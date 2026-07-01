@@ -7396,7 +7396,6 @@
       typedom_types: ["Keyword", "Length"],
       invalidate: ["layout", "paint"],
       affected_by_zoom: true,
-      runtime_flag: "MulticolColumnWrapping",
     },
     {
       name: "column-wrap",
@@ -7407,7 +7406,6 @@
       default_value: "auto",
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
-      runtime_flag: "MulticolColumnWrapping",
     },
     {
       name: "hyphenate-character",

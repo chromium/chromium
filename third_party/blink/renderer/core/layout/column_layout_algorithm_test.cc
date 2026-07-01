@@ -6616,7 +6616,6 @@ TEST_F(ColumnLayoutAlgorithmTest,
 
 TEST_F(ColumnLayoutAlgorithmTest,
        GapDecorationColumnWrapOneColumn) {
-  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
  <style>
@@ -6709,7 +6708,6 @@ TEST_F(ColumnLayoutAlgorithmTest,
 }
 
 TEST_F(ColumnLayoutAlgorithmTest, GapDecorationColumnWrapBasic) {
-  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -6799,7 +6797,6 @@ TEST_F(ColumnLayoutAlgorithmTest, GapDecorationColumnWrapBasic) {
 
 TEST_F(ColumnLayoutAlgorithmTest,
        GapDecorationColumnWrapAndSpanner) {
-  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
 <style>
@@ -6896,7 +6893,6 @@ TEST_F(ColumnLayoutAlgorithmTest,
 
 TEST_F(ColumnLayoutAlgorithmTest,
        GapDecorationColumnWrapLastRowNotFilled) {
-  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
  <style>

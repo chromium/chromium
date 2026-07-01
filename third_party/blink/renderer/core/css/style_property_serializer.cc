@@ -2755,7 +2755,6 @@ String StylePropertySerializer::GetShorthandValueForColumns(
       property_set_.GetPropertyCSSValue(GetCSSPropertyColumnWidth());
   const CSSValue* count =
       property_set_.GetPropertyCSSValue(GetCSSPropertyColumnCount());
-  const CSSValue* height = nullptr;
 
   auto* width_keyword = DynamicTo<CSSIdentifierValue>(width);
   auto* count_keyword = DynamicTo<CSSIdentifierValue>(count);
@@ -2764,14 +2763,12 @@ String StylePropertySerializer::GetShorthandValueForColumns(
       width_keyword && width_keyword->GetValueID() == CSSValueID::kAuto;
   bool count_is_auto =
       count_keyword && count_keyword->GetValueID() == CSSValueID::kAuto;
-  bool height_is_auto = true;
 
-  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled()) {
-    height = property_set_.GetPropertyCSSValue(GetCSSPropertyColumnHeight());
-    auto* height_keyword = DynamicTo<CSSIdentifierValue>(height);
-    height_is_auto =
-        height_keyword && height_keyword->GetValueID() == CSSValueID::kAuto;
-  }
+  const CSSValue* height =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyColumnHeight());
+  auto* height_keyword = DynamicTo<CSSIdentifierValue>(height);
+  bool height_is_auto =
+      height_keyword && height_keyword->GetValueID() == CSSValueID::kAuto;
 
   StringBuilder result;
   if (width_is_auto && count_is_auto) {

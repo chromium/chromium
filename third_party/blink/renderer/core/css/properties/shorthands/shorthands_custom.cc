@@ -1955,8 +1955,7 @@ bool Columns::ParseShorthand(
   css_parsing_utils::ConsumeColumnWidthOrCount(stream, context, local_context,
                                                column_width, column_count);
 
-  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled() &&
-      css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
+  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
     column_height = css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
     if (!column_height) {
       column_height = css_parsing_utils::ConsumeLength(
@@ -1982,19 +1981,17 @@ bool Columns::ParseShorthand(
       CSSPropertyID::kColumnCount, CSSPropertyID::kInvalid, *column_count,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
-  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled()) {
-    if (!column_height) {
-      column_height = CSSIdentifierValue::Create(CSSValueID::kAuto);
-    }
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kColumnHeight, CSSPropertyID::kInvalid, *column_height,
-        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-        properties);
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kColumnWrap, CSSPropertyID::kInvalid,
-        *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  if (!column_height) {
+    column_height = CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnHeight, CSSPropertyID::kInvalid, *column_height,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnWrap, CSSPropertyID::kInvalid,
+      *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   return true;
 }
 
@@ -2016,15 +2013,12 @@ const CSSValue* Columns::CSSValueFromComputedStyleInternal(
   bool count_is_auto =
       count_keyword && count_keyword->GetValueID() == CSSValueID::kAuto;
 
-  const CSSValue* height = nullptr;
-  bool height_is_auto = true;
-  if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled()) {
-    height = GetCSSPropertyColumnHeight().CSSValueFromComputedStyle(
-        style, layout_object, allow_visited_style, value_phase);
-    auto* height_keyword = DynamicTo<CSSIdentifierValue>(height);
-    height_is_auto =
-        height_keyword && height_keyword->GetValueID() == CSSValueID::kAuto;
-  }
+  const CSSValue* height =
+      GetCSSPropertyColumnHeight().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  auto* height_keyword = DynamicTo<CSSIdentifierValue>(height);
+  bool height_is_auto =
+      height_keyword && height_keyword->GetValueID() == CSSValueID::kAuto;
 
   if (width_is_auto && count_is_auto && height_is_auto) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
