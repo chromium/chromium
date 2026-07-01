@@ -325,6 +325,101 @@ TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
   EXPECT_EQ(result.entries[1].value, u"Remote Name");
 }
 
+// Tests that results with the most matching filter words are retained, ties for
+// the highest match count keep all tied entries, and lower match entries are
+// filtered out. Also tests non-ASCII case-folding.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_WithFilterWords_HighestMatchCountAndTie) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+  plan->add_filter_keywords("münchen");
+  plan->add_filter_keywords("karl");
+
+  StubFetchContextResponse(std::move(response));
+
+  // Entry with only 1 match ("München").
+  MemorySearchResult entry_a(MemoryDataType::kAddressFull, u"Address",
+                             u"Hauptstraße 742, München, DE");
+  entry_a.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                     u"Homer Simpson");
+
+  // Entry with 0 matches.
+  MemorySearchResult entry_b(MemoryDataType::kAddressFull, u"Address",
+                             u"1st Avenue, Berlin, DE");
+  entry_b.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                     u"Marge Simpson");
+
+  // Entry with 2 matches ("Karl" in metadata, "München" in value).
+  MemorySearchResult entry_c(MemoryDataType::kAddressFull, u"Address",
+                             u"Hauptstraße 742, München, DE");
+  entry_c.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                     u"Karl");
+
+  // Entry with 2 matches ("Karl" in metadata, "München" in value) - tie with C.
+  MemorySearchResult entry_d(MemoryDataType::kAddressFull, u"Address",
+                             u"Marienplatz 100, München, DE");
+  entry_d.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                     u"KARL HEINZ");
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+  fake_data_provider->SetResults({entry_a, entry_b, entry_c, entry_d});
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "de-DE");
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"Karl Adresse in MÜNCHEN", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ASSERT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
+  // Highest match count is 2 (`entry_c` and `entry_d`). Both should be
+  // retained.
+  EXPECT_EQ(result.entries.size(), 2u);
+  EXPECT_THAT(result.entries,
+              testing::UnorderedElementsAre(
+                  testing::Field(&MemorySearchResult::value,
+                                 u"Hauptstraße 742, München, DE"),
+                  testing::Field(&MemorySearchResult::value,
+                                 u"Marienplatz 100, München, DE")));
+}
+
+// Tests that the query service falls back to returning all results for the
+// classified intent if none of the results match the filter words.
+TEST_F(AtMemoryQueryServiceTest, Query_WithFilterWords_NoMatch_ReturnsAll) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+  plan->add_filter_keywords("berlin");
+
+  StubFetchContextResponse(std::move(response));
+
+  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
+                           u"123 San Diego St Home San Diego");
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+  fake_data_provider->SetResults({entry});
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"What's my home address in Berlin",
+                 future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
+  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+                                  &MemorySearchResult::value,
+                                  u"123 San Diego St Home San Diego")));
+}
+
 // Tests that the query service returns the appropriate error status when the
 // personal context resolver fails.
 TEST_F(AtMemoryQueryServiceTest, Query_PersonalContextResolverError) {

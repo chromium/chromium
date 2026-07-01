@@ -17,6 +17,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
+#include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -305,39 +306,38 @@ personal_context::proto::AtMemoryQueryRequest BuildAtMemoryQueryRequest(
   return request;
 }
 
-// Tokenizes `text` using native word boundaries and returns true if any
-// token exists in `filter_words_set`.
-bool TextContainsAnyFilterWord(
+// Tokenizes `text` using native word boundaries and counts the number of
+// occurrences of any filter word in `filter_words_set`.
+size_t CountFilterWordMatchesInText(
     std::u16string_view text,
     const base::flat_set<std::u16string>& filter_words_set) {
   base::i18n::BreakIterator iter(text, base::i18n::BreakIterator::BREAK_WORD);
   if (!iter.Init()) {
-    return false;
+    return 0;
   }
 
+  size_t count = 0;
   while (iter.Advance()) {
     if (iter.IsWord()) {
-      std::u16string word = base::ToLowerASCII(iter.GetString());
+      std::u16string word = base::i18n::FoldCase(iter.GetString());
       if (filter_words_set.contains(word)) {
-        return true;
+        count++;
       }
     }
   }
-  return false;
+  return count;
 }
 
-// Returns true if at least one word in `filter_words_set` is present in
-// `entry.value` or any of its `metadata_list` values.
-bool EntryMatchesAnyFilterWord(
+// Counts total filter word matches across `entry`'s value and any of its
+// metadata values.
+size_t CountFilterWordMatchesInEntry(
     const MemorySearchResult& entry,
     const base::flat_set<std::u16string>& filter_words_set) {
-  if (TextContainsAnyFilterWord(entry.value, filter_words_set)) {
-    return true;
+  size_t count = CountFilterWordMatchesInText(entry.value, filter_words_set);
+  for (const EntryMetadata& metadata : entry.metadata_list) {
+    count += CountFilterWordMatchesInText(metadata.value, filter_words_set);
   }
-  return std::ranges::any_of(
-      entry.metadata_list, [&](const EntryMetadata& metadata) {
-        return TextContainsAnyFilterWord(metadata.value, filter_words_set);
-      });
+  return count;
 }
 
 // Deduplicates search results in `MemorySearchResults`.
@@ -369,19 +369,30 @@ void DeduplicateResults(std::vector<MemorySearchResult>& results) {
   results = std::move(unique_results);
 }
 
+// Filters search results by retaining only those entries that have the maximum
+// number of matching filter words. If `filter_words` is empty or if no entry
+// matches any filter word, all entries are returned.
 std::vector<MemorySearchResult> FilterResults(
     const std::vector<MemorySearchResult>& entries,
     const base::flat_set<std::u16string>& filter_words) {
   if (filter_words.empty()) {
     return entries;
   }
+
   std::vector<MemorySearchResult> filtered_entries;
   filtered_entries.reserve(entries.size());
-  // TODO(crbug.com/512755034): Improve filtering logic.
-  std::ranges::copy_if(entries, std::back_inserter(filtered_entries),
-                       [&](const MemorySearchResult& entry) {
-                         return EntryMatchesAnyFilterWord(entry, filter_words);
-                       });
+  size_t max_matches = 0;
+  for (const MemorySearchResult& entry : entries) {
+    size_t count = CountFilterWordMatchesInEntry(entry, filter_words);
+    if (count > max_matches) {
+      max_matches = count;
+      filtered_entries.clear();
+      filtered_entries.push_back(entry);
+    } else if (count == max_matches) {
+      filtered_entries.push_back(entry);
+    }
+  }
+
   return filtered_entries;
 }
 
@@ -518,7 +529,7 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
     });
     filter_words = base::MakeFlatSet<std::u16string>(
         plan.filter_keywords(), {}, [](const std::string& word) {
-          return base::ToLowerASCII(base::UTF8ToUTF16(word));
+          return base::i18n::FoldCase(base::UTF8ToUTF16(word));
         });
   }
 
