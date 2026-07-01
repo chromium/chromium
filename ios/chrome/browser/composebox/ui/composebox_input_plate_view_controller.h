@@ -30,6 +30,9 @@
 // The input plate view to be used in animations.
 @property(nonatomic, readonly) UIView* inputPlateViewForAnimation;
 
+/// The container view for the omnibox/text field.
+@property(nonatomic, readonly) UIView* omniboxContainer;
+
 // Whether the UI is in compact (single line) mode.
 @property(nonatomic, readonly, getter=isCompact) BOOL compact;
 
