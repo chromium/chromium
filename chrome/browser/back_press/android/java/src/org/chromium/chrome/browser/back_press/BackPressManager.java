@@ -24,7 +24,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -137,8 +136,7 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
         @Override
         public void handleOnBackPressed() {
             mLastCalledHandlerType = -1;
-            if (ChromeFeatureList.sLockBackPressHandlerAtStart.isEnabled()
-                    && mActiveHandler != null) {
+            if (mActiveHandler != null) {
                 Boolean enabled = mActiveHandler.getHandleBackPressChangedSupplier().get();
                 if (enabled != null && enabled) {
                     int result = mActiveHandler.handleBackPress();
@@ -153,6 +151,8 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
                     BackPressManager.this.handleBackPress();
                 }
             } else {
+                // mActiveHandler is always null on lower versions which do not support
+                // handleOnBackStarted
                 BackPressManager.this.handleBackPress();
             }
 

@@ -522,7 +522,6 @@ public abstract class ChromeFeatureList {
     public static final String LOAD_ALL_TABS_AT_STARTUP = "LoadAllTabsAtStartup";
     public static final String LOAD_NATIVE_EARLY = "LoadNativeEarly";
     public static final String LOCAL_NETWORK_ACCESS = "LocalNetworkAccessChecks";
-    public static final String LOCK_BACK_PRESS_HANDLER_AT_START = "LockBackPressHandlerAtStart";
     public static final String LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2 =
             "LockTopControlsOnLargeTabletsV2";
     public static final String LOGO_VIEW_REFACTOR = "LogoViewRefactor";
@@ -1073,8 +1072,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sLoadNativeEarly =
             newCachedFlag(LOAD_NATIVE_EARLY, /* defaultValue= */ true);
-    public static final CachedFlag sLockBackPressHandlerAtStart =
-            newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sLockTopControlsOnLargeTabletsV2 =
             newCachedFlag(
                     LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
@@ -1374,7 +1371,6 @@ public abstract class ChromeFeatureList {
                     sLensSendRawFileMediaTypes,
                     sLoadAllTabsAtStartup,
                     sLoadNativeEarly,
-                    sLockBackPressHandlerAtStart,
                     sLockTopControlsOnLargeTabletsV2,
                     sLogoViewRefactor,
                     sMaliciousApkDownloadCheck,
