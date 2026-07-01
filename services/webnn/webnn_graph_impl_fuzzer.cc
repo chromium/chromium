@@ -1430,7 +1430,6 @@ std::optional<OperandId> BuildDequantizeInput(
     bool is_input_constant,
     std::string_view input_name,
     const OperandDescriptor& op_input_desc,
-    OperandDataType quantized_type,
     const QuantizationParams& quantization_params,
     std::optional<uint32_t> channel_axis,
     uint8_t seed_for_data,
@@ -1443,7 +1442,8 @@ std::optional<OperandId> BuildDequantizeInput(
 
   ASSIGN_OR_RETURN_NULLOPT(
       auto input_dq_desc,
-      OperandDescriptor::Create(context_properties, quantized_type,
+      OperandDescriptor::Create(context_properties,
+                                quantization_params.quantized_type,
                                 op_input_desc.shape(), ""));
   ASSIGN_OR_RETURN_NULLOPT(
       auto input_scale_desc,
@@ -1451,7 +1451,8 @@ std::optional<OperandId> BuildDequantizeInput(
                                 scale_shape, ""));
   ASSIGN_OR_RETURN_NULLOPT(
       auto input_zero_desc,
-      OperandDescriptor::Create(context_properties, quantized_type, scale_shape,
+      OperandDescriptor::Create(context_properties,
+                                quantization_params.quantized_type, scale_shape,
                                 ""));
   ASSIGN_OR_RETURN_NULLOPT(auto input_desc_result,
                            ValidateDequantizeLinearAndInferOutput(
@@ -1483,7 +1484,6 @@ bool BuildQuantizeOutput(GraphInfoBuilder& builder,
                          const ContextProperties& context_properties,
                          std::string_view output_name,
                          const OperandDescriptor& op_output_desc,
-                         OperandDataType quantized_type,
                          const QuantizationParams& quantization_params,
                          std::optional<uint32_t> channel_axis,
                          OperandId op_output_id,
@@ -1498,7 +1498,8 @@ bool BuildQuantizeOutput(GraphInfoBuilder& builder,
                                 scale_shape, ""));
   ASSIGN_OR_RETURN_FALSE(
       auto output_zero_desc,
-      OperandDescriptor::Create(context_properties, quantized_type, scale_shape,
+      OperandDescriptor::Create(context_properties,
+                                quantization_params.quantized_type, scale_shape,
                                 ""));
   ASSIGN_OR_RETURN_FALSE(auto quantized_output_desc,
                          ValidateQuantizeLinearAndInferOutput(
@@ -4274,7 +4275,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQClampQ(
   ASSIGN_OR_RETURN_VOID(
       auto clamp_descs,
       SetUpClampDescriptors(this->context_properties(), clamp_params));
-  const OperandDataType quantized_type = quantization_params.quantized_type;
 
   // Use per-tensor quantization for the input when the input shape is empty
   // (scalar), since per-channel/per-block quantization requires a non-empty
@@ -4295,11 +4295,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQClampQ(
 
   ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto clamp_input_id,
-      BuildDequantizeInput(
-          builder, this->context_properties(), clamp_params.is_input_constant,
-          "input", clamp_descs.input_desc, quantized_type, quantization_params,
-          channel_axis, seed_for_input, seed_for_scale, seed_for_zero_point,
-          data_buffers, named_inputs));
+      BuildDequantizeInput(builder, this->context_properties(),
+                           clamp_params.is_input_constant, "input",
+                           clamp_descs.input_desc, quantization_params,
+                           channel_axis, seed_for_input, seed_for_scale,
+                           seed_for_zero_point, data_buffers, named_inputs));
 
   // The output of clamp has the same shape and data type as the input.
   OperandId clamp_output_id = builder.BuildIntermediateOperand(
@@ -4309,9 +4309,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQClampQ(
                      clamp_descs.max_value);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           clamp_descs.input_desc, quantized_type,
-                           quantization_params, channel_axis, clamp_output_id,
-                           seed_for_scale, seed_for_zero_point)) {
+                           clamp_descs.input_desc, quantization_params,
+                           channel_axis, clamp_output_id, seed_for_scale,
+                           seed_for_zero_point)) {
     return;
   }
 
@@ -4362,8 +4362,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConcatQ(
         BuildDequantizeInput(
             builder, this->context_properties(),
             concat_params.is_input_constant, "input" + base::NumberToString(i),
-            concat_descs.input_descs[i], quantized_type,
-            per_tensor_quantization_params,
+            concat_descs.input_descs[i], per_tensor_quantization_params,
             /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
             seed_for_zero_point, data_buffers, named_inputs));
     concat_input_ids.push_back(concat_input_id);
@@ -4376,7 +4375,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConcatQ(
                       concat_descs.axis);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           concat_descs.output_desc, quantized_type,
+                           concat_descs.output_desc,
                            per_tensor_quantization_params,
                            /*channel_axis=*/std::nullopt, concat_output_id,
                            seed_for_scale, seed_for_zero_point)) {
@@ -4402,7 +4401,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
       auto conv2d_descs,
       SetUpConv2dDescriptors(this->context_properties(), conv2d_params));
 
-  OperandDataType quantized_type = quantization_params.quantized_type;
   InputOperandLayout input_layout =
       this->context_properties().input_operand_layout;
   const uint32_t input_channel_axis =
@@ -4433,26 +4431,29 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
       auto conv2d_input_id,
       BuildDequantizeInput(
           builder, this->context_properties(), conv2d_params.is_input_constant,
-          "input", conv2d_descs.input_desc, quantized_type, quantization_params,
+          "input", conv2d_descs.input_desc, quantization_params,
           input_channel_axis, seed_for_data, /*scale_value=*/0.5f,
           /*zero_point_value=*/0, data_buffers, named_inputs));
   ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto conv2d_filter_id,
       BuildDequantizeInput(builder, this->context_properties(),
                            conv2d_params.is_filter_constant, "filter",
-                           conv2d_descs.filter_desc, quantized_type,
-                           quantization_params, filter_channel_axis,
-                           seed_for_data, /*scale_value=*/0.25f,
+                           conv2d_descs.filter_desc, quantization_params,
+                           filter_channel_axis, seed_for_data,
+                           /*scale_value=*/0.25f,
                            /*zero_point_value=*/0, data_buffers, named_inputs));
   std::optional<OperandId> conv2d_bias_id;
   if (conv2d_params.bias_kind != OptionalOperandKind::kNone) {
+    // The bias must be quantized to int32.
+    QuantizationParams bias_quantization_params = quantization_params;
+    bias_quantization_params.quantized_type = OperandDataType::kInt32;
     ASSIGN_OPTIONAL_OR_RETURN_VOID(
         auto bias_id,
         BuildDequantizeInput(
             builder, this->context_properties(),
             conv2d_params.bias_kind == OptionalOperandKind::kConstant, "bias",
-            *conv2d_descs.bias_desc, OperandDataType::kInt32,
-            quantization_params, bias_channel_axis, seed_for_data,
+            *conv2d_descs.bias_desc, bias_quantization_params,
+            bias_channel_axis, seed_for_data,
             /*scale_value=*/0.125f, /*zero_point_value=*/0, data_buffers,
             named_inputs));
     conv2d_bias_id = bias_id;
@@ -4504,9 +4505,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
   }
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           conv2d_descs.output_desc, quantized_type,
-                           quantization_params, output_channel_axis,
-                           quantize_input_id,
+                           conv2d_descs.output_desc, quantization_params,
+                           output_channel_axis, quantize_input_id,
                            /*scale_value=*/0.125f, /*zero_point_value=*/0)) {
     return;
   }
@@ -4552,7 +4552,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
       auto binary_lhs_id,
       BuildDequantizeInput(
           builder, this->context_properties(), params.is_lhs_constant, "lhs",
-          descs.lhs_desc, quantized_type, per_tensor_quantization_params,
+          descs.lhs_desc, per_tensor_quantization_params,
           /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
           seed_for_zero_point, data_buffers, named_inputs));
 
@@ -4560,7 +4560,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
       auto binary_rhs_id,
       BuildDequantizeInput(
           builder, this->context_properties(), params.is_rhs_constant, "rhs",
-          descs.rhs_desc, quantized_type, per_tensor_quantization_params,
+          descs.rhs_desc, per_tensor_quantization_params,
           /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
           seed_for_zero_point, data_buffers, named_inputs));
 
@@ -4570,8 +4570,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
                                  binary_output_id);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           descs.output_desc, quantized_type,
-                           per_tensor_quantization_params,
+                           descs.output_desc, per_tensor_quantization_params,
                            /*channel_axis=*/std::nullopt, binary_output_id,
                            seed_for_scale, seed_for_zero_point)) {
     return;
@@ -4613,7 +4612,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGatherQ(
   //   - If input_channel_axis < gather_axis: unchanged.
   //   - If input_channel_axis > gather_axis: shifted by (indices_rank - 1)
   //     because the gather axis (1 dim) is replaced by indices_rank dims.
-  OperandDataType quantized_type = quantization_params.quantized_type;
   uint32_t input_channel_axis = channel_axis % gather_params.input_rank;
   std::optional<uint32_t> output_channel_axis;
 
@@ -4638,11 +4636,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGatherQ(
 
   ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto gather_input_id,
-      BuildDequantizeInput(
-          builder, this->context_properties(), gather_params.is_input_constant,
-          "input", gather_descs.input_desc, quantized_type, quantization_params,
-          input_channel_axis, seed_for_input, seed_for_scale,
-          seed_for_zero_point, data_buffers, named_inputs));
+      BuildDequantizeInput(builder, this->context_properties(),
+                           gather_params.is_input_constant, "input",
+                           gather_descs.input_desc, quantization_params,
+                           input_channel_axis, seed_for_input, seed_for_scale,
+                           seed_for_zero_point, data_buffers, named_inputs));
 
   OperandId indices_id = BuildInputOrConstant(
       builder, gather_params.is_indices_constant, "indices",
@@ -4661,10 +4659,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGatherQ(
   // Reuse input scale/zero-point values for output since they should have the
   // same values.
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           gather_descs.output_desc, quantized_type,
-                           quantization_params, output_channel_axis,
-                           gather_output_id, seed_for_scale,
-                           seed_for_zero_point)) {
+                           gather_descs.output_desc, quantization_params,
+                           output_channel_axis, gather_output_id,
+                           seed_for_scale, seed_for_zero_point)) {
     return;
   }
 
@@ -4693,7 +4690,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
       auto gemm_descs,
       SetUpGemmDescriptors(this->context_properties(), gemm_params));
 
-  OperandDataType quantized_type = quantization_params.quantized_type;
   const uint32_t b_channel_axis = gemm_params.b_transpose ? 0u : 1u;
 
   mojo::Remote<mojom::WebNNGraphBuilder> remote =
@@ -4713,15 +4709,15 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
       auto gemm_a_id,
       BuildDequantizeInput(
           builder, this->context_properties(), gemm_params.is_a_constant, "a",
-          gemm_descs.a_desc, quantized_type, per_tensor_quantization_params,
+          gemm_descs.a_desc, per_tensor_quantization_params,
           /*channel_axis=*/std::nullopt, seed_for_data, /*scale_value=*/0.5f,
           /*zero_point_value=*/0, data_buffers, named_inputs));
   ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto gemm_b_id,
       BuildDequantizeInput(builder, this->context_properties(),
                            gemm_params.is_b_constant, "b", gemm_descs.b_desc,
-                           quantized_type, quantization_params, b_channel_axis,
-                           seed_for_data, /*scale_value=*/0.25f,
+                           quantization_params, b_channel_axis, seed_for_data,
+                           /*scale_value=*/0.25f,
                            /*zero_point_value=*/0, data_buffers, named_inputs));
 
   BuildGemmAttributes gemm_attr;
@@ -4741,12 +4737,14 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
     // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2079;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
     // TODO(crbug.com/498987226): Remove these restrictions to increase test
     // coverage.
+    QuantizationParams c_quantization_params = quantization_params;
+    c_quantization_params.quantized_type = OperandDataType::kInt32;
     ASSIGN_OPTIONAL_OR_RETURN_VOID(
         auto gemm_c_id,
         BuildDequantizeInput(builder, this->context_properties(),
                              gemm_params.is_c_constant, "c", *gemm_descs.c_desc,
-                             OperandDataType::kInt32, quantization_params,
-                             c_channel_axis, seed_for_data,
+                             c_quantization_params, c_channel_axis,
+                             seed_for_data,
                              /*scale_value=*/0.125f, /*zero_point_value=*/0,
                              data_buffers, named_inputs));
     gemm_attr.c_operand_id = gemm_c_id;
@@ -4757,7 +4755,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
   builder.BuildGemm(gemm_a_id, gemm_b_id, gemm_output_id, gemm_attr);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           gemm_descs.output_desc, quantized_type,
+                           gemm_descs.output_desc,
                            per_tensor_quantization_params,
                            /*channel_axis=*/std::nullopt, gemm_output_id,
                            /*scale_value=*/0.125f, /*zero_point_value=*/0)) {
@@ -4805,8 +4803,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPadQ(
       auto pad_input_id,
       BuildDequantizeInput(
           builder, this->context_properties(), pad_params.is_input_constant,
-          "input", pad_descs.input_desc, quantized_type,
-          per_tensor_quantization_params,
+          "input", pad_descs.input_desc, per_tensor_quantization_params,
           /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
           seed_for_zero_point, data_buffers, named_inputs));
 
@@ -4817,7 +4814,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPadQ(
                    pad_descs.ending_padding, pad_params.mode, pad_params.value);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           pad_descs.output_desc, quantized_type,
+                           pad_descs.output_desc,
                            per_tensor_quantization_params,
                            /*channel_axis=*/std::nullopt, pad_output_id,
                            seed_for_scale, seed_for_zero_point)) {
@@ -4843,7 +4840,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPool2dQ(
       auto pool2d_descs,
       SetUpPool2dDescriptors(this->context_properties(), pool2d_params));
 
-  OperandDataType quantized_type = quantization_params.quantized_type;
   InputOperandLayout input_layout =
       this->context_properties().input_operand_layout;
   const uint32_t input_channel_axis =
@@ -4868,7 +4864,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPool2dQ(
       auto pool2d_input_id,
       BuildDequantizeInput(
           builder, this->context_properties(), pool2d_params.is_input_constant,
-          "input", pool2d_descs.input_desc, quantized_type, quantization_params,
+          "input", pool2d_descs.input_desc, quantization_params,
           input_channel_axis, seed_for_data, /*scale_value=*/0.25f,
           /*zero_point_value=*/0, data_buffers, named_inputs));
 
@@ -4890,9 +4886,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPool2dQ(
                       pool_output_id, pool2d_attr);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           pool2d_descs.output_desc, quantized_type,
-                           quantization_params, output_channel_axis,
-                           pool_output_id,
+                           pool2d_descs.output_desc, quantization_params,
+                           output_channel_axis, pool_output_id,
                            /*scale_value=*/0.25f, /*zero_point_value=*/0)) {
     return;
   }
@@ -4918,8 +4913,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
   ASSIGN_OR_RETURN_VOID(
       auto reduce_descs,
       SetUpReduceDescriptors(this->context_properties(), reduce_params));
-
-  OperandDataType quantized_type = quantization_params.quantized_type;
 
   // Use per-tensor quantization for the input when the input shape is empty
   // (scalar), since per-channel/per-block quantization requires a non-empty
@@ -4954,11 +4947,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
 
   ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto reduce_input_id,
-      BuildDequantizeInput(
-          builder, this->context_properties(), reduce_params.is_input_constant,
-          "input", reduce_descs.input_desc, quantized_type,
-          input_quantization_params, input_channel_axis, seed_for_input,
-          seed_for_scale, seed_for_zero_point, data_buffers, named_inputs));
+      BuildDequantizeInput(builder, this->context_properties(),
+                           reduce_params.is_input_constant, "input",
+                           reduce_descs.input_desc, input_quantization_params,
+                           input_channel_axis, seed_for_input, seed_for_scale,
+                           seed_for_zero_point, data_buffers, named_inputs));
 
   OperandId reduce_output_id = builder.BuildIntermediateOperand(
       reduce_descs.output_desc.shape(), reduce_descs.output_desc.data_type());
@@ -4968,10 +4961,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
                       reduce_params.keep_dimensions);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           reduce_descs.output_desc, quantized_type,
-                           output_quantization_params, output_channel_axis,
-                           reduce_output_id, seed_for_scale,
-                           seed_for_zero_point)) {
+                           reduce_descs.output_desc, output_quantization_params,
+                           output_channel_axis, reduce_output_id,
+                           seed_for_scale, seed_for_zero_point)) {
     return;
   }
 
@@ -5015,13 +5007,12 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
 
   ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto resample2d_input_id,
-      BuildDequantizeInput(builder, this->context_properties(),
-                           resample2d_params.is_input_constant, "input",
-                           resample2d_descs.input_desc, quantized_type,
-                           per_tensor_quantization_params,
-                           /*channel_axis=*/std::nullopt, seed_for_input,
-                           seed_for_scale, seed_for_zero_point, data_buffers,
-                           named_inputs));
+      BuildDequantizeInput(
+          builder, this->context_properties(),
+          resample2d_params.is_input_constant, "input",
+          resample2d_descs.input_desc, per_tensor_quantization_params,
+          /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
+          seed_for_zero_point, data_buffers, named_inputs));
 
   OperandId resample_output_id = builder.BuildIntermediateOperand(
       resample2d_descs.output_desc.shape(),
@@ -5035,7 +5026,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
                           resample2d_attr);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           resample2d_descs.output_desc, quantized_type,
+                           resample2d_descs.output_desc,
                            per_tensor_quantization_params,
                            /*channel_axis=*/std::nullopt, resample_output_id,
                            seed_for_scale, seed_for_zero_point)) {
@@ -5084,8 +5075,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSliceQ(
       auto slice_input_id,
       BuildDequantizeInput(
           builder, this->context_properties(), slice_params.is_input_constant,
-          "input", slice_descs.input_desc, quantized_type,
-          per_tensor_quantization_params,
+          "input", slice_descs.input_desc, per_tensor_quantization_params,
           /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
           seed_for_zero_point, data_buffers, named_inputs));
 
@@ -5096,7 +5086,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSliceQ(
                      slice_descs.sizes, slice_descs.strides);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           slice_descs.output_desc, quantized_type,
+                           slice_descs.output_desc,
                            per_tensor_quantization_params,
                            /*channel_axis=*/std::nullopt, slice_output_id,
                            seed_for_scale, seed_for_zero_point)) {
@@ -5150,7 +5140,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSoftmaxQ(
       auto softmax_input_id,
       BuildDequantizeInput(
           builder, this->context_properties(), softmax_params.is_input_constant,
-          "input", softmax_desc, quantized_type, per_tensor_quantization_params,
+          "input", softmax_desc, per_tensor_quantization_params,
           /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
           seed_for_zero_point, data_buffers, named_inputs));
 
@@ -5161,8 +5151,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSoftmaxQ(
   builder.BuildSoftmax(softmax_input_id, softmax_output_id, softmax_descs.axis);
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           softmax_desc, quantized_type,
-                           per_tensor_quantization_params,
+                           softmax_desc, per_tensor_quantization_params,
                            /*channel_axis=*/std::nullopt, softmax_output_id,
                            seed_for_scale, seed_for_zero_point)) {
     return;
@@ -5212,8 +5201,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSplitQ(
       auto split_input_id,
       BuildDequantizeInput(
           builder, this->context_properties(), split_params.is_input_constant,
-          "input", split_descs.input_desc, quantized_type,
-          per_tensor_quantization_params,
+          "input", split_descs.input_desc, per_tensor_quantization_params,
           /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
           seed_for_zero_point, data_buffers, named_inputs));
 
@@ -5232,7 +5220,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSplitQ(
   for (size_t i = 0; i < output_num; ++i) {
     if (!BuildQuantizeOutput(builder, this->context_properties(),
                              "output" + base::NumberToString(i),
-                             split_descs.output_descs[i], quantized_type,
+                             split_descs.output_descs[i],
                              per_tensor_quantization_params,
                              /*channel_axis=*/std::nullopt, split_output_ids[i],
                              seed_for_scale, seed_for_zero_point)) {
@@ -5271,8 +5259,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
   per_tensor_quantization_params.quantization_kind =
       QuantizationKind::kPerTensor;
 
-  OperandDataType quantized_type = quantization_params.quantized_type;
-
   // Use per-tensor quantization for the output when transpose produces a
   // scalar (rank 0), since per-channel/per-block quantization requires a
   // non-empty shape. Otherwise, clamp channel_axis to be valid for the output
@@ -5295,13 +5281,12 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
 
   ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto transpose_input_id,
-      BuildDequantizeInput(builder, this->context_properties(),
-                           transpose_params.is_input_constant, "input",
-                           transpose_descs.input_desc, quantized_type,
-                           per_tensor_quantization_params,
-                           /*channel_axis=*/std::nullopt, seed_for_input,
-                           seed_for_scale, seed_for_zero_point, data_buffers,
-                           named_inputs));
+      BuildDequantizeInput(
+          builder, this->context_properties(),
+          transpose_params.is_input_constant, "input",
+          transpose_descs.input_desc, per_tensor_quantization_params,
+          /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
+          seed_for_zero_point, data_buffers, named_inputs));
 
   OperandId transpose_output_id =
       builder.BuildIntermediateOperand(transpose_descs.output_desc.shape(),
@@ -5311,7 +5296,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
                          std::move(transpose_descs.permutation));
 
   if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           transpose_descs.output_desc, quantized_type,
+                           transpose_descs.output_desc,
                            output_quantization_params, output_channel_axis,
                            transpose_output_id, seed_for_scale,
                            seed_for_zero_point)) {
