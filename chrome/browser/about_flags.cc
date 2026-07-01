@@ -5979,6 +5979,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutoWebContentsDarkModeDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kForceWebContentsDarkMode)},
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-accessibility-android-math",
+     flag_descriptions::kAccessibilityAndroidMathName,
+     flag_descriptions::kAccessibilityAndroidMathDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilityAndroidMath)},
     {"enable-accessibility-deprecate-type-announce",
      flag_descriptions::kAccessibilityDeprecateTypeAnnounceName,
      flag_descriptions::kAccessibilityDeprecateTypeAnnounceDescription,
