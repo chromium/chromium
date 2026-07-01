@@ -3573,6 +3573,7 @@ if (!is_android) {
     if (is_win || is_mac || is_linux) {
       deps += [
         "//chrome/browser/enterprise/profile_management:browser_tests",
+        "//chrome/browser/enterprise/signin:browser_tests",
         "//chrome/browser/ui/views/media_preview/mic_preview:browser_tests",
       ]
     }
@@ -4256,10 +4257,6 @@ if (!is_android) {
       }
       if (is_win || is_mac || is_linux) {
         sources += [
-          "../browser/enterprise/signin/managed_profile_creation_controller_browsertest.cc",
-          "../browser/enterprise/signin/managed_profile_required_navigation_throttle_browsertest.cc",
-          "../browser/enterprise/signin/profile_management_disclaimer_service_browsertest.cc",
-          "../browser/enterprise/signin/profile_token_web_signin_interceptor_browsertest.cc",
           "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
           "../browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view_browsertest.cc",
         ]
@@ -4972,12 +4969,7 @@ if (!is_android) {
     }
 
     if (is_mac || is_win || is_linux) {
-      sources += [
-        "../browser/enterprise/signin/enterprise_signin_service_browsertest.cc",
-        "../browser/enterprise/signin/oidc_authentication_signin_interceptor_browsertest.cc",
-        "../browser/enterprise/signin/user_policy_oidc_signin_service_browsertest.cc",
-        "../browser/signin/signin_hats_util_browsertest.cc",
-      ]
+      sources += [ "../browser/signin/signin_hats_util_browsertest.cc" ]
       deps += [
         "//chrome/browser/browser_switcher:browser_tests",
         "//chrome/browser/ui/startup/default_browser_prompt",
@@ -5474,7 +5466,6 @@ test("unit_tests") {
     "../browser/chrome_content_browser_client_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
     "../browser/enterprise/connectors/interstitials/enterprise_page_unittest.cc",
-    "../browser/enterprise/signin/interstitials/managed_profile_required_page_unittest.cc",
     "../browser/file_select_helper_unittest.cc",
     "../browser/font_family_cache_unittest.cc",
     "../browser/font_pref_change_notifier_unittest.cc",
@@ -5766,6 +5757,7 @@ test("unit_tests") {
     "//chrome/browser/enterprise/reporting:unit_tests",
     "//chrome/browser/enterprise/reporting/test:test_support",
     "//chrome/browser/enterprise/signals:unit_tests",
+    "//chrome/browser/enterprise/signin:unit_tests",
     "//chrome/browser/enterprise/webstore:unit_tests",
     "//chrome/browser/external_protocol",
     "//chrome/browser/external_protocol:unit_tests",
@@ -8385,9 +8377,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/device_attester_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/profile_attester_unittest.cc",
-      "../browser/enterprise/signin/managed_profile_creator_unittest.cc",
-      "../browser/enterprise/signin/oidc_managed_profile_creation_delegate_unittest.cc",
-      "../browser/enterprise/signin/token_managed_profile_creation_delegate_unittest.cc",
       "../browser/signin/accounts_policy_manager_unittest.cc",
     ]
 

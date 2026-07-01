@@ -1,0 +1,69 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ozone.gni")
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "interstitials/managed_profile_required_page_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/enterprise:impl",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_linux || is_mac || is_win) {
+    sources += [
+      "managed_profile_creator_unittest.cc",
+      "oidc_managed_profile_creation_delegate_unittest.cc",
+      "token_managed_profile_creation_delegate_unittest.cc",
+    ]
+    deps += [ "//components/enterprise:test_support" ]
+  }
+}
+
+if (is_win || is_mac || is_linux) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # Some of these tests declare file-scope objects with non-trivial
+    # destructors.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    sources = [
+      "enterprise_signin_service_browsertest.cc",
+      "managed_profile_creation_controller_browsertest.cc",
+      "managed_profile_required_navigation_throttle_browsertest.cc",
+      "oidc_authentication_signin_interceptor_browsertest.cc",
+      "profile_management_disclaimer_service_browsertest.cc",
+      "profile_token_web_signin_interceptor_browsertest.cc",
+      "user_policy_oidc_signin_service_browsertest.cc",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/enterprise:impl",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/profiles:misc",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/signin",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/enterprise:test_support",
+      "//components/policy/test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//ui/base:ozone_buildflags",
+    ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+  }
+}
