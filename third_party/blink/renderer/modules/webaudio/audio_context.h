@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 
 #include <atomic>
+#include <optional>
 
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
@@ -69,6 +70,18 @@ class MODULES_EXPORT AudioContext final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Errors that can occur when attempting to resume the AudioContext.
+  enum class ResumeError {
+    // The context is closed; resume is not possible.
+    kClosed,
+    // The frame visibility is unknown; the resume decision is deferred.
+    kUnknownFrameVisibility,
+    // The context is interrupted; resume is rejected.
+    kInterrupted,
+    // The context is already running; no action needed.
+    kAlreadyRunning,
+  };
+
   // SetSinkIdResolver is a helper class that manages the asynchronous operation
   // of AudioContext.setSinkId(). It encapsulates a ScriptPromise that is
   // resolved or rejected based on the success or failure of changing the audio
@@ -162,8 +175,8 @@ class MODULES_EXPORT AudioContext final
                         const Vector<WebMediaDeviceInfo>&) override;
 
   // FrameVisibilityObserver
-  void FrameVisibilityChanged(
-      mojom::blink::FrameVisibility frame_visibility) override;
+  void OnFrameHidden() override;
+  void OnFrameShown() override;
 
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
@@ -397,6 +410,15 @@ class MODULES_EXPORT AudioContext final
   // prerendering.
   void ResumeOnPrerenderActivation();
 
+  // Performs the state-checking logic for resuming the AudioContext. Returns
+  // std::nullopt on success, or a ResumeError indicating the failure reason.
+  std::optional<ResumeError> ResumeInternal();
+
+  // Processes deferred resume() calls that were made while frame visibility was
+  // unknown. Calls ResumeInternal() to check if the context can be resumed and
+  // rejects or resolves the deferred promises accordingly.
+  void ProcessDeferredResume();
+
   void HandleRenderError()
       VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
@@ -544,10 +566,17 @@ class MODULES_EXPORT AudioContext final
   // True if the context should be interrupted when the frame is hidden.
   const bool should_interrupt_when_frame_is_hidden_;
 
-  // True if the host frame's:
-  // - 'display' property is set to 'none';
-  // - 'visibility' property is set to 'hidden';
-  bool is_frame_hidden_ = false;
+  // Whether the host frame is hidden for media playback purposes. True if the
+  // frame's 'display' is 'none', 'visibility' is 'hidden', or it has zero
+  // size. Nullopt before the first visibility notification from the frame,
+  // which can happen for cross-origin iframes where the IPC is asynchronous.
+  std::optional<bool> is_frame_hidden_;
+
+  // Resolvers for resume() calls made while is_frame_hidden_ was unknown
+  // (nullopt) and should_interrupt_when_frame_is_hidden_ is active. The resume
+  // decision is deferred until OnFrameHidden() or OnFrameShown() resolves it.
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
+      deferred_resume_resolvers_;
 
   // The number of pending device list updates, to allow waiting until the
   // device list is refrehsed before using it.  A value of 0 means no updates
