@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_CUSTOMTABS_TAB_INTERACTION_RECORDER_ANDROID_H_
 
 #include "base/android/jni_android.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
