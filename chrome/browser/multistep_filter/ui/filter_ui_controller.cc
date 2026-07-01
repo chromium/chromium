@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/favicon/core/favicon_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
@@ -167,8 +165,6 @@ FilterUiController::FilterUiController(tabs::TabInterface& tab)
   if (Profile* profile = tab.GetProfile()) {
     log_router_ = MultistepFilterLogRouterFactory::GetForProfile(profile);
     service_ = MultistepFilterServiceFactory::GetForProfile(profile);
-    favicon_service_ = FaviconServiceFactory::GetForProfile(
-        profile, ServiceAccessType::EXPLICIT_ACCESS);
     pref_service_ = profile->GetPrefs();
   }
   if (tab.GetTabFeatures()) {
@@ -199,7 +195,7 @@ void FilterUiController::OnSuggestionGenerated(
     return;
   }
   if (!tab().GetContents() || !service_ || !page_action_controller_ ||
-      !favicon_service_ || !pref_service_) {
+      !pref_service_) {
     LogSuggestionUiShown(log_router_, *suggestion, false,
                          "missing_dependencies");
     return;
@@ -342,14 +338,32 @@ bool FilterUiController::ShouldShowCue() const {
 }
 
 void FilterUiController::ShowCue(const UrlFilterSuggestion& suggestion) {
-  // Fetch favicon for the suggestion source host.
-  GURL host_url(
-      base::StrCat({"https://", base::UTF16ToUTF8(suggestion.source_host)}));
-  favicon_service_->GetFaviconImageForPageURL(
-      host_url,
-      base::BindOnce(&FilterUiController::OnFaviconAvailable,
-                     dismissal_weak_factory_.GetWeakPtr(), suggestion),
-      &favicon_task_tracker_);
+  const std::u16string& message = suggestion.suggestion_message;
+
+  page_action_controller_->OverrideText(
+      kActionMultistepFilter,
+      l10n_util::GetStringUTF16(IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT));
+
+  page_action_controller_->SetAnchoredMessageText(kActionMultistepFilter,
+                                                  message);
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+  menu_model->AddItemWithStringIdAndIcon(
+      internal::kDismissCommand, IDS_MULTISTEP_FILTER_CUE_DISMISS,
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseIcon));
+  menu_model->AddItemWithStringIdAndIcon(
+      internal::kSettingsCommand, IDS_MULTISTEP_FILTER_CUE_SETTINGS,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon));
+  page_action_controller_->SetAnchoredMessageAction(
+      kActionMultistepFilter,
+      page_actions::AnchoredMessageActionIconType::kMenu,
+      std::move(menu_model));
+
+  page_action_controller_->Show(kActionMultistepFilter);
+
+  page_action_controller_->ShowAnchoredMessage(
+      kActionMultistepFilter,
+      {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
 }
 
 void FilterUiController::ClearCue() {
@@ -444,52 +458,6 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
     case SuggestionViewState::kCollapsedInOmniboxAfterReopen:
       NOTREACHED();
   }
-}
-
-void FilterUiController::OnFaviconAvailable(
-    UrlFilterSuggestion suggestion,
-    const favicon_base::FaviconImageResult& result) {
-  const std::u16string& message = suggestion.suggestion_message;
-
-  page_action_controller_->OverrideText(
-      kActionMultistepFilter,
-      l10n_util::GetStringUTF16(IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT));
-
-  page_action_controller_->SetAnchoredMessageText(kActionMultistepFilter,
-                                                  message);
-
-  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
-  menu_model->AddItemWithStringIdAndIcon(
-      internal::kDismissCommand, IDS_MULTISTEP_FILTER_CUE_DISMISS,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseIcon));
-  menu_model->AddItemWithStringIdAndIcon(
-      internal::kSettingsCommand, IDS_MULTISTEP_FILTER_CUE_SETTINGS,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon));
-  page_action_controller_->SetAnchoredMessageAction(
-      kActionMultistepFilter,
-      page_actions::AnchoredMessageActionIconType::kMenu,
-      std::move(menu_model));
-
-  std::vector<page_actions::AnchoredMessageExpandableItem> items;
-  items.push_back(
-      {.icon = result.image.IsEmpty()
-                   ? ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon)
-                   : ui::ImageModel::FromImage(result.image),
-       .text = suggestion.source_host});
-
-  page_actions::AnchoredMessageExpandableContent content;
-  content.heading = l10n_util::GetStringUTF16(
-      IDS_MULTISTEP_FILTER_CUE_EXPANDABLE_CONTENT_HEADING);
-  content.items = std::move(items);
-
-  page_action_controller_->SetAnchoredMessageExpandableContent(
-      kActionMultistepFilter, std::move(content));
-
-  page_action_controller_->Show(kActionMultistepFilter);
-
-  page_action_controller_->ShowAnchoredMessage(
-      kActionMultistepFilter,
-      {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
 }
 
 void FilterUiController::MaybeShowPromo() {

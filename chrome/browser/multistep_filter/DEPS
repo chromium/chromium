@@ -1,10 +1,8 @@
 include_rules = [
   "+chrome/browser/contextual_cueing",
-  "+chrome/browser/favicon",
   "+chrome/browser/ui/browser_window",
   "+chrome/browser/ui/page_action",
   "+chrome/grit",
-  "+components/favicon/core",
   "+components/vector_icons",
   "+chrome/browser/sync",
   "+components/multistep_filter/content",

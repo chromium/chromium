@@ -10,10 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
-#include "components/favicon_base/favicon_types.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/menus/simple_menu_model.h"
@@ -26,10 +24,6 @@ class TabInterface;
 
 namespace page_actions {
 class PageActionController;
-}
-
-namespace favicon {
-class FaviconService;
 }
 
 class PrefService;
@@ -146,10 +140,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   void OnPageActionAnchoredMessageHidden(
       const page_actions::PageActionState& page_action) override;
 
-  // Callback for when the favicon image is available.
-  void OnFaviconAvailable(UrlFilterSuggestion suggestion,
-                          const favicon_base::FaviconImageResult& result);
-
   // Helper variable to scope tab instance unowned user data ownership.
   ui::ScopedUnownedUserData<FilterUiController> scoped_unowned_user_data_;
 
@@ -166,14 +156,8 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   // Controller for the page action.
   raw_ptr<page_actions::PageActionController> page_action_controller_ = nullptr;
 
-  // Service for fetching favicons.
-  raw_ptr<favicon::FaviconService> favicon_service_ = nullptr;
-
   // Service for user preferences.
   raw_ptr<PrefService> pref_service_ = nullptr;
-
-  // Tracker for favicon fetch requests.
-  base::CancelableTaskTracker favicon_task_tracker_;
 
   // Factory for dismissal callbacks. Must be the last member variable to
   // ensure that it is destroyed first, invalidating all weak pointers before
