@@ -739,16 +739,21 @@ void ProfilePickerFlowController::PickProfile(
     profile_picked_time_on_startup_ = base::TimeTicks::Now();
   }
 
-  bool open_command_line_urls = ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened();
+  bool open_command_line_urls =
+      ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened();
   ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(false);
 
-  profiles::SwitchToProfile(
-      profile_path, /*always_create=*/false,
+  base::OnceCallback<void(Browser*)> switch_to_profile_complete_callback =
       base::BindOnce(&ProfilePickerFlowController::OnSwitchToProfileComplete,
                      weak_ptr_factory_.GetWeakPtr(), args.open_settings,
                      args.exit_flow_after_profile_picked,
-                     std::move(pick_profile_complete_callback)),
-      open_command_line_urls);
+                     std::move(pick_profile_complete_callback));
+
+  g_browser_process->profile_manager()->CreateProfileAsync(
+      profile_path,
+      base::BindOnce(&ProfilePickerFlowController::OnProfileLoadedForPicking,
+                     weak_ptr_factory_.GetWeakPtr(), open_command_line_urls,
+                     std::move(switch_to_profile_complete_callback)));
 }
 
 void ProfilePickerFlowController::OnSwitchToProfileComplete(
@@ -871,4 +876,20 @@ ProfilePickerFlowController::RegisterPostIdentitySteps(
       ProfileManagementFlowController::Step::kFinishFlow);
 
   return post_identity_steps;
+}
+
+void ProfilePickerFlowController::OnProfileLoadedForPicking(
+    bool open_command_line_urls,
+    base::OnceCallback<void(Browser*)> pick_profile_complete_callback,
+    Profile* profile) {
+  CHECK(pick_profile_complete_callback);
+  if (!profile) {
+    std::move(pick_profile_complete_callback).Run(nullptr);
+    return;
+  }
+
+  // TODO(b/512836948): Conditionally display the signals disclaimer dialog.
+  profiles::OpenBrowserWindowForProfile(
+      std::move(pick_profile_complete_callback), /*always_create=*/false,
+      /*is_new_profile=*/false, open_command_line_urls, profile);
 }
