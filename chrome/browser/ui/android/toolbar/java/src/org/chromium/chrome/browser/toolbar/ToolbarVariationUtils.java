@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -52,12 +53,15 @@ public final class ToolbarVariationUtils {
         return isToolbarUiRefactorEnabled(context);
     }
 
+    // LINT.IfChange(isToolbarUiRefactorEnabled)
     /**
      * Whether the toolbar UI refactor is enabled. This controls changes to the toolbar layout and
      * behavior only for phone form factors when the Android Bottom Bar feature is enabled.
      */
     public static boolean isToolbarUiRefactorEnabled(Context context) {
-        return ChromeFeatureList.sAndroidBottomBar.isEnabled()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !DeviceInfo.isAutomotive()
+                && ChromeFeatureList.sAndroidBottomBar.isEnabled();
     }
+    // LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java:isBottomBarEnabled)
 }

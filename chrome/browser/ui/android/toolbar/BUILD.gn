@@ -13,6 +13,7 @@ android_library("variation_utils_java") {
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarVariationUtils.java",
   ]
   deps = [
+    "//base:build_info_java",
     "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
