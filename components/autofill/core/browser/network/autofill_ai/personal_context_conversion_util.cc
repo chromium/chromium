@@ -285,6 +285,7 @@ std::optional<EntityInstance> PersonalContextEntityToEntityInstance(
       return PersonalContextOrderToEntityInstance(entity.order());
     case personal_context::proto::Entity::kShipment:
       return PersonalContextShipmentToEntityInstance(entity.shipment());
+    case personal_context::proto::Entity::kKnownTravelerNumber:
     case personal_context::proto::Entity::kSensitivePiiPresence:
       return std::nullopt;
     case personal_context::proto::Entity::ENTITY_NOT_SET:
@@ -333,6 +334,7 @@ std::optional<EntityType> ToEntityType(
       return EntityType(EntityTypeName::kOrder);
     case personal_context::proto::Entity::kShipment:
       return EntityType(EntityTypeName::kShipment);
+    case personal_context::proto::Entity::kKnownTravelerNumber:
     case personal_context::proto::Entity::kSensitivePiiPresence:
     case personal_context::proto::Entity::ENTITY_NOT_SET:
       return std::nullopt;

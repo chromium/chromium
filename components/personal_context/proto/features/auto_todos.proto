@@ -27,4 +27,7 @@ message AutoTodoItem {
 
   // The references/sources where the Todo was extracted from.
   repeated SourceReference source_references = 3;
+
+  // The URL where the user can complete the Todo.
+  string actionable_url = 4;
 }

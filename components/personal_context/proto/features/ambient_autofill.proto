@@ -11,10 +11,9 @@ import "components/personal_context/proto/features/common_data.proto";
 option optimize_for = LITE_RUNTIME;
 
 message ContextMemoryAmbientAutofillRequest {
-  // The domain of the current page (e.g. "amazon.com").
-  // Used to perform domain-specific filtering for temporal entities like
-  // Orders and Shipments.
-  string top_level_domain = 1;
+  // Deprecated: Domain-specific filtering should be performed on the client
+  // side. This field is no longer used by the server.
+  string top_level_domain = 1 [deprecated = true];
 
   repeated EntityType requested_types = 2;
 

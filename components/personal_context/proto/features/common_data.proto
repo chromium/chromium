@@ -19,6 +19,7 @@ enum EntityType {
   NATIONAL_ID = 5;
   FLIGHT_RESERVATION = 6;
   VEHICLE = 7;
+  KNOWN_TRAVELER_NUMBER = 8;
 }
 
 // This is a mirror of google.protobuf.Duration.
@@ -99,6 +100,7 @@ message Entity {
     FlightReservation flight_reservation = 6;
     Vehicle vehicle = 7;
     SensitivePiiPresence sensitive_pii_presence = 11;
+    KnownTravelerNumber known_traveler_number = 12;
   }
 
   // The source references for the entity.
@@ -212,6 +214,15 @@ message Passport {
   // The country that issued the passport, normalized as a two-letter country
   // code (ISO 3166-1 alpha-2).
   string issuing_country = 5;
+}
+
+// Represents a known traveler number.
+message KnownTravelerNumber {
+  // The name of the user as it appears on the known traveler number.
+  string name = 1;
+
+  // The unique identifier number for the known traveler number.
+  string number = 2;
 }
 
 // Represents a government-issued national identity document.
