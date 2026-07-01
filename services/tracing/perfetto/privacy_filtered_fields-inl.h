@@ -636,6 +636,11 @@ constexpr MessageInfo kBeginFrameArgsV2 = {kBeginFrameArgsV2Indices, nullptr};
 constexpr int kMacVoucherReleaseIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
 constexpr MessageInfo kMacVoucherRelease = {kMacVoucherReleaseIndices, nullptr};
 
+// Proto Message: AndroidVsyncIntervalDecision
+constexpr int kAndroidVsyncIntervalDecisionIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr MessageInfo kAndroidVsyncIntervalDecision = {
+    kAndroidVsyncIntervalDecisionIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
@@ -646,7 +651,7 @@ constexpr int kTrackEventIndices[] = {
     1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
     1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, 1059,
     1060, 1061, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1075, 1076,
-    1077, 1078, 1079, 1080, 1081, 1082, 1083, -1};
+    1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -750,7 +755,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeAccessibilityWinNotifyWinEvent,
     &kFrameIntervalDecider,
     &kBeginFrameArgsV2,
-    &kMacVoucherRelease};
+    &kMacVoucherRelease,
+    &kAndroidVsyncIntervalDecision};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
