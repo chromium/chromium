@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -57,6 +58,7 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<TabListInterface> tab_list_;
 
+  tabs::TabHandle nudged_tab_handle_;
   raw_ptr<GlicSplitButtonDelegate> tab_strip_delegate_ = nullptr;
   raw_ptr<GlicSplitButtonDelegate> toolbar_delegate_ = nullptr;
 

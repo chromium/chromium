@@ -7,6 +7,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -55,6 +56,7 @@ class GlicNudgeControllerAndroid : public GlicNudgeController,
   TabListInterface* GetTabList();
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
+  tabs::TabHandle nudged_tab_handle_;
   raw_ptr<GlicSplitButtonDelegate> tab_strip_delegate_ = nullptr;
   std::optional<std::string> prompt_suggestion_;
   GlicNudgeActivityCallback nudge_activity_callback_;
