@@ -6,9 +6,11 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_stats.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "partition_alloc/tagging.h"
@@ -205,6 +207,15 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
   branch.Purge();
 }
 
+class LeakedSanitizedObjectTest : public testing::Test {
+ public:
+  LeakedSanitizedObjectTest() = default;
+
+  void TearDown() override {
+    partition_alloc::PartitionRoot::ClearIntendedLeakStatsForTesting();
+  }
+};
+
 class TestClass1 {
   LEAKED_SANITIZED_OBJECT();
 
@@ -215,7 +226,8 @@ class TestClass1 {
   uintptr_t value1_ = 0u;
   uintptr_t value2_ = 1u;
 
-  FRIEND_TEST_ALL_PREFIXES(MemorySafetyCheckTest, InfiniteQuarantine);
+  FRIEND_TEST_ALL_PREFIXES(LeakedSanitizedObjectTest, InfiniteQuarantine);
+  FRIEND_TEST_ALL_PREFIXES(LeakedSanitizedObjectTest, DumpLeakStats);
 };
 
 class TestClass2 {
@@ -228,10 +240,10 @@ class TestClass2 {
   uintptr_t value1_ = 0u;
   uintptr_t value2_ = 1u;
 
-  FRIEND_TEST_ALL_PREFIXES(MemorySafetyCheckTest, InfiniteQuarantine);
+  FRIEND_TEST_ALL_PREFIXES(LeakedSanitizedObjectTest, InfiniteQuarantine);
 };
 
-TEST(MemorySafetyCheckTest, InfiniteQuarantine) {
+TEST_F(LeakedSanitizedObjectTest, InfiniteQuarantine) {
   TestClass1* obj1 = new TestClass1;
   ASSERT_NE(obj1, nullptr);
   // Firstly confirm that the `obj1` was allocated by PartitionAllocator
@@ -252,6 +264,60 @@ TEST(MemorySafetyCheckTest, InfiniteQuarantine) {
   // TestClass1 and TestClass2 must have different zap values.
   EXPECT_NE(TestClass1::kPartitionAllocSanitizedObjectTypeId,
             TestClass2::kPartitionAllocSanitizedObjectTypeId);
+}
+
+class TestPartitionStatsDumper final
+    : public partition_alloc::PartitionStatsDumper {
+ public:
+  void PartitionDumpTotals(
+      const char* partition_name,
+      const partition_alloc::PartitionMemoryStats*) override {}
+  void PartitionsDumpBucketStats(
+      const char* partition_name,
+      const partition_alloc::PartitionBucketMemoryStats*) override {}
+  void DumpIntendedLeak(uint32_t type_id, size_t size) override {
+    intended_leaks_.insert(std::make_pair(type_id, size));
+  }
+
+  const base::flat_map<uint32_t, size_t>& intended_leaks() const {
+    return intended_leaks_;
+  }
+
+ private:
+  base::flat_map<uint32_t, size_t> intended_leaks_;
+};
+
+// Need to check whether MallocDumpProvider reports leaked objects or not.
+TEST_F(LeakedSanitizedObjectTest, DumpLeakStats) {
+  TestClass1* obj1 = new TestClass1;
+  ASSERT_NE(obj1, nullptr);
+  // Firstly confirm that the `obj1` was allocated by PartitionAllocator
+  // RegularPool. Not BRPPool.
+  EXPECT_TRUE(partition_alloc::IsManagedByPartitionAllocRegularPool(
+      reinterpret_cast<uintptr_t>(partition_alloc::UntagPtr(obj1))));
+  delete obj1;
+
+  TestPartitionStatsDumper dumper;
+  // PartitionRoot::DumpStats() should invoke this stats? Or
+  // ReportPartitionMemoryDump() should invoke this function?
+  // (but original/malloc allocator is different from the root)
+  partition_alloc::PartitionRoot::DumpIntendedLeakStats(&dumper);
+
+  const auto& reported_leaks = dumper.intended_leaks();
+  EXPECT_EQ(1u, reported_leaks.size());
+
+  const auto& iterator_test_class1 =
+      reported_leaks.find(TestClass1::kPartitionAllocSanitizedObjectTypeId);
+  ASSERT_NE(reported_leaks.cend(), iterator_test_class1);
+
+  const auto* root = base::internal::LeakedSecurityObjectAllocator();
+  // Reported size is bucket's slot_size. Not equal to requested size.
+  // Need to obtain bucket's slot_size and compare.
+  // If FreeWithSize(), i.e. Free<kSizeHint>() is available, we know requested
+  // size at free().
+  size_t slot_size =
+      root->GetSlotSizeFromRequestedSizeForTesting(sizeof(TestClass1));
+  EXPECT_EQ(slot_size, iterator_test_class1->second);
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

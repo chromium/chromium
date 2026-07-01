@@ -136,6 +136,7 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
   void PartitionsDumpBucketStats(
       const char* partition_name,
       const partition_alloc::PartitionBucketMemoryStats*) override;
+  void DumpIntendedLeak(uint32_t type_id, size_t size) override;
 
   size_t total_mmapped_bytes() const { return total_mmapped_bytes_; }
   size_t total_resident_bytes() const { return total_resident_bytes_; }

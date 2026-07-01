@@ -193,6 +193,11 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   *cumulative_brp_quarantined_count +=
       partition_stats_dumper.cumulative_brp_quarantined_count();
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+
+  if (!is_light_dump) {
+    partition_alloc::PartitionRoot::DumpIntendedLeakStats(
+        &partition_stats_dumper);
+  }
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -797,6 +802,16 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
   allocator_dump->AddScalar("decommitted_slot_spans",
                             MemoryAllocatorDump::kUnitsObjects,
                             memory_stats->num_decommitted_slot_spans);
+}
+
+void MemoryDumpPartitionStatsDumper::DumpIntendedLeak(uint32_t type_id,
+                                                      size_t size) {
+  std::string dump_name = base::StringPrintf(
+      "%s/%s/leaked/LeakedSecurityObject/%08x", root_name_,
+      MemoryDumpPartitionStatsDumper::kPartitionsDumpName, type_id);
+  MemoryAllocatorDump* dump = memory_dump_->CreateAllocatorDump(dump_name);
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
