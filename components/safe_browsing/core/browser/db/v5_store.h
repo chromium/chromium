@@ -163,6 +163,10 @@ class V5Store : public SBStore {
   // reason for the failure or reports success.
   V5StoreReadResult ReadFromDiskInternal();
 
+  // Helper method for performing the actual checksum verification logic.
+  // Returns true if the calculated checksum matches the expected checksum.
+  bool VerifyChecksumInternal();
+
   // Attempts to migrate the store from v4 to v5 if eligible and needed. Returns
   // the reason for the failure or reports success.
   V4ToV5MigrationResult AttemptV4ToV5Migration();
@@ -214,8 +218,8 @@ class V5Store : public SBStore {
   // applied update response.
   std::string version_;
 
-  // The checksum value as read from the disk, until it is verified. Once
-  // verified, it is cleared.
+  // The checksum value as read from the disk. It is cleared if the store is
+  // invalid. It is updated if there is a new checksum provided in an update.
   std::string expected_checksum_;
 
   // Records the status of the update being applied to the database.

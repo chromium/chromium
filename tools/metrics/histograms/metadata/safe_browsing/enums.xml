@@ -658,6 +658,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Success"/>
   <int value="2" label="MmapFailure"/>
   <int value="3" label="FileSizeNotMultipleOfPrefixSize"/>
+  <int value="4" label="ChecksumMismatchFailure"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_list.h:V5ApplyUpdateResult) -->

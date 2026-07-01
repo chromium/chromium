@@ -260,10 +260,23 @@ class V5StoreTest : public PlatformTest {
         expected_conversion_result, 1);
   }
 
+  void ExpectChecksumHistograms(V5ApplyUpdateResult expected_result) {
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result", expected_result, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result.V5StoreTest",
+        expected_result, 1);
+    histogram_tester_.ExpectTotalCount(
+        "SafeBrowsing.V5ReadFromDisk.VerifyChecksumDuration", 1);
+    histogram_tester_.ExpectTotalCount(
+        "SafeBrowsing.SBReadFromDisk.VerifyChecksumDuration", 1);
+  }
+
   base::ScopedTempDir temp_dir_;
   base::FilePath store_path_;
   base::FilePath v4_store_path_;
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(V5StoreTest, TestReadFromEmptyFile) {
@@ -338,13 +351,18 @@ TEST_F(V5StoreTest, TestReadFromNoHashPrefixesFile) {
   base::HistogramTester histogram_tester;
   ListDetails list_details;
   list_details.set_version("test_version");
+  auto hash = crypto::hash::Sha256(base::span<const uint8_t>());
+  list_details.mutable_checksum()->set_sha256(
+      std::string(hash.begin(), hash.end()));
   WriteFileFormatProtoToFile(0x600D71FE, 10, &list_details);
   V5Store store(task_runner(), store_path_, 4, v4_store_path_,
                 /*is_eligible_for_v4_to_v5_disk_migration=*/true,
                 /*is_extensions_blocklist=*/false);
-  EXPECT_EQ(V5StoreReadResult::kReadSuccess, ReadFromDisk(store));
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_TRUE(store.VerifyChecksum());
   EXPECT_TRUE(GetHashPrefixList(store).view().empty());
-  EXPECT_EQ(24, GetFileSize(store));
+  EXPECT_EQ(60, GetFileSize(store));
 
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result",
@@ -600,19 +618,29 @@ TEST_F(V5StoreTest, TestReadWithValidHashPrefixList) {
   hash_file->set_extension("foo");
   hash_file->set_file_size(4);
 
+  std::string data = "abcd";
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  crypto::hash::Hash(crypto::hash::HashKind::kSha256, base::as_byte_span(data),
+                     checksum);
+  list_details->mutable_checksum()->set_sha256(
+      std::string(reinterpret_cast<char*>(checksum.data()), checksum.size()));
+
   // Write main proto.
   base::WriteFile(store_path_, file_format.SerializeAsString());
   // Write valid hash file (4 bytes).
-  base::WriteFile(store_path_.AddExtensionASCII("foo"), "abcd");
+  base::WriteFile(store_path_.AddExtensionASCII("foo"), data);
 
   V5Store store(task_runner(), store_path_, 4, v4_store_path_,
                 /*is_eligible_for_v4_to_v5_disk_migration=*/true,
                 /*is_extensions_blocklist=*/false);
-  EXPECT_EQ(V5StoreReadResult::kReadSuccess, ReadFromDisk(store));
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
   EXPECT_EQ("test_version", store.version());
   EXPECT_EQ(GetHashPrefixList(store).view().at(4), "abcd");
   EXPECT_EQ(base::checked_cast<int64_t>(file_format.ByteSizeLong() + 4),
             GetFileSize(store));
+
+  EXPECT_TRUE(store.VerifyChecksum());
 
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result",
@@ -1245,6 +1273,157 @@ TEST_F(V5StoreTest, TestExtensionMigrationSuccessWithEmptyChecksum) {
   RunExtensionMigrationChecksumTest(
       /*override_checksum=*/"",
       /*expect_success=*/true);
+}
+
+TEST_F(V5StoreTest, TestVerifyChecksumInvalidEmptyChecksum) {
+  V5StoreFileFormat file_format;
+  file_format.set_magic_number(0x600D71FE);
+  file_format.set_file_version(10);
+  ListDetails* list_details = file_format.mutable_list_details();
+  list_details->set_version("test_version");
+  V5HashFile* hash_file = list_details->mutable_hash_file();
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  base::WriteFile(store_path_, file_format.SerializeAsString());
+  base::WriteFile(store_path_.AddExtensionASCII("foo"), "abcd");
+
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_TRUE(GetExpectedChecksum(store).empty());
+
+  // Fails because we have data but no checksum.
+  EXPECT_FALSE(store.VerifyChecksum());
+  ExpectChecksumHistograms(V5ApplyUpdateResult::kChecksumMismatchFailure);
+}
+
+TEST_F(V5StoreTest, TestVerifyChecksumInvalidEmptyStoreAndChecksum) {
+  ListDetails list_details;
+  list_details.set_version("test_version");
+  WriteFileFormatProtoToFile(0x600D71FE, 10, &list_details);
+
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_TRUE(GetExpectedChecksum(store).empty());
+  EXPECT_TRUE(GetHashPrefixList(store).view().empty());
+
+  // Fails because we have no checksum.
+  EXPECT_FALSE(store.VerifyChecksum());
+  ExpectChecksumHistograms(V5ApplyUpdateResult::kChecksumMismatchFailure);
+}
+
+TEST_F(V5StoreTest, TestVerifyChecksumValid) {
+  V5StoreFileFormat file_format;
+  file_format.set_magic_number(0x600D71FE);
+  file_format.set_file_version(10);
+  ListDetails* list_details = file_format.mutable_list_details();
+  list_details->set_version("test_version");
+  V5HashFile* hash_file = list_details->mutable_hash_file();
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  std::string data = "abcd";
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  crypto::hash::Hash(crypto::hash::HashKind::kSha256, base::as_byte_span(data),
+                     checksum);
+  std::string checksum_sha256(reinterpret_cast<char*>(checksum.data()),
+                              checksum.size());
+  list_details->mutable_checksum()->set_sha256(checksum_sha256);
+
+  base::WriteFile(store_path_, file_format.SerializeAsString());
+  base::WriteFile(store_path_.AddExtensionASCII("foo"), data);
+
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_EQ(checksum_sha256, GetExpectedChecksum(store));
+
+  EXPECT_TRUE(store.VerifyChecksum());
+  EXPECT_EQ(checksum_sha256, GetExpectedChecksum(store));
+  ExpectChecksumHistograms(V5ApplyUpdateResult::kSuccess);
+}
+
+TEST_F(V5StoreTest, TestVerifyChecksumInvalid) {
+  V5StoreFileFormat file_format;
+  file_format.set_magic_number(0x600D71FE);
+  file_format.set_file_version(10);
+  ListDetails* list_details = file_format.mutable_list_details();
+  list_details->set_version("test_version");
+  V5HashFile* hash_file = list_details->mutable_hash_file();
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  std::string data = "abcd";
+  std::string wrong_checksum(32, 'x');
+  list_details->mutable_checksum()->set_sha256(wrong_checksum);
+
+  base::WriteFile(store_path_, file_format.SerializeAsString());
+  base::WriteFile(store_path_.AddExtensionASCII("foo"), data);
+
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_EQ(wrong_checksum, GetExpectedChecksum(store));
+
+  EXPECT_FALSE(store.VerifyChecksum());
+  EXPECT_EQ(wrong_checksum, GetExpectedChecksum(store));
+  ExpectChecksumHistograms(V5ApplyUpdateResult::kChecksumMismatchFailure);
+}
+
+TEST_F(V5StoreTest, TestVerifyChecksumEmptyStore) {
+  ListDetails list_details;
+  list_details.set_version("test_version");
+  list_details.mutable_checksum()->set_sha256(std::string(32, 'x'));
+  WriteFileFormatProtoToFile(0x600D71FE, 10, &list_details);
+
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_EQ(std::string(32, 'x'), GetExpectedChecksum(store));
+  EXPECT_TRUE(GetHashPrefixList(store).view().empty());
+
+  EXPECT_FALSE(store.VerifyChecksum());
+  ExpectChecksumHistograms(V5ApplyUpdateResult::kChecksumMismatchFailure);
+}
+
+TEST_F(V5StoreTest, TestVerifyChecksumSkippedOnReadFailure) {
+  base::HistogramTester histogram_tester;
+  // Write a corrupted file (invalid magic number).
+  WriteFileFormatProtoToFile(111);
+
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_FALSE(store.HasValidData());
+
+  // VerifyChecksum should return true and not log any histograms itself.
+  EXPECT_TRUE(store.VerifyChecksum());
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result", 0);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result.V5StoreTest", 0);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.V5ReadFromDisk.VerifyChecksumDuration", 0);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.SBReadFromDisk.VerifyChecksumDuration", 0);
+
+  // The general read histogram should still be logged.
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5StoreRead.Result",
+      V5StoreReadResult::kUnexpectedMagicNumberFailure, 1);
 }
 
 }  // namespace safe_browsing

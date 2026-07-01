@@ -155,6 +155,12 @@ chromium-metrics-reviews@google.com.
   <variant name="V4Update" summary="Safe Browsing V4 update"/>
 </variants>
 
+<variants name="SafeBrowsingV4OrV5OrSB">
+  <variant name="SB" summary="Safe Browsing"/>
+  <variant name="V4" summary="Safe Browsing V4"/>
+  <variant name="V5" summary="Safe Browsing V5"/>
+</variants>
+
 <variants name="ThreatSources">
   <variant name=""/>
   <variant name=".AndroidSafeBrowsing"/>
@@ -4193,16 +4199,6 @@ and applied correctly. -->
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ReadFromDisk.VerifyChecksumDuration" units="ms"
-    expires_after="2026-11-15">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records how long it took to verify the checksum of a V4 store. This is
-    recorded in thread time, to avoid recording any disk operations.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4Store.ConvertExtensionBlocklistV5ToV4Result"
     enum="ConvertExtensionBlocklistV5ToV4Result" expires_after="2027-05-05">
   <owner>thefrog@chromium.org</owner>
@@ -4651,6 +4647,19 @@ failing to fetch the updates which puts users' security at risk. -->
     overlap, so the counts cannot be used as percentages.
   </summary>
   <token key="Protocol" variants="SafeBrowsingUpdateProtocolV4OrSB"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}ReadFromDisk.VerifyChecksumDuration"
+    units="ms" expires_after="2026-11-15">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it took to verify the checksum of a
+    {SafeBrowsingV4OrV5OrSB} store. This is recorded in thread time, to avoid
+    recording any disk operations.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
 <histogram name="SafeBrowsing.{Store}.ReadyOnStartup" enum="BooleanReady"

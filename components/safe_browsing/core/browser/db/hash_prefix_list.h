@@ -33,7 +33,10 @@ enum class V5ApplyUpdateResult {
   // The file size is not a multiple of the expected prefix size.
   kFileSizeNotMultipleOfPrefixSize = 3,
 
-  kMaxValue = kFileSizeNotMultipleOfPrefixSize,
+  // The expected checksum did not match the actual hash file's checksum.
+  kChecksumMismatchFailure = 4,
+
+  kMaxValue = kChecksumMismatchFailure,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV5ApplyUpdateResult)
 

@@ -158,12 +158,13 @@ V5StoreReadResult V5Store::ReadFromDiskInternal() {
 
   V5ApplyUpdateResult apply_update_result =
       hash_prefix_list_->ReadFromDisk(SBStoreFileFormat(&file_format));
-  RecordApplyUpdateResult("SafeBrowsing.V5ReadFromDisk", apply_update_result,
-                          store_path_);
   last_apply_update_result_ = apply_update_result;
 
   if (apply_update_result != V5ApplyUpdateResult::kSuccess) {
     hash_prefix_list_->Clear();
+    // The success case will be logged within `VerifyChecksum`.
+    RecordApplyUpdateResult("SafeBrowsing.V5ReadFromDisk", apply_update_result,
+                            store_path_);
     return V5StoreReadResult::kHashPrefixListGenerationFailure;
   }
 
@@ -408,8 +409,37 @@ void V5Store::Reset() {
 }
 
 bool V5Store::VerifyChecksum() {
-  // TODO(crbug.com/362791941): implement
-  NOTREACHED();
+  base::ElapsedThreadTimer thread_timer;
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!has_valid_data_) {
+    // No need to verify the checksum because the store is already slated to
+    // get a full update.
+    return true;
+  }
+  bool checksum_matches = VerifyChecksumInternal();
+  RecordApplyUpdateResult("SafeBrowsing.V5ReadFromDisk",
+                          checksum_matches
+                              ? V5ApplyUpdateResult::kSuccess
+                              : V5ApplyUpdateResult::kChecksumMismatchFailure,
+                          store_path_);
+  base::TimeDelta duration = thread_timer.Elapsed();
+  base::UmaHistogramTimes("SafeBrowsing.V5ReadFromDisk.VerifyChecksumDuration",
+                          duration);
+  base::UmaHistogramTimes("SafeBrowsing.SBReadFromDisk.VerifyChecksumDuration",
+                          duration);
+  return checksum_matches;
+}
+
+bool V5Store::VerifyChecksumInternal() {
+  const HashPrefixMapView map_view = hash_prefix_list_->view();
+  CHECK_LE(map_view.size(), 1u);
+
+  base::span<const uint8_t> data_for_checksum =
+      (!map_view.empty() && !map_view.begin()->second.empty())
+          ? base::as_byte_span(map_view.begin()->second)
+          : base::span<const uint8_t>();
+  auto checksum = crypto::hash::Sha256(data_for_checksum);
+  return base::as_byte_span(expected_checksum_) == checksum;
 }
 
 void V5Store::CollectStoreInfo(

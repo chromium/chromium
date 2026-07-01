@@ -140,6 +140,11 @@ void RecordVerifyChecksumDuration(const std::string& base_metric,
   base::UmaHistogramTimes(base_metric + kVerifyChecksumDuration, duration);
 }
 
+void RecordVerifyChecksumDuration(base::TimeDelta duration) {
+  RecordVerifyChecksumDuration(kReadFromDisk, duration);
+  RecordVerifyChecksumDuration("SafeBrowsing.SBReadFromDisk", duration);
+}
+
 void RecordStoreReadResult(StoreReadResult result) {
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.V4StoreRead.Result", result,
                             STORE_READ_RESULT_MAX);
@@ -1324,7 +1329,7 @@ bool V4Store::VerifyChecksum() {
   const HashPrefixMapView map_view = hash_prefix_map_->view();
   if (map_view.size() == 1) {
     bool result = VerifyChecksumFast(map_view);
-    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
+    RecordVerifyChecksumDuration(thread_timer.Elapsed());
     return result;
   }
 
@@ -1362,11 +1367,11 @@ bool V4Store::VerifyChecksum() {
     DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
              << "; expected: " << expected_checksum_b64 << "; store: " << *this;
 #endif
-    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
+    RecordVerifyChecksumDuration(thread_timer.Elapsed());
     return false;
   }
 
-  RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
+  RecordVerifyChecksumDuration(thread_timer.Elapsed());
   return true;
 }
 
