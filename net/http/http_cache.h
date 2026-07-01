@@ -21,6 +21,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -271,6 +272,12 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
              filter_type == other.filter_type && origins == other.origins &&
              domains == other.domains;
     }
+
+    bool operator<(const InvalidationFilter& other) const {
+      return std::tie(begin_time, end_time, filter_type, origins, domains) <
+             std::tie(other.begin_time, other.end_time, other.filter_type,
+                      other.origins, other.domains);
+    }
   };
 
   // Retrieves the cache backend for this HttpCache instance. If the backend
@@ -323,8 +330,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                               base::Time delete_begin,
                               base::Time delete_end);
 
-
-
   // Adds a filter to the logical invalidation list. Any subsequent access
   // to an entry matching this filter will result in a cache miss.
   void AddInvalidationFilter(InvalidationFilter filter);
@@ -334,6 +339,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   size_t GetInvalidationFilterCountForTesting() const {
     return invalidation_filters_.size();
+  }
+
+  const std::vector<InvalidationFilter>& invalidation_filters() const {
+    return invalidation_filters_;
   }
 
   // Orchestrator for invalidation checks. This provides a fast-path bailout

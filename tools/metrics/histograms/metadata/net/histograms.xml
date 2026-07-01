@@ -3811,6 +3811,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpCache.LogicalInvalidation.MatchResult"
+    enum="NetHttpCacheLogicalInvalidationMatchResult"
+    expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The lookup match outcome when querying active HTTP cache invalidation
+    filters (e.g. filter matched resulting in a cache miss, or filter did not
+    match). Recorded on the hot path in HttpCache::IsInvalidated only when
+    active invalidation filters are present in memory.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.HttpCache.LogicalInvalidation.StaleDataProtectedAfterCrash"
+    enum="Boolean" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Recorded as true when a cache entry is matched and invalidated by a logical
+    filter that was recovered from persistent storage after a crash or restart.
+    This tracks how often recovered logical filters actively protect against
+    serving stale data before a physical purge occurs.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.BytesReceived2" units="bytes"
     expires_after="2026-11-01">
   <owner>ashleynewson@chromium.org</owner>

@@ -102,6 +102,14 @@ const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
+// LINT.IfChange(LogicalInvalidationMatchResult)
+enum class LogicalInvalidationMatchResult {
+  kMatchedStale = 0,
+  kUnmatched = 1,
+  kMaxValue = kUnmatched
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetHttpCacheLogicalInvalidationMatchResult)
+
 }  // namespace
 
 const char HttpCache::kDoubleKeyPrefix[] = "_dk_";
@@ -1937,7 +1945,7 @@ bool HttpCache::InvalidationFilter::Matches(
 }
 
 void HttpCache::AddInvalidationFilter(InvalidationFilter filter) {
-  DCHECK_LE(filter.begin_time, filter.end_time);
+  CHECK_LE(filter.begin_time, filter.end_time);
   invalidation_filters_.push_back(std::move(filter));
 }
 
@@ -1977,16 +1985,29 @@ bool HttpCache::IsInvalidated(disk_cache::Entry* entry) {
     if (!parsed_url) {
       parsed_url = GURL(GetResourceURLFromHttpCacheKey(entry->GetKey()));
       if (!parsed_url->is_valid()) {
+        base::UmaHistogramEnumeration(
+            "Net.HttpCache.LogicalInvalidation.MatchResult",
+            LogicalInvalidationMatchResult::kUnmatched);
         return false;
       }
     }
 
     if (DoesUrlMatchFilter(filter.filter_type, filter.origins, filter.domains,
                            *parsed_url)) {
+      base::UmaHistogramEnumeration(
+          "Net.HttpCache.LogicalInvalidation.MatchResult",
+          LogicalInvalidationMatchResult::kMatchedStale);
+      if (filter.was_loaded_from_disk) {
+        base::UmaHistogramBoolean(
+            "Net.HttpCache.LogicalInvalidation.StaleDataProtectedAfterCrash",
+            true);
+      }
       return true;
     }
   }
 
+  base::UmaHistogramEnumeration("Net.HttpCache.LogicalInvalidation.MatchResult",
+                                LogicalInvalidationMatchResult::kUnmatched);
   return false;
 }
 

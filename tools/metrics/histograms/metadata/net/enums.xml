@@ -1321,10 +1321,23 @@ historical analysis. -->
   </int>
 </enum>
 
+<!-- LINT.IfChange(NetHttpCacheLogicalInvalidationClearContext) -->
+
 <enum name="NetHttpCacheLogicalInvalidationClearContext">
   <int value="0" label="kSameSession"/>
   <int value="1" label="kRecoveredAfterCrash"/>
 </enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache.h:InvalidationFilterClearContext) -->
+
+<!-- LINT.IfChange(NetHttpCacheLogicalInvalidationMatchResult) -->
+
+<enum name="NetHttpCacheLogicalInvalidationMatchResult">
+  <int value="0" label="kMatchedStale"/>
+  <int value="1" label="kUnmatched"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache.cc:LogicalInvalidationMatchResult) -->
 
 <enum name="NetNetworkErrorLoggingRequestOutcome">
   <int value="0" label="Discarded: no NetworkErrorLoggingService"/>
