@@ -57,6 +57,7 @@
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/payments/core/payment_prefs.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #import "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
@@ -517,6 +518,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   optimization_guide::model_execution::prefs::RegisterProfilePrefs(registry);
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
+  personal_context::prefs::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
   PushNotificationService::RegisterProfilePrefs(registry);

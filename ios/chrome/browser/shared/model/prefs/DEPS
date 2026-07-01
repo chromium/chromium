@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+components/collaboration/public/pref_names.h",
   "+components/lens/lens_overlay_permission_utils.h",
+  "+components/personal_context/core/personal_context_prefs.h",
   "+components/regional_capabilities/regional_capabilities_prefs.h",
   "+components/saved_tab_groups/public/pref_names.h",
   "+components/sharing_message/sharing_sync_preference.h",

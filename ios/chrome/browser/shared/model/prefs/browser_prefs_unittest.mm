@@ -10,6 +10,7 @@
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/safety_check/safety_check_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -250,4 +251,15 @@ TEST_F(BrowserPrefsTest, CleanupObsoleteLocalStatePrefs) {
               prefs::
                   kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness)
           ->IsDefaultValue());
+}
+
+TEST_F(BrowserPrefsTest, RegisterPersonalContextPrefs) {
+  EXPECT_NE(profile_prefs()->FindPreference(
+                personal_context::prefs::
+                    kPersonalContextAmbientAutofillNoticeShouldBeShown),
+            nullptr);
+  EXPECT_NE(profile_prefs()->FindPreference(
+                personal_context::prefs::
+                    kPersonalContextInAutofillSettingsToggleStatus),
+            nullptr);
 }
