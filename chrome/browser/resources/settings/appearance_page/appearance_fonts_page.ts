@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_slider.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 
 import type {FontsBrowserProxy, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
 import {FontsBrowserProxyImpl} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import {getTemplate} from './appearance_fonts_page.html.js';
-
+import {getCss} from './appearance_fonts_page.css.js';
+import {getHtml} from './appearance_fonts_page.html.js';
 
 const FONT_SIZE_RANGE: number[] = [
   9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24,
@@ -40,6 +39,7 @@ function ticksWithLabels(ticks: number[]): SliderTick[] {
 export interface SettingsAppearanceFontsPageElement {
   $: {
     fixedFontPreview: HTMLElement,
+    mathFontPreview: HTMLElement,
     minimumSizeFontPreview: HTMLElement,
     sansSerifFontPreview: HTMLElement,
     serifFontPreview: HTMLElement,
@@ -48,7 +48,7 @@ export interface SettingsAppearanceFontsPageElement {
 }
 
 const SettingsAppearanceFontsPageElementBase =
-    PrefServiceObserverMixin(SettingsViewMixin(PolymerElement));
+    SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
 export class SettingsAppearanceFontsPageElement extends
     SettingsAppearanceFontsPageElementBase {
@@ -56,60 +56,51 @@ export class SettingsAppearanceFontsPageElement extends
     return 'settings-appearance-fonts-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      fontOptions_: Object,
-
-      /** Common font sizes. */
-      fontSizeRange_: {
-        readOnly: true,
-        type: Array,
-        value: ticksWithLabels(FONT_SIZE_RANGE),
-      },
-
-      /** Reasonable, minimum font sizes. */
-      minimumFontSizeRange_: {
-        readOnly: true,
-        type: Array,
-        value: ticksWithLabels(MINIMUM_FONT_SIZE_RANGE),
-      },
-
-      defaultFixedFontSizePref_: Object,
-      defaultFontSizePref_: Object,
-      fixedFontPref_: Object,
-      mathFontPref_: Object,
-      minimumFontSizePref_: Object,
-      sansSerifFontPref_: Object,
-      serifFontPref_: Object,
-      standardFontPref_: Object,
+      fontOptions_: {type: Array},
+      fontSizeRange_: {type: Array},
+      minimumFontSizeRange_: {type: Array},
+      defaultFixedFontSizePref_: {type: Object},
+      defaultFontSizePref_: {type: Object},
+      fixedFontPref_: {type: Object},
+      mathFontPref_: {type: Object},
+      minimumFontSizePref_: {type: Object},
+      sansSerifFontPref_: {type: Object},
+      serifFontPref_: {type: Object},
+      standardFontPref_: {type: Object},
     };
   }
 
-  declare private fontOptions_: DropdownMenuOptionList;
-  declare private fontSizeRange_: SliderTick[];
-
-  declare private minimumFontSizeRange_: SliderTick[];
-  declare private defaultFixedFontSizePref_:
+  protected accessor fontOptions_: DropdownMenuOptionList = [];
+  protected accessor fontSizeRange_: SliderTick[] =
+      ticksWithLabels(FONT_SIZE_RANGE);
+  protected accessor minimumFontSizeRange_: SliderTick[] =
+      ticksWithLabels(MINIMUM_FONT_SIZE_RANGE);
+  protected accessor defaultFixedFontSizePref_:
       chrome.settingsPrivate.PrefObject<number>|undefined;
-  declare private defaultFontSizePref_:
+  protected accessor defaultFontSizePref_:
       chrome.settingsPrivate.PrefObject<number>|undefined;
-  declare private fixedFontPref_: chrome.settingsPrivate.PrefObject<string>|
+  protected accessor fixedFontPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  declare private mathFontPref_: chrome.settingsPrivate.PrefObject<string>|
+  protected accessor mathFontPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  declare private minimumFontSizePref_:
+  protected accessor minimumFontSizePref_:
       chrome.settingsPrivate.PrefObject<number>|undefined;
-  declare private sansSerifFontPref_: chrome.settingsPrivate.PrefObject<string>|
+  protected accessor sansSerifFontPref_:
+      chrome.settingsPrivate.PrefObject<string>|undefined;
+  protected accessor serifFontPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  declare private serifFontPref_: chrome.settingsPrivate.PrefObject<string>|
-      undefined;
-  declare private standardFontPref_: chrome.settingsPrivate.PrefObject<string>|
-      undefined;
-
+  protected accessor standardFontPref_:
+      chrome.settingsPrivate.PrefObject<string>|undefined;
 
   private browserProxy_: FontsBrowserProxy =
       FontsBrowserProxyImpl.getInstance();
@@ -129,8 +120,8 @@ export class SettingsAppearanceFontsPageElement extends
     });
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
     this.browserProxy_.fetchFontsData().then(this.setFontsData_.bind(this));
   }
 
@@ -145,16 +136,16 @@ export class SettingsAppearanceFontsPageElement extends
   /**
    * Get the minimum font size, accounting for unset prefs.
    */
-  private getMinimumFontSize_(): number {
+  protected getMinimumFontSize_(): number {
     return this.minimumFontSizePref_?.value || MINIMUM_FONT_SIZE_RANGE[0];
   }
 
-  private getMinimumSizeHidden_(): boolean {
+  protected getMinimumSizeHidden_(): boolean {
     return this.minimumFontSizePref_ === undefined ||
         this.minimumFontSizePref_.value <= 0;
   }
 
-  private fontFamilyValueForFixed_(): string {
+  protected fontFamilyValueForFixed_(): string {
     if (!this.fixedFontPref_) {
       return '';
     }
@@ -170,9 +161,9 @@ export class SettingsAppearanceFontsPageElement extends
     return this.fixedFontPref_.value;
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

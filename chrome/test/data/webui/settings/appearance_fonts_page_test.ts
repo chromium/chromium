@@ -4,11 +4,11 @@
 
 // clang-format off
 import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {FontsBrowserProxy, FontsData, SettingsAppearanceFontsPageElement} from 'chrome://settings/lazy_load.js';
 import {FontsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
@@ -96,7 +96,7 @@ suite('AppearanceFontHandler', function() {
     document.body.appendChild(fontsPage);
 
     await PrefService.getInstance().whenInitialized();
-    flush();  // #mathFontPreview is inserted dynamically via dom-if.
+    await microtasksFinished();
   });
 
   teardown(function() {
@@ -108,24 +108,24 @@ suite('AppearanceFontHandler', function() {
     return fontsBrowserProxy.whenCalled('fetchFontsData');
   });
 
-  test('minimum font size preview', () => {
+  test('minimum font size preview', async () => {
     assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([
       {key: 'webkit.webprefs.minimum_font_size', value: 6},
     ]);
-    flush();
+    await microtasksFinished();
     assertFalse(fontsPage.$.minimumSizeFontPreview.hidden);
     assertEquals('6px', fontsPage.$.minimumSizeFontPreview.style.fontSize);
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([
       {key: 'webkit.webprefs.minimum_font_size', value: 0},
     ]);
-    flush();
+    await microtasksFinished();
     assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
   });
 
-  test('font preview size', () => {
+  test('font preview size', async () => {
     function assertFontSize(element: HTMLElement, expectedFontSize: number) {
       // Check that the font size is applied correctly.
       const {value, unit} = element.computedStyleMap().get('font-size') as
@@ -143,20 +143,17 @@ suite('AppearanceFontHandler', function() {
       {key: 'webkit.webprefs.default_font_size', value: 20},
       {key: 'webkit.webprefs.default_fixed_font_size', value: 10},
     ]);
-    flush();
+    await microtasksFinished();
 
     assertFontSize(fontsPage.$.standardFontPreview, 20);
     assertFontSize(fontsPage.$.serifFontPreview, 20);
     assertFontSize(fontsPage.$.sansSerifFontPreview, 20);
     assertFontSize(fontsPage.$.fixedFontPreview, 10);
 
-    const mathFontPreview =
-        fontsPage.shadowRoot!.querySelector<HTMLElement>('#mathFontPreview');
-    assertTrue(!!mathFontPreview);
-    assertFontSize(mathFontPreview, 20);
+    assertFontSize(fontsPage.$.mathFontPreview, 20);
   });
 
-  test('font preview family', () => {
+  test('font preview family', async () => {
     function assertFontFamily(element: HTMLElement, genericFamily: string) {
       // Check that the font-family is applied correctly.
       const family =
@@ -173,25 +170,22 @@ suite('AppearanceFontHandler', function() {
       {key: 'webkit.webprefs.fonts.fixed.Zyyy', value: 'custom_fixed'},
       {key: 'webkit.webprefs.fonts.math.Zyyy', value: 'custom_math'},
     ]);
-    flush();
+    await microtasksFinished();
 
     assertFontFamily(fontsPage.$.standardFontPreview, 'standard');
     assertFontFamily(fontsPage.$.serifFontPreview, 'serif');
     assertFontFamily(fontsPage.$.sansSerifFontPreview, 'sansserif');
     assertFontFamily(fontsPage.$.fixedFontPreview, 'fixed');
 
-    const mathFontPreview =
-        fontsPage.shadowRoot!.querySelector<HTMLElement>('#mathFontPreview');
-    assertTrue(!!mathFontPreview);
-    assertFontFamily(mathFontPreview, 'math');
+    assertFontFamily(fontsPage.$.mathFontPreview, 'math');
   });
 
-  test('font preview fixed Osaka', () => {
+  test('font preview fixed Osaka', async () => {
     // Simulate backend change for fixed font.
     prefsBrowserProxy.fakeApi.sendPrefChanges([
       {key: 'webkit.webprefs.fonts.fixed.Zyyy', value: 'Osaka'},
     ]);
-    flush();
+    await microtasksFinished();
 
     const cssFamilyName = fontsPage.$.fixedFontPreview.computedStyleMap().get(
                               'font-family') as CSSStyleValue;
@@ -203,9 +197,8 @@ suite('AppearanceFontHandler', function() {
     // </if>
   });
 
-  test('math font preview', () => {
-    const mathFontPreview =
-        fontsPage.shadowRoot!.querySelector<HTMLElement>('#mathFontPreview');
+  test('math font preview', async () => {
+    const mathFontPreview = fontsPage.$.mathFontPreview;
     assertTrue(!!mathFontPreview);
     const maths = mathFontPreview.getElementsByTagNameNS(
         'http://www.w3.org/1998/Math/MathML', 'math');
@@ -221,7 +214,7 @@ suite('AppearanceFontHandler', function() {
       {key: 'webkit.webprefs.default_font_size', value: EXPECTED_FONT_SIZE},
       {key: 'webkit.webprefs.fonts.math.Zyyy', value: EXPECTED_FONT_FAMILY},
     ]);
-    flush();
+    await microtasksFinished();
     const family = math.computedStyleMap().get('font-family') as CSSStyleValue;
     assertEquals(EXPECTED_FONT_FAMILY, family.toString());
     const {value, unit} = math.computedStyleMap().get('font-size') as
