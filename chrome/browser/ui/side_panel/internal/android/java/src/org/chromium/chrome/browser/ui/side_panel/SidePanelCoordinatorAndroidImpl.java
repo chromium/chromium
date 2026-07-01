@@ -128,42 +128,34 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         mDisableAnimationsForTesting = true;
     }
 
-    /**
-     * Starts populating the side panel with content.
-     *
-     * @param sidePanelNativeView The view to show.
-     * @param x The x coordinate of the starting bounds, or -1 if none.
-     * @param y The y coordinate of the starting bounds, or -1 if none.
-     * @param width The width of the starting bounds, or -1 if none.
-     * @param height The height of the starting bounds, or -1 if none.
-     * @param suppressAnimations Whether animations should be suppressed when showing the panel.
-     */
     @CalledByNative
-    private void startPopulatingContent(
+    private void startOpeningPanel(
             View sidePanelNativeView,
             int x,
             int y,
             int width,
             int height,
             boolean suppressAnimations) {
-        log(TAG, "startPopulatingContent", sidePanelNativeView, x, y, width, height);
-        mSidePanelContainerCoordinator.startPopulatingContent(
+        log(TAG, "startOpeningPanel", sidePanelNativeView, x, y, width, height);
+        mSidePanelContainerCoordinator.startOpeningPanel(
                 new SidePanelContent(sidePanelNativeView),
-                () -> onContentPopulated(),
+                this::onPanelOpened,
                 createRectFromCoordinates(x, y, width, height),
                 suppressAnimations || mDisableAnimationsForTesting);
     }
 
-    /**
-     * Starts removing content and closing the side panel.
-     *
-     * @param suppressAnimations Whether animations should be suppressed when closing the panel.
-     */
     @CalledByNative
-    private void startRemovingContent(boolean suppressAnimations) {
-        log(TAG, "startRemovingContent", suppressAnimations);
-        mSidePanelContainerCoordinator.startRemovingContent(
-                () -> onContentRemoved(), suppressAnimations || mDisableAnimationsForTesting);
+    private void startClosingPanel(boolean suppressAnimations) {
+        log(TAG, "startClosingPanel", suppressAnimations);
+        mSidePanelContainerCoordinator.startClosingPanel(
+                this::onPanelClosed, suppressAnimations || mDisableAnimationsForTesting);
+    }
+
+    @CalledByNative
+    private void startReplacingPanelContent(View sidePanelNativeView) {
+        log(TAG, "startReplacingPanelContent", sidePanelNativeView);
+        mSidePanelContainerCoordinator.startReplacingPanelContent(
+                new SidePanelContent(sidePanelNativeView), this::onPanelContentReplaced);
     }
 
     @CalledByNativeForTesting
@@ -185,19 +177,27 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         return new Rect(x, y, x + width, y + height);
     }
 
-    private void onContentPopulated() {
-        log(TAG, "onContentPopulated");
+    private void onPanelOpened() {
+        log(TAG, "onPanelOpened");
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidImplJni.get()
-                    .onContentPopulated(mNativeSidePanelCoordinatorAndroid);
+                    .onPanelOpened(mNativeSidePanelCoordinatorAndroid);
         }
     }
 
-    private void onContentRemoved() {
-        log(TAG, "onContentRemoved");
+    private void onPanelClosed() {
+        log(TAG, "onPanelClosed");
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidImplJni.get()
-                    .onContentRemoved(mNativeSidePanelCoordinatorAndroid);
+                    .onPanelClosed(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    private void onPanelContentReplaced() {
+        log(TAG, "onPanelContentReplaced");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get()
+                    .onPanelContentReplaced(mNativeSidePanelCoordinatorAndroid);
         }
     }
 
@@ -221,20 +221,28 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         void destroy(long nativeSidePanelCoordinatorAndroid);
 
         /**
-         * Notifies the underlying native object that the content has been removed.
+         * Notifies the underlying native object that the panel has been closed.
          *
          * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
          *     SidePanelCoordinatorAndroid}.
          */
-        void onContentRemoved(long nativeSidePanelCoordinatorAndroid);
+        void onPanelClosed(long nativeSidePanelCoordinatorAndroid);
 
         /**
-         * Notifies the underlying native object that the content has been populated.
+         * Notifies the underlying native object that the panel has been opened.
          *
          * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
          *     SidePanelCoordinatorAndroid}.
          */
-        void onContentPopulated(long nativeSidePanelCoordinatorAndroid);
+        void onPanelOpened(long nativeSidePanelCoordinatorAndroid);
+
+        /**
+         * Notifies the underlying native object that the panel content has been replaced.
+         *
+         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
+         *     SidePanelCoordinatorAndroid}.
+         */
+        void onPanelContentReplaced(long nativeSidePanelCoordinatorAndroid);
 
         /**
          * Initializes the native coordinator and restores the active entry if one exists.

@@ -84,7 +84,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void startPopulatingContent_containerHasNoContent_addsContentView() {
+    public void startOpeningPanel_containerHasNoContent_addsContentView() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content");
@@ -92,7 +92,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Act.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -106,13 +106,13 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void startPopulatingContent_containerHasExistingContent_replacesContentView() {
+    public void startReplacingPanelContent_replacesContentView() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent1 = createSidePanelContent("Side Panel Content 1");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent1,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -123,11 +123,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent2 = createSidePanelContent("Side Panel Content 2");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
-                                sidePanelContent2,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
+                        coordinator.startReplacingPanelContent(
+                                sidePanelContent2, DO_NOTHING_RUNNABLE));
         FrameLayout containerView = waitForContainerViewOpen(coordinator);
 
         // Assert.
@@ -137,7 +134,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void startPopulatingContent_withStartingBounds_addsContentView() {
+    public void startOpeningPanel_withStartingBounds_addsContentView() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content");
@@ -146,7 +143,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Act.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent, DO_NOTHING_RUNNABLE, startingBounds, true));
         FrameLayout containerView = waitForContainerViewOpen(coordinator);
 
@@ -157,7 +154,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void startPopulatingContent_containerViewHasValidWidth() {
+    public void startOpeningPanel_containerViewHasValidWidth() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content");
@@ -165,7 +162,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Act.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -182,7 +179,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void startPopulatingContent_renderContainer() throws Exception {
+    public void startOpeningPanel_renderContainer() throws Exception {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content");
@@ -190,7 +187,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Act.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -203,13 +200,13 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void removeContent_removesContentAndCloseView() {
+    public void startClosingPanel_removesContentAndCloseView() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -220,7 +217,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         SidePanelContainerCoordinatorImpl.setHasContentToShowForTesting(
                 /* hasContentToShow= */ false);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.startRemovingContent(DO_NOTHING_RUNNABLE, true));
+                () -> coordinator.startClosingPanel(DO_NOTHING_RUNNABLE, true));
         waitForContainerViewClose(coordinator);
 
         // Assert.
@@ -229,7 +226,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void populateAndRemoveContent_resizeWebContents() {
+    public void openAndClosePanel_resizeWebContents() {
         // Arrange: Get WebContents.
         var webContents = mResponsivePageStation.getTab().getWebContents();
         assertNotNull(webContents);
@@ -240,7 +237,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent = createSidePanelContent("Side Panel Content");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -263,7 +260,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 /* hasContentToShow= */ false);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startRemovingContent(
+                        coordinator.startClosingPanel(
                                 DO_NOTHING_RUNNABLE, /* suppressAnimations= */ true));
         waitForContainerViewClose(coordinator);
 
@@ -279,7 +276,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void populateAndRemoveContent_tabThumbnailHasCorrectWidth() throws Exception {
+    public void openAndClosePanel_tabThumbnailHasCorrectWidth() throws Exception {
         // Arrange: Get the tab showing the responsive page.
         var tab = mResponsivePageStation.getTab();
 
@@ -288,7 +285,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent = createSidePanelContent("Side Panel Content");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -313,7 +310,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 /* hasContentToShow= */ false);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startRemovingContent(
+                        coordinator.startClosingPanel(
                                 DO_NOTHING_RUNNABLE, /* suppressAnimations= */ true));
         waitForContainerViewClose(coordinator);
 
@@ -328,7 +325,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void isShowingContent_beforePopulatingContent_returnsFalse() {
+    public void isShowingContent_beforeOpeningPanel_returnsFalse() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content");
@@ -346,7 +343,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent = createSidePanelContent("Side Panel Content");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -367,7 +364,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent2 = createSidePanelContent("Side Panel Content 2");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent1,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
@@ -381,23 +378,24 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void isShowing_afterRemovingContentAndClose_returnsFalse() {
+    public void isShowing_afterClosingPanel_returnsFalse() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        coordinator.startPopulatingContent(
+                        coordinator.startOpeningPanel(
                                 sidePanelContent,
                                 DO_NOTHING_RUNNABLE,
                                 /* startingBounds= */ null,
                                 true));
-        waitForContainerViewOpen(coordinator);
+        FrameLayout containerView = waitForContainerViewOpen(coordinator);
 
+        // Act.
         SidePanelContainerCoordinatorImpl.setHasContentToShowForTesting(
                 /* hasContentToShow= */ false);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.startRemovingContent(DO_NOTHING_RUNNABLE, true));
+                () -> coordinator.startClosingPanel(DO_NOTHING_RUNNABLE, true));
         waitForContainerViewClose(coordinator);
 
         // Assert.

@@ -58,10 +58,10 @@ final class SidePanelContainerCoordinatorImpl
      * <p>This flag prevents {@link #onWillAutoClose} from triggering another UI update, which isn't
      * allowed.
      *
-     * <p>The C++ {@code SidePanelCoordinatorAndroid} calls {@link #startRemovingContent} during
-     * {@link #onWillAutoClose}. {@link #startRemovingContent} is also for non-auto-closing cases
-     * where a call to {@link SideUiCoordinator#updateUi} is required, so we need this flag to avoid
-     * calling {@link SideUiCoordinator#updateUi} for the auto-close case.
+     * <p>The C++ {@code SidePanelCoordinatorAndroid} calls {@link #startClosingPanel} during {@link
+     * #onWillAutoClose}. {@link #startClosingPanel} is also for non-auto-closing cases where a call
+     * to {@link SideUiCoordinator#updateUi} is required, so we need this flag to avoid calling
+     * {@link SideUiCoordinator#updateUi} for the auto-close case.
      *
      * <p>TODO(crbug.com/527985639): Refactor the C++ side and remove this flag.
      */
@@ -120,15 +120,17 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void startPopulatingContent(
+    public void startOpeningPanel(
             SidePanelContent content,
-            Runnable onContentPopulated,
+            Runnable onPanelOpened,
             @Nullable Rect startingBounds,
             boolean suppressAnimations) {
-        log(TAG, "startPopulatingContent", content, startingBounds, suppressAnimations);
+        log(TAG, "startOpeningPanel", content, startingBounds, suppressAnimations);
         ThreadUtils.assertOnUiThread();
-        mCurrentContent = content;
 
+        // TODO(crbug.com/513302000): assert the side panel is currently closed.
+
+        mCurrentContent = content;
         mContainerView.removeAllViews();
         mContainerView.addView(content.mView);
 
@@ -140,12 +142,12 @@ final class SidePanelContainerCoordinatorImpl
 
         // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
         //  finished.
-        onContentPopulated.run();
+        onPanelOpened.run();
     }
 
     @Override
-    public void startRemovingContent(Runnable onContentRemoved, boolean suppressAnimations) {
-        log(TAG, "startRemovingContent", suppressAnimations);
+    public void startClosingPanel(Runnable onPanelClosed, boolean suppressAnimations) {
+        log(TAG, "startClosingPanel", suppressAnimations);
         ThreadUtils.assertOnUiThread();
 
         assert !mIsPreparingForAutoRestore;
@@ -156,7 +158,24 @@ final class SidePanelContainerCoordinatorImpl
 
         // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
         //  finished.
-        onContentRemoved.run();
+        onPanelClosed.run();
+    }
+
+    @Override
+    public void startReplacingPanelContent(
+            SidePanelContent newContent, Runnable onPanelContentReplaced) {
+        log(TAG, "startReplacingPanelContent", newContent);
+        ThreadUtils.assertOnUiThread();
+
+        // TODO(crbug.com/513302000): assert the side panel is currently open.
+        // TODO(crbug.com/513302000): assert the side panel isn't preparing for auto-restore/close.
+
+        mCurrentContent = newContent;
+
+        // TODO(crbug.com/505895733): Delay removing the old View to prevent UI flickers.
+        mContainerView.removeAllViews();
+        mContainerView.addView(newContent.mView);
+        onPanelContentReplaced.run();
     }
 
     @Override

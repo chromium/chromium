@@ -69,33 +69,46 @@ public interface SidePanelContainerCoordinator {
             @Nullable SidePanelDevFeature sidePanelDevFeature);
 
     /**
-     * Populates {@link SidePanelContent} into this side panel container.
+     * Starts opening this side panel container with the given {@link SidePanelContent}.
      *
-     * <p>This method is intended for a side panel feature.
-     *
-     * <p>If the container is closed, calling this method will show the container. If the container
-     * already has content, the existing content will be replaced with no animation.
+     * <p>This method is intended for a side panel feature and should only be called when the side
+     * panel isn't shown.
      *
      * @param content Wrapper object for the content to show in the side panel.
-     * @param onContentPopulated Runnable to invoke after content is populated.
+     * @param onPanelOpened Runnable to invoke after the panel is fully opened.
      * @param startingBounds Optional bounds for the animation to start from.
      * @param suppressAnimations Whether or not to suppress animations for this populate request.
      */
-    void startPopulatingContent(
+    void startOpeningPanel(
             SidePanelContent content,
-            Runnable onContentPopulated,
+            Runnable onPanelOpened,
             @Nullable Rect startingBounds,
             boolean suppressAnimations);
 
     /**
-     * Removes {@link SidePanelContent} from this side panel container and closes the container.
+     * Starts closing this side panel container.
      *
-     * <p>This method is for a side panel feature. Calling it will also close the container.
+     * <p>This method is for a side panel feature.
      *
-     * @param onContentRemoved Runnable to invoke after content is removed.
+     * @param onPanelClosed Runnable to invoke after the panel is closed.
      * @param suppressAnimations Whether or not to suppress animations for this removal.
      */
-    void startRemovingContent(Runnable onContentRemoved, boolean suppressAnimations);
+    void startClosingPanel(Runnable onPanelClosed, boolean suppressAnimations);
+
+    /**
+     * Starts replacing the {@link SidePanelContent} inside this container.
+     *
+     * <p>This method is for a side panel feature and should only be called when the side panel is
+     * shown.
+     *
+     * <p>Note that replacing the content shouldn't have animations, but it still needs to be async
+     * to make the UI smooth. For example, if the new content is a {@code ThinWebView}, we need to
+     * wait for the first frame of its web contents before removing the old content.
+     *
+     * @param newContent Wrapper object for the new content to show in the side panel.
+     * @param onPanelContentReplaced Runnable to invoke after the content is replaced.
+     */
+    void startReplacingPanelContent(SidePanelContent newContent, Runnable onPanelContentReplaced);
 
     /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
     boolean isShowing(SidePanelContent sidePanelContent);

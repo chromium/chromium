@@ -16,7 +16,7 @@ import org.chromium.content_public.browser.WebContents;
 final class SidePanelDevFeatureContent {
 
     /**
-     * Content for {@link SidePanelContainerCoordinator#startPopulatingContent}.
+     * Content for {@link SidePanelContainerCoordinator#startOpeningPanel}.
      *
      * <p>It should hold {@link #mThinWebView} as {@link SidePanelContent#mView}.
      */
