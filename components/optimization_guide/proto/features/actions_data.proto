@@ -691,7 +691,7 @@ message TabObservation {
 
 // All relevant state in chrome after the actions are taken or an error has
 // occurred.
-// Next ID: 8
+// Next ID: 9
 message ActionsResult {
   // The result of the actions. See
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/actor.mojom
@@ -704,6 +704,13 @@ message ActionsResult {
 
   // A human-readable error message from first failed action, if any.
   string error_message = 7 [features = { field_presence: EXPLICIT }];
+
+  // Human-readable extra information of operations that succeeded. If `n`
+  // actions were sent for actuation, `extra_information` will return for up to
+  // `n` entries. Entry `idx` corresponds to the returned message of action
+  // `idx`. Actions that did not return a message are represented by empty
+  // strings. Error messages are always stored in `error_message`.
+  repeated string extra_information = 8;
 
   // Observations after all actions are finished or an error has occurred. The
   // client will determine the relevant windows and tabs.
