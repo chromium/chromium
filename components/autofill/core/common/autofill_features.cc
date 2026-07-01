@@ -683,19 +683,6 @@ BASE_FEATURE(kAutofillIgnoreCheckableElements,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_ignore_checkable_elements)
 
-// When enabled, a new grammar for phone numbers is considered and we get
-// slightly better at detecting cases where the generic regex for
-// PHONE_COUNTRY_CODE matches a field that should not actually be classified as
-// such.
-BASE_FEATURE(kAutofillImprovePhoneFieldParser,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, `(PHONE_HOME_COUNTRY_CODE, PHONE_HOME_WHOLE_NUMBER)` are
-// rationalized to `(PHONE_HOME_COUNTRY_CODE,
-// PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX)`.
-BASE_FEATURE(kAutofillImprovePhoneNumberRationalization,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, global rules are applied to rewrite empty string values like
 // "null" to an empty string. These rules are applied for all types during
 // address normalization.
@@ -765,16 +752,6 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Improves the regex for matching augmented country code select options by
-// supporting cases like +1 (234).
-BASE_FEATURE(kAutofillNewAugmentedPhoneCountryCodeRegex,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, more patterns are added to the PHONE_COUNTRY_CODE regex.
-// TODO(crbug.com/479503511): Remove once launched.
-BASE_FEATURE(kAutofillNewRegexForPhoneCountryCode,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the new suggestion generation logic is used.
 // TODO(crbug.com/409962888): Remove once launched.
 BASE_FEATURE(kAutofillNewSuggestionGeneration,
@@ -843,11 +820,6 @@ BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
 // display on top of all other windows, which potentially can negatively
 // affect their functionality.
 BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, we prefer a `PHONE_HOME_COUNTRY_CODE` heuristic type over a
-// `HtmlFieldType::kCountryCode`.
-BASE_FEATURE(kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic

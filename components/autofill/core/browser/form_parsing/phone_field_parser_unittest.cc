@@ -183,8 +183,6 @@ TEST_F(PhoneFieldParserTest, ParseTwoLinePhone_CityCode) {
 }
 
 TEST_F(PhoneFieldParserTest, ParseTwoLinePhone_CountryCode) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillImprovePhoneFieldParser};
   for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Country Code", u"country code",
@@ -282,8 +280,6 @@ TEST_F(PhoneFieldParserTest, CountryCodeWithOptions) {
 // Tests if the country code field is correctly classified by the heuristic when
 // the phone code is a select element and consists of valid options.
 TEST_F(PhoneFieldParserTest, IsPhoneCountryCodeField) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillNewAugmentedPhoneCountryCodeRegex};
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Options with the country name followed by the country code in brackets.
       {"India(+91) ", "Germany(+49)", "United States(+1)", "Egypt(+20)",

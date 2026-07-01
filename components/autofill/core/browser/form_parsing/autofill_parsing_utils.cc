@@ -29,8 +29,6 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillFixStateCountryMisclassification;
     case RegexFeature::kAutofillFixCivilStateMisclassificationForESPT:
       return &features::kAutofillFixCivilStateMisclassificationForESPT;
-    case RegexFeature::kAutofillNewRegexForPhoneCountryCode:
-      return &features::kAutofillNewRegexForPhoneCountryCode;
     case RegexFeature::kAutofillSupportCombinedZipAndCityFR:
       return &features::kAutofillSupportCombinedZipAndCityFR;
   }

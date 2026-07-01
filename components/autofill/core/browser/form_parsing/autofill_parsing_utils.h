@@ -67,8 +67,7 @@ enum class RegexFeature : uint8_t {
   kAutofillDisallowMoreHyphenLikeLabels = 3,
   kAutofillFixStateCountryMisclassification = 4,
   kAutofillFixCivilStateMisclassificationForESPT = 5,
-  kAutofillNewRegexForPhoneCountryCode = 6,
-  kAutofillSupportCombinedZipAndCityFR = 7,
+  kAutofillSupportCombinedZipAndCityFR = 6,
   kMaxValue = kAutofillSupportCombinedZipAndCityFR,
 };
 

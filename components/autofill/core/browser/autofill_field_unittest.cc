@@ -601,8 +601,6 @@ class AutofillPredictionPreferenceTest
 // overall field type.
 TEST_P(AutofillPredictionPreferenceTest,
        AutofillPredictionPreferenceTestParams) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType};
   AutofillPredictionPreferenceTestParams test_case = GetParam();
   AutofillField field;
   field.set_form_control_type(test_case.form_control_type);
