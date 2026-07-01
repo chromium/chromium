@@ -80,6 +80,18 @@ class MockPermissionManager : public PermissionControllerDelegate {
   MOCK_METHOD1(
       UnsubscribeFromPermissionResultChange,
       void(content::PermissionController::SubscriptionId subscription_id));
+  MOCK_METHOD(
+      content::PermissionController::SubscriptionId,
+      SubscribeToContentSettingsTypeChange,
+      (ContentSettingsType content_settings_type,
+       const GURL& requesting_origin,
+       const GURL& embedding_origin,
+       base::RepeatingCallback<void(const PermissionSetting&)> callback),
+      (override));
+  MOCK_METHOD(void,
+              UnsubscribeFromContentSettingsTypeChange,
+              (content::PermissionController::SubscriptionId subscription_id),
+              (override));
 };
 
 }  // namespace content

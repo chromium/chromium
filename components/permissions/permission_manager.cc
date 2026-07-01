@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
@@ -36,6 +38,7 @@
 #include "url/origin.h"
 
 using blink::PermissionType;
+using SubscriptionId = content::PermissionController::SubscriptionId;
 
 namespace permissions {
 namespace {
@@ -46,6 +49,25 @@ GURL GetEmbeddingOrigin(content::RenderFrameHost* const render_frame_host,
       ->GetEmbeddingOriginOverride(requesting_origin, render_frame_host)
       .value_or(PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()));
+}
+
+PermissionSetting GetPermissionSettingForSubscription(
+    ContentSettingsType content_settings_type,
+    const content::PermissionResult& result) {
+  const content_settings::PermissionSettingsInfo* info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_settings_type);
+  switch (result.status) {
+    case PermissionStatus::GRANTED:
+      CHECK(result.retrieved_permission_setting.has_value());
+      return *result.retrieved_permission_setting;
+    case PermissionStatus::ASK:
+      return info->delegate().ToPermissionSetting(CONTENT_SETTING_ASK);
+    case PermissionStatus::DENIED:
+      return info->delegate().ToPermissionSetting(CONTENT_SETTING_BLOCK);
+    default:
+      NOTREACHED();
+  }
 }
 }  // anonymous namespace
 
@@ -166,19 +188,22 @@ PermissionManager::~PermissionManager() {
 void PermissionManager::Shutdown() {
   is_shutting_down_ = true;
 
-  if (subscriptions() && !subscriptions()->IsEmpty()) {
+  if (subscriptions()) {
     SetSubscriptions(nullptr);
-    for (const auto& type_to_count : subscription_type_counts_) {
-      if (type_to_count.second > 0) {
-        PermissionContextBase* context =
-            GetPermissionContext(type_to_count.first);
-        if (context != nullptr) {
-          context->RemoveObserver(this);
-        }
+  }
+
+  content_settings_subscriptions_.Clear();
+
+  for (const auto& type_to_count : subscription_type_counts_) {
+    if (type_to_count.second > 0) {
+      PermissionContextBase* context =
+          GetPermissionContext(type_to_count.first);
+      if (context != nullptr) {
+        context->RemoveObserver(this);
       }
     }
-    subscription_type_counts_.clear();
   }
+  subscription_type_counts_.clear();
   permission_contexts_.clear();
 
   auto* autoblocker =
@@ -276,6 +301,83 @@ void PermissionManager::ResetPermission(PermissionType permission,
   context->ResetPermission(PermissionUtil::GetCanonicalOrigin(
                                type, requesting_origin, embedding_origin),
                            embedding_origin.DeprecatedGetOriginAsURL());
+}
+
+PermissionManager::ContentSettingsTypeSubscription::
+    ContentSettingsTypeSubscription() = default;
+PermissionManager::ContentSettingsTypeSubscription::
+    ~ContentSettingsTypeSubscription() = default;
+
+SubscriptionId PermissionManager::SubscribeToContentSettingsTypeChange(
+    ContentSettingsType content_settings_type,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    base::RepeatingCallback<void(const PermissionSetting&)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_) {
+    return SubscriptionId();
+  }
+
+  PermissionContextBase* context = GetPermissionContext(content_settings_type);
+  if (context == nullptr) {
+    return SubscriptionId();
+  }
+
+  auto subscription = std::make_unique<ContentSettingsTypeSubscription>();
+  subscription->content_settings_type = content_settings_type;
+  subscription->requesting_origin = requesting_origin;
+  subscription->embedding_origin = embedding_origin;
+  subscription->callback = std::move(callback);
+
+  auto permission_descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(
+          PermissionUtil::ContentSettingsTypeToPermissionType(
+              content_settings_type));
+
+  content::PermissionResult result = GetPermissionStatusInternal(
+      permission_descriptor,
+      /*render_process_host=*/nullptr,
+      /*render_frame_host=*/nullptr, requesting_origin, embedding_origin,
+      /*should_include_device_status=*/false);
+  subscription->last_setting =
+      GetPermissionSettingForSubscription(content_settings_type, result);
+
+  if (subscription_type_counts_[content_settings_type]++ == 0) {
+    context->AddObserver(this);
+  }
+
+  SubscriptionId id = subscription_id_generator_.GenerateNextId();
+  content_settings_subscriptions_.AddWithID(std::move(subscription), id);
+  return id;
+}
+
+void PermissionManager::UnsubscribeFromContentSettingsTypeChange(
+    SubscriptionId subscription_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_) {
+    return;
+  }
+
+  ContentSettingsTypeSubscription* subscription =
+      content_settings_subscriptions_.Lookup(subscription_id);
+  if (!subscription) {
+    return;
+  }
+
+  ContentSettingsType type = subscription->content_settings_type;
+  auto type_count = subscription_type_counts_.find(type);
+  CHECK(type_count != subscription_type_counts_.end());
+  CHECK_GT(type_count->second, 0u);
+
+  type_count->second--;
+  if (type_count->second == 0) {
+    PermissionContextBase* context = GetPermissionContext(type);
+    if (context != nullptr) {
+      context->RemoveObserver(this);
+    }
+  }
+
+  content_settings_subscriptions_.Remove(subscription_id);
 }
 
 void PermissionManager::RequestPermissionsFromCurrentDocument(
@@ -382,7 +484,7 @@ bool PermissionManager::IsPermissionOverridable(
 }
 
 void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
-    content::PermissionController::SubscriptionId subscription_id) {
+    SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_)
     return;
@@ -441,7 +543,7 @@ void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
 }
 
 void PermissionManager::UnsubscribeFromPermissionResultChange(
-    content::PermissionController::SubscriptionId subscription_id) {
+    SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_)
     return;
@@ -510,67 +612,114 @@ void PermissionManager::OnPermissionChanged(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(primary_pattern.IsValid());
   DCHECK(secondary_pattern.IsValid());
-  if (!subscriptions()) {
-    return;
-  }
 
   std::vector<base::OnceClosure> callbacks;
-  callbacks.reserve(subscriptions()->size());
-  for (content::PermissionController::SubscriptionsMap::iterator iter(
-           subscriptions());
+
+  if (subscriptions()) {
+    for (content::PermissionController::SubscriptionsMap::iterator iter(
+             subscriptions());
+         !iter.IsAtEnd(); iter.Advance()) {
+      content::PermissionResultSubscription* subscription =
+          iter.GetCurrentValue();
+      if (!subscription) {
+        continue;
+      }
+      if (!content_type_set.Contains(
+              PermissionUtil::PermissionTypeToContentSettingsType(
+                  blink::PermissionDescriptorToPermissionType(
+                      subscription->permission_descriptor)))) {
+        continue;
+      }
+
+      // The RFH may be null if the request is for a worker.
+      content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+          subscription->render_process_id, subscription->render_frame_id);
+      GURL embedding_origin;
+      GURL requesting_origin_delegation =
+          subscription->requesting_origin_delegation;
+      if (rfh) {
+        embedding_origin =
+            GetEmbeddingOrigin(rfh, requesting_origin_delegation);
+      } else {
+        embedding_origin = requesting_origin_delegation;
+      }
+
+      if (!primary_pattern.Matches(requesting_origin_delegation) ||
+          !secondary_pattern.Matches(embedding_origin)) {
+        continue;
+      }
+
+      content::RenderProcessHost* rph =
+          rfh ? nullptr
+              : content::RenderProcessHost::FromID(
+                    subscription->render_process_id);
+
+      content::PermissionResult new_result = GetPermissionStatusInternal(
+          subscription->permission_descriptor, rph, rfh,
+          subscription->requesting_origin_delegation, embedding_origin,
+          subscription->should_include_device_status);
+
+      if (subscription->permission_result &&
+          subscription->permission_result->status == new_result.status &&
+          subscription->permission_result->retrieved_permission_setting ==
+              new_result.retrieved_permission_setting) {
+        continue;
+      }
+
+      subscription->permission_result = new_result;
+
+      // Add the callback to |callbacks| which will be run after the loop to
+      // prevent re-entrance issues.
+      callbacks.push_back(base::BindOnce(subscription->callback, new_result,
+                                         /*ignore_status_override=*/false));
+    }
+  }
+
+  for (base::IDMap<std::unique_ptr<ContentSettingsTypeSubscription>,
+                   SubscriptionId>::iterator
+           iter(&content_settings_subscriptions_);
        !iter.IsAtEnd(); iter.Advance()) {
-    content::PermissionResultSubscription* subscription =
-        iter.GetCurrentValue();
+    ContentSettingsTypeSubscription* subscription = iter.GetCurrentValue();
     if (!subscription) {
       continue;
     }
-    if (!content_type_set.Contains(
-            PermissionUtil::PermissionTypeToContentSettingsType(
-                blink::PermissionDescriptorToPermissionType(
-                    subscription->permission_descriptor)))) {
+
+    if (!content_type_set.Contains(subscription->content_settings_type)) {
       continue;
     }
 
-    // The RFH may be null if the request is for a worker.
-    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-        subscription->render_process_id, subscription->render_frame_id);
-    GURL embedding_origin;
-    GURL requesting_origin_delegation =
-        subscription->requesting_origin_delegation;
-    if (rfh) {
-      embedding_origin = GetEmbeddingOrigin(rfh, requesting_origin_delegation);
-    } else {
-      embedding_origin = requesting_origin_delegation;
-    }
-
-    if (!primary_pattern.Matches(requesting_origin_delegation) ||
-        !secondary_pattern.Matches(embedding_origin)) {
+    if (!primary_pattern.Matches(subscription->requesting_origin) ||
+        !secondary_pattern.Matches(subscription->embedding_origin)) {
       continue;
     }
 
-    content::RenderProcessHost* rph =
-        rfh ? nullptr
-            : content::RenderProcessHost::FromID(
-                  subscription->render_process_id);
+    auto permission_descriptor = content::PermissionDescriptorUtil::
+        CreatePermissionDescriptorForPermissionType(
+            PermissionUtil::ContentSettingsTypeToPermissionType(
+                subscription->content_settings_type));
 
-    content::PermissionResult new_result = GetPermissionStatusInternal(
-        subscription->permission_descriptor, rph, rfh,
-        subscription->requesting_origin_delegation, embedding_origin,
-        subscription->should_include_device_status);
+    content::PermissionResult result = GetPermissionStatusInternal(
+        permission_descriptor,
+        /*render_process_host=*/nullptr,
+        /*render_frame_host=*/nullptr, subscription->requesting_origin,
+        subscription->embedding_origin,
+        /*should_include_device_status=*/false);
 
-    if (subscription->permission_result &&
-        subscription->permission_result->status == new_result.status &&
-        subscription->permission_result->retrieved_permission_setting ==
-            new_result.retrieved_permission_setting) {
+    // For GEOLOCATION, even if there are two permission types (GEOLOCATION and
+    // GEOLOCATION_APPROXIMATE) corresponding to the content settings type, the
+    // resolved `new_setting` must not depend on which of the two is used to
+    // query. `ContentSettingsTypeToPermissionType` above resolves to
+    // `GEOLOCATION` which is sufficient.
+    PermissionSetting new_setting = GetPermissionSettingForSubscription(
+        subscription->content_settings_type, result);
+
+    if (subscription->last_setting == new_setting) {
       continue;
     }
 
-    subscription->permission_result = new_result;
+    subscription->last_setting = new_setting;
 
-    // Add the callback to |callbacks| which will be run after the loop to
-    // prevent re-entrance issues.
-    callbacks.push_back(base::BindOnce(subscription->callback, new_result,
-                                       /*ignore_status_override=*/false));
+    callbacks.push_back(base::BindOnce(subscription->callback, new_setting));
   }
 
   for (auto& callback : callbacks)

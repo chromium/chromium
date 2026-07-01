@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/safe_ref.h"
 #include "build/build_config.h"

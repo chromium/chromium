@@ -92,6 +92,16 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void UnsubscribeFromPermissionResultChange(
       SubscriptionId subscription_id) override;
 
+  SubscriptionId SubscribeToContentSettingsTypeChange(
+      ContentSettingsType content_settings_type,
+      RenderProcessHost* render_process_host,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool should_include_device_status,
+      const base::RepeatingCallback<void(const PermissionSetting&)>& callback);
+
+  void UnsubscribeFromContentSettingsTypeChange(SubscriptionId subscription_id);
+
   // If there's currently a permission prompt bubble for the given WebContents,
   // returns the bounds of the bubble view as exclusion area in screen
   // coordinates.

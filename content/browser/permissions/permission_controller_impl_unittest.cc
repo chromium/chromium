@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/types/optional_ref.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -759,5 +760,109 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
                 geolocation_permission_descriptor, child_without_policy));
 }
 #endif
+
+TEST_P(PermissionControllerImplTestWithApproxLocation,
+       SubscribeToContentSettingsTypeChangeProgression) {
+  using PermissionSettingCallback =
+      base::RepeatingCallback<void(const PermissionSetting&)>;
+  GURL kUrl = GURL(kTestUrl);
+
+  content::PermissionController::SubscriptionId subscription_id(123);
+  base::RepeatingCallback<void(const PermissionSetting&)> subscription_callback;
+
+  ON_CALL(*mock_manager(), SubscribeToContentSettingsTypeChange)
+      .WillByDefault([&subscription_id, &subscription_callback](
+                         ContentSettingsType content_settings_type,
+                         const GURL& requesting_origin,
+                         const GURL& embedding_origin,
+                         base::RepeatingCallback<void(const PermissionSetting&)>
+                             callback) {
+        subscription_callback = std::move(callback);
+        return subscription_id;
+      });
+
+  base::MockCallback<PermissionSettingCallback> callback;
+  auto id = permission_controller()->SubscribeToContentSettingsTypeChange(
+      content_settings::GeolocationContentSettingsType(), nullptr, nullptr,
+      kUrl,
+      /*should_include_device_status=*/false, callback.Get());
+
+  EXPECT_EQ(subscription_id, id);
+  ASSERT_TRUE(subscription_callback);
+
+  // 2. Switch to precise granted.
+  EXPECT_CALL(callback, Run(testing::An<const PermissionSetting&>()))
+      .WillOnce([](const PermissionSetting& setting) {
+        if (base::FeatureList::IsEnabled(
+                content_settings::features::
+                    kApproximateGeolocationPermission)) {
+          EXPECT_EQ(setting, PermissionSetting(GeolocationSetting{
+                                 .approximate = PermissionOption::kAllowed,
+                                 .precise = PermissionOption::kAllowed}));
+        } else {
+          EXPECT_EQ(CONTENT_SETTING_ALLOW, std::get<ContentSetting>(setting));
+        }
+      });
+
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    subscription_callback.Run(
+        GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                           .precise = PermissionOption::kAllowed});
+  } else {
+    subscription_callback.Run(CONTENT_SETTING_ALLOW);
+  }
+
+  // 3. Switch to approximate only.
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    EXPECT_CALL(callback, Run(testing::An<const PermissionSetting&>()))
+        .WillOnce([](const PermissionSetting& setting) {
+          EXPECT_EQ(setting, PermissionSetting(GeolocationSetting{
+                                 .approximate = PermissionOption::kAllowed,
+                                 .precise = PermissionOption::kDenied}));
+        });
+    subscription_callback.Run(
+        GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                           .precise = PermissionOption::kDenied});
+  } else {
+    // When the feature is disabled, approximate only is not supported, so we
+    // transition back to ASK (CONTENT_SETTING_ASK).
+    EXPECT_CALL(callback, Run(testing::An<const PermissionSetting&>()))
+        .WillOnce([](const PermissionSetting& setting) {
+          EXPECT_EQ(CONTENT_SETTING_ASK, std::get<ContentSetting>(setting));
+        });
+    subscription_callback.Run(CONTENT_SETTING_ASK);
+  }
+
+  // 4. Switch back to denied for both.
+  EXPECT_CALL(callback, Run(testing::An<const PermissionSetting&>()))
+      .WillOnce([](const PermissionSetting& setting) {
+        if (base::FeatureList::IsEnabled(
+                content_settings::features::
+                    kApproximateGeolocationPermission)) {
+          EXPECT_EQ(setting, PermissionSetting(GeolocationSetting{
+                                 .approximate = PermissionOption::kDenied,
+                                 .precise = PermissionOption::kDenied}));
+        } else {
+          EXPECT_EQ(CONTENT_SETTING_BLOCK, std::get<ContentSetting>(setting));
+        }
+      });
+
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    subscription_callback.Run(
+        GeolocationSetting{.approximate = PermissionOption::kDenied,
+                           .precise = PermissionOption::kDenied});
+  } else {
+    subscription_callback.Run(CONTENT_SETTING_BLOCK);
+  }
+
+  // Unsubscribe should clean up successfully.
+  EXPECT_CALL(*mock_manager(),
+              UnsubscribeFromContentSettingsTypeChange(subscription_id))
+      .Times(1);
+  permission_controller()->UnsubscribeFromContentSettingsTypeChange(id);
+}
 
 }  // namespace content

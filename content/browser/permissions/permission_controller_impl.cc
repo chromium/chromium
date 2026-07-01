@@ -894,6 +894,39 @@ void PermissionControllerImpl::UnsubscribeFromPermissionResultChange(
   subscriptions_.Remove(subscription_id);
 }
 
+PermissionController::SubscriptionId
+PermissionControllerImpl::SubscribeToContentSettingsTypeChange(
+    ContentSettingsType content_settings_type,
+    RenderProcessHost* render_process_host,
+    RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    bool should_include_device_status,
+    const base::RepeatingCallback<void(const PermissionSetting&)>& callback) {
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate) {
+    return SubscriptionId();
+  }
+
+  GURL embedding_origin = requesting_origin;
+  if (render_frame_host) {
+    embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
+        render_frame_host->GetMainFrame());
+  }
+
+  return delegate->SubscribeToContentSettingsTypeChange(
+      content_settings_type, requesting_origin, embedding_origin, callback);
+}
+
+void PermissionControllerImpl::UnsubscribeFromContentSettingsTypeChange(
+    SubscriptionId subscription_id) {
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (delegate) {
+    delegate->UnsubscribeFromContentSettingsTypeChange(subscription_id);
+  }
+}
+
 bool PermissionControllerImpl::IsSubscribedToPermissionChangeEvent(
     blink::PermissionType permission,
     RenderFrameHost* render_frame_host) {

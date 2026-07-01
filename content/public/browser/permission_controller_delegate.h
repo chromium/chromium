@@ -7,9 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
@@ -100,6 +103,21 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual void ResetPermission(blink::PermissionType permission,
                                const GURL& requesting_origin,
                                const GURL& embedding_origin) = 0;
+
+  // Subscribes to changes of all related permission types for a given
+  // ContentSettingsType. Returns a SubscriptionId if successful, or an invalid
+  // SubscriptionId() if not supported.
+  // This method has default virtual implementations returning safe defaults
+  // to prevent compilation breakages in other embedders (e.g. WebView).
+  virtual content::PermissionController::SubscriptionId
+  SubscribeToContentSettingsTypeChange(
+      ContentSettingsType content_settings_type,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      base::RepeatingCallback<void(const PermissionSetting&)> callback);
+
+  virtual void UnsubscribeFromContentSettingsTypeChange(
+      content::PermissionController::SubscriptionId subscription_id);
 
   // Set a pointer of subscriptions map from PermissionController.
   virtual void OnPermissionStatusChangeSubscriptionAdded(
