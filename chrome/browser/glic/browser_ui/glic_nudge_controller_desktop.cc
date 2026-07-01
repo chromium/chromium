@@ -24,7 +24,11 @@ namespace glic {
 GlicNudgeControllerDesktop::GlicNudgeControllerDesktop(
     BrowserWindowInterface* browser_window_interface,
     TabListInterface* tab_list)
-    : browser_window_interface_(browser_window_interface), tab_list_(tab_list) {
+    : browser_window_interface_(browser_window_interface),
+      tab_list_(tab_list),
+      scoped_unowned_user_data_(
+          browser_window_interface->GetUnownedUserDataHost(),
+          *this) {
   CHECK(tab_list_);
   tab_list_observation_.Observe(tab_list);
 
@@ -175,6 +179,11 @@ void GlicNudgeControllerDesktop::OnActiveTabChanged(TabListInterface& tab_list,
     delegate->OnHideGlicNudgeUI();
     OnNudgeActivity(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
   }
+}
+
+void GlicNudgeControllerDesktop::OnTabListDestroyed(
+    TabListInterface& tab_list) {
+  tab_list_observation_.Reset();
 }
 
 GlicSplitButtonDelegate* GlicNudgeControllerDesktop::GetActiveDelegate() {

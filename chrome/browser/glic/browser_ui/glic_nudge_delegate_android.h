@@ -10,9 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 
-namespace tabs {
-class TabInterface;
-}
+class BrowserWindowInterface;
 
 namespace ui {
 class WindowAndroid;
@@ -28,8 +26,8 @@ enum class GlicNudgeActivity;
 // GlicNudgeDelegateBridge.
 class GlicNudgeDelegateAndroid : public GlicSplitButtonDelegate {
  public:
-  GlicNudgeDelegateAndroid(GlicNudgeController& controller,
-                           tabs::TabInterface& tab);
+  GlicNudgeDelegateAndroid(GlicNudgeController* controller,
+                           BrowserWindowInterface* browser);
   GlicNudgeDelegateAndroid(const GlicNudgeDelegateAndroid&) = delete;
   GlicNudgeDelegateAndroid& operator=(const GlicNudgeDelegateAndroid&) = delete;
   ~GlicNudgeDelegateAndroid() override;
@@ -42,11 +40,10 @@ class GlicNudgeDelegateAndroid : public GlicSplitButtonDelegate {
   void OnNudgeActivity(GlicNudgeActivity activity);
 
   ui::WindowAndroid* GetWindowAndroid();
-  bool IsActiveTab();
 
  private:
-  raw_ref<GlicNudgeController> controller_;
-  raw_ref<tabs::TabInterface> tab_;
+  raw_ptr<GlicNudgeController> controller_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 };
 
 }  // namespace glic

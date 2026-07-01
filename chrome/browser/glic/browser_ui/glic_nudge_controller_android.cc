@@ -9,20 +9,25 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate_android.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
 
-GlicNudgeControllerAndroid::GlicNudgeControllerAndroid(tabs::TabInterface& tab)
-    : tab_(tab) {
-  delegate_ = std::make_unique<GlicNudgeDelegateAndroid>(*this, tab);
+GlicNudgeControllerAndroid::GlicNudgeControllerAndroid(
+    BrowserWindowInterface* browser)
+    : browser_(browser),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
+  TabListInterface* tab_list = GetTabList();
+  if (tab_list) {
+    tab_list_observation_.Observe(tab_list);
+  }
+  delegate_ = std::make_unique<GlicNudgeDelegateAndroid>(this, browser);
   SetTabStripDelegate(delegate_.get());
-
-  tab_deactivate_subscription_ = tab.RegisterWillDeactivate(
-      base::BindRepeating(&GlicNudgeControllerAndroid::OnTabWillDeactivate,
-                          base::Unretained(this)));
 }
+
 GlicNudgeControllerAndroid::~GlicNudgeControllerAndroid() = default;
 
 void GlicNudgeControllerAndroid::SetTabStripDelegate(
@@ -42,14 +47,17 @@ void GlicNudgeControllerAndroid::UpdateNudgeLabel(
     const std::string& anchored_message_text,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeActivityCallback callback) {
-  if (tab_->GetContents() != web_contents || !tab_->IsActivated()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       GlicNudgeActivity::kNudgeNotShownWebContents));
-    return;
+  // Skip update if this isn't the active tab.
+  if (TabListInterface* tab_list = GetTabList()) {
+    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+    if (!active_tab || active_tab->GetContents() != web_contents) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback),
+                         GlicNudgeActivity::kNudgeNotShownWebContents));
+      return;
+    }
   }
-
   nudge_activity_callback_ = callback;
   prompt_suggestion_ = prompt_suggestion;
 
@@ -95,12 +103,18 @@ void GlicNudgeControllerAndroid::OnNudgeActivity(GlicNudgeActivity activity) {
   }
 }
 
-void GlicNudgeControllerAndroid::OnTabWillDeactivate(tabs::TabInterface* tab) {
+void GlicNudgeControllerAndroid::OnActiveTabChanged(TabListInterface& tab_list,
+                                                    tabs::TabInterface* tab) {
   GlicSplitButtonDelegate* delegate = tab_strip_delegate_;
   if (delegate && delegate->GetIsShowingGlicNudge()) {
     delegate->OnHideGlicNudgeUI();
     OnNudgeActivity(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
   }
+}
+
+void GlicNudgeControllerAndroid::OnTabListDestroyed(
+    TabListInterface& tab_list) {
+  tab_list_observation_.Reset();
 }
 
 std::optional<std::string> GlicNudgeControllerAndroid::GetPromptSuggestion() {
@@ -109,6 +123,10 @@ std::optional<std::string> GlicNudgeControllerAndroid::GetPromptSuggestion() {
 
 void GlicNudgeControllerAndroid::ClearPromptSuggestion() {
   prompt_suggestion_.reset();
+}
+
+TabListInterface* GlicNudgeControllerAndroid::GetTabList() {
+  return browser_ ? TabListInterface::From(browser_) : nullptr;
 }
 
 }  // namespace glic

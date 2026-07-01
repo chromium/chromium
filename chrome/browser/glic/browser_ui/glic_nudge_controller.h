@@ -8,10 +8,13 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+class BrowserWindowInterface;
 
 namespace glic {
 
@@ -34,6 +37,10 @@ class GlicSplitButtonDelegate;
 // Interface for the controller that mediates Glic Nudges.
 class GlicNudgeController {
  public:
+  DECLARE_USER_DATA(GlicNudgeController);
+
+  static GlicNudgeController* From(BrowserWindowInterface* browser);
+
   using GlicNudgeActivityCallback =
       base::RepeatingCallback<void(GlicNudgeActivity)>;
 

@@ -4,10 +4,13 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_ANDROID_H_
 
-#include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+class BrowserWindowInterface;
+class TabListInterface;
 
 namespace content {
 class WebContents;
@@ -19,9 +22,10 @@ class TabInterface;
 
 namespace glic {
 
-class GlicNudgeControllerAndroid : public GlicNudgeController {
+class GlicNudgeControllerAndroid : public GlicNudgeController,
+                                   public TabListInterfaceObserver {
  public:
-  explicit GlicNudgeControllerAndroid(tabs::TabInterface& tab);
+  explicit GlicNudgeControllerAndroid(BrowserWindowInterface* browser);
   GlicNudgeControllerAndroid(const GlicNudgeControllerAndroid&) = delete;
   GlicNudgeControllerAndroid& operator=(const GlicNudgeControllerAndroid&) =
       delete;
@@ -43,14 +47,21 @@ class GlicNudgeControllerAndroid : public GlicNudgeController {
   void ClearPromptSuggestion() override;
 
  private:
-  void OnTabWillDeactivate(tabs::TabInterface* tab);
+  // TabListInterfaceObserver:
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
 
-  raw_ref<tabs::TabInterface> tab_;
+  TabListInterface* GetTabList();
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
   raw_ptr<GlicSplitButtonDelegate> tab_strip_delegate_ = nullptr;
   std::optional<std::string> prompt_suggestion_;
   GlicNudgeActivityCallback nudge_activity_callback_;
   std::unique_ptr<GlicSplitButtonDelegate> delegate_;
-  base::CallbackListSubscription tab_deactivate_subscription_;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+
+  ui::ScopedUnownedUserData<GlicNudgeController> scoped_unowned_user_data_;
 };
 
 }  // namespace glic

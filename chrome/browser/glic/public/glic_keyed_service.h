@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -89,6 +90,9 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
       GlicKeyedService* glic_keyed_service);
   bool IsGlicShortcutActive();
   bool IsBottomBarEnabled();
+
+  class GlicNudgeControllerAndroid* GetOrCreateNudgeController(
+      BrowserWindowInterface* browser);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Convenience method, may return nullptr.
@@ -290,6 +294,16 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicTabFaviconObserver> tab_favicon_observer_;
 
   base::CallbackListSubscription experimental_triggering_state_subscription_;
+
+#if BUILDFLAG(IS_ANDROID)
+  void OnBrowserWindowClosed(BrowserWindowInterface* browser);
+
+  base::flat_map<BrowserWindowInterface*,
+                 std::unique_ptr<class GlicNudgeControllerAndroid>>
+      nudge_controllers_;
+  base::flat_map<BrowserWindowInterface*, base::CallbackListSubscription>
+      window_close_subscriptions_;
+#endif
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

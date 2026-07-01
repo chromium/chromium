@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class TabListInterface;
@@ -40,6 +41,7 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
   // TabListInterfaceObserver:
   void OnActiveTabChanged(TabListInterface& tab_list,
                           tabs::TabInterface* tab) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   void SetTabStripDelegate(GlicSplitButtonDelegate* delegate) override;
   void SetToolbarDelegate(GlicSplitButtonDelegate* delegate) override;
@@ -65,6 +67,8 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
   std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
+
+  ui::ScopedUnownedUserData<GlicNudgeController> scoped_unowned_user_data_;
 };
 
 }  // namespace glic

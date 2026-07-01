@@ -94,6 +94,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/android/glic_keyed_service_android.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller_android.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 
 namespace glic {
@@ -546,5 +548,37 @@ void GlicKeyedService::OnExperimentalTriggeringStateChanged() {
     device_info_sync_service->RefreshLocalDeviceInfo();
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/484037810): Once a window features object (similar to tab
+// features) is supported on Android, move ownership of the nudge controller to
+// it (accessed via unowned user data and ::From methods), matching Desktop,
+// rather than storing it in GlicKeyedService.
+GlicNudgeControllerAndroid* GlicKeyedService::GetOrCreateNudgeController(
+    BrowserWindowInterface* browser) {
+  if (!browser) {
+    return nullptr;
+  }
+  auto it = nudge_controllers_.find(browser);
+  if (it != nudge_controllers_.end()) {
+    return it->second.get();
+  }
+
+  auto controller = std::make_unique<GlicNudgeControllerAndroid>(browser);
+  auto* controller_ptr = controller.get();
+  nudge_controllers_[browser] = std::move(controller);
+
+  window_close_subscriptions_[browser] =
+      browser->RegisterBrowserDidClose(base::BindRepeating(
+          &GlicKeyedService::OnBrowserWindowClosed, base::Unretained(this)));
+
+  return controller_ptr;
+}
+
+void GlicKeyedService::OnBrowserWindowClosed(BrowserWindowInterface* browser) {
+  nudge_controllers_.erase(browser);
+  window_close_subscriptions_.erase(browser);
+}
+#endif
 
 }  // namespace glic
