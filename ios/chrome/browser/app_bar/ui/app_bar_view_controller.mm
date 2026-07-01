@@ -31,6 +31,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -1159,18 +1160,32 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   }
 }
 
+// Records the given `action`. If the device is an iPhone in portrait, and
+// Fullscreen is active, also records `fullscreenAction`.
+- (void)recordAction:(const char*)action
+    withFullscreenAction:(const char*)fullscreenAction {
+  base::RecordAction(base::UserMetricsAction(action));
+
+  bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+  if (isIPhone && !_isRotated && _fullscreenProgress < 1.0) {
+    base::RecordAction(base::UserMetricsAction(fullscreenAction));
+  }
+}
+
 #pragma mark - Actions
 
 // Called when the Assistant button is tapped.
 - (void)didTapAssistantButton {
-  base::RecordAction(base::UserMetricsAction("MobileToolbarAssistant"));
+  [self recordAction:"MobileToolbarAssistant"
+      withFullscreenAction:"MobileToolbarAssistantFullscreen"];
   [self.mutator assistantButtonTappedWithState:_assistantButtonState
                                       fromView:_assistantButton];
 }
 
 // Called when the New Tab button is tapped.
 - (void)didTapOpenNewTabButton:(UIView*)sender {
-  base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
+  [self recordAction:"MobileToolbarNewTabShortcut"
+      withFullscreenAction:"MobileToolbarNewTabShortcutFullscreen"];
   [self.mutator createNewTabFromView:sender];
 }
 
@@ -1186,7 +1201,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
     [self.tabGridHandler exitTabGrid];
   } else {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
+    [self recordAction:"MobileToolbarShowStackView"
+        withFullscreenAction:"MobileToolbarShowStackViewFullscreen"];
     [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
   }
 }

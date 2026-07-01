@@ -32832,6 +32832,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarAssistantFullscreen">
+  <owner>gambard@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    The user tapped on the Assistant button in the AppBar on an iPhone while in
+    portrait mode with Fullscreen active. Logged in addition to the general
+    metric.
+  </description>
+</action>
+
 <action name="MobileToolbarBack">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -32986,6 +32996,16 @@ should be able to be added at any place in this file.
     User pressed the NewTab shortcut on the toolbar. iOS only. The UI of the bar
     changed from a toolbar UI to an an appbar UI, which may affect usage. This
     change happened when the flag ChromeNextIa was enabled.
+  </description>
+</action>
+
+<action name="MobileToolbarNewTabShortcutFullscreen">
+  <owner>gambard@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    User pressed the NewTab shortcut on the AppBar on an iPhone while in
+    portrait mode with Fullscreen active. Logged in addition to the general
+    metric.
   </description>
 </action>
 
@@ -33185,6 +33205,16 @@ should be able to be added at any place in this file.
     User tapped on the toolbar button to show the TabGrid. On iOS the UI of the
     bar changed from a toolbar UI to an an appbar UI, which may affect usage.
     This change happened when the flag ChromeNextIa was enabled.
+  </description>
+</action>
+
+<action name="MobileToolbarShowStackViewFullscreen">
+  <owner>gambard@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    User tapped on the toolbar button to show the TabGrid on an iPhone while in
+    portrait mode with Fullscreen active. Logged in addition to the general
+    metric.
   </description>
 </action>
 
