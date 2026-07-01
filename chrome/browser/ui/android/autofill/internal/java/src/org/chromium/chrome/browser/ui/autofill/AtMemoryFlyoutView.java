@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.constraintlayout.helper.widget.Flow;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
@@ -28,9 +29,16 @@ import java.util.List;
 /** View wrapper for the flyout screen of the @memory bottom sheet. */
 @NullMarked
 public class AtMemoryFlyoutView extends LinearLayout {
-    private @Nullable ConstraintLayout mChipsContainer;
-    private @Nullable Flow mChipsFlow;
+    private ConstraintLayout mChipsContainer;
+    private Flow mChipsFlow;
+    private View mBackButton;
+    private TextView mTitleView;
+    private TextView mSourceButton;
+    private TextView mManageButton;
+
     private final List<ChipView> mActiveChips = new ArrayList<>();
+
+    private @Nullable Callback<AutofillSuggestion> mSuggestionClickListener;
 
     public AtMemoryFlyoutView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -41,12 +49,21 @@ public class AtMemoryFlyoutView extends LinearLayout {
         super.onFinishInflate();
         mChipsContainer = findViewById(R.id.flyout_chips_container);
         mChipsFlow = findViewById(R.id.chips_flow);
+        mBackButton = findViewById(R.id.flyout_back_button);
+        mTitleView = findViewById(R.id.flyout_title);
+        mSourceButton = findViewById(R.id.flyout_source_button);
+        mManageButton = findViewById(R.id.flyout_manage_button);
     }
 
-    /** Populates the flyout screen with chip suggestions. */
-    public void setSuggestions(List<AutofillSuggestion> suggestions) {
-        if (mChipsContainer == null || mChipsFlow == null) return;
+    public void setTitle(@Nullable String title) {
+        mTitleView.setText(title);
+    }
 
+    public void setSourceText(@Nullable String sourceText) {
+        mSourceButton.setText(sourceText);
+    }
+
+    public void setSuggestions(List<AutofillSuggestion> suggestions) {
         for (ChipView chip : mActiveChips) {
             mChipsContainer.removeView(chip);
         }
@@ -61,6 +78,22 @@ public class AtMemoryFlyoutView extends LinearLayout {
             mActiveChips.add(chip);
         }
         mChipsFlow.setReferencedIds(ids);
+    }
+
+    public void setBackClickListener(Runnable onClickListener) {
+        mBackButton.setOnClickListener(v -> onClickListener.run());
+    }
+
+    public void setSourceClickListener(Runnable onClickListener) {
+        mSourceButton.setOnClickListener(v -> onClickListener.run());
+    }
+
+    public void setManageClickListener(Runnable onClickListener) {
+        mManageButton.setOnClickListener(v -> onClickListener.run());
+    }
+
+    public void setSuggestionClickListener(Callback<AutofillSuggestion> onClickListener) {
+        mSuggestionClickListener = onClickListener;
     }
 
     private ChipView createFlyoutChipView(ViewGroup parent, AutofillSuggestion suggestion) {
@@ -84,6 +117,13 @@ public class AtMemoryFlyoutView extends LinearLayout {
         } else {
             secondaryTextView.setVisibility(View.GONE);
         }
+
+        chip.setOnClickListener(
+                v -> {
+                    if (mSuggestionClickListener != null) {
+                        mSuggestionClickListener.onResult(suggestion);
+                    }
+                });
 
         return chip;
     }

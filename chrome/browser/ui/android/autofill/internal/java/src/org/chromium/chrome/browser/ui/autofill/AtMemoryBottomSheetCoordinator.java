@@ -8,15 +8,11 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -65,32 +61,11 @@ public class AtMemoryBottomSheetCoordinator {
 
         AtMemoryBottomSheetView view = new AtMemoryBottomSheetView(context);
 
-        ModelList modelList = new ModelList();
-        mMediator =
-                new AtMemoryBottomSheetMediator(
-                        profile, delegate, modelList, view::hideKeyboardAndClearFocus);
-
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(modelList);
-        adapter.registerType(
-                ITEM_TYPE_SUGGESTION,
-                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_suggestion_item),
-                AtMemoryBottomSheetSuggestionViewBinder::bind);
-        adapter.registerType(
-                ITEM_TYPE_SEARCH_TILE,
-                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_search_item),
-                AtMemoryBottomSheetSearchTileViewBinder::bind);
-        adapter.registerType(
-                ITEM_TYPE_ZERO_STATE,
-                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_zero_state_item),
-                // Zero-state illustration and text are static in the layout, so no view binding is
-                // needed.
-                (m, v, k) -> {});
-        view.setRecyclerViewAdapter(adapter);
+        mMediator = new AtMemoryBottomSheetMediator(profile, delegate, view);
 
         mContent = new AtMemoryBottomSheetContent(view.getContentView(), mBottomSheetController);
 
-        PropertyModelChangeProcessor.create(
-                mMediator.getModel(), view, AtMemoryBottomSheetViewBinder::bind);
+        setUpModelChangeProcessors(view);
     }
 
     public void show(List<AutofillSuggestion> suggestions) {
@@ -113,5 +88,26 @@ public class AtMemoryBottomSheetCoordinator {
 
     AtMemoryBottomSheetContent getBottomSheetContentForTesting() {
         return mContent;
+    }
+
+    /**
+     * Sets up the Model Change Processors (MCPs) to bind the separate property models for the
+     * bottom sheet, the home screen, and the flyout screen to their respective views.
+     */
+    private void setUpModelChangeProcessors(AtMemoryBottomSheetView view) {
+        PropertyModelChangeProcessor.create(
+                mMediator.getModel(),
+                view,
+                AtMemoryBottomSheetViewBinder::bindAtMemoryBottomSheetView);
+
+        PropertyModelChangeProcessor.create(
+                mMediator.getHomeModel(),
+                view.getHomeView(),
+                AtMemoryBottomSheetViewBinder::bindAtMemoryHomeView);
+
+        PropertyModelChangeProcessor.create(
+                mMediator.getFlyoutModel(),
+                view.getFlyoutView(),
+                AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
     }
 }

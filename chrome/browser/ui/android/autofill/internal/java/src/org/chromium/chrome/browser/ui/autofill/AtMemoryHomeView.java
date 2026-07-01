@@ -21,8 +21,12 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties.ItemType;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 @NullMarked
 public class AtMemoryHomeView extends LinearLayout {
@@ -48,7 +52,24 @@ public class AtMemoryHomeView extends LinearLayout {
         mNoticeOkButton = findViewById(R.id.notice_ok_button);
     }
 
-    public void setRecyclerViewAdapter(Adapter adapter) {
+    public void setUpSheetItems(ModelList items) {
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(items);
+
+        adapter.registerType(
+                ItemType.SUGGESTION,
+                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_suggestion_item),
+                AtMemoryBottomSheetViewBinder::bindSuggestionItemView);
+
+        adapter.registerType(
+                ItemType.SEARCH_TILE,
+                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_search_item),
+                AtMemoryBottomSheetViewBinder::bindSearchItemView);
+
+        adapter.registerType(
+                ItemType.ZERO_STATE,
+                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_zero_state_item),
+                (model, view, propertyKey) -> {});
+
         mRecyclerView.setAdapter(adapter);
     }
 

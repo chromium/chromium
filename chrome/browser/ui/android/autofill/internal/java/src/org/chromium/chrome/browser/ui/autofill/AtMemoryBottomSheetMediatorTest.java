@@ -11,15 +11,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetCoordinator.ITEM_TYPE_ZERO_STATE;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.IS_LOADING;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ON_QUERY_TEXT_CHANGED_CALLBACK;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.CURRENT_SCREEN;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.ON_TILE_CLICKED;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.TILE_TITLE;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ON_FLYOUT_CLICKED;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ON_SUGGESTION_CLICKED;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TITLE;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetSearchTileProperties.ON_TILE_CLICKED;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetSearchTileProperties.TILE_TITLE;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetSuggestionProperties.ON_FLYOUT_CLICKED;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetSuggestionProperties.ON_SUGGESTION_CLICKED;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetSuggestionProperties.TITLE;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +32,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunServiceJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
@@ -50,22 +52,22 @@ public class AtMemoryBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AtMemoryBottomSheetCoordinator.Delegate mDelegate;
-    @Mock private Runnable mHideKeyboardCallback;
+    @Mock private SearchItemProperties.Delegate mSearchDelegate;
     @Mock private Profile mProfile;
     @Mock private PersonalContextFirstRunService.Natives mFirstRunServiceJniMock;
 
     private PropertyModel mModel;
+    private PropertyModel mHomeModel;
     private ModelList mModelList;
     private AtMemoryBottomSheetMediator mMediator;
 
     @Before
     public void setUp() {
         PersonalContextFirstRunServiceJni.setInstanceForTesting(mFirstRunServiceJniMock);
-        mModelList = new ModelList();
-        mMediator =
-                new AtMemoryBottomSheetMediator(
-                        mProfile, mDelegate, mModelList, mHideKeyboardCallback);
+        mMediator = new AtMemoryBottomSheetMediator(mProfile, mDelegate, mSearchDelegate);
         mModel = mMediator.getModel();
+        mHomeModel = mMediator.getHomeModel();
+        mModelList = mHomeModel.get(HomeProperties.SHEET_ITEMS);
     }
 
     @Test
@@ -117,29 +119,43 @@ public class AtMemoryBottomSheetMediatorTest {
         PropertyModel itemModel2 = mModelList.get(1).model;
         itemModel2.get(ON_FLYOUT_CLICKED).run();
 
-        assertEquals(
-                List.of(suggestions.get(1)),
-                mModel.get(AtMemoryBottomSheetProperties.FLYOUT_SUGGESTIONS));
+        PropertyModel flyoutModel = mMediator.getFlyoutModel();
+        assertEquals("Hotel Booking", flyoutModel.get(FlyoutProperties.TITLE));
+        assertEquals("Google", flyoutModel.get(FlyoutProperties.SOURCE_TEXT));
+        assertEquals(List.of(suggestions.get(1)), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
     }
 
     @Test
     public void testOnDismissed() {
         mModel.set(VISIBLE, true);
-        mModel.set(IS_LOADING, true);
+        mHomeModel.set(HomeProperties.IS_LOADING, true);
+
+        PropertyModel flyoutModel = mMediator.getFlyoutModel();
+        flyoutModel.set(FlyoutProperties.TITLE, "Title");
+        flyoutModel.set(FlyoutProperties.SOURCE_TEXT, "Source");
+
         mMediator.onDismissed();
+
         assertFalse(mModel.get(VISIBLE));
-        assertFalse(mModel.get(IS_LOADING));
+        assertFalse(mHomeModel.get(HomeProperties.IS_LOADING));
+        assertEquals(ScreenId.HOME_SCREEN, mModel.get(CURRENT_SCREEN));
+
+        assertEquals("", flyoutModel.get(FlyoutProperties.TITLE));
+        assertEquals("", flyoutModel.get(FlyoutProperties.SOURCE_TEXT));
+        assertEquals(List.of(), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
+
         verify(mDelegate).onDismissed();
     }
 
     @Test
     public void testOnQuerySubmitted() {
         mMediator.onQuerySubmitted("flight");
+        assertTrue(mHomeModel.get(HomeProperties.IS_LOADING));
         verify(mDelegate).onQuerySubmitted("flight");
 
         when(mDelegate.isSearching()).thenReturn(true);
         mMediator.show(List.of());
-        assertTrue(mModel.get(IS_LOADING));
+        assertTrue(mHomeModel.get(HomeProperties.IS_LOADING));
 
         when(mDelegate.isSearching()).thenReturn(false);
         mMediator.show(
@@ -148,21 +164,22 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .setLabel("No data")
                                 .setSubLabel("")
                                 .build()));
-        assertFalse(mModel.get(IS_LOADING));
+        assertFalse(mHomeModel.get(HomeProperties.IS_LOADING));
     }
 
     @Test
     public void testOnQueryTextChanged() {
-        mModel.get(ON_QUERY_TEXT_CHANGED_CALLBACK).onResult("flight");
+        mHomeModel.get(HomeProperties.ON_QUERY_TEXT_CHANGED_CALLBACK).onResult("flight");
         verify(mDelegate).onQueryTextChanged("flight");
 
         mMediator.show(List.of(createSearchAffordance("flight")));
         assertEquals(1, mModelList.size());
-        assertEquals(AtMemoryBottomSheetCoordinator.ITEM_TYPE_SEARCH_TILE, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.SEARCH_TILE, mModelList.get(0).type);
         assertEquals("flight", mModelList.get(0).model.get(TILE_TITLE));
+        assertFalse(mHomeModel.get(HomeProperties.SHOW_SUGGESTIONS_BACKGROUND));
 
         mModelList.get(0).model.get(ON_TILE_CLICKED).run();
-        verify(mHideKeyboardCallback).run();
+        verify(mSearchDelegate).hideKeyboardAndClearFocus();
         verify(mDelegate).onQuerySubmitted("flight");
     }
 
@@ -186,7 +203,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
         mMediator.show(List.of());
         assertEquals(1, mModelList.size());
-        assertEquals(ITEM_TYPE_ZERO_STATE, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
     }
 
     private AutofillSuggestion createSearchAffordance(String query) {
@@ -203,7 +220,7 @@ public class AtMemoryBottomSheetMediatorTest {
         mMediator.show(List.of());
 
         assertEquals(1, mModelList.size());
-        assertEquals(ITEM_TYPE_ZERO_STATE, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
     }
 
     @Test
@@ -211,18 +228,16 @@ public class AtMemoryBottomSheetMediatorTest {
         when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(true);
 
         AtMemoryBottomSheetMediator mediator =
-                new AtMemoryBottomSheetMediator(
-                        mProfile, mDelegate, mModelList, mHideKeyboardCallback);
-        PropertyModel model = mediator.getModel();
+                new AtMemoryBottomSheetMediator(mProfile, mDelegate, mSearchDelegate);
+        PropertyModel homeModel = mediator.getHomeModel();
 
-        assertTrue(model.get(AtMemoryBottomSheetProperties.IS_NOTICE_VISIBLE));
+        assertTrue(homeModel.get(HomeProperties.IS_NOTICE_VISIBLE));
 
-        Runnable okClickListener =
-                model.get(AtMemoryBottomSheetProperties.NOTICE_OK_CLICK_LISTENER);
+        Runnable okClickListener = homeModel.get(HomeProperties.NOTICE_OK_CLICK_LISTENER);
         assertNotNull(okClickListener);
         okClickListener.run();
 
-        assertFalse(model.get(AtMemoryBottomSheetProperties.IS_NOTICE_VISIBLE));
+        assertFalse(homeModel.get(HomeProperties.IS_NOTICE_VISIBLE));
         verify(mFirstRunServiceJniMock).noticeAcknowledged(mProfile);
     }
 
@@ -231,9 +246,8 @@ public class AtMemoryBottomSheetMediatorTest {
         when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(false);
 
         AtMemoryBottomSheetMediator mediator =
-                new AtMemoryBottomSheetMediator(
-                        mProfile, mDelegate, mModelList, mHideKeyboardCallback);
+                new AtMemoryBottomSheetMediator(mProfile, mDelegate, mSearchDelegate);
 
-        assertFalse(mediator.getModel().get(AtMemoryBottomSheetProperties.IS_NOTICE_VISIBLE));
+        assertFalse(mediator.getHomeModel().get(HomeProperties.IS_NOTICE_VISIBLE));
     }
 }
