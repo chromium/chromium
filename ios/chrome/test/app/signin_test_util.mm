@@ -153,8 +153,8 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
       ChangeProfileContinuation continuation =
           CreateChangeProfileSignoutContinuation(
               signout_source, /*force_snackbar_over_toolbar=*/false,
-              /*should_record_metrics=*/false, /*snackbar_message =*/nil,
-              std::move(switch_callback));
+              /*should_record_metrics=*/false,
+              /*snackbar_message_builder=*/{}, std::move(switch_callback));
       SceneState* scene_state = chrome_test_util::GetForegroundActiveScene();
       signin::SwitchToPersonalProfile(
           scene_state, ChangeProfileReason::kManagedAccountSignOut,

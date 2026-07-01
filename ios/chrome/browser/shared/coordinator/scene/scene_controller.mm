@@ -1257,8 +1257,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     ChangeProfileContinuation continuation =
         CreateChangeProfileSignoutContinuation(
             signoutSource, /*force_snackbar_over_toolbar=*/false,
-            /*should_record_metrics=*/false, /*snackbar_message =*/nil,
-            base::DoNothing());
+            /*should_record_metrics=*/false,
+            /*snackbar_message_builder=*/{}, base::DoNothing());
     signin::SwitchToPersonalProfile(self.sceneState,
                                     ChangeProfileReason::kManagedAccountSignOut,
                                     std::move(continuation));

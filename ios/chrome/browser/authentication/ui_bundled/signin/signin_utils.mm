@@ -458,11 +458,11 @@ ProfileSignoutRequest::~ProfileSignoutRequest() {
   CHECK(run_has_been_called_);
 }
 
-ProfileSignoutRequest&& ProfileSignoutRequest::SetSnackbarMessage(
-    SnackbarMessage* snackbar_message,
+ProfileSignoutRequest&& ProfileSignoutRequest::SetSnackbarMessageBuilder(
+    SnackbarMessageBuilder snackbar_message_builder,
     bool force_snackbar_over_toolbar) && {
   CHECK(!run_has_been_called_);
-  snackbar_message_ = snackbar_message;
+  snackbar_message_builder_ = std::move(snackbar_message_builder);
   force_snackbar_over_toolbar_ = force_snackbar_over_toolbar;
   return std::move(*this);
 }
@@ -501,7 +501,8 @@ void ProfileSignoutRequest::Run(Browser* browser) && {
   ChangeProfileContinuation continuation =
       CreateChangeProfileSignoutContinuation(
           source_, force_snackbar_over_toolbar_, should_record_metrics_,
-          snackbar_message_, std::move(completion_callback_));
+          std::move(snackbar_message_builder_),
+          std::move(completion_callback_));
   ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
@@ -579,8 +580,8 @@ void MultiProfileSignOutForProfile(
     ChangeProfileContinuation continuation =
         CreateChangeProfileSignoutContinuation(
             signout_source, /*force_snackbar_over_toolbar=*/false,
-            /*should_record_metrics=*/false, /*snackbar_message =*/nil,
-            std::move(barrier));
+            /*should_record_metrics=*/false,
+            /*snackbar_message_builder=*/{}, std::move(barrier));
     SwitchToPersonalProfile(browser->GetSceneState(),
                             ChangeProfileReason::kManagedAccountSignOut,
                             std::move(continuation));

@@ -9,6 +9,7 @@
 
 #import "base/functional/callback_forward.h"
 #import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 
 @class SnackbarMessage;
 
@@ -20,12 +21,12 @@ enum class ProfileSignout;
 using SignoutCompletionCallback = base::OnceCallback<void(SceneState*)>;
 
 // Returns a ChangeProfileContinuation that sign-out the profile, presents
-// a snackbar (if non-null), and then runs `signout_completion`.
+// a snackbar (if builder returns non-null), and then runs `signout_completion`.
 ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
-    SnackbarMessage* snackbar_message,
+    signin::SnackbarMessageBuilder snackbar_message_builder,
     SignoutCompletionCallback signout_completion);
 
 // Returns a ChangeProfileContinuation that shows a force sign out prompt.

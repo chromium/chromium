@@ -324,9 +324,6 @@ using signin_metrics::SignoutDataLossAlertReason;
   }
 
   [self preventUserInteraction];
-  // Prepare the signout snackbar before account switching.
-  // The snackbar message might be nil if the snackbar is not needed.
-  SnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
 
   // Strongly retain completionWrapper in the blocks to ensure that the
   // completion callback will be invoked even if the UI is destroyed
@@ -335,7 +332,8 @@ using signin_metrics::SignoutDataLossAlertReason;
 
   __weak __typeof(self) weakSelf = self;
   signin::ProfileSignoutRequest(_signoutSourceMetric)
-      .SetSnackbarMessage(snackbarMessage, _forceSnackbarOverToolbar)
+      .SetSnackbarMessageBuilder([self signoutSnackbarMessageBuilder],
+                                 _forceSnackbarOverToolbar)
       .SetPrepareCallback(base::BindOnce(^(bool will_change_profile) {
         completionWrapper.willChangeProfile = will_change_profile;
       }))
@@ -346,13 +344,14 @@ using signin_metrics::SignoutDataLossAlertReason;
       .Run(browser);
 }
 
-// Returns snackbar if needed.
-- (SnackbarMessage*)signoutSnackbarMessage {
+// Returns snackbar builder.
+- (signin::SnackbarMessageBuilder)signoutSnackbarMessageBuilder {
   if (self.isForceSigninEnabled) {
     // Snackbar should be skipped since force sign-in dialog will be shown right
     // after.
-    return nil;
+    return {};
   }
+
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(self.profile);
   int message_id =
@@ -361,9 +360,12 @@ using signin_metrics::SignoutDataLossAlertReason;
               HasManagedSyncDataType(syncService)
           ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
           : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
-  SnackbarMessage* message = [[SnackbarMessage alloc]
-      initWithTitle:l10n_util::GetNSString(message_id)];
-  return message;
+
+  return base::BindOnce(^(Browser* post_signout_browser) {
+    SnackbarMessage* message = [[SnackbarMessage alloc]
+        initWithTitle:l10n_util::GetNSString(message_id)];
+    return message;
+  });
 }
 
 @end
