@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/base64url.h"
+#include "base/check_deref.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -17,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -63,11 +66,14 @@ namespace net::device_bound_sessions {
 
 namespace {
 
+using ::base::test::RunOnceCallback;
+using ::base::test::ValueIs;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::WithArg;
@@ -529,8 +535,8 @@ TEST_F(RegistrationTest, VerifyTaskPriority) {
 
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), std::ref(mock_service),
-          context_.get(), std::ref(isolation_info),
+          request_param, session_service(), mock_service, context_.get(),
+          isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kUserVisible);
@@ -540,6 +546,103 @@ TEST_F(RegistrationTest, VerifyTaskPriority) {
       request_param, unexportable_keys::UnexportableSigningKeyId(),
       callback.callback());
   callback.WaitForCall();
+}
+
+TEST_F(RegistrationTest, SigningKeyGenerationFailure) {
+  unexportable_keys::MockUnexportableKeyService mock_service;
+
+  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync)
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GURL("https://a.test"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      request_param, session_service(), mock_service, context_.get(),
+      isolation_info,
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  TestRegistrationCallback callback;
+  fetcher->StartCreateTokenAndFetch(request_param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kSigningKeyGenerationError);
+}
+
+TEST_F(RegistrationTest, AttestationKeyGenerationFailure) {
+  unexportable_keys::MockUnexportableKeyService mock_service;
+
+  // Mock signing key generation to succeed
+  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync)
+      .WillOnce(
+          RunOnceCallback<2>(unexportable_keys::UnexportableSigningKeyId()));
+
+  // Mock attestation key generation to fail
+  EXPECT_CALL(mock_service, GenerateAttestationKeySlowlyAsync)
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GURL("https://a.test"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      request_param, session_service(), mock_service, context_.get(),
+      isolation_info,
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  TestRegistrationCallback callback;
+  fetcher->StartCreateTokenAndFetch(request_param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kAttestationKeyGenerationError);
+}
+
+TEST_F(RegistrationTest, AttestationKeyGenerationSuccess) {
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating([](const test_server::HttpRequest& request) {
+        EXPECT_TRUE(VerifyEs256Jwt(CHECK_DEREF(
+            base::FindOrNull(request.headers, kSessionResponseHeaderName))));
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  auto param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), /*session_identifier=*/std::nullopt,
+      std::string(kChallenge),
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      param, session_service(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const Session& session = callback.outcome().SessionForTesting();
+  EXPECT_THAT(session.maybe_unexportable_attestation_key_id(),
+              ValueIs(Optional(_)));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Registration.Network.Result", HTTP_OK, 1);
 }
 
 TEST_F(RegistrationTest, NoScopeJson) {
@@ -1677,9 +1780,8 @@ TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1720,9 +1822,8 @@ TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1759,9 +1860,8 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1793,9 +1893,8 @@ TEST_F(RegistrationTest, FetchRefreshAndChallengeRequired_NoChallenge) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1848,9 +1947,8 @@ TEST_F(RegistrationTest,
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1904,9 +2002,8 @@ TEST_F(RegistrationTest,
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1975,8 +2072,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), std::ref(mock_service),
-          context_.get(), std::ref(isolation_info),
+          request_param, session_service(), mock_service, context_.get(),
+          isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2018,8 +2115,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), std::ref(mock_service),
-          context_.get(), std::ref(isolation_info),
+          request_param, session_service(), mock_service, context_.get(),
+          isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2072,9 +2169,8 @@ TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2113,9 +2209,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2168,8 +2263,8 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
       /*authorization=*/std::nullopt);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), std::ref(mock_key_service),
-          context_.get(), std::ref(isolation_info),
+          request_param, session_service(), mock_key_service, context_.get(),
+          isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2215,8 +2310,8 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
       /*authorization=*/std::nullopt);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), std::ref(mock_key_service),
-          context_.get(), std::ref(isolation_info),
+          request_param, session_service(), mock_key_service, context_.get(),
+          isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2270,8 +2365,8 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
       /*authorization=*/std::nullopt);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), std::ref(mock_key_service),
-          context_.get(), std::ref(isolation_info),
+          request_param, session_service(), mock_key_service, context_.get(),
+          isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2334,9 +2429,8 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2387,9 +2481,8 @@ TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
   UnexportableSigningKeyId key = CreateSigningKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(),
-          std::ref(unexportable_key_service()), context_.get(),
-          std::ref(isolation_info),
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);

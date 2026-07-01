@@ -510,7 +510,6 @@ void Session::InformOfRefreshResult(bool was_proactive,
       backoff_.InformOfRequest(/*succeeded=*/true);
       break;
     // Fatal errors, no backoff needed
-    case kKeyError:
     case kSigningError:
     case kServerRequestedTermination:
     case kInvalidConfigJson:
@@ -574,6 +573,8 @@ void Session::InformOfRefreshResult(bool was_proactive,
       backoff_.InformOfRequest(/*succeeded=*/false);
       break;
     // Registration-only errors
+    case kSigningKeyGenerationError:
+    case kAttestationKeyGenerationError:
     case kSubdomainRegistrationWellKnownUnavailable:
     case kSubdomainRegistrationUnauthorized:
     case kSubdomainRegistrationWellKnownMalformed:

@@ -23,7 +23,7 @@ struct NET_EXPORT SessionError {
   enum class ErrorType {
     kSuccess = 0,  // Only used for metrics, a session error will never have
                    // this error type.
-    kKeyError = 1,
+    kSigningKeyGenerationError = 1,
     kSigningError = 2,
     // Deprecated: kNetError = 3,
     // Deprecated: kHttpError = 4,
@@ -106,7 +106,8 @@ struct NET_EXPORT SessionError {
     kSessionDeletedDuringRefresh = 81,
     kTransientSigningError = 82,
     kCrossOriginRegistrationSiteNotIncluded = 83,
-    kMaxValue = kCrossOriginRegistrationSiteNotIncluded,
+    kAttestationKeyGenerationError = 84,
+    kMaxValue = kAttestationKeyGenerationError,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeviceBoundSessionError,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionError)
 

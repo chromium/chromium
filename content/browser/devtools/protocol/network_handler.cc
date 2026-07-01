@@ -1903,13 +1903,20 @@ BuildProtocolDeviceBoundSessionFailedRequest(
   return protocol_failed_request;
 }
 
+// LINT.IfChange(DeviceBoundSessionFetchResult)
 String BuildProtocolDeviceBoundSessionFetchResult(
     net::device_bound_sessions::SessionError::ErrorType type) {
   switch (type) {
     case net::device_bound_sessions::SessionError::ErrorType::kSuccess:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::Success;
-    case net::device_bound_sessions::SessionError::ErrorType::kKeyError:
-      return protocol::Network::DeviceBoundSessionFetchResultEnum::KeyError;
+    case net::device_bound_sessions::SessionError::ErrorType::
+        kSigningKeyGenerationError:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          SigningKeyGenerationError;
+    case net::device_bound_sessions::SessionError::ErrorType::
+        kAttestationKeyGenerationError:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          AttestationKeyGenerationError;
     case net::device_bound_sessions::SessionError::ErrorType::kSigningError:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::SigningError;
     case net::device_bound_sessions::SessionError::ErrorType::
@@ -2173,6 +2180,7 @@ String BuildProtocolDeviceBoundSessionFetchResult(
           CrossOriginRegistrationSiteNotIncluded;
   }
 }
+// LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionFetchResult)
 
 String BuildProtocolDeviceBoundSessionRefreshResult(
     net::device_bound_sessions::RefreshResult result) {

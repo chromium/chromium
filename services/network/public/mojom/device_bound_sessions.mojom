@@ -123,7 +123,7 @@ enum DeviceBoundSessionError {
   kSuccess = 0,  // Only used for metrics, a session error will never have
                    // this error type.
 
-  kKeyError = 1,
+  kSigningKeyGenerationError = 1,
   kSigningError = 2,
   // Deprecated: kNetError = 3,
   // Deprecated: kHttpError = 4,
@@ -206,6 +206,7 @@ enum DeviceBoundSessionError {
   kSessionDeletedDuringRefresh = 81,
   kTransientSigningError = 82,
   kCrossOriginRegistrationSiteNotIncluded = 83,
+  kAttestationKeyGenerationError = 84,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)

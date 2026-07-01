@@ -2149,10 +2149,12 @@ domain Network
   experimental type DeviceBoundSessionEventId extends string
 
   # A fetch result for a device bound session creation or refresh.
+  # LINT.IfChange(DeviceBoundSessionFetchResult)
   experimental type DeviceBoundSessionFetchResult extends string
     enum
       Success
-      KeyError
+      SigningKeyGenerationError
+      AttestationKeyGenerationError
       SigningError
       TransientSigningError
       ServerRequestedTermination
@@ -2221,6 +2223,7 @@ domain Network
       FailedToUnwrapKey
       SessionDeletedDuringRefresh
       CrossOriginRegistrationSiteNotIncluded
+  # LINT.ThenChange(//content/browser/devtools/protocol/network_handler.cc:DeviceBoundSessionFetchResult)
 
   # Details about a failed device bound session network request.
   experimental type DeviceBoundSessionFailedRequest extends object
