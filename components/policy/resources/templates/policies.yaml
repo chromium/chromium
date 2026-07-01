@@ -1468,6 +1468,7 @@ policies:
   1467: ThirdPartyAiChatSettings
   1468: ProcessIsolationEnabled
   1469: Indigo
+  1470: DeviceOnlinePasswordMismatchBehavior
 
 atomic_groups:
   1: Homepage

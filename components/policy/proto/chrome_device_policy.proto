@@ -2132,4 +2132,5 @@ message ChromeDeviceSettingsProto {
   optional StringPolicyProto DeviceLoginScreenPreferSlowKexAlgorithms = 1414;
   optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
   optional IntegerPolicyProto DeviceWeeklyScheduledResuspendDelayMs = 1460;
+  optional IntegerPolicyProto DeviceOnlinePasswordMismatchBehavior = 1470;
 }
