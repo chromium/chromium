@@ -918,6 +918,37 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryDenied) {
       UnorderedElementsAre(Pair(net::SchemefulSite(GURL(kOriginB)), false)));
 }
 
+// Test that permissions.query inside a credentialless iframe does not expose
+// embargoed status when a storage access request has been repeatedly dismissed.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       PermissionQueryEmbargoed_CredentiallessFrame) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DISMISS);
+
+  // Dismissing the prompt 3 times places the origin under embargo.
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_FALSE(
+        content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  }
+  ASSERT_EQ(prompt_factory()->TotalRequestCount(), 3);
+  ASSERT_EQ(QueryPermission(GetFrame()), "prompt");
+
+  NavigateToPageWithFrame(kHostA, /*browser_ptr=*/nullptr,
+                          /*credentialless=*/true);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // Even when under embargo, permissions.query inside a credentialless iframe
+  // should return "prompt" rather than "denied".
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+}
+
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryCrossSite) {
   SetBlockThirdPartyCookies(true);
 

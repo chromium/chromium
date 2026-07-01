@@ -938,6 +938,34 @@ TEST_F(PermissionManagerTest,
   EXPECT_TRUE(!context);
 }
 
+TEST_F(PermissionManagerTest, StorageAccessPermissionStatusMasksDenied) {
+  SetPermission(PermissionType::STORAGE_ACCESS_GRANT,
+                PermissionStatus::GRANTED);
+  CheckPermissionStatus(PermissionType::STORAGE_ACCESS_GRANT,
+                        PermissionStatus::GRANTED);
+
+  SetPermission(PermissionType::STORAGE_ACCESS_GRANT, PermissionStatus::ASK);
+  CheckPermissionStatus(PermissionType::STORAGE_ACCESS_GRANT,
+                        PermissionStatus::ASK);
+
+  SetPermission(PermissionType::STORAGE_ACCESS_GRANT, PermissionStatus::DENIED);
+  CheckPermissionStatus(PermissionType::STORAGE_ACCESS_GRANT,
+                        PermissionStatus::ASK);
+  CheckPermissionResult(PermissionType::STORAGE_ACCESS_GRANT,
+                        PermissionStatus::ASK,
+                        content::PermissionStatusSource::UNSPECIFIED);
+}
+
+TEST_F(PermissionManagerTest, StorageAccessPermissionRequestMasksDenied) {
+  NavigateAndCommit(url());
+  SetPermission(PermissionType::STORAGE_ACCESS_GRANT, PermissionStatus::DENIED);
+
+  RequestPermissionFromCurrentDocument(PermissionType::STORAGE_ACCESS_GRANT,
+                                       main_rfh());
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::ASK, callback_result());
+}
+
 class PermissionManagerWithGeolocationTest : public PermissionManagerTest {
  public:
   PermissionManagerWithGeolocationTest() {

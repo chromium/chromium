@@ -501,6 +501,9 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
                              embedding_origin);
 }
 
+void PermissionContextBase::MaybeOverridePermissionResultToReturn(
+    content::PermissionResult& result) const {}
+
 bool PermissionContextBase::IsPermissionAvailableToOrigins(
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {

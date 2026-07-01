@@ -407,29 +407,6 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
-  {
-    // Normally a previous prompt rejection would already be filtered before
-    // reaching `StorageAccessGrantPermissionContext::DecidePermission`, but the
-    // requirement not to surface the user's denial back to the caller means
-    // this code is reachable even after permission has been blocked.
-    // Accordingly, check the default implementation, and if a denial has been
-    // persisted, respect that decision.
-    ContentSetting existing_setting = permissions::
-        ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
-            rfh, request_data->requesting_origin,
-            request_data->embedding_origin);
-    // ALLOW grants are handled by ContentSettingPermissionContextBase so they
-    // never reach this point.
-    CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
-    if (existing_setting == CONTENT_SETTING_BLOCK) {
-      NotifyPermissionSetInternal(*request_data, std::move(callback),
-                                  /*persist=*/false, PermissionDecision::kDeny,
-                                  RequestOutcome::kReusedPreviousDecision);
-      return;
-    }
-    CHECK_EQ(existing_setting, CONTENT_SETTING_ASK);
-  }
-
   // FedCM grants (and the appropriate permissions policy) may allow the call to
   // auto-resolve (without granting a new permission).
   if (FederatedIdentityPermissionContext* fedcm_context =
@@ -582,7 +559,7 @@ StorageAccessGrantPermissionContext::GetContentSettingStatusInternal(
     const GURL& embedding_origin) const {
   if (render_frame_host) {
     if (IsAccessRestrictedInFrame(render_frame_host)) {
-      return CONTENT_SETTING_ASK;
+      return CONTENT_SETTING_BLOCK;
     }
 
     // Permission query from top-level frame should be "granted" by default.
@@ -591,16 +568,9 @@ StorageAccessGrantPermissionContext::GetContentSettingStatusInternal(
     }
   }
 
-  ContentSetting setting = permissions::ContentSettingPermissionContextBase::
+  return permissions::ContentSettingPermissionContextBase::
       GetContentSettingStatusInternal(render_frame_host, requesting_origin,
                                       embedding_origin);
-
-  // The spec calls for avoiding exposure of rejections to prevent any attempt
-  // at retaliating against users who would reject a prompt.
-  if (setting == CONTENT_SETTING_BLOCK) {
-    return CONTENT_SETTING_ASK;
-  }
-  return setting;
 }
 
 void StorageAccessGrantPermissionContext::NotifyPermissionSet(
@@ -639,6 +609,15 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
   }
   NotifyPermissionSetInternal(request_data, std::move(callback), persist,
                               decision.overall_decision, outcome);
+}
+
+void StorageAccessGrantPermissionContext::MaybeOverridePermissionResultToReturn(
+    content::PermissionResult& result) const {
+  // The spec calls for avoiding exposure of rejections to prevent any attempt
+  // at retaliating against users who would reject a prompt.
+  if (result.status == content::PermissionStatus::DENIED) {
+    result.status = content::PermissionStatus::ASK;
+  }
 }
 
 void StorageAccessGrantPermissionContext::ReportRelatedWebsiteSetsDeprecation(

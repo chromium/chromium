@@ -55,6 +55,24 @@ class FakePermissionContextAlwaysAllow : public FakePermissionContext {
   }
 };
 
+class FakeStorageAccessPermissionContext : public FakePermissionContext {
+ public:
+  FakeStorageAccessPermissionContext(
+      content::BrowserContext* browser_context,
+      ContentSettingsType content_settings_type,
+      network::mojom::PermissionsPolicyFeature permissions_policy_feature)
+      : FakePermissionContext(browser_context,
+                              content_settings_type,
+                              permissions_policy_feature) {}
+
+  void MaybeOverridePermissionResultToReturn(
+      content::PermissionResult& result) const override {
+    if (result.status == content::PermissionStatus::DENIED) {
+      result.status = content::PermissionStatus::ASK;
+    }
+  }
+};
+
 class TestGeolocationDelegate : public GeolocationPermissionContext::Delegate {
  public:
   bool DecidePermission(const PermissionRequestData& request_data,
@@ -107,7 +125,7 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
           browser_context, ContentSettingsType::MIDI,
           network::mojom::PermissionsPolicyFeature::kMidiFeature);
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
-      std::make_unique<FakePermissionContextAlwaysAllow>(
+      std::make_unique<FakeStorageAccessPermissionContext>(
           browser_context, ContentSettingsType::STORAGE_ACCESS,
           network::mojom::PermissionsPolicyFeature::kStorageAccessAPI);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)

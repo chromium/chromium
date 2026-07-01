@@ -91,6 +91,10 @@ class StorageAccessGrantPermissionContext
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback);
 
+  // PermissionContextBase:
+  void MaybeOverridePermissionResultToReturn(
+      content::PermissionResult& result) const override;
+
   static int GetImplicitGrantLimitForTesting();
   static void SetImplicitGrantLimitForTesting(int limit);
 

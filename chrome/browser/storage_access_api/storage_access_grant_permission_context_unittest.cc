@@ -43,6 +43,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/btm_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
@@ -85,6 +86,7 @@ constexpr char kGrantIsImplicitHistogram[] =
 constexpr char kPromptResultHistogram[] = "Permissions.Action.StorageAccess";
 constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 constexpr int kImplicitGrantLimit = 5;  // Implicit grant limit for testing.
+constexpr int kDefaultDismissalsBeforeEmbargo = 3;
 
 const uint64_t kDwaEventNameHash =
     base::HashMetricName("StorageAccess.RequestOutcome");
@@ -196,12 +198,20 @@ class StorageAccessGrantPermissionContextTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  content::RenderFrameHost* RenderFrameHostFromID(
+      content::GlobalRenderFrameHostId id) {
+    content::RenderFrameHost* target_rfh = content::RenderFrameHost::FromID(id);
+    return target_rfh ? target_rfh : main_rfh();
+  }
+
   base::test::TestFuture<content::PermissionResult> DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       bool simulate_user_gesture = true) {
     DCHECK(request_data);
     if (request_data->user_gesture && simulate_user_gesture) {
-      content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+      content::RenderFrameHostTester::For(
+          RenderFrameHostFromID(request_data->id.global_render_frame_host_id()))
+          ->SimulateUserActivation();
     }
     base::test::TestFuture<content::PermissionResult> future;
     permission_context_->DecidePermissionForTesting(std::move(request_data),
@@ -213,7 +223,9 @@ class StorageAccessGrantPermissionContextTest
       std::unique_ptr<permissions::PermissionRequestData> request_data) {
     DCHECK(request_data);
     if (request_data->user_gesture) {
-      content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+      content::RenderFrameHostTester::For(
+          RenderFrameHostFromID(request_data->id.global_render_frame_host_id()))
+          ->SimulateUserActivation();
     }
     base::test::TestFuture<content::PermissionResult> future;
     permission_context_->RequestPermissionForTesting(std::move(request_data),
@@ -222,14 +234,15 @@ class StorageAccessGrantPermissionContextTest
   }
 
   std::unique_ptr<permissions::PermissionRequestData> MakePermissionRequestData(
-      bool user_gesture) {
+      bool user_gesture,
+      content::RenderFrameHost* rfh = nullptr) {
     return std::make_unique<permissions::PermissionRequestData>(
         content::PermissionDescriptorUtil::
             CreatePermissionDescriptorForPermissionType(
                 permissions::PermissionUtil::
                     ContentSettingsTypeToPermissionType(
                         ContentSettingsType::STORAGE_ACCESS)),
-        CreateFakeID(), user_gesture, GetRequesterURL(), GetTopLevelURL());
+        CreateFakeID(rfh), user_gesture, GetRequesterURL(), GetTopLevelURL());
   }
 
   // Helper to ensure that a given content setting is consistently applied on a
@@ -417,17 +430,14 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 
   // Querying permission from a credentialless frame should return ASK (prompt)
   // even if there is a grant.
-  EXPECT_EQ(
-      PermissionStatus::ASK,
-      permission_context()
-          ->GetPermissionStatus(
-              content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      permissions::PermissionUtil::
-                          ContentSettingsTypeToPermissionType(
-                              permission_context()->content_settings_type())),
-              child_rfh, GetRequesterURL(), GetTopLevelURL())
-          .status);
+  content::PermissionResult result = permission_context()->GetPermissionStatus(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
+                  permission_context()->content_settings_type())),
+      child_rfh, GetRequesterURL(), GetTopLevelURL());
+  permission_context()->MaybeOverridePermissionResultToReturn(result);
+  EXPECT_EQ(PermissionStatus::ASK, result.status);
 }
 
 // Test that after a successful explicit storage access grant, there's a content
@@ -897,6 +907,14 @@ TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantDenial) {
 
 TEST_F(StorageAccessGrantPermissionContextTest,
        ExplicitGrantDenialNotExposedViaQuery) {
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(GetRequesterURL(),
+                                                            child_rfh);
+  navigation->Commit();
+  child_rfh = navigation->GetFinalRenderFrameHost();
+
   // Set the content setting to blocked, mimicking a prompt rejection by the
   // user.
   HostContentSettingsMap* settings_map =
@@ -908,26 +926,22 @@ TEST_F(StorageAccessGrantPermissionContextTest,
   prompt_factory().set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::NONE);
 
-  auto future =
-      DecidePermission(MakePermissionRequestData(/*user_gesture=*/true));
+  auto future = RequestPermission(
+      MakePermissionRequestData(/*user_gesture=*/true, child_rfh));
   // Ensure the prompt is not shown.
   ASSERT_FALSE(request_manager()->IsRequestInProgress());
   EXPECT_EQ(PermissionStatus::DENIED, future.Get().status);
 
   // However, ensure that the user's denial is not exposed when querying the
   // permission, per the spec.
-  EXPECT_EQ(
-      PermissionStatus::ASK,
-      permission_context()
-          ->GetPermissionStatus(
-              content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      permissions::PermissionUtil::
-                          ContentSettingsTypeToPermissionType(
-                              permission_context()->content_settings_type())),
-              /*render_frame_host=*/nullptr, GetRequesterURL(),
-              GetTopLevelURL())
-          .status);
+  content::PermissionResult result = permission_context()->GetPermissionStatus(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
+                  permission_context()->content_settings_type())),
+      child_rfh, GetRequesterURL(), GetTopLevelURL());
+  permission_context()->MaybeOverridePermissionResultToReturn(result);
+  EXPECT_EQ(PermissionStatus::ASK, result.status);
 
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
@@ -1043,6 +1057,67 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
               IsEmpty());
+}
+
+TEST_F(StorageAccessGrantPermissionContextTest, RepeatedDismissalsNotExposed) {
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(GetRequesterURL(),
+                                                            child_rfh);
+  navigation->Commit();
+  child_rfh = navigation->GetFinalRenderFrameHost();
+
+  prompt_factory().set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DISMISS);
+
+  for (int i = 0; i < kDefaultDismissalsBeforeEmbargo; ++i) {
+    EXPECT_EQ(PermissionStatus::ASK,
+              RequestPermission(
+                  MakePermissionRequestData(/*user_gesture=*/true, child_rfh))
+                  .Get()
+                  .status);
+  }
+
+  content::PermissionResult result = permission_context()->GetPermissionStatus(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
+                  permission_context()->content_settings_type())),
+      child_rfh, GetRequesterURL(), GetTopLevelURL());
+  permission_context()->MaybeOverridePermissionResultToReturn(result);
+  EXPECT_EQ(PermissionStatus::ASK, result.status);
+}
+
+TEST_F(StorageAccessGrantPermissionContextTest,
+       EmbargoActivatesAfterRepeatedDismissals) {
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(GetRequesterURL(),
+                                                            child_rfh);
+  navigation->Commit();
+  child_rfh = navigation->GetFinalRenderFrameHost();
+
+  prompt_factory().set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DISMISS);
+
+  for (int i = 0; i < kDefaultDismissalsBeforeEmbargo; ++i) {
+    EXPECT_EQ(PermissionStatus::ASK,
+              RequestPermission(
+                  MakePermissionRequestData(/*user_gesture=*/true, child_rfh))
+                  .Get()
+                  .status);
+  }
+
+  prompt_factory().set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+  EXPECT_EQ(PermissionStatus::DENIED,
+            RequestPermission(
+                MakePermissionRequestData(/*user_gesture=*/true, child_rfh))
+                .Get()
+                .status);
 }
 
 class StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest

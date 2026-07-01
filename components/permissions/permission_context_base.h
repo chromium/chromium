@@ -137,6 +137,13 @@ class PermissionContextBase : public content_settings::Observer {
       const GURL& requesting_origin,
       const GURL& embedding_origin) const;
 
+  // Optionally overwrites the result before returning it to the caller (for a
+  // permissions request or status query). Default implementation does nothing.
+  // Useful (for example) to mask an internal DENIED state and expose it as
+  // PROMPT to the web.
+  virtual void MaybeOverridePermissionResultToReturn(
+      content::PermissionResult& result) const;
+
   // Returns whether the permission is usable by requesting/embedding origins.
   bool IsPermissionAvailableToOrigins(const GURL& requesting_origin,
                                       const GURL& embedding_origin) const;
