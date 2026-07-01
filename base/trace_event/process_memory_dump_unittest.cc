@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_tracker.h"

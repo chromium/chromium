@@ -4,6 +4,7 @@
 
 #include "base/trace_event/memory_allocator_dump_guid.h"
 
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/hash/sha1.h"
 #include "base/numerics/byte_conversions.h"

@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"

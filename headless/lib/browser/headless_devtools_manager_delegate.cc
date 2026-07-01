@@ -4,6 +4,7 @@
 
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"

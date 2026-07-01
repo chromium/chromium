@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"

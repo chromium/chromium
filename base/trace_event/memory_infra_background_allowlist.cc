@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"

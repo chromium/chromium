@@ -7,6 +7,7 @@
 #include <evntrace.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 

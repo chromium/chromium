@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/debug/leak_annotations.h"
 #include "base/run_loop.h"
 #include "base/trace_event/trace_log.h"

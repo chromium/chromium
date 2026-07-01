@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "components/headless/test/bitmap_utils.h"
 #include "pdf/pdf.h"

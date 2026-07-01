@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 
 namespace tracing {

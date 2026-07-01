@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
