@@ -6,14 +6,100 @@
 
 #include <algorithm>
 #include <array>
+#include <ostream>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/sys_byteorder.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace safe_browsing {
 
 namespace v5_rice_utils {
+
+// =============================================================================
+// Uint256 Implementation
+// =============================================================================
+
+Uint256& Uint256::operator+=(const Uint256& other) {
+  absl::uint128 old_low = low;
+  low += other.low;
+  high += other.high;
+  if (low < old_low) {
+    high += 1;
+  }
+  return *this;
+}
+
+Uint256 Uint256::operator+(const Uint256& other) const {
+  Uint256 result = *this;
+  result += other;
+  return result;
+}
+
+std::ostream& operator<<(std::ostream& os, const Uint256& v) {
+  return os << "(" << v.high << ", " << v.low << ")";
+}
+
+Uint256& Uint256::operator<<=(int shift) {
+  CHECK_GE(shift, 0);
+  if (shift == 0) {
+    return *this;
+  }
+  if (shift >= 256) {
+    high = 0;
+    low = 0;
+  } else if (shift >= 128) {
+    high = low << (shift - 128);
+    low = 0;
+  } else {
+    high = (high << shift) | (low >> (128 - shift));
+    low = low << shift;
+  }
+  return *this;
+}
+
+Uint256 Uint256::operator<<(int shift) const {
+  Uint256 result = *this;
+  result <<= shift;
+  return result;
+}
+
+Uint256& Uint256::operator>>=(int shift) {
+  CHECK_GE(shift, 0);
+  if (shift == 0) {
+    return *this;
+  }
+  if (shift >= 256) {
+    high = 0;
+    low = 0;
+  } else if (shift >= 128) {
+    low = high >> (shift - 128);
+    high = 0;
+  } else {
+    low = (low >> shift) | (high << (128 - shift));
+    high = high >> shift;
+  }
+  return *this;
+}
+
+Uint256 Uint256::operator>>(int shift) const {
+  Uint256 result = *this;
+  result >>= shift;
+  return result;
+}
+
+Uint256& Uint256::operator|=(const Uint256& other) {
+  high |= other.high;
+  low |= other.low;
+  return *this;
+}
+
+Uint256 Uint256::operator|(const Uint256& other) const {
+  Uint256 result = *this;
+  result |= other;
+  return result;
+}
 
 // =============================================================================
 // V5BitReader Implementation
@@ -63,7 +149,7 @@ bool V5BitReader::ReadMultipleBits(int num_bits, T* out) {
 }
 
 // =============================================================================
-// AddWithOverflow Implementation & Specializations
+// TryAdd Implementation & Specializations
 // =============================================================================
 
 template <typename T>
@@ -71,6 +157,25 @@ bool TryAdd(T a, T b, T* result) {
   *result = a + b;
   return *result >= a;
 }
+
+bool TryAdd(Uint256 a, Uint256 b, Uint256* result) {
+  absl::uint128 low = a.low + b.low;
+  bool carry = (low < a.low);
+  absl::uint128 high = a.high + b.high;
+  bool overflow = (high < a.high);
+  if (carry) {
+    high += 1;
+    if (high == 0) {
+      overflow = true;
+    }
+  }
+  *result = Uint256(high, low);
+  return !overflow;
+}
+
+// =============================================================================
+// SerializeToBigEndianBytes Implementation
+// =============================================================================
 
 namespace {
 
@@ -82,6 +187,34 @@ struct SerializationTraits<uint32_t> {
   using ArrayType = std::array<uint32_t, 1>;
   static ArrayType SerializeToBigEndian(uint32_t val) {
     return {base::HostToNet32(val)};
+  }
+};
+
+template <>
+struct SerializationTraits<uint64_t> {
+  using ArrayType = std::array<uint64_t, 1>;
+  static ArrayType SerializeToBigEndian(uint64_t val) {
+    return {base::HostToNet64(val)};
+  }
+};
+
+template <>
+struct SerializationTraits<absl::uint128> {
+  using ArrayType = std::array<uint64_t, 2>;
+  static ArrayType SerializeToBigEndian(absl::uint128 val) {
+    return {base::HostToNet64(absl::Uint128High64(val)),
+            base::HostToNet64(absl::Uint128Low64(val))};
+  }
+};
+
+template <>
+struct SerializationTraits<Uint256> {
+  using ArrayType = std::array<uint64_t, 4>;
+  static ArrayType SerializeToBigEndian(Uint256 val) {
+    return {base::HostToNet64(absl::Uint128High64(val.high)),
+            base::HostToNet64(absl::Uint128Low64(val.high)),
+            base::HostToNet64(absl::Uint128High64(val.low)),
+            base::HostToNet64(absl::Uint128Low64(val.low))};
   }
 };
 
@@ -115,10 +248,20 @@ std::string SerializeToBigEndianBytes(std::vector<T> decoded) {
 //
 // If an external caller tries to use these templates with an unsupported type,
 // they will get a compile or linker error.
-
 template bool V5BitReader::ReadMultipleBits<uint32_t>(int, uint32_t*);
+template bool V5BitReader::ReadMultipleBits<uint64_t>(int, uint64_t*);
+template bool V5BitReader::ReadMultipleBits<absl::uint128>(int, absl::uint128*);
+template bool V5BitReader::ReadMultipleBits<Uint256>(int, Uint256*);
 template bool TryAdd<uint32_t>(uint32_t, uint32_t, uint32_t*);
+template bool TryAdd<uint64_t>(uint64_t, uint64_t, uint64_t*);
+template bool TryAdd<absl::uint128>(absl::uint128,
+                                    absl::uint128,
+                                    absl::uint128*);
 template std::string SerializeToBigEndianBytes<uint32_t>(std::vector<uint32_t>);
+template std::string SerializeToBigEndianBytes<uint64_t>(std::vector<uint64_t>);
+template std::string SerializeToBigEndianBytes<absl::uint128>(
+    std::vector<absl::uint128>);
+template std::string SerializeToBigEndianBytes<Uint256>(std::vector<Uint256>);
 
 }  // namespace v5_rice_utils
 
@@ -252,7 +395,6 @@ V5DecodeResult V5RiceDecoder::DecodeNextValue(
   // Because we checked `q > max_valid_q` above, we are mathematically
   // guaranteed that `q << rice_parameter` will not overflow type `T`.
   T q_shifted = static_cast<T>(q) << rice_parameter;
-
   bool add_succeeded = v5_rice_utils::TryAdd(q_shifted, r, out);
   CHECK(add_succeeded);
 
@@ -268,8 +410,44 @@ template V5DecodeResult V5RiceDecoder::DecodeIntegers<uint32_t>(
     int,
     base::span<const uint8_t>,
     std::vector<uint32_t>*);
+template V5DecodeResult V5RiceDecoder::DecodeIntegers<uint64_t>(
+    uint64_t,
+    int,
+    int,
+    base::span<const uint8_t>,
+    std::vector<uint64_t>*);
+template V5DecodeResult V5RiceDecoder::DecodeIntegers<absl::uint128>(
+    absl::uint128,
+    int,
+    int,
+    base::span<const uint8_t>,
+    std::vector<absl::uint128>*);
+template V5DecodeResult V5RiceDecoder::DecodeIntegers<v5_rice_utils::Uint256>(
+    v5_rice_utils::Uint256,
+    int,
+    int,
+    base::span<const uint8_t>,
+    std::vector<v5_rice_utils::Uint256>*);
 template V5DecodeResult V5RiceDecoder::DecodePrefixes<uint32_t>(
     uint32_t,
+    int,
+    int,
+    base::span<const uint8_t>,
+    std::string*);
+template V5DecodeResult V5RiceDecoder::DecodePrefixes<uint64_t>(
+    uint64_t,
+    int,
+    int,
+    base::span<const uint8_t>,
+    std::string*);
+template V5DecodeResult V5RiceDecoder::DecodePrefixes<absl::uint128>(
+    absl::uint128,
+    int,
+    int,
+    base::span<const uint8_t>,
+    std::string*);
+template V5DecodeResult V5RiceDecoder::DecodePrefixes<v5_rice_utils::Uint256>(
+    v5_rice_utils::Uint256,
     int,
     int,
     base::span<const uint8_t>,

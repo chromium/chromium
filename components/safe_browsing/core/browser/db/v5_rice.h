@@ -7,15 +7,50 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace safe_browsing {
 
 namespace v5_rice_utils {
+
+// A lightweight 256-bit unsigned integer struct for V5 Rice decoding.
+struct Uint256 {
+  Uint256() = default;
+  explicit Uint256(uint64_t v) : low(v) {}
+  Uint256(absl::uint128 high, absl::uint128 low) : low(low), high(high) {}
+
+  Uint256& operator+=(const Uint256& other);
+  Uint256 operator+(const Uint256& other) const;
+  Uint256& operator<<=(int shift);
+  Uint256 operator<<(int shift) const;
+  Uint256& operator>>=(int shift);
+  Uint256 operator>>(int shift) const;
+  Uint256& operator|=(const Uint256& other);
+  Uint256 operator|(const Uint256& other) const;
+
+  bool operator==(const Uint256& other) const {
+    return high == other.high && low == other.low;
+  }
+
+  bool operator!=(const Uint256& other) const { return !(*this == other); }
+
+  // The least significant 128 bits.
+  absl::uint128 low = 0;
+  // The most significant 128 bits.
+  absl::uint128 high = 0;
+};
+
+std::ostream& operator<<(std::ostream& os, const Uint256& v);
+
+// Ensure that Uint256 has no padding and is exactly 32 bytes (256 bits).
+// This is required for `SerializeToBigEndianBytes` to work correctly.
+static_assert(sizeof(Uint256) == 32, "Uint256 must be exactly 32 bytes");
 
 // Type traits to get the bit width of types.
 // The bit width is the total number of bits in the representation of type `T`.
@@ -31,11 +66,30 @@ struct V5TypeTraits<uint32_t> {
   static constexpr int kMinRiceParameter = 3;
   static constexpr int kMaxRiceParameter = 30;
 };
+template <>
+struct V5TypeTraits<uint64_t> {
+  static constexpr int kBitWidth = 64;
+  static constexpr int kMinRiceParameter = 35;
+  static constexpr int kMaxRiceParameter = 62;
+};
+template <>
+struct V5TypeTraits<absl::uint128> {
+  static constexpr int kBitWidth = 128;
+  static constexpr int kMinRiceParameter = 99;
+  static constexpr int kMaxRiceParameter = 126;
+};
+template <>
+struct V5TypeTraits<Uint256> {
+  static constexpr int kBitWidth = 256;
+  static constexpr int kMinRiceParameter = 227;
+  static constexpr int kMaxRiceParameter = 254;
+};
 
 // Safe addition with overflow detection.
 // Returns true on success (no overflow), false on failure (overflow).
 template <typename T>
 bool TryAdd(T a, T b, T* result);
+bool TryAdd(Uint256 a, Uint256 b, Uint256* result);
 
 // BitReader that reads bits from a byte stream, least significant bit first
 // within each byte.

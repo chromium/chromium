@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace safe_browsing {
 
 using v5_rice_utils::SerializeToBigEndianBytes;
 using v5_rice_utils::TryAdd;
+using v5_rice_utils::Uint256;
 using v5_rice_utils::V5BitReader;
 
 namespace {
@@ -41,11 +43,20 @@ template <typename T>
 bool GetBit(const T& val, int bit_idx) {
   return ((val >> bit_idx) & 1) != 0;
 }
+template <>
+bool GetBit(const Uint256& val, int bit_idx) {
+  Uint256 shifted = val >> bit_idx;
+  return (shifted.low & 1) != 0;
+}
 
 // Helper to cast or truncate a value to uint32_t.
 template <typename T>
 uint32_t ToUint32(const T& val) {
   return static_cast<uint32_t>(val);
+}
+template <>
+uint32_t ToUint32(const Uint256& val) {
+  return static_cast<uint32_t>(val.low);
 }
 
 // Returns the maximum representable value for type T.
@@ -53,17 +64,38 @@ template <typename T>
 T GetMaxVal() {
   return std::numeric_limits<T>::max();
 }
+template <>
+absl::uint128 GetMaxVal<absl::uint128>() {
+  return ~absl::uint128(0);
+}
+template <>
+Uint256 GetMaxVal<Uint256>() {
+  return Uint256(GetMaxVal<absl::uint128>(), GetMaxVal<absl::uint128>());
+}
 
 // Subtraction (only used for tests).
 template <typename T>
 T SubtractDelta(T val, T delta) {
   return val - delta;
 }
+template <>
+Uint256 SubtractDelta<Uint256>(Uint256 val, Uint256 delta) {
+  absl::uint128 low = val.low - delta.low;
+  absl::uint128 high = val.high - delta.high;
+  if (val.low < delta.low) {
+    high -= 1;
+  }
+  return Uint256(high, low);
+}
 
 // Conversion helpers.
 template <typename T>
 T ConvertTo(uint64_t v) {
   return static_cast<T>(v);
+}
+template <>
+Uint256 ConvertTo<Uint256>(uint64_t v) {
+  return Uint256(v);
 }
 
 // Encodes a single delta value using Rice-Golomb coding.
@@ -129,6 +161,161 @@ void VerifyDecodePrefixes(T first_value,
 // Helper Class / Method Unit Tests
 // =============================================================================
 
+TEST(V5RiceUint256Test, ConstructorsAndEquality) {
+  // Test constructor and equality
+  Uint256 a1(/*high=*/absl::MakeUint128(/*high=*/1, /*low=*/2),
+             /*low=*/absl::MakeUint128(/*high=*/3, /*low=*/4));
+  EXPECT_EQ(a1.high, absl::MakeUint128(/*high=*/1, /*low=*/2));
+  EXPECT_EQ(a1.low, absl::MakeUint128(/*high=*/3, /*low=*/4));
+
+  Uint256 a2(/*high=*/absl::MakeUint128(/*high=*/1, /*low=*/2),
+             /*low=*/absl::MakeUint128(/*high=*/3, /*low=*/4));
+  EXPECT_EQ(a1, a2);
+
+  Uint256 b(/*high=*/absl::MakeUint128(/*high=*/1, /*low=*/2),
+            /*low=*/absl::MakeUint128(/*high=*/3, /*low=*/5));
+  // Explicitly test comparison operators on unequal objects.
+  EXPECT_TRUE(a1 != b);
+  EXPECT_FALSE(a1 == b);
+
+  // Test copy constructor
+  Uint256 a3(a1);
+  EXPECT_EQ(a1, a3);
+
+  // Test default constructor
+  Uint256 c;
+  EXPECT_EQ(c.high, absl::uint128(0));
+  EXPECT_EQ(c.low, absl::uint128(0));
+}
+
+TEST(V5RiceUint256Test, AdditionOperators) {
+  Uint256 a(/*high=*/1, /*low=*/2);
+  Uint256 b(/*high=*/3, /*low=*/4);
+
+  Uint256 c = a + b;
+  EXPECT_EQ(c.high, absl::uint128(4));
+  EXPECT_EQ(c.low, absl::uint128(6));
+
+  c += b;
+  EXPECT_EQ(c.high, absl::uint128(7));
+  EXPECT_EQ(c.low, absl::uint128(10));
+}
+
+TEST(V5RiceUint256Test, AdditionCarryLogic) {
+  absl::uint128 max_uint128 = GetMaxVal<absl::uint128>();
+  Uint256 a(/*high=*/0, /*low=*/max_uint128);
+  Uint256 one(/*high=*/0, /*low=*/1);
+  Uint256 b = a + one;
+  EXPECT_EQ(b.high, absl::uint128(1));
+  EXPECT_EQ(b.low, absl::uint128(0));
+
+  Uint256 c(/*high=*/5, /*low=*/max_uint128);
+  Uint256 d = c + one;
+  EXPECT_EQ(d.high, absl::uint128(6));
+  EXPECT_EQ(d.low, absl::uint128(0));
+
+  Uint256 max_u256 = GetMaxVal<Uint256>();
+  Uint256 e = max_u256 + one;
+  EXPECT_EQ(e.high, absl::uint128(0));
+  EXPECT_EQ(e.low, absl::uint128(0));
+}
+
+TEST(V5RiceUint256Test, BitwiseOr) {
+  Uint256 a(/*high=*/absl::MakeUint128(/*high=*/0xF0F0, /*low=*/0),
+            /*low=*/absl::MakeUint128(/*high=*/0, /*low=*/0xF0F0));
+  Uint256 b(/*high=*/absl::MakeUint128(/*high=*/0x0F0F, /*low=*/0x0F0F),
+            /*low=*/absl::MakeUint128(/*high=*/0x0F0F, /*low=*/0));
+  Uint256 c1 = a | b;
+  EXPECT_EQ(c1.high, absl::MakeUint128(/*high=*/0xFFFF, /*low=*/0x0F0F));
+  EXPECT_EQ(c1.low, absl::MakeUint128(/*high=*/0x0F0F, /*low=*/0xF0F0));
+
+  Uint256 c2 = a;
+  c2 |= b;
+  EXPECT_EQ(c2, c1);
+}
+
+TEST(V5RiceUint256Test, LeftShift) {
+  const uint64_t p1 = 0x9988776655443322ULL;
+  const uint64_t p2 = 0xAABBCCDDEEFF0011ULL;
+  const uint64_t p3 = 0x1234567890ABCDEFULL;
+  const uint64_t p4 = 0x1122334455667788ULL;
+
+  Uint256 a(/*high=*/absl::MakeUint128(/*high=*/p1, /*low=*/p2),
+            /*low=*/absl::MakeUint128(/*high=*/p3, /*low=*/p4));
+
+  // shift by 0
+  EXPECT_EQ(a << 0, a);
+
+  // shift by non-multiple of 64 (8 bits)
+  Uint256 b = a << 8;
+  EXPECT_EQ(b.high,
+            absl::MakeUint128((p1 << 8) | (p2 >> 56), (p2 << 8) | (p3 >> 56)));
+  EXPECT_EQ(b.low, absl::MakeUint128((p3 << 8) | (p4 >> 56), p4 << 8));
+
+  // shift by < 128
+  Uint256 c = a << 64;
+  EXPECT_EQ(c.high, absl::MakeUint128(/*high=*/p2, /*low=*/p3));
+  EXPECT_EQ(c.low, absl::MakeUint128(/*high=*/p4, /*low=*/0));
+
+  // shift by 128
+  Uint256 d = a << 128;
+  EXPECT_EQ(d.high, absl::MakeUint128(/*high=*/p3, /*low=*/p4));
+  EXPECT_EQ(d.low, absl::uint128(0));
+
+  // shift by > 128
+  Uint256 e = a << 192;
+  EXPECT_EQ(e.high, absl::MakeUint128(/*high=*/p4, /*low=*/0));
+  EXPECT_EQ(e.low, absl::uint128(0));
+
+  // shift by >= 256
+  Uint256 f = a << 256;
+  EXPECT_EQ(f.high, absl::uint128(0));
+  EXPECT_EQ(f.low, absl::uint128(0));
+
+  EXPECT_EQ(a << 300, Uint256(/*high=*/0, /*low=*/0));
+}
+
+TEST(V5RiceUint256Test, RightShift) {
+  const uint64_t p1 = 0x1234567890ABCDEFULL;
+  const uint64_t p2 = 0x1122334455667788ULL;
+  const uint64_t p3 = 0x9988776655443322ULL;
+  const uint64_t p4 = 0xAABBCCDDEEFF0011ULL;
+
+  Uint256 a(/*high=*/absl::MakeUint128(/*high=*/p1, /*low=*/p2),
+            /*low=*/absl::MakeUint128(/*high=*/p3, /*low=*/p4));
+
+  // shift by 0
+  EXPECT_EQ(a >> 0, a);
+
+  // shift by non-multiple of 64 (8 bits)
+  Uint256 b = a >> 8;
+  EXPECT_EQ(b.high, absl::MakeUint128(p1 >> 8, (p1 << 56) | (p2 >> 8)));
+  EXPECT_EQ(b.low,
+            absl::MakeUint128((p2 << 56) | (p3 >> 8), (p3 << 56) | (p4 >> 8)));
+
+  // shift by < 128
+  Uint256 c = a >> 64;
+  EXPECT_EQ(c.high, absl::MakeUint128(/*high=*/0, /*low=*/p1));
+  EXPECT_EQ(c.low, absl::MakeUint128(/*high=*/p2, /*low=*/p3));
+
+  // shift by 128
+  Uint256 d = a >> 128;
+  EXPECT_EQ(d.high, absl::uint128(0));
+  EXPECT_EQ(d.low, absl::MakeUint128(/*high=*/p1, /*low=*/p2));
+
+  // shift by > 128
+  Uint256 e = a >> 192;
+  EXPECT_EQ(e.high, absl::uint128(0));
+  EXPECT_EQ(e.low, absl::MakeUint128(/*high=*/0, /*low=*/p1));
+
+  // shift by >= 256
+  Uint256 f = a >> 256;
+  EXPECT_EQ(f.high, absl::uint128(0));
+  EXPECT_EQ(f.low, absl::uint128(0));
+
+  EXPECT_EQ(a >> 300, Uint256(/*high=*/0, /*low=*/0));
+}
+
 TEST(V5RiceTryAddTest, TryAdd) {
   // uint32_t
   uint32_t result_u32;
@@ -137,6 +324,38 @@ TEST(V5RiceTryAddTest, TryAdd) {
   EXPECT_TRUE(TryAdd(a_u32, b_u32, &result_u32));
   EXPECT_EQ(result_u32, 30u);
   EXPECT_FALSE(TryAdd(0xFFFFFFFFu, 1u, &result_u32));
+
+  // uint64_t
+  uint64_t result_u64;
+  uint64_t a_u64 = 10;
+  uint64_t b_u64 = 20;
+  EXPECT_TRUE(TryAdd(a_u64, b_u64, &result_u64));
+  EXPECT_EQ(result_u64, 30ULL);
+  uint64_t max_u64 = 0xFFFFFFFFFFFFFFFFULL;
+  uint64_t one_u64 = 1ULL;
+  EXPECT_FALSE(TryAdd(max_u64, one_u64, &result_u64));
+
+  // absl::uint128
+  absl::uint128 result_u128;
+  absl::uint128 max_u128 = GetMaxVal<absl::uint128>();
+  absl::uint128 a_u128 = 10;
+  absl::uint128 b_u128 = 20;
+  EXPECT_TRUE(TryAdd(a_u128, b_u128, &result_u128));
+  EXPECT_EQ(result_u128, absl::uint128(30));
+  EXPECT_FALSE(TryAdd(max_u128, absl::uint128(1), &result_u128));
+
+  // Uint256
+  Uint256 result_u256;
+  Uint256 max_u256 = GetMaxVal<Uint256>();
+  EXPECT_TRUE(TryAdd(Uint256(/*high=*/0, /*low=*/10),
+                     Uint256(/*high=*/0, /*low=*/20), &result_u256));
+  EXPECT_EQ(result_u256, Uint256(/*high=*/0, /*low=*/30));
+  EXPECT_FALSE(TryAdd(max_u256, Uint256(/*high=*/0, /*low=*/1), &result_u256));
+
+  // Test carry overflow where there is carrying but no overflow
+  EXPECT_TRUE(TryAdd(Uint256(/*high=*/0, max_u128),
+                     Uint256(/*high=*/0, /*low=*/1), &result_u256));
+  EXPECT_EQ(result_u256, Uint256(/*high=*/1, /*low=*/0));
 }
 
 TEST(V5RiceBitReaderTest, ReadBits) {
@@ -199,11 +418,90 @@ TEST(V5RiceSerializeTest, SerializeToBigEndianBytes) {
   std::string expected32 =
       std::string("\x12\x34\x56\x78\x9A\xBC\xDE\xF0", /*n=*/8);
   EXPECT_EQ(res32, expected32);
+
+  // For uint64_t:
+  std::vector<uint64_t> vec64 = {0x1234567890ABCDEFULL};
+  std::string res64 = SerializeToBigEndianBytes(vec64);
+  std::string expected64 =
+      std::string("\x12\x34\x56\x78\x90\xAB\xCD\xEF", /*n=*/8);
+  EXPECT_EQ(res64, expected64);
+
+  // For absl::uint128:
+  std::vector<absl::uint128> vec128 = {
+      absl::MakeUint128(/*high=*/0x0102030405060708ULL,
+                        /*low=*/0x090A0B0C0D0E0F10ULL)};
+  std::string res128 = SerializeToBigEndianBytes(vec128);
+  std::string expected128 = std::string(
+      "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10",
+      /*n=*/16);
+  EXPECT_EQ(res128, expected128);
+
+  // For Uint256:
+  std::vector<Uint256> decoded256 = {
+      Uint256(absl::MakeUint128(/*high=*/0x0102030405060708ULL,
+                                /*low=*/0x090A0B0C0D0E0F10ULL),
+              absl::MakeUint128(/*high=*/0x1112131415161718ULL,
+                                /*low=*/0x191A1B1C1D1E1F20ULL))};
+  std::string bytes256 = SerializeToBigEndianBytes(decoded256);
+  std::string expected256 =
+      "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10"
+      "\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x20";
+  EXPECT_EQ(expected256, bytes256);
 }
 
 // =============================================================================
 // V5RiceDecoderTest
 // =============================================================================
+
+TEST(V5RiceDecoderTest, DecodeUint256SerializationLayout) {
+  // Test decoding where both high and low halves of Uint256 are non-zero.
+  // This ensures we catch any swap of high/low halves during serialization.
+  //
+  // first_value = Uint256(high=1, low=2)
+  // offsets = [1, 2]
+  // Decoded values (logical):
+  // 1. Uint256(1, 2)
+  // 2. Uint256(1, 3)
+  // 3. Uint256(1, 5)
+  //
+  // Expected big-endian bytes (32 bytes per entry, total 96 bytes):
+  // Entry 1: [Big-endian of 1 (16 bytes)] [Big-endian of 2 (16 bytes)]
+  //          Since big-endian stores the most significant bytes first, the
+  //          value `1` (stored in the high 16 bytes of Uint256) will have its
+  //          non-zero byte `0x01` at index 15. The value `2` (stored in the low
+  //          16 bytes of Uint256) will have its non-zero byte `0x02` at
+  //          index 31.
+  // Entry 2: [Big-endian of 1 (16 bytes)] [Big-endian of 3 (16 bytes)]
+  //          -> 0x01 at index 47, 0x03 at index 63
+  // Entry 3: [Big-endian of 1 (16 bytes)] [Big-endian of 5 (16 bytes)]
+  //          -> 0x01 at index 79, 0x05 at index 95
+  std::vector<uint8_t> expected(96, 0);
+  expected[15] = 0x01;
+  expected[31] = 0x02;
+  expected[47] = 0x01;
+  expected[63] = 0x03;
+  expected[79] = 0x01;
+  expected[95] = 0x05;
+
+  Uint256 first_value(/*high=*/1, /*low=*/2);
+
+  // Rice-encoded bitstream for offsets [1, 2] with parameter 227.
+  // - offset1 = 1 (q=0, r=1) -> bits: [q:0][r:1,0,0...] -> Byte 0 = 0x02.
+  //   (takes 1 + 227 = 228 bits, occupying bits 0-227).
+  // - offset2 = 2 (q=0, r=2) starts at bit 228 (Byte 28 bit 4)
+  //   -> bits: [q:0][r:0,1,0...] -> Byte 28 = 0x40.
+  //   (takes 1 + 227 = 228 bits, occupying bits 228-455).
+  // - Total bits: 228 * 2 = 456 bits -> 57 bytes.
+  std::string encoded_data(57, 0);
+  encoded_data[0] = 0x02;
+  encoded_data[28] = 0x40;
+  auto encoded_span = base::as_byte_span(encoded_data);
+
+  VerifyDecodePrefixes<Uint256>(first_value, /*rice_parameter=*/227,
+                                /*num_entries=*/2, encoded_span,
+                                /*expected_result=*/V5DecodeResult::kSuccess,
+                                /*expected_bytes=*/expected);
+}
 
 TEST(V5RiceDecoderTest, V5InterestingValues) {
   // Test uint32_t cases.
@@ -270,6 +568,62 @@ TEST(V5RiceDecoderTest, V5InterestingValues) {
                                    base::as_byte_span(tc.stream),
                                    V5DecodeResult::kSuccess, tc.expected_bytes);
   }
+
+  // Test uint64_t case.
+  VerifyDecodePrefixes<uint64_t>(
+      /*first_value=*/2103960615330909784ULL,
+      /*rice_parameter=*/62,
+      /*num_entries=*/2,
+      /*stream=*/
+      base::as_byte_span(std::string(
+          "\352\215\315\251s\000\322\227\313cq{\032\355It\000", /*n=*/17)),
+      V5DecodeResult::kSuccess,
+      /*expected_bytes=*/
+      {0x1D, 0x32, 0xC5, 0x08, 0x4A, 0x36, 0x0E, 0x58, 0x29, 0x1B, 0xC5, 0x42,
+       0x1F, 0x1C, 0xD5, 0x4D, 0xF7, 0xA5, 0x02, 0xE5, 0x6E, 0x8B, 0x01, 0xC6});
+
+  // Test absl::uint128 case.
+  VerifyDecodePrefixes<absl::uint128>(
+      /*first_value=*/absl::MakeUint128(2103960615330909784ULL,
+                                        17417795843993004048ULL),
+      /*rice_parameter=*/126,
+      /*num_entries=*/2,
+      /*stream=*/
+      base::as_byte_span(std::string(
+          "R\365\330\333\230\266\356O\351\215\315\251s\000\322\227\203\010\375"
+          "\005\372\366\242\023\312cq{\032\355It\000",
+          /*n=*/33)),
+      V5DecodeResult::kSuccess,
+      /*expected_bytes=*/
+      {0x1D, 0x32, 0xC5, 0x08, 0x4A, 0x36, 0x0E, 0x58, 0xF1, 0xB8, 0x71, 0x09,
+       0x63, 0x7A, 0x68, 0x10, 0x29, 0x1B, 0xC5, 0x42, 0x1F, 0x1C, 0xD5, 0x4D,
+       0x99, 0xAF, 0xCC, 0x55, 0xD1, 0x66, 0xE2, 0xB9, 0xF7, 0xA5, 0x02, 0xE5,
+       0x6E, 0x8B, 0x01, 0xC6, 0xDC, 0x24, 0x2B, 0x35, 0x12, 0x26, 0x83, 0xC9});
+
+  // Test Uint256 case.
+  VerifyDecodePrefixes<Uint256>(
+      /*first_value=*/Uint256(
+          absl::MakeUint128(2103960615330909784ULL, 17417795843993004048ULL),
+          absl::MakeUint128(12442768094943213214ULL, 10311063094514325004ULL)),
+      /*rice_parameter=*/254,
+      /*num_entries=*/2,
+      /*stream=*/
+      base::as_byte_span(std::string(
+          "\240\343\367\006\300\263w\035\244\312\303\207\217Y)\243R\365\330"
+          "\333\230\266\356O\351\215\315\251s\000\322\227;9ft\227\236\267\260"
+          "=\215N\316W\034\326\240~\010\375\005\372\366\242\023\312cq{\032"
+          "\355It\000",
+          /*n=*/65)),
+      V5DecodeResult::kSuccess,
+      /*expected_bytes=*/
+      {0x1D, 0x32, 0xC5, 0x08, 0x4A, 0x36, 0x0E, 0x58, 0xF1, 0xB8, 0x71, 0x09,
+       0x63, 0x7A, 0x68, 0x10, 0xAC, 0xAD, 0x97, 0xA8, 0x61, 0xA7, 0x76, 0x9E,
+       0x8F, 0x18, 0x41, 0x41, 0x0D, 0x2A, 0x96, 0x0C, 0x29, 0x1B, 0xC5, 0x42,
+       0x1F, 0x1C, 0xD5, 0x4D, 0x99, 0xAF, 0xCC, 0x55, 0xD1, 0x66, 0xE2, 0xB9,
+       0xFE, 0x42, 0x44, 0x70, 0x25, 0x89, 0x5B, 0xF0, 0x9D, 0xD4, 0x1B, 0x21,
+       0x10, 0xA6, 0x87, 0xDC, 0xF7, 0xA5, 0x02, 0xE5, 0x6E, 0x8B, 0x01, 0xC6,
+       0xDC, 0x24, 0x2B, 0x35, 0x12, 0x26, 0x83, 0xC9, 0xD2, 0x5D, 0x07, 0xFB,
+       0x1F, 0x53, 0x2D, 0x98, 0x53, 0xEB, 0x0E, 0xF3, 0xFF, 0x33, 0x4F, 0x03});
 }
 
 // =============================================================================
@@ -279,7 +633,8 @@ TEST(V5RiceDecoderTest, V5InterestingValues) {
 template <typename T>
 class V5RiceDecoderTypedTest : public ::testing::Test {};
 
-using V5RiceTypes = ::testing::Types<uint32_t>;
+using V5RiceTypes =
+    ::testing::Types<uint32_t, uint64_t, absl::uint128, Uint256>;
 TYPED_TEST_SUITE(V5RiceDecoderTypedTest, V5RiceTypes);
 
 TYPED_TEST(V5RiceDecoderTypedTest, NumEntriesZero) {
