@@ -28,10 +28,6 @@ enum class ContextFeatureFlags : uint64_t;
 // process, and the calling thread must have an async_dispatcher.
 void RegisterWebInstanceProductData(std::string_view absolute_component_url);
 
-// File names must not contain directory separators, nor match the special
-// current- nor parent-directory filenames.
-bool IsValidContentDirectoryName(std::string_view file_name);
-
 // Appends switches and values to `launch_args` based on the contents of
 // `params`. Members of `params` not supported by the build will be cleared if
 // set.

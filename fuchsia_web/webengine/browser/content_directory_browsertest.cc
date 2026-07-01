@@ -290,4 +290,25 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, BigFilesAreSniffable) {
       kUrl, "content-type: text/html");
 }
 
+IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, InvalidContentDirectoryName) {
+  for (const char* url_spec : {
+           "fuchsia-dir://./title1.html",
+           "fuchsia-dir://./testdata/title1.html",
+           "fuchsia-dir://../title1.html",
+           "fuchsia-dir://../content-directories/testdata/title1.html",
+           "fuchsia-dir://test*data/title1.html",
+           "fuchsia-dir://test@data/title1.html",
+       }) {
+    const GURL kUrl(url_spec);
+    auto frame =
+        FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
+    EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         kUrl.spec()));
+    fuchsia::web::NavigationState error_state;
+    error_state.set_page_type(fuchsia::web::PageType::ERROR);
+    frame.navigation_listener().RunUntilNavigationStateMatches(error_state);
+  }
+}
+
 }  // namespace

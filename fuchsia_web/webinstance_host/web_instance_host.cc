@@ -34,6 +34,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/fuchsia_component_support/serialize_arguments.h"
+#include "fuchsia_web/common/fuchsia_dir_scheme.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_internal.h"

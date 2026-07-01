@@ -310,6 +310,10 @@ net::Error OpenFileFromDirectory(
   DCHECK(file_request);
   DCHECK(!relative_file_path.IsAbsolute());
 
+  if (!IsValidContentDirectoryName(content_directory_name)) {
+    return net::ERR_FILE_NOT_FOUND;
+  }
+
   auto absolute_file_path =
       base::FilePath(ContentDirectoryLoaderFactory::kContentDirectoriesPath)
           .Append(content_directory_name)

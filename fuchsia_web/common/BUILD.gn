@@ -19,6 +19,7 @@ source_set("common") {
     "string_util.h",
   ]
   deps = [
+    "//base",
     "//components/version_info",
     "//url",
   ]
