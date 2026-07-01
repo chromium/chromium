@@ -21,6 +21,7 @@
     "format:prettier": "prettier --cache --write .",
     "format:py": "(command -v ruff >/dev/null && ruff check --fix . && ruff format .) || (pipenv run ruff check --fix . && pipenv run ruff format .)",
     "prepare": "npm run build",
+    "rdb-e2e": "rdb stream -new -realm chromium:public -- npm run e2e",
     "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",
     "server": "npm run build && tools/run-bidi-server.mjs",
     "test": "npm run unit && npm run e2e && npm run wpt",

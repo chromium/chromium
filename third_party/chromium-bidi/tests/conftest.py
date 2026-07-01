@@ -41,6 +41,8 @@ from tools.local_http_server import LocalHttpServer
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+pytest_plugins = ["resultsink_reporter"]
+
 GOOD_SSL_CERT_SPKI = "QQDsUATYj6FX2oHvQ5/cyDW9CutD2sp9z+qeLfNGHHw="
 
 
