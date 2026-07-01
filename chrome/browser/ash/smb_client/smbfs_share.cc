@@ -225,15 +225,20 @@ void SmbFsShare::OnDisconnected() {
 
   // At this point, we won't receive any more callbacks from the Mojo host, so
   // run any pending callbacks.
-  if (remove_credentials_callback_) {
-    LOG(WARNING) << "Mojo disconnected while removing credentials";
-    std::move(remove_credentials_callback_).Run(false /* success */);
-  }
-
   if (delete_recursively_callback_) {
     LOG(WARNING)
         << "Mojo disconnected while recursively deleting a path on the share";
-    std::move(delete_recursively_callback_).Run(base::File::FILE_ERROR_FAILED);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(delete_recursively_callback_),
+                                  base::File::FILE_ERROR_FAILED));
+  }
+
+  // This method must run last as it deletes "this"
+  if (remove_credentials_callback_) {
+    LOG(WARNING) << "Mojo disconnected while removing credentials";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(remove_credentials_callback_),
+                                  false /* success */));
   }
 }
 

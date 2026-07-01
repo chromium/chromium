@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/smb_client/smb_service_test_base.h"
 #include "components/prefs/pref_service.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -352,6 +353,99 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
   std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   EXPECT_FALSE(info);
   EXPECT_TRUE(registry.GetAll().empty());
+}
+
+TEST_F(SmbServiceWithSmbfsTest, DisconnectDuringUnmountWithPendingOperations) {
+  CreateService(profile());
+  WaitForSetupComplete();
+
+  mojo::Remote<smbfs::mojom::SmbFs> smbfs_remote;
+  MockSmbFsImpl smbfs_impl(smbfs_remote.BindNewPipeAndPassReceiver());
+  mojo::Remote<smbfs::mojom::SmbFsDelegate> smbfs_delegate_remote;
+
+  smbfs::SmbFsHost::Delegate* smbfs_host_delegate = nullptr;
+  auto mock_mounter = std::make_unique<MockSmbFsMounter>();
+  smb_service->SetSmbFsMounterCreationCallbackForTesting(
+      base::BindLambdaForTesting([&mock_mounter, &smbfs_host_delegate](
+                                     const std::string& share_path,
+                                     const std::string& mount_dir_name,
+                                     const SmbFsShare::MountOptions& options,
+                                     smbfs::SmbFsHost::Delegate* delegate)
+                                     -> std::unique_ptr<smbfs::SmbFsMounter> {
+        smbfs_host_delegate = delegate;
+        return std::move(mock_mounter);
+      }));
+  EXPECT_CALL(*mock_mounter, Mount(_))
+      .WillOnce(
+          [this, &smbfs_host_delegate, &smbfs_remote,
+           &smbfs_delegate_remote](smbfs::SmbFsMounter::DoneCallback callback) {
+            std::move(callback).Run(
+                smbfs::mojom::MountError::kOk,
+                std::make_unique<smbfs::SmbFsHost>(
+                    MakeMountPoint(base::FilePath(kMountPath)),
+                    smbfs_host_delegate, std::move(smbfs_remote),
+                    smbfs_delegate_remote.BindNewPipeAndPassReceiver()));
+          });
+
+  base::RunLoop run_loop;
+  smb_service->Mount(
+      kDisplayName, base::FilePath(kSharePath), kTestUser, kTestPassword,
+      false /* use_kerberos */,
+      false /* should_open_file_manager_after_mount */,
+      true /* save_credentials */,
+      base::BindLambdaForTesting([&run_loop](SmbMountResult result) {
+        EXPECT_EQ(SmbMountResult::kSuccess, result);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  SmbFsShare* share =
+      smb_service->GetSmbFsShareForPath(base::FilePath(kMountPath));
+  ASSERT_TRUE(share);
+
+  // Start a recursive delete and an unmount. The smbfs side never replies to
+  // either request, simulating a daemon that goes away mid-operation.
+  smbfs::mojom::SmbFs::DeleteRecursivelyCallback pending_delete_reply;
+  EXPECT_CALL(smbfs_impl, DeleteRecursively(_, _))
+      .WillOnce([&](const base::FilePath&,
+                    smbfs::mojom::SmbFs::DeleteRecursivelyCallback callback) {
+        pending_delete_reply = std::move(callback);
+      });
+  smbfs::mojom::SmbFs::RemoveSavedCredentialsCallback pending_remove_reply;
+  EXPECT_CALL(smbfs_impl, RemoveSavedCredentials(_))
+      .WillOnce(
+          [&](smbfs::mojom::SmbFs::RemoveSavedCredentialsCallback callback) {
+            pending_remove_reply = std::move(callback);
+          });
+
+  bool delete_callback_ran = false;
+  share->DeleteRecursively(
+      base::FilePath(kMountPath).Append("dir"),
+      base::BindLambdaForTesting([&](base::File::Error error) {
+        EXPECT_EQ(base::File::FILE_ERROR_FAILED, error);
+        delete_callback_ran = true;
+      }));
+  smb_service->UnmountSmbFs(base::FilePath(kMountPath));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return pending_delete_reply && pending_remove_reply; }));
+  ASSERT_TRUE(pending_delete_reply);
+  ASSERT_TRUE(pending_remove_reply);
+
+  // Simulate the smbfs daemon disconnecting before sending either reply.
+  smbfs_delegate_remote.reset();
+
+  // Both pending callbacks should have been completed with failure, and the
+  // share should have been removed from the service and registry. Since the
+  // callbacks are run asynchronously via PostTask, wait for both conditions.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return delete_callback_ran &&
+           !smb_service->GetSmbFsShareForPath(base::FilePath(kMountPath));
+  }));
+
+  EXPECT_TRUE(delete_callback_ran);
+  SmbPersistedShareRegistry registry(profile());
+  EXPECT_FALSE(registry.Get(SmbUrl(kShareUrl)));
 }
 
 TEST_F(SmbServiceWithSmbfsTest, MountInvalidSaved) {
