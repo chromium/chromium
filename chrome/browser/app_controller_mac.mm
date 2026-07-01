@@ -14,6 +14,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -35,6 +36,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_termination_manager.h"
@@ -1220,11 +1222,12 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   CFStringRef app = CFSTR("com.google.Keystone.Agent");
   CFStringRef checkInterval = CFSTR("checkInterval");
-  CFPropertyListRef plist = CFPreferencesCopyAppValue(checkInterval, app);
-  if (!plist) {
-    const float fiveHoursInSeconds = 5.0 * 60.0 * 60.0;
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> plist(
+      CFPreferencesCopyAppValue(checkInterval, app));
+  if (!plist.get()) {
+    const float interval = base::Hours(5).InSecondsF();
     CFPreferencesSetAppValue(
-        checkInterval, base::apple::NSToCFPtrCast(@(fiveHoursInSeconds)), app);
+        checkInterval, base::apple::NSToCFPtrCast(@(interval)), app);
     CFPreferencesAppSynchronize(app);
   }
 #endif
