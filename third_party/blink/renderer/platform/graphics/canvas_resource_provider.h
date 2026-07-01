@@ -65,7 +65,7 @@ PLATFORM_EXPORT extern const base::FeatureParam<int> kMaxPinnedImageKB;
 class CanvasResource;
 class CanvasResourceSharedImage;
 class CanvasNon2DResourceProvider;
-class Canvas2DResourceProviderSharedImage;
+class Canvas2DResourceProvider;
 class CanvasImageProvider;
 class MemoryManagedPaintCanvas;
 class StaticBitmapImage;
@@ -147,7 +147,7 @@ PLATFORM_EXPORT void NotifyImageBitmapWillTransfer(
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
 // * by Canvas2D.
-class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
+class PLATFORM_EXPORT Canvas2DResourceProvider
     : public CanvasResourceSharedImage::Client,
       public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
@@ -161,7 +161,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       base::Seconds(5);
 
   // The returned instance will have been cleared at creation.
-  static std::unique_ptr<Canvas2DResourceProviderSharedImage> CreateWithClear(
+  static std::unique_ptr<Canvas2DResourceProvider> CreateWithClear(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -171,7 +171,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<Canvas2DResourceProviderSharedImage> CreateWithClear(
+  static std::unique_ptr<Canvas2DResourceProvider> CreateWithClear(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -185,7 +185,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                            gfx::HDRMetadata(), context_provider_wrapper,
                            raster_mode, shared_image_usage_flags, delegate);
   }
-  static std::unique_ptr<Canvas2DResourceProviderSharedImage> CreateWithClear(
+  static std::unique_ptr<Canvas2DResourceProvider> CreateWithClear(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
@@ -193,7 +193,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       gpu::SharedImageUsageSet shared_image_usage_flags);
 
   // The returned instance will have been cleared at creation.
-  static std::unique_ptr<Canvas2DResourceProviderSharedImage>
+  static std::unique_ptr<Canvas2DResourceProvider>
   CreateWithClearForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -202,7 +202,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       const gfx::HDRMetadata& hdr_metadata,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<Canvas2DResourceProviderSharedImage>
+  static std::unique_ptr<Canvas2DResourceProvider>
   CreateWithClearForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -215,24 +215,23 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
         shared_image_interface_provider, delegate);
   }
 
-  Canvas2DResourceProviderSharedImage(
-      gfx::Size,
-      viz::SharedImageFormat,
-      SkAlphaType,
-      const gfx::ColorSpace&,
-      const gfx::HDRMetadata&,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      bool is_accelerated,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      CanvasResourceProviderDelegate*);
-  Canvas2DResourceProviderSharedImage(gfx::Size,
-                                      viz::SharedImageFormat,
-                                      SkAlphaType,
-                                      const gfx::ColorSpace&,
-                                      const gfx::HDRMetadata&,
-                                      WebGraphicsSharedImageInterfaceProvider*,
-                                      CanvasResourceProviderDelegate*);
-  ~Canvas2DResourceProviderSharedImage() override;
+  Canvas2DResourceProvider(gfx::Size,
+                           viz::SharedImageFormat,
+                           SkAlphaType,
+                           const gfx::ColorSpace&,
+                           const gfx::HDRMetadata&,
+                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+                           bool is_accelerated,
+                           gpu::SharedImageUsageSet shared_image_usage_flags,
+                           CanvasResourceProviderDelegate*);
+  Canvas2DResourceProvider(gfx::Size,
+                           viz::SharedImageFormat,
+                           SkAlphaType,
+                           const gfx::ColorSpace&,
+                           const gfx::HDRMetadata&,
+                           WebGraphicsSharedImageInterfaceProvider*,
+                           CanvasResourceProviderDelegate*);
+  ~Canvas2DResourceProvider() override;
 
   void ClearUnusedResources();
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
@@ -353,10 +352,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   virtual sk_sp<SkSurface> CreateSkSurface() const;
   gpu::raster::RasterInterface* RasterInterface() const;
 
-  base::WeakPtr<Canvas2DResourceProviderSharedImage> CreateWeakPtr();
+  base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 
-  static void NotifyGpuContextLostTask(
-      base::WeakPtr<Canvas2DResourceProviderSharedImage>);
+  static void NotifyGpuContextLostTask(base::WeakPtr<Canvas2DResourceProvider>);
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
@@ -428,8 +426,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   std::optional<cc::PaintRecord> last_recording_;
   bool always_enable_raster_timers_for_testing_ = false;
 
-  base::WeakPtrFactory<Canvas2DResourceProviderSharedImage> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage

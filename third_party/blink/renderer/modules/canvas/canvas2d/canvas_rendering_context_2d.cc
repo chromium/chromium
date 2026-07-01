@@ -1204,17 +1204,16 @@ void CanvasRenderingContext2D::CreateCanvasResourceProvider() {
       }
     }
 
-    shared_image_provider_ =
-        Canvas2DResourceProviderSharedImage::CreateWithClear(
-            canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
-            SharedGpuContext::ContextProviderWrapper(), raster_mode,
-            shared_image_usage_flags, canvas());
+    shared_image_provider_ = Canvas2DResourceProvider::CreateWithClear(
+        canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
+        SharedGpuContext::ContextProviderWrapper(), raster_mode,
+        shared_image_usage_flags, canvas());
   } else if (!is_gpu_compositing_enabled) {
     // Create a CanvasResourceProvider that uses a SharedImage backed by a
     // shared-memory buffer that can be written by canvas SW raster and read by
     // the SW compositor.
-    shared_image_provider_ = Canvas2DResourceProviderSharedImage::
-        CreateWithClearForSoftwareCompositor(
+    shared_image_provider_ =
+        Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
             canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
             SharedGpuContext::SharedImageInterfaceProvider(), canvas());
   }
@@ -1251,8 +1250,8 @@ bool CanvasRenderingContext2D::IsResourceProviderValid() const {
   return false;
 }
 
-Canvas2DResourceProviderSharedImage*
-CanvasRenderingContext2D::GetSharedImageProvider() const {
+Canvas2DResourceProvider* CanvasRenderingContext2D::GetSharedImageProvider()
+    const {
   return shared_image_provider_.get();
 }
 
@@ -1456,7 +1455,7 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
 }
 
 void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
-    std::unique_ptr<Canvas2DResourceProviderSharedImage> provider,
+    std::unique_ptr<Canvas2DResourceProvider> provider,
     const gfx::Size& size) {
   canvas()->DiscardResources();
   canvas()->SetSize(size);

@@ -82,8 +82,8 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  std::unique_ptr<Canvas2DResourceProviderSharedImage> provider =
-      Canvas2DResourceProviderSharedImage::CreateWithClear(
+  std::unique_ptr<Canvas2DResourceProvider> provider =
+      Canvas2DResourceProvider::CreateWithClear(
           gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           context_provider_wrapper_, RasterMode::kCPU,
@@ -116,7 +116,7 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
 TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
   base::ScopedMockElapsedTimersForTest mock_timer;
 
-  auto provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+  auto provider = Canvas2DResourceProvider::CreateWithClear(
       gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());

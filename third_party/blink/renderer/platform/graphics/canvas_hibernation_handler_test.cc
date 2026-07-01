@@ -52,7 +52,7 @@ class TestHibernationHandlerDelegate
     is_hibernating_ = is_hibernating;
   }
 
-  Canvas2DResourceProviderSharedImage* GetSharedImageProvider() const override {
+  Canvas2DResourceProvider* GetSharedImageProvider() const override {
     return resource_provider_.get();
   }
   bool HasResourceProvider() const override {
@@ -62,7 +62,7 @@ class TestHibernationHandlerDelegate
 
   void CreateResourceProvider() {
     CHECK(!GetSharedImageProvider());
-    resource_provider_ = Canvas2DResourceProviderSharedImage::CreateWithClear(
+    resource_provider_ = Canvas2DResourceProvider::CreateWithClear(
         size_, GetN32FormatForCanvas(), kPremul_SkAlphaType,
         gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
@@ -76,7 +76,7 @@ class TestHibernationHandlerDelegate
   }
 
  private:
-  std::unique_ptr<Canvas2DResourceProviderSharedImage> resource_provider_;
+  std::unique_ptr<Canvas2DResourceProvider> resource_provider_;
   bool page_visible_ = true;
   bool is_hibernating_ = false;
   gfx::Size size_;

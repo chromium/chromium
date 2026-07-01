@@ -21,7 +21,7 @@
 
 namespace blink {
 
-class Canvas2DResourceProviderSharedImage;
+class Canvas2DResourceProvider;
 
 inline constexpr char kCanvasHibernationEventHistogramName[] =
     "Blink.Canvas.HibernationEvents2";
@@ -35,8 +35,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
    public:
     virtual ~Delegate() = default;
 
-    virtual Canvas2DResourceProviderSharedImage* GetSharedImageProvider()
-        const = 0;
+    virtual Canvas2DResourceProvider* GetSharedImageProvider() const = 0;
     virtual bool HasResourceProvider() const = 0;
     virtual bool IsPageVisible() const = 0;
     virtual bool IsContextLost() const = 0;

@@ -579,12 +579,12 @@ void CanvasRenderingContext2DTestBase::TearDown() {
 
 //============================================================================
 
-class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
+class FakeCanvasResourceProvider : public Canvas2DResourceProvider {
  public:
   FakeCanvasResourceProvider(gfx::Size size,
                              RasterModeHint hint,
                              CanvasResourceProviderDelegate* delegate)
-      : Canvas2DResourceProviderSharedImage(
+      : Canvas2DResourceProvider(
             size,
             GetN32FormatForCanvas(),
             kPremul_SkAlphaType,
@@ -3005,7 +3005,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  const Canvas2DResourceProviderSharedImage* provider =
+  const Canvas2DResourceProvider* provider =
       Context2D()->GetSharedImageProvider();
   ASSERT_THAT(provider, NotNull());
   EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);

@@ -411,8 +411,7 @@ void CanvasHibernationHandler::Hibernate(
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
   DCHECK(!IsHibernating());
 
-  Canvas2DResourceProviderSharedImage* provider =
-      delegate_->GetSharedImageProvider();
+  Canvas2DResourceProvider* provider = delegate_->GetSharedImageProvider();
   if (!provider) {
     if (delegate_->HasResourceProvider()) {
       ReportHibernationEvent(

@@ -249,17 +249,16 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 
-    shared_image_provider_ =
-        Canvas2DResourceProviderSharedImage::CreateWithClear(
-            host->Size(), format, alpha_type, color_space, hdr_metadata,
-            SharedGpuContext::ContextProviderWrapper(),
-            use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
-            shared_image_usage_flags, host);
+    shared_image_provider_ = Canvas2DResourceProvider::CreateWithClear(
+        host->Size(), format, alpha_type, color_space, hdr_metadata,
+        SharedGpuContext::ContextProviderWrapper(),
+        use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
+        shared_image_usage_flags, host);
   } else if (host->HasPlaceholderCanvas()) {
     // using the software compositor
     host->GetOrCreateResourceDispatcher();
-    shared_image_provider_ = Canvas2DResourceProviderSharedImage::
-        CreateWithClearForSoftwareCompositor(
+    shared_image_provider_ =
+        Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
             host->Size(), format, alpha_type, color_space, hdr_metadata,
             SharedGpuContext::SharedImageInterfaceProvider(), host);
   }

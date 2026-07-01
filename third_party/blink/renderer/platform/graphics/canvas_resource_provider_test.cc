@@ -239,7 +239,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+  auto provider = Canvas2DResourceProvider::CreateWithClear(
       kSize, color_params, context_provider_wrapper_, RasterMode::kCPU,
       shared_image_usage_flags);
 
@@ -255,9 +255,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-std::unique_ptr<Canvas2DResourceProviderSharedImage>
-MakeCanvas2DResourceProvider(base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-                                 context_provider_wrapper) {
+std::unique_ptr<Canvas2DResourceProvider> MakeCanvas2DResourceProvider(
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+        context_provider_wrapper) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
@@ -265,13 +265,13 @@ MakeCanvas2DResourceProvider(base::WeakPtr<WebGraphicsContext3DProviderWrapper>
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  return Canvas2DResourceProviderSharedImage::CreateWithClear(
+  return Canvas2DResourceProvider::CreateWithClear(
       gfx::Size(10, 10), color_params, context_provider_wrapper,
       RasterMode::kGPU, shared_image_usage_flags);
 }
 
 scoped_refptr<CanvasResource> UpdateResource(
-    Canvas2DResourceProviderSharedImage* provider) {
+    Canvas2DResourceProvider* provider) {
   provider->ProduceCanvasResource(FlushReason::kOther);
   // Resource updated after draw.
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
@@ -334,7 +334,7 @@ TEST_F(CanvasResourceProviderTest,
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+  auto provider = Canvas2DResourceProvider::CreateWithClear(
       kSize, color_params, context_provider_wrapper_, RasterMode::kGPU,
       shared_image_usage_flags);
 
@@ -393,7 +393,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
   // There is a ready-to-reuse resource
   EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(
-      Canvas2DResourceProviderSharedImage::kUnusedResourceExpirationTime);
+      Canvas2DResourceProvider::kUnusedResourceExpirationTime);
   // The resource is freed, don't repost the task.
   EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   EXPECT_FALSE(
@@ -440,7 +440,7 @@ TEST_F(CanvasResourceProviderTest,
   // There is a ready-to-reuse resource
   EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(
-      Canvas2DResourceProviderSharedImage::kUnusedResourceExpirationTime -
+      Canvas2DResourceProvider::kUnusedResourceExpirationTime -
       base::Seconds(1));
   // The reclaim task hasn't run yet.
   EXPECT_TRUE(
@@ -463,7 +463,7 @@ TEST_F(CanvasResourceProviderTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 
   task_environment_.FastForwardBy(
-      Canvas2DResourceProviderSharedImage::kUnusedResourceExpirationTime);
+      Canvas2DResourceProvider::kUnusedResourceExpirationTime);
   // Now it's collected.
   EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   // And no new task is posted.
@@ -480,7 +480,7 @@ TEST_F(CanvasResourceProviderTest,
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+  auto provider = Canvas2DResourceProvider::CreateWithClear(
       gfx::Size(10, 10), color_params, context_provider_wrapper_,
       RasterMode::kGPU, shared_image_usage_flags);
 
@@ -609,11 +609,11 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto src_provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+  auto src_provider = Canvas2DResourceProvider::CreateWithClear(
       gfx::Size(10, 10), color_params, context_provider_wrapper_,
       RasterMode::kGPU, gpu::SharedImageUsageSet());
 
-  auto dst_provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+  auto dst_provider = Canvas2DResourceProvider::CreateWithClear(
       gfx::Size(10, 10), color_params, context_provider_wrapper_,
       RasterMode::kGPU, gpu::SharedImageUsageSet());
 
