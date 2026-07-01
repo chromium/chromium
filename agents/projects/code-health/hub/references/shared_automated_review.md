@@ -50,5 +50,6 @@ If the review returns findings:
    (one by one)**.
 4. Once all remediations have been applied, re-run the review protocol.
 5. Repeat until the review returns `PASS`.
-6. **Final Validation:** Once `PASS` is achieved, run `git cl format` one last
-   time before moving to the next phase in the skill.
+6. **Final Validation:** Once `PASS` is achieved, run `git cl format`. If a
+   histogram was modified, also execute
+   `python3 tools/metrics/histograms/validate_format.py`.

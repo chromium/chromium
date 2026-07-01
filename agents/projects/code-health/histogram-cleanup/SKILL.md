@@ -136,13 +136,11 @@ supersedes the autonomous loops in `edit-code`.
 
 ### Branch Creation
 
-Inform the user: "Preparing workspace: creating a new branch..."
+1. **Branch Creation**: Follow the **Branch Creation** section in
+   `../hub/references/shared_workflows.md` using the branch name
+   `cleanup-<HistogramName>`.
 
-1. **Branch Creation:** Run `git new-branch cleanup-<HistogramName>` to create a
-   new branch for this specific cleanup, ensuring it doesn't chain with previous
-   commits.
-
-### Implementation
+### Refactoring & Implementation
 
 1. **Apply Changes:** Make the changes directly (do NOT delegate). Apply the
    code modifications for the candidate histogram. When removing recording
@@ -154,7 +152,7 @@ Inform the user: "Preparing workspace: creating a new branch..."
    remain in the codebase. Each individual change must have a corresponding
    'What & Why' explanation provided to the user.
 
-### Review & Validation
+### Verification & Validation
 
 1. **Linting & Formatting:**
 
@@ -164,10 +162,10 @@ Inform the user: "Preparing workspace: creating a new branch..."
    - **Code Formatting:** Execute `git cl format` to format the modified source
      code. Address any errors that are reported.
 
-2. **Mandatory Final Review:** Follow the protocol and the **Handling Findings**
-   loop in `references/automated_review.md` for the removal: `<HistogramName>`.
-   Do NOT skip this step. Do NOT proceed to the Submission phase until the
-   review returns `PASS`.
+2. **Mandatory Final Review:** Execute the **Shared Automated Review Protocol**
+   defined in `../hub/references/shared_automated_review.md`, using the specific
+   prompt overrides in `references/automated_review.md`. Do NOT skip this step.
+   Do NOT proceed to the Submission phase until the review returns `PASS`.
 
 ### Submission
 
@@ -179,22 +177,19 @@ Inform the user: "Preparing workspace: creating a new branch..."
    - **Interactive Pause:** Do NOT proceed until the bug handling is resolved
      and you have a Bug ID (or the user has chosen to skip).
 
-2. **Commit:**
+2. **Commit**: Follow the **Commit** section in
+   `../hub/references/shared_workflows.md` using the following commit message
+   template:
 
-   - **Draft Message:** Draft a commit message following this template:
-     ```
-     [histogram-cleanup] Remove expired histogram: <HistogramName>
+   ```
+   [histogram-cleanup] Remove expired histogram: <HistogramName>
 
-     This histogram expired on <ExpiryDate>.
+   This histogram expired on <ExpiryDate>.
 
-     Bug: <BugID>
-     ```
-   - **Execution:** Display the drafted commit message to the user. Then,
-     autonomously stage ONLY the specific files modified during this task using
-     `git add` and execute the commit:
-     ```bash
-     git commit -m "<drafted message>"
-     ```
+   This change was generated using the skill histogram-cleanup.
+
+   Bug: 499059525, <BugID>
+   ```
 
 3. **Submission Pipeline:** Follow the **Upload to Gerrit** section in
    `../hub/references/shared_workflows.md` to handle the upload.

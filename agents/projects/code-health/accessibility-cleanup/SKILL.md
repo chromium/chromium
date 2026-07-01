@@ -116,13 +116,12 @@ autonomous loops in `edit-code`.
 
 ### Branch Creation
 
-Inform the user: "Preparing workspace: creating a new branch..."
+1. **Branch Creation**: Follow the **Branch Creation** section in
+   `../hub/references/shared_workflows.md` using the branch name
+   `accessibility-cleanup-<ComponentName>` (where ComponentName is the class
+   name of the candidate file).
 
-1. **Branch Creation:** Run
-   `git new-branch accessibility-cleanup-<ComponentName>` (where ComponentName
-   is the class name of the candidate file) to create a new branch.
-
-### Implementation
+### Refactoring & Implementation
 
 1. **Apply Changes:** Make the changes directly (do NOT delegate).
    - Read the candidate Java file to understand the class structure.
@@ -133,7 +132,7 @@ Inform the user: "Preparing workspace: creating a new branch..."
      remove them from the corresponding `.grd` / `.grsp` resource files.
    - Ensure the code formats correctly: Run `git cl format`.
 
-### Review & Validation
+### Verification & Validation
 
 1. **Compilation & Unit Tests:**
 
@@ -149,10 +148,10 @@ Inform the user: "Preparing workspace: creating a new branch..."
    - Execute `git cl format` to format the modified source code. Address any
      errors that are reported.
 
-3. **Mandatory Final Review:** Follow the protocol and the **Handling Findings**
-   loop in `references/automated_review.md` for the removal: `<SourceFileName>`.
-   Do NOT skip this step. Do NOT proceed to the Submission phase until the
-   review returns `PASS`.
+3. **Mandatory Final Review:** Execute the **Shared Automated Review Protocol**
+   defined in `../hub/references/shared_automated_review.md`, using the specific
+   prompt overrides in `references/automated_review.md`. Do NOT skip this step.
+   Do NOT proceed to the Submission phase until the review returns `PASS`.
 
 ### Submission
 
@@ -163,32 +162,21 @@ Inform the user: "Preparing workspace: creating a new branch..."
    - **Interactive Pause:** Do NOT proceed until you have a Bug ID (or the user
      has chosen to skip).
 
-2. **Commit:**
+2. **Commit**: Follow the **Commit** section in
+   `../hub/references/shared_workflows.md` using the following commit message
+   template:
 
-   - **Write description:** Define a commit message that explains the changes
-     that were made, giving the common information: {what, why, how}. These do
-     not need to be labeled explicitly. The description should be brief and
-     fully explain what the changes are.
+   ```
+   [Accessibility Cleanup] Improve accessibility semantics in <SourceFileName>
 
-   - **Draft Message:** Draft a commit message following this template:
+   <Write a description explaining the changes (what, why, how).>
 
-     ```
-     [Accessibility Cleanup] Improve accessibility semantics in <SourceFileName>
+   This change was generated using the skill accessibility-cleanup.
 
-     <Description from step 1.>
+   Bug: <BugID>
+   ```
 
-     Bug: <BugID>
-     ```
-
-     *(Note: use only the filename for `<SourceFileName>`, not the full path)*
-
-   - **Execution:** Display the drafted commit message to the user. Then,
-     autonomously stage ONLY the specific files modified during this task using
-     `git add` and execute the commit:
-
-     ```bash
-     git commit -m "<drafted message>"
-     ```
+   *(Note: use only the filename for `<SourceFileName>`, not the full path)*
 
 3. **Submission Pipeline:** Follow the **Upload to Gerrit** section in
    `../hub/references/shared_workflows.md` to handle the upload.

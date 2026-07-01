@@ -29,11 +29,12 @@ If an issue does not exist, proceed to creation.
 
 1. **LDAP Retrieval:** Determine the current user's LDAP using
    `run_shell_command` (`whoami`)
-2. **Bug Creation:** Create a Buganizer issue using the relevant tools (e.g.
-   `mcp_Buganizer_create_buganizer_issue`). Bug information:
-   - **Component ID:** `1456931` (CodeHealth).
-   - **Hotlist IDs:** `8218789` and `8519218`
-   - **Assignee:** `<LDAP>`
+2. **Bug Creation:** Create a Buganizer issue using the `create_buganizer_issue`
+   tool with the following properties:
+   - **componentId:** "1456931"
+   - **hotlistIds:** ["8218789", "8519218"]
+   - **priority:** "P2"
+   - **assignee:** "<LDAP>"
    - **Title:**
      `[Accessibility Cleanup] Improve accessibility semantics in <SourceFileName>`
    - **Description:** See the "Description construction" section below for full
