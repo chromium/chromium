@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -70,13 +71,38 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
 - (void)start {
   [super start];
 
+  // Gemini is not supported in Incognito.
+  if (IsChromeNextIaEnabled()) {
+    if (self.browser->type() != Browser::Type::kRegular) {
+      [self finishWithResult:kGeminiEntryFlowResultCancelled];
+      return;
+    }
+  }
+
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
 
   // If the user is already signed in, proceed to the next step.
-  if (authService->HasPrimaryIdentity()) {
+  if (authService && authService->HasPrimaryIdentity()) {
     [self evaluateEligibilityAndRoute];
     return;
+  }
+
+  // If sign-in is disabled, finish the flow.
+  if (IsChromeNextIaEnabled()) {
+    if (!authService || !authService->SigninEnabled()) {
+      if (authService &&
+          authService->GetServiceStatus() ==
+              AuthenticationService::ServiceStatus::SigninDisabledByPolicy) {
+        [self
+            showSnackbarForIneligibilityType:kIneligibilitySnackbarTypeAccount];
+        [self finishWithResult:
+                  kGeminiEntryFlowResultAccountIneligibleByEnterprise];
+      } else {
+        [self finishWithResult:kGeminiEntryFlowResultCancelled];
+      }
+      return;
+    }
   }
 
   // User is signed out, present sign-in.
