@@ -14,6 +14,7 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
