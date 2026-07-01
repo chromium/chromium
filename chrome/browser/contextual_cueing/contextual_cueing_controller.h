@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CONTROLLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CONTROLLER_H_
 
+#include <limits>
 #include <memory>
+#include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -116,8 +119,9 @@ class ContextualCueingController
                         std::string cue_id);
 
  private:
-  // Initiates a model execution request to MES for the current window state.
-  void InitiateModelExecutionRequest();
+  // Initiates a model execution request to MES for the current window state,
+  // requesting only surfaces for the winning target.
+  void InitiateModelExecutionRequest(CueTargetType winning_target_type);
 
   // The V1 single-source evaluation path, triggered by page content
   // annotations. Performs URL eligibility checks, category classification
@@ -128,6 +132,35 @@ class ContextualCueingController
   void RunGlicSingleSourcePath(
       const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result);
+
+  // V2 multi-source orchestration entry point. Called from ActiveTabUrlChanged
+  // when kContextualCueingV2MultiSource is enabled. Performs shared pre-checks
+  // (URL eligibility, quota/backoff), then fans out CheckEligibility calls to
+  // all registered targets via base::BarrierCallback.
+  void EvaluateCues();
+
+  // Result of a single target's CheckEligibility round-trip, collected by the
+  // barrier and forwarded to OnAllEligibilityChecksComplete.
+  struct EligibilityResult {
+    CueTargetType type;
+    bool eligible;
+    CueTarget::ContentGenerator generator;
+  };
+
+  // Called when every registered target has responded to CheckEligibility.
+  // Applies UCB scoring to the eligible candidates, selects the winner, and
+  // either runs its ContentGenerator or delegates to
+  // InitiateModelExecutionRequest().
+  void OnAllEligibilityChecksComplete(
+      base::WeakPtr<content::WebContents> web_contents,
+      GURL url,
+      std::vector<EligibilityResult> results);
+
+  // Called when a target's ContentGenerator completes. Shows the cue or
+  // records a failure.
+  void OnContentGenerated(
+      CueTargetType type,
+      std::optional<optimization_guide::proto::ContextualCue> cue);
 
   // Retrieves favicon for a specific web contents.
   void FetchFavicon(tabs::TabInterface* tab,

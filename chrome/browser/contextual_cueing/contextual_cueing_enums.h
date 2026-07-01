@@ -80,7 +80,11 @@ enum class ContextualCueingDecision {
   kAnchoredMessageAlreadyShowing = 30,
   // The tab is shown in split view.
   kTabInSplitView = 31,
-  kMaxValue = kTabInSplitView,
+  // WebContents destroyed during async eligibility check.
+  kWebContentsDestroyed = 32,
+  // Tab navigated away or is no longer active during async eligibility check.
+  kNoLongerActiveTabAfterEligibilityCheck = 33,
+  kMaxValue = kNoLongerActiveTabAfterEligibilityCheck,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

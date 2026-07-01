@@ -238,6 +238,12 @@ void ContextualCueingController::RegisterCueTarget(
 void ContextualCueingController::OnPageContentAnnotated(
     const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
+  // V2 multi-source path is driven by ActiveTabUrlChanged, not by annotation
+  // arrival.  Page content annotations are consumed directly by each
+  // CueTarget's CheckEligibility() via GlicCueTabState.
+  if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
+    return;
+  }
   RunGlicSingleSourcePath(visit, result);
 }
 
@@ -324,7 +330,7 @@ void ContextualCueingController::RunGlicSingleSourcePath(
       "%s eligible for cue: Category classification "
       "succeeded. Initiating model execution request.",
       active_web_contents->GetLastCommittedURL().spec().c_str()));
-  InitiateModelExecutionRequest();
+  InitiateModelExecutionRequest(CueTargetType::kGlic);
 }
 
 void ContextualCueingController::OnActiveTabChanged(TabListInterface& tab_list,
@@ -347,9 +353,178 @@ void ContextualCueingController::ActiveTabUrlChanged(const GURL& url) {
   last_logged_active_url_ = url;
   CUEING_LOG(
       base::StringPrintf("Active tab URL changed to %s", url.spec().c_str()));
+
+  // V2: kick off parallel eligibility fan-out for all registered targets.
+  if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
+    EvaluateCues();
+  }
 }
 
-void ContextualCueingController::InitiateModelExecutionRequest() {
+void ContextualCueingController::EvaluateCues() {
+  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
+  if (!active_tab) {
+    return;
+  }
+  content::WebContents* web_contents = active_tab->GetContents();
+  if (!web_contents) {
+    return;
+  }
+  const GURL url = web_contents->GetLastCommittedURL();
+  ukm::SourceId source_id = GetActiveTabSourceId();
+
+  // --- shared pre-checks (same gates as V1) ---
+  if (!IsUrlEligibleForCue(url)) {
+    CUEING_LOG(base::StringPrintf("%s ineligible for cue: URL is ineligible.",
+                                  url.spec()));
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kUrlNotEligible);
+    return;
+  }
+
+  if (auto decision = IsAllowedToShowCue();
+      decision != ContextualCueingDecision::kUnspecified) {
+    CUEING_LOG(base::StringPrintf("%s ineligible for cue with reason: %d.",
+                                  url.spec(), static_cast<int>(decision)));
+    return;
+  }
+
+  if (auto decision = contextual_cueing_service_->CanShowCue(url);
+      decision != ContextualCueingDecision::kSuccess) {
+    CUEING_LOG(base::StringPrintf("%s ineligible for cue with reason: %d.",
+                                  url.spec(), static_cast<int>(decision)));
+    RecordContextualCueingDecision(source_id, decision);
+    return;
+  }
+
+  // --- fan out eligibility checks ---
+  // Determine intrusiveness tier (loud unless in quiet-loads backoff).
+  CueIntrusiveness intrusiveness = CueIntrusiveness::kLoud;
+
+  // Collect non-backed-off targets.
+  std::vector<CueTargetType> candidates;
+  for (const auto& [type, target] : cue_targets_) {
+    if (target->IsEligible()) {
+      candidates.push_back(type);
+    }
+  }
+
+  if (candidates.empty()) {
+    CUEING_LOG("EvaluateCues: no eligible targets.");
+    RecordContextualCueingDecision(
+        source_id, ContextualCueingDecision::kTargetFeatureNotEligible);
+    return;
+  }
+
+  auto barrier = base::BarrierCallback<EligibilityResult>(
+      candidates.size(),
+      base::BindOnce(
+          &ContextualCueingController::OnAllEligibilityChecksComplete,
+          weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(), url));
+
+  for (CueTargetType type : candidates) {
+    CueTarget* target = GetTarget(type);
+    CHECK(target);
+    target->CheckEligibility(
+        web_contents->GetWeakPtr(), intrusiveness,
+        base::BindOnce(
+            [](CueTargetType t, base::OnceCallback<void(EligibilityResult)> cb,
+               bool eligible, CueTarget::ContentGenerator generator) {
+              std::move(cb).Run(EligibilityResult{
+                  .type = t,
+                  .eligible = eligible,
+                  .generator = std::move(generator),
+              });
+            },
+            type, barrier));
+  }
+}
+
+void ContextualCueingController::OnAllEligibilityChecksComplete(
+    base::WeakPtr<content::WebContents> web_contents,
+    GURL url,
+    std::vector<EligibilityResult> results) {
+  // Guard: if the tab navigated away while checks were in-flight, bail.
+  if (!web_contents) {
+    CUEING_LOG("OnAllEligibilityChecksComplete: WebContents destroyed.");
+    RecordContextualCueingDecision(
+        GetActiveTabSourceId(),
+        ContextualCueingDecision::kWebContentsDestroyed);
+    return;
+  }
+  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
+  if (!active_tab || active_tab->GetContents() != web_contents.get() ||
+      web_contents->GetLastCommittedURL() != url) {
+    CUEING_LOG(
+        "OnAllEligibilityChecksComplete: tab navigated away or is no longer "
+        "active.");
+    RecordContextualCueingDecision(
+        GetActiveTabSourceId(),
+        ContextualCueingDecision::kNoLongerActiveTabAfterEligibilityCheck);
+    return;
+  }
+
+  // Select the winner via UCB scoring.
+  CueTargetType best_type = CueTargetType::kGlic;  // default fallback
+  double best_score = -std::numeric_limits<double>::infinity();
+  CueTarget::ContentGenerator winning_generator;
+  bool any_eligible = false;
+
+  for (auto& r : results) {
+    if (!r.eligible) {
+      continue;
+    }
+    any_eligible = true;
+    double score = contextual_cueing_service_->GetUcbScore(r.type);
+    CUEING_LOG(base::StringPrintf("  Target '%s' eligible, UCB score: %.4f",
+                                  GetName(r.type), score));
+    if (score > best_score) {
+      best_score = score;
+      best_type = r.type;
+      winning_generator = std::move(r.generator);
+    }
+  }
+
+  if (!any_eligible) {
+    CUEING_LOG("OnAllEligibilityChecksComplete: no targets eligible.");
+    RecordContextualCueingDecision(
+        GetActiveTabSourceId(),
+        ContextualCueingDecision::kTargetFeatureNotEligible);
+    return;
+  }
+
+  CUEING_LOG(base::StringPrintf(
+      "OnAllEligibilityChecksComplete: winner is '%s' (score %.4f)",
+      GetName(best_type), best_score));
+
+  if (winning_generator) {
+    // Target provides its own content — run the generator.
+    std::move(winning_generator)
+        .Run(base::BindOnce(&ContextualCueingController::OnContentGenerated,
+                            weak_ptr_factory_.GetWeakPtr(), best_type));
+  } else {
+    // No local generator — delegate to MES.
+    InitiateModelExecutionRequest(best_type);
+  }
+}
+
+void ContextualCueingController::OnContentGenerated(
+    CueTargetType type,
+    std::optional<optimization_guide::proto::ContextualCue> cue) {
+  if (!cue) {
+    CUEING_LOG(base::StringPrintf("ContentGenerator for '%s' returned no cue.",
+                                  GetName(type)));
+    OnShowCueFailed(ContextualCueingDecision::kModelExecutionFailed);
+    return;
+  }
+  CueTarget* target = GetTarget(type);
+  if (!target) {
+    return;
+  }
+  ShowCue(type, *target, *cue);
+}
+
+void ContextualCueingController::InitiateModelExecutionRequest(
+    CueTargetType winning_target_type) {
   tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
   CHECK(active_tab);
   content::WebContents* active_web_contents = active_tab->GetContents();
@@ -412,9 +587,19 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
   CUEING_LOG(base::StringPrintf("Requesting %d background tabs.",
                                 request.background_tabs_size()));
 
-  auto eligible_cue_surfaces = GetEligibleCueSurfaces();
-  *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
-                                           eligible_cue_surfaces.end()};
+  // In V2, restrict the MES request to only the winning target's surface.
+  if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
+    CueTarget* winner = GetTarget(winning_target_type);
+    if (winner &&
+        winner->GetSurface() !=
+            optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
+      request.add_supported_surfaces(winner->GetSurface());
+    }
+  } else {
+    auto eligible_cue_surfaces = GetEligibleCueSurfaces();
+    *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
+                                             eligible_cue_surfaces.end()};
+  }
 
   LOCAL_HISTOGRAM_COUNTS_100("ContextualCueing.V2.NumRequestedBackgroundTabs",
                              request.background_tabs_size());
