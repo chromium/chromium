@@ -179,6 +179,24 @@ TEST_F(ExternalFileURLLoaderFactoryTest, WrongFormat) {
   EXPECT_EQ(net::ERR_INVALID_URL, client.completion_status().error_code);
 }
 
+TEST_F(ExternalFileURLLoaderFactoryTest, DisconnectWhileReadPending) {
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateURLLoaderAndStart(&client, CreateRequest(kTestUrl));
+
+  // Wait until the response head and body pipe have been delivered. At this
+  // point the loader has begun streaming file contents into the data pipe.
+  client.RunUntilResponseBodyArrived();
+  ASSERT_TRUE(client.response_body().is_valid());
+
+  // Drop the URLLoader pipe to tear down the loader while file reads may still
+  // be in flight, then drain any remaining work.
+  loader.reset();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(client.has_received_completion());
+}
+
 TEST_F(ExternalFileURLLoaderFactoryTest, RangeHeader) {
   network::TestURLLoaderClient client;
   network::ResourceRequest request = CreateRequest(kTestUrl);
