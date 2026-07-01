@@ -387,7 +387,7 @@ pub fn MojoArmTrap<'a>(
             let count = num_events as usize;
             debug_assert!(count > 0);
             debug_assert!(count <= blocking_events.len());
-            // Tranmuting into &mut [TrapEvent] is safe because:
+            // SAFETY: Transmuting into &mut [TrapEvent] is safe because:
             // * it is derived from blocking_events, which is already a valid Rust slice
             //   managing the lifetime
             // * MojoArmTrap guarantees it initialized the first `num_events` elements

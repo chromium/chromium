@@ -216,6 +216,7 @@ pub fn MojoCreateDataPipe(
     ret.map(|_| MojoDataPipe {
         // SAFETY: We just got these handles from Mojo, so they are live and unowned.
         producer: unsafe { UntypedHandle::wrap_raw_value(producer_handle) },
+        // SAFETY: As above
         consumer: unsafe { UntypedHandle::wrap_raw_value(consumer_handle) },
     })
 }

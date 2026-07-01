@@ -43,8 +43,9 @@ pub fn MojoCreateMessagePipe() -> MojoResult<(UntypedHandle, UntypedHandle)> {
 
     ret.map(|_| {
         (
-            // SAFETY: We just got these handles from Mojo
+            // SAFETY: We just got these handles from Mojo, so they are live and unowned.
             unsafe { UntypedHandle::wrap_raw_value(handle1) },
+            // SAFETY: As above
             unsafe { UntypedHandle::wrap_raw_value(handle2) },
         )
     })

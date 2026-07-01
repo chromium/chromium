@@ -238,10 +238,10 @@ pub fn MojoGetMessageDataMut<'a>(
     // Call the internal function to get a raw slice, then create a mutable
     // reference to it here.
     match MojoGetMessageDataInternal(message, handles) {
-        // SAFETY: `MojoGetMessageDataInternal` promises this call is safe,
-        // and we have a mutable reference to `message`.
         GetMessageDataStatus::Success { bytes: (buffer, buffer_size), num_handles_written } => {
             GetMessageDataStatus::Success {
+                // SAFETY: `MojoGetMessageDataInternal` promises this call is safe,
+                // and we have a mutable reference to `message`.
                 bytes: unsafe { std::slice::from_raw_parts_mut(buffer, buffer_size) },
                 num_handles_written,
             }

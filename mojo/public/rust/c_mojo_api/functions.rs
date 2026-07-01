@@ -19,5 +19,6 @@ chromium::import! {
 /// Although the units are microseconds, the resolution of the clock may vary
 /// and is typically in the range of ~1-15 ms.
 pub fn MojoGetTimeTicksNow() -> i64 {
+    // SAFETY: This function is fully safe, but bindgen doesn't know that
     unsafe { raw_ffi::MojoGetTimeTicksNow() }
 }
