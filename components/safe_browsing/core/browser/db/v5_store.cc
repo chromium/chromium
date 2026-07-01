@@ -413,8 +413,7 @@ bool V5Store::VerifyChecksum() {
 }
 
 void V5Store::CollectStoreInfo(
-    DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
-    const std::string& base_metric) {
+    DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info) {
   // TODO(crbug.com/362791941): implement
   NOTREACHED();
 }

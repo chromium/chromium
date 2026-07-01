@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -34,13 +35,16 @@ namespace safe_browsing {
 
 namespace {
 
-// TODO(crbug.com/362791941): Handle references to v4.
-const char kV4DatabaseSizeMetric[] = "SafeBrowsing.V4Database.Size";
-const char kV4DatabaseSizeLinearMetric[] = "SafeBrowsing.V4Database.SizeLinear";
-const char kV4DatabaseUpdateLatency[] = "SafeBrowsing.V4Database.UpdateLatency";
 constexpr base::TimeDelta kUmaMinTime = base::Milliseconds(1);
 constexpr base::TimeDelta kUmaMaxTime = base::Hours(5);
 constexpr int kUmaNumBuckets = 50;
+
+// Returns the name of the metric by combining `prefix`, "V4" or "V5",
+// and `suffix`.
+std::string GetMetricName(std::string_view prefix, std::string_view suffix) {
+  // TODO(crbug.com/362791941): handle v5 and SB
+  return base::StrCat({prefix, "V4", suffix});
+}
 
 // The factory that controls the creation of the SBDatabase object.
 std::unique_ptr<SBDatabaseFactory>& GetDatabaseFactory() {
@@ -91,9 +95,12 @@ DbLookupResult CheckStores(
       }
     }
     if (store.first.threat_type() == ThreatType::HIGH_CONFIDENCE_ALLOWLIST) {
+      // Logs
+      // SafeBrowsing.V4Store.DbThread.CheckHighConfidenceAllowlistStoreDuration
       base::UmaHistogramTimes(
-          "SafeBrowsing.V4Store.DbThread."
-          "CheckHighConfidenceAllowlistStoreDuration",
+          GetMetricName(
+              "SafeBrowsing.",
+              "Store.DbThread.CheckHighConfidenceAllowlistStoreDuration"),
           base::TimeTicks::Now() - start);
     }
   }
@@ -168,8 +175,10 @@ void SBDatabase::CreateOnTaskRunner(
     const base::FilePath store_path = base_path.AppendASCII(it.filename());
     SBStorePtr store =
         GetStoreFactory()->CreateStore(db_task_runner, store_path, it);
-    base::UmaHistogramBoolean("SafeBrowsing.V4Store.ReadyOnStartup",
-                              store->HasValidData());
+    // Logs SafeBrowsing.V4Store.ReadyOnStartup
+    base::UmaHistogramBoolean(
+        GetMetricName("SafeBrowsing.", "Store.ReadyOnStartup"),
+        store->HasValidData());
     store_map->insert({it.list_id(), std::move(store)});
   }
 
@@ -401,26 +410,32 @@ int64_t SBDatabase::GetStoreSizeInBytes(
 }
 
 void SBDatabase::RecordFileSizeHistograms() {
+  // Logs SafeBrowsing.V4Database.Size
+  std::string size_metric = GetMetricName("SafeBrowsing.", "Database.Size");
   int64_t db_size = 0;
   for (const auto& store_map_iter : *store_map_) {
     const int64_t size =
-        store_map_iter.second->RecordAndReturnFileSize(kV4DatabaseSizeMetric);
+        store_map_iter.second->RecordAndReturnFileSize(size_metric);
     db_size += size;
   }
   const int64_t db_size_kilobytes = static_cast<int64_t>(db_size / 1024);
-  UMA_HISTOGRAM_COUNTS_1M(kV4DatabaseSizeMetric, db_size_kilobytes);
+  base::UmaHistogramCounts1M(size_metric, db_size_kilobytes);
 
   const int64_t db_size_megabytes =
       static_cast<int64_t>(db_size_kilobytes / 1024);
-  UMA_HISTOGRAM_EXACT_LINEAR(kV4DatabaseSizeLinearMetric, db_size_megabytes,
-                             50);
+  // Logs SafeBrowsing.V4Database.SizeLinear
+  base::UmaHistogramExactLinear(
+      GetMetricName("SafeBrowsing.", "Database.SizeLinear"), db_size_megabytes,
+      50);
 }
 
 void SBDatabase::RecordDatabaseUpdateLatency() {
   if (!last_update_.is_null()) {
-    UmaHistogramCustomTimes(kV4DatabaseUpdateLatency,
-                            base::Time::Now() - last_update_, kUmaMinTime,
-                            kUmaMaxTime, kUmaNumBuckets);
+    // Logs SafeBrowsing.V4Database.UpdateLatency
+    base::UmaHistogramCustomTimes(
+        GetMetricName("SafeBrowsing.", "Database.UpdateLatency"),
+        base::Time::Now() - last_update_, kUmaMinTime, kUmaMaxTime,
+        kUmaNumBuckets);
   }
 }
 
@@ -432,7 +447,7 @@ void SBDatabase::CollectDatabaseInfo(
   for (const auto& store_map_iter : *store_map_) {
     DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info =
         database_info->add_store_info();
-    store_map_iter.second->CollectStoreInfo(store_info, kV4DatabaseSizeMetric);
+    store_map_iter.second->CollectStoreInfo(store_info);
     db_size += store_info->file_size_bytes();
   }
 

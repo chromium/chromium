@@ -242,8 +242,7 @@ class SBStore {
 
   // Populates the DatabaseInfo message.
   virtual void CollectStoreInfo(
-      DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
-      const std::string& base_metric) = 0;
+      DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info) = 0;
 
   // Updates the SBStore with the response received from the SafeBrowsing
   // service. `response` contains the protocol-specific update payload. `runner`

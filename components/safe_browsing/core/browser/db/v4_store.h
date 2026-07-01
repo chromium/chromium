@@ -207,8 +207,7 @@ class V4Store : public SBStore {
   bool VerifyChecksum() override;
 
   void CollectStoreInfo(
-      DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
-      const std::string& base_metric) override;
+      DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info) override;
 
   const std::string& GetStoreState() const override;
 

@@ -1385,8 +1385,7 @@ int64_t V4Store::RecordAndReturnFileSize(const std::string& base_metric) {
 }
 
 void V4Store::CollectStoreInfo(
-    DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
-    const std::string& base_metric) {
+    DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info) {
   store_info->set_file_name(GetUmaSuffixForStore(store_path_)
                                 .substr(1));  // Strip the '.' off the front
   store_info->set_file_size_bytes(file_size_);
