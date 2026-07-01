@@ -1577,7 +1577,7 @@ void StoragePartitionImpl::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(
-          network::features::kDeclarativePerformanceObserver)) {
+          blink::features::kDeclarativePerformanceObserver)) {
     declarative_performance_observer_store_ =
         std::make_unique<DeclarativePerformanceObserverStore>(is_in_memory(),
                                                               path);

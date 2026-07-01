@@ -790,7 +790,7 @@ class StoragePartitionImplTest : public testing::Test {
     std::vector<base::test::FeatureRef> enabled_features{
         network::features::kInterestGroupStorage,
         network::features::kSharedStorageAPI,
-        network::features::kDeclarativePerformanceObserver};
+        blink::features::kDeclarativePerformanceObserver};
     std::vector<base::test::FeatureRef> disabled_features;
     if (is_local_storage_sqlite_enabled) {
       enabled_features.push_back(storage::kDomStorageSqlite);

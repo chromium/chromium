@@ -666,7 +666,5 @@ BASE_FEATURE_PARAM(bool,
                    &kRestrictForbiddenSecurityHeaders,
                    false);
 
-BASE_FEATURE(kDeclarativePerformanceObserver,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace network::features
