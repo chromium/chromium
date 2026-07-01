@@ -9471,6 +9471,8 @@ crbug.com/525007363 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/web
 crbug.com/524086652 [ Release Mac15-arm64 ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Failure Pass ]
 crbug.com/524086652 [ Release Mac26-arm64 ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Failure Pass ]
 
+crbug.com/407750537 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass ]
+
 # TODO(crbug.com/466779634): Flaky. Reenable it.
 crbug.com/466779634 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
 
