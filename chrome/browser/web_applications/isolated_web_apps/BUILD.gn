@@ -1,0 +1,85 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("isolated_web_apps_no_pwa_core_deps") {
+  sources = [
+    "install/isolated_web_app_install_source.cc",
+    "install/isolated_web_app_install_source.h",
+    "install/non_installed_bundle_inspection_context.cc",
+    "install/non_installed_bundle_inspection_context.h",
+    "isolated_web_app_features.cc",
+    "isolated_web_app_features.h",
+    "isolated_web_app_url_info.cc",
+    "isolated_web_app_url_info.h",
+    "policy/isolated_web_app_external_install_options.cc",
+    "policy/isolated_web_app_external_install_options.h",
+    "policy/isolated_web_app_policy_constants.cc",
+    "policy/isolated_web_app_policy_constants.h",
+    "storage_util.cc",
+    "storage_util.h",
+    "update/version_change_validator.cc",
+    "update/version_change_validator.h",
+    "update_manifest/update_manifest.cc",
+    "update_manifest/update_manifest.h",
+    "update_manifest/update_manifest_fetcher.cc",
+    "update_manifest/update_manifest_fetcher.h",
+    "window_management/window_management_content_setting_observer.cc",
+    "window_management/window_management_content_setting_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/web_applications:app_id_helpers",
+    "//chrome/browser/web_applications:iwa_types",
+    "//chrome/browser/web_applications/isolated_web_apps/runtime_data",
+    "//components/web_package",
+    "//components/webapps/browser",
+    "//components/webapps/common",
+    "//components/webapps/isolated_web_apps/download",
+    "//components/webapps/isolated_web_apps/types",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:chrome_content_browser_client_parts",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/policy",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//components/base32",
+    "//components/content_settings/core/browser",
+    "//components/permissions",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/webapps/isolated_web_apps:iwa_client",
+    "//components/webapps/isolated_web_apps:scheme",
+    "//components/webapps/isolated_web_apps/bundle_operations",
+    "//components/webapps/isolated_web_apps/identity",
+    "//components/webapps/isolated_web_apps/service",
+    "//crypto",
+    "//net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+
+  assert_no_deps = [ "//chrome/browser/web_applications" ]
+
+  if (is_chromeos) {
+    public_deps += [ "//ash/constants" ]
+    deps += [
+      "//chromeos/components/kiosk",
+      "//chromeos/components/mgs",
+    ]
+    sources += [
+      "policy/isolated_web_app_cache_client.cc",
+      "policy/isolated_web_app_cache_client.h",
+    ]
+  }
+}

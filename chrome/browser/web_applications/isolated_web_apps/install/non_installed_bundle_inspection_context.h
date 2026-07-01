@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_NON_INSTALLED_BUNDLE_INSPECTION_CONTEXT_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_NON_INSTALLED_BUNDLE_INSPECTION_CONTEXT_H_
 
-#include "chrome/browser/web_applications/web_app.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/web_contents_user_data.h"
 

@@ -139,20 +139,12 @@ source_set("web_applications") {
     "isolated_web_apps/commands/isolated_web_app_prepare_and_store_update_command.h",
     "isolated_web_apps/install/isolated_web_app_dev_install_manager.cc",
     "isolated_web_apps/install/isolated_web_app_dev_install_manager.h",
-    "isolated_web_apps/install/isolated_web_app_install_source.cc",
-    "isolated_web_apps/install/isolated_web_app_install_source.h",
-    "isolated_web_apps/install/non_installed_bundle_inspection_context.cc",
-    "isolated_web_apps/install/non_installed_bundle_inspection_context.h",
     "isolated_web_apps/isolated_web_app_error_page.cc",
     "isolated_web_apps/isolated_web_app_error_page.h",
-    "isolated_web_apps/isolated_web_app_features.cc",
-    "isolated_web_apps/isolated_web_app_features.h",
     "isolated_web_apps/isolated_web_app_throttle.cc",
     "isolated_web_apps/isolated_web_app_throttle.h",
     "isolated_web_apps/isolated_web_app_trust_checker.cc",
     "isolated_web_apps/isolated_web_app_trust_checker.h",
-    "isolated_web_apps/isolated_web_app_url_info.cc",
-    "isolated_web_apps/isolated_web_app_url_info.h",
     "isolated_web_apps/isolated_web_app_user_installed_manager.cc",
     "isolated_web_apps/isolated_web_app_user_installed_manager.h",
     "isolated_web_apps/iwa_permissions_policy_cache.cc",
@@ -163,12 +155,8 @@ source_set("web_applications") {
     "isolated_web_apps/jobs/prepare_install_info_job.h",
     "isolated_web_apps/key_rotation_util.cc",
     "isolated_web_apps/key_rotation_util.h",
-    "isolated_web_apps/policy/isolated_web_app_external_install_options.cc",
-    "isolated_web_apps/policy/isolated_web_app_external_install_options.h",
     "isolated_web_apps/policy/isolated_web_app_installer.cc",
     "isolated_web_apps/policy/isolated_web_app_installer.h",
-    "isolated_web_apps/policy/isolated_web_app_policy_constants.cc",
-    "isolated_web_apps/policy/isolated_web_app_policy_constants.h",
     "isolated_web_apps/policy/isolated_web_app_policy_manager.cc",
     "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
     "isolated_web_apps/remove_isolated_web_app_data.cc",
@@ -177,8 +165,6 @@ source_set("web_applications") {
     "isolated_web_apps/runtime_init.h",
     "isolated_web_apps/signed_web_bundle_metadata.cc",
     "isolated_web_apps/signed_web_bundle_metadata.h",
-    "isolated_web_apps/storage_util.cc",
-    "isolated_web_apps/storage_util.h",
     "isolated_web_apps/trust_and_signature_verifier.cc",
     "isolated_web_apps/trust_and_signature_verifier.h",
     "isolated_web_apps/update/isolated_web_app_update_apply_task.cc",
@@ -189,14 +175,6 @@ source_set("web_applications") {
     "isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h",
     "isolated_web_apps/update/isolated_web_app_update_manager.cc",
     "isolated_web_apps/update/isolated_web_app_update_manager.h",
-    "isolated_web_apps/update/version_change_validator.cc",
-    "isolated_web_apps/update/version_change_validator.h",
-    "isolated_web_apps/update_manifest/update_manifest.cc",
-    "isolated_web_apps/update_manifest/update_manifest.h",
-    "isolated_web_apps/update_manifest/update_manifest_fetcher.cc",
-    "isolated_web_apps/update_manifest/update_manifest_fetcher.h",
-    "isolated_web_apps/window_management/window_management_content_setting_observer.cc",
-    "isolated_web_apps/window_management/window_management_content_setting_observer.h",
     "jobs/finalize_install_job.cc",
     "jobs/finalize_install_job.h",
     "jobs/finalize_update_job.cc",
@@ -474,8 +452,6 @@ source_set("web_applications") {
       "isolated_web_apps/commands/get_bundle_cache_path_command.h",
       "isolated_web_apps/commands/remove_obsolete_bundle_versions_cache_command.cc",
       "isolated_web_apps/commands/remove_obsolete_bundle_versions_cache_command.h",
-      "isolated_web_apps/policy/isolated_web_app_cache_client.cc",
-      "isolated_web_apps/policy/isolated_web_app_cache_client.h",
       "isolated_web_apps/policy/isolated_web_app_cache_manager.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_manager.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
@@ -750,8 +726,10 @@ source_set("web_applications") {
   }
 
   public_deps = [
+    ":app_id_helpers",
     ":iwa_types",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
     "//chrome/browser/web_applications/isolated_web_apps/runtime_data",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
@@ -1603,5 +1581,25 @@ source_set("web_app_test") {
   deps = [
     "//chrome/browser",
     "//testing/gtest",
+  ]
+}
+
+source_set("app_id_helpers") {
+  visibility = [
+    ":*",
+    "//chrome/browser/web_applications/isolated_web_apps:*",
+  ]
+  sources = [
+    "app_id_helpers.cc",
+    "app_id_helpers.h",
+  ]
+  public_deps = [
+    "//components/webapps/common",
+    "//third_party/blink/public/common",
+  ]
+  deps = [
+    "//components/crx_file",
+    "//crypto",
+    "//url",
   ]
 }

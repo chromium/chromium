@@ -15,7 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/app_id_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -95,8 +95,8 @@ IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(const IwaOrigin& iwa_origin)
       // start_url, and then sets Manifest::id to the path of this resolved URL,
       // not including a leading slash. Because of this, the resolved manifest
       // id will always be empty string.
-      app_id_(
-          GenerateAppId(/*manifest_id=*/"", iwa_origin_.origin().GetURL())) {}
+      app_id_(internal::GenerateAppId(/*manifest_id=*/"",
+                                      iwa_origin_.origin().GetURL())) {}
 
 const url::Origin& IsolatedWebAppUrlInfo::origin() const {
   return iwa_origin_.origin();
