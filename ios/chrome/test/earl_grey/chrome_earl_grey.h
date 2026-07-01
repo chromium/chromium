@@ -691,6 +691,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // is not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateFrameContainingText:(const std::string&)UTF8Text;
 
+// Waits for the main frame or an iframe to contain `UTF8Text`. If the condition
+// is not met within the given `timeout` a GREYAssert is induced.
+- (void)waitForWebStateFrameContainingText:(const std::string&)UTF8Text
+                                   timeout:(base::TimeDelta)timeout;
+
 // Waits for the current web state to contain `UTF8Text`. If the condition is
 // not met within the given `timeout` a GREYAssert is induced.
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text

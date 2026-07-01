@@ -55,11 +55,11 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
     std::string text,
     base::TimeDelta timeout = base::test::ios::kWaitForPageLoadTimeout);
 
-// Waits for a web view with the corresponding `image_id` and `image_state`, in
-// the given `web_state`.
-bool WaitForWebViewContainingImage(std::string image_id,
-                                   web::WebState* web_state,
-                                   ImageStateElement image_state);
+// Returns true if the given `web_state` contains an image with `image_id` and
+// `image_state`.
+bool IsWebViewContainingImage(std::string image_id,
+                              web::WebState* web_state,
+                              ImageStateElement image_state);
 
 // Returns true if there is a web view for `web_state` that contains an
 // element for the `selector`.

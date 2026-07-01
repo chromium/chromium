@@ -795,19 +795,9 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return nil;
 }
 
-+ (NSError*)waitForWebStateContainingTextInIFrame:(NSString*)text {
-  std::string stringText = base::SysNSStringToUTF8(text);
-  bool success = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return web::test::IsWebViewContainingTextInFrame(
-        chrome_test_util::GetCurrentWebState(), stringText);
-  });
-  if (!success) {
-    NSString* NSErrorDescription = [NSString
-        stringWithFormat:
-            @"Failed waiting for web state's iframes containing text %@", text];
-    return testing::NSErrorWithLocalizedDescription(NSErrorDescription);
-  }
-  return nil;
++ (BOOL)webStateContainsTextInIFrame:(NSString*)text {
+  return web::test::IsWebViewContainingTextInFrame(
+      chrome_test_util::GetCurrentWebState(), base::SysNSStringToUTF8(text));
 }
 
 + (NSError*)submitWebStateFormWithID:(NSString*)formID {
@@ -835,55 +825,29 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
                           web_state, base::SysNSStringToUTF8(text));
 }
 
-+ (NSError*)waitForWebStateContainingLoadedImage:(NSString*)imageID {
++ (BOOL)webStateContainsLoadedImage:(NSString*)imageID {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  bool success = web_state && web::test::WaitForWebViewContainingImage(
-                                  base::SysNSStringToUTF8(imageID), web_state,
-                                  web::test::IMAGE_STATE_LOADED);
-
-  if (!success) {
-    NSString* errorString = [NSString
-        stringWithFormat:@"Failed waiting for web view loaded image %@",
-                         imageID];
-    return testing::NSErrorWithLocalizedDescription(errorString);
-  }
-
-  return nil;
+  return web_state && web::test::IsWebViewContainingImage(
+                          base::SysNSStringToUTF8(imageID), web_state,
+                          web::test::IMAGE_STATE_LOADED);
 }
 
-+ (NSError*)waitForWebStateContainingBlockedImage:(NSString*)imageID {
++ (BOOL)webStateContainsBlockedImage:(NSString*)imageID {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  bool success = web::test::WaitForWebViewContainingImage(
-      base::SysNSStringToUTF8(imageID), web_state,
-      web::test::IMAGE_STATE_BLOCKED);
-
-  if (!success) {
-    NSString* errorString = [NSString
-        stringWithFormat:@"Failed waiting for web view blocked image %@",
-                         imageID];
-    return testing::NSErrorWithLocalizedDescription(errorString);
-  }
-
-  return nil;
+  return web_state && web::test::IsWebViewContainingImage(
+                          base::SysNSStringToUTF8(imageID), web_state,
+                          web::test::IMAGE_STATE_BLOCKED);
 }
 
-+ (NSError*)waitForWebStateZoomScale:(CGFloat)scale {
-  bool success = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-    if (!web_state) {
-      return false;
-    }
-
-    CGFloat current_scale =
-        [[web_state->GetWebViewProxy() scrollViewProxy] zoomScale];
-    return (current_scale > (scale - 0.05)) && (current_scale < (scale + 0.05));
-  });
-  if (!success) {
-    NSString* NSErrorDescription = [NSString
-        stringWithFormat:@"Failed waiting for web state zoom scale %f", scale];
-    return testing::NSErrorWithLocalizedDescription(NSErrorDescription);
++ (BOOL)webStateZoomScaleCloseTo:(CGFloat)scale {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  if (!web_state) {
+    return NO;
   }
-  return nil;
+
+  CGFloat current_scale =
+      [[web_state->GetWebViewProxy() scrollViewProxy] zoomScale];
+  return (current_scale > (scale - 0.05)) && (current_scale < (scale + 0.05));
 }
 
 + (void)signOutAndClearIdentitiesWithCompletion:(ProceduralBlock)completion {

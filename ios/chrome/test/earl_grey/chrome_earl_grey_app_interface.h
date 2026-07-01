@@ -302,11 +302,8 @@ enum class TipsNotificationType;
 // operation failed, otherwise nil.
 + (NSError*)tapWebStateElementWithID:(NSString*)elementID;
 
-
-// Waits for the current web state's frames to contain `text`.
-// If not succeed returns an NSError indicating  why the operation failed,
-// otherwise nil.
-+ (NSError*)waitForWebStateContainingTextInIFrame:(NSString*)text;
+// Returns YES if the current WebState's frames contain `text`.
++ (BOOL)webStateContainsTextInIFrame:(NSString*)text;
 
 // Attempts to submit form with `formID` in the current WebState.
 // Returns nil on success, or else an NSError indicating why the operation
@@ -320,21 +317,17 @@ enum class TipsNotificationType;
 + (BOOL)webStateContainsText:(NSString*)text;
 
 // Waits for the current WebState to contain loaded image with `imageID`.
-// When loaded, the image element will have the same size as actual image.
-// Returns nil if the condition is met within a timeout, or else an NSError
-// indicating why the operation failed.
-+ (NSError*)waitForWebStateContainingLoadedImage:(NSString*)imageID;
+// Returns YES if the current WebState contains a loaded image with `imageID`.
++ (BOOL)webStateContainsLoadedImage:(NSString*)imageID;
 
-// Waits for the current WebState to contain a blocked image with `imageID`.
-// When blocked, the image element will be smaller than the actual image size.
-// Returns nil if the condition is met within a timeout, or else an NSError
-// indicating why the operation failed.
-+ (NSError*)waitForWebStateContainingBlockedImage:(NSString*)imageID;
+// Returns YES if the current WebState contains a blocked image with `imageID`.
++ (BOOL)webStateContainsBlockedImage:(NSString*)imageID;
 
 // Waits for the web state's scroll view zoom scale to be suitably close (within
 // 0.05) of the expected scale. Returns nil if the condition is met within a
 // timeout, or else an NSError indicating why the operation failed.
-+ (NSError*)waitForWebStateZoomScale:(CGFloat)scale;
+// Returns YES if the current WebState's zoom scale is close to `scale`.
++ (BOOL)webStateZoomScaleCloseTo:(CGFloat)scale;
 
 // Signs the user out from Chrome and then starts clearing the identities.
 //

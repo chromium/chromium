@@ -830,9 +830,25 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 }
 
 - (void)waitForWebStateFrameContainingText:(const std::string&)UTF8Text {
+  [self waitForWebStateFrameContainingText:UTF8Text
+                                   timeout:kWaitForPageLoadTimeout];
+}
+
+- (void)waitForWebStateFrameContainingText:(const std::string&)UTF8Text
+                                   timeout:(base::TimeDelta)timeout {
   NSString* text = base::SysUTF8ToNSString(UTF8Text);
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [ChromeEarlGreyAppInterface waitForWebStateContainingTextInIFrame:text]);
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for web state's frames containing %@",
+                       text];
+
+  GREYCondition* waitForText =
+      [GREYCondition conditionWithName:errorString
+                                 block:^{
+                                   return [ChromeEarlGreyAppInterface
+                                       webStateContainsTextInIFrame:text];
+                                 }];
+  bool containsText = [waitForText waitWithTimeout:timeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
 }
 
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text
@@ -870,20 +886,48 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (void)waitForWebStateContainingBlockedImageElementWithID:
     (const std::string&)UTF8ImageID {
   NSString* imageID = base::SysUTF8ToNSString(UTF8ImageID);
-  EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
-      waitForWebStateContainingBlockedImage:imageID]);
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for web view blocked image %@",
+                       imageID];
+  GREYCondition* condition =
+      [GREYCondition conditionWithName:errorString
+                                 block:^{
+                                   return [ChromeEarlGreyAppInterface
+                                       webStateContainsBlockedImage:imageID];
+                                 }];
+  bool success =
+      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
 - (void)waitForWebStateContainingLoadedImageElementWithID:
     (const std::string&)UTF8ImageID {
   NSString* imageID = base::SysUTF8ToNSString(UTF8ImageID);
-  EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
-      waitForWebStateContainingLoadedImage:imageID]);
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for web view loaded image %@", imageID];
+  GREYCondition* condition =
+      [GREYCondition conditionWithName:errorString
+                                 block:^{
+                                   return [ChromeEarlGreyAppInterface
+                                       webStateContainsLoadedImage:imageID];
+                                 }];
+  bool success =
+      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
 - (void)waitForWebStateZoomScale:(CGFloat)scale {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [ChromeEarlGreyAppInterface waitForWebStateZoomScale:scale]);
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for web state zoom scale %f", scale];
+  GREYCondition* condition =
+      [GREYCondition conditionWithName:errorString
+                                 block:^{
+                                   return [ChromeEarlGreyAppInterface
+                                       webStateZoomScaleCloseTo:scale];
+                                 }];
+  bool success =
+      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
 - (GURL)webStateVisibleURL {
