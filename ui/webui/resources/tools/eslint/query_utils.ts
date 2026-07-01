@@ -156,14 +156,7 @@ export function extractClassImport(
   };
 }
 
-function isArrayType(typeStr: string): boolean {
-  return typeStr.endsWith('[]') || typeStr.startsWith('Array<');
-}
-
 function isObjectType(type: ts.Type, typeStr: string): boolean {
-  if (isArrayType(typeStr)) {
-    return false;
-  }
   if ((type.flags & (ts.TypeFlags.Object | ts.TypeFlags.Intersection)) !== 0) {
     return true;
   }
@@ -191,7 +184,7 @@ export function getLitPropertyType(
     return 'Number';
   }
 
-  if (isArrayType(nonNullableTypeStr)) {
+  if (checker.isArrayType(nonNullableType)) {
     return 'Array';
   }
 
@@ -201,6 +194,9 @@ export function getLitPropertyType(
 
   if ((type.flags & ts.TypeFlags.Union) !== 0) {
     const union = type as ts.UnionType;
+    if (union.types.every((t: ts.Type) => checker.isArrayType(t))) {
+      return 'Array';
+    }
     if (union.types.some(
             (t: ts.Type) => isObjectType(t, checker.typeToString(t)))) {
       return 'Object';
