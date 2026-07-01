@@ -7,6 +7,7 @@
 #include "base/test/run_until.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
@@ -20,6 +21,10 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
                                        public views::WidgetObserver {
@@ -91,12 +96,17 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
 // Ensure the bubble reshows on mouse move events after a suppression period.
 // TODO(crbug.com/336399260): Enable on macOS
 // TODO(crbug.com/372814576): Enable on Wayland
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ReshowOnMove DISABLED_ReshowOnMove
 #else
 #define MAYBE_ReshowOnMove ReshowOnMove
 #endif
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnMove) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Skipping for Wayland";
+  }
+#endif
   // Click on the tab now, so test events are sent to that target later.
   ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
 
@@ -137,12 +147,17 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnMove) {
 // Ensure the bubble reshows on mouse click events after a suppression period.
 // TODO(crbug.com/336399260): Enable on macOS
 // TODO(crbug.com/372814576): Enable on Wayland
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ReshowOnClick DISABLED_ReshowOnClick
 #else
 #define MAYBE_ReshowOnClick ReshowOnClick
 #endif
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnClick) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Skipping for Wayland";
+  }
+#endif
   // Click on the tab now, so test events are sent to that target later.
   ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
 

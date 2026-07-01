@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -16,6 +17,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 using ExclusiveAccessManagerTest = ExclusiveAccessTest;
 
@@ -53,17 +58,17 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
   ExpectMockControllerReceivedEscape(2);
 }
 
-// TODO: crbug.com/352244303 - For some reason the test fails on
-// linux_wayland_rel when kKeyboardAndPointerLockPrompt is disabled. Re-enable
-// the test when the feature is enabled by default.
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-#define MAYBE_HandleKeyEvent_KeyboardLocked \
-  DISABLED_HandleKeyEvent_KeyboardLocked
-#else
-#define MAYBE_HandleKeyEvent_KeyboardLocked HandleKeyEvent_KeyboardLocked
-#endif
+// Ensure HandleKeyEvent_KeyboardLocked.
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
-                       MAYBE_HandleKeyEvent_KeyboardLocked) {
+                       HandleKeyEvent_KeyboardLocked) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO: crbug.com/352244303 - For some reason the test fails on
+  // linux_wayland_rel when kKeyboardAndPointerLockPrompt is disabled. Re-enable
+  // the test when the feature is enabled by default.
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland has lock limitations";
+  }
+#endif
   // Esc key pressed while keyboard is locked without Esc key should be handled.
   EnterActiveTabFullscreen();
   RequestKeyboardLock(/*esc_key_locked=*/false);

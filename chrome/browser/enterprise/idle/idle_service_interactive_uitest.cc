@@ -56,6 +56,10 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/idle_test_utils.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using base::TestMockTimeTaskRunner;
 using testing::_;
 using testing::ElementsAre;
@@ -235,12 +239,14 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
   void ActivateBrowser(BrowserWindowInterface* browser_window_interface) {
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_OZONE)
     // TODO(nicolaso): BrowserActivationWaiter times out on Wayland. Figure out
     // why.
-#else
+    if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+      return;
+    }
+#endif
     ActivateBrowserImpl(browser_window_interface);
-#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   }
 
   void ActivateBrowserImpl(BrowserWindowInterface* browser_window_interface) {

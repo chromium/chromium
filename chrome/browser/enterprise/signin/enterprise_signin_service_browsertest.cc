@@ -33,6 +33,10 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace enterprise_signin {
 
 namespace {
@@ -202,12 +206,18 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, OpensNewTabOnSyncPaused) {
                   CheckTabs(browser(), {{example_url, ACTIVE}, {auth_url}}));
 }
 
-// TODO(nicolaso): Wayland doesn't support programmatically changing window
-// activation. This test relies on `browser2` having activation, so it doesn't
-// work on Wayland.
-#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+// Ensure CurrentlyActiveTabIsAlreadyLoginPage.
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
                        CurrentlyActiveTabIsAlreadyLoginPage) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(nicolaso): Wayland doesn't support programmatically changing window
+  // activation. This test relies on `browser2` having activation, so it doesn't
+  // work on Wayland.
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support programmatically changing window "
+                    "activation";
+  }
+#endif
   GURL example_url(kExampleUrl);
   GURL auth_url(kAuthUrl);
 
@@ -233,6 +243,5 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
       CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
       CheckTabs(browser2, {{example_url, ACTIVE}, {auth_url}}));
 }
-#endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 
 }  // namespace enterprise_signin

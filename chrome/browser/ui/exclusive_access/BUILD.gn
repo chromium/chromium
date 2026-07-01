@@ -130,6 +130,9 @@ if (!is_android) {
       "//components/content_settings/core/browser",
       "//ui/base:ozone_buildflags",
     ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 
   if (!is_chromeos_device) {
