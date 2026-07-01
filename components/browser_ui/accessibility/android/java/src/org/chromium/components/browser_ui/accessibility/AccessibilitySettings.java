@@ -38,6 +38,9 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.UiAndroidFeatureList;
@@ -92,6 +95,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private double mPageZoomLatestDefaultZoomPrefValue;
     private ChromeSwitchPreference mTouchpadOverscrollHistoryNavigationPref;
     private @Nullable DistilledPagePrefs mDistilledPagePrefs;
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private @Nullable PrefObserver mPrefObserver;
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -228,15 +233,39 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         } else {
             mTouchpadOverscrollHistoryNavigationPref.setVisible(false);
         }
+
+        String caretBrowsingKey = mDelegate.getCaretBrowsingPreferenceKey();
+        if (caretBrowsingKey != null) {
+            mPrefChangeRegistrar =
+                    new PrefChangeRegistrar(UserPrefs.get(mDelegate.getBrowserContextHandle()));
+            mPrefObserver = this::updateCaretBrowsingPref;
+            mPrefChangeRegistrar.addObserver(caretBrowsingKey, mPrefObserver);
+        }
     }
 
     @Override
     public void onDestroy() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
         if (mDistilledPagePrefs != null) {
             mDistilledPagePrefs.removeObserver(mDistilledPagePrefsObserver);
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateCaretBrowsingPref();
+    }
+
+    private void updateCaretBrowsingPref() {
+        if (mCaretBrowsingPref != null && mDelegate != null) {
+            mCaretBrowsingPref.setChecked(mDelegate.isCaretBrowsingEnabled());
+        }
     }
 
     @Override
@@ -304,6 +333,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     @Override
     public boolean hasDivider() {
         return false;
+    }
+
+    @Nullable PrefObserver getPrefObserverForTesting() {
+        return mPrefObserver;
     }
 
     private static boolean shouldShowJumpStartOmniboxPref() {

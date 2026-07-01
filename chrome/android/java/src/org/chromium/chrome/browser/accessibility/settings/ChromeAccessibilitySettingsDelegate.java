@@ -145,4 +145,9 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     public void setCaretBrowsingEnabled(boolean enabled) {
         AccessibilitySettingsBridge.setCaretBrowsingEnabled(mProfile, enabled);
     }
+
+    @Override
+    public String getCaretBrowsingPreferenceKey() {
+        return Pref.CARET_BROWSING_ENABLED;
+    }
 }

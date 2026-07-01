@@ -58,6 +58,11 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -94,6 +99,8 @@ public class AccessibilitySettingsTest {
     @Mock private DistilledPagePrefs mDistilledPagePrefsMock;
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapBridgeMock;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
+    @Mock private PrefService mPrefServiceMock;
 
     @Rule // initialize mocks
     public MockitoRule rule = MockitoJUnit.rule();
@@ -119,6 +126,8 @@ public class AccessibilitySettingsTest {
 
     @After
     public void tearDown() {
+        PrefChangeRegistrarJni.setInstanceForTesting(null);
+        UserPrefs.setPrefServiceForTesting(null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false));
         when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(false);
@@ -412,6 +421,56 @@ public class AccessibilitySettingsTest {
 
         // Verify that we did set the feature value on the delegate
         verify(mDelegate).setCaretBrowsingEnabled(any(Boolean.class));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testCaretBrowsingSyncOnStart() {
+        when(mDelegate.isCaretBrowsingEnabled()).thenReturn(false);
+        launchPreferenceUI();
+        ChromeSwitchPreference caretBrowsingPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_CARET_BROWSING);
+        Assert.assertFalse("Initial value should be false", caretBrowsingPref.isChecked());
+
+        // Simulate external update (e.g. F7 shortcut in another window) changing value to true.
+        when(mDelegate.isCaretBrowsingEnabled()).thenReturn(true);
+        ThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStart());
+
+        Assert.assertTrue(
+                "Caret browsing toggle should update onStart", caretBrowsingPref.isChecked());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testCaretBrowsingSplitScreenSync() {
+        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
+        UserPrefs.setPrefServiceForTesting(mPrefServiceMock);
+        when(mDelegate.getCaretBrowsingPreferenceKey())
+                .thenReturn(AccessibilitySettings.PREF_CARET_BROWSING);
+        when(mDelegate.isCaretBrowsingEnabled()).thenReturn(false);
+
+        launchPreferenceUI();
+        ChromeSwitchPreference caretBrowsingPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_CARET_BROWSING);
+        Assert.assertFalse("Initial value should be false", caretBrowsingPref.isChecked());
+
+        // Verify observer was registered
+        PrefObserver observer = mAccessibilitySettings.getPrefObserverForTesting();
+        Assert.assertNotNull("PrefObserver should be registered", observer);
+
+        // Simulate active split-screen external preference update
+        when(mDelegate.isCaretBrowsingEnabled()).thenReturn(true);
+        ThreadUtils.runOnUiThreadBlocking(observer::onPreferenceChange);
+
+        Assert.assertTrue(
+                "Caret browsing toggle should update via live observer",
+                caretBrowsingPref.isChecked());
     }
 
     // Helper methods.

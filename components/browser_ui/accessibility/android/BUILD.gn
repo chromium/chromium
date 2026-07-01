@@ -192,6 +192,8 @@ android_library("unit_device_javatests") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/dom_distiller/core/android:dom_distiller_core_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//content/public/android:content_main_dex_jni_java",
     "//content/public/common:common_java",
