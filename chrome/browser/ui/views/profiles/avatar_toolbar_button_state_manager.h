@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_types.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
@@ -199,7 +200,9 @@ class StateObserver {
 class AvatarToolbarButtonStateManager
     : public StateObserver,
       public signin::IdentityManager::Observer,
-      public ProfileAttributesStorage::Observer {
+      public ProfileAttributesStorage::Observer,
+      public subscription_eligibility::SubscriptionEligibilityService::
+          Observer {
  public:
   using ButtonState = AvatarToolbarButtonState;
 
@@ -327,6 +330,9 @@ class AvatarToolbarButtonStateManager
   // filter if this is impacting performance.
   void UpdateAvatarButton();
 
+  // subscription_eligibility::SubscriptionEligibilityService::Observer:
+  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
+
   // signin::IdentityManager::Observer:
   void OnIdentityManagerShutdown(signin::IdentityManager*) override;
 
@@ -375,6 +381,10 @@ class AvatarToolbarButtonStateManager
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
+  base::ScopedObservation<
+      subscription_eligibility::SubscriptionEligibilityService,
+      subscription_eligibility::SubscriptionEligibilityService::Observer>
+      subscription_service_observation_{this};
 
   const raw_ref<Profile> profile_;
 

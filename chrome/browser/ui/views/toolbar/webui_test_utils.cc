@@ -173,6 +173,28 @@ WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
       ->GetWebUIToolbarViewForTesting();
 }
 
+AvatarButtonUpdateWaiter::AvatarButtonUpdateWaiter(
+    AvatarToolbarButtonInterface* button)
+    : quit_closure_(run_loop_.QuitClosure()) {
+  if (button) {
+    scoped_observation_.Observe(button);
+  }
+}
+
+AvatarButtonUpdateWaiter::~AvatarButtonUpdateWaiter() = default;
+
+void AvatarButtonUpdateWaiter::Wait() {
+  if (updated_) {
+    return;
+  }
+  run_loop_.Run();
+}
+
+void AvatarButtonUpdateWaiter::OnIconUpdated() {
+  updated_ = true;
+  quit_closure_.Run();
+}
+
 AvatarToolbarButtonTestAccessor::AvatarToolbarButtonTestAccessor(
     BrowserWindowInterface* browser)
     : browser_(browser) {
@@ -253,6 +275,12 @@ bool AvatarToolbarButtonTestAccessor::WaitForTextNotEqual(
 bool AvatarToolbarButtonTestAccessor::WaitForState(
     AvatarToolbarButtonState state) {
   return base::test::RunUntil([this, state]() { return GetState() == state; });
+}
+
+std::unique_ptr<AvatarButtonUpdateWaiter>
+AvatarToolbarButtonTestAccessor::CreateUpdateWaiter() {
+  AvatarToolbarButtonInterface* button = GetInterface();
+  return std::make_unique<AvatarButtonUpdateWaiter>(button);
 }
 
 AvatarToolbarButtonState AvatarToolbarButtonTestAccessor::GetState() {
