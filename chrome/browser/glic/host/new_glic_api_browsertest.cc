@@ -583,6 +583,12 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFocusedTabStateV2) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testClosePanel) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(WaitForGlicClose());
+}
+
 class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
  public:
   NewGlicApiTestWithWebActuationSettingEnabled() {

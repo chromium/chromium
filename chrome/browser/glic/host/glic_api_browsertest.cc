@@ -1238,11 +1238,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDetachDoesNotLogActivationMetric) {
   histogram_tester->ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosePanel) {
-  ExecuteJsTest();
-  RunTestSequence(WaitForHide(kGlicViewElementId));
-}
-
 class GlicApiTestRuntimeFeatureOff : public GlicApiTestWithOneTab {
  public:
   GlicApiTestRuntimeFeatureOff() {
