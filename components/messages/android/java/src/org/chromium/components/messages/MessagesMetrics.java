@@ -6,7 +6,6 @@ package org.chromium.components.messages;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -17,7 +16,6 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class MessagesMetrics {
-    private static final String TAG = "MessagesMetrics";
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";
     private static final String ENQUEUED_SUSPEND_HISTOGRAM_NAME =
             "Android.Messages.Enqueued.Suspended";
@@ -182,7 +180,6 @@ public class MessagesMetrics {
     }
 
     static void recordStackingAnimationType(@StackingAnimationType int type) {
-        Log.i(TAG, "Triggered message stacking animation type %s.", type);
         RecordHistogram.recordEnumeratedHistogram(
                 STACKING_HISTOGRAM_NAME, type, StackingAnimationType.MAX_VALUE);
     }

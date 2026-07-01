@@ -26,7 +26,6 @@ import java.util.List;
 /** Coordinator for toggling animation when message is about to show or hide. */
 @NullMarked
 public class MessageAnimationCoordinator implements SwipeAnimationHandler {
-    private static final String TAG = MessageQueueManager.TAG;
     // Animation start delay for the back message for MessageBannerMediator.ENTER_DURATION_MS amount
     // of time, required to show the front message from Position.INVISIBLE to Position.FRONT.
     private static final int BACK_MESSAGE_START_DELAY_MS = 600;

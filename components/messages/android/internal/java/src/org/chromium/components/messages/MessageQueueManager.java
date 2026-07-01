@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
@@ -27,8 +26,6 @@ import java.util.Objects;
  */
 @NullMarked
 class MessageQueueManager implements ScopeChangeController.Delegate {
-    static final String TAG = "MessageQueueManager";
-
     // TokenHolder tracking whether the queue should be suspended.
     private final TokenHolder mSuppressionTokenHolder =
             new TokenHolder(this::onSuspendedStateChange);
@@ -147,12 +144,6 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         List<MessageState> messageQueue = mMessageQueues.get(scopeKey);
         assumeNonNull(messageQueue);
         messageQueue.remove(messageState);
-        Log.w(
-                TAG,
-                "Removed message with ID %s and key %s from queue because of reason %s.",
-                message.getMessageIdentifier(),
-                messageState.messageKey,
-                dismissReason);
         if (messageQueue.isEmpty()) {
             mMessageQueues.remove(scopeKey);
             mScopeChangeController.lastMessageDismissed(scopeKey);
