@@ -2155,8 +2155,10 @@ public class CustomTabsConnection {
             logCall("receiveFile()", false);
             return false;
         }
+        SessionHolder<?> session = new SessionHolder<>(sessionToken);
+        if (!mClientManager.isSessionValid(session)) return false;
         return CustomTabsClientFileProcessor.getInstance()
-                .processFile(new SessionHolder<>(sessionToken), uri, purpose, extras);
+                .processFile(session, uri, purpose, extras);
     }
 
     public void setCustomTabIsInForeground(

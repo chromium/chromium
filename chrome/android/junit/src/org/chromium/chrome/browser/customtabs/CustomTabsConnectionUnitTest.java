@@ -374,6 +374,7 @@ public class CustomTabsConnectionUnitTest {
     @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 35})
     @Test
     public void receiveFile_CallerWithUriPermission() throws IOException {
+        initSession();
         Uri uri = registerSplashImageProvider();
         setCallerUriPermission(PackageManager.PERMISSION_GRANTED);
 
@@ -387,5 +388,20 @@ public class CustomTabsConnectionUnitTest {
         assertNotNull(SplashImageHolder.getInstance().takeImage(mSessionHolder));
     }
 
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 35})
+    @Test
+    public void receiveFile_SessionNotRegistered() throws IOException {
+        Uri uri = registerSplashImageProvider();
+        setCallerUriPermission(PackageManager.PERMISSION_GRANTED);
+
+        assertFalse(
+                mConnection.receiveFile(
+                        mSession,
+                        uri,
+                        CustomTabsService.FILE_PURPOSE_TRUSTED_WEB_ACTIVITY_SPLASH_IMAGE,
+                        Bundle.EMPTY));
+        assertFalse(TestSplashImageContentProvider.sOpened);
+        assertNull(SplashImageHolder.getInstance().takeImage(mSessionHolder));
+    }
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.
 }

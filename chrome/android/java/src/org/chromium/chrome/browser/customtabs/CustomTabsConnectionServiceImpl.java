@@ -131,6 +131,7 @@ public class CustomTabsConnectionServiceImpl extends SplitCompatCustomTabsServic
     @Override
     protected boolean receiveFile(
             CustomTabsSessionToken sessionToken, Uri uri, int purpose, @Nullable Bundle extras) {
+        if (!isFirstRunDone()) return false;
         return mConnection.receiveFile(sessionToken, uri, purpose, extras);
     }
 
