@@ -1202,6 +1202,244 @@
       <message name="IDS_ENCRYPTION_MIGRATION_BUTTON_SIGNIN" desc="In encryption migration screen, button label to sign in to the user's session.">
         Sign in
       </message>
+
+      <!-- Strings for the "Hangouts Meet" OOBE UI. -->
+      <message name="IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_CANCEL" desc="Cancel button text in the device requisition poup.">
+        Cancel
+      </message>
+      <message name="IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_OK" desc="OK button text in the device requisition poup.">
+        Restart
+      </message>
+      <message name="IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_TEXT" desc="Prompt shown in the device requisition prompt popup.">
+        Use this device requisition when enrolling the device for enterprise management:
+      </message>
+      <message name="IDS_ENTERPRISE_DEVICE_REQUISITION_REMORA_PROMPT_TEXT" desc="Prompt shown in the device requisition remora prompt popup.">
+        Are you sure you want to set up this device to run Hangouts Meet?
+      </message>
+      <message name="IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT" desc="Prompt shown in the device requisition shark prompt popup.">
+        Are you sure you want to set up this device as a "Shark"?
+      </message>
+      <message name="IDS_ENABLE_DEMO_MODE_DIALOG_TITLE" desc="Title of the enable demo mode dialog.">
+        Enable demo mode
+      </message>
+      <message name="IDS_ENABLE_DEMO_MODE_DIALOG_TEXT" desc="Prompt shown in the enable demo mode dialog.">
+        Are you sure you want to enable demo mode?
+      </message>
+      <message name="IDS_ENABLE_DEMO_MODE_DIALOG_CANCEL" desc="Cancel button text in the enable demo mode dialog.">
+        Cancel
+      </message>
+      <message name="IDS_ENABLE_DEMO_MODE_DIALOG_CONFIRM" desc="Confirm button text in the enable demo mode dialog.">
+        OK
+      </message>
+
+      <!-- Strings for the enterprise enrollment page -->
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED" desc="Error message shown on the enrollment screen if enrollment is not allowed because of OS installation flow.">
+        Enrollment is only supported after you install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_FAILED" desc="Error message shown on the enrollment screen upon failed device registration.">
+        Error when registering the device with the server: <ph name="CLIENT_ERROR">$1<ex>Failed to connect to the server</ex></ph>.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_NO_STATE_KEYS" desc="Error message shown on the enrollment screen when the system failed to determine server-backed state keys.">
+        Oops!  The system failed to determine device identifiers for this device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_BAD_MODE" desc="Error message shown on the enrollment screen upon receiving a bad mode on device registration.">
+        The supplied enrollment mode is not supported by this version of the operating system.  Please make sure you are running the newest version and try again.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_POLICY_FETCH_FAILED" desc="Error message shown on the enrollment screen upon a failed policy fetch.">
+        Error when fetching policy settings from the server: <ph name="CLIENT_ERROR">$1<ex>Failed to connect to the server</ex></ph>.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_VALIDATION_FAILED" desc="Error message shown on the enrollment screen upon a failure to validate downloaded policy.">
+        The policy downloaded from the server is invalid: <ph name="VALIDATION_ERROR">$1<ex>Invalid signature</ex></ph>.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ROBOT_AUTH_FETCH_FAILED" desc="Error message shown on the enrollment screen upon failure to fetch the OAuth2 authorization code for device-level API access.">
+        Oops!  The system failed to authorize API access for this device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ROBOT_REFRESH_FETCH_FAILED" desc="Error message shown on the enrollment screen upon failure to fetch the OAuth2 refresh token for device-level API access.">
+        Oops!  The system failed to attain a long-term API access token for this device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ROBOT_REFRESH_STORE_FAILED" desc="Error message shown on the enrollment screen upon failure to store the OAuth2 refresh token for device-level API access.">
+        Oops!  The system failed to store the long-term API access token for this device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_LOCK_ERROR" desc="Error message shown on the enrollment screen upon failure to lock the device mode.">
+        Oops!  The system failed to establish the device installation-time attributes lock.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_LOCK_TIMEOUT" desc="Error message to show when the initialization of the lockbox is taking too long.">
+        Oops!  The initialization of the installation-time attributes has timed out.  Please contact your support representative.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_LOCK_WRONG_USER" desc="Error message to show when the user used to re-enroll the device does not belong to the domain that the device was originally enrolled into.">
+        This user account does not belong to the domain that the device is enrolled to.  If you want to enroll to a different domain you need to go through device recovery first.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_LOCK_WRONG_MODE" desc="Error message to show upon attempting to re-enroll a device that is locked to a different operational mode.">
+        This device is locked in a mode that prevents enterprise enrollment.  If you want to enroll the device you need to go through device recovery first.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_STORE_ERROR" desc="Error message shown on the enrollment screen when the installation of the policy on the device fails.">
+        Failed to install policy settings on the device: <ph name="VALIDATION_ERROR">$1<ex>Policy parsing failed</ex></ph>.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_AUTH_FATAL_ERROR" desc="Error message to show when there is an unrecoverable error while authenticating with GAIA.">
+        Oops!  Something went wrong when trying to authenticate you.  Please double-check your sign-in credentials and try again.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_AUTH_ACCOUNT_ERROR" desc="Error message to show when there is a problem with the user account.">
+        This user account is not eligible for the service.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_AUTH_NETWORK_ERROR" desc="Error message to show when there is a network problem when authenticating for enrollment.">
+        Oops!  A network communication problem occurred during authentication.  Please check your network connection and try again.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_AUTH_INSECURE_URL_ERROR" desc="Error message to show when a redirect to an insecure URL was detected and blocked when authenticating for enrollment.">
+        Oops!  Authentication failed because it was configured to use a non-secure URL (<ph name="BLOCKED_URL">$1<ex>http://www.example.com/login.html</ex></ph>).  Please contact your administrator.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_FATAL_ENROLLMENT_ERROR" desc="Error message to show when there is an unrecoverable error while performing enrollment.">
+        Oops!  Something went really wrong while enrolling this device.  Please try again or contact your support representative.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR" desc="Error message to show when there is a problem with the user account.">
+        This user account is not eligible for the service.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS" desc="Error message to show when there is a problem with the user account.">
+        Your organization limits device enrollment to authorized users only. This user is not authorized to enroll devices. Please make sure the user has the "Enroll Google Meet hardware" administrator privilege in the Users section of the Admin console.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses.">
+        You do not have enough upgrades to enroll this device. Please contact sales to purchase more. If you believe you're seeing this message in error, please contact support.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses.">
+        You do not have enough available licenses to enroll this Google Meet hardware device. Please contact sales to purchase more. If you believe you're seeing this message in error, please contact support.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses for a Google Beam device.">
+        You do not have enough available licenses to enroll this Google Beam device. Please contact your reseller to purchase more. If you believe you're seeing this message in error, please contact your reseller.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM_MEET" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses for a Google Beam Meet device.">
+        You do not have enough available licenses to enroll this Google Meet hardware device. Please contact your reseller to purchase more. If you believe you're seeing this message in error, please contact your reseller.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_DEPROVISIONED_ERROR" desc="Error message to show when enrollment fails because the administrator has deprovisioned the device on the server side.">
+        This device has been placed into a deprovisioned state by the administrator. To enable it for enrollment, please have your administrator place the device into a pending state.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_DOMAIN_MISMATCH_ERROR" desc="Error message shown when the device doesn't belong to the organization the user tried to enroll it to. Organization can be a domain or an email address.">
+        This device cannot be enrolled to the organization your account belongs to because the device is marked for management by a different organization.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE" desc="Error message to show when the user tries to enroll a device with a packaged license using a consumer account.">
+        Your device includes a Chrome Enterprise Upgrade, but your username is not associated with an enterprise account. Please create an enterprise account by visiting g.co/ChromeEnterpriseAccount on a secondary device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_EDU_PACKAGED_LICENSE" desc="Error message to show when the user tries to enroll a device with a education packaged license using a consumer account.">
+        Your device includes a Chrome Education Upgrade, but your username is not associated with a Google for Education account. Please create a Google for Education account by visiting g.co/workspace/edusignup on a secondary device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_EDU_PACKAGED_LICENSE_ACCOUNT_CHECK" desc="Error message to show after account check when the user tries to enroll a device with a education packaged license using a consumer account.">
+        <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> isn't a valid Google for Education account. Contact your administrator. If you are an administrator, you can set up your organization by visiting: g.co/workspace/edusignup
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK" desc="Error message to show after account check when the user tries to enroll a device with a packaged license using a consumer account.">
+        <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> does not belong to a valid organization. Contact your administrator. If you are an administrator, you can set up your organization by visiting: g.co/ChromeEnterpriseAccount
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Error message to show when the user tries to enroll a device with an ineligible enterprise account.">
+        Your username belongs to your organization's enterprise account. To enroll devices to the account, first verify domain ownership in the Admin console. You will need administrative privileges on the account to verify.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED" desc="Error message to show when the user tries to enroll a device, but administrator has not accepted TOS.">
+        Your administrator must first accept the terms of service in the Admin console Chrome device list.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS" desc="Error message to show when the user tries to enroll a device, but administrator has not accepted TOS.">
+        An administrator with Billing Management privileges must first accept the Google Meet Hardware Terms of Service in the Google Meet Hardware section of the Admin console.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE" desc="Error message to show when the user tries to enroll a CBEdu device into non-EDU account.">
+        You must enroll this Chrome Education device into an education account. To sign up for a new account, please visit g.co/workspace/edusignup.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK" desc="Error message to show when the user tries to enroll an enterprise license packaged device into KIOSK.">
+        This is a bundled device and can not be enrolled with Kiosk &amp; Signage Upgrade.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED" desc="Error message to show when the user tries to enroll a device but the initial enrollment limit for the organization unit has been reached.">
+        This device can't be enrolled right now because your organization unit has reached its initial enrollment limit. Contact your administrator for assistance.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ATTRIBUTE_ERROR" desc="Error message shown when successfully enrolled, but the device attribute update has failed.">
+        Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has successfully been enrolled for enterprise management, but failed to send its asset and location information. Please manually enter this information from your Admin console for this device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_CERT_FETCH_FAILED" desc="Error message shown when a registration certificate could not be obtained.">
+        A registration certificate could not be obtained.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_NO_MACHINE_IDENTIFICATION" desc="Error message shown on the enrollment screen when the system failed to determine the device model or serial number.">
+        Oops!  The system failed to determine device model or serial number.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_SAVE_DEVICE_CONFIGURATION" desc="Error message shown on the enrollment screen when the system failed to save some part of the device configuration. E.g. token from the Device Management server.">
+        Oops!  The system failed to save device configuration.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_MAY_NOT_BLOCK_DEV_MODE" desc="Error message shown on the enrollment screen when the incoming device policy block developer mode but a command-line switch prevents this." translateable="false">
+        Device policy would block developer mode but a command-line switch prevents this.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_SCREEN_TITLE" desc="The title on the enterprise enrollment dialog.">
+        Enterprise enrollment
+      </message>
+      <message name="IDS_EDUCATION_ENROLLMENT_SCREEN_TITLE" desc="The title on the education enrollment dialog.">
+        School enrollment
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_SCREEN_PROGRESS_LABEL" desc="The a11y label for enrollment in progress dialog with spinner.">
+        Enterprise enrollment in progress
+      </message>
+      <message name="IDS_ENTERPRISE_ACCOUNT_CHECK_TITLE" desc="The title of spinner dialog shown during account check.">
+        Checking eligibility
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_DEVICE_INFORMATION" desc="The title on the device attribute prompt screen.">
+        Device information
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE" desc="Title of the screen to be shown upon an error during enterprise enrollment.">
+        Enrollment Error
+      </message>
+      <message name="IDS_EDUCATION_ENROLLMENT_ERROR_TITLE" desc="Title of the screen to be shown upon an error during enterprise enrollment.">
+        Couldn't complete school enrollment
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_RETRY" desc="Label for the retry button on the error step in the enterprise enrollment dialog.">
+        Try again
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_DONE" desc="Label for the done button on the success screen in the enterprise enrollment dialog.">
+        Done
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ENROLL_ENTERPRISE" desc="Label for the enterprise license enroll button on the password screen in the enterprise enrollment dialog.">
+        Enroll enterprise device
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ENROLL_KIOSK" desc="Label for the kiosk license enroll button on the password screen in the enterprise enrollment dialog.">
+        Enroll kiosk or signage device
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ENROLL_MANUALLY" desc="Label for the button on the error step in the enterprise enrollment dialog that allows to run manual enrollment (after an error during automated enrollment).">
+        Enroll manually
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_SKIP" desc="Label for the skip button on the device attribute prompt screen in the enterprise enrollment dialog.">
+        Skip
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_TITLE" desc="Title of the screen to be shown once enterprise enrollment completes.">
+        Enterprise enrollment complete
+      </message>
+      <message name="IDS_EDUCATION_ENROLLMENT_SUCCESS_TITLE" desc="Title of the screen to be shown once education enrollment completes.">
+        School enrollment complete
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_ENTERPRISE_ICON_EXPLANATION" desc="Title of the screen to be shown once enterprise enrollment completes.">
+        You will see this Managed icon when a setting or feature is managed by your administrator.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS" desc="Success message to be shown once enterprise enrollment completes.">
+        Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has successfully been enrolled for enterprise management.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN" desc="Success message to be shown once enterprise enrollment completes. MANAGER can be a domain or an email address.">
+        This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will be managed by <ph name="MANAGER">$2<ex>acmecorp.com</ex></ph>.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_ASSET_ID_LABEL" desc="Label for asset id text box on the device naming screen in the enterprise enrollment dialog.">
+        Asset Identifier
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_LOCATION_LABEL" desc="Label for location tex box on the device naming screen in the enterprise enrollment dialog.">
+        Device Location
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_TITLE" desc="Title of kiosk confirm enrollment screen.">
+        Confirm kiosk and signage device enrollment?
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_MESSAGE" desc="Message of kiosk confirm enrollment screen.">
+        You will use a Kiosk &amp; Signage Upgrade which only allows the device to run in kiosk or signage mode. If you would like users to sign into the device, please go back and enroll using Chrome Enterprise Upgrade.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_POWERWASH_MESSAGE" desc="Message of kiosk confirm enrollment screen.">
+        If you want to switch after enrollment, you will need to factory reset (powerwash) your device.
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CANCEL_BUTTON" desc="Label for the decline button on the cofirm kiosk enrollment screen in the enterprise enrollment dialog.">
+        Decline
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_CONFIRM_BUTTON" desc="Label for the confirm button on the cofirm kiosk enrollment screen in the enterprise enrollment dialog.">
+        Confirm
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_WORKING_TITLE" desc="Message to show while Kiosk enrollment is in progress.">
+        Kiosk and signage device enrollment
+      </message>
+      <message name="IDS_ENTERPRISE_ENROLLMENT_KIOSK_SUCCESS_TITLE" desc="Title of the screen to be shown once enterprise kiosk enrollment completes.">
+        Kiosk and signage device enrollment complete
+      </message>
     </messages>
   </release>
 </grit>

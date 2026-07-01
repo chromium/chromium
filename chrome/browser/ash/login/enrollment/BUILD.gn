@@ -105,10 +105,10 @@ source_set("browser_tests") {
   deps = [
     ":enrollment",
     "//ash/constants",
+    "//ash/login/resources:login_strings",
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",

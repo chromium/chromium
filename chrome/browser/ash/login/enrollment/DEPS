@@ -32,6 +32,5 @@ include_rules = [
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/common/chrome_paths.h",
-  "+chrome/grit",
   "+chrome/test/base",
 ]
