@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ash/webui/print_management/print_management_ui.h"
 
 #include <memory>
@@ -14,6 +13,7 @@
 #include "ash/webui/print_management/backend/print_management_delegate.h"
 #include "ash/webui/print_management/backend/print_management_handler.h"
 #include "ash/webui/print_management/url_constants.h"
+#include "base/containers/span.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"

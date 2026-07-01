@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"

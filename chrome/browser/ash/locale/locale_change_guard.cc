@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
