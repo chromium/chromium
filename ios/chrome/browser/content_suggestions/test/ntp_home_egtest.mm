@@ -1084,14 +1084,15 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
 
-  // Change the Search Engine to Yahoo!.
+  // Change the Search Engine to Microsoft Bing.
+  // TODO(b/530120931): Stop assuming that search engine is even available.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:grey_accessibilityID(kSettingsSearchEngineCellId)];
-  NSString* yahooSearchEngineName = [SearchEngineChoiceEarlGreyUI
-      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::yahoo];
+  NSString* bingSearchEngineName = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(yahooSearchEngineName)]
+      selectElementWithMatcher:grey_accessibilityLabel(bingSearchEngineName)]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
