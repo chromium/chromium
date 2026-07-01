@@ -317,7 +317,18 @@ class SystemIdentityManager {
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation
   // completes.
+  // Returns YES if the MDM notification display process is successfully
+  // initiated.
+  // Should not be called if the error is not an MDM error.
+  virtual bool DisplayMDMNotification(id<SystemIdentity> identity,
+                                      const GoogleServiceAuthError& error,
+                                      HandleMDMCallback callback);
+
+  // Asynchronously handles a potential MDM (Mobile Device Management) event.
+  // The callback is invoked on the calling sequence when the operation
+  // completes.
   // Returns YES if the device status is blocked.
+  // This method will be removed during the MDM cleanup.
   virtual bool HandleMDMNotification(
       id<SystemIdentity> identity,
       NSArray<id<SystemIdentity>>* active_identities,

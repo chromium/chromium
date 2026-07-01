@@ -575,6 +575,17 @@ bool FakeSystemIdentityManager::HandleMDMNotification(
   return true;
 }
 
+bool FakeSystemIdentityManager::DisplayMDMNotification(
+    id<SystemIdentity> identity,
+    const GoogleServiceAuthError& error,
+    HandleMDMCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), false));
+  return false;
+}
+
 bool FakeSystemIdentityManager::IsScopeLimitedError(
     id<RefreshAccessTokenError> error) {
   return base::apple::ObjCCastStrict<FakeRefreshAccessTokenError>(error)

@@ -124,3 +124,10 @@ bool SystemIdentityManager::IsScopeLimitedError(
     id<RefreshAccessTokenError> error) {
   return false;
 }
+
+bool SystemIdentityManager::DisplayMDMNotification(
+    id<SystemIdentity> identity,
+    const GoogleServiceAuthError& error,
+    HandleMDMCallback callback) {
+  return false;
+}
