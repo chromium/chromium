@@ -843,7 +843,7 @@ TEST_F(LeakDetectionDelegateTest, ApcNotSuggestedWhenFederatedLoginDetected) {
   EXPECT_CALL(
       mock_password_change_service,
       IsPasswordChangeSupported(form, /*is_non_password_login_detected=*/true))
-      .WillRepeatedly(Return(true));
+      .WillRepeatedly(Return(false));
 
   ExpectPasswords({});
   auto check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();

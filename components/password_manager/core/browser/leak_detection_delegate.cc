@@ -230,7 +230,7 @@ void LeakDetectionDelegate::NotifyUserCredentialsWereLeaked(
                           base::Time::Now() - check_start_time);
 
   HasChangePasswordUrl has_change_url(
-      !is_non_password_login_detected && client_->GetPasswordChangeService() &&
+      client_->GetPasswordChangeService() &&
       client_->GetPasswordChangeService()->IsPasswordChangeSupported(
           details.credentials, is_non_password_login_detected));
   if (has_change_url) {
