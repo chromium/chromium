@@ -10166,16 +10166,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(
          optimization_guide::switches::kEnableModelQualityDogfoodLogging)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"hybrid-passkeys-in-context-menu",
-     flag_descriptions::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName,
-     flag_descriptions::
-         kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"conch", flag_descriptions::kConchName,
      flag_descriptions::kConchDescription, kOsCrOS,

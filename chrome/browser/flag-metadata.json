@@ -5789,14 +5789,7 @@
     ],
     "expiry_milestone": 160
   },
-  {
-    "name": "hybrid-passkeys-in-context-menu",
-    "owners": [
-      "derinel@google.com",
-      "chrome-webauthn@google.com"
-    ],
-    "expiry_milestone": 138
-  },
+
   {
     "name": "idb-sqlite-backing-store",
     "owners": ["evanstade@microsoft.com", "abhishek.shanthkumar@microsoft.com", "//content/browser/indexed_db/OWNERS"],

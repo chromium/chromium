@@ -480,10 +480,7 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
   const bool add_passkey_from_another_device_option =
       webauthn::IsPasskeyFromAnotherDeviceContextMenuEnabled(
           delegate_->GetRenderFrameHost(), params_.form_renderer_id,
-          params_.field_renderer_id) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+          params_.field_renderer_id);
   const bool add_import_passwords_option = !add_select_password_option;
 
   if (add_select_password_option) {

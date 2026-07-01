@@ -2029,33 +2029,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                expected_message, Suggestion::Icon::kDevice));
 }
 
-TEST_F(PasswordSuggestionGeneratorTest,
-       GetWebauthnSignInWithAnotherDeviceSuggestionWhenContextMenuIsEnabled) {
-#if !BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-#endif  // !BUILDFLAG(IS_IOS)
-  const std::vector<PasskeyCredential> passkeys;
-  ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(Return(base::ok(&passkeys)));
-  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
-      .WillByDefault(Return(true));
-
-  std::optional<Suggestion> suggestion =
-      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
-  ASSERT_TRUE(suggestion.has_value());
-  EXPECT_THAT(*suggestion,
-              EqualsSuggestion(
-                  SuggestionType::kWebauthnSignInWithAnotherDevice,
-#if BUILDFLAG(IS_IOS)
-                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY),
-#else
-                  l10n_util::GetStringUTF16(
-                      IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE),
-#endif  // BUILDFLAG(IS_IOS)
-                  Suggestion::Icon::kDevice));
-}
 
 TEST_F(PasswordSuggestionGeneratorTest,
        NoWebauthnSignInWithAnotherDeviceSuggestionWhenNoPasskeys) {

@@ -485,26 +485,17 @@ class PasswordsFallbackTestBase : public BaseAutofillContextMenuManagerTest {
   base::CallbackListSubscription subscription_;
 };
 
+// Test suite for manual fallback. The boolean parameter indicates whether the
+// password form under test is configured to accept WebAuthn credentials.
 class PasswordManualFallbackTest : public PasswordsFallbackTestBase,
                                    public testing::WithParamInterface<bool> {
  public:
-  PasswordManualFallbackTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {password_manager::features::
-               kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {password_manager::features::
-                   kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
-    }
-  }
+  PasswordManualFallbackTest() = default;
 
   void SetUpOnMainThread() override {
     PasswordsFallbackTestBase::SetUpOnMainThread();
 
-    form_ = CreateAndAttachPasswordForm(/*is_webauthn=*/GetParam());
+    form_ = CreateAndAttachPasswordForm(is_webauthn_form());
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams(form_.renderer_id(),
                                 form_.fields()[0].renderer_id(),
@@ -519,12 +510,12 @@ class PasswordManualFallbackTest : public PasswordsFallbackTestBase,
     return ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
                content::WebContents::FromRenderFrameHost(main_rfh()))
         ->GetDelegateForFrame(main_rfh());
-    ;
   }
+
+  bool is_webauthn_form() const { return GetParam(); }
 
  private:
   raw_ptr<ChromeWebAuthnCredentialsDelegate> webauthn_delegate_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -532,7 +523,8 @@ IN_PROC_BROWSER_TEST_P(
     PasswordGenerationEnabled_NoPasswordsSaved_ManualFallbackAddedWithGeneratePasswordOptionAndImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/true);
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(), PasswordFallbackAdded(false, true, GetParam()));
+  EXPECT_THAT(menu_model(),
+              PasswordFallbackAdded(false, true, is_webauthn_form()));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -540,7 +532,8 @@ IN_PROC_BROWSER_TEST_P(
     PasswordGenerationDisabled_NoPasswordsSaved_ManualFallbackAddedWithImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/false);
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(), PasswordFallbackAdded(false, false, GetParam()));
+  EXPECT_THAT(menu_model(),
+              PasswordFallbackAdded(false, false, is_webauthn_form()));
 }
 
 IN_PROC_BROWSER_TEST_P(

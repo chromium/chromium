@@ -1113,29 +1113,10 @@ class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
       af_manager_injector_;
 };
 
-// Verify that "Use passkey from another device" is not displayed when the
-// feature is disabled.
-TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
-       UsePasskeyFromAnotherDeviceNotInContextMenu) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      password_manager::features::
-          kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-  NavigateAndCommit(get_url());
-
-  auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/true);
-
-  EXPECT_FALSE(
-      menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
-}
-
 // Verify that "Use passkey from another device" is not displayed on
-// non-WebAuthn fields when the feature is enabled.
+// non-WebAuthn fields.
 TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
        UsePasskeyFromAnotherDeviceNotInContextMenuWhenNonWebauthnField) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::
-          kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
   NavigateAndCommit(get_url());
   webauthn_delegate()->OnCredentialsReceived(
       {}, ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
