@@ -7,7 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/i18n/message_formatter.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -18,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -40,6 +47,10 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
   MOCK_METHOD(bool, ContinueHeaderDrag, (const ui::LocatedEvent&), (override));
   MOCK_METHOD(void, CancelHeaderDrag, (), (override));
   MOCK_METHOD(const TabGroup&, GetTabGroup, (), (const, override));
+  MOCK_METHOD(const tabs::TabGroupData&,
+              GetTabGroupData,
+              (),
+              (const, override));
   MOCK_METHOD(void, UpdateHoverCard, (int), (const, override));
   MOCK_METHOD(void, HideHoverCard, (int), (const, override));
   MOCK_METHOD(bool, IsFocusInTabStrip, (), (override));
@@ -100,6 +111,8 @@ TEST_P(TabGroupHeaderViewTest, TooltipText) {
   // Initialize with data
   tabs::TabGroupData data;
   data.visual_data = visual_data;
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
   // Empty tool tip if hover cards are enabled.
@@ -217,6 +230,291 @@ TEST_P(TabGroupHeaderViewTest, OnKeyPress_ShiftDown) {
   EXPECT_CALL(delegate, ShiftGroupDown()).Times(1);
 
   EXPECT_TRUE(header->OnKeyPressed(event));
+}
+
+TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_OneTab) {
+  if (!UseGroupHeaderHoverCards()) {
+    GTEST_SKIP();
+  }
+
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header =
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 1;
+
+  tabs::TabGroupTabData tab;
+  tab.title = u"Tab 1";
+  tab.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab);
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  std::u16string expected_acc_text =
+      u" group Group Title - \u2022  Tab 1 - Expanded";
+
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_FiveTabs) {
+  if (!UseGroupHeaderHoverCards()) {
+    GTEST_SKIP();
+  }
+
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header =
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 5;
+
+  for (int i = 0; i < 5; ++i) {
+    tabs::TabGroupTabData tab;
+    tab.title = u"Tab " + base::NumberToString16(i + 1);
+    tab.last_committed_url = GURL("https://google.com");
+    data.tab_data.push_back(tab);
+  }
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  std::u16string expected_acc_text =
+      u" group Group Title - \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab 3, "
+      u"\u2022  Tab 4, \u2022  Tab 5 - Expanded";
+
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_ExcessTabs) {
+  if (!UseGroupHeaderHoverCards()) {
+    GTEST_SKIP();
+  }
+
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header =
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 6;
+
+  for (int i = 0; i < 5; ++i) {
+    tabs::TabGroupTabData tab;
+    tab.title = u"Tab " + base::NumberToString16(i + 1);
+    tab.last_committed_url = GURL("https://google.com");
+    data.tab_data.push_back(tab);
+  }
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+#if BUILDFLAG(IS_MAC)
+  std::u16string expected_acc_text =
+      u" group Group Title - \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab 3, "
+      u"\u2022  Tab 4, \u2022  Tab 5, + 1 More - Expanded";
+#else
+  std::u16string expected_acc_text =
+      u" group Group Title - \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab 3, "
+      u"\u2022  Tab 4, \u2022  Tab 5, + 1 more - Expanded";
+#endif
+
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_UnnamedGroup) {
+  if (!UseGroupHeaderHoverCards()) {
+    GTEST_SKIP();
+  }
+
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header =
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tab_groups::TabGroupVisualData unnamed_visual_data(
+      u"", tab_groups::TabGroupColorId::kRed, false);
+
+  tabs::TabGroupData data;
+  data.visual_data = unnamed_visual_data;
+  data.num_tabs_in_group = 2;
+
+  tabs::TabGroupTabData tab1;
+  tab1.title = u"Tab 1";
+  tab1.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab1);
+
+  tabs::TabGroupTabData tab2;
+  tab2.title = u"Tab 2";
+  tab2.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab2);
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  std::u16string expected_acc_text =
+      u" unnamed group - \u2022  Tab 1, \u2022  Tab 2 - Expanded";
+
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_LongTabTitleElided) {
+  if (!UseGroupHeaderHoverCards()) {
+    GTEST_SKIP();
+  }
+
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header =
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 1;
+
+  tabs::TabGroupTabData tab;
+  // 100 characters title
+  tab.title =
+      u"Very Long Tab Title "
+      u"01234567890123456789012345678901234567890123456789012345678"
+      u"901234567890123456789";
+  tab.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab);
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  std::u16string expected_acc_text =
+      u" group Group Title - \u2022  Very Long Tab Title "
+      u"01234567890123456789012345\u2026 - Expanded";
+
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_SharedGroup) {
+  if (!UseGroupHeaderHoverCards()) {
+    GTEST_SKIP();
+  }
+
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header =
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 1;
+  data.is_sharing_group = true;
+
+  tabs::TabGroupTabData tab;
+  tab.title = u"Tab 1";
+  tab.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab);
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  std::u16string expected_acc_text =
+      u"Shared group Group Title - \u2022  Tab 1 - Expanded";
+
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_CollapsedGroup) {
+  if (!UseGroupHeaderHoverCards()) {
+    GTEST_SKIP();
+  }
+
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, true);
+
+  auto header =
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 1;
+
+  tabs::TabGroupTabData tab;
+  tab.title = u"Tab 1";
+  tab.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab);
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  std::u16string expected_acc_text =
+      u" group Group Title - \u2022  Tab 1 - Collapsed";
+
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -458,6 +458,11 @@ const TabGroup& TabGroupView::GetTabGroup() const {
   return *GetTabGroupFromNode(collection_node_);
 }
 
+const tabs::TabGroupData& TabGroupView::GetTabGroupData() const {
+  CHECK(tab_group_data_observer_);
+  return tab_group_data_observer_->tab_group_data();
+}
+
 void TabGroupView::UpdateHoverCard(int update_type) const {
   if (!collection_node_ || !group_header_) {
     return;

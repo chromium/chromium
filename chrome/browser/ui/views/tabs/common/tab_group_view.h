@@ -60,6 +60,7 @@ class TabGroupView : public views::View,
   bool ContinueHeaderDrag(const ui::LocatedEvent& event) override;
   void CancelHeaderDrag() override;
   const TabGroup& GetTabGroup() const override;
+  const tabs::TabGroupData& GetTabGroupData() const override;
   void UpdateHoverCard(int update_type) const override;
   void HideHoverCard(int update_type) const override;
   bool IsFocusInTabStrip() override;

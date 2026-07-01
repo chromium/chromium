@@ -9,11 +9,18 @@
 
 class TabGroup;
 
+namespace tabs {
+struct TabGroupData;
+}
+
 namespace tab_groups {
 
 // Returns a localized string describing the group's contents for accessibility
 // purposes (e.g., "Google Search and 3 other tabs").
 std::u16string GetGroupContentString(const TabGroup* tab_group);
+
+// Returns the accessibility text for the tab group hover card.
+std::u16string GetHoverCardAccessibilityText(const tabs::TabGroupData& data);
 
 }  // namespace tab_groups
 

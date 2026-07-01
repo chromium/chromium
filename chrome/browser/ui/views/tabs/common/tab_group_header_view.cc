@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/event_utils.h"
+#include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -551,6 +552,12 @@ void TabGroupHeaderView::UpdateAttentionState(bool needs_attention) {
 }
 
 void TabGroupHeaderView::UpdateAccessibleName() {
+  if (features::IsTabGroupHoverCardsEnabled()) {
+    GetViewAccessibility().SetName(tab_groups::GetHoverCardAccessibilityText(
+        delegate_->GetTabGroupData()));
+    return;
+  }
+
   const std::u16string title = tab_group_visual_data_.title();
 
   const std::u16string contents = delegate_->GetGroupContentString();
