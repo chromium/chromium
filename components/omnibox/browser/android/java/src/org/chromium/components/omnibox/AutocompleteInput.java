@@ -432,15 +432,20 @@ public class AutocompleteInput implements UserData {
      * @return The adjusted cursor position.
      */
     public int getCursorPositionForAutocomplete(int currentCursorPosition) {
+        // A negative value means there is no focus, do not modify or clamp.
+        if (currentCursorPosition < 0) {
+            return currentCursorPosition;
+        }
+
+        // It's possible the UI text has not synchronously updated yet, meaning the reported cursor
+        // position is out of bounds for the logical text. Cap it to the length of the user text.
+        int safeCursorPosition = Math.min(currentCursorPosition, mUserText.get().length());
+
         SiteSearchData siteSearchData = getSiteSearchData();
-        if (siteSearchData != null && currentCursorPosition >= 0) {
-            // It's possible the UI text has not synchronously updated yet, meaning the reported
-            // cursor position is out of bounds for the logical text. Cap it to the length of the
-            // user text.
-            int safeCursorPosition = Math.min(currentCursorPosition, mUserText.get().length());
+        if (siteSearchData != null) {
             return safeCursorPosition + siteSearchData.keyword.length() + 1;
         }
-        return currentCursorPosition;
+        return safeCursorPosition;
     }
 
     /** Returns the text as currently typed by the User. */
