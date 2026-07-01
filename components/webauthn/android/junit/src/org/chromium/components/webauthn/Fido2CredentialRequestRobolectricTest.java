@@ -1230,7 +1230,7 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     private void verifyGetCredentialsAndTriggerSuccess(
-            GmsCoreGetCredentialsHelper.Reason reason,
+            @GmsCoreGetCredentialsHelper.Reason int reason,
             List<WebauthnCredentialDetails> credentials) {
         ArgumentCaptor<GmsCoreGetCredentialsHelper.GetCredentialsCallback> successCallbackCaptor =
                 ArgumentCaptor.forClass(GmsCoreGetCredentialsHelper.GetCredentialsCallback.class);
@@ -1245,7 +1245,7 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     private void verifyGetCredentialsAndTriggerFailure(
-            GmsCoreGetCredentialsHelper.Reason reason, Exception exception) {
+            @GmsCoreGetCredentialsHelper.Reason int reason, Exception exception) {
         ArgumentCaptor<OnFailureListener> failureCallbackCaptor =
                 ArgumentCaptor.forClass(OnFailureListener.class);
         verify(mGmsCoreGetCredentialsHelperMock)

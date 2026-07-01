@@ -846,7 +846,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
             }
             mCancellableUiState = CancellableUiState.WAITING_FOR_CREDENTIAL_LIST;
-            GmsCoreGetCredentialsHelper.Reason reason;
+            @GmsCoreGetCredentialsHelper.Reason int reason;
             if (payment != null) {
                 reason = GmsCoreGetCredentialsHelper.Reason.PAYMENT;
             } else if (publicKeyOptions.relyingPartyId.equals("google.com")) {

@@ -8,6 +8,8 @@ import static org.chromium.components.webauthn.WebauthnLogger.log;
 
 import android.os.SystemClock;
 
+import androidx.annotation.IntDef;
+
 import com.google.android.gms.tasks.OnFailureListener;
 
 import org.chromium.base.ResettersForTesting;
@@ -15,6 +17,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -59,21 +63,29 @@ public class GmsCoreGetCredentialsHelper {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
     /** The reason for a get credentials request. */
-    public enum Reason {
+    @IntDef({
+        Reason.GET_ASSERTION_NON_GOOGLE,
+        Reason.GET_ASSERTION_GOOGLE_RP,
+        Reason.PAYMENT,
+        Reason.GET_MATCHING_CREDENTIAL_IDS,
+        Reason.CHECK_FOR_MATCHING_CREDENTIALS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Reason {
         // A regular get assertion request for a non-Google relying party.
-        GET_ASSERTION_NON_GOOGLE,
+        int GET_ASSERTION_NON_GOOGLE = 0;
         // A request where the relying party is Google. For Google RP the cache should
         // not be used.
-        GET_ASSERTION_GOOGLE_RP,
+        int GET_ASSERTION_GOOGLE_RP = 1;
         // A payment request. For payment requests the cache should not be used.
-        PAYMENT,
+        int PAYMENT = 2;
         // A request for payment requests with an allowlist
         // and should not use the cache.
-        GET_MATCHING_CREDENTIAL_IDS,
+        int GET_MATCHING_CREDENTIAL_IDS = 3;
         // This is for checking for matching credentials before calling CredMan. These requests are
         // for non-payments, non-conditional requests with an allowlist and should not use the
         // cache.
-        CHECK_FOR_MATCHING_CREDENTIALS,
+        int CHECK_FOR_MATCHING_CREDENTIALS = 4;
     }
 
     /** Callback for receiving credentials from GMS Core. */
@@ -102,10 +114,13 @@ public class GmsCoreGetCredentialsHelper {
      * @param successCallback The callback to be run on success.
      * @param failureCallback The callback to be run on failure.
      */
-    public void getCredentials(AuthenticationContextProvider authenticationContextProvider,
-            String relyingPartyId, Reason reason, GetCredentialsCallback successCallback,
+    public void getCredentials(
+            AuthenticationContextProvider authenticationContextProvider,
+            String relyingPartyId,
+            @Reason int reason,
+            GetCredentialsCallback successCallback,
             OnFailureListener failureCallback) {
-        log(TAG, "getCredentials with reason: " + reason);
+        log(TAG, "getCredentials with reason: %s", getReasonName(reason));
         final long startTimeMs = SystemClock.elapsedRealtime();
         if (reason == Reason.GET_ASSERTION_NON_GOOGLE && GmsCoreUtils.isPasskeyCacheSupported()) {
             Fido2ApiCallHelper.getInstance()
@@ -149,7 +164,7 @@ public class GmsCoreGetCredentialsHelper {
     private void getCredentialsFromFido2Api(
             AuthenticationContextProvider authenticationContextProvider,
             String relyingPartyId,
-            Reason reason,
+            @Reason int reason,
             GetCredentialsCallback successCallback,
             OnFailureListener failureCallback,
             @GmsCoreGetCredentialsResult int successMetric,
@@ -176,7 +191,7 @@ public class GmsCoreGetCredentialsHelper {
 
     private void recordSuccessMetrics(
             List<WebauthnCredentialDetails> credentials,
-            Reason reason,
+            @Reason int reason,
             @GmsCoreGetCredentialsResult int result,
             long startTimeMs) {
         log(TAG, "recordSuccessMetrics with result: " + result);
@@ -215,7 +230,7 @@ public class GmsCoreGetCredentialsHelper {
         return CREDENTIAL_FETCH_DURATION_HISTOGRAM + suffix;
     }
 
-    private void recordNoCacheReason(Reason requestReason) {
+    private void recordNoCacheReason(@Reason int requestReason) {
         @GmsCoreSkippedCacheReason int reason;
         if (requestReason == Reason.GET_ASSERTION_GOOGLE_RP) {
             reason = GmsCoreSkippedCacheReason.GOOGLE_RP;
@@ -234,5 +249,22 @@ public class GmsCoreGetCredentialsHelper {
                 "WebAuthentication.Android.GmsCoreSkippedCacheReason",
                 reason,
                 GmsCoreSkippedCacheReason.NUM_ENTRIES);
+    }
+
+    private static String getReasonName(@Reason int reason) {
+        switch (reason) {
+            case Reason.GET_ASSERTION_NON_GOOGLE:
+                return "GET_ASSERTION_NON_GOOGLE";
+            case Reason.GET_ASSERTION_GOOGLE_RP:
+                return "GET_ASSERTION_GOOGLE_RP";
+            case Reason.PAYMENT:
+                return "PAYMENT";
+            case Reason.GET_MATCHING_CREDENTIAL_IDS:
+                return "GET_MATCHING_CREDENTIAL_IDS";
+            case Reason.CHECK_FOR_MATCHING_CREDENTIALS:
+                return "CHECK_FOR_MATCHING_CREDENTIALS";
+            default:
+                return "UNKNOWN";
+        }
     }
 }
