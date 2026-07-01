@@ -213,7 +213,8 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('composeboxSmartComposeEnabled');
         accessor smartTabSharingActive: boolean = false;
         accessor smartTabSharingVisible: boolean = false;
-        accessor contextManagementInComposeboxEnabled: boolean = false;
+        accessor contextManagementInComposeboxEnabled: boolean =
+            getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
         contextMenuDescriptionEnabled: boolean =
             getLoadTimeBoolean('composeboxShowContextMenuDescription', false);
         accessor showContextMenuDescription: boolean =
@@ -251,6 +252,7 @@ export const ComposeboxEmbedderMixin =
         contextMenuOpened: boolean = false;
         hasCachedSubmittedTabsThisTurn: boolean = false;
         keepMenuOpenOnTabSelectForRealbox: boolean =
+            this.contextManagementInComposeboxEnabled &&
             getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
         eventTracker: EventTracker = new EventTracker();
 
@@ -1253,9 +1255,12 @@ export const ComposeboxEmbedderMixin =
         }
 
         async keepMenuOpenForMultiSelection() {
-          if ((this.composeboxSource === 'NewTabPage' &&
-               !this.keepMenuOpenOnTabSelectForRealbox) ||
-              (this.composeboxSource === 'Omnibox')) {
+          // Conditionally keep menu open only if context management is enabled.
+          // Otherwise, always keep menu open.
+          if (this.contextManagementInComposeboxEnabled &&
+              ((this.composeboxSource === 'NewTabPage' &&
+                !this.keepMenuOpenOnTabSelectForRealbox) ||
+               (this.composeboxSource === 'Omnibox'))) {
             return;
           }
           this.shareTabsFlyoutOpen = true;

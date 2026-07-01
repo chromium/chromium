@@ -183,8 +183,12 @@ export class ContextualActionMenuElement extends
       loadTimeData.getBoolean('ShowContextMenuHeaders');
   protected accessor shareTabsFlyoutPosition_: string = 'right';
   protected accessor sharingTabsText_: string = '';
-  protected closeMenuOnSelect: boolean =
-      !getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
+  // Only close menu if the context management flag and the
+  // `keepMenuOpenOnTabSelectForRealbox` param are enabled.
+  protected get closeMenuOnSelect(): boolean {
+    return this.contextManagementInComposeboxEnabled &&
+        !getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
+  }
 
   private closeTimer_: number|null = null;
   private pointerOverTrigger_: boolean = false;
@@ -276,6 +280,7 @@ export class ContextualActionMenuElement extends
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+
 
     if (!this.closeMenuOnSelect && changedProperties.has('disabledTabIds') &&
         this.pendingTabAddId_ !== null) {
