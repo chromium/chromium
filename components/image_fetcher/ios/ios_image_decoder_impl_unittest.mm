@@ -119,16 +119,10 @@ TEST_F(IOSImageDecoderImplTest, DecodedImageScale) {
   gfx::ImageSkia image_skia = decoded_image_.AsImageSkia();
   std::vector<gfx::ImageSkiaRep> reps = image_skia.image_reps();
 
-  ASSERT_FALSE(reps.empty());
-  // Verify that the representation has a scale of 1.0.
+  // Verify that only a single 1.0x representation exists and no representations
+  // for higher scale factors were created.
+  EXPECT_EQ(reps.size(), 1u);
   EXPECT_EQ(reps[0].scale(), 1.0f);
-
-  // If the device has a scale factor > 1.0, verify that we did not
-  // create a representation at that scale.
-  CGFloat screen_scale = [UIScreen mainScreen].scale;
-  if (screen_scale > 1.0f) {
-    EXPECT_FALSE(image_skia.HasRepresentation(screen_scale));
-  }
 }
 
 }  // namespace image_fetcher
