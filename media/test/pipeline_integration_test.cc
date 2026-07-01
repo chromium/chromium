@@ -3085,7 +3085,7 @@ TEST_F(PipelineIntegrationTest, HLSMediaPlaylistTSavc1) {
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   // 320x192 video of which only 320x180 is visible.
-  EXPECT_EQ("9537d9d2592aa801cff8fceb2af9f6e3c5226df089e16f8f789d43e1fdec7ba2",
+  EXPECT_EQ("8154a4c21175255af6728f2a9d8448d910a0dd90ff3c2ccd4a2df3bb03f9ca48",
             GetVideoHash());
 }
 #endif

@@ -858,6 +858,7 @@ class MockStreamParser : public StreamParser {
                     EndMediaSegmentCB end_of_segment_cb,
                     MediaLog* media_log));
   MOCK_METHOD0(Flush, void());
+  MOCK_METHOD0(MarkEndOfStream, void());
   MOCK_CONST_METHOD0(GetGenerateTimestampsFlag, bool());
   MOCK_METHOD1(AppendToParseBuffer, bool(base::span<const uint8_t>));
   MOCK_METHOD1(Parse, ParseStatus(int));

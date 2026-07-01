@@ -235,11 +235,17 @@ bool WebSourceBufferImpl::SetTimestampOffset(double offset) {
 void WebSourceBufferImpl::SetAppendWindowStart(double start) {
   DCHECK_GE(start, 0);
   append_window_start_ = DoubleToTimeDelta(start);
+  if (demuxer_) {
+    demuxer_->SetAppendWindow(id_, append_window_start_, append_window_end_);
+  }
 }
 
 void WebSourceBufferImpl::SetAppendWindowEnd(double end) {
   DCHECK_GE(end, 0);
   append_window_end_ = DoubleToTimeDelta(end);
+  if (demuxer_) {
+    demuxer_->SetAppendWindow(id_, append_window_start_, append_window_end_);
+  }
 }
 
 void WebSourceBufferImpl::RemovedFromMediaSource() {

@@ -1108,6 +1108,15 @@ void ChunkDemuxer::ResetParserState(const std::string& id,
     RunSeekCB_Locked(PIPELINE_OK);
 }
 
+void ChunkDemuxer::SetAppendWindow(const std::string& id,
+                                   base::TimeDelta start,
+                                   base::TimeDelta end) {
+  base::AutoLock auto_lock(lock_);
+  DCHECK(!id.empty());
+  CHECK(IsValidId_Locked(id));
+  source_state_map_[id]->SetAppendWindow(start, end);
+}
+
 void ChunkDemuxer::Remove(const std::string& id,
                           base::TimeDelta start,
                           base::TimeDelta end) {

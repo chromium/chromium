@@ -368,6 +368,12 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                         base::TimeDelta append_window_end,
                         base::TimeDelta* timestamp_offset);
 
+  // Sets the persistent append window boundaries for the source buffer
+  // associated with |id|.
+  void SetAppendWindow(const std::string& id,
+                       base::TimeDelta start,
+                       base::TimeDelta end);
+
   // Remove buffers between |start| and |end| for the source buffer
   // associated with |id|.
   void Remove(const std::string& id, base::TimeDelta start,

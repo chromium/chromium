@@ -314,6 +314,19 @@ void Mp2tStreamParser::Flush() {
   timestamp_unroller_.Reset();
 }
 
+void Mp2tStreamParser::MarkEndOfStream() {
+  DVLOG(1) << "Mp2tStreamParser::MarkEndOfStream";
+
+  // Flush the packet/ES adapters to force emission of trapped frames
+  for (const auto& pid_pair : pids_) {
+    DVLOG(1) << "Flushing PID: " << pid_pair.first;
+    pid_pair.second->Flush();
+  }
+
+  // Deliver the remaining buffers to the SourceBufferState
+  EmitRemainingBuffers();
+}
+
 bool Mp2tStreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }

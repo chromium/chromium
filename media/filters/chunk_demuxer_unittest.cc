@@ -5034,6 +5034,70 @@ TEST_F(ChunkDemuxerTest, AddAutoDetectIDFindsCodecs) {
 
   CheckExpectedRanges(kPrimary, "{ [1466,2267) }");
 }
+
+TEST_F(ChunkDemuxerTest, HlsEndOfStreamFlush) {
+  CreateNewDemuxer();
+
+  EXPECT_CALL(*this, DemuxerOpened());
+  EXPECT_CALL(host_, SetDuration(_)).Times(AnyNumber());
+  EXPECT_CALL(media_log_, DoAddLogRecordLogString(_)).Times(AnyNumber());
+  demuxer_->Initialize(&host_,
+                       CreateInitDoneCallback(kNoTimestamp, PIPELINE_OK));
+
+  const char* kPrimary = "primary";
+  AddAutoDetectedCodecsId_Checked(kPrimary, RelaxedParserSupportedType::kMP2T);
+  scoped_refptr<DecoderBuffer> data =
+      ReadTestDataFile("hls/hls_last_segment.ts");
+
+  EXPECT_FOUND_CODEC_NAME(Video, "h264");
+  EXPECT_FOUND_CODEC_NAME(Audio, "aac");
+  EXPECT_CALL(*this, InitSegmentReceivedMock(_));
+
+  EXPECT_TRUE(AppendData(kPrimary, base::span(*data)));
+
+  // Before end of stream, the last few video frames are trapped.
+  CheckExpectedRanges(DemuxerStream::VIDEO, "{ [6000,7875) }");
+
+  // MarkEndOfStream should trigger non-destructive flush and release
+  // trapped frames.
+  MarkEndOfStream(PIPELINE_OK);
+
+  CheckExpectedRanges(DemuxerStream::VIDEO, "{ [6000,8166) }");
+}
+
+TEST_F(ChunkDemuxerTest, HlsEndOfStreamFlushWithOffset) {
+  CreateNewDemuxer();
+
+  EXPECT_CALL(*this, DemuxerOpened());
+  EXPECT_CALL(host_, SetDuration(_)).Times(AnyNumber());
+  EXPECT_CALL(media_log_, DoAddLogRecordLogString(_)).Times(AnyNumber());
+  demuxer_->Initialize(&host_,
+                       CreateInitDoneCallback(kNoTimestamp, PIPELINE_OK));
+
+  const char* kPrimary = "primary";
+  AddAutoDetectedCodecsId_Checked(kPrimary, RelaxedParserSupportedType::kMP2T);
+  scoped_refptr<DecoderBuffer> data =
+      ReadTestDataFile("hls/hls_last_segment.ts");
+
+  EXPECT_FOUND_CODEC_NAME(Video, "h264");
+  EXPECT_FOUND_CODEC_NAME(Audio, "aac");
+  EXPECT_CALL(*this, InitSegmentReceivedMock(_));
+
+  // Set a non-zero timestamp offset before appending.
+  ASSERT_TRUE(SetTimestampOffset(kPrimary, base::Seconds(10)));
+
+  EXPECT_TRUE(AppendData(kPrimary, base::span(*data)));
+
+  // Before end of stream, the last few video frames are trapped.
+  // Their original timeline [6000, 7875) should be shifted by 10s.
+  CheckExpectedRanges(DemuxerStream::VIDEO, "{ [16000,17875) }");
+
+  // MarkEndOfStream should trigger non-destructive flush and release
+  // trapped frames. Flushed frames should also respect the active 10s offset.
+  MarkEndOfStream(PIPELINE_OK);
+
+  CheckExpectedRanges(DemuxerStream::VIDEO, "{ [16000,18166) }");
+}
 #endif
 
 // TODO(servolk): Add a unit test with multiple audio/video tracks using the

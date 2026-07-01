@@ -144,6 +144,10 @@ class MEDIA_EXPORT StreamParser {
   // algorithm already resets the segment parsing state.
   virtual void Flush() = 0;
 
+  // Called when the source buffer is marked as end-of-stream.
+  // Allows the parser to drain/emit any remaining delayed frames.
+  virtual void MarkEndOfStream() {}
+
   // Returns the MSE byte stream format registry's "Generate Timestamps Flag"
   // for the byte stream corresponding to this parser.
   virtual bool GetGenerateTimestampsFlag() const = 0;

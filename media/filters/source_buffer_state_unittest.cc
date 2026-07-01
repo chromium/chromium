@@ -382,4 +382,36 @@ TEST_F(SourceBufferStateTest, TrackIdsSwappedInSecondInitSegment) {
   AppendDataAndReportTracks(sbs, std::move(tracks2));
 }
 
+TEST_F(SourceBufferStateTest, MarkEndOfStreamFlushesParser) {
+  std::unique_ptr<SourceBufferState> sbs =
+      CreateAndInitSourceBufferState("vp8");
+
+  // Verify that MarkEndOfStream triggers the end-of-stream action on
+  // the stream parser.
+  EXPECT_CALL(*mock_stream_parser_, MarkEndOfStream());
+
+  sbs->MarkEndOfStream();
+}
+
+TEST_F(SourceBufferStateTest, SetAppendWindowUpdatesEndOfStreamBoundaries) {
+  std::unique_ptr<SourceBufferState> sbs =
+      CreateAndInitSourceBufferState("vp8");
+
+  // Verify that the default persistent append window end is kInfiniteDuration.
+  EXPECT_EQ(kInfiniteDuration, sbs->append_window_end_for_testing());
+
+  // Update append window.
+  base::TimeDelta start = base::Seconds(1);
+  base::TimeDelta end = base::Seconds(8);
+  sbs->SetAppendWindow(start, end);
+
+  // Verify persistent boundaries are updated.
+  EXPECT_EQ(start, sbs->append_window_start_for_testing());
+  EXPECT_EQ(end, sbs->append_window_end_for_testing());
+
+  // Verify that MarkEndOfStream triggers MarkEndOfStream on mock parser.
+  EXPECT_CALL(*mock_stream_parser_, MarkEndOfStream());
+  sbs->MarkEndOfStream();
+}
+
 }  // namespace media
