@@ -16,6 +16,9 @@ __KNOWN_CONFIG_OPTIONS = [
     # Indicates that the build runs on a builder.
     "builder",
 
+    # Indicate that it runs on Cog (automatically set on Cog).
+    "cog",
+
     # Enable remote as default rule.
     "default-remote",
 
@@ -58,6 +61,8 @@ def __get(ctx, key):
                 return True
             if cfg == "disable-remote-on-cog":
                 disableRemoteOnCog = True
+            if cfg == "cog":
+                onCog = True
     if hasattr(backend, "configs"):
         if key in backend.configs(ctx):
             return True
@@ -69,7 +74,7 @@ def __get(ctx, key):
         # disable race strategy as "builder".
         # enable "remote-*" on cog
         # TODO: b/308405411 - enable "remote-devtools-frontend-typescript"
-        if key in ("builder", "default-remote", "remote-link"):
+        if key in ("builder", "cog", "remote-link"):
             return True
     return False
 

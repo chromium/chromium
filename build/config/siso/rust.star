@@ -289,7 +289,7 @@ def __step_config(ctx, step_config):
                 "third_party/rust-toolchain:toolchain",
             ],
             "handler": "rust_build_handler",
-            "remote": remote or config.get(ctx, "default-remote"),
+            "remote": (remote and config.get(ctx, "cog")) or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
@@ -298,7 +298,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/rust-toolchain:toolchain",
             ],
-            "remote": remote or config.get(ctx, "default-remote"),
+            "remote": (remote and config.get(ctx, "cog")) or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {

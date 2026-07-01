@@ -61,32 +61,32 @@ def __step_config(ctx, step_config):
         {
             "name": "write_buildflag_header",
             "command_prefix": "python3 ../../build/write_buildflag_header.py",
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
             "name": "write_build_date_header",
             "command_prefix": "python3 ../../base/write_build_date_header.py",
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
             "name": "version_py",
             "command_prefix": "python3 ../../build/util/version.py",
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
             "name": "perfetto/touch_file",
             "command_prefix": "python3 ../../third_party/perfetto/tools/touch_file.py",
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "replace": True,
             "timeout": "2m",
         },
         {
             "name": "perfetto/write_buildflag_header",
             "command_prefix": "python3 ../../third_party/perfetto/gn/write_buildflag_header.py",
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
@@ -96,20 +96,20 @@ def __step_config(ctx, step_config):
                 "third_party/perfetto/python:python",
                 "third_party/perfetto/src/trace_processor:trace_processor",
             ],
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
             "name": "perfetto/gen_cc_proto_descriptor",
             "command_prefix": "python3 ../../third_party/perfetto/tools/gen_cc_proto_descriptor.py",
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
             # b/331716896: local fails due to link(2) error.
             "name": "generate_fontconfig_cache",
             "command_prefix": "python3 ../../build/gn_run_binary.py generate_fontconfig_caches",
-            "remote": config.get(ctx, "default-remote"),
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
     ])

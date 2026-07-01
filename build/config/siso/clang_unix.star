@@ -263,7 +263,9 @@ def __rules(ctx):
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
             # Remote assembly is typically much slower than local assembly.
-            "remote": config.get(ctx, "default-remote"),
+            # However, on Cog, local actions incur the overhead of fetching the
+            # toolchain and all inputs, making remote execution preferable.
+            "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "input_root_absolute_path": input_root_absolute_path,
             "timeout": "2m",
         },
