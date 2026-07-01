@@ -500,11 +500,14 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     size_t row_bytes,
     int x,
     int y) {
+  if (shared_image_provider_ && !shared_image_provider_->IsValid()) {
+    return false;
+  }
+  if (bitmap_provider_ && !bitmap_provider_->IsValid()) {
+    return false;
+  }
+  FlushCanvas(FlushReason::kOther);
   if (shared_image_provider_) {
-    if (!shared_image_provider_->IsValid()) {
-      return false;
-    }
-    shared_image_provider_->Flush();
     if (!shared_image_provider_->IsValid()) {
       return false;
     }
@@ -512,10 +515,6 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
                                                y);
   }
   if (bitmap_provider_) {
-    if (!bitmap_provider_->IsValid()) {
-      return false;
-    }
-    bitmap_provider_->Flush();
     if (!bitmap_provider_->IsValid()) {
       return false;
     }
