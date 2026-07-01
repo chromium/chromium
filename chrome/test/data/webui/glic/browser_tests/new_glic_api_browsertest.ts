@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -891,6 +891,19 @@ class ApiTests extends ApiTestFixtureBase {
     } else {
       assertEquals(formFactor, FormFactor.DESKTOP);
     }
+  }
+
+  async testGetFocusedTabStateV2() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus = await sequence.next();
+    assertDefined(focus.hasFocus);
+    assertEquals(
+        new URL(focus.hasFocus.tabData.url).pathname,
+        '/glic/browser_tests/test.html', `url=${focus.hasFocus.tabData.url}`);
+    assertEquals('Test Page', focus.hasFocus.tabData.title);
+    assertFalse(!!focus.hasNoFocus);
   }
 }
 

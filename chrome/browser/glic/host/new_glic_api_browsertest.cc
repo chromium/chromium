@@ -575,6 +575,14 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFormFactor) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFocusedTabStateV2) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
  public:
   NewGlicApiTestWithWebActuationSettingEnabled() {

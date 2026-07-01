@@ -427,19 +427,6 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
 
-  async testGetFocusedTabStateV2() {
-    assertDefined(this.host.getFocusedTabStateV2);
-    const sequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    const focus = await sequence.next();
-    assertDefined(focus.hasFocus);
-    assertEquals(
-        new URL(focus.hasFocus.tabData.url).pathname,
-        '/glic/browser_tests/test.html', `url=${focus.hasFocus.tabData.url}`);
-    assertEquals('Test Page', focus.hasFocus.tabData.title);
-    assertFalse(!!focus.hasNoFocus);
-  }
-
   async testGetFocusedTabStateV2WithNavigation() {
     // Initial state.
     assertDefined(this.host.getFocusedTabStateV2);

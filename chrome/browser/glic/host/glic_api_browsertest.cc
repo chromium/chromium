@@ -1553,10 +1553,6 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
                                       10 /*GetContextFromTab*/, 2);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetFocusedTabStateV2WithNavigation) {
   // Confirm that the observer is notified through getFocusedTabState of the
