@@ -334,6 +334,7 @@ struct URLRequestContextConfigBuilder {
 
 BASE_DECLARE_FEATURE(
     kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake);
+BASE_DECLARE_FEATURE(kCronetInitialDelayForBrokenAlternativeService);
 
 }  // namespace cronet
 
