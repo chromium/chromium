@@ -7,24 +7,17 @@ import("//components/compose/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("dialogs") {
-  sources = [ "outdated_upgrade_bubble.h" ]
-
+  public = [ "outdated_upgrade_bubble.h" ]
   public_deps = [ ":browser_dialogs" ]
-}
-
-source_set("impl") {
   sources = [ "outdated_upgrade_bubble.cc" ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
-    ":dialogs",
     "//base",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/upgrade_detector",
+    "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//content/public/browser",

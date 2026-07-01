@@ -4771,7 +4771,6 @@ static_library("ui") {
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/desktop_to_mobile_promos:utils",
       "//chrome/browser/ui/dialogs",
-      "//chrome/browser/ui/dialogs:impl",
       "//chrome/browser/ui/immersive:immersive_mode_controller",
       "//chrome/browser/ui/plus_addresses",
       "//chrome/browser/ui/qrcode_generator",
