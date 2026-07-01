@@ -433,7 +433,7 @@ bool IsABookmarkNodeSectionForIdentifier(
     [self.consumer.tableViewModel addItem:signinPromoItem
                   toSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
   } else {
-    if (!signinPromoViewMediator.invalidClosedOrNeverVisible) {
+    if (signinPromoViewMediator.isUsable) {
       // When the sign-in view is closed, the promo state changes, but
       // -[SigninPromoViewMediator signinPromoViewIsHidden] should not be
       // called.
