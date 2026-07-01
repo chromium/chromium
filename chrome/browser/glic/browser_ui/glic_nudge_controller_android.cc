@@ -11,11 +11,8 @@
 namespace glic {
 
 GlicNudgeControllerAndroid::GlicNudgeControllerAndroid(
-    TabListInterface* tab_list)
-    : tab_list_(tab_list) {
-  if (tab_list_) {
-    tab_list_observation_.Observe(tab_list_);
-  }
+    content::WebContents* web_contents) {
+  // TODO(crbug.com/524810240): Observe tab changes.
 }
 GlicNudgeControllerAndroid::~GlicNudgeControllerAndroid() = default;
 
@@ -36,16 +33,7 @@ void GlicNudgeControllerAndroid::UpdateNudgeLabel(
     const std::string& anchored_message_text,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeActivityCallback callback) {
-  if (auto* active_tab = tab_list_->GetActiveTab()) {
-    if (active_tab->GetContents() != web_contents) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback),
-                         GlicNudgeActivity::kNudgeNotShownWebContents));
-      return;
-    }
-  }
-
+  // TODO(crbug.com/524810240): Skip update if this isn't the active tab.
   nudge_activity_callback_ = callback;
   prompt_suggestion_ = prompt_suggestion;
 
