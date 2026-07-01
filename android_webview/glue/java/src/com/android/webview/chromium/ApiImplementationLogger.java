@@ -29,7 +29,7 @@ public final class ApiImplementationLogger {
     private static final String TAG = "ApiImplLogger";
 
     /**
-     * Enumeration of all overridable methods in {@link android.webkit.WebViewClient}.
+     * Enumeration of all overridable methods in {@link WebViewClient}.
      *
      * <p>These values are logged to UMA, and should never be changed or reused.
      *

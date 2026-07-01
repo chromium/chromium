@@ -24,6 +24,7 @@ import android.webkit.ClientCertRequest;
 import android.webkit.ConsoleMessage;
 import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions;
+import android.webkit.HttpAuthHandler;
 import android.webkit.JsDialogHelper;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
@@ -69,21 +70,19 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 
 /**
- * An adapter class that forwards the callbacks from {@link ContentViewClient}
- * to the appropriate {@link WebViewClient} or {@link WebChromeClient}.
+ * An adapter class that forwards the callbacks from {@link ContentViewClient} to the appropriate
+ * {@link WebViewClient} or {@link WebChromeClient}.
  *
- * An instance of this class is associated with one {@link WebViewChromium}
- * instance. A WebViewChromium is a WebView implementation provider (that is
- * android.webkit.WebView delegates all functionality to it) and has exactly
- * one corresponding {@link ContentView} instance.
+ * <p>An instance of this class is associated with one {@link WebViewChromium} instance. A
+ * WebViewChromium is a WebView implementation provider (that is WebView delegates all functionality
+ * to it) and has exactly one corresponding {@link ContentView} instance.
  *
- * A {@link ContentViewClient} may be shared between multiple {@link ContentView}s,
- * and hence multiple WebViews. Many WebViewClient methods pass the source
- * WebView as an argument. This means that we either need to pass the
- * corresponding ContentView to the corresponding ContentViewClient methods,
- * or use an instance of ContentViewClientAdapter per WebViewChromium, to
- * allow the source WebView to be injected by ContentViewClientAdapter. We
- * choose the latter, because it makes for a cleaner design.
+ * <p>A {@link ContentViewClient} may be shared between multiple {@link ContentView}s, and hence
+ * multiple WebViews. Many WebViewClient methods pass the source WebView as an argument. This means
+ * that we either need to pass the corresponding ContentView to the corresponding ContentViewClient
+ * methods, or use an instance of ContentViewClientAdapter per WebViewChromium, to allow the source
+ * WebView to be injected by ContentViewClientAdapter. We choose the latter, because it makes for a
+ * cleaner design.
  */
 @Lifetime.WebView
 class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
@@ -216,7 +215,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         }
     }
 
-    /** @see AwContentsClient#shouldInterceptRequest(java.lang.String) */
+    /**
+     * @see AwContentsClient#shouldInterceptRequest(String)
+     */
     @Override
     public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
         try (TraceEvent event =
@@ -239,7 +240,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         }
     }
 
-    /** @see AwContentsClient#onUnhandledKeyEvent(android.view.KeyEvent) */
+    /**
+     * @see AwContentsClient#onUnhandledKeyEvent(KeyEvent)
+     */
     @Override
     public void onUnhandledKeyEvent(KeyEvent event) {
         try (TraceEvent traceEvent =
@@ -251,7 +254,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         }
     }
 
-    /** @see AwContentsClient#onConsoleMessage(android.webkit.ConsoleMessage) */
+    /**
+     * @see AwContentsClient#onConsoleMessage(ConsoleMessage)
+     */
     @Override
     public boolean onConsoleMessage(AwConsoleMessage consoleMessage) {
         try (TraceEvent event =
@@ -1063,7 +1068,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         }
     }
 
-    private static class AwHttpAuthHandlerAdapter extends android.webkit.HttpAuthHandler {
+    private static class AwHttpAuthHandlerAdapter extends HttpAuthHandler {
         private final AwHttpAuthHandler mAwHandler;
 
         public AwHttpAuthHandlerAdapter(AwHttpAuthHandler awHandler) {

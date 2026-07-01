@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.webkit.CookieManager;
+import android.webkit.WebIconDatabase;
 import android.webkit.WebSettings;
 import android.webkit.WebViewDatabase;
 
@@ -1242,7 +1243,7 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    public android.webkit.WebIconDatabase getWebIconDatabase() {
+    public WebIconDatabase getWebIconDatabase() {
         triggerAndWaitForChromiumStarted(CallSite.GET_WEB_ICON_DATABASE);
         WebViewChromium.recordWebViewApiCall(
                 ApiCall.WEB_ICON_DATABASE_GET_INSTANCE,
