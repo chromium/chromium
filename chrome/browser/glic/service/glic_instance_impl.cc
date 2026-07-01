@@ -312,7 +312,10 @@ GlicInstanceImpl::instance_metrics_backwards_compatibility() {
 
 GlicSkillsManager& GlicInstanceImpl::skills_manager() {
   if (!skills_manager_) {
-    skills_manager_ = std::make_unique<GlicSkillsManagerImpl>(this, profile_);
+    // Safe because `instance_metrics_` is declared before `skills_manager_`
+    // in the header and is guaranteed to outlive it.
+    skills_manager_ = std::make_unique<GlicSkillsManagerImpl>(
+        this, profile_, &instance_metrics_);
   }
   return *skills_manager_;
 }

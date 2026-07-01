@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
@@ -37,6 +38,7 @@ namespace glic {
 
 class FocusedTabData;
 class GlicInstance;
+class GlicInstanceMetrics;
 
 class GlicSkillsClientSession;
 
@@ -44,7 +46,9 @@ class GlicSkillsClientSession;
 // web client.
 class GlicSkillsManagerImpl : public GlicSkillsManager {
  public:
-  GlicSkillsManagerImpl(GlicInstance* instance, Profile* profile);
+  GlicSkillsManagerImpl(GlicInstance* instance,
+                        Profile* profile,
+                        GlicInstanceMetrics* instance_metrics);
   ~GlicSkillsManagerImpl() override;
   explicit GlicSkillsManagerImpl(const GlicSkillsManager&) = delete;
   GlicSkillsManagerImpl& operator=(const GlicSkillsManager&) = delete;
@@ -74,6 +78,7 @@ class GlicSkillsManagerImpl : public GlicSkillsManager {
   GlicActiveTabForProfileTracker& active_tab_tracker() {
     return active_tab_tracker_;
   }
+  void RecordSkillsWebClientEvent(mojom::SkillsWebClientEvent event);
 
  private:
   tabs::TabInterface* EnsureTabForSkills();
@@ -100,6 +105,8 @@ class GlicSkillsManagerImpl : public GlicSkillsManager {
 
   // We update the set of skills on active tab changes.
   base::CallbackListSubscription active_tab_changed_subscription_;
+
+  const raw_ref<GlicInstanceMetrics> instance_metrics_;
 
   std::unique_ptr<GlicSkillsClientSession> session_;
   std::vector<mojom::SkillPreviewPtr> pending_contextual_skills_;

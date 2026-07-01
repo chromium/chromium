@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -49,9 +50,14 @@ mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::proto::Skill& skill) {
 
 }  // namespace
 
-GlicSkillsManagerImpl::GlicSkillsManagerImpl(GlicInstance* instance,
-                                             Profile* profile)
-    : instance_(*instance), profile_(*profile), active_tab_tracker_(profile) {
+GlicSkillsManagerImpl::GlicSkillsManagerImpl(
+    GlicInstance* instance,
+    Profile* profile,
+    GlicInstanceMetrics* instance_metrics)
+    : instance_(*instance),
+      profile_(*profile),
+      active_tab_tracker_(profile),
+      instance_metrics_(CHECK_DEREF(instance_metrics)) {
   active_tab_changed_subscription_ =
       active_tab_tracker_.AddActiveTabChangedCallback(
           base::BindRepeating(&GlicSkillsManagerImpl::OnActiveTabChanged,
@@ -358,10 +364,14 @@ void GlicSkillsClientSession::GetSkill(const std::string& id,
   std::move(callback).Run(std::move(skill));
 }
 
+void GlicSkillsManagerImpl::RecordSkillsWebClientEvent(
+    mojom::SkillsWebClientEvent event) {
+  instance_metrics_->RecordSkillsWebClientEvent(event);
+}
+
 void GlicSkillsClientSession::RecordSkillsWebClientEvent(
     mojom::SkillsWebClientEvent event) {
-  manager_->instance().host().instance_metrics().RecordSkillsWebClientEvent(
-      event);
+  manager_->RecordSkillsWebClientEvent(event);
 }
 
 void GlicSkillsClientSession::ShowManageSkillsUi() {
