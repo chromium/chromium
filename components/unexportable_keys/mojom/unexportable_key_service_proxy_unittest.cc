@@ -50,6 +50,7 @@ using ::testing::Optional;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithArg;
 
 constexpr BackgroundTaskPriority kTestPriority =
     BackgroundTaskPriority::kBestEffort;
@@ -820,10 +821,10 @@ TEST(UnexportableKeyServiceProxyTest, DestroyProxyBeforeCallback) {
       pending_callback;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_uks, GenerateSigningKeySlowlyAsync)
-      .WillOnce([&](auto, auto, auto cb) {
+      .WillOnce(WithArg<2>([&](auto cb) {
         pending_callback = std::move(cb);
         run_loop.Quit();
-      });
+      }));
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(
       {crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1},
@@ -857,10 +858,10 @@ TEST(UnexportableKeyServiceProxyTest, DestroyProxyAndServiceBeforeCallback) {
       pending_callback;
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_uks, GenerateSigningKeySlowlyAsync)
-      .WillOnce([&](auto, auto, auto cb) {
+      .WillOnce(WithArg<2>([&](auto cb) {
         pending_callback = std::move(cb);
         run_loop.Quit();
-      });
+      }));
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(
       {crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1},
