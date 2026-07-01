@@ -25691,7 +25691,7 @@
             ]
         }
     ],
-    "VoiceSearchCoherenceSearchbox": [
+    "VoiceSearchCoherenceNtpRealbox": [
         {
             "platforms": [
                 "chromeos",
