@@ -6899,15 +6899,27 @@ class DestroyingMockInputMethod : public ui::MockInputMethod {
     }
   }
 
+  void OnTextInputTypeChanged(ui::TextInputClient* client) override {
+    ui::MockInputMethod::OnTextInputTypeChanged(client);
+    if (on_text_input_type_changed_) {
+      std::move(on_text_input_type_changed_).Run();
+    }
+  }
+
   void set_on_caret_bounds_changed(base::OnceClosure closure) {
     on_caret_bounds_changed_ = std::move(closure);
   }
 
+  void set_on_text_input_type_changed(base::OnceClosure closure) {
+    on_text_input_type_changed_ = std::move(closure);
+  }
+
  private:
   base::OnceClosure on_caret_bounds_changed_;
+  base::OnceClosure on_text_input_type_changed_;
 };
 
-class RenderWidgetHostViewAuraOnBoundsChangedUAFTest
+class RenderWidgetHostViewAuraReentrantDestructionIME
     : public RenderWidgetHostViewAuraTest {
  public:
   void SetUp() override {
@@ -6936,7 +6948,7 @@ class RenderWidgetHostViewAuraOnBoundsChangedUAFTest
 // ~AutoReset both touch freed memory. AutoReset::scoped_variable_ is
 // RAW_PTR_EXCLUSION, so it is not MiraclePtr-protected: the ~AutoReset write
 // lands in a freed (un-quarantined) slot.
-TEST_F(RenderWidgetHostViewAuraOnBoundsChangedUAFTest,
+TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
        DestroyDuringOnCaretBoundsChanged) {
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
@@ -6959,6 +6971,37 @@ TEST_F(RenderWidgetHostViewAuraOnBoundsChangedUAFTest,
   // keyboard_occluded_bounds_) followed by a write-after-free in
   // ~AutoReset<bool> to the freed in_bounds_changed_ slot.
   raw_view->OnBoundsChanged(gfx::Rect(), gfx::Rect(0, 0, 100, 100));
+}
+
+// RWHVA::OnUpdateTextInputStateCalled() calls
+// GetInputMethod()->OnTextInputTypeChanged(this), which on Windows reaches
+// TSFBridge::OnTextInputTypeChanged() -> ITfThreadMgr::SetFocus(). If the
+// active TIP pumps the message queue and the view is destroyed re-entrantly,
+// on unwind the function continues to dereference the freed `this` and
+// `updated_view`.
+TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
+       DestroyDuringOnTextInputTypeChanged) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  // `view_` shares the root window (and thus the InputMethod) with
+  // `parent_view_`.
+  ASSERT_EQ(static_cast<ui::InputMethod*>(input_method_.get()),
+            GetInputMethod());
+
+  // Arrange for the view to be synchronously destroyed inside
+  // OnTextInputTypeChanged, simulating re-entrant destruction triggered by a
+  // TSF callout that pumps a queued window.close() / renderer-gone task.
+  input_method_->set_on_text_input_type_changed(
+      base::BindLambdaForTesting([&]() {
+        widget_host_ = nullptr;
+        view_.ExtractAsDangling()->Destroy();
+      }));
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  // Dispatching this state notifies `view_` (a TextInputManager observer) via
+  // OnUpdateTextInputStateCalled(), which calls into the input method above.
+  GetTextInputManager(view_)->UpdateTextInputState(view_, state);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
