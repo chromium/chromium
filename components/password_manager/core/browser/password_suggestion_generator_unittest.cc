@@ -1591,6 +1591,21 @@ TEST_F(
   EXPECT_THAT(suggestions[0], Not(FaviconCanBeRequestedFromGoogle()));
 }
 
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_Favicons_NoFaviconDetailsForNonHttpsUrl) {
+  PasswordForm form =
+      CreateEntry("user@example.com", "pass", GURL("http://127.0.0.1:8080/"),
+                  PasswordForm::MatchType::kExact);
+  form.signon_realm = "https://example.com/";
+
+  std::vector<Suggestion> suggestions = GenerateSuggestedPasswordsSection(
+      {form}, IsTriggeredOnPasswordForm(true));
+
+  ASSERT_GE(suggestions.size(), 1u);
+  EXPECT_FALSE(std::holds_alternative<Suggestion::FaviconDetails>(
+      suggestions[0].custom_icon));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

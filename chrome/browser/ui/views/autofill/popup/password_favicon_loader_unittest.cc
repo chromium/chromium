@@ -319,5 +319,36 @@ TEST_F(PasswordFaviconLoaderTest, ImagesFromImageFetcherAreCached) {
       /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
 }
 
+TEST_F(PasswordFaviconLoaderTest, FailsForNonHttpsDomainUrlOnFaviconService) {
+  EXPECT_CALL(large_icon_service(), GetLargeIconFromCacheFallbackToGoogleServer)
+      .Times(0);
+
+  base::MockOnceCallback<void(const gfx::Image&)> on_success;
+  base::MockOnceClosure on_fail;
+
+  EXPECT_CALL(on_success, Run).Times(0);
+  EXPECT_CALL(on_fail, Run);
+
+  loader().Load(
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("http://google.com"),
+                                 /*can_be_requested_from_google=*/true),
+      /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
+}
+
+TEST_F(PasswordFaviconLoaderTest, FailsForNonHttpsDomainUrlOnImageFetcher) {
+  EXPECT_CALL(image_fetcher(), FetchImageAndData_).Times(0);
+
+  base::MockOnceCallback<void(const gfx::Image&)> on_success;
+  base::MockOnceClosure on_fail;
+
+  EXPECT_CALL(on_success, Run).Times(0);
+  EXPECT_CALL(on_fail, Run);
+
+  loader().Load(
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("http://google.com"),
+                                 /*can_be_requested_from_google=*/false),
+      /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
+}
+
 }  // namespace
 }  // namespace autofill
