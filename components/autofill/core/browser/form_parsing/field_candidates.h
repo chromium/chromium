@@ -53,8 +53,9 @@ struct FieldCandidate {
   // The associated type for this candidate.
   FieldType type = internal::IsRequired();
 
-  // Based on which attribute the `type` was derived.
-  MatchAttribute match_attribute = internal::IsRequired();
+  // Information on whether the `type` was derived based on name or high/low
+  // quality label.
+  MatchInfo match_info = internal::IsRequired();
 
   // A non-negative number indicating how sure the type is for this specific
   // candidate. The higher the more confidence.
@@ -78,7 +79,7 @@ class FieldCandidates {
   // determine the most likely type for this given field. Please see
   // field_candidates.cc for details on how this type is actually chosen.
   void AddFieldCandidate(FieldType type,
-                         MatchAttribute match_attribute,
+                         MatchInfo match_info,
                          FieldCandidatePriority priority);
 
   // Determines the best type based on the current possible types.

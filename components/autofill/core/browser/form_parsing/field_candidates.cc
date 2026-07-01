@@ -55,10 +55,10 @@ FieldCandidates& FieldCandidates::operator=(FieldCandidates&& other) = default;
 FieldCandidates::~FieldCandidates() = default;
 
 void FieldCandidates::AddFieldCandidate(FieldType type,
-                                        MatchAttribute match_attribute,
+                                        MatchInfo match_info,
                                         FieldCandidatePriority priority) {
   field_candidates_.push_back(FieldCandidate{
-      .type = type, .match_attribute = match_attribute, .priority = priority});
+      .type = type, .match_info = match_info, .priority = priority});
 }
 
 // We currently select a type with the maximum score sum.
@@ -77,7 +77,10 @@ DenseSet<MatchAttribute> FieldCandidates::BestHeuristicTypeReason() const {
   DenseSet<MatchAttribute> attributes;
   for (const FieldCandidate& candidate : field_candidates_) {
     if (candidate.type == best_type) {
-      attributes.insert(candidate.match_attribute);
+      attributes.insert(candidate.match_info.matched_attribute ==
+                                MatchInfo::MatchAttribute::kName
+                            ? MatchAttribute::kName
+                            : MatchAttribute::kLabel);
     }
   }
   return attributes;

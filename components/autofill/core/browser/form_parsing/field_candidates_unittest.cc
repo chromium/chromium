@@ -26,7 +26,8 @@ TEST(FieldCandidatesTest, EmptyFieldCandidates) {
 TEST(FieldCandidatesTest, SingleCandidate) {
   FieldCandidates field_candidates;
   field_candidates.AddFieldCandidate(
-      COMPANY_NAME, MatchAttribute::kName,
+      COMPANY_NAME,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
       {/*is_name_or_high_quality_label_match=*/true,
        /*parser_type=*/HeuristicParser::kName});
   EXPECT_EQ(COMPANY_NAME, field_candidates.BestHeuristicType());
@@ -36,11 +37,13 @@ TEST(FieldCandidatesTest, SingleCandidate) {
 TEST(FieldCandidatesTest, TwoCandidates) {
   FieldCandidates field_candidates;
   field_candidates.AddFieldCandidate(
-      NAME_FULL, MatchAttribute::kName,
+      NAME_FULL,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
       {/*is_name_or_high_quality_label_match=*/true,
        /*parser_type=*/HeuristicParser::kName});
   field_candidates.AddFieldCandidate(
-      MERCHANT_PROMO_CODE, MatchAttribute::kName,
+      MERCHANT_PROMO_CODE,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
       {/*is_name_or_high_quality_label_match=*/true,
        /*parser_type=*/HeuristicParser::kMerchantPromoCode});
   EXPECT_EQ(NAME_FULL, field_candidates.BestHeuristicType());
@@ -51,11 +54,13 @@ TEST(FieldCandidatesTest, TwoCandidates) {
 TEST(FieldCandidatesTest, TwoCandidatesOppositeOrder) {
   FieldCandidates field_candidates;
   field_candidates.AddFieldCandidate(
-      MERCHANT_PROMO_CODE, MatchAttribute::kName,
+      MERCHANT_PROMO_CODE,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
       {/*is_name_or_high_quality_label_match=*/true,
        /*parser_type=*/HeuristicParser::kMerchantPromoCode});
   field_candidates.AddFieldCandidate(
-      NAME_FULL, MatchAttribute::kName,
+      NAME_FULL,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
       {/*is_name_or_high_quality_label_match=*/true,
        /*parser_type=*/HeuristicParser::kName});
   EXPECT_EQ(NAME_FULL, field_candidates.BestHeuristicType());
@@ -65,14 +70,18 @@ TEST(FieldCandidatesTest, BestHeuristicTypeReason) {
   FieldCandidates field_candidates;
 
   field_candidates.AddFieldCandidate(
-      NAME_FULL, MatchAttribute::kLabel,
+      NAME_FULL,
+      MatchInfo{.matched_attribute =
+                    MatchInfo::MatchAttribute::kLowQualityLabel},
       {/*is_name_or_high_quality_label_match=*/false,
        /*parser_type=*/HeuristicParser::kName});
   EXPECT_THAT(field_candidates.BestHeuristicTypeReason(),
               UnorderedElementsAre(MatchAttribute::kLabel));
 
   field_candidates.AddFieldCandidate(
-      IBAN_VALUE, MatchAttribute::kLabel,
+      IBAN_VALUE,
+      MatchInfo{.matched_attribute =
+                    MatchInfo::MatchAttribute::kLowQualityLabel},
       {/*is_name_or_high_quality_label_match=*/false,
        /*parser_type=*/HeuristicParser::kIban});
   // The best type becomes IBAN_VALUE due to a higher parser priority.
@@ -80,7 +89,8 @@ TEST(FieldCandidatesTest, BestHeuristicTypeReason) {
               UnorderedElementsAre(MatchAttribute::kLabel));
 
   field_candidates.AddFieldCandidate(
-      IBAN_VALUE, MatchAttribute::kName,
+      IBAN_VALUE,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
       {/*is_name_or_high_quality_label_match=*/true,
        /*parser_type=*/HeuristicParser::kIban});
   // The best type remains, but the reason now includes the kName match.
