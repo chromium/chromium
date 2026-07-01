@@ -561,6 +561,8 @@ public class NavigationTransitionsTest {
         performNavigationTransition(url2, BackEventCompat.EDGE_RIGHT);
         waitForTransitionFinished();
         Assert.assertEquals(url2, getCurrentUrl());
+        // Consume the first screenshot callback before starting the second navigation.
+        helper.waitForNext();
 
         // Perform an edge gesture transition from the left edge (semantically
         // forward - since we're in RTL). In three button mode this goes
