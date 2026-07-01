@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/fake_location_bar_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -16,6 +17,21 @@ typedef NS_ENUM(NSInteger, BottomSheetSnappingState) {
   BottomSheetSnappingStateCollapsed,
   BottomSheetSnappingStateExpanded,
 };
+
+// Tabs available in the NTP Redesign bottom sheet.
+typedef NS_ENUM(NSInteger, NTPRedesignTab) {
+  NTPRedesignTabContext = 0,
+  NTPRedesignTabAsk = 1,
+  NTPRedesignTabRead = 2,
+};
+
+// Spacing/margin constants for segmented control and content container.
+constexpr CGFloat kSegmentedControlTopMargin = 12.0;
+constexpr CGFloat kSegmentedControlHorizontalMargin = 16.0;
+constexpr CGFloat kContentContainerTopMargin = 12.0;
+
+// Tab cross-fade transition animation duration.
+constexpr CGFloat kTabTransitionAnimationDuration = 0.25;
 
 // Minimum velocity needed for a user drag to trigger bottom sheet state change.
 constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
@@ -27,6 +43,9 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
 @implementation NewTabPageBottomSheetViewController {
   UIView* _dragHandle;
   FakeLocationBarView* _fakeLocationBar;
+  UISegmentedControl* _segmentedControl;
+  UIView* _contentContainerView;
+  UICollectionView* _feedCollectionView;
 
   NSLayoutConstraint* _bottomSheetTopConstraint;
   BottomSheetSnappingState _sheetState;
@@ -134,6 +153,43 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
   [_fakeLocationBar applyBackgroundTheme];
   [_fakeLocationBar updateColorsWithProgress:0.0 colorPalette:nil];
 
+  // Add segmented control tabs.
+  _segmentedControl = [[UISegmentedControl alloc]
+      initWithItems:@[ @"Context", @"Ask", @"Read" ]];
+  _segmentedControl.translatesAutoresizingMaskIntoConstraints = NO;
+  _segmentedControl.selectedSegmentIndex = 0;
+  [_segmentedControl addTarget:self
+                        action:@selector(segmentedControlChanged:)
+              forControlEvents:UIControlEventValueChanged];
+  [visualEffectView.contentView addSubview:_segmentedControl];
+
+  // Add content container view for tab content.
+  _contentContainerView = [[UIView alloc] init];
+  _contentContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [visualEffectView.contentView addSubview:_contentContainerView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_segmentedControl.topAnchor
+        constraintEqualToAnchor:_fakeLocationBar.bottomAnchor
+                       constant:kSegmentedControlTopMargin],
+    [_segmentedControl.leadingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor
+                       constant:kSegmentedControlHorizontalMargin],
+    [_segmentedControl.trailingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor
+                       constant:-kSegmentedControlHorizontalMargin],
+
+    [_contentContainerView.topAnchor
+        constraintEqualToAnchor:_segmentedControl.bottomAnchor
+                       constant:kContentContainerTopMargin],
+    [_contentContainerView.leadingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor],
+    [_contentContainerView.trailingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor],
+    [_contentContainerView.bottomAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.bottomAnchor],
+  ]];
+
   // Add pan gesture recognizer.
   UIPanGestureRecognizer* panGesture =
       [[UIPanGestureRecognizer alloc] initWithTarget:self
@@ -160,12 +216,93 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
 
 - (void)invalidate {
   self.delegate = nil;
+  self.feedViewController = nil;
 }
 
 #pragma mark - Action Targets
 
 - (void)fakeLocationBarTapped {
   [self.delegate bottomSheetViewControllerDidTapFakeLocationBar:self];
+}
+
+- (void)segmentedControlChanged:(UISegmentedControl*)sender {
+  [self switchToTab:static_cast<NTPRedesignTab>(sender.selectedSegmentIndex)];
+}
+
+- (void)switchToTab:(NTPRedesignTab)tabType {
+  BOOL shouldShowFeed = (tabType == NTPRedesignTabRead);
+  if (shouldShowFeed && _feedViewController &&
+      !_feedViewController.parentViewController) {
+    [self embedFeedViewController];
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  if (_feedViewController &&
+      _feedViewController.view.hidden == shouldShowFeed) {
+    [UIView
+        transitionWithView:_contentContainerView
+                  duration:kTabTransitionAnimationDuration
+                   options:UIViewAnimationOptionTransitionCrossDissolve
+                animations:^{
+                  NewTabPageBottomSheetViewController* strongSelf = weakSelf;
+                  if (strongSelf) {
+                    strongSelf.feedViewController.view.hidden = !shouldShowFeed;
+                  }
+                  // Stubs for future Ask and Context tab container
+                  // switching in Tasks 3.3 and 3.4.
+                }
+                completion:nil];
+  }
+}
+
+#pragma mark - Feed Integration
+
+- (void)setFeedViewController:(UIViewController*)feedViewController {
+  if (_feedViewController == feedViewController) {
+    return;
+  }
+  if (_feedViewController) {
+    [_feedViewController willMoveToParentViewController:nil];
+    [_feedViewController.view removeFromSuperview];
+    [_feedViewController removeFromParentViewController];
+    _feedCollectionView = nil;
+  }
+  _feedViewController = feedViewController;
+  if (self.isViewLoaded && _feedViewController &&
+      _segmentedControl.selectedSegmentIndex == 2) {
+    [self embedFeedViewController];
+  }
+}
+
+- (void)embedFeedViewController {
+  if (!_feedViewController || !_contentContainerView ||
+      _feedViewController.parentViewController) {
+    return;
+  }
+  [self addChildViewController:_feedViewController];
+  _feedViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [_contentContainerView addSubview:_feedViewController.view];
+  AddSameConstraints(_feedViewController.view, _contentContainerView);
+  [_feedViewController didMoveToParentViewController:self];
+
+  _feedViewController.view.hidden =
+      (_segmentedControl.selectedSegmentIndex != NTPRedesignTabRead);
+
+  _feedCollectionView =
+      [self findCollectionViewInView:_feedViewController.view];
+}
+
+- (UICollectionView*)findCollectionViewInView:(UIView*)view {
+  if ([view isKindOfClass:[UICollectionView class]]) {
+    return (UICollectionView*)view;
+  }
+  for (UIView* subview in view.subviews) {
+    UICollectionView* collectionView = [self findCollectionViewInView:subview];
+    if (collectionView) {
+      return collectionView;
+    }
+  }
+  return nil;
 }
 
 #pragma mark - Snapping Offsets

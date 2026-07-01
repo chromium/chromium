@@ -26,6 +26,9 @@
 @property(nonatomic, weak) id<NewTabPageBottomSheetViewControllerDelegate>
     delegate;
 
+// The feed view controller embedded under the "Read" tab.
+@property(nonatomic, strong) UIViewController* feedViewController;
+
 // Clears state and delegates.
 - (void)invalidate;
 

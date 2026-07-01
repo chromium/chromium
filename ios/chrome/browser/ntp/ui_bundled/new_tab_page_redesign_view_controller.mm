@@ -32,6 +32,7 @@ constexpr CGFloat kBackgroundImageAnimationDuration = 0.25;
   UIImage* _backgroundImage;
   HomeCustomizationFramingCoordinates* _framingCoordinates;
   NewTabPageBottomSheetViewController* _bottomSheetViewController;
+  UIViewController* _feedViewController;
 }
 
 - (void)viewDidLoad {
@@ -46,6 +47,7 @@ constexpr CGFloat kBackgroundImageAnimationDuration = 0.25;
   _bottomSheetViewController =
       [[NewTabPageBottomSheetViewController alloc] init];
   _bottomSheetViewController.delegate = self;
+  _bottomSheetViewController.feedViewController = _feedViewController;
   [self addChildViewController:_bottomSheetViewController];
   [self.view addSubview:_bottomSheetViewController.view];
   [_bottomSheetViewController didMoveToParentViewController:self];
@@ -59,6 +61,7 @@ constexpr CGFloat kBackgroundImageAnimationDuration = 0.25;
   self.mutator = nil;
   self.searchEngineLogoView = nil;
   self.NTPContentDelegate = nil;
+  [self setFeedViewController:nil];
   [_bottomSheetViewController invalidate];
   _bottomSheetViewController = nil;
 }
@@ -146,6 +149,16 @@ constexpr CGFloat kBackgroundImageAnimationDuration = 0.25;
   _searchEngineLogoView = searchEngineLogoView;
   if (_searchEngineLogoView && _bottomSheetViewController) {
     [self addSearchEngineLogoView];
+  }
+}
+
+- (void)setFeedViewController:(UIViewController*)feedViewController {
+  if (_feedViewController == feedViewController) {
+    return;
+  }
+  _feedViewController = feedViewController;
+  if (_bottomSheetViewController) {
+    _bottomSheetViewController.feedViewController = feedViewController;
   }
 }
 

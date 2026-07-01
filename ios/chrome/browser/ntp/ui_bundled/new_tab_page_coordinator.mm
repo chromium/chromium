@@ -866,6 +866,7 @@
 - (void)configureNTPViewController {
   if (IsNTPRedesignEnabled()) {
     self.NTPRedesignViewController.NTPContentDelegate = self;
+    self.NTPRedesignViewController.feedViewController = self.feedViewController;
     [self configureMainViewControllerUsing:self.NTPRedesignViewController];
     return;
   }
@@ -1741,6 +1742,15 @@
 // Updates the NTP to take into account a change in module visibility
 - (void)handleChangeInModules {
   if (IsNTPRedesignEnabled()) {
+    if (self.feedViewController) {
+      self.discoverFeedService->RemoveFeedViewController(
+          self.feedViewController);
+    }
+    self.feedViewController = nil;
+    if ([self.NTPMediator isFeedHeaderVisible]) {
+      [self configureFeedAndHeader];
+    }
+    self.NTPRedesignViewController.feedViewController = self.feedViewController;
     return;
   }
   DCHECK(self.NTPViewController);

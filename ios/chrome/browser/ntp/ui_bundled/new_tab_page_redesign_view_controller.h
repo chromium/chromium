@@ -30,6 +30,9 @@
 // The search engine/Doodle logo view.
 @property(nonatomic, strong) UIView* searchEngineLogoView;
 
+// Sets the feed view controller to embed in the redesign bottom sheet.
+- (void)setFeedViewController:(UIViewController*)feedViewController;
+
 // `YES` if the omnibox should be focused on when the view appears for voice
 // over.
 @property(nonatomic, assign) BOOL focusAccessibilityOmniboxWhenViewAppears;
