@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
 #include <memory>
 #include <string_view>
@@ -22,7 +22,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "components/webapps/isolated_web_apps/public/iwa_entitlements.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
@@ -35,7 +35,6 @@ namespace {
 // has loaded. After this duration, readiness is signaled via
 // OnMaybeDownloadedComponentDataReady().
 constexpr base::TimeDelta kDownloadedComponentDataWaitTime = base::Seconds(15);
-
 
 bool GetSkipCaptureStartedNotification(
     const IwaSpecialAppPermissions::SpecialAppPermissions& special_permission) {
@@ -116,13 +115,12 @@ void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
 
 void IwaKeyDistributionInfoProvider::SetUp(
     QueueOnDemandUpdateCallback callback) {
-  queue_on_demand_update_ = callback;
+  queue_on_demand_update_ = std::move(callback);
 }
 
 const IwaRuntimeDataProvider::KeyRotationInfo*
 IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
     const std::string& web_bundle_id) const {
-
   base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
                                 GetComponentDataSource());
 
@@ -215,7 +213,7 @@ IwaKeyDistributionInfoProvider::GetSpecialAppPermissionsInfo(
   return nullptr;
 }
 
-const ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData*
+const IwaRuntimeDataProvider::UserInstallAllowlistItemData*
 IwaKeyDistributionInfoProvider::GetUserInstallAllowlistData(
     const std::string& web_bundle_id) const {
   return component_ ? base::FindOrNull(component_->data.user_install_allowlist,
@@ -336,44 +334,43 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
     blocklist = base::MakeFlatSet<std::string>(
         key_distribution.iwa_access_control().blocklist(), /*comp=*/{},
         /*proj=*/[](const auto& pair) { return pair.first; });
-    user_install_allowlist = base::MakeFlatMap<
-        std::string,
-        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData>(
-        key_distribution.iwa_access_control().user_install_allowlist(),
-        /*comp=*/{},
-        /*proj=*/[](const auto& entry) {
-          const auto& [web_bundle_id, data] = entry;
-          std::vector<web_app::IwaEntitlementsSet> entitlements;
-          for (const auto& entitlement_set_proto : data.entitlements()) {
-            web_app::IwaEntitlementsSet set;
-            if (entitlement_set_proto.has_version_range()) {
-              set.version_range.set_begin(
-                  entitlement_set_proto.version_range().begin());
-              set.version_range.set_end(
-                  entitlement_set_proto.version_range().end());
-            }
-            set.entitlements = base::ToVector(
-                entitlement_set_proto.entitlement(),
-                [](const auto& entitlement_proto) {
-                  return IwaAccessControl::UserInstallAllowlistItemData::
-                      Entitlement(entitlement_proto);
-                });
-            entitlements.push_back(std::move(set));
-          }
+    user_install_allowlist =
+        base::MakeFlatMap<std::string,
+                          IwaRuntimeDataProvider::UserInstallAllowlistItemData>(
+            key_distribution.iwa_access_control().user_install_allowlist(),
+            /*comp=*/{},
+            /*proj=*/[](const auto& entry) {
+              const auto& [web_bundle_id, data] = entry;
+              std::vector<web_app::IwaEntitlementsSet> entitlements;
+              for (const auto& entitlement_set_proto : data.entitlements()) {
+                web_app::IwaEntitlementsSet set;
+                if (entitlement_set_proto.has_version_range()) {
+                  set.version_range.set_begin(
+                      entitlement_set_proto.version_range().begin());
+                  set.version_range.set_end(
+                      entitlement_set_proto.version_range().end());
+                }
+                set.entitlements = base::ToVector(
+                    entitlement_set_proto.entitlement(),
+                    [](const auto& entitlement_proto) {
+                      return IwaAccessControl::UserInstallAllowlistItemData::
+                          Entitlement(entitlement_proto);
+                    });
+                entitlements.push_back(std::move(set));
+              }
 
-          return std::make_pair(
-              web_bundle_id,
-              ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
-                  data.has_enterprise_name() ? data.enterprise_name() : "",
-                  std::move(entitlements)));
-        });
+              return std::make_pair(
+                  web_bundle_id,
+                  IwaRuntimeDataProvider::UserInstallAllowlistItemData(
+                      data.has_enterprise_name() ? data.enterprise_name() : "",
+                      std::move(entitlements)));
+            });
   }
 
   return Data(std::move(key_rotations), std::move(special_app_permissions),
               std::move(managed_allowlist), std::move(blocklist),
               std::move(user_install_allowlist));
 }
-
 
 base::OneShotEvent&
 IwaKeyDistributionInfoProvider::OnBestEffortRuntimeDataReady() {

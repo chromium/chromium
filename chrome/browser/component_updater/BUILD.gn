@@ -198,10 +198,10 @@ source_set("impl") {
       "//chrome/browser/dictation",
       "//chrome/browser/new_tab_page",
       "//chrome/browser/ui/read_anything",
-      "//chrome/browser/web_applications/isolated_web_apps/key_distribution",
       "//components/live_caption:constants",
       "//components/live_caption:utils",
       "//components/soda:constants",
+      "//components/webapps/isolated_web_apps/key_distribution",
       "//third_party/zxcvbn-cpp",
     ]
   }

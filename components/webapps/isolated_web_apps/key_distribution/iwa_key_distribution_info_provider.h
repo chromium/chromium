@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
 
 #include <optional>
 #include <string>
@@ -24,8 +24,7 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
@@ -42,7 +41,7 @@ namespace web_app {
 
 // This class is a singleton responsible for processing the IWA Key Distribution
 // Component data.
-class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
+class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
  public:
   using KeyRotations =
       base::flat_map<std::string, IwaRuntimeDataProvider::KeyRotationInfo>;
@@ -91,7 +90,7 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
   //  newer version.
   base::OneShotEvent& OnBestEffortRuntimeDataReady() override;
 
-  // ChromeIwaRuntimeDataProvider:
+  // IwaRuntimeDataProvider:
   const SpecialAppPermissionsInfo* GetSpecialAppPermissionsInfo(
       const std::string& web_bundle_id) const override;
   const UserInstallAllowlistItemData* GetUserInstallAllowlistData(
@@ -116,7 +115,6 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
   void LoadKeyDistributionData(const base::Version& component_version,
                                const base::FilePath& file_path,
                                bool is_preloaded);
-
 
   std::optional<bool> IsPreloadedForTesting() const;
   void SetComponentDataForTesting(base::Version component_version,
@@ -211,4 +209,4 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_

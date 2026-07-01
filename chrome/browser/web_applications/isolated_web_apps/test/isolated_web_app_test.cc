@@ -7,16 +7,13 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
+#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/common/chrome_features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "content/public/common/content_features.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace web_app {
 
@@ -83,7 +80,7 @@ IsolatedWebAppTest::IsolatedWebAppTest(
       features::kIsolatedWebApps,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      component_updater::kIwaKeyDistributionComponent
+      component_updater::kIwaKeyDistributionComponent,
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   };
   if (dev_mode) {

@@ -6,18 +6,22 @@
 #define CHROME_BROWSER_COMPONENT_UPDATER_IWA_KEY_DISTRIBUTION_COMPONENT_INSTALLER_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/update_client/update_client.h"
 
 namespace base {
+
 class FilePath;
 class Version;
+
 }  // namespace base
 
 namespace web_app {
