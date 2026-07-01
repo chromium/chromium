@@ -34,6 +34,7 @@
 #include <limits>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
@@ -74,14 +76,12 @@ class SVGAnimatedPathLength final : public SVGAnimatedNumber {
 
 const CSSValue* SVGAnimatedPathLength::CssValue() const {
   DCHECK(HasPresentationAttributeMapping());
-  // A negative pathLength is invalid per spec. If a SMIL animation drives
-  // the value negative, suppress the presentation attribute so the CSS
-  // value (or its base value) is used instead.
+  // A negative animated value is an error; treat it as 'none'.
   if (CurrentValue()->Value() < 0) {
-    return nullptr;
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   return CSSNumericLiteralValue::Create(CurrentValue()->Value(),
-                                        CSSPrimitiveValue::UnitType::kNumber);
+                                        CSSPrimitiveValue::UnitType::kPixels);
 }
 
 SVGGeometryElement::SVGGeometryElement(const QualifiedName& tag_name,
@@ -263,21 +263,21 @@ float SVGGeometryElement::ComputePathLength() const {
 }
 
 float SVGGeometryElement::AuthorPathLength() const {
-  float author_path_length;
   if (RuntimeEnabledFeatures::SvgPathLengthCssPropertyEnabled()) {
     const ComputedStyle* style =
         const_cast<SVGGeometryElement*>(this)->EnsureComputedStyle();
-    if (!style || style->PathLength() < 0) {
+    if (!style || style->PathLength().IsNone()) {
       return std::numeric_limits<float>::quiet_NaN();
     }
-    author_path_length = style->PathLength();
-  } else {
-    // Read from the animated SVG attribute directly.
-    if (!path_length_ || !path_length_->IsSpecified()) {
-      return std::numeric_limits<float>::quiet_NaN();
-    }
-    author_path_length = path_length_->CurrentValue()->Value();
+    // path-length cannot be a percentage, so the dimension is unused. This
+    // also divides out the effective zoom to keep the author value stable.
+    return ValueForLength(style->PathLength(), *style, /*dimension=*/0);
   }
+  // Read from the animated SVG attribute directly.
+  if (!path_length_ || !path_length_->IsSpecified()) {
+    return std::numeric_limits<float>::quiet_NaN();
+  }
+  float author_path_length = path_length_->CurrentValue()->Value();
   // https://svgwg.org/svg2-draft/paths.html#PathLengthAttribute
   // "A negative value is an error"
   if (author_path_length < 0) {

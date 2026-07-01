@@ -48,11 +48,6 @@ std::optional<double> NumberPropertyFunctions::GetNumber(
       return style.StrokeMiterLimit();
     case CSSPropertyID::kStrokeOpacity:
       return style.StrokeOpacity();
-    case CSSPropertyID::kPathLength:
-      if (style.PathLength() >= 0) {
-        return style.PathLength();
-      }
-      return std::optional<double>();
     case CSSPropertyID::kWidows:
       return style.Widows();
     case CSSPropertyID::kColumnCount:
@@ -129,7 +124,6 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
     case CSSPropertyID::kFlexGrow:
     case CSSPropertyID::kFlexShrink:
     case CSSPropertyID::kLineHeight:
-    case CSSPropertyID::kPathLength:
     case CSSPropertyID::kTabSize:
     case CSSPropertyID::kZoom:
       return ClampTo<float>(value, 0);
@@ -209,9 +203,6 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       return true;
     case CSSPropertyID::kStrokeOpacity:
       builder.SetStrokeOpacity(value);
-      return true;
-    case CSSPropertyID::kPathLength:
-      builder.SetPathLength(static_cast<float>(value));
       return true;
     case CSSPropertyID::kColumnCount:
       builder.SetColumnCount(value);

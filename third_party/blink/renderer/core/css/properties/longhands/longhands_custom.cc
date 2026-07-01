@@ -3627,7 +3627,7 @@ const CSSValue* PathLength::ParseSingleValue(
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
-  return css_parsing_utils::ConsumeNumber(
+  return css_parsing_utils::ConsumeLength(
       stream, context, local_context,
       CSSPrimitiveValue::ValueRange::kNonNegative);
 }
@@ -3637,12 +3637,12 @@ const CSSValue* PathLength::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  float path_length = style.PathLength();
-  if (path_length < 0) {
+  const Length& path_length = style.PathLength();
+  if (path_length.IsNone()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  return CSSNumericLiteralValue::Create(path_length,
-                                        CSSPrimitiveValue::UnitType::kNumber);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(path_length,
+                                                             style);
 }
 
 const CSSValue* D::ParseSingleValue(CSSParserTokenStream& stream,

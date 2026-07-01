@@ -2240,14 +2240,13 @@ float StyleBuilderConverter::ConvertNumberOrPercentage(
   return primitive_value.ConvertTo<float>(state.CssToLengthConversionData());
 }
 
-float StyleBuilderConverter::ConvertPathLength(StyleResolverState& state,
-                                               const CSSValue& value) {
+Length StyleBuilderConverter::ConvertPathLength(StyleResolverState& state,
+                                                const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return -1.0;
+    return Length::None();
   }
-  return To<CSSPrimitiveValue>(value).ConvertTo<float>(
-      state.CssToLengthConversionData());
+  return ConvertLength(state, value);
 }
 
 int StyleBuilderConverter::ConvertInteger(StyleResolverState& state,

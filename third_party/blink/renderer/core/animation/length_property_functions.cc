@@ -29,6 +29,7 @@ Length::ValueRange LengthPropertyFunctions::GetValueRange(
     case CSSPropertyID::kPaddingLeft:
     case CSSPropertyID::kPaddingRight:
     case CSSPropertyID::kPaddingTop:
+    case CSSPropertyID::kPathLength:
     case CSSPropertyID::kPerspective:
     case CSSPropertyID::kR:
     case CSSPropertyID::kRx:
@@ -256,6 +257,10 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       break;
     case CSSPropertyID::kPaddingTop:
       result = style.PaddingTop();
+      success = true;
+      break;
+    case CSSPropertyID::kPathLength:
+      result = style.PathLength();
       success = true;
       break;
     case CSSPropertyID::kR:
@@ -579,6 +584,9 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       return true;
     case CSSPropertyID::kPaddingTop:
       builder.SetPaddingTop(value);
+      return true;
+    case CSSPropertyID::kPathLength:
+      builder.SetPathLength(value);
       return true;
     case CSSPropertyID::kR:
       builder.SetR(value);
