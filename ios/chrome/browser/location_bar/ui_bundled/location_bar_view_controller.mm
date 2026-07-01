@@ -777,7 +777,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
           removeTarget:nil
                 action:nil
       forControlEvents:UIControlEventAllEvents];
-  self.locationBarSteadyView.trailingButton.hidden = NO;
+  [self.locationBarSteadyView setTrailingButtonHidden:NO];
 
   TrailingButtonState state = self.trailingButtonState;
   if (state == kShareButton && self.hideShareButtonWhileOnIncognitoNTP) {
@@ -786,7 +786,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 
   switch (state) {
     case kNoButton: {
-      self.locationBarSteadyView.trailingButton.hidden = YES;
+      [self.locationBarSteadyView setTrailingButtonHidden:YES];
       break;
     };
     case kShareButton: {

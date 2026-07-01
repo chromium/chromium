@@ -66,6 +66,9 @@
 // appropriately.
 - (void)enableTrailingButton:(BOOL)enabled;
 
+// Sets the hidden state of the trailing button and updates accessibility.
+- (void)setTrailingButtonHidden:(BOOL)hidden;
+
 // Sets whether the contents are centered or aligned to the leading side.
 - (void)setCentered:(BOOL)centered;
 
