@@ -33,6 +33,7 @@ enum GPUFeatureName {
     "chromium-experimental-timestamp-query-inside-passes",
     "chromium-experimental-multi-draw-indirect",
     "chromium-experimental-subgroup-matrix",
+    "texture-compression-unaligned",
 };
 
 [

@@ -762,6 +762,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::TextureFormatsTier2;
     case V8GPUFeatureName::Enum::kSubgroupSizeControl:
       return wgpu::FeatureName::SubgroupSizeControl;
+    case V8GPUFeatureName::Enum::kTextureCompressionUnaligned:
+      return wgpu::FeatureName::TextureCompressionUnaligned;
   }
 }
 
