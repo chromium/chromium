@@ -6,6 +6,8 @@ syntax = "proto2";
 
 package identity_consent;
 
+option optimize_for = LITE_RUNTIME;
+
 // Wire-compatible standalone definition of the Google3 PrivacyPrimitiveConfig
 // protobuf. Non-essential annotations and option definitions are omitted.
 // Original path:

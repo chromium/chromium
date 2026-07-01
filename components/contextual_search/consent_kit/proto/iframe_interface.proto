@@ -6,6 +6,8 @@ syntax = "proto2";
 
 package identity_consent;
 
+option optimize_for = LITE_RUNTIME;
+
 message ConsentFlowCompleted {}
 message ConsentFlowNotCompleted {}
 
