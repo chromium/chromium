@@ -227,6 +227,72 @@ class CheckNoUNIT_TESTInSourceFilesTest(unittest.TestCase):
         self.assertEqual(0, len(errors))
 
 
+class CheckNoOzonePlatformMacrosInTestsTest(unittest.TestCase):
+
+    def testWarning(self):
+        test_files = [
+            MockFile('chrome/browser/foo_unittest.cc', [
+                '#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)',
+                '#endif',
+            ]),
+            MockFile('chrome/browser/bar_browsertest.cc', [
+                '#if BUILDFLAG(SUPPORTS_OZONE_X11)',
+                '#endif',
+            ]),
+            MockFile('content/test/baz_test.cc', [
+                'BUILDFLAG(SUPPORTS_OZONE_WAYLAND)',
+            ]),
+        ]
+        input_api = MockInputApi()
+        input_api.InitFiles(test_files)
+        warnings = PRESUBMIT.CheckNoOzonePlatformMacrosInTests(
+            input_api, MockOutputApi())
+        self.assertEqual(1, len(warnings))
+        self.assertEqual('warning', warnings[0].type)
+        self.assertEqual(3, len(warnings[0].items))
+        self.assertIn(
+            f'{os.path.normpath("chrome/browser/foo_unittest.cc")}:1',
+            warnings[0].items[0])
+        self.assertIn(
+            f'{os.path.normpath("chrome/browser/bar_browsertest.cc")}:1',
+            warnings[0].items[1])
+        self.assertIn(
+            f'{os.path.normpath("content/test/baz_test.cc")}:1',
+            warnings[0].items[2])
+
+    def testNoWarning(self):
+        non_test_files = [
+            MockFile('chrome/browser/foo.cc', [
+                '#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)',
+                '#endif',
+            ]),
+            MockFile('ui/ozone/platform/wayland/wayland_window.cc', [
+                'SUPPORTS_OZONE_WAYLAND',
+            ]),
+            MockFile('chrome/browser/baz_unittest.cc', [
+                'SUPPORTS_OZONE_WAYLAND',
+            ]),
+        ]
+        input_api = MockInputApi()
+        input_api.InitFiles(non_test_files)
+        warnings = PRESUBMIT.CheckNoOzonePlatformMacrosInTests(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(warnings))
+
+    def testCleanTest(self):
+        clean_test_files = [
+            MockFile('chrome/browser/foo_unittest.cc', [
+                '#if BUILDFLAG(IS_CHROMEOS)',
+                '#endif',
+            ]),
+        ]
+        input_api = MockInputApi()
+        input_api.InitFiles(clean_test_files)
+        warnings = PRESUBMIT.CheckNoOzonePlatformMacrosInTests(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(warnings))
+
+
 class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
 
     def testNewSha256FileNoDEPS(self):
