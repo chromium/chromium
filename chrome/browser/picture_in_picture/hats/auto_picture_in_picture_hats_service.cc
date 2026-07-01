@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -90,6 +91,13 @@ std::string GetSurveyTrigger(PromptResult result) {
   }
 }
 
+void RecordTimeFromWindowOpenToSurveyLaunch(base::TimeDelta duration) {
+  base::UmaHistogramCustomTimes(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToSurveyLaunchHistogramName,
+      duration, base::Milliseconds(1), base::Hours(10), 100);
+}
+
 }  // namespace
 
 AutoPictureInPictureHatsService::AutoPictureInPictureHatsService(
@@ -109,6 +117,10 @@ void AutoPictureInPictureHatsService::SetPromptResult(
     AutoPipSettingHelper::PromptResult result) {
   if (active_window_context_) {
     active_window_context_->prompt_result = result;
+    base::UmaHistogramCustomTimes(
+        kTimeFromWindowOpenToPromptResultHistogramName,
+        clock_->NowTicks() - active_window_context_->start_time,
+        base::Milliseconds(1), base::Hours(10), 100);
   }
 }
 
@@ -139,6 +151,8 @@ void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
   // If the window is closed but we never got a prompt result, we cannot launch
   // a survey. Clear context and return.
   if (!active_window_context_->prompt_result) {
+    base::UmaHistogramEnumeration(kTriggerResultHistogramName,
+                                  SurveyTriggerResult::kMissingPromptResult);
     active_window_context_ = std::nullopt;
     return;
   }
@@ -146,6 +160,8 @@ void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
   if (!hats_service) {
+    base::UmaHistogramEnumeration(kTriggerResultHistogramName,
+                                  SurveyTriggerResult::kHatsServiceNull);
     active_window_context_ = std::nullopt;
     return;
   }
@@ -156,6 +172,9 @@ void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
 
   // We do not trigger surveys for browser-initiated AutoPip.
   if (auto_pip_trigger_reason == AutoPipReason::kBrowserInitiated) {
+    base::UmaHistogramEnumeration(
+        kTriggerResultHistogramName,
+        SurveyTriggerResult::kBrowserInitiatedSkipped);
     active_window_context_ = std::nullopt;
     return;
   }
@@ -168,6 +187,8 @@ void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
 
   if (auto_pip_trigger_reason != GetSurveyTargetReason() ||
       actual_trigger != target_trigger) {
+    base::UmaHistogramEnumeration(kTriggerResultHistogramName,
+                                  SurveyTriggerResult::kFinchSegmentMismatch);
     active_window_context_ = std::nullopt;
     return;
   }
@@ -196,8 +217,14 @@ void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
         PromptResultToString(permission_prompt_result);
   }
 
-  hats_service->LaunchSurveyForWebContents(actual_trigger, web_contents, {},
-                                           product_specific_string_data);
+  hats_service->LaunchSurveyForWebContents(
+      actual_trigger, web_contents, {}, product_specific_string_data,
+      /*success_callback=*/
+      base::BindOnce(&RecordTimeFromWindowOpenToSurveyLaunch,
+                     clock_->NowTicks() - active_window_context_->start_time));
+
+  base::UmaHistogramEnumeration(kTriggerResultHistogramName,
+                                SurveyTriggerResult::kLaunched);
 
   // Clear the context after a successful launch.
   active_window_context_ = std::nullopt;

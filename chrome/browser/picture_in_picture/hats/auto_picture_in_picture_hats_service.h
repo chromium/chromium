@@ -28,6 +28,29 @@ class Profile;
 // Automatic Picture-in-Picture.
 class AutoPictureInPictureHatsService : public KeyedService {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SurveyTriggerResult)
+  enum class SurveyTriggerResult {
+    kLaunched = 0,
+    kFinchSegmentMismatch = 1,
+    kMissingPromptResult = 2,
+    kBrowserInitiatedSkipped = 3,
+    kHatsServiceNull = 4,
+    kMaxValue = kHatsServiceNull,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaAutoPictureInPictureHappinessTrackingSurveyTriggerResult)
+
+  static constexpr char kTriggerResultHistogramName[] =
+      "Media.AutoPictureInPicture.HappinessTrackingSurvey.TriggerResult";
+  static constexpr char kTimeFromWindowOpenToPromptResultHistogramName[] =
+      "Media.AutoPictureInPicture.HappinessTrackingSurvey."
+      "TimeFromWindowOpenToPromptResult";
+  static constexpr char kTimeFromWindowOpenToSurveyLaunchHistogramName[] =
+      "Media.AutoPictureInPicture.HappinessTrackingSurvey."
+      "TimeFromWindowOpenToSurveyLaunch";
+
   // Represents an active Auto Picture-in-Picture window context. A context is
   // considered "active" from the moment an Auto Picture-in-Picture window is
   // successfully opened via `AutoPictureInPictureWindowOpened()` until it is

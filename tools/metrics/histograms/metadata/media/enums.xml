@@ -1387,6 +1387,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Error: Failed to create a stream object"/>
 </enum>
 
+<!-- LINT.IfChange(MediaAutoPictureInPictureHappinessTrackingSurveyTriggerResult) -->
+
+<enum name="MediaAutoPictureInPictureHappinessTrackingSurveyTriggerResult">
+  <int value="0" label="Launched"/>
+  <int value="1" label="Finch segment mismatch"/>
+  <int value="2" label="Missing prompt result"/>
+  <int value="3" label="Browser initiated skipped"/>
+  <int value="4" label="HatsService null"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service.h:SurveyTriggerResult) -->
+
 <enum name="MediaAutoPictureInPicturePromptResult">
   <int value="0" label="Ignored"/>
   <int value="1" label="Block"/>

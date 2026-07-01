@@ -6,6 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service_factory.h"
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_test_base.h"
@@ -438,4 +440,138 @@ TEST_F(AutoPictureInPictureHatsServiceTest, PSDFieldsMatchConfig) {
   }
   EXPECT_THAT(captured_keys, testing::UnorderedElementsAreArray(
                                  config.product_specific_string_data_fields));
+}
+
+TEST_F(AutoPictureInPictureHatsServiceTest,
+       RecordsTriggerResultAndTimingsOnSuccessfulLaunch) {
+  constexpr base::TimeDelta kPromptResultDelay = base::Milliseconds(150);
+  constexpr base::TimeDelta kRemainingDuration = base::Milliseconds(350);
+  constexpr base::TimeDelta kTotalDuration =
+      kPromptResultDelay + kRemainingDuration;
+
+  base::HistogramTester histogram_tester;
+  auto feature_list =
+      CreateFinchScopedFeatureList("VideoConferencing", "AllowOnce");
+
+  service()->AutoPictureInPictureWindowOpened(
+      PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing,
+      GURL("https://example.com/"));
+
+  task_environment()->FastForwardBy(kPromptResultDelay);
+  service()->SetPromptResult(PromptResult::kAllowOnce);
+
+  task_environment()->FastForwardBy(kRemainingDuration);
+  service()->AutoPictureInPictureWindowClosed();
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurveyForWebContents(kHatsSurveyTriggerAutoPipAllowed,
+                                         web_contents(), _, _, _, _, _, _))
+      .WillOnce([](const std::string& trigger,
+                   content::WebContents* web_contents,
+                   const SurveyBitsData& product_specific_bits_data,
+                   const SurveyStringData& product_specific_string_data,
+                   base::OnceClosure success_callback,
+                   base::OnceClosure failure_callback,
+                   const std::optional<std::string>& supplied_trigger_id,
+                   const HatsService::SurveyOptions& survey_options) {
+        std::move(success_callback).Run();
+        return HatsService::LaunchError::kNone;
+      });
+
+  service()->MaybeLaunchSurvey(web_contents());
+
+  histogram_tester.ExpectUniqueSample(
+      AutoPictureInPictureHatsService::kTriggerResultHistogramName,
+      AutoPictureInPictureHatsService::SurveyTriggerResult::kLaunched, 1);
+  histogram_tester.ExpectUniqueSample(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToPromptResultHistogramName,
+      kPromptResultDelay.InMilliseconds(), 1);
+  histogram_tester.ExpectUniqueSample(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToSurveyLaunchHistogramName,
+      kTotalDuration.InMilliseconds(), 1);
+}
+
+TEST_F(AutoPictureInPictureHatsServiceTest,
+       RecordsTriggerResultOnMissingPromptResult) {
+  base::HistogramTester histogram_tester;
+  service()->AutoPictureInPictureWindowOpened(
+      PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing,
+      GURL("https://example.com/"));
+  service()->AutoPictureInPictureWindowClosed();
+
+  service()->MaybeLaunchSurvey(web_contents());
+
+  histogram_tester.ExpectUniqueSample(
+      AutoPictureInPictureHatsService::kTriggerResultHistogramName,
+      AutoPictureInPictureHatsService::SurveyTriggerResult::
+          kMissingPromptResult,
+      1);
+  histogram_tester.ExpectTotalCount(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToPromptResultHistogramName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToSurveyLaunchHistogramName,
+      0);
+}
+
+TEST_F(AutoPictureInPictureHatsServiceTest,
+       RecordsTriggerResultOnFinchSegmentMismatch) {
+  base::HistogramTester histogram_tester;
+  auto feature_list =
+      CreateFinchScopedFeatureList("VideoConferencing", "AllowOnce");
+
+  service()->AutoPictureInPictureWindowOpened(
+      PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing,
+      GURL("https://example.com/"));
+  service()->SetPromptResult(PromptResult::kBlock);
+  service()->AutoPictureInPictureWindowClosed();
+
+  service()->MaybeLaunchSurvey(web_contents());
+
+  histogram_tester.ExpectUniqueSample(
+      AutoPictureInPictureHatsService::kTriggerResultHistogramName,
+      AutoPictureInPictureHatsService::SurveyTriggerResult::
+          kFinchSegmentMismatch,
+      1);
+  histogram_tester.ExpectTotalCount(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToPromptResultHistogramName,
+      1);
+  histogram_tester.ExpectTotalCount(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToSurveyLaunchHistogramName,
+      0);
+}
+
+TEST_F(AutoPictureInPictureHatsServiceTest,
+       RecordsTriggerResultOnBrowserInitiatedSkipped) {
+  base::HistogramTester histogram_tester;
+  auto feature_list =
+      CreateFinchScopedFeatureList("VideoConferencing", "AllowOnce");
+
+  service()->AutoPictureInPictureWindowOpened(
+      PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated,
+      GURL("https://example.com/"));
+  service()->SetPromptResult(PromptResult::kAllowOnce);
+  service()->AutoPictureInPictureWindowClosed();
+
+  service()->MaybeLaunchSurvey(web_contents());
+
+  histogram_tester.ExpectUniqueSample(
+      AutoPictureInPictureHatsService::kTriggerResultHistogramName,
+      AutoPictureInPictureHatsService::SurveyTriggerResult::
+          kBrowserInitiatedSkipped,
+      1);
+  histogram_tester.ExpectTotalCount(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToPromptResultHistogramName,
+      1);
+  histogram_tester.ExpectTotalCount(
+      AutoPictureInPictureHatsService::
+          kTimeFromWindowOpenToSurveyLaunchHistogramName,
+      0);
 }
