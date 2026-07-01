@@ -4,6 +4,7 @@
 
 #include "content/browser/code_cache/simple_lru_cache.h"
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"

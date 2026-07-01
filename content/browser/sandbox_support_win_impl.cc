@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "content/browser/sandbox_support_impl.h"

@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/clamped_math.h"
 #include "content/common/features.h"
