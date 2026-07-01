@@ -1401,11 +1401,16 @@ static bool AnyAttributeMatches(Element& element,
   // Legacy dictates that values of some attributes should be compared in
   // a case-insensitive manner regardless of whether the case insensitive
   // flag is set or not (but an explicit case sensitive flag will override
-  // that, by causing LegacyCaseInsensitiveMatch() never to be set).
+  // that, by causing LegacyCaseInsensitiveMatch() never to be set). This only
+  // applies to HTML elements in HTML documents:
+  // https://html.spec.whatwg.org/multipage/semantics-other.html#case-sensitivity-of-selectors
   const bool case_insensitive =
       selector.AttributeMatch() ==
           CSSSelector::AttributeMatchType::kCaseInsensitive ||
       (selector.LegacyCaseInsensitiveMatch() &&
+       (!RuntimeEnabledFeatures::
+            CSSAttributeValueCaseSensitiveNonHTMLEnabled() ||
+        element.IsHTMLElement()) &&
        IsA<HTMLDocument>(element.GetDocument()));
 
   AttributeCollection attributes = element.AttributesWithoutUpdate();

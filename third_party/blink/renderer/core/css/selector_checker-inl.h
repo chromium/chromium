@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -241,6 +242,9 @@ bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
           selector->AttributeMatch() ==
               CSSSelector::AttributeMatchType::kCaseInsensitive ||
           (selector->LegacyCaseInsensitiveMatch() &&
+           (!RuntimeEnabledFeatures::
+                CSSAttributeValueCaseSensitiveNonHTMLEnabled() ||
+            element->IsHTMLElement()) &&
            IsA<HTMLDocument>(element->GetDocument()));
       return AttributeMatches(*element, selector->Attribute(),
                               selector->Value(), case_insensitive);

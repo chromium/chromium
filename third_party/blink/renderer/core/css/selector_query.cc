@@ -783,6 +783,12 @@ void SelectorQuery::BuildCompounds(const CSSSelector* first_selector) {
               CSSSelector::AttributeMatchType::kCaseInsensitive;
           current_compound.legacy_case_insensitive =
               current->LegacyCaseInsensitiveMatch();
+          if (current_compound.legacy_case_insensitive &&
+              !current_compound.match_type_case_insensitive) {
+            // The fast exact-attribute check does not know whether the matched
+            // element should use the legacy HTML case-insensitive rule.
+            need_full_check_ = true;
+          }
         } else {
           need_full_check_ = true;
         }
@@ -869,8 +875,7 @@ void SelectorQuery::BuildCompounds(const CSSSelector* first_selector) {
 
   for (unsigned compound_idx = compounds_.size(); compound_idx-- > 0;) {
     const Compound& compound = compounds_[compound_idx];
-    // NOTE: compound.attr_case_insensitive has not been set yet,
-    // so we use a more conservative test.
+    // The document and element are unknown here, so use a conservative test.
     if (compound.id_needed || (compound.attr_needed == html_names::kIdAttr &&
                                !compound.match_type_case_insensitive &&
                                !compound.legacy_case_insensitive)) {

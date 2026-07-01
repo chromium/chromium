@@ -1546,6 +1546,14 @@
       status: "test",
     },
     {
+      // https://crbug.com/41089999: Legacy ASCII case-insensitive attribute
+      // value matching only applies to HTML elements, so SVG and
+      // empty-namespace elements compare attribute values case-sensitively.
+      // Enabled by default; kept as a killswitch.
+      name: "CSSAttributeValueCaseSensitiveNonHTML",
+      status: "stable",
+    },
+    {
       // https://chromestatus.com/feature/6234471210811392
       // Ship in M150, should be removed in M152.
       name: "CSSBackgroundClipBorderArea",
