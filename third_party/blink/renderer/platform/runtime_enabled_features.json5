@@ -6051,10 +6051,6 @@
       status: "experimental",
     },
     {
-      name: "SvgSmilClockValueValidation",
-      status: "stable",
-    },
-    {
       name: "SvgStyleElementReflectTypeAndMedia",
       status: "stable",
     },
