@@ -103,29 +103,25 @@ NSArray<UIWindow*>* ForegroundWindowsForApplication(
 
 // Called when the timer actually fires.
 - (void)recordConfiguration {
-  [self recordGeometryForScreen:[UIScreen mainScreen]
-                        windows:ForegroundWindowsForApplication(
-                                    UIApplication.sharedApplication)];
+  [self recordGeometryForWindows:ForegroundWindowsForApplication(
+                                     UIApplication.sharedApplication)];
 }
 
-// Computes configuration for given screen and windows and records it.
-- (void)recordGeometryForScreen:(UIScreen*)screen
-                        windows:(NSArray<UIWindow*>*)windows {
-  WindowConfiguration configuration = [self configurationForScreen:screen
-                                                           windows:windows];
+// Computes configuration for given windows and records it.
+- (void)recordGeometryForWindows:(NSArray<UIWindow*>*)windows {
+  WindowConfiguration configuration = [self configurationForWindows:windows];
   base::UmaHistogramEnumeration("IOS.MultiWindow.Configuration", configuration);
 }
 
 #pragma mark - Visible For Testing
 
-- (WindowConfiguration)configurationForScreen:(UIScreen*)screen
-                                      windows:(NSArray<UIWindow*>*)windows {
+- (WindowConfiguration)configurationForWindows:(NSArray<UIWindow*>*)windows {
   NSMutableArray<UIWindow*>* fullscreenWindows = [[NSMutableArray alloc] init];
   NSMutableArray<UIWindow*>* slideoverWindows = [[NSMutableArray alloc] init];
   NSMutableArray<UIWindow*>* sharedWindows = [[NSMutableArray alloc] init];
 
-  CGRect screenRect = screen.bounds;
   for (UIWindow* window in windows) {
+    CGRect screenRect = window.screen.bounds;
     CGRect windowRect = window.frame;
 
     // Is the window full screen?
