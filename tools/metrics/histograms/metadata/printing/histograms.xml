@@ -59,8 +59,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.DPI.AllValues" units="DPI"
-    expires_after="2026-07-06">
-  <owner>gavinwill@google.com</owner>
+    expires_after="2027-01-06">
+  <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records one of the available DPI values from a printer's capabilities
@@ -73,8 +73,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.DPI.Count" units="resolutions"
-    expires_after="2026-07-06">
-  <owner>gavinwill@google.com</owner>
+    expires_after="2027-01-06">
+  <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the count of all DPI values from a printer's capabilities whenever
@@ -83,8 +83,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.DPI.{Type}" units="DPI"
-    expires_after="2026-07-06">
-  <owner>gavinwill@google.com</owner>
+    expires_after="2027-01-06">
+  <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the {Type} DPI value from a printer's capabilities whenever the
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="2026-07-25">
+    expires_after="2027-01-25">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2026-07-18">
+    expires_after="2027-01-18">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -288,8 +288,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusQueryResult"
-    enum="PrinterStatusQueryResult" expires_after="2026-07-14">
-  <owner>gavinwill@google.com</owner>
+    enum="PrinterStatusQueryResult" expires_after="2027-01-14">
+  <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the success outcome of a printer status query to a local printer.
@@ -333,8 +333,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.SettingsUserAction"
-    enum="PrinterSettingsUserAction" expires_after="2026-07-06">
-  <owner>gavinwill@google.com</owner>
+    enum="PrinterSettingsUserAction" expires_after="2027-01-06">
+  <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the action a user takes on the OS Printer settings page.
