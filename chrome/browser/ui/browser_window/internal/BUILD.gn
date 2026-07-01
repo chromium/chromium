@@ -109,6 +109,7 @@ source_set("internal") {
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/views/animations",
       "//chrome/browser/ui/views/contextual_tasks",
+      "//chrome/browser/ui/views/data_sharing",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/interaction:impl",
       "//chrome/browser/ui/views/location_bar:impl",

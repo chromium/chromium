@@ -1081,9 +1081,11 @@ static_library("ui") {
       # TODO(crbug.com/504627103): Remove this circular dependency.
       "//chrome/browser/new_tab_page:impl",
 
-      # data_sharing:impl includes headers from //chrome/browser/ui (e.g.
-      # data_sharing_utils.h) that can't be split out yet.
-      "//chrome/browser/ui/webui/data_sharing:impl",
+      # views/data_sharing:impl includes headers still built as part of this
+      # target (browser.h, browser_window.h, chrome_pages.h,
+      # browser_element_identifiers.h and views/frame/browser_view.h) that
+      # can't be split out yet.
+      "//chrome/browser/ui/views/data_sharing:impl",
 
       # downloads includes headers from //chrome/browser/ui (e.g.
       # browser_window.h, chrome_pages.h) that can't be split out yet.
@@ -1655,6 +1657,8 @@ static_library("ui") {
       "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/translate:impl",
+      "//chrome/browser/ui/views/data_sharing",
+      "//chrome/browser/ui/views/data_sharing:impl",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/glic:impl",
@@ -3878,14 +3882,6 @@ static_library("ui") {
       "views/content_setting_bubble_contents.h",
       "views/content_setting_site_row_view.cc",
       "views/content_setting_site_row_view.h",
-      "views/data_sharing/account_card_view.cc",
-      "views/data_sharing/account_card_view.h",
-      "views/data_sharing/collaboration_controller_delegate_desktop.cc",
-      "views/data_sharing/collaboration_controller_delegate_desktop.h",
-      "views/data_sharing/data_sharing_bubble_controller.cc",
-      "views/data_sharing/data_sharing_bubble_controller.h",
-      "views/data_sharing/data_sharing_utils.cc",
-      "views/data_sharing/data_sharing_utils.h",
       "views/device_chooser_content_view.cc",
       "views/device_chooser_content_view.h",
       "views/dictation/dictation_bubble_ui.cc",

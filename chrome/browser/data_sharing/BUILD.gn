@@ -500,7 +500,6 @@ source_set("data_sharing") {
 # //c/b/ui:ui that are not componentized yet, namely:
 #
 # - c/b/ui/webui/data_sharing/data_sharing_page_handler.h
-# - c/b/ui/views/data_sharing/collaboration_controller_delegate_desktop.h
 # - c/b/ui/browser.h
 #
 # Hence, depending on //c/b/ui:ui isn't itself a problem. However, in this case,
@@ -545,6 +544,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/data_sharing",
     ]
   }
 
