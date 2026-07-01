@@ -690,16 +690,6 @@ public class SigninPromoDelegateTest {
                         .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
     }
 
-    @Test
-    public void testNtpPromoHidden_setupListActive() {
-        setupDelegate(
-                SigninAccessPoint.NTP_FEED_TOP_PROMO,
-                /* visibleAccount= */ null,
-                /* isSetupListActive= */ true);
-
-        assertFalse(mDelegate.canShowPromo());
-    }
-
     private void setupDelegate(
             @SigninAccessPoint int accessPoint, @Nullable DisplayableProfileData visibleAccount) {
         setupDelegate(accessPoint, visibleAccount, /* isSetupListActive= */ false);

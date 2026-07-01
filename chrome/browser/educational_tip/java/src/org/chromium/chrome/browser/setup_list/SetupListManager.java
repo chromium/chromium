@@ -21,7 +21,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,7 +28,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate;
-import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.SyncService;
@@ -107,13 +105,15 @@ public class SetupListManager
     // Order of modules in the setup list.
     public static final List<Integer> BASE_SETUP_LIST_ORDER =
             Arrays.asList(
-                    ModuleType.DEFAULT_BROWSER_PROMO,
-                    ModuleType.SIGN_IN_PROMO,
                     ModuleType.HISTORY_SYNC_PROMO,
                     ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
-                    ModuleType.SAVE_PASSWORDS_PROMO,
-                    ModuleType.PASSWORD_CHECKUP_PROMO,
                     ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+    // TODO(crbug.com/469425754): Deprecate module and cleanup related logic.
+    // ModuleType.DEFAULT_BROWSER_PROMO,
+    // ModuleType.SIGN_IN_PROMO,
+    // ModuleType.SAVE_PASSWORDS_PROMO,
+    // ModuleType.PASSWORD_CHECKUP_PROMO,
+
     private static final Set<Integer> BASE_SETUP_LIST_SET = new HashSet<>(BASE_SETUP_LIST_ORDER);
 
     private List<Integer> mRankedModules = new ArrayList<>();
@@ -147,11 +147,6 @@ public class SetupListManager
 
     @VisibleForTesting
     static final long TWO_CELL_LAYOUT_ACTIVE_WINDOW_MILLIS = TimeUnit.DAYS.toMillis(3);
-
-    @VisibleForTesting
-    static final String ADDRESS_BAR_PLACEMENT_PARAM = "include_address_bar_placement";
-
-    @VisibleForTesting static final String PW_MANAGEMENT_PARAM = "include_pw_management";
 
     private static class ModulePartition {
         final List<Integer> mActiveModules = new ArrayList<>();
@@ -348,18 +343,9 @@ public class SetupListManager
             return shouldShowCelebratoryPromo();
         }
 
-        if (moduleType == ModuleType.DEFAULT_BROWSER_PROMO) {
-            return !SearchEngineChoiceService.getInstance().isDefaultBrowserPromoSuppressed();
-        }
-
-        if (moduleType == ModuleType.SIGN_IN_PROMO
+        if (moduleType == ModuleType.ADDRESS_BAR_PLACEMENT_PROMO
                 || moduleType == ModuleType.ENHANCED_SAFE_BROWSING_PROMO) {
             return true;
-        }
-
-        if (moduleType == ModuleType.ADDRESS_BAR_PLACEMENT_PROMO) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.ANDROID_SETUP_LIST, ADDRESS_BAR_PLACEMENT_PARAM, true);
         }
 
         // For modules that require a profile or account state.
@@ -373,26 +359,6 @@ public class SetupListManager
 
         if (moduleType == ModuleType.HISTORY_SYNC_PROMO) {
             return isSignedIn;
-        }
-
-        // User should be signed in to display passwords related promos
-        boolean isPwManagementEnabled =
-                isSignedIn
-                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.ANDROID_SETUP_LIST, PW_MANAGEMENT_PARAM, true);
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-
-        // Only a single password related promo should be visible at a time. Display the save
-        // password promo if the user doesn't have any saved passwords. If they have saved
-        // passwords, display the password checkup promo instead.
-        if (moduleType == ModuleType.SAVE_PASSWORDS_PROMO) {
-            return isPwManagementEnabled
-                    && !PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
-        }
-
-        if (moduleType == ModuleType.PASSWORD_CHECKUP_PROMO) {
-            return isPwManagementEnabled
-                    && PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
         }
 
         return false;
@@ -460,10 +426,6 @@ public class SetupListManager
 
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        @PrimaryAccountChangeEvent.Type int eventType = eventDetails.getEventTypeFor();
-        if (eventType == PrimaryAccountChangeEvent.Type.SET) {
-            setModuleCompleted(ModuleType.SIGN_IN_PROMO, /* silent= */ false);
-        }
         reconcileState();
         notifyStateChanged();
     }
@@ -646,9 +608,11 @@ public class SetupListManager
         }
     }
 
+    // TODO(crbug.com/469425754): The suppression logic can be removed from the
+    // DefaultBrowserPromoUtils.
     @Override
     public boolean shouldSuppressPromo() {
-        return isSetupListActive();
+        return false;
     }
 
     public static void setInstanceForTesting(@Nullable SetupListManager instance) {

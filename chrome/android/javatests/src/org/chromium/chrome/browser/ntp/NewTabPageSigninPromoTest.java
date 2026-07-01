@@ -370,34 +370,6 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
-    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testSignInPromo_HiddenWhenSetupListActive_Legacy() {
-        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(true);
-
-        openNewTabPage();
-
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"FeedNewTabPage"})
-    public void testSignInPromo_HiddenWhenSetupListActive() {
-        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(true);
-
-        openNewTabPage();
-
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"FeedNewTabPage"})
     @DisabledTest(message = "https://crbug.com/40116614")
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testSignInPromo_DismissBySwipe() {

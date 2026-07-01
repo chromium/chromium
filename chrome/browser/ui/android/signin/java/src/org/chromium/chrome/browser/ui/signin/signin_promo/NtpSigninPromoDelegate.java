@@ -51,8 +51,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         int SIGNIN = 1;
     }
 
-    private final BooleanSupplier mIsSetupListActiveSupplier;
-
     static final int MAX_IMPRESSIONS_NTP = 5;
 
     // 14 days in hours.
@@ -100,7 +98,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
             Runnable onPromoStateChange,
             BooleanSupplier isSetupListActiveSupplier) {
         super(context, profile, launcher, onPromoStateChange);
-        mIsSetupListActiveSupplier = isSetupListActiveSupplier;
+        // TODO(crbug.com/469425754): Deprecate isSetupListActiveSupplier.
         resetNtpSyncPromoLimitsIfHiddenForTooLong();
     }
 
@@ -246,9 +244,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     private @PromoState int computePromoState(@Nullable DisplayableProfileData visibleAccount) {
-        if (mIsSetupListActiveSupplier.getAsBoolean()) {
-            return PromoState.NONE;
-        }
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
                 && isPromoSuppressed()) {
             return PromoState.NONE;

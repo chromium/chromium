@@ -1166,15 +1166,6 @@ public class SigninPromoCoordinatorTest {
                                 SigninAccessPoint.NTP_FEED_TOP_PROMO, nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    public void testNtpPromoSuppressed_setupListActive() {
-        mIsSetupListActive = true;
-        setUpSignInPromo(SigninAccessPoint.NTP_FEED_TOP_PROMO);
-
-        ThreadUtils.runOnUiThreadBlocking(() -> assertFalse(mPromoCoordinator.canShowPromo()));
-    }
-
     private void setUpSignInPromo(@SigninAccessPoint int accessPoint) {
         @LayoutRes int layoutResId = SigninPromoCoordinator.getLayoutResId(accessPoint);
         ThreadUtils.runOnUiThreadBlocking(
