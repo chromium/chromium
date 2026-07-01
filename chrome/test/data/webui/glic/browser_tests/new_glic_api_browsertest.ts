@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, PanelStateKind, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -933,6 +933,21 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await activeSequence.next());
     await this.advanceToNextStep();
     assertFalse(await activeSequence.next());
+  }
+
+  async testGetPanelStateAttached() {
+    assertDefined(this.host.getPanelState);
+    // getPanelState and notifyPanelWillOpen should signal the ATTACHED state.
+    const panelStates = observeSequence(this.host.getPanelState());
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+    assertEquals(
+        PanelStateKind.ATTACHED,
+        this.client.panelOpenStateKind.getCurrentValue());
+    await sleep(100);
+    // It should remain in the attached state.
+    assertEquals(
+        PanelStateKind.ATTACHED,
+        this.host.getPanelState().getCurrentValue()?.kind);
   }
 }
 

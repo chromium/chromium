@@ -629,6 +629,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testPanelActive) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPanelStateAttached) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
  public:
   NewGlicApiTestWithWebActuationSettingEnabled() {
