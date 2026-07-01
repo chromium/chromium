@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/fast_ink/fast_ink_host_frame_utils.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -32,6 +30,30 @@
 #include "ui/gfx/video_types.h"
 
 namespace ash {
+namespace {
+
+void ClearGpuBuffer(const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
+  if (shared_image) {
+    mapping = shared_image->Map();
+  }
+
+  LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
+  if (!mapping) {
+    return;
+  }
+
+  gfx::Size size = mapping->Size();
+  int stride = mapping->Stride(0);
+  for (int i = 0; i < size.height(); ++i) {
+    auto row_span = mapping->GetMemoryForPlane(0).subspan(
+        base::checked_cast<size_t>(i * stride),
+        base::checked_cast<size_t>(size.width() * 4));
+    std::ranges::fill(row_span, 0);
+  }
+}
+
+}  // namespace
 
 // -----------------------------------------------------------------------------
 // FastInkHost::ScopedPaint
@@ -152,25 +174,9 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
   LOG_IF(ERROR, !client_shared_image_) << "Failed to create MappableSI";
   sync_token_ = sii->GenVerifiedSyncToken();
 
-  if (switches::ShouldClearFastInkBuffer()) {
-    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-    if (client_shared_image_) {
-      mapping = client_shared_image_->Map();
-    }
-    LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
-    if (mapping) {
-      gfx::Size size = mapping->Size();
-      int stride = mapping->Stride(0);
-      // Clear the buffer before usage, since it may be uninitialized.
-      // (http://b/168735625)
-      for (int i = 0; i < size.height(); ++i) {
-        auto row_span = mapping->GetMemoryForPlane(0).subspan(
-            base::checked_cast<size_t>(i * stride),
-            base::checked_cast<size_t>(size.width() * 4));
-        std::ranges::fill(row_span, 0);
-      }
-    }
-  }
+  // Clear the buffer before usage, since it may be uninitialized.
+  // (http://b/168735625)
+  ClearGpuBuffer(client_shared_image_);
 
   // Draw pending bitmaps to the buffer.
   for (auto pending_bitmap : pending_bitmaps_) {
