@@ -6260,37 +6260,6 @@
             ]
         }
     ],
-    "ClientSideDetectionNewObservers": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_0",
-                    "params": {
-                        "ClassificationDelay": "0.0"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionNewObservers"
-                    ]
-                },
-                {
-                    "name": "Enabled_0_5",
-                    "params": {
-                        "ClassificationDelay": "0.5"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionNewObservers"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionOnlyESBClassification": [
         {
             "platforms": [
@@ -6365,25 +6334,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ClientSideDetectionSkipErrorPage"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ClientSideDetectionTierSystem": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionTierSystem"
                     ]
                 }
             ]
