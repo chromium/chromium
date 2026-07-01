@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
