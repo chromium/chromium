@@ -115,6 +115,7 @@ PasswordForm GetTestCredential() {
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = kTestUsername;
   form.password_value = kTestPassword;
+  form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
 
@@ -611,6 +612,49 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
   // The first credential is picked (arbitrarily).
   EXPECT_EQ(&stored3,
             GetMatchForUpdating(parsed, {&stored3, &stored2, &stored1}));
+}
+
+TEST(PasswordManagerUtil,
+     GetMatchForUpdating_EmptyUsernamePreferMatchingPasswordAndRank) {
+  const base::Time kNow = base::Time::Now();
+  const base::Time kYesterday = kNow - base::Days(1);
+
+  StoredCredential stored1 =
+      password_manager::FromPasswordForm(GetTestCredential());
+  stored1.username_value = u"MyUsername";
+  stored1.password_value = u"MyPassword2";
+  stored1.date_last_used = kYesterday;
+  stored1.match_type = PasswordForm::MatchType::kExact;
+
+  StoredCredential stored2 =
+      password_manager::FromPasswordForm(GetTestCredential());
+  stored2.username_value = u"";
+  stored2.password_value = u"MyPassword1";
+  stored2.date_last_used = kYesterday;
+  stored2.match_type = PasswordForm::MatchType::kExact;
+
+  StoredCredential stored3 =
+      password_manager::FromPasswordForm(GetTestCredential());
+  stored3.username_value = u"OtherUsername";
+  stored3.password_value = u"MyPassword2";
+  stored3.date_last_used = kNow;
+  stored3.match_type = PasswordForm::MatchType::kExact;
+
+  PasswordForm parsed = GetTestCredential();
+  parsed.username_value.clear();
+  parsed.password_value = u"MyPassword2";
+
+  // stored3 has same match type as stored1 but is newer.
+  EXPECT_EQ(&stored3,
+            GetMatchForUpdating(parsed, {&stored1, &stored2, &stored3}));
+
+  // Now, let's test MatchType ranking.
+  // stored1: MatchType::kExact, DateLastUsed: Yesterday
+  // stored3: MatchType::kPSL, DateLastUsed: Now
+  // Even though stored3 is newer, stored1 is exact and should be preferred.
+  stored3.match_type = PasswordForm::MatchType::kPSL;
+  EXPECT_EQ(&stored1,
+            GetMatchForUpdating(parsed, {&stored1, &stored2, &stored3}));
 }
 
 TEST(PasswordManagerUtil,

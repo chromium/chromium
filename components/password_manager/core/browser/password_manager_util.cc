@@ -70,6 +70,21 @@ bool IsBetterMatchStored(const StoredCredential& lhs,
   return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
 }
 
+// Returns whether we should attempt to match |submitted_form| against stored
+// credentials by password value.
+//
+// This returns true if the username is empty, which typically happens when:
+// 1. The browser failed to detect the username field on the page.
+// 2. It is a password-only submission (e.g., a re-auth or step-up flow).
+//
+// Forms submitted via the Credential Management API (kApi) are explicitly
+// excluded. In the context of the API, an empty username is an intentional,
+// explicit signal from the site, not a parsing failure, so we should not
+// try to second-guess it.
+bool IsEligibleForEmptyUsernameMatching(const PasswordForm& submitted_form) {
+  return submitted_form.username_value.empty() &&
+         submitted_form.type != PasswordForm::Type::kApi;
+}
 }  // namespace
 
 // Update |credential| to reflect usage.
@@ -396,7 +411,21 @@ const StoredCredential* GetMatchForUpdating(
     return nullptr;
   }
 
-  // Try to return form with matching |username_value|.
+  if (IsEligibleForEmptyUsernameMatching(submitted_form)) {
+    // Prioritize matching by password value.
+    const StoredCredential* best_match = nullptr;
+    for (const StoredCredential* stored_match : credentials) {
+      if (stored_match->password_value == submitted_form.password_value &&
+          (!best_match || IsBetterMatchStored(*stored_match, *best_match))) {
+        best_match = stored_match;
+      }
+    }
+    if (best_match) {
+      return best_match;
+    }
+  }
+
+  // Match credential by username.
   const StoredCredential* username_match =
       FindCredentialByUsername(credentials, submitted_form.username_value);
   if (username_match) {
@@ -424,29 +453,13 @@ const StoredCredential* GetMatchForUpdating(
                                                               : nullptr;
   }
 
-  // Next attempt is to find a match by password value. It should not be tried
-  // when the username was actually detected.
-  if (submitted_form.type == PasswordForm::Type::kApi ||
-      !submitted_form.username_value.empty()) {
-    return nullptr;
+  // Ultimate fallback: The submitted form had no username but a password.
+  // Assume that it corresponds to an existing credential.
+  if (IsEligibleForEmptyUsernameMatching(submitted_form) &&
+      !username_updated_in_bubble && !credentials.empty()) {
+    return credentials.front();
   }
-
-  for (const StoredCredential* stored_match : credentials) {
-    if (stored_match->password_value == submitted_form.password_value) {
-      return stored_match;
-    }
-  }
-
-  // If the user manually changed the username value: consider this at this
-  // point of the heuristic a new credential (didn't match other
-  // passwords/usernames).
-  if (username_updated_in_bubble) {
-    return nullptr;
-  }
-
-  // Last try. The submitted form had no username but a password. Assume that
-  // it's an existing credential.
-  return credentials.empty() ? nullptr : credentials.front();
+  return nullptr;
 }
 
 PasswordForm MakeNormalizedBlocklistedForm(
