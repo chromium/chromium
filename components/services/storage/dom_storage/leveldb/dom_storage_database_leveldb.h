@@ -82,6 +82,10 @@ class DomStorageDatabaseLevelDB
   // fails when the version in the database is not supported.
   //
   // To create an in-memory database, provide an empty `directory`.
+  //
+  // When `write_tag_file` is true, writes the experimental tag file inside the
+  // (on-disk) database directory after a successful open. `Open()` fails if the
+  // tag cannot be written.
   static StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> Open(
       StorageType storage_type,
       const base::FilePath& directory,
@@ -89,7 +93,8 @@ class DomStorageDatabaseLevelDB
           memory_dump_id,
       KeyView version_key,
       int64_t min_supported_version,
-      int64_t max_supported_version);
+      int64_t max_supported_version,
+      bool write_tag_file);
 
   static DbStatus Destroy(const base::FilePath& directory);
 

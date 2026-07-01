@@ -34,13 +34,9 @@ LevelDbOnDiskState CheckOnDiskLevelDbState(
 DatabaseMetricsType GetMetricsType(DomStorageSqliteRolloutStage stage,
                                    LevelDbOnDiskState leveldb_state);
 
-// Writes the experimental tag file inside the LevelDB directory. Must be
-// called on a thread that allows blocking I/O. Returns `DbStatus::OK()` on
-// success. On failure, callers must propagate the error and treat the
-// database as unusable (the absence of the tag would permanently
-// misclassify a newly-created control-arm database as pre-existing).
-[[nodiscard]] DbStatus WriteLevelDbExperimentalTag(
-    const base::FilePath& database_path);
+// Returns the path to the experimental tag file inside the LevelDB directory.
+base::FilePath GetLevelDbExperimentalTagPath(
+    const base::FilePath& leveldb_path);
 
 }  // namespace storage
 

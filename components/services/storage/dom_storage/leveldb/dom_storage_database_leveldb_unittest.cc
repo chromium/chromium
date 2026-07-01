@@ -90,7 +90,8 @@ class DomStorageDatabaseLevelDBTest : public testing::Test {
         DomStorageDatabaseLevelDB::Open(
             StorageType::kLocalStorage, directory,
             /*memory_dump_id=*/std::nullopt, kTestVersionKey,
-            kTestMinSupportedVersion, kTestMaxSupportedVersion);
+            kTestMinSupportedVersion, kTestMaxSupportedVersion,
+            /*write_tag_file=*/false);
 
     ASSERT_TRUE(database.has_value()) << database.error().ToString();
     *result = *std::move(database);
@@ -399,7 +400,8 @@ void DomStorageDatabaseLevelDBTest::TestInvalidVersion(
       DomStorageDatabaseLevelDB::Open(
           StorageType::kLocalStorage, temp_dir.GetPath(),
           /*memory_dump_id=*/std::nullopt, kTestVersionKey,
-          kTestMinSupportedVersion, kTestMaxSupportedVersion);
+          kTestMinSupportedVersion, kTestMaxSupportedVersion,
+          /*write_tag_file=*/false);
   ASSERT_FALSE(reopened_database.has_value());
   EXPECT_TRUE(reopened_database.error().IsCorruption());
 }

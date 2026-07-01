@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/expected_macros.h"
-#include "components/services/storage/dom_storage/dom_storage_rollout.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -177,16 +176,14 @@ DbStatus SessionStorageLevelDB::Open(
     const base::FilePath& directory,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id) {
-  ASSIGN_OR_RETURN(
-      leveldb_, DomStorageDatabaseLevelDB::Open(
-                    StorageType::kSessionStorage, directory, memory_dump_id,
-                    kSessionStorageLevelDBVersionKey,
-                    /*min_supported_version=*/kSessionStorageLevelDBVersion,
-                    /*max_supported_version=*/kSessionStorageLevelDBVersion));
-  if (write_exp_tag_) {
-    DB_RETURN_IF_ERROR(WriteLevelDbExperimentalTag(directory));
-    write_exp_tag_ = false;
-  }
+  ASSIGN_OR_RETURN(leveldb_,
+                   DomStorageDatabaseLevelDB::Open(
+                       StorageType::kSessionStorage, directory, memory_dump_id,
+                       kSessionStorageLevelDBVersionKey,
+                       /*min_supported_version=*/kSessionStorageLevelDBVersion,
+                       /*max_supported_version=*/kSessionStorageLevelDBVersion,
+                       /*write_tag_file=*/write_exp_tag_));
+  write_exp_tag_ = false;
   return DbStatus::OK();
 }
 
