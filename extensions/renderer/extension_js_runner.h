@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 #define EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

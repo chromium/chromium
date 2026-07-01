@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_DOM_ACTIVITY_LOGGER_H_
 #define EXTENSIONS_RENDERER_DOM_ACTIVITY_LOGGER_H_
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_id.h"
