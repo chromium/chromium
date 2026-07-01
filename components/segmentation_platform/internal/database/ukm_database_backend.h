@@ -75,7 +75,7 @@ class UkmDatabaseBackend {
   void TrackChangesInTransaction(int change_count);
 
   // Commit current transaction and begin a new one.
-  void RestartTransaction();
+  void RestartTransaction(bool purge_stale_data);
 
   const base::FilePath database_path_;
   const bool in_memory_;
