@@ -2145,6 +2145,16 @@ public class CustomTabsConnection {
 
     public boolean receiveFile(
             CustomTabsSessionToken sessionToken, Uri uri, int purpose, @Nullable Bundle extras) {
+        if (ContextUtils.getApplicationContext()
+                        .checkUriPermission(
+                                uri,
+                                Binder.getCallingPid(),
+                                Binder.getCallingUid(),
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                != PackageManager.PERMISSION_GRANTED) {
+            logCall("receiveFile()", false);
+            return false;
+        }
         return CustomTabsClientFileProcessor.getInstance()
                 .processFile(new SessionHolder<>(sessionToken), uri, purpose, extras);
     }
