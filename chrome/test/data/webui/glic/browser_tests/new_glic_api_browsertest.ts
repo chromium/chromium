@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, HostCapability, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -874,6 +874,23 @@ class ApiTests extends ApiTestFixtureBase {
     // Show the panel again. The client should receive an update.
     await this.advanceToNextStep();
     sequence.waitFor(tabs => tabs.length === 2);
+  }
+
+  async testGetFormFactor() {
+    assertDefined(this.host.getFormFactor);
+    const formFactor = this.host.getFormFactor();
+    assertDefined(formFactor);
+    if (navigator.userAgent.includes('Android')) {
+      if (navigator.userAgent.includes('Mobile')) {
+        assertEquals(formFactor, FormFactor.PHONE);
+      } else {
+        assertTrue(
+            formFactor === FormFactor.TABLET ||
+            formFactor === FormFactor.DESKTOP);
+      }
+    } else {
+      assertEquals(formFactor, FormFactor.DESKTOP);
+    }
   }
 }
 

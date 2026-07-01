@@ -570,6 +570,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFormFactor) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
  public:
   NewGlicApiTestWithWebActuationSettingEnabled() {

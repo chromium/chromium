@@ -1378,10 +1378,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFormFactor) {
-  ExecuteJsTest();
-}
-
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
                        testGetModelQualityClientIdFeatureEnabled) {

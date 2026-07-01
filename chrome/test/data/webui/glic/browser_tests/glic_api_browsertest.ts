@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {CancelActionsResult, FocusedTabData, InvokeOptions, OpenPanelInfo, PanelOpeningData, TabData, UserConfirmationDialogRequest, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -813,15 +813,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await actuationOnWebState.next());
   }
 
-
-  async testGetFormFactor() {
-    assertDefined(this.host.getFormFactor);
-    const formFactor = this.host.getFormFactor();
-    assertDefined(formFactor);
-    // TODO: When this is migrated to android, update this test to check for
-    // the other form factors.
-    assertEquals(formFactor, FormFactor.DESKTOP);
-  }
 
   async testGetUserProfileInfo() {
     assertDefined(this.host.getUserProfileInfo);
