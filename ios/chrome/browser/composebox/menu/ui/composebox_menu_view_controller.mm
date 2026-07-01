@@ -483,8 +483,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
                                      ComposeboxAttachmentOption::kFile]];
 
   NSMutableArray* attachmentItems =
-      [NSMutableArray arrayWithObjects:currentTabItem, tabsItem, cameraItem,
-                                       galleryItem, filesItem, nil];
+      [NSMutableArray arrayWithObjects:currentTabItem, tabsItem, galleryItem,
+                                       cameraItem, filesItem, nil];
   if (IsComposeboxDriveOptionEnabled()) {
     UIImage* driveSymbol =
         DefaultSymbolWithPointSize(kFolderSymbol, kSymbolActionPointSize);
