@@ -821,8 +821,8 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
   for (const auto& dir_name : dir_names) {
     sub_path = sub_path.AppendASCII(dir_name);
     ASSERT_TRUE(CreateDirectory(sub_path));
-    // TODO(crbug.com/40263777): Expect that no events are fired.
   }
+  delegate.SpinAndExpectNoEvents();
 
   // It may take some time for `watcher` to re-construct its watch list, so it's
   // possible an event is missed. _At least_ one event should be fired, though.
