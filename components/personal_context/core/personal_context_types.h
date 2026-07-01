@@ -40,6 +40,8 @@ enum class PersonalContextNonEligibilityReason {
 enum class PersonalContextEnablementState {
   kDisabledNotEligible = 0,  // Feature disabled, user not eligible.
   kDisabledNeedsOptIn = 1,   // Feature disabled pending OptIn.
+  // TODO(b:494149753): The EnablementService should only handle the non-
+  // Autofill-specific parts. Remove the following two Autofill-specific states.
   kDisabledViaPersonalIntelligenceInAutofillToggle = 2,  // User toggled it off.
   kEnabledShouldShowNotice = 3,  // Feature enabled but notice should be shown.
   kEnabled = 4                   // Feature enabled, first run completed.

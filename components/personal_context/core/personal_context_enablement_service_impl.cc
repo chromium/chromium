@@ -138,47 +138,12 @@ SatisfiesMiscellaneousRequirements(GeoIpCountryCode country_code,
 
   return std::pair{true, std::nullopt};
 }
-
-// Checks whether preference requirements are satisfied.
-[[nodiscard]] std::pair<PersonalContextEnablementState,
-                        std::optional<PersonalContextNonEligibilityReason>>
-SatisfiesPreferenceRequirements(PrefService* pref_service,
-                                std::string* debug_message = nullptr) {
-  using enum PersonalContextEnablementState;
-  if (!pref_service) {
-    MaybeOutputReason(debug_message, "Prefs are not available.");
-    return std::pair{kDisabledNotEligible, std::nullopt};
-  }
-
-  // TODO(b:494149753): This pref is autofill specific, find a way to move it to
-  // components/autofill.
-  const bool ambient_autofill_notice_should_be_shown = pref_service->GetBoolean(
-      prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown);
-  const bool toggle_is_on = pref_service->GetBoolean(
-      prefs::kPersonalContextInAutofillSettingsToggleStatus);
-
-  if (!toggle_is_on) {
-    // The toggle is on-by-default. If it's off then it must have been disabled
-    // by the user.
-    MaybeOutputReason(debug_message, "User disabled via toggle.");
-    return std::pair{
-        kDisabledViaPersonalIntelligenceInAutofillToggle,
-        PersonalContextNonEligibilityReason::kPersonalIntelligencePrefDisabled};
-  }
-
-  if (ambient_autofill_notice_should_be_shown) {
-    MaybeOutputReason(debug_message, "Notice not yet shown.");
-    return std::pair{kEnabledShouldShowNotice,
-                     PersonalContextNonEligibilityReason::kEligible};
-  }
-
-  return std::pair{kEnabled, PersonalContextNonEligibilityReason::kEligible};
-}
 }  // namespace
 
 PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
     account_settings::AccountSettingService* account_settings_service,
     signin::IdentityManager* identity_manager,
+    // TODO(b:494149753): PrefsService is no longer needed, remove it.
     PrefService* pref_service,
     GeoIpCountryCode country_code,
     std::string locale)
@@ -192,19 +157,6 @@ PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
   }
   if (identity_manager) {
     identity_manager_observer_.Observe(identity_manager);
-  }
-  if (pref_service_) {
-    pref_registrar_.Init(pref_service_);
-    pref_registrar_.Add(
-        prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown,
-        base::BindRepeating(
-            &PersonalContextEnablementServiceImpl::UpdateEnablementState,
-            base::Unretained(this)));
-    pref_registrar_.Add(
-        prefs::kPersonalContextInAutofillSettingsToggleStatus,
-        base::BindRepeating(
-            &PersonalContextEnablementServiceImpl::UpdateEnablementState,
-            base::Unretained(this)));
   }
   UpdateEnablementState();
 }
@@ -263,10 +215,8 @@ PersonalContextEnablementServiceImpl::ComputeEnablementState() {
             : kDisabledNotEligible,
         reason};
   }
-  // SatisfiesPreferenceRequirements() needs to be called last: Up to this
-  // point, general eligibility checks have been performed. Only if those are
-  // satifsied, autofill specific prefs should be evaluated.
-  return SatisfiesPreferenceRequirements(pref_service_.get());
+
+  return std::pair{kEnabled, PersonalContextNonEligibilityReason::kEligible};
 }
 
 void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
@@ -286,15 +236,6 @@ void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
 
 void PersonalContextEnablementServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    if (pref_service_) {
-      pref_service_->ClearPref(
-          prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown);
-      pref_service_->ClearPref(
-          prefs::kPersonalContextInAutofillSettingsToggleStatus);
-    }
-  }
   UpdateEnablementState();
 }
 

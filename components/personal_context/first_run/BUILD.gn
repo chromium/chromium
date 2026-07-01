@@ -16,6 +16,7 @@ static_library("first_run") {
     "//components/accessibility_annotator/core",
     "//components/keyed_service/core",
     "//components/personal_context/core",
+    "//components/signin/public/identity_manager",
     "//content/public/browser",
   ]
 }
@@ -33,6 +34,7 @@ source_set("unit_tests") {
     "//components/personal_context/core",
     "//components/personal_context/core:prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

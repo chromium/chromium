@@ -163,69 +163,6 @@ TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
       PersonalContextNonEligibilityReason::kEligible, 1);
 }
 
-// Verifies that the state is `kEnabled` when the notice no longer needs to be
-// shown and the toggle is "on".
-TEST_F(PersonalContextEnablementServiceImplTest,
-       EnabledShouldNotShowNoticeAndToggleIsOn) {
-  pref_service_.SetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown,
-      false);
-  pref_service_.SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      true);
-  EXPECT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::kEnabled);
-}
-
-// Verifies that the state is `kEnabledShouldShowNotice` when the notice still
-// needs to be shown and the toggle is "on".
-TEST_F(PersonalContextEnablementServiceImplTest,
-       EnabledShouldShowNoticeAndToggleIsOn) {
-  pref_service_.SetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown,
-      true);
-  pref_service_.SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      true);
-  EXPECT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::kEnabledShouldShowNotice);
-  histogram_tester().ExpectBucketCount(
-      "Autofill.PersonalContext.NonEligibilityReason",
-      PersonalContextNonEligibilityReason::kEligible, 1);
-}
-
-// Verifies that the state is `kDisabledViaPersonalIntelligenceInAutofillToggle`
-// when the toggle is off.
-TEST_F(PersonalContextEnablementServiceImplTest, DisabledViaToggle) {
-  pref_service_.SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      false);
-
-  // The toggle takes precedence no matter if the notice should still be shown.
-  pref_service_.SetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown,
-      false);
-  EXPECT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::
-                kDisabledViaPersonalIntelligenceInAutofillToggle);
-
-  pref_service_.SetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown,
-      true);
-  EXPECT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::
-                kDisabledViaPersonalIntelligenceInAutofillToggle);
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.PersonalContext.NonEligibilityReason",
-      PersonalContextNonEligibilityReason::kPersonalIntelligencePrefDisabled,
-      1);
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
 // Verifies that the service is disabled when the user is not signed in.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
@@ -238,23 +175,6 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
       PersonalContextNonEligibilityReason::kNotSignedIn, 2);
 }
 
-// Verifies that the onboarding preference is reset when the user signs out,
-// ensuring they see the notice again if they sign back in.
-TEST_F(PersonalContextEnablementServiceImplTest, ClearsPrefOnSignout) {
-  pref_service_.SetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown,
-      false);
-  pref_service_.SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      false);
-  identity_test_env_.ClearPrimaryAccount();
-  EXPECT_TRUE(pref_service_.GetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown));
-  EXPECT_TRUE(pref_service_.GetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus));
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that the service is disabled for underaged users.
@@ -379,37 +299,6 @@ TEST_F(PersonalContextEnablementServiceImplTest,
     EXPECT_EQ(service().GetEnablementState(),
               PersonalContextEnablementState::kEnabled);
   }
-}
-
-// Verifies that registered observers are correctly notified when the
-// enablement state changes due to a preference update.
-TEST_F(PersonalContextEnablementServiceImplTest,
-       ObserversNotifiedOnEnablementStateChanged) {
-  MockPersonalContextEnablementServiceObserver observer;
-  service().AddObserver(&observer);
-
-  // Initial state is kEnabled.
-  ASSERT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::kEnabled);
-
-  // Trigger a change to `kEnabledShouldShowNotice` by setting a pref.
-  EXPECT_CALL(observer,
-              OnEnablementStateChanged(
-                  PersonalContextEnablementState::kEnabledShouldShowNotice));
-  pref_service_.SetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown,
-      true);
-
-  // Trigger a change back to kEnabled.
-  EXPECT_CALL(observer, OnEnablementStateChanged(
-                            PersonalContextEnablementState::kEnabled));
-  pref_service_.SetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown,
-      false);
-
-  service().RemoveObserver(&observer);
 }
 
 // Verifies that the internal state cache and observers are updated when

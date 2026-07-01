@@ -8,10 +8,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/first_run/personal_context_first_run_client.h"
 #include "components/personal_context/first_run/personal_context_first_run_service.h"
 #include "components/personal_context/first_run/personal_context_first_run_types.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class PrefService;
 
@@ -23,12 +25,14 @@ namespace personal_context {
 class PersonalContextEnablementService;
 
 class PersonalContextFirstRunServiceImpl
-    : public PersonalContextFirstRunService {
+    : public PersonalContextFirstRunService,
+      public signin::IdentityManager::Observer {
  public:
   PersonalContextFirstRunServiceImpl(
       std::unique_ptr<PersonalContextFirstRunClient> client,
       PersonalContextEnablementService* enablement_service,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager);
   PersonalContextFirstRunServiceImpl(
       const PersonalContextFirstRunServiceImpl&) = delete;
   PersonalContextFirstRunServiceImpl& operator=(
@@ -43,6 +47,10 @@ class PersonalContextFirstRunServiceImpl
   void MarkPersonalContextInAutofillNoticeAsAcknowledged() override;
   bool ShouldShowPersonalContextAutofillNotice() const override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
  private:
   void OnNoticeDialogCompleted(
       base::OnceCallback<void(FirstRunTriggerResult)> callback,
@@ -51,6 +59,11 @@ class PersonalContextFirstRunServiceImpl
   std::unique_ptr<PersonalContextFirstRunClient> client_;
   raw_ptr<PersonalContextEnablementService> enablement_service_;
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<PersonalContextFirstRunServiceImpl> weak_ptr_factory_{
       this};

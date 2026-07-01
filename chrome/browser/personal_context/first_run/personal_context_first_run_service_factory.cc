@@ -12,6 +12,7 @@
 #include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/personal_context/first_run/personal_context_first_run_service_impl.h"
 
 // static
@@ -35,6 +36,7 @@ PersonalContextFirstRunServiceFactory::PersonalContextFirstRunServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(PersonalContextEnablementServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 PersonalContextFirstRunServiceFactory::
@@ -49,5 +51,5 @@ PersonalContextFirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<personal_context::PersonalContextFirstRunServiceImpl>(
       std::move(client),
       PersonalContextEnablementServiceFactory::GetForProfile(profile),
-      profile->GetPrefs());
+      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
 }

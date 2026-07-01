@@ -40,37 +40,25 @@ public class PersonalContextFirstRunServiceBridgeTest {
     }
 
     /**
-     * Test 1: Verify shouldShow is true under state 3, and call noticeAcknowledged does not lead to
-     * crashes.
+     * Test 1: Verify shouldShow is true under state 4 (eligible), and calling noticeAcknowledged
+     * makes it false.
      */
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=PersonalContextFirstRunNoticePhase2,"
-                + "PersonalContextForceEnablementState:state/3"
-    })
-    public void testNoticeEligibleInitially() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Under state 3, shouldShowNotice must return true
-                    Assert.assertTrue(PersonalContextFirstRunService.shouldShowNotice(mProfile));
-
-                    // Call real C++ noticeAcknowledged JNI.
-                    PersonalContextFirstRunService.noticeAcknowledged(mProfile);
-                });
-    }
-
-    /** Test 2: Verify shouldShow is false under state 4 (First run completed). */
     @Test
     @SmallTest
     @CommandLineFlags.Add({
         "enable-features=PersonalContextFirstRunNoticePhase2,"
                 + "PersonalContextForceEnablementState:state/4"
     })
-    public void testNoticeNotShownAfterAcknowledgement() {
+    public void testNoticeEligibleInitially() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Under state 4, shouldShowNotice must return false.
+                    // Under state 4 (eligible), shouldShowNotice must return true initially.
+                    Assert.assertTrue(PersonalContextFirstRunService.shouldShowNotice(mProfile));
+
+                    // Call real C++ noticeAcknowledged JNI.
+                    PersonalContextFirstRunService.noticeAcknowledged(mProfile);
+
+                    // Notice should no longer be shown.
                     Assert.assertFalse(PersonalContextFirstRunService.shouldShowNotice(mProfile));
                 });
     }
