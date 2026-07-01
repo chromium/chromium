@@ -157,10 +157,8 @@ TEST(BaseWinUtilTest, IsRunningUnderDesktopName) {
   std::wstring desktop_name = GetWindowObjectName(thread_desktop);
 
   EXPECT_TRUE(IsRunningUnderDesktopName(desktop_name));
-  EXPECT_TRUE(IsRunningUnderDesktopName(
-      AsWString(ToLowerASCII(AsStringPiece16(desktop_name)))));
-  EXPECT_TRUE(IsRunningUnderDesktopName(
-      AsWString(ToUpperASCII(AsStringPiece16(desktop_name)))));
+  EXPECT_TRUE(IsRunningUnderDesktopName(ToLowerASCII(desktop_name)));
+  EXPECT_TRUE(IsRunningUnderDesktopName(ToUpperASCII(desktop_name)));
   EXPECT_FALSE(
       IsRunningUnderDesktopName(desktop_name + L"_non_existent_desktop_name"));
 }

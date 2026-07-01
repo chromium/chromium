@@ -1108,8 +1108,7 @@ bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
   }
 
   std::wstring current_desktop_name = GetWindowObjectName(thread_desktop);
-  return EqualsCaseInsensitiveASCII(AsStringPiece16(current_desktop_name),
-                                    AsStringPiece16(desktop_name));
+  return EqualsCaseInsensitiveASCII(current_desktop_name, desktop_name);
 }
 
 // This method is used to detect whether current session is a remote session.

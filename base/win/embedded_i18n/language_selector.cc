@@ -48,8 +48,7 @@ struct AvailableLanguageAliases {
 bool IsArraySortedAndLowerCased(span<const LangToOffset> languages_to_offset) {
   return std::ranges::is_sorted(languages_to_offset) &&
          std::ranges::all_of(languages_to_offset, [](const auto& lang) {
-           auto language = AsStringPiece16(lang.first);
-           return ToLowerASCII(language) == language;
+           return ToLowerASCII(lang.first) == lang.first;
          });
 }
 #endif  // DCHECK_IS_ON()
@@ -223,8 +222,7 @@ bool SelectIf(const std::vector<std::wstring>& candidates,
   // An earlier candidate entry matching on an exact match or alias match takes
   // precedence over a later candidate entry matching on an exact match.
   for (const std::wstring& scan : candidates) {
-    std::wstring lower_case_candidate =
-        AsWString(ToLowerASCII(AsStringPiece16(scan)));
+    std::wstring lower_case_candidate = ToLowerASCII(scan);
     if (GetExactLanguageOffset(languages_to_offset, lower_case_candidate,
                                matched_language_to_offset) ||
         GetAliasedLanguageOffset(available_aliases, lower_case_candidate,
@@ -237,8 +235,7 @@ bool SelectIf(const std::vector<std::wstring>& candidates,
   // If no candidate matches exactly or by alias, try to match by locale neutral
   // language.
   for (const std::wstring& scan : candidates) {
-    std::wstring lower_case_candidate =
-        AsWString(ToLowerASCII(AsStringPiece16(scan)));
+    std::wstring lower_case_candidate = ToLowerASCII(scan);
 
     // Extract the locale neutral language from the language to search and try
     // to find an exact match for that language in the provided table.
