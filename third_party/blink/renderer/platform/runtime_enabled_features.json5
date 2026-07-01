@@ -4675,8 +4675,10 @@
     {
       // Simplifies the behavior and stacking interactions of popover=hint and
       // popover=auto. See https://crbug.com/499019927.
-      // This shipped in M150 and can be removed in M152.
+      // This shipped in M150, was disabled via Finch, and was re-enabled in
+      // M151. It can be removed in M153.
       name: "PopoverHintNewBehavior",
+      status: "stable",
     },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
