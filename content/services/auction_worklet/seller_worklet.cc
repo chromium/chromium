@@ -171,7 +171,6 @@ bool IsValidBid(double bid) {
 // (With many fields filled in on-demand by an AuctionConfigLazyFiller).
 bool AppendAuctionConfig(
     AuctionV8Helper* v8_helper,
-    AuctionV8Logger* v8_logger,
     v8::Local<v8::Context> context,
     const url::Origin& seller,
     base::optional_ref<const GURL> decision_logic_url,
@@ -269,7 +268,7 @@ bool AppendAuctionConfig(
     for (size_t pos = 0; pos < component_auctions.size(); ++pos) {
       const auto& component_auction = component_auctions[pos];
       if (!AppendAuctionConfig(
-              v8_helper, v8_logger, context, component_auction.seller,
+              v8_helper, context, component_auction.seller,
               component_auction.decision_logic_url,
               component_auction.trusted_scoring_signals_url,
               experiment_group_id,
@@ -1143,8 +1142,6 @@ void SellerWorklet::V8State::ScoreAd(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
   TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "get_seller_context"
 
-  AuctionV8Logger v8_logger(v8_helper_.get(), context);
-
   v8::LocalVector<v8::Value> args(isolate);
   if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
@@ -1163,10 +1160,10 @@ void SellerWorklet::V8State::ScoreAd(
   context_recycler->EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
   if (!AppendAuctionConfig(
-          v8_helper_.get(), &v8_logger, context,
-          url::Origin::Create(decision_logic_url_), decision_logic_url_,
-          trusted_scoring_signals_url_, experiment_group_id_,
-          send_creative_scanning_metadata_, auction_ad_config_non_shared_params,
+          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
+          decision_logic_url_, trusted_scoring_signals_url_,
+          experiment_group_id_, send_creative_scanning_metadata_,
+          auction_ad_config_non_shared_params,
           context_recycler->auction_config_lazy_fillers(),
           /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
@@ -1755,17 +1752,16 @@ void SellerWorklet::V8State::ReportResult(
 
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
-  AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
   v8::LocalVector<v8::Value> args(isolate);
 
   context_recycler.EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
   if (!AppendAuctionConfig(
-          v8_helper_.get(), &v8_logger, context,
-          url::Origin::Create(decision_logic_url_), decision_logic_url_,
-          trusted_scoring_signals_url_, experiment_group_id_,
-          send_creative_scanning_metadata_, auction_ad_config_non_shared_params,
+          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
+          decision_logic_url_, trusted_scoring_signals_url_,
+          experiment_group_id_, send_creative_scanning_metadata_,
+          auction_ad_config_non_shared_params,
           context_recycler.auction_config_lazy_fillers(),
           /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),

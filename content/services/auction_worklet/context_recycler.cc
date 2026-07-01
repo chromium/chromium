@@ -183,12 +183,6 @@ v8::Local<v8::Context> ContextRecycler::GetContext() {
 }
 
 void ContextRecycler::ResetForReuse() {
-  // Make sure that microtasks get flushed as they would not on timeout.
-  {
-    AuctionV8Helper::TimeLimitScope time_scope(v8_helper_->GetTimeLimit());
-    v8_helper_->isolate()->PerformMicrotaskCheckpoint();
-  }
-
   for (Bindings* bindings : bindings_list_) {
     bindings->Reset();
   }
@@ -206,6 +200,12 @@ void ContextRecycler::ResetForReuse() {
   }
   for (const auto& auction_config_lazy_filler : auction_config_lazy_fillers_) {
     auction_config_lazy_filler->Reset();
+  }
+
+  // Make sure that microtasks get flushed as they would not on timeout.
+  {
+    AuctionV8Helper::TimeLimitScope time_scope(v8_helper_->GetTimeLimit());
+    v8_helper_->isolate()->PerformMicrotaskCheckpoint();
   }
 }
 

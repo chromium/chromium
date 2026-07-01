@@ -1128,6 +1128,12 @@ void BidderWorklet::V8State::ReportWin(
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 
+  // Needs to outlast ContextRecyclerScope. See crbug.com/527406824.
+  DeprecatedUrlLazyFiller deprecated_render_url(
+      v8_helper_.get(), &browser_signal_render_url,
+      "browserSignals.renderUrl is deprecated."
+      " Please use browserSignals.renderURL instead.");
+
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
   ContextRecycler context_recycler(v8_helper_.get());
@@ -1176,10 +1182,6 @@ void BidderWorklet::V8State::ReportWin(
 
   context_recycler.AddReportWinBrowserSignalsLazyFiller();
 
-  DeprecatedUrlLazyFiller deprecated_render_url(
-      v8_helper_.get(), &v8_logger, &browser_signal_render_url,
-      "browserSignals.renderUrl is deprecated."
-      " Please use browserSignals.renderURL instead.");
   base::TimeDelta reporting_timeout =
       browser_signal_reporting_timeout.has_value()
           ? *browser_signal_reporting_timeout
@@ -1238,6 +1240,8 @@ void BidderWorklet::V8State::ReportWin(
   }
   args.push_back(direct_from_seller_signals);
 
+  deprecated_render_url.SetLogger(&v8_logger);
+
   // An empty return value indicates an exception was thrown. Any other return
   // value indicates no exception.
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
@@ -1253,6 +1257,7 @@ void BidderWorklet::V8State::ReportWin(
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                             total_timeout.get(), errors_out);
   if (result != AuctionV8Helper::Result::kSuccess) {
+    deprecated_render_url.SetLogger(nullptr);
     TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/std::nullopt,
@@ -1293,6 +1298,7 @@ void BidderWorklet::V8State::ReportWin(
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportWinTime", elapsed);
 
   if (result != AuctionV8Helper::Result::kSuccess) {
+    deprecated_render_url.SetLogger(nullptr);
     // Keep Private Aggregation API requests since `reportWin()` might use it to
     // detect script timeout or failures.
     PostReportWinCallbackToUserThread(
@@ -1399,6 +1405,7 @@ void BidderWorklet::V8State::ReportWin(
   }
   // This covers both the case where a report URL was provided, and the case one
   // was not.
+  deprecated_render_url.SetLogger(nullptr);
   PostReportWinCallbackToUserThread(
       std::move(callback), context_recycler.report_bindings()->report_url(),
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
