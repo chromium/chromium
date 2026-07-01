@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/accessibility_annotator/core/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
@@ -50,6 +51,8 @@ namespace autofill {
 
 namespace {
 
+using ::accessibility_annotator::MemoryEntrySource;
+using ::accessibility_annotator::MemoryEntrySourceType;
 using ::accessibility_annotator::MemorySearchResult;
 using ::accessibility_annotator::MemorySearchResults;
 using MemoryDataType = ::accessibility_annotator::MemoryDataType;
@@ -907,6 +910,106 @@ TEST_F(AtMemoryManagerTest,
   EXPECT_EQ(final_suggestions[0].main_text.value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA));
 }
+
+enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };
+
+class AtMemoryManagerIconTest
+    : public AtMemoryManagerTest,
+      public ::testing::WithParamInterface<SourceScenario> {
+ public:
+  SourceScenario scenario() const { return GetParam(); }
+
+  static std::vector<MemoryEntrySource> GetSourcesForScenario(
+      SourceScenario scenario) {
+    std::vector<MemoryEntrySource> sources;
+    switch (scenario) {
+      case SourceScenario::kNoSources:
+        break;
+      case SourceScenario::kAutofillOnly:
+        sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kAutofill));
+        break;
+      case SourceScenario::kGmailOnly:
+        sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kGmail));
+        break;
+      case SourceScenario::kMixed:
+        sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kAutofill));
+        sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kGmail));
+        break;
+    }
+    return sources;
+  }
+};
+
+TEST_P(AtMemoryManagerIconTest,
+       TransformsResultsIntoSuggestionsWithCorrectIcons) {
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback_.Get());
+
+  struct TestCase {
+    MemoryDataType type;
+    Suggestion::Icon regular_icon;
+    Suggestion::Icon sparkly_icon;
+  };
+  const std::vector<TestCase> test_cases = {
+      {MemoryDataType::kAddressFull, Suggestion::Icon::kLocation,
+       Suggestion::Icon::kLocationSpark},
+      {MemoryDataType::kVehicle, Suggestion::Icon::kVehicle,
+       Suggestion::Icon::kVehicleSpark},
+      {MemoryDataType::kPassportFull, Suggestion::Icon::kPassport,
+       Suggestion::Icon::kPassportSpark},
+      {MemoryDataType::kFlightReservationFull, Suggestion::Icon::kFlight,
+       Suggestion::Icon::kFlightSpark},
+      {MemoryDataType::kDriversLicenseFull, Suggestion::Icon::kIdCard,
+       Suggestion::Icon::kIdCardSpark},
+      {MemoryDataType::kKnownTravelerNumberFull, Suggestion::Icon::kIdCard2,
+       Suggestion::Icon::kIdCard2Spark},
+      {MemoryDataType::kCreditCardNumber, Suggestion::Icon::kCardGeneric,
+       Suggestion::Icon::kCardGenericSpark},
+      {MemoryDataType::kIban, Suggestion::Icon::kCardGeneric,
+       Suggestion::Icon::kCardGenericSpark},
+      {MemoryDataType::kOrderFull, Suggestion::Icon::kOrder,
+       Suggestion::Icon::kOrderSpark},
+      {MemoryDataType::kShipmentFull, Suggestion::Icon::kShipment,
+       Suggestion::Icon::kShipmentSpark},
+      {MemoryDataType::kEmail, Suggestion::Icon::kNoIcon,
+       Suggestion::Icon::kTextSpark},
+      {MemoryDataType::kUnknown, Suggestion::Icon::kNoIcon,
+       Suggestion::Icon::kTextSpark},
+  };
+
+  std::vector<MemorySearchResult> entries =
+      base::ToVector(test_cases, [&](const TestCase& test_case) {
+        MemorySearchResult entry(test_case.type, u"label", u"value");
+        entry.sources = GetSourcesForScenario(scenario());
+        return entry;
+      });
+
+  std::vector<Suggestion> final_suggestions;
+  MockQueryResultsAndExpectCallback(
+      u"query",
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_EQ(final_suggestions.size(), test_cases.size());
+  const bool expect_sparkly = (scenario() != SourceScenario::kAutofillOnly);
+  for (auto [test_case, suggestion] :
+       base::zip(test_cases, final_suggestions)) {
+    Suggestion::Icon expected_icon =
+        expect_sparkly ? test_case.sparkly_icon : test_case.regular_icon;
+    EXPECT_EQ(suggestion.icon, expected_icon)
+        << "For MemoryDataType: " << static_cast<int>(test_case.type)
+        << " in scenario: " << static_cast<int>(scenario());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AtMemoryManagerIconTest,
+                         ::testing::Values(SourceScenario::kNoSources,
+                                           SourceScenario::kAutofillOnly,
+                                           SourceScenario::kGmailOnly,
+                                           SourceScenario::kMixed));
 
 }  // namespace
 

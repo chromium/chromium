@@ -197,8 +197,13 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
   }
 }
 
-Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
-  switch (type) {
+Suggestion::Icon GetIcon(
+    const accessibility_annotator::MemorySearchResult& search_result) {
+  const bool is_autofill_only =
+      search_result.sources.size() == 1 &&
+      search_result.sources.front().type ==
+          accessibility_annotator::MemoryEntrySourceType::kAutofill;
+  switch (search_result.type) {
     case MemoryDataType::kNameFull:
     case MemoryDataType::kAddressFull:
     case MemoryDataType::kAddressStreetAddress:
@@ -208,12 +213,8 @@ Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kAddressCountry:
     case MemoryDataType::kPhone:
     case MemoryDataType::kCompanyName:
-      return Suggestion::Icon::kAccount;
-    case MemoryDataType::kEmail:
-      return Suggestion::Icon::kEmail;
-    case MemoryDataType::kIban:
-    case MemoryDataType::kIbanNickname:
-      return Suggestion::Icon::kIban;
+      return is_autofill_only ? Suggestion::Icon::kLocation
+                              : Suggestion::Icon::kLocationSpark;
     case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
@@ -222,14 +223,16 @@ Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kVehiclePlateNumber:
     case MemoryDataType::kVehiclePlateState:
     case MemoryDataType::kVehicleVin:
-      return Suggestion::Icon::kVehicle;
+      return is_autofill_only ? Suggestion::Icon::kVehicle
+                              : Suggestion::Icon::kVehicleSpark;
     case MemoryDataType::kPassportFull:
     case MemoryDataType::kPassportName:
     case MemoryDataType::kPassportCountry:
     case MemoryDataType::kPassportNumber:
     case MemoryDataType::kPassportIssueDate:
     case MemoryDataType::kPassportExpirationDate:
-      return Suggestion::Icon::kPassport;
+      return is_autofill_only ? Suggestion::Icon::kPassport
+                              : Suggestion::Icon::kPassportSpark;
     case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
     case MemoryDataType::kFlightReservationTicketNumber:
@@ -239,7 +242,8 @@ Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kFlightReservationArrivalAirport:
     case MemoryDataType::kFlightReservationDepartureDate:
     case MemoryDataType::kFlightReservationArrivalDate:
-      return Suggestion::Icon::kFlight;
+      return is_autofill_only ? Suggestion::Icon::kFlight
+                              : Suggestion::Icon::kFlightSpark;
     case MemoryDataType::kNationalIdCardFull:
     case MemoryDataType::kNationalIdCardName:
     case MemoryDataType::kNationalIdCardCountry:
@@ -252,7 +256,8 @@ Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kDriversLicenseNumber:
     case MemoryDataType::kDriversLicenseIssueDate:
     case MemoryDataType::kDriversLicenseExpirationDate:
-      return Suggestion::Icon::kIdCard;
+      return is_autofill_only ? Suggestion::Icon::kIdCard
+                              : Suggestion::Icon::kIdCardSpark;
     case MemoryDataType::kRedressNumberFull:
     case MemoryDataType::kRedressNumberName:
     case MemoryDataType::kRedressNumberNumber:
@@ -260,13 +265,17 @@ Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kKnownTravelerNumberName:
     case MemoryDataType::kKnownTravelerNumberNumber:
     case MemoryDataType::kKnownTravelerNumberExpirationDate:
-      return Suggestion::Icon::kPersonCheck;
+      return is_autofill_only ? Suggestion::Icon::kIdCard2
+                              : Suggestion::Icon::kIdCard2Spark;
     case MemoryDataType::kCreditCardNumber:
     case MemoryDataType::kCreditCardExpirationDate:
     case MemoryDataType::kCreditCardSecurityCode:
     case MemoryDataType::kCreditCardNameOnCard:
     case MemoryDataType::kCreditCardNickname:
-      return Suggestion::Icon::kCardGeneric;
+    case MemoryDataType::kIban:
+    case MemoryDataType::kIbanNickname:
+      return is_autofill_only ? Suggestion::Icon::kCardGeneric
+                              : Suggestion::Icon::kCardGenericSpark;
     case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
     case MemoryDataType::kOrderAccount:
@@ -275,7 +284,8 @@ Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kOrderMerchantDomain:
     case MemoryDataType::kOrderProductNames:
     case MemoryDataType::kOrderGrandTotal:
-      return Suggestion::Icon::kOrder;
+      return is_autofill_only ? Suggestion::Icon::kOrder
+                              : Suggestion::Icon::kOrderSpark;
     case MemoryDataType::kShipmentFull:
     case MemoryDataType::kShipmentTrackingNumber:
     case MemoryDataType::kShipmentAssociatedOrderId:
@@ -285,33 +295,21 @@ Suggestion::Icon GetIconForMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kShipmentCarrierDomain:
     case MemoryDataType::kShipmentEstimatedDeliveryDate:
     case MemoryDataType::kShipmentShippedDate:
+      return is_autofill_only ? Suggestion::Icon::kShipment
+                              : Suggestion::Icon::kShipmentSpark;
+    case MemoryDataType::kEmail:
     case MemoryDataType::kUnknown:
-      return Suggestion::Icon::kNoIcon;
+      return is_autofill_only ? Suggestion::Icon::kNoIcon
+                              : Suggestion::Icon::kTextSpark;
   }
-  return Suggestion::Icon::kNoIcon;
+  NOTREACHED();
 }
 
 Suggestion TransformResultIntoSuggestion(
     const accessibility_annotator::MemorySearchResult& entry) {
   Suggestion suggestion(entry.value, SuggestionType::kAtMemorySearchResult);
-  suggestion.icon = GetIconForMemoryDataType(entry.type);
-  if (suggestion.icon == Suggestion::Icon::kNoIcon && !entry.sources.empty()) {
-    switch (entry.sources.front().type) {
-      case accessibility_annotator::MemoryEntrySourceType::kGmail:
-        suggestion.icon = Suggestion::Icon::kGmail;
-        break;
-      case accessibility_annotator::MemoryEntrySourceType::kPhotos:
-        suggestion.icon = Suggestion::Icon::kGooglePhotos;
-        break;
-      case accessibility_annotator::MemoryEntrySourceType::kCalendar:
-        suggestion.icon = Suggestion::Icon::kGoogleCalendar;
-        break;
-      case accessibility_annotator::MemoryEntrySourceType::kAmbient:
-      case accessibility_annotator::MemoryEntrySourceType::kLiveTabs:
-      case accessibility_annotator::MemoryEntrySourceType::kAutofill:
-        break;
-    }
-  }
+  suggestion.icon = GetIcon(entry);
+
   // Label row: [type_name, metadata[0].value, ...]
   std::vector<Suggestion::Text> label_row;
   std::u16string type_name = entry.type_name.empty()
