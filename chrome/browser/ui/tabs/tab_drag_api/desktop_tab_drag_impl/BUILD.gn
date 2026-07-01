@@ -30,3 +30,27 @@ source_set("desktop_tab_drag_impl") {
     "//ui/views",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tab_drag_service_impl_browsertest.cc" ]
+
+  deps = [
+    ":desktop_tab_drag_impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/tab_drag_api",
+    "//chrome/browser/ui/tabs/tab_drag_api:impl",
+    "//chrome/test:test_support",
+    "//components/browser_apis/tab_drag",
+    "//components/browser_apis/tab_drag:mojom",
+    "//components/browser_apis/tab_drag/testing",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}

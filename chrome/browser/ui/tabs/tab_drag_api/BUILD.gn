@@ -21,3 +21,10 @@ source_set("impl") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    deps = [ "desktop_tab_drag_impl:browser_tests" ]
+  }
+}
