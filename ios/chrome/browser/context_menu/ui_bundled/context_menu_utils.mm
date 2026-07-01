@@ -47,7 +47,7 @@ TitleAndOrigin GetContextMenuTitleAndOrigin(web::ContextMenuParams params) {
   }
 
   if ([title hasPrefix:base::SysUTF8ToNSString(url::kDataScheme)]) {
-    title = nil;
+    title = @"";
     origin = ContextMenuTitleOrigin::kURL;
   }
 

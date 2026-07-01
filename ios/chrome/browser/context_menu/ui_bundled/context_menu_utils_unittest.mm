@@ -78,7 +78,7 @@ TEST_F(ContextMenuUtilsTest, TitleDataTitle) {
   web::ContextMenuParams params;
   params.src_url = GURL(kDataUrl);
 
-  EXPECT_NSEQ(GetContextMenuTitle(params), nil);
+  EXPECT_NSEQ(GetContextMenuTitle(params), @"");
   EXPECT_FALSE(IsImageTitle(params));
 }
 
