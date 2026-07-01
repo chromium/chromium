@@ -74,6 +74,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -92,6 +93,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -106,6 +108,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests account picker bottom sheet of the web signin flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 // TODO(crbug.com/428056054): The top content is blocked by system UI on B+.
@@ -356,7 +359,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
 
         Espresso.pressBack();
 
@@ -389,7 +392,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
 
         Espresso.pressBack();
 
@@ -421,7 +424,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
 
         onViewWaiting(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
 
@@ -454,7 +457,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
 
         onVisibleView(withText(R.string.cancel)).perform(click());
 
@@ -1301,6 +1304,7 @@ public class AccountPickerBottomSheetTest {
         // Start sign-in and remove the account before completing the device lock.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
+        mFakeIdentityManager.addOrUpdateExtendedAccountInfo(TestAccounts.ACCOUNT2);
         onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
@@ -1615,6 +1619,7 @@ public class AccountPickerBottomSheetTest {
     private void addAccountAndSignin(AccountInfo accountToAdd) {
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         mAccountManagerTestRule.setAddAccountFlowResult(accountToAdd);
+        mFakeIdentityManager.addOrUpdateExtendedAccountInfo(accountToAdd);
         onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
     }
