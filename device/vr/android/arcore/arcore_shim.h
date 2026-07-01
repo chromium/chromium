@@ -15,8 +15,10 @@ namespace device {
 COMPONENT_EXPORT(VR_ARCORE) bool LoadArCoreSdk(const std::string& libraryPath);
 
 // Determines whether AR Core features are supported.
-// TODO(crbug.com/41436902): Currently, this is very simplistic. It should
-// consider whether the device can support ARCore.
+// TODO(crbug.com/528404699): This currently checks if the Android SDK is
+// >= Nougat. Since Chrome's minimum supported SDK is now higher, this
+// always returns true and should be removed, along with simplifying its
+// callers.
 // Calling this method won't load AR Core SDK and does not depend on AR Core SDK
 // to be loaded.
 // Returns true if the AR Core usage is supported, false otherwise.

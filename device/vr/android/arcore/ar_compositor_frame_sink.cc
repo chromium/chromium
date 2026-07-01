@@ -32,7 +32,7 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
       : HostDisplayClient(gfx::kNullAcceleratedWidget),
         main_thread_task_runner_(main_thread_task_runner),
         root_window_(root_window) {
-    // TODO(crbug.com/40758616): Ideally, we'd DCHECK here, but the UTs
+    // Ideally, we'd DCHECK(root_window_) here, but the unit tests
     // don't create a root_window.
   }
 

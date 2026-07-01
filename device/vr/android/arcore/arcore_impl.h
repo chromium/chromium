@@ -270,9 +270,6 @@ class ArCoreImpl : public ArCore {
   base::WeakPtrFactory<ArCoreImpl> weak_ptr_factory_{this};
 };
 
-// TODO(crbug.com/41389193): Once the arcore_device class is moved,
-// determine if this is still necessary or if we should have some other form of
-// factory that can abstract this.
 class COMPONENT_EXPORT(VR_ARCORE) ArCoreImplFactory : public ArCoreFactory {
  public:
   std::unique_ptr<ArCore> Create() override;

@@ -86,7 +86,7 @@ XrRenderer::Program XrRenderer::CreateProgram(const std::string& vertex,
   std::string error;
   GLuint vertex_shader_handle =
       vr::CompileShader(GL_VERTEX_SHADER, vertex, error);
-  // TODO(crbug.com/41403313): fail gracefully if shaders don't compile.
+
   CHECK(vertex_shader_handle) << error << "\nvertex_src\n" << vertex;
 
   GLuint fragment_shader_handle =

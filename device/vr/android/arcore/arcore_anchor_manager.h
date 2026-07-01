@@ -98,9 +98,6 @@ class ArCoreAnchorManager {
   // if |Update()| was called twice in a row w/o a call to |GetAnchorsData()| in
   // between. Initially true since we expect the call to |Update()| to happen
   // next.
-  // TODO(crbug.com/40757459): remove the assumption that the calls to
-  // |Update()| will always be followed by at least one call to
-  // |GetAnchorsData()| before the next call to |Update()| happens.
   mutable bool was_anchor_data_retrieved_in_current_frame_ = true;
 #endif
 };

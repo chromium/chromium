@@ -299,10 +299,6 @@ void ArCoreDevice::OnSessionEnded() {
   // case the GL thread hadn't completed, or had initialized partially, to
   // ensure consistent state.
 
-  // TODO(crbug.com/41392761): Instead of splitting the initialization
-  // of this class between construction and RequestSession, perform all the
-  // initialization at once on the first successful RequestSession call.
-
   // If we have a frame sink client, notify it that it's surface has been
   // destroyed. While this is required in the case of the surface actually being
   // destroyed, it's a good idea to do it before we actually end the session.

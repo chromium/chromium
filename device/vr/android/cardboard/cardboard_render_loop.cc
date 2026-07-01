@@ -29,10 +29,9 @@
 
 namespace device {
 namespace {
-// TODO(crbug.com/40900871): It's not clear if the display rotation
-// should factor into Cardboard's viewport orientation. Initial attempts to
-// map them together frequently gave wrong results, whereas statically using
-// kLandscapeLeft has the expected effect.
+// Statically using kLandscapeLeft is preferred because initial attempts to
+// map display rotation to Cardboard's viewport orientation frequently gave
+// wrong results.
 constexpr CardboardViewportOrientation kViewportOrientation = kLandscapeLeft;
 
 // Default downscale factor for computing the recommended WebXR
@@ -271,7 +270,7 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 
-  // TODO(crbug.com/40900872): Determine if we should support this.
+  // TODO(crbug.com/528413360): Determine if we should support this.
   config->supports_viewport_scaling = false;
 
   config->default_framebuffer_scale = kRecommendedResolutionScale;
@@ -396,8 +395,6 @@ void CardboardRenderLoop::GetFrameData(
 
   frame_data->time_delta = now - base::TimeTicks();
 
-  // TODO(crbug.com/40900872): Calculating
-  // frame_data->rendering_time_ratio may be necessary for viewport scaling.
   std::move(callback).Run(std::move(frame_data));
 }
 
