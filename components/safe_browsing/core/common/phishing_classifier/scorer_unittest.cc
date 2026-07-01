@@ -32,7 +32,7 @@ namespace safe_browsing {
 
 namespace {
 
-std::string GetFlatBufferString() {
+std::string GetFlatBufferString(bool include_tflite_metadata = true) {
   flatbuffers::FlatBufferBuilder builder(1024);
   std::vector<flatbuffers::Offset<flat::Hash>> hashes;
   // Make sure this is sorted.
@@ -82,7 +82,9 @@ std::string GetFlatBufferString() {
   csd_model_builder.add_murmur_hash_seed(12345U);
   csd_model_builder.add_max_shingles_per_page(10);
   csd_model_builder.add_shingle_size(3);
-  csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+  if (include_tflite_metadata) {
+    csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+  }
   csd_model_builder.add_dom_model_version(123);
 
   builder.Finish(csd_model_builder.Finish());
@@ -156,6 +158,12 @@ TEST_F(PhishingScorerTest, HasValidFlatBufferModel) {
       GetMappedReadOnlyRegionWithData(flatbuffer);
   scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
+
+  // Missing TfLite metadata.
+  flatbuffer = GetFlatBufferString(/*include_tflite_metadata=*/false);
+  mapped_region = GetMappedReadOnlyRegionWithData(flatbuffer);
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
+  EXPECT_FALSE(scorer.get());
 
   // Invalid region.
   scorer = Scorer::Create(base::ReadOnlySharedMemoryRegion(), base::File());

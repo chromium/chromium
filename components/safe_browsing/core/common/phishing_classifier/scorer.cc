@@ -391,6 +391,11 @@ std::unique_ptr<Scorer> Scorer::Create(base::ReadOnlySharedMemoryRegion region,
     return nullptr;
   }
   scorer->flatbuffer_model_ = flat::GetClientSideModel(mapping.memory());
+  if (!scorer->flatbuffer_model_ ||
+      !scorer->flatbuffer_model_->tflite_metadata()) {
+    RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
+    return nullptr;
+  }
 
   // Only do this part if the visual model file exists
   if (visual_tflite_model.IsValid()) {
@@ -399,8 +404,16 @@ std::unique_ptr<Scorer> Scorer::Create(base::ReadOnlySharedMemoryRegion region,
       RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
       return nullptr;
     } else {
+      if (!scorer->flatbuffer_model_->tflite_metadata()->thresholds()) {
+        RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
+        return nullptr;
+      }
       for (const flat::TfLiteModelMetadata_::Threshold* flat_threshold :
            *(scorer->flatbuffer_model_->tflite_metadata()->thresholds())) {
+        if (!flat_threshold || !flat_threshold->label()) {
+          RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
+          return nullptr;
+        }
         // While the threshold comparison is done on the browser side, threshold
         // fields are added so that the verdict score results size check with
         // threshold size can be done
@@ -432,12 +445,16 @@ std::unique_ptr<Scorer> Scorer::CreateScorerWithImageEmbeddingModel(
       RecordScorerCreationStatus(
           SCORER_FAIL_FLATBUFFER_INVALID_IMAGE_EMBEDDING_TFLITE_MODEL);
       return nullptr;
+    } else if (scorer) {
+      if (!scorer->flatbuffer_model_->img_embedding_metadata()) {
+        RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
+        return nullptr;
+      }
+      scorer->SetImageEmbeddingDimensions(
+          scorer->flatbuffer_model_->img_embedding_metadata()->input_width(),
+          scorer->flatbuffer_model_->img_embedding_metadata()->input_height());
     }
   }
-
-  scorer->SetImageEmbeddingDimensions(
-      scorer->flatbuffer_model_->img_embedding_metadata()->input_width(),
-      scorer->flatbuffer_model_->img_embedding_metadata()->input_height());
 
   return scorer;
 }
