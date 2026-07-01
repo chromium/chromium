@@ -469,6 +469,21 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
+    public void isStandby_returnsTrueForStandbyAndStandbyNoFocus() {
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        assertTrue(mInput.isStandby());
+
+        mInput.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
+        assertTrue(mInput.isStandby());
+
+        mInput.setAutocompleteState(AutocompleteState.ENABLED);
+        assertFalse(mInput.isStandby());
+
+        mInput.setAutocompleteState(AutocompleteState.DISABLED);
+        assertFalse(mInput.isStandby());
+    }
+
+    @Test
     public void testCopyFrom() {
         long urlFocusTime = 12345L;
         GURL pageUrl = GURL.emptyGURL();

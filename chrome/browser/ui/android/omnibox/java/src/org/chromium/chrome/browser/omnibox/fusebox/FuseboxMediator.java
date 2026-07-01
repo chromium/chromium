@@ -516,7 +516,7 @@ import java.util.function.Supplier;
 
         if (!isInInputSession()) {
             targetState = FuseboxState.DISABLED;
-        } else if (mInput.getAutocompleteState() == AutocompleteState.STANDBY_NO_FOCUS) {
+        } else if (mInput.isStandby()) {
             targetState = FuseboxState.DISABLED;
         } else if (!mHasContextualTasksFocus && isContextualTasks) {
             targetState = FuseboxState.COMPACT;

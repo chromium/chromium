@@ -622,6 +622,12 @@ public class AutocompleteInput implements UserData {
         return mAutocompleteState;
     }
 
+    /** Returns whether the current autocomplete state is a standby state. */
+    public boolean isStandby() {
+        return mAutocompleteState == AutocompleteState.STANDBY
+                || mAutocompleteState == AutocompleteState.STANDBY_NO_FOCUS;
+    }
+
     /** Sets the {@link AutocompleteState}. */
     public AutocompleteInput setAutocompleteState(@AutocompleteState int state) {
         mAutocompleteState = state;
