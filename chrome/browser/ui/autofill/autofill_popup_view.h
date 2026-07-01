@@ -18,7 +18,7 @@
 
 namespace autofill {
 
-class AutofillSuggestionController;
+class AutofillPopupController;
 
 // The interface for creating and controlling a platform-dependent
 // AutofillPopupView.
@@ -58,7 +58,7 @@ class AutofillPopupView {
   // `tabbed_pane_config` will be used to create a popup with a tabbed pane,
   // if present.
   static base::WeakPtr<AutofillPopupView> Create(
-      base::WeakPtr<AutofillSuggestionController> controller,
+      base::WeakPtr<AutofillPopupController> controller,
       std::optional<const SearchBarConfig> search_bar_config = std::nullopt,
       std::optional<const TabbedPaneConfig> tabbed_pane_config = std::nullopt);
 
@@ -96,7 +96,7 @@ class AutofillPopupView {
   // The child's lifetime depends on its parent, i.e. when the parent dies
   // the child dies also.
   virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
-      base::WeakPtr<AutofillSuggestionController> sub_controller) = 0;
+      base::WeakPtr<AutofillPopupController> sub_controller) = 0;
 
   // Indicates whether any of the view elements currently has focus.
   virtual bool HasFocus() const = 0;

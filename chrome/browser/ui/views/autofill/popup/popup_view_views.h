@@ -41,7 +41,6 @@ class TabbedPane;
 namespace autofill {
 
 class AutofillPopupController;
-class AutofillSuggestionController;
 class PopupBnplFootnoteView;
 class PopupPersonalContextNoticeView;
 class PopupSeparatorView;
@@ -155,7 +154,7 @@ class PopupViewViews : public PopupBaseView,
   std::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
-      base::WeakPtr<AutofillSuggestionController> controller) override;
+      base::WeakPtr<AutofillPopupController> controller) override;
   bool HasFocus() const override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
