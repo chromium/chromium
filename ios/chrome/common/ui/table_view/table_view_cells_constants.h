@@ -67,9 +67,6 @@ extern NSString* const kMaskedPassword;
 // TableView InfoButton.
 extern NSString* const kTableViewCellInfoButtonViewId;
 
-// Returns a padding according to the width of the current device.
-extern CGFloat HorizontalPadding();
-
 // Accessibility identifier for UMA checkbox in the FRE and in Google services
 // settings.
 extern NSString* const kImproveChromeItemAccessibilityIdentifier;

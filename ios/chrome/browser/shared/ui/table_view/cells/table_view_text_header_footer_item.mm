@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -141,11 +142,11 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
     bottomAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
     leadingAnchorConstraint_ = [containerView.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:HorizontalPadding()];
+                       constant:ChromeTableViewHorizontalPadding()];
     leadingAnchorConstraint_.priority = UILayoutPriorityDefaultHigh;
     trailingAnchorConstraint_ = [containerView.trailingAnchor
         constraintEqualToAnchor:self.contentView.trailingAnchor
-                       constant:-HorizontalPadding()];
+                       constant:-ChromeTableViewHorizontalPadding()];
     trailingAnchorConstraint_.priority = UILayoutPriorityDefaultHigh;
 
     // Set and activate constraints.
@@ -232,10 +233,12 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 }
 
 - (void)setForceIndents:(BOOL)forceIndents {
-  leadingAnchorConstraint_.constant =
-      forceIndents ? kHorizontalSpacingToAlignWithItems : HorizontalPadding();
+  leadingAnchorConstraint_.constant = forceIndents
+                                          ? kHorizontalSpacingToAlignWithItems
+                                          : ChromeTableViewHorizontalPadding();
   trailingAnchorConstraint_.constant =
-      forceIndents ? -kHorizontalSpacingToAlignWithItems : -HorizontalPadding();
+      forceIndents ? -kHorizontalSpacingToAlignWithItems
+                   : -ChromeTableViewHorizontalPadding();
 }
 
 #pragma mark - UITextViewDelegate

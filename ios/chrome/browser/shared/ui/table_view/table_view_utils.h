@@ -7,8 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-// Returns an UITableViewStyle according to the width of the current device.
+// Returns an UITableViewStyle according to the font size chosen by the user.
 UITableViewStyle ChromeTableViewStyle();
+
+// Returns a padding according to the font size chosen by the user.
+extern CGFloat ChromeTableViewHorizontalPadding();
 
 // Returns a header height according to the given section.
 // The returned size for the first section is bigger because it's used as

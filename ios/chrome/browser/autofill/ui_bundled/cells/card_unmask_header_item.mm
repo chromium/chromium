@@ -11,6 +11,7 @@
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -99,10 +100,10 @@ const CGFloat kGooglePayBadgeHeight = 16;
                          constant:kTableViewImagePadding],
       [_titleLabel.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:HorizontalPadding()],
+                         constant:ChromeTableViewHorizontalPadding()],
       [_titleLabel.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-HorizontalPadding()],
+                         constant:-ChromeTableViewHorizontalPadding()],
 
       // Instructions label
       [_instructionsLabel.topAnchor
@@ -110,10 +111,10 @@ const CGFloat kGooglePayBadgeHeight = 16;
                          constant:kUISpacing],
       [_instructionsLabel.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:HorizontalPadding()],
+                         constant:ChromeTableViewHorizontalPadding()],
       [_instructionsLabel.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-HorizontalPadding()],
+                         constant:-ChromeTableViewHorizontalPadding()],
       [_instructionsLabel.bottomAnchor
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:-kTableViewLargeVerticalSpacing],

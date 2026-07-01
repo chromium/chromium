@@ -5,21 +5,28 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
-#import "ios/chrome/common/ui/util/device_util.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
 // Default header Height when none is set.
 const CGFloat kDefaultHeaderHeight = 10;
 
+// Whether the style used by the TableView should have insets.
+bool HasTableViewInsetStyle() {
+  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE ||
+         !UIContentSizeCategoryIsAccessibilityCategory(
+             UIApplication.sharedApplication.preferredContentSizeCategory);
+}
+
 }  // namespace
 
 UITableViewStyle ChromeTableViewStyle() {
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          UIApplication.sharedApplication.preferredContentSizeCategory)) {
-    return UITableViewStyleGrouped;
+  if (HasTableViewInsetStyle()) {
+    return UITableViewStyleInsetGrouped;
   }
-  return UITableViewStyleInsetGrouped;
+  return UITableViewStyleGrouped;
 }
 
 CGFloat ChromeTableViewHeightForHeaderInSection(NSInteger section) {
@@ -28,4 +35,11 @@ CGFloat ChromeTableViewHeightForHeaderInSection(NSInteger section) {
   }
 
   return kDefaultHeaderHeight;
+}
+
+CGFloat ChromeTableViewHorizontalPadding() {
+  if (HasTableViewInsetStyle()) {
+    return 0;
+  }
+  return kTableViewHorizontalSpacing;
 }

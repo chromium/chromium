@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -99,12 +100,12 @@
     bottomAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
     NSLayoutConstraint* leadingAnchorConstraint = [horizontalStack.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:HorizontalPadding()];
+                       constant:ChromeTableViewHorizontalPadding()];
     leadingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
     NSLayoutConstraint* trailingAnchorConstraint =
         [horizontalStack.trailingAnchor
             constraintEqualToAnchor:self.contentView.trailingAnchor
-                           constant:-HorizontalPadding()];
+                           constant:-ChromeTableViewHorizontalPadding()];
     trailingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
 
     // Set and activate constraints.

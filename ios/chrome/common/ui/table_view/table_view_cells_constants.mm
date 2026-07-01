@@ -4,7 +4,6 @@
 
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
-#import "ios/chrome/common/ui/util/device_util.h"
 
 const CGFloat kTableViewHeaderFooterViewHeight = 48.0;
 const CGFloat kChromeTableViewCellHeight = 52.0;
@@ -33,9 +32,3 @@ NSString* const kImproveChromeItemAccessibilityIdentifier =
 NSString* const kTableViewActivityIndicatorHeaderFooterViewId =
     @"TableViewActivityIndicatorHeaderFooterViewId";
 
-CGFloat HorizontalPadding() {
-  if (!IsSmallDevice()) {
-    return 0;
-  }
-  return kTableViewHorizontalSpacing;
-}

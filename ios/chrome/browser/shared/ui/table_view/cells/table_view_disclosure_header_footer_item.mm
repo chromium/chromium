@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/numerics/math_constants.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -122,10 +123,10 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
       topAnchorConstraint, bottomAnchorConstraint,
       [horizontalStack.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:HorizontalPadding()],
+                         constant:ChromeTableViewHorizontalPadding()],
       [horizontalStack.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-HorizontalPadding()]
+                         constant:-ChromeTableViewHorizontalPadding()]
     ]];
 
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]

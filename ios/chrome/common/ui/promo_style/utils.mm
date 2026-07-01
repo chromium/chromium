@@ -4,7 +4,6 @@
 
 #import "ios/chrome/common/ui/promo_style/utils.h"
 
-#import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 UIFontTextStyle GetTitleLabelFontTextStyle(UIViewController* view_controller) {
@@ -13,14 +12,13 @@ UIFontTextStyle GetTitleLabelFontTextStyle(UIViewController* view_controller) {
                                     : view_controller;
   BOOL accessibility_category = UIContentSizeCategoryIsAccessibilityCategory(
       presenter.traitCollection.preferredContentSizeCategory);
-  if (!accessibility_category) {
-    if (IsRegularXRegularSizeClass(presenter.traitCollection)) {
-      return UIFontTextStyleTitle1;
-    } else if (!IsSmallDevice()) {
-      return UIFontTextStyleLargeTitle;
-    }
+  if (accessibility_category) {
+    return UIFontTextStyleTitle2;
   }
-  return UIFontTextStyleTitle2;
+  if (IsRegularXRegularSizeClass(presenter.traitCollection)) {
+    return UIFontTextStyleTitle1;
+  }
+  return UIFontTextStyleLargeTitle;
 }
 
 UIFont* GetFRETitleFont(UIFontTextStyle text_style) {
