@@ -29,9 +29,18 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
+#include "components/security_state/content/security_state_tab_helper.h"
+#include "components/security_state/core/security_state.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/ssl_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/cert/cert_status_flags.h"
+#include "net/ssl/ssl_connection_status_flags.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -346,6 +355,165 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, AbortLoginTracking) {
                                      /*global_frame_ids=*/{});
   service().AbortLoginTracking();
   EXPECT_FALSE(service().ConsumeLoginContext().has_value());
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       IsFormFillingSecure_NoSecurityStateHelper) {
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, IsFormFillingSecure_Success) {
+  NavigateAndCommit(GURL("https://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
+
+  content::NavigationEntry* entry =
+      tab().GetContents()->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  content::SSLStatus& ssl = entry->GetSSL();
+  ssl.initialized = true;
+  ssl.certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl.cert_status = net::OK;
+  // Set a valid TLS connection version (`TLS 1.2`) in `connection_status` using
+  // `SSLConnectionStatusSetVersion` so `VisibleSecurityState` sets
+  // `connection_info_initialized` to true.
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                     &ssl.connection_status);
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+  EXPECT_TRUE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       IsFormFillingSecure_InsecureFormAction) {
+  NavigateAndCommit(GURL("https://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
+
+  content::NavigationEntry* entry =
+      tab().GetContents()->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  content::SSLStatus& ssl = entry->GetSSL();
+  ssl.initialized = true;
+  ssl.certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl.cert_status = net::OK;
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                     &ssl.connection_status);
+
+  FormData insecure_form =
+      SeeForm({.fields = {{.server_type = ONE_TIME_CODE}},
+               .action = "http://example.com/submit.html"});
+  FieldGlobalId insecure_field_id = insecure_form.fields()[0].global_id();
+  EXPECT_FALSE(
+      service().IsFormFillingSecure(tab().GetHandle(), {insecure_field_id}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       IsFormFillingSecure_MixedContentPage) {
+  NavigateAndCommit(GURL("https://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
+
+  content::NavigationEntry* entry =
+      tab().GetContents()->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  content::SSLStatus& ssl = entry->GetSSL();
+  ssl.initialized = true;
+  ssl.certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl.cert_status = net::OK;
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                     &ssl.connection_status);
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  // Simulating mixed content (`DISPLAYED_INSECURE_CONTENT`) in `content_status`
+  // downgrades `SecurityLevel` and returns false.
+  ssl.content_status |= content::SSLStatus::DISPLAYED_INSECURE_CONTENT;
+  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, IsFormFillingSecure_HttpPage) {
+  NavigateAndCommit(GURL("http://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("http://example.com"));
+  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       IsFormFillingSecure_InvalidCertificate) {
+  NavigateAndCommit(GURL("https://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
+
+  content::NavigationEntry* entry =
+      tab().GetContents()->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  content::SSLStatus& ssl = entry->GetSSL();
+  ssl.initialized = true;
+  ssl.certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "expired_cert.pem");
+  // Setting `CERT_STATUS_DATE_INVALID` in `cert_status` downgrades
+  // `SecurityLevel` to `DANGEROUS`.
+  ssl.cert_status = net::CERT_STATUS_DATE_INVALID;
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                     &ssl.connection_status);
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       IsFormFillingSecure_FormNotFound) {
+  NavigateAndCommit(GURL("https://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
+
+  content::NavigationEntry* entry =
+      tab().GetContents()->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  content::SSLStatus& ssl = entry->GetSSL();
+  ssl.initialized = true;
+  ssl.certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl.cert_status = net::OK;
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                     &ssl.connection_status);
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  // Simulate dynamic removal of the form from the DOM by notifying
+  // `BrowserAutofillManager` via `OnFormsSeen` that the form was removed.
+  manager().OnFormsSeen(/*updated_forms=*/{},
+                        /*removed_forms=*/{form.global_id()});
+
+  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       IsFormFillingSecure_InvalidTabHandle) {
+  EXPECT_FALSE(service().IsFormFillingSecure(tabs::TabHandle::Null(),
+                                             {test::MakeFieldGlobalId()}));
 }
 
 }  // namespace

@@ -80,6 +80,13 @@ class ActorOneTimeTokenFillingService {
                        const std::string& otp,
                        base::OnceCallback<void(bool)> callback) = 0;
 
+  // Returns true if the page in `tab_handle` and its subresources are all
+  // loaded over secure HTTPS (no mixed content or certificate errors) and the
+  // form identified by `trigger_field_ids` does not submit to HTTP.
+  virtual bool IsFormFillingSecure(
+      tabs::TabHandle tab_handle,
+      base::span<const FieldGlobalId> trigger_field_ids) const = 0;
+
   // Returns a weak pointer to this service.
   virtual base::WeakPtr<ActorOneTimeTokenFillingService> GetWeakPtr() = 0;
 };
