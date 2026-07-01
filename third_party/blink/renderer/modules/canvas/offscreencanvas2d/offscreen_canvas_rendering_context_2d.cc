@@ -137,11 +137,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
     return;
   }
 
-  if (shared_image_provider_) {
-    shared_image_provider_->Flush(reason);
-  } else {
-    bitmap_provider_->Flush(reason);
-  }
+  FlushCanvas(reason);
   Host()->NotifyCachesOfSwitchingFrame();
 }
 
@@ -394,21 +390,16 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage() {
 scoped_refptr<StaticBitmapImage>
 OffscreenCanvasRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
-  if (shared_image_provider_) {
-    if (!shared_image_provider_->IsValid()) {
-      return nullptr;
-    }
-    shared_image_provider_->Flush();
-    return shared_image_provider_->Snapshot();
+  if (shared_image_provider_ && !shared_image_provider_->IsValid()) {
+    return nullptr;
   }
-  if (bitmap_provider_) {
-    if (!bitmap_provider_->IsValid()) {
-      return nullptr;
-    }
-    bitmap_provider_->Flush();
-    return bitmap_provider_->Snapshot();
+  if (bitmap_provider_ && !bitmap_provider_->IsValid()) {
+    return nullptr;
   }
-  return nullptr;
+  FlushCanvas(FlushReason::kOther);
+  return shared_image_provider_ ? shared_image_provider_->Snapshot()
+         : bitmap_provider_     ? bitmap_provider_->Snapshot()
+                                : nullptr;
 }
 
 V8RenderingContext* OffscreenCanvasRenderingContext2D::AsV8RenderingContext() {
