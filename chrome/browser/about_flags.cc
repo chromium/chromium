@@ -10055,6 +10055,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripHeightTransitionGlitchFix)},
 
+    {"tab-strip-layout-transition-debounce-fix",
+     flag_descriptions::kTabStripLayoutTransitionDebounceFixName,
+     flag_descriptions::kTabStripLayoutTransitionDebounceFixDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripLayoutTransitionDebounceFix)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,

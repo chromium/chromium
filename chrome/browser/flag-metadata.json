@@ -9097,6 +9097,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "tab-strip-layout-transition-debounce-fix",
+    "owners": [ "yhanada@chromium.org", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tab-switcher-drag-drop",
     "owners": [
       "desiatyrikov@google.com",

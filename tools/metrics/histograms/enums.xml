@@ -9814,6 +9814,8 @@ from previous Chrome versions.
   <int value="-1441386544" label="NtpSearchboxComposeEntrypoint:disabled"/>
   <int value="-1441340278" label="NewTabPageIcons:enabled"/>
   <int value="-1440440375" label="WebVrAutopresent:enabled"/>
+  <int value="-1440388206"
+      label="TabStripLayoutTransitionDebounceFix:disabled"/>
   <int value="-1440152291" label="disable-gesture-typing"/>
   <int value="-1439701253"
       label="EnableExternalKeyboardsInDiagnosticsApp:enabled"/>
@@ -18553,6 +18555,7 @@ from previous Chrome versions.
   <int value="1413158119" label="WebRtcRemoteEventLog:disabled"/>
   <int value="1413334779" label="WebPaymentsMinimalUI:enabled"/>
   <int value="1413948819" label="NupPrinting:enabled"/>
+  <int value="1414004676" label="TabStripLayoutTransitionDebounceFix:enabled"/>
   <int value="1414652547" label="LinkCapturingAutoDisplayIntentPicker:enabled"/>
   <int value="1414918327" label="enable-accelerated-video-decode"/>
   <int value="1415788025" label="force-drive-disclaimer-accepted:disabled"/>

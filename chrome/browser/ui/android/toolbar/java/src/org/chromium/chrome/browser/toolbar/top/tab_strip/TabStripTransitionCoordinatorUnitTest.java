@@ -266,6 +266,46 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_TRANSITION_DEBOUNCE_FIX)
+    public void testDebounceLayoutPass_PreserveForceUpdate() {
+        // Initialize and enter desktop windowing mode.
+        setUpTabStripTransitionCoordinator(
+                /* isInDesktopWindow= */ true, LARGE_DESKTOP_WINDOW_WIDTH);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        mTestHandler.reset();
+
+        int initialHeaderHeight = TEST_TAB_STRIP_HEIGHT + mReservedTopPadding;
+
+        // Trigger header height change (staying in desktop window).
+        // This should set mForceUpdateHeight = true and post a delayed task.
+        int newHeaderHeight = initialHeaderHeight + 10;
+        Rect appHeaderRect = new Rect(0, 0, LARGE_DESKTOP_WINDOW_WIDTH, newHeaderHeight);
+        AppHeaderState state1 = new AppHeaderState(appHeaderRect, appHeaderRect, true);
+        mCoordinator.onAppHeaderStateChanged(state1);
+
+        // Verify that no transition has run yet (it should be delayed).
+        assertEquals(
+                "Transition should be delayed.", NOTHING_OBSERVED, mTestHandler.heightRequested);
+
+        // Trigger another app header state change with the same new height, but different width.
+        // This should cancel the first task and post a new one.
+        // mForceUpdateHeight should be preserved.
+        int newerWidth = LARGE_DESKTOP_WINDOW_WIDTH - 10;
+        Rect appHeaderRect2 = new Rect(0, 0, newerWidth, newHeaderHeight);
+        AppHeaderState state2 = new AppHeaderState(appHeaderRect2, appHeaderRect2, true);
+        mCoordinator.onAppHeaderStateChanged(state2);
+
+        // Run the looper to let the delayed task run.
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        // Verify that the transition ran, and it used the new height.
+        assertEquals(
+                "Transition should have run with new height.",
+                newHeaderHeight,
+                mTestHandler.heightRequested);
+    }
+
+    @Test
     @Config(qualifiers = "w320dp")
     public void showTabStrip() {
         settleTransitionDuringInitForNarrowWindow();

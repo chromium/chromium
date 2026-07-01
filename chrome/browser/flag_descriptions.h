@@ -6172,6 +6172,11 @@ inline constexpr char kTabStripHeightTransitionGlitchFixName[] =
 inline constexpr char kTabStripHeightTransitionGlitchFixDescription[] =
     "Flag guard for the tab strip height transition glitch fix.";
 
+inline constexpr char kTabStripLayoutTransitionDebounceFixName[] =
+    "Tab strip layout transition debounce fix";
+inline constexpr char kTabStripLayoutTransitionDebounceFixDescription[] =
+    "Flag guard for the tab strip layout transition debounce fix.";
+
 inline constexpr char kThreeDotMenuBackButtonName[] =
     "Three Dot Menu Back Button";
 inline constexpr char kThreeDotMenuBackButtonDescription[] =
