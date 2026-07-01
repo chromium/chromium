@@ -348,6 +348,11 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     return true;
   }
 
+  if (element.SupportsBaseAppearance(old_style->EffectiveAppearance()) !=
+      element.SupportsBaseAppearance(new_style->EffectiveAppearance())) {
+    return true;
+  }
+
   // LayoutObject tree structure for <legend> depends on whether it's a
   // rendered legend or not.
   if (IsA<HTMLLegendElement>(element) &&

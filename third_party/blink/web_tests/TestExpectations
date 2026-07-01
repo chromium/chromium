@@ -9471,7 +9471,6 @@ crbug.com/407750537 http/tests/devtools/indexeddb/live-update-indexeddb-content.
 crbug.com/466779634 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
 
 # Gardener 2026-06-25
-crbug.com/527735384 external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-keyboard-behavior.tentative.html [ Failure Pass Timeout ]
 crbug.com/526171024 [ Linux ] external/wpt/webdriver/tests/bidi/browser/set_download_behavior/global.py [ Failure Pass ]
 crbug.com/524270212 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_locale_override/locale.py [ Pass Timeout ]
 crbug.com/524583990 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/context_created/subscribe_steps.py [ Pass Timeout ]
