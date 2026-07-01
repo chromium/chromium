@@ -43,7 +43,6 @@ class ContextImplCoreml;
 class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       ContextImplCoreml& context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
@@ -56,9 +55,7 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   struct Params;
-  GraphImplCoreml(mojo::PendingReceiver<mojom::WebNNGraph> receiver,
-                  WebNNContextImpl& context,
-                  std::unique_ptr<Params> params);
+  GraphImplCoreml(WebNNContextImpl& context, std::unique_ptr<Params> params);
 
   GraphImplCoreml(const GraphImplCoreml&) = delete;
   GraphImplCoreml& operator=(const GraphImplCoreml&) = delete;
@@ -126,7 +123,6 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       NSError* compute_plan_error);
 
   static void DidCreateAndBuild(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
       base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result);

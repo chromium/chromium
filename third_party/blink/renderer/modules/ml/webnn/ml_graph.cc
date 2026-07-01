@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 
-#include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -19,28 +17,18 @@
 
 namespace blink {
 
-MLGraph::MLGraph(
-    ExecutionContext* execution_context,
-    MLContext* context,
-    mojo::PendingRemote<webnn::mojom::blink::WebNNGraph> pending_graph_remote,
-    blink::WebNNGraphToken graph_token,
-    NamedOperandDescriptors input_constraints,
-    NamedOperandDescriptors output_constraints,
-    Vector<V8MLDeviceType> devices,
-    base::PassKey<MLGraphBuilder> /*pass_key*/)
+MLGraph::MLGraph(ExecutionContext* execution_context,
+                 MLContext* context,
+                 blink::WebNNGraphToken graph_token,
+                 NamedOperandDescriptors input_constraints,
+                 NamedOperandDescriptors output_constraints,
+                 Vector<V8MLDeviceType> devices,
+                 base::PassKey<MLGraphBuilder> /*pass_key*/)
     : input_constraints_(std::move(input_constraints)),
       output_constraints_(std::move(output_constraints)),
       ml_context_(context),
       graph_token_(graph_token),
-      remote_graph_(execution_context),
-      devices_(std::move(devices)) {
-  // Bind the end point of `WebNNGraph` mojo interface in the blink side.
-  remote_graph_.Bind(
-      std::move(pending_graph_remote),
-      execution_context->GetTaskRunner(TaskType::kMachineLearning));
-  remote_graph_.set_disconnect_handler(
-      BindOnce(&MLGraph::OnConnectionError, WrapWeakPersistent(this)));
-}
+      devices_(std::move(devices)) {}
 
 MLGraph::~MLGraph() = default;
 
@@ -48,16 +36,15 @@ void MLGraph::Dispose() {
   // When GC collects the graph without an explicit destroy() call, send
   // DestroyGraph through the context pipe to ensure ordering with
   // Dispatch/ReadTensor/WriteTensor. If destroy() was already called,
-  // the remote is unbound and this is a no-op.
+  // this is a no-op.
   if (!IsDestroyed()) {
     ml_context_->DestroyGraph(graph_token_);
-    OnConnectionError();
+    is_destroyed_ = true;
   }
 }
 
 void MLGraph::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
-  visitor->Trace(remote_graph_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -68,7 +55,7 @@ void MLGraph::destroy() {
 }
 
 bool MLGraph::IsDestroyed() const {
-  return !remote_graph_.is_bound();
+  return is_destroyed_;
 }
 
 Vector<V8MLDeviceType> MLGraph::devices() const {
@@ -85,10 +72,6 @@ const MLGraph::NamedOperandDescriptors& MLGraph::GetOutputConstraints() const {
 
 const MLContext* MLGraph::Context() const {
   return ml_context_.Get();
-}
-
-void MLGraph::OnConnectionError() {
-  remote_graph_.reset();
 }
 
 }  // namespace blink

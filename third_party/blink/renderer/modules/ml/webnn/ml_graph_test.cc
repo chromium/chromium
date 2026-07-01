@@ -373,17 +373,6 @@ class WebNNContextHelper {
       tensor_impls_;
 };
 
-class FakeWebNNGraph : public blink_mojom::WebNNGraph {
- public:
-  explicit FakeWebNNGraph(MLGraphTest& helper) : helper_(helper) {}
-  FakeWebNNGraph(const FakeWebNNGraph&) = delete;
-  FakeWebNNGraph(FakeWebNNGraph&&) = delete;
-  ~FakeWebNNGraph() override = default;
-
- private:
-  // TODO(crbug.com/354741414): Fix this dangling pointer.
-  const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
-};
 
 class FakeWebNNTensor : public blink_mojom::WebNNTensor {
  public:
@@ -478,15 +467,8 @@ class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
                    CreateGraphCallback callback) override {
     helper_->SetGraphInfo(std::move(graph_info));
 
-    mojo::PendingRemote<blink_mojom::WebNNGraph> blink_remote;
-    // The receiver bind to FakeWebNNGraph.
-    mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNGraph>(
-        std::make_unique<FakeWebNNGraph>(*helper_),
-        blink_remote.InitWithNewPipeAndPassReceiver());
-
     auto success = blink_mojom::CreateGraphSuccess::New(
-        std::move(blink_remote), blink::WebNNGraphToken(),
-        Vector<blink_mojom::Device>());
+        blink::WebNNGraphToken(), Vector<blink_mojom::Device>());
     std::move(callback).Run(std::move(success));
   }
 

@@ -197,9 +197,6 @@ class WebnnGraphLPMFuzzer {
     }
     webnn_graph_builder_remote.reset();
 
-    mojo::Remote<webnn::mojom::WebNNGraph> webnn_graph_remote;
-    webnn_graph_remote.Bind(
-        std::move(create_graph_result.value()->graph_remote));
     blink::WebNNGraphToken graph_token =
         create_graph_result.value()->graph_token;
 

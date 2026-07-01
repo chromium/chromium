@@ -85,10 +85,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
   ~DispatchContextImplOrt() override;
 
   // mojom::WebNNModelLoader:
-  void LoadCompiledGraph(
-      mojom::CompiledGraphPtr compiled_graph,
-      mojo::PendingReceiver<mojom::WebNNGraph> graph_receiver,
-      LoadCompiledGraphCallback callback) override;
+  void LoadCompiledGraph(mojom::CompiledGraphPtr compiled_graph,
+                         LoadCompiledGraphCallback callback) override;
 
   // The EP device that was selected for this DispatchContextImplOrt. Used to
   // reconnect when requesting a CompilerContext from the Compiler process for

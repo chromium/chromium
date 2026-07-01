@@ -16,7 +16,6 @@
 #include "services/webnn/ort/graph_builder_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -37,7 +36,6 @@ class SessionOptions;
 class GraphImplOrt final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -48,8 +46,7 @@ class GraphImplOrt final : public WebNNGraphImpl {
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   class ComputeResources;
-  GraphImplOrt(mojo::PendingReceiver<mojom::WebNNGraph> receiver,
-               ComputeResourceInfo compute_resource_info,
+  GraphImplOrt(ComputeResourceInfo compute_resource_info,
                std::unique_ptr<ComputeResources> compute_resources,
                WebNNContextImpl& context,
                std::vector<mojom::Device> devices);
@@ -61,7 +58,6 @@ class GraphImplOrt final : public WebNNGraphImpl {
   // Compiler process and constructs the WebNNGraphImpl.
   static base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>
   CreateSessionFromCompiledGraph(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       WebNNContextImpl& context,
       ComputeResourceInfo compute_resource_info,
       scoped_refptr<SessionOptions> session_options,
@@ -89,7 +85,6 @@ class GraphImplOrt final : public WebNNGraphImpl {
       ScopedTrace scoped_trace);
 
   static void DidCreateAndBuild(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       WebNNContextImpl& context,
       ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback,

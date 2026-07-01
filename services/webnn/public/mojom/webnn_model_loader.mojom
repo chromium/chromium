@@ -49,8 +49,6 @@ interface WebNNModelLoader {
   // Returns a graph handle and execution devices, or an error if the
   // GPU process fails to load the model (e.g., the backend cannot create
   // an inference session).
-  LoadCompiledGraph(
-      CompiledGraph compiled_graph,
-      pending_receiver<WebNNGraph> graph_receiver)
+  LoadCompiledGraph(CompiledGraph compiled_graph)
     => result<LoadedGraphInfo, Error>;
 };

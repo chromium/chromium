@@ -167,8 +167,6 @@ BuildAndCompute(
       return {};
   }
 
-  mojo::Remote<mojom::WebNNGraph> graph_remote;
-  graph_remote.Bind(std::move(create_graph_result.value()->graph_remote));
   blink::WebNNGraphToken graph_token = create_graph_result.value()->graph_token;
 
   std::vector<std::pair<std::string, blink::WebNNTensorToken>>

@@ -500,7 +500,6 @@ void ContextImplOrt::HandleContextLostOrCrash(const std::string& error_message,
 }
 
 void ContextImplOrt::CreateGraphImpl(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -509,9 +508,9 @@ void ContextImplOrt::CreateGraphImpl(
         constant_tensor_operands,
     CreateGraphImplCallback callback) {
   GraphImplOrt::CreateAndBuild(
-      std::move(receiver), std::move(graph_info),
-      std::move(compute_resource_info), std::move(constant_operands),
-      std::move(constant_tensor_operands), *this, std::move(callback));
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(constant_tensor_operands), *this,
+      std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

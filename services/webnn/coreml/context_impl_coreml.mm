@@ -73,7 +73,6 @@ base::WeakPtr<WebNNContextImpl> ContextImplCoreml::AsWeakPtr() {
 }
 
 void ContextImplCoreml::CreateGraphImpl(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -82,10 +81,9 @@ void ContextImplCoreml::CreateGraphImpl(
         constant_tensor_operands,
     CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(
-      std::move(receiver), *this, std::move(graph_info),
-      std::move(compute_resource_info), std::move(constant_operands),
-      std::move(constant_tensor_operands), options().Clone(), properties(),
-      std::move(callback));
+      *this, std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(constant_tensor_operands),
+      options().Clone(), properties(), std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

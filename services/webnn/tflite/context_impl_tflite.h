@@ -80,7 +80,6 @@ class ContextImplTflite final : public WebNNContextImpl {
   ~ContextImplTflite() override;
 
   void CreateGraphImpl(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -90,7 +89,6 @@ class ContextImplTflite final : public WebNNContextImpl {
       CreateGraphImplCallback callback) override;
 
   void DidCreateWeightsFile(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>

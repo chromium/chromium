@@ -2443,8 +2443,6 @@ void BuildAndCompute(
   }
   graph_builder_remote.reset();
 
-  mojo::Remote<mojom::WebNNGraph> graph_remote;
-  graph_remote.Bind(std::move(create_graph_result.value()->graph_remote));
   blink::WebNNGraphToken graph_token = create_graph_result.value()->graph_token;
 
   std::vector<std::pair<std::string, blink::WebNNTensorToken>>
@@ -2476,7 +2474,6 @@ void BuildAndCompute(
   }
 
   context_remote->DestroyGraph(graph_token);
-  graph_remote.reset();
 }
 
 }  // namespace

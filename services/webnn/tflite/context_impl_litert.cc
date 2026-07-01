@@ -109,7 +109,6 @@ base::WeakPtr<WebNNContextImpl> ContextImplLiteRt::AsWeakPtr() {
 }
 
 void ContextImplLiteRt::CreateGraphImpl(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -122,22 +121,21 @@ void ContextImplLiteRt::CreateGraphImpl(
     // rather than an external weights file, pass an invalid file handle to
     // the graph impl so it can fallback to the default behavior.
     GraphImplLiteRt::CreateAndBuild(
-        std::move(receiver), std::move(graph_info),
-        std::move(compute_resource_info), std::move(constant_operands),
-        std::move(constant_tensor_operands), *this,
+        std::move(graph_info), std::move(compute_resource_info),
+        std::move(constant_operands), std::move(constant_tensor_operands),
+        *this,
         /*weights_file=*/base::File(base::File::FILE_ERROR_NOT_FOUND),
         std::move(callback));
   } else {
     CreateWeightsFile(base::BindOnce(
         &ContextImplLiteRt::DidCreateWeightsFile, weak_factory_.GetWeakPtr(),
-        std::move(receiver), std::move(graph_info),
-        std::move(compute_resource_info), std::move(constant_operands),
-        std::move(constant_tensor_operands), std::move(callback)));
+        std::move(graph_info), std::move(compute_resource_info),
+        std::move(constant_operands), std::move(constant_tensor_operands),
+        std::move(callback)));
   }
 }
 
 void ContextImplLiteRt::DidCreateWeightsFile(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -150,11 +148,10 @@ void ContextImplLiteRt::DidCreateWeightsFile(
   // temporary file (for example, because the profile is incognito) or the
   // creation failed. In either case, fall back to keeping the weights
   // embedded in the in-memory Flatbuffer model.
-  GraphImplLiteRt::CreateAndBuild(std::move(receiver), std::move(graph_info),
-                                  std::move(compute_resource_info),
-                                  std::move(constant_operands),
-                                  std::move(constant_tensor_operands), *this,
-                                  std::move(weights_file), std::move(callback));
+  GraphImplLiteRt::CreateAndBuild(
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(constant_tensor_operands), *this,
+      std::move(weights_file), std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

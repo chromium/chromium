@@ -154,7 +154,6 @@ void DispatchContextImplOrt::RequestCompilerContext(
 
 void DispatchContextImplOrt::LoadCompiledGraph(
     mojom::CompiledGraphPtr compiled_graph,
-    mojo::PendingReceiver<mojom::WebNNGraph> graph_receiver,
     LoadCompiledGraphCallback callback) {
   // Split CompiledOperandDescriptor maps into separate binding name maps
   // and descriptor maps for ComputeResourceInfo and session creation.
@@ -193,8 +192,8 @@ void DispatchContextImplOrt::LoadCompiledGraph(
       base::PassKey<DispatchContextImplOrt>());
 
   auto result = GraphImplOrt::CreateSessionFromCompiledGraph(
-      std::move(graph_receiver), *this, std::move(compute_resource_info),
-      session_options(), env(), std::move(compiled_graph->compiled_model_data),
+      *this, std::move(compute_resource_info), session_options(), env(),
+      std::move(compiled_graph->compiled_model_data),
       std::move(input_binding_names), std::move(output_binding_names));
 
   if (!result.has_value()) {

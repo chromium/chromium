@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -37,7 +36,6 @@ class ContextImplLiteRt;
 class GraphImplLiteRt final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -49,8 +47,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   class ComputeResources;
-  GraphImplLiteRt(mojo::PendingReceiver<mojom::WebNNGraph> receiver,
-                  ComputeResourceInfo compute_resource_info,
+  GraphImplLiteRt(ComputeResourceInfo compute_resource_info,
                   std::vector<std::pair<std::string, tflite::TensorDescriptor>>
                       input_name_to_descriptor,
                   std::vector<std::pair<std::string, tflite::TensorDescriptor>>
@@ -80,7 +77,6 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
       base::File weights_file);
 
   static void DidCreateAndBuild(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback,

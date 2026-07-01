@@ -102,7 +102,6 @@ void CompilerContextImplOrt::CreateGraphBuilder(
 
 // TODO(crbug.com/508864477): Remove the constant tensor operands parameter.
 void CompilerContextImplOrt::BuildGraph(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -127,8 +126,7 @@ void CompilerContextImplOrt::BuildGraph(
                      std::move(graph_info), session_options_, env_, properties_,
                      std::move(constant_operands)),
       base::BindOnce(&CompilerContextImplOrt::DidCompile,
-                     base::Unretained(this), std::move(receiver),
-                     std::move(compute_resource_info),
+                     base::Unretained(this), std::move(compute_resource_info),
                      std::move(wrapped_callback)));
 }
 
@@ -223,7 +221,6 @@ CompilerContextImplOrt::CompileOnBackgroundThread(
 }
 
 void CompilerContextImplOrt::DidCompile(
-    mojo::PendingReceiver<mojom::WebNNGraph> graph_receiver,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     BuildGraphCallback callback,
     base::expected<std::unique_ptr<CompilationResult>, mojom::ErrorPtr>
@@ -261,9 +258,9 @@ void CompilerContextImplOrt::DidCompile(
       mojom::CompiledGraph::New(std::move(compilation->compiled_model_data),
                                 std::move(inputs), std::move(outputs));
 
-  // Send compiled graph and graph receiver to GPU process.
+  // Send compiled graph to GPU process.
   model_loader_->LoadCompiledGraph(
-      std::move(compiled_graph), std::move(graph_receiver),
+      std::move(compiled_graph),
       base::BindOnce(
           [](BuildGraphCallback callback,
              base::expected<mojom::LoadedGraphInfoPtr, mojom::ErrorPtr>

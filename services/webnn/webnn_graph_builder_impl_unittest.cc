@@ -52,15 +52,12 @@ mojom::GraphInfoPtr BuildSimpleGraphInfo(
   return builder.TakeGraphInfo();
 }
 
-// A fake WebNNGraph Mojo interface implementation that binds a pipe for
-// computing graph message.
+// A fake WebNNGraph implementation for testing.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  FakeWebNNGraphImpl(mojo::PendingReceiver<mojom::WebNNGraph> receiver,
-                     WebNNContextImpl& context,
+  FakeWebNNGraphImpl(WebNNContextImpl& context,
                      ComputeResourceInfo compute_resource_info)
-      : WebNNGraphImpl(std::move(receiver),
-                       context,
+      : WebNNGraphImpl(context,
                        std::move(compute_resource_info),
                        /*devices=*/{}) {}
 
@@ -114,7 +111,6 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   ~FakeWebNNContextImpl() override = default;
 
   void CreateGraphImpl(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -129,19 +125,15 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     // Asynchronously resolve `callback` so there's an opportunity for
     // subsequent messages to be (illegally) sent from the `WebNNGraphBuilder`
     // remote before it's disconnected.
-    RunOrScheduleTask(
-        base::BindOnce(
-            [](mojo::PendingReceiver<mojom::WebNNGraph> receiver,
-               base::WeakPtr<WebNNContextImpl> context,
-               WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-               CreateGraphImplCallback callback) {
-              CHECK(context);
-              std::move(callback).Run(base::MakeRefCounted<FakeWebNNGraphImpl>(
-                  std::move(receiver), *context,
-                  std::move(compute_resource_info)));
-            },
-            std::move(receiver), AsWeakPtr(), std::move(compute_resource_info),
-            std::move(callback)));
+    RunOrScheduleTask(base::BindOnce(
+        [](base::WeakPtr<WebNNContextImpl> context,
+           WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+           CreateGraphImplCallback callback) {
+          CHECK(context);
+          std::move(callback).Run(base::MakeRefCounted<FakeWebNNGraphImpl>(
+              *context, std::move(compute_resource_info)));
+        },
+        AsWeakPtr(), std::move(compute_resource_info), std::move(callback)));
   }
 
   base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

@@ -128,7 +128,6 @@ class GraphImplOrt::ComputeResources {
 
 // static
 void GraphImplOrt::CreateAndBuild(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -147,9 +146,8 @@ void GraphImplOrt::CreateAndBuild(
                      std::move(graph_info), context.session_options(),
                      context.env(), context.properties(),
                      std::move(constant_operands), std::move(scoped_trace)),
-      base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::move(receiver),
-                     std::ref(context), std::move(compute_resource_info),
-                     std::move(callback)));
+      base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::ref(context),
+                     std::move(compute_resource_info), std::move(callback)));
 }
 
 // static
@@ -192,7 +190,6 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
 // static
 void GraphImplOrt::DidCreateAndBuild(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     WebNNContextImpl& context,
     ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
@@ -205,15 +202,13 @@ void GraphImplOrt::DidCreateAndBuild(
 
   // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   std::move(callback).Run(base::MakeRefCounted<GraphImplOrt>(
-      std::move(receiver), std::move(compute_resource_info),
-      std::move(result.value()), context,
+      std::move(compute_resource_info), std::move(result.value()), context,
       /*devices=*/std::vector<mojom::Device>()));
 }
 
 // static
 base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>
 GraphImplOrt::CreateSessionFromCompiledGraph(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     WebNNContextImpl& context,
     ComputeResourceInfo compute_resource_info,
     scoped_refptr<SessionOptions> session_options,
@@ -239,8 +234,7 @@ GraphImplOrt::CreateSessionFromCompiledGraph(
       std::move(operand_output_name_to_onnx_output_name)));
 
   return base::MakeRefCounted<GraphImplOrt>(
-      std::move(receiver), std::move(compute_resource_info),
-      std::move(compute_resources), context,
+      std::move(compute_resource_info), std::move(compute_resources), context,
       // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
       /*devices=*/std::vector<mojom::Device>());
 }
@@ -248,13 +242,11 @@ GraphImplOrt::CreateSessionFromCompiledGraph(
 GraphImplOrt::~GraphImplOrt() = default;
 
 GraphImplOrt::GraphImplOrt(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<GraphImplOrt::ComputeResources> compute_resources,
     WebNNContextImpl& context,
     std::vector<mojom::Device> devices)
-    : WebNNGraphImpl(std::move(receiver),
-                     context,
+    : WebNNGraphImpl(context,
                      std::move(compute_resource_info),
                      std::move(devices)),
       compute_resources_(std::move(compute_resources)) {}

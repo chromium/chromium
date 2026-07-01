@@ -53,7 +53,6 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
   ~ContextImplCoreml() override;
 
   void CreateGraphImpl(
-      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>

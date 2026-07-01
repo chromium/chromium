@@ -457,7 +457,6 @@ class GraphImplTflite::ComputeResources {
 
 // static
 void GraphImplTflite::CreateAndBuild(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -483,9 +482,8 @@ void GraphImplTflite::CreateAndBuild(
                      std::move(operand_to_dependent_operations),
                      std::move(operand_to_producing_operation),
                      std::move(weights_file)),
-      base::BindOnce(&GraphImplTflite::DidCreateAndBuild, std::move(receiver),
-                     context.AsWeakPtr(), std::move(compute_resource_info),
-                     std::move(callback)));
+      base::BindOnce(&GraphImplTflite::DidCreateAndBuild, context.AsWeakPtr(),
+                     std::move(compute_resource_info), std::move(callback)));
 }
 
 // static
@@ -521,7 +519,6 @@ GraphImplTflite::CreateAndBuildOnBackgroundThread(
 }
 
 void GraphImplTflite::DidCreateAndBuild(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
@@ -546,15 +543,14 @@ void GraphImplTflite::DidCreateAndBuild(
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(*compute_resources));
   std::move(callback).Run(base::MakeRefCounted<GraphImplTflite>(
-      std::move(receiver), std::move(compute_resource_info),
-      std::move(input_name_to_descriptor), std::move(output_name_to_descriptor),
-      std::move(compute_resources_state), *context, std::move(devices)));
+      std::move(compute_resource_info), std::move(input_name_to_descriptor),
+      std::move(output_name_to_descriptor), std::move(compute_resources_state),
+      *context, std::move(devices)));
 }
 
 GraphImplTflite::~GraphImplTflite() = default;
 
 GraphImplTflite::GraphImplTflite(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<std::string, TensorDescriptor> input_name_to_descriptor,
     base::flat_map<std::string, TensorDescriptor> output_name_to_descriptor,
@@ -562,8 +558,7 @@ GraphImplTflite::GraphImplTflite(
         compute_resources_state,
     WebNNContextImpl& context,
     std::vector<mojom::Device> devices)
-    : WebNNGraphImpl(std::move(receiver),
-                     context,
+    : WebNNGraphImpl(context,
                      std::move(compute_resource_info),
                      std::move(devices)),
       compute_resources_state_(std::move(compute_resources_state)),

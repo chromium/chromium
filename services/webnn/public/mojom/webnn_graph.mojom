@@ -1448,8 +1448,3 @@ struct GraphInfo {
       id_to_constant_tensor_operand_map;
 };
 
-// WebNNGraph runs in the GPU process and is called by the renderer process.
-// Graph execution is performed via WebNNContext::Dispatch().
-// This interface is lifecycle-only: pipe disconnect signals graph destruction.
-interface WebNNGraph {
-};

@@ -237,9 +237,6 @@ void WebNNContextImpl::OnDisconnect() {
     impl->ResetMojoReceiver();
   }
 
-  for (auto impl : graph_impls_) {
-    impl->ResetMojoReceiver();
-  }
 
   // Close the primary pipe before clearing builders. Closing the pipe detaches
   // all endpoint clients on the router, so the subsequent Clear() won't trigger
@@ -312,7 +309,6 @@ void WebNNContextImpl::CreateWeightsFile(
 }
 
 void WebNNContextImpl::BuildGraph(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -320,8 +316,7 @@ void WebNNContextImpl::BuildGraph(
     base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
         constant_tensor_operands,
     BuildGraphCallback callback) {
-  CreateGraphImpl(std::move(receiver), std::move(graph_info),
-                  std::move(compute_resource_info),
+  CreateGraphImpl(std::move(graph_info), std::move(compute_resource_info),
                   std::move(constant_operands),
                   std::move(constant_tensor_operands),
                   base::BindOnce(&WebNNContextImpl::OnGraphBuilt, AsWeakPtr(),
@@ -649,7 +644,6 @@ void WebNNContextImpl::DestroyGraph(
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidGraph);
     return;
   }
-  (*it)->ResetMojoReceiver();
   graph_impls_.erase(it);
 }
 
