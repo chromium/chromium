@@ -57,6 +57,7 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
 
   v8_inspector::V8InspectorSession* v8_session() { return v8_session_; }
 
+  void Dispose() override;
   void Restore() override;
   void DidCommitLoadForLocalFrame(LocalFrame*) override;
 
@@ -115,10 +116,13 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
       std::unique_ptr<DeleteDatabaseCallback>) override;
 
  private:
+  void ReleaseObjectGroup();
+
   // This is null while inspecting workers.
   Member<InspectedFrames> inspected_frames_;
   // This is null while inspecting frames.
   Member<WorkerGlobalScope> worker_global_scope_;
+  // This is null after `InspectorIndexedDBAgent` is disposed.
   raw_ptr<v8_inspector::V8InspectorSession, DanglingUntriaged> v8_session_;
   InspectorAgentState::Boolean enabled_;
 };
