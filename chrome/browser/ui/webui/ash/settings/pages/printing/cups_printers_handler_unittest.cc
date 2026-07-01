@@ -387,8 +387,8 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicense) {
 
 TEST_F(CupsPrintersHandlerTest, ViewPPDUnsanitizedFilename) {
   // Test the nominal case where the printer has a name that needs sanitized.
-  const std::string printer_name("bad/name");
-  const std::string sanitized_name("bad_name");
+  const std::string printer_name("bad/name#with?bad%chars\\");
+  const std::string sanitized_name("bad_name_with_bad_chars_");
 
   AddPrinterToPrintScanManager("id", kDefaultPpdData);
 
@@ -411,6 +411,45 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDUnsanitizedFilename) {
   // Check for the downloaded PPD file.
   std::string contents;
   EXPECT_TRUE(GetDownloadedPpdContents(contents, sanitized_name));
+  EXPECT_EQ(contents, kDefaultPpdData);
+}
+
+TEST_F(CupsPrintersHandlerTest, ViewPPDWithPathNeedingEscaping) {
+  // Since the filename gets sanitized, a test won't be able to validate the
+  // FilePathToFileURL method in DisplayPpdFile with a bad filename. Instead,
+  // create a bogus download directory that needs special handling.
+  const std::string dir_name("dir#name?here");
+  const std::string sanitized_name("dir%23name%3Fhere");
+  base::FilePath download_path = download_dir_.GetPath().Append(dir_name);
+  ASSERT_TRUE(base::CreateDirectory(download_path));
+
+  DownloadPrefs* prefs =
+      DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager());
+  prefs->SetDownloadPath(download_path);
+
+  AddPrinterToPrintScanManager("id", kDefaultPpdData);
+
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+
+  print_backend_->AddValidPrinter(
+      printer.id(),
+      std::make_unique<::printing::PrinterSemanticCapsAndDefaults>(), nullptr);
+
+  // Verify that the URL passed to OpenUrl contains the expected escaped
+  // characters.
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(testing::Property(&GURL::spec,
+                                        testing::HasSubstr(sanitized_name)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
+  CallRetrieveCupsPpd(printer.id());
+
+  // Check for the downloaded PPD file.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents));
   EXPECT_EQ(contents, kDefaultPpdData);
 }
 

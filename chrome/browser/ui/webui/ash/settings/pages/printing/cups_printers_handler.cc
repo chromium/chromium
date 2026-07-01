@@ -571,9 +571,11 @@ void CupsPrintersHandler::WriteAndDisplayPpdFile(
   const base::FilePath downloads_path =
       DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
           ->DownloadPath();
-  // To make sure an appropriate filename is created, remove any dir separators.
+  // To make sure an appropriate filename is created, remove any dir separators
+  // and characters that are significant in URL syntax (the path is later turned
+  // into a file:// URL).
   std::string sanitized_name = printer_name;
-  base::ReplaceChars(sanitized_name, "/", "_", &sanitized_name);
+  base::ReplaceChars(sanitized_name, "/\\#?%", "_", &sanitized_name);
   const base::FilePath ppd_file_path_base =
       downloads_path.Append(sanitized_name).AddExtension("ppd");
 
@@ -592,9 +594,14 @@ void CupsPrintersHandler::DisplayPpdFile(const base::FilePath& ppd_file_path) {
   }
 
   PRINTER_LOG(DEBUG) << "PPD saved to " << ppd_file_path;
+  GURL file_url = net::FilePathToFileURL(ppd_file_path);
+  if (!file_url.is_valid()) {
+    PRINTER_LOG(ERROR) << ppd_file_path << " is not a valid file url";
+    return;
+  }
+
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(base::StringPrintf("file://%s", ppd_file_path.value().c_str())),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      file_url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
