@@ -254,6 +254,8 @@ class V4Store : public SBStore {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestMergeUpdateFastPathMultipleRemovalsInARow);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestVerifyChecksumFastPath);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestVerifyChecksumValidStoreChecksumEmptyHistogram);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesRemovesOnlyElement);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesRemovesFirstElement);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesRemovesMiddleElement);

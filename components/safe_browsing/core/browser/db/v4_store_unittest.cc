@@ -1455,6 +1455,49 @@ TEST_F(V4StoreTest, TestVerifyChecksumFastPath) {
   EXPECT_FALSE(store.VerifyChecksum());
 }
 
+TEST_F(V4StoreTest, TestVerifyChecksumValidStoreChecksumEmptyHistogram) {
+  base::HistogramTester histograms;
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/0,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.hash_prefix_map_->Append(4, "000011112222");
+  store.has_valid_data_ = true;
+
+  // Case 1: expected_checksum_ is empty.
+  store.expected_checksum_ = "";
+  EXPECT_TRUE(store.VerifyChecksum());
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty.V4StoreTest",
+      true, 1);
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty", true, 1);
+
+  // Case 2: expected_checksum_ is not empty.
+  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
+  checksum_ctx.Update("000011112222");
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  checksum_ctx.Finish(checksum);
+  store.expected_checksum_ = std::string(checksum.begin(), checksum.end());
+
+  V4StoreFileFormat file_format;
+  SBStoreFileFormat sb_file_format(&file_format);
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(sb_file_format));
+
+  EXPECT_TRUE(store.VerifyChecksum());
+  // We expect one more sample for "false" (not empty).
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty.V4StoreTest",
+      false, 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty.V4StoreTest",
+      2);
+
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty", false, 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty", 2);
+}
+
 TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
   std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
