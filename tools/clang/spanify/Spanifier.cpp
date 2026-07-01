@@ -885,13 +885,22 @@ bool isConstToken(const clang::Token& tok) {
   return is_const_keyword || is_raw_identifier_and_const;
 }
 
-bool HasConstNode(const clang::TypeLoc* type_loc,
-                  const clang::SourceManager& source_manager,
-                  const clang::LangOptions& lang_opts) {
+bool isVolatileToken(const clang::Token& tok) {
+  return tok.is(clang::tok::kw_volatile) ||
+         (tok.is(clang::tok::raw_identifier) &&
+          tok.getRawIdentifier() == "volatile");
+}
+
+template <typename F>
+bool HasQualifierInRange(clang::SourceLocation begin,
+                         clang::SourceLocation end,
+                         const clang::SourceManager& source_manager,
+                         const clang::LangOptions& lang_opts,
+                         F qualifierFunc) {
   clang::Token tok;
-  if (!clang::Lexer::getRawToken(type_loc->getBeginLoc(), tok, source_manager,
-                                 lang_opts, /*KeepWhitespace=*/false)) {
-    if (isConstToken(tok)) {
+  if (!clang::Lexer::getRawToken(begin, tok, source_manager, lang_opts,
+                                 /*KeepWhitespace=*/false)) {
+    if (qualifierFunc(tok)) {
       return true;
     }
   }
@@ -899,14 +908,71 @@ bool HasConstNode(const clang::TypeLoc* type_loc,
   auto get_next_tok = [&](clang::SourceLocation loc) {
     return clang::Lexer::findNextToken(loc, source_manager, lang_opts);
   };
-  for (auto maybe_tok = get_next_tok(type_loc->getBeginLoc());
-       maybe_tok && maybe_tok->getLocation() < type_loc->getEndLoc();
+  for (auto maybe_tok = get_next_tok(begin);
+       maybe_tok && maybe_tok->getLocation() < end;
        maybe_tok = get_next_tok(maybe_tok->getLocation())) {
-    if (isConstToken(*maybe_tok)) {
+    if (qualifierFunc(*maybe_tok)) {
       return true;
     }
   }
   return false;
+}
+
+template <typename F>
+bool HasQualifierNode(const clang::TypeLoc* type_loc,
+                      const clang::SourceManager& source_manager,
+                      const clang::LangOptions& lang_opts,
+                      F qualifierFunc) {
+  return HasQualifierInRange(type_loc->getBeginLoc(), type_loc->getEndLoc(),
+                             source_manager, lang_opts, qualifierFunc);
+}
+
+template <typename F>
+clang::SourceLocation ExpandLeft(clang::SourceLocation start,
+                                 const clang::SourceManager& source_manager,
+                                 const clang::LangOptions& lang_opts,
+                                 F predicate) {
+  auto get_prev_token = [&](clang::SourceLocation src) {
+    return clang::Lexer::findPreviousToken(src, source_manager, lang_opts,
+                                           /*IncludeComments=*/false);
+  };
+  clang::SourceLocation current = start;
+  for (std::optional<clang::Token> prev = get_prev_token(current);
+       prev.has_value(); prev = get_prev_token(current)) {
+    auto prev_loc = prev->getLocation();
+    if (prev_loc.isInvalid() ||
+        !source_manager.isWrittenInSameFile(start, prev_loc)) {
+      // We have reached beyond our starting file (likely a macro),
+      // return whatever valid range we found before updating with `prev`.
+      return current;
+    }
+    if (!predicate(*prev)) {
+      // This isn't one of the tokens we wanted so return the valid
+      // range before updating.
+      return current;
+    }
+    // The previous token should be included as well; extend our valid range.
+    current = prev_loc;
+  }
+  return current;
+}
+
+void ReportQualifierError(clang::SourceLocation new_begin,
+                          const clang::SourceManager& source_manager,
+                          const clang::LangOptions& lang_opts) {
+  std::optional<clang::Token> failed_prev =
+      clang::Lexer::findPreviousToken(new_begin, source_manager, lang_opts,
+                                      /*IncludeComments=*/false);
+  std::string_view got_text = "unknown";
+  if (failed_prev.has_value()) {
+    got_text = clang::Lexer::getSourceText(
+        clang::CharSourceRange::getCharRange(
+            {failed_prev->getLocation(), failed_prev->getEndLoc()}),
+        source_manager, lang_opts);
+  }
+  llvm::errs()
+      << "WARNING: `getNodeFromPointerTypeLoc()` expected `const` or `volatile`"
+      << ", but got: " << got_text << " instead.\n";
 }
 
 std::string getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
@@ -925,57 +991,53 @@ std::string getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
   // *  `QualifiedTypeLoc` deliberately does not provide source locations
   //    for qualifiers [1].
   //
-  // As a best effort, if the type is const-qualified:
-  // 1. We first check if the `const` keyword is already within the source
-  //    range of `type_loc` (e.g. `const int*` or `int const*`). If it is, the
-  //    range is already correct and we can return it as is.
-  // 2. Otherwise, we abuse the Lexer to back up one token behind `type_loc`.
-  //    Take a deep breath and hope that it's the `const` qualifier. If so, we
-  //    extend the range to include it.
+  // As a best effort, if the type is const-qualified or volatile-qualified:
+  // 1. We first check if the qualifiers are already within the source range
+  //    of `type_loc` (e.g. `const int*` or `int const*`).
+  // 2. Otherwise, we abuse the Lexer to back up and find them, extending
+  //    the range to include them.
   //
   // [1]
   // https://github.com/llvm/llvm-project/blob/6cf656eca717890a43975c026d0ae34c16c6c455/clang/include/clang/AST/TypeLoc.h#L288
-  clang::SourceRange replacement_range = [type_loc, &result, &source_manager,
+  clang::SourceRange replacement_range = [type_loc, &source_manager,
                                           &lang_opts]() {
     const auto qualified_type_loc =
         type_loc->getPointeeLoc().getAs<clang::QualifiedTypeLoc>();
     clang::SourceRange result = {type_loc->getBeginLoc(),
                                  type_loc->getEndLoc().getLocWithOffset(1)};
-    if (qualified_type_loc.isNull() ||
-        !qualified_type_loc.getType().isConstQualified()) {
+    if (qualified_type_loc.isNull()) {
+      return result;
+    }
+    const bool type_is_const = qualified_type_loc.getType().isConstQualified();
+    const bool type_is_volatile =
+        qualified_type_loc.getType().isVolatileQualified();
+    if (!type_is_const && !type_is_volatile) {
       return result;
     }
 
-    // If `const` is found within the source range of `type_loc` (e.g.
-    // `const int*` or `int const*`), the default range already includes
-    // the qualifier, so we can return the result as is.
-    if (HasConstNode(type_loc, source_manager, lang_opts)) {
-      return result;
-    }
+    auto is_qualifier_token = [](const clang::Token& tok) {
+      return isConstToken(tok) || isVolatileToken(tok);
+    };
 
-    std::optional<clang::Token> previous_token =
-        clang::Lexer::findPreviousToken(type_loc->getBeginLoc(), source_manager,
-                                        lang_opts, /*IncludeComments=*/false);
-    // If we can't find the previous token, bail out to the previous
-    // behavior.
-    if (!previous_token.has_value()) {
-      return result;
-    }
-    if (!isConstToken(*previous_token)) {
-      std::string_view actual_previous_qualifier = clang::Lexer::getSourceText(
-          clang::CharSourceRange::getCharRange(
-              {previous_token->getLocation(), previous_token->getEndLoc()}),
-          source_manager, lang_opts);
-      // A patch hitting this will likely fail to compile.
-      llvm::errs() << "WARNING: `getNodeFromPointerTypeLoc()` expected "
-                      "`const`, but got: "
-                   << actual_previous_qualifier << " instead.\n";
-      return result;
-    }
+    // Look back to extend range and find remaining qualifiers
+    const clang::SourceLocation new_begin = ExpandLeft(
+        type_loc->getBeginLoc(), source_manager, lang_opts, is_qualifier_token);
 
+    // Verify we found what we expected
+    const bool found_const =
+        HasQualifierInRange(new_begin, type_loc->getEndLoc(), source_manager,
+                            lang_opts, isConstToken);
+    const bool found_volatile =
+        HasQualifierInRange(new_begin, type_loc->getEndLoc(), source_manager,
+                            lang_opts, isVolatileToken);
+
+    if (type_is_const != found_const || type_is_volatile != found_volatile) {
+      ReportQualifierError(new_begin, source_manager, lang_opts);
+      assert(false && "failed to find const or volatile see logs");
+    }
     // Extend the replacement range leftward to include `const` in the
     // type to be rewritten.
-    result.setBegin(previous_token->getLocation());
+    result.setBegin(new_begin);
     return result;
   }();
 
