@@ -256,14 +256,15 @@ ContextualTasksPanelController* ContextualTasksPanelController::From(
 void ContextualTasksSidePanelCoordinator::Show(
     bool transition_from_tab,
     omnibox::ChromeAimEntryPoint entry_point) {
-  EntrySource entry_source;
+  ContextualTasksPanelController::EntrySource entry_source;
   if (entry_point == omnibox::ChromeAimEntryPoint::
                          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT) {
-    entry_source = EntrySource::kLensOverlay;
+    entry_source = ContextualTasksPanelController::EntrySource::kLensOverlay;
   } else if (transition_from_tab) {
-    entry_source = EntrySource::kAiModeLinkClick;
+    entry_source =
+        ContextualTasksPanelController::EntrySource::kAiModeLinkClick;
   } else {
-    entry_source = EntrySource::kOther;
+    entry_source = ContextualTasksPanelController::EntrySource::kOther;
   }
 
   // Increment the impression count and attempt to show the HaTS survey.
@@ -418,6 +419,18 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
 
 bool ContextualTasksSidePanelCoordinator::IsPanelOpenForContextualTask() const {
   return contextual_tasks_panel_host_->IsPanelOpenForContextualTask();
+}
+
+ContextualTasksPanelController::EntrySource
+ContextualTasksSidePanelCoordinator::GetActiveEntrySource() const {
+  if (content::WebContents* active_web_contents = GetActiveWebContents()) {
+    for (const auto& it : task_id_to_web_contents_cache_) {
+      if (it.second->web_contents.get() == active_web_contents) {
+        return it.second->entry_source;
+      }
+    }
+  }
+  return ContextualTasksPanelController::EntrySource::kOther;
 }
 
 void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(

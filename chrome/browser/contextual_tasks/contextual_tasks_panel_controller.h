@@ -61,6 +61,18 @@ class ContextualTasksPanelController {
   // feature might also show panel.
   virtual bool IsPanelOpenForContextualTask() const = 0;
 
+  // LINT.IfChange(ContextualTasksSidePanelEntrySource)
+  enum class EntrySource {
+    kOther = 0,
+    kLensOverlay = 1,
+    kAiModeLinkClick = 2,
+    kMaxValue = kAiModeLinkClick,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksSidePanelEntrySource)
+
+  // Returns the entry source of the currently active panel.
+  virtual EntrySource GetActiveEntrySource() const = 0;
+
   // Context management.
   // Returns the tab handle of the auto suggested tab if the auto suggested tab
   // chip is shown in the compose box.

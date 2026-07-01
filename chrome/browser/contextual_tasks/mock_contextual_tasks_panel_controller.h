@@ -32,6 +32,10 @@ class MockContextualTasksPanelController
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, OpenInZeroState, (), (override));
   MOCK_METHOD(bool, IsPanelOpenForContextualTask, (), (const, override));
+  MOCK_METHOD(ContextualTasksPanelController::EntrySource,
+              GetActiveEntrySource,
+              (),
+              (const, override));
   MOCK_METHOD(std::optional<tabs::TabHandle>,
               GetAutoSuggestedTabHandle,
               (),
