@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -215,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeCallsOnClientConnected) {
   // Verify that there is a connected web client when our callback fires.
   base::WeakPtr<GlicInstance> instance = connected_future.Get();
   ASSERT_TRUE(instance);
-  EXPECT_TRUE(instance->host().IsWebClientConnected());
+  auto* instance_impl = static_cast<GlicInstanceImpl*>(instance.get());
+  EXPECT_TRUE(instance_impl->host().IsWebClientConnected());
 
   // Verify that the passed instance is the correct one.
   EXPECT_EQ(instance.get(), GetInstanceForTab(tab));

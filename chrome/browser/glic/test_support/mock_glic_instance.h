@@ -68,7 +68,6 @@ class MockGlicInstance : public GlicInstance {
               (mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>,
                base::OnceCallback<void(bool)>),
               (override));
-  MOCK_METHOD(Host&, host, (), (override));
   MOCK_METHOD(void,
               SendAdditionalContext,
               (mojom::AdditionalContextPtr),

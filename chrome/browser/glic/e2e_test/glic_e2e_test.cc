@@ -433,7 +433,8 @@ ui::ElementIdentifier GetGlicViewElementId() {
 void GlicE2ETest::OnActiveInstanceChanged(GlicInstance* new_instance) {
   host_observation_.Reset();
   if (new_instance) {
-    host_observation_.Observe(&new_instance->host());
+    host_observation_.Observe(
+        &static_cast<GlicInstanceImpl*>(new_instance)->host());
   }
 }
 

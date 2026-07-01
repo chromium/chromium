@@ -70,10 +70,6 @@ class GlicInstance {
   virtual base::CallbackListSubscription RegisterWillBeDestroyed(
       DestructionCallback callback) = 0;
 
-  // Get this instance's Host which manages the chrome://glic WebContents.
-  // DEPRECATED - Use specific GlicInstance methods instead.
-  virtual Host& host() = 0;
-
   // Sends additional context to the instance.
   // DEPRECATED: Use the invoke API instead.
   virtual void SendAdditionalContext(mojom::AdditionalContextPtr context) = 0;
