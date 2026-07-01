@@ -1382,6 +1382,16 @@ public class CustomTabsConnection {
         return mClientManager.getClientPackageNameForSession(session);
     }
 
+    /** See {@link ClientManager#getClientUidForSession(SessionHolder)} */
+    public int getClientUidForSession(@Nullable SessionHolder<?> session) {
+        return mClientManager.getClientUidForSession(session);
+    }
+
+    /** See {@link ClientManager#getClientPidForSession(SessionHolder)} */
+    public int getClientPidForSession(@Nullable SessionHolder<?> session) {
+        return mClientManager.getClientPidForSession(session);
+    }
+
     /**
      * Extracts the target network from the intent if the caller has the required permissions.
      * Package-private to be used by {@link CustomTabIntentDataProvider}.

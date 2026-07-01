@@ -13,11 +13,14 @@ import static androidx.browser.trusted.TrustedWebActivityIntentBuilder.EXTRA_FIL
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.browser.trusted.FileHandlingData;
@@ -32,8 +35,10 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.ClientModeAction;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FailureReasonAction;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FileHandlingAction;
@@ -42,6 +47,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -195,12 +201,13 @@ public class WebAppLaunchHandler extends WebContentsObserver {
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.INITIAL_INTENT);
 
+        FileHandlingData filteredData = filterFileHandlingData(intentDataProvider);
         WebAppLaunchParams launchParams =
                 getLaunchParams(
                         /* newNavigationStarted= */ true,
                         assertNonNull(intentDataProvider.getUrlToLoad()),
                         assertNonNull(intentDataProvider.getClientPackageName()),
-                        intentDataProvider.getFileHandlingData());
+                        filteredData);
 
         maybeNotifyLaunchQueue(launchParams);
     }
@@ -225,11 +232,13 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         assert urlToLoad != null;
         String packageName = intentDataProvider.getClientPackageName();
 
+        FileHandlingData filteredData = filterFileHandlingData(intentDataProvider);
+
         CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
         if (clientMode == NAVIGATE_NEW
                 || state == null
                 || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
-            launchNewIntent(urlToLoad, packageName, intentDataProvider.getFileHandlingData());
+            launchNewIntent(urlToLoad, packageName, filteredData);
         } else {
             boolean startNavigation =
                     clientMode == NAVIGATE_EXISTING && !TextUtils.isEmpty(urlToLoad);
@@ -242,11 +251,7 @@ public class WebAppLaunchHandler extends WebContentsObserver {
 
             assert packageName != null;
             WebAppLaunchParams launchParams =
-                    getLaunchParams(
-                            startNavigation,
-                            urlToLoad,
-                            packageName,
-                            intentDataProvider.getFileHandlingData());
+                    getLaunchParams(startNavigation, urlToLoad, packageName, filteredData);
 
             maybeNotifyLaunchQueue(launchParams);
         }
@@ -368,6 +373,84 @@ public class WebAppLaunchHandler extends WebContentsObserver {
     @Override
     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
         mIsPageLoading = false;
+    }
+
+    /**
+     * Filters incoming file handling data to retain only URIs that the launching client app has
+     * permission to access.
+     *
+     * @param intentDataProvider Provides incoming intent and session customization data.
+     * @return The filtered FileHandlingData object containing authorized URIs, or null if all URIs
+     *     were denied or no file data was provided.
+     */
+    private @Nullable FileHandlingData filterFileHandlingData(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        FileHandlingData fileHandlingData = intentDataProvider.getFileHandlingData();
+        if (fileHandlingData == null || fileHandlingData.uris.isEmpty()) {
+            return null;
+        }
+
+        List<Uri> filteredUris = new ArrayList<>();
+        for (Uri uri : fileHandlingData.uris) {
+            if (doesCallerHavePermissionForUri(intentDataProvider.getSession(), uri)) {
+                filteredUris.add(uri);
+            } else {
+                Log.w(TAG, "Caller does not have permission for URI: " + uri);
+            }
+        }
+
+        if (filteredUris.isEmpty()) {
+            return null;
+        }
+        if (filteredUris.size() == fileHandlingData.uris.size()) {
+            return fileHandlingData;
+        }
+        return new FileHandlingData(filteredUris);
+    }
+
+    /**
+     * Verifies whether the calling application holds read permission for the specified URI.
+     *
+     * <p>On Android 15+ (API 35+), checks caller identity via {@link Activity#getCurrentCaller()}.
+     * On older Android versions, falls back to verifying URI permissions against the session UID.
+     *
+     * @param session The session holder associated with the launching client app.
+     * @param uri The Content URI to verify.
+     * @return True if the caller has explicit read permission for uri, false otherwise.
+     */
+    @SuppressLint("NewApi")
+    private boolean doesCallerHavePermissionForUri(@Nullable SessionHolder<?> session, Uri uri) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            try {
+                var caller = mActivity.getCurrentCaller();
+                if (caller != null) {
+                    return caller.checkContentUriPermission(
+                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            == PackageManager.PERMISSION_GRANTED;
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to check caller's permission via getCurrentCaller.", e);
+                return false;
+            }
+        }
+
+        // Fallback for Android versions prior to Android 15 (API < 35) or when getCurrentCaller()
+        // is unavailable. We check URI read permissions against the client UID and PID recorded
+        // when the TWA session was established.
+        if (session != null) {
+            int uid = CustomTabsConnection.getInstance().getClientUidForSession(session);
+            int pid = CustomTabsConnection.getInstance().getClientPidForSession(session);
+            if (uid != -1) {
+                try {
+                    return mActivity.checkUriPermission(
+                                    uri, pid, uid, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            == PackageManager.PERMISSION_GRANTED;
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to check URI permission for UID: " + uid, e);
+                }
+            }
+        }
+        return false;
     }
 
     /**
