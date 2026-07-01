@@ -4,6 +4,7 @@
 
 #include "base/types/expected.h"
 
+#include <concepts>
 #include <string>
 #include <utility>
 #include <variant>
@@ -24,6 +25,19 @@ namespace {
 // proposal.
 static_assert(!std::is_convertible_v<int, expected<int, int>>);
 static_assert(!std::is_convertible_v<long, expected<bool, long>>);
+
+// operator bool is conditionally enabled: only when the value type T is not
+// constructible from bool, to avoid bug-prone usage when the value type is
+// convertible to bool, see e.g. https://abseil.io/tips/141.
+//
+// Enabled cases (T is NOT constructible from bool):
+static_assert(std::constructible_from<bool, expected<std::string, int>>);
+static_assert(std::constructible_from<bool, expected<void, int>>);
+//
+// Disabled cases (T IS constructible from bool):
+static_assert(!std::constructible_from<bool, expected<int, int>>);
+static_assert(!std::constructible_from<bool, expected<bool, int>>);
+static_assert(!std::constructible_from<bool, expected<double, int>>);
 
 template <typename T>
 struct Strong {
@@ -64,6 +78,10 @@ struct WeakMoveOnly {
 enum class Error {
   kFail,
 };
+
+// Additional enabled cases that require locally-defined types:
+static_assert(std::is_constructible_v<bool, expected<Strong<int>, int>>);
+static_assert(std::is_constructible_v<bool, expected<Error, int>>);
 
 enum class CvRef {
   kNone,
@@ -599,6 +617,19 @@ TEST(Expected, HasValue) {
 
   constexpr expected<int, int> unex = unexpected(0);
   static_assert(!unex.has_value());
+}
+
+TEST(Expected, OperatorBool) {
+  // Test with a type that is NOT constructible from bool, so operator bool is
+  // enabled.
+
+  constexpr expected<std::string, int> ex;
+  static_assert(ex.has_value());
+  static_assert(static_cast<bool>(ex));
+
+  constexpr expected<std::string, int> unex = unexpected(0);
+  static_assert(!unex.has_value());
+  static_assert(!static_cast<bool>(unex));
 }
 
 TEST(Expected, Value) {
@@ -1173,6 +1204,16 @@ TEST(ExpectedVoid, HasValue) {
 
   constexpr expected<void, int> unex = unexpected(0);
   static_assert(!unex.has_value());
+}
+
+TEST(ExpectedVoid, OperatorBool) {
+  constexpr expected<void, int> ex;
+  static_assert(ex.has_value());
+  static_assert(static_cast<bool>(ex));
+
+  constexpr expected<void, int> unex = unexpected(0);
+  static_assert(!unex.has_value());
+  static_assert(!static_cast<bool>(unex));
 }
 
 TEST(ExpectedVoid, Value) {

@@ -102,8 +102,10 @@ namespace base {
 //   success values when the implicit conversion above is disallowed.
 // * Calling operator* or operator-> on an unexpected value results in program
 //   termination, and not UB.
-// * There is no operator bool due to bug-prone usage when the value type is
-//   convertible to bool, see e.g. https://abseil.io/tips/141.
+// * There is a conditional explicit operator bool that is only enabled when
+//   the value type is not constructible from bool, to avoid bug-prone usage
+//   when the value type is convertible to bool, see e.g.
+//   https://abseil.io/tips/141.
 // * Moving out of an expected object will put it into a moved-from state.
 //   Trying to use it before re-initializing it will result in program
 //   termination.
@@ -420,10 +422,17 @@ class [[nodiscard, gsl::Owner]] expected final {
     return std::move(value());
   }
 
-  // Note: Deviation from the Standard: No operator bool due to bug-prone
-  // patterns when the value type is convertible to bool, see e.g.
-  // https://abseil.io/tips/141.
   constexpr bool has_value() const noexcept { return impl_.has_value(); }
+
+  // Note: Deviation from the Standard: operator bool is conditionally enabled,
+  // only when the value type is not constructible from bool, to avoid
+  // bug-prone patterns when the value type is convertible to bool, see e.g.
+  // https://abseil.io/tips/141.
+  constexpr explicit operator bool() const
+    requires(!std::constructible_from<bool, T>)
+  {
+    return has_value();
+  }
 
   constexpr T& value() & noexcept { return impl_.value(); }
   constexpr const T& value() const& noexcept { return impl_.value(); }
@@ -732,9 +741,8 @@ class [[nodiscard]] expected<T, E> final {
   friend constexpr void swap(expected& x, expected& y) noexcept { x.swap(y); }
 
   // [expected.void.obs], observers
-  // Note: Deviation from the Standard: No operator bool due to consistency with
-  // non-void expected types.
   constexpr bool has_value() const noexcept { return impl_.has_value(); }
+  constexpr explicit operator bool() const noexcept { return has_value(); }
 
   constexpr void operator*() const { CHECK(has_value()); }
   constexpr void value() const { CHECK(has_value()); }
