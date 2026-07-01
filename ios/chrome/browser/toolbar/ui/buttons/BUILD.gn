@@ -19,6 +19,7 @@ source_set("buttons") {
   public_deps = [ "//ios/chrome/common/ui/elements" ]
   deps = [
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/location_bar/ui_bundled:utils",
     "//ios/chrome/browser/shared/ui/elements/gradient",
