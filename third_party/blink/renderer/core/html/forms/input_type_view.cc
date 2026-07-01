@@ -198,7 +198,7 @@ void InputTypeView::UpdateView() {}
 
 void InputTypeView::MultipleAttributeChanged() {}
 
-void InputTypeView::DisabledAttributeChanged() {}
+void InputTypeView::DisabledAttributeChanged(DisabledChangedReason) {}
 
 void InputTypeView::ReadonlyAttributeChanged() {}
 

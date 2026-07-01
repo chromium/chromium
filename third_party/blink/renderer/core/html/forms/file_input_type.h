@@ -88,7 +88,7 @@ class CORE_EXPORT FileInputType final : public InputType,
   String DroppedFileSystemId() override;
   void CreateShadowSubtree() override;
   HTMLInputElement* UploadButton() const override;
-  void DisabledAttributeChanged() override;
+  void DisabledAttributeChanged(DisabledChangedReason) override;
   void MultipleAttributeChanged() override;
   String DefaultToolTip(const InputTypeView&) const override;
   void CopyNonAttributeProperties(const HTMLInputElement&) override;

@@ -104,7 +104,7 @@ class MultipleFieldsTemporalInputTypeView final
   void AdjustStyle(ComputedStyleBuilder&) override;
   void CreateShadowSubtree() final;
   void DestroyShadowSubtree() final;
-  void DisabledAttributeChanged() final;
+  void DisabledAttributeChanged(DisabledChangedReason) final;
   void ForwardEvent(Event&) final;
   void HandleClickEvent(MouseEvent&) final;
   void HandleFocusInEvent(Element* old_focused_element,

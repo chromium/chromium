@@ -46,6 +46,8 @@
 
 namespace blink {
 
+enum class DisabledChangedReason;
+
 class AXObject;
 class BeforeTextInsertedEvent;
 class ComputedStyle;
@@ -143,7 +145,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void SrcAttributeChanged();
   virtual void UpdateView();
   virtual void MultipleAttributeChanged();
-  virtual void DisabledAttributeChanged();
+  virtual void DisabledAttributeChanged(DisabledChangedReason);
   virtual void ReadonlyAttributeChanged();
   virtual void RequiredAttributeChanged();
   virtual void ValueAttributeChanged();

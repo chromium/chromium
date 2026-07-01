@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -124,18 +126,21 @@ bool HTMLFieldSetElement::IsSubmittableElement() {
 // Returns a disabled focused element if it's in descendants of |base|.
 Element*
 HTMLFieldSetElement::InvalidateDescendantDisabledStateAndFindFocusedOne(
-    Element& base) {
+    Element& base,
+    DisabledChangedReason reason) {
   Element* focused_element = AdjustedFocusedElementInTreeScope();
   bool should_blur = false;
   {
     EventDispatchForbiddenScope event_forbidden;
     for (HTMLElement& element : Traversal<HTMLElement>::DescendantsOf(base)) {
-      if (auto* control = DynamicTo<HTMLFormControlElement>(element))
-        control->AncestorDisabledStateWasChanged();
-      else if (element.IsFormAssociatedCustomElement())
-        element.EnsureElementInternals().AncestorDisabledStateWasChanged();
-      else
+      if (auto* control = DynamicTo<HTMLFormControlElement>(element)) {
+        control->AncestorDisabledStateWasChanged(reason);
+      } else if (element.IsFormAssociatedCustomElement()) {
+        element.EnsureElementInternals().AncestorDisabledStateWasChanged(
+            reason);
+      } else {
         continue;
+      }
       if (focused_element == &element && element.IsDisabledFormControl())
         should_blur = true;
     }
@@ -143,11 +148,12 @@ HTMLFieldSetElement::InvalidateDescendantDisabledStateAndFindFocusedOne(
   return should_blur ? focused_element : nullptr;
 }
 
-void HTMLFieldSetElement::DisabledAttributeChanged() {
+void HTMLFieldSetElement::DisabledAttributeChanged(
+    DisabledChangedReason reason) {
   bool was_disabled = IsSelfDisabledIgnoringAncestors();
   // This element must be updated before the style of nodes in its subtree gets
   // recalculated.
-  HTMLFormControlElement::DisabledAttributeChanged();
+  HTMLFormControlElement::DisabledAttributeChanged(reason);
   if (was_disabled != IsSelfDisabledIgnoringAncestors()) {
     Document& document = GetDocument();
     if (was_disabled) {
@@ -157,16 +163,18 @@ void HTMLFieldSetElement::DisabledAttributeChanged() {
     }
   }
   if (Element* focused_element =
-          InvalidateDescendantDisabledStateAndFindFocusedOne(*this))
+          InvalidateDescendantDisabledStateAndFindFocusedOne(*this, reason)) {
     focused_element->blur();
+  }
 }
 
-void HTMLFieldSetElement::AncestorDisabledStateWasChanged() {
+void HTMLFieldSetElement::AncestorDisabledStateWasChanged(
+    DisabledChangedReason reason) {
   ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
   // Do not re-enter HTMLFieldSetElement::DisabledAttributeChanged(), so that
   // we only invalidate this element's own disabled state and do not traverse
   // the descendants.
-  HTMLFormControlElement::DisabledAttributeChanged();
+  HTMLFormControlElement::DisabledAttributeChanged(reason);
 }
 
 void HTMLFieldSetElement::DidMoveToNewDocument(Document& old_document) {
@@ -184,9 +192,10 @@ void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
     EventDispatchForbiddenScope event_forbidden;
     for (HTMLLegendElement& legend :
          Traversal<HTMLLegendElement>::ChildrenOf(*this)) {
-      if (Element* element =
-              InvalidateDescendantDisabledStateAndFindFocusedOne(legend))
+      if (Element* element = InvalidateDescendantDisabledStateAndFindFocusedOne(
+              legend, DisabledChangedReason::kFieldsetChildrenChanged)) {
         focused_element = element;
+      }
     }
   }
   if (!GetDocument().StatePreservingAtomicMoveInProgress() && focused_element) {

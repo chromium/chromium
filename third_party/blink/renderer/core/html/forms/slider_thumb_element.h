@@ -46,7 +46,12 @@ class TouchEvent;
 
 class SliderThumbElement final : public HTMLDivElement {
  public:
-  SliderThumbElement(Document&);
+  enum EventDispatch {
+    kEventDispatchAllowed,
+    kEventDispatchDisallowed,
+  };
+
+  explicit SliderThumbElement(Document&);
 
   void SetPositionFromValue();
 
@@ -58,7 +63,7 @@ class SliderThumbElement final : public HTMLDivElement {
   const AtomicString& ShadowPseudoId() const override;
   HTMLInputElement* HostInput() const;
   void SetPositionFromPoint(const PhysicalOffset&);
-  void StopDragging();
+  void StopDragging(EventDispatch = kEventDispatchAllowed);
   bool IsSliderThumbElement() const override { return true; }
 
  private:
