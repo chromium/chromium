@@ -50,6 +50,13 @@ ElementSelector* UsernameElement() {
   return [ElementSelector selectorWithElementID:"username"];
 }
 
+void DismissSnackbar() {
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::SnackbarViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 @interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
@@ -67,10 +74,9 @@ ElementSelector* UsernameElement() {
       send_tab_to_self::kSendTabToSelfExtraEntryPoints);
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfEnhancedBottomsheet);
-  if ([self isRunningTest:@selector(
-                    testSendTabToSelfAndVerifySuccessSnackbar)] ||
-      [self isRunningTest:@selector(
-                    testSendTabToSelfAndVerifyErrorSnackbar)]) {
+  if ([self
+          isRunningTest:@selector(testSendTabToSelfAndVerifySuccessSnackbar)] ||
+      [self isRunningTest:@selector(testSendTabToSelfAndVerifyErrorSnackbar)]) {
     config.features_enabled.push_back(
         send_tab_to_self::kSendTabToSelfPostSendToast);
   }
@@ -123,6 +129,10 @@ ElementSelector* UsernameElement() {
                  grey_accessibilityID(
                      kConsistencySigninPrimaryButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
+
+  // Dismiss the signin snackbar, which would otherwise overlap and obscure the
+  // target device picker bottom sheet.
+  DismissSnackbar();
 
   // The device list should be shown.
   [ChromeEarlGrey
@@ -680,6 +690,10 @@ ElementSelector* UsernameElement() {
                  grey_accessibilityID(
                      kConsistencySigninPrimaryButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
+
+  // Dismiss the signin snackbar, which would otherwise overlap and obscure the
+  // target device picker bottom sheet.
+  DismissSnackbar();
 
   // The device list should be shown.
   [ChromeEarlGrey
