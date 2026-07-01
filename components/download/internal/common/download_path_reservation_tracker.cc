@@ -205,6 +205,7 @@ struct CreateReservationInfo {
   base::FilePath suggested_path;
   base::FilePath default_download_path;
   base::FilePath temporary_path;
+  base::FilePath containment_directory;
   base::FilePath fallback_directory;  // directory to use when target path
                                       // cannot be used.
   bool create_target_directory = false;
@@ -261,20 +262,22 @@ PathValidationResult ValidatePathAndResolveConflicts(
   // Enforce that the suggested path does not escape the default download
   // directory via symlink/junction traversal.
   bool path_escaped = false;
+  base::FilePath containment_dir = info.containment_directory.empty()
+                                       ? info.default_download_path
+                                       : info.containment_directory;
   if (!info.is_transient && !info.is_forced_path &&
-      !info.is_user_selected_path && !info.default_download_path.empty() &&
-      base::PathExists(info.default_download_path)) {
-    base::FilePath absolute_default_path =
-        base::MakeAbsoluteFilePath(info.default_download_path);
+      !info.is_user_selected_path && !containment_dir.empty() &&
+      base::PathExists(containment_dir)) {
+    base::FilePath absolute_containment_dir =
+        base::MakeAbsoluteFilePath(containment_dir);
     base::FilePath absolute_target_dir =
         base::MakeAbsoluteFilePath(target_path->DirName());
-    if (!absolute_default_path.empty() && !absolute_target_dir.empty()) {
-      if (absolute_target_dir != absolute_default_path &&
-          !absolute_default_path.IsParent(absolute_target_dir)) {
-        DVLOG(1) << "Path escapes default download path via symlink/junction \""
+    if (!absolute_containment_dir.empty() && !absolute_target_dir.empty()) {
+      if (absolute_target_dir != absolute_containment_dir &&
+          !absolute_containment_dir.IsParent(absolute_target_dir)) {
+        DVLOG(1) << "Path escapes containment directory via symlink/junction \""
                  << target_path->value() << "\"";
-        *target_path =
-            info.default_download_path.Append(target_path->BaseName());
+        *target_path = containment_dir.Append(target_path->BaseName());
         path_escaped = true;
       }
     }
@@ -526,7 +529,8 @@ void DownloadPathReservationTracker::GetReservedPath(
     const base::FilePath& fallback_directory,
     bool create_directory,
     FilenameConflictAction conflict_action,
-    ReservedPathCallback callback) {
+    ReservedPathCallback callback,
+    const base::FilePath& containment_directory) {
   // Attach an observer to the download item so that we know when the target
   // path changes and/or the download is no longer active.
   new DownloadItemObserver(download_item);
@@ -541,6 +545,7 @@ void DownloadPathReservationTracker::GetReservedPath(
                                 target_path,
                                 default_path,
                                 download_item->GetTemporaryFilePath(),
+                                containment_directory,
                                 fallback_directory,
                                 create_directory,
                                 download_item->GetStartTime(),

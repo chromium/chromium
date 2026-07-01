@@ -104,6 +104,7 @@ class DownloadTargetDeterminerDelegate {
       bool create_directory,
       download::DownloadPathReservationTracker::FilenameConflictAction
           conflict_action,
+      const base::FilePath& containment_directory,
       ReservedPathCallback callback) = 0;
 
   // Display a prompt to the user requesting that a download target be chosen.

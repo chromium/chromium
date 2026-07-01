@@ -382,6 +382,10 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   base::FilePath virtual_path_;
   base::FilePath local_path_;
   base::FilePath intermediate_path_;
+  // The directory that should contain the downloaded file. This is used as the
+  // containment directory during path reservation to ensure the suggested path
+  // does not escape it.
+  base::FilePath containment_directory_;
   std::string mime_type_;
   bool is_filetype_handled_safely_ = false;
   download::DownloadItem::InsecureDownloadStatus insecure_download_status_;

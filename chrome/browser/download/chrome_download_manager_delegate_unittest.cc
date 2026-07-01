@@ -176,7 +176,9 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       const base::FilePath& virtual_path,
       bool create_directory,
       DownloadPathReservationTracker::FilenameConflictAction conflict_action,
-      DownloadPathReservationTracker::ReservedPathCallback callback) override {
+      const base::FilePath& containment_directory,
+      DownloadTargetDeterminerDelegate::ReservedPathCallback callback)
+      override {
     PathValidationResult result = PathValidationResult::SUCCESS;
     base::FilePath path_to_return = MockReserveVirtualPath(
         download, virtual_path, create_directory, conflict_action, &result);
