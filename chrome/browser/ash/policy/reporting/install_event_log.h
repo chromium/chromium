@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/reporting/single_install_event_log.h"
