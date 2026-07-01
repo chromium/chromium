@@ -893,6 +893,7 @@ source_set("web_applications_test_support") {
 
   public_deps = [
     "//components/webapps/common:mojo_bindings",
+    "//components/webapps/isolated_web_apps/key_distribution",
     "//components/webapps/isolated_web_apps/key_distribution/proto",
   ]
 

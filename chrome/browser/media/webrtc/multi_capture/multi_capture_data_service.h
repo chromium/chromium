@@ -31,7 +31,7 @@ class ImageSkia;
 }  // namespace gfx
 
 namespace web_app {
-class ChromeIwaRuntimeDataProvider;
+class IwaRuntimeDataProvider;
 class WebAppProvider;
 }  // namespace web_app
 
@@ -96,7 +96,7 @@ class MultiCaptureDataService : public KeyedService,
   void OnIconReceived(const webapps::AppId& app_id, gfx::ImageSkia icon);
   bool MaybeAddAppToCaptureAppLists(const webapps::AppId& app_id);
 
-  const raw_ref<web_app::ChromeIwaRuntimeDataProvider> data_provider_;
+  const raw_ref<web_app::IwaRuntimeDataProvider> data_provider_;
   const raw_ptr<web_app::WebAppProvider> provider_;
   const raw_ptr<PrefService> prefs_;
 

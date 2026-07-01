@@ -5,17 +5,15 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
-#include "base/notimplemented.h"
 #include "base/path_service.h"
-#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected_macros.h"
@@ -23,7 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
 namespace web_app::test {
@@ -35,31 +32,15 @@ using ComponentMetadataOrError =
 
 using ComponentUpdateFuture = base::test::TestFuture<ComponentMetadataOrError>;
 
-base::CallbackListSubscription SetOnComponentUpdatedForTesting(
-    base::RepeatingCallback<void(ComponentMetadataOrError)> callback) {
-  return IwaKeyDistributionInfoProvider::GetInstanceForTesting()
-      .OnComponentUpdatedForTesting(
-          base::BindRepeating([](base::expected<void, IwaComponentUpdateError>
-                                     result) {
-            return result.transform([]() -> IwaComponentMetadata {
-              auto& instance =
-                  IwaKeyDistributionInfoProvider::GetInstanceForTesting();
-              return {.version = *instance.GetVersion(),
-                      .is_preloaded = *instance.IsPreloadedForTesting()};
-            });
-          }).Then(callback));
-}
-
 }  // namespace
 
-base::expected<void, IwaComponentUpdateError> KeyDistributionComponent::
-    KeyDistributionComponent::UploadFromComponentFolder() {
+base::expected<void, IwaComponentUpdateError>
+KeyDistributionComponent::UploadFromComponentFolder() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   return UpdateKeyDistributionInfo(version, component_data);
 }
 
-void KeyDistributionComponent::KeyDistributionComponent::
-    InjectComponentDataDirectly() {
+void KeyDistributionComponent::InjectComponentDataDirectly() {
   IwaKeyDistributionInfoProvider::GetInstanceForTesting()
       .SetComponentDataForTesting(version, is_preloaded, component_data);
 }
@@ -100,7 +81,6 @@ KeyDistributionComponentBuilder::AddToSpecialAppPermissions(
   special_app_permissions_proto.mutable_multi_screen_capture()
       ->set_skip_capture_started_notification(
           special_app_permissions.skip_capture_started_notification);
-
   (*component_.component_data.mutable_special_app_permissions_data()
         ->mutable_special_app_permissions())[web_bundle_id.id()] =
       std::move(special_app_permissions_proto);
@@ -118,8 +98,7 @@ KeyDistributionComponentBuilder::AddToSpecialAppPermissions(
 KeyDistributionComponentBuilder& KeyDistributionComponentBuilder::WithBlocklist(
     const std::vector<web_package::SignedWebBundleId>& bundle_ids) & {
   for (const auto& bundle_id : bundle_ids) {
-    (*component_.component_data.mutable_iwa_access_control()
-          ->mutable_blocklist())[bundle_id.id()] = {};
+    AddToBlocklist(bundle_id);
   }
   return *this;
 }
@@ -132,24 +111,24 @@ KeyDistributionComponentBuilder::WithBlocklist(
 
 KeyDistributionComponentBuilder&
 KeyDistributionComponentBuilder::AddToBlocklist(
-    const web_package::SignedWebBundleId& bundle_id) & {
-  (*component_.component_data.mutable_iwa_access_control()
-        ->mutable_blocklist())[bundle_id.id()] = {};
+    const web_package::SignedWebBundleId& web_bundle_id) & {
+  component_.component_data.mutable_iwa_access_control()
+      ->mutable_blocklist()
+      ->emplace(web_bundle_id.id(), IwaAccessControl_BlocklistItemData{});
   return *this;
 }
 
 KeyDistributionComponentBuilder&&
 KeyDistributionComponentBuilder::AddToBlocklist(
-    const web_package::SignedWebBundleId& bundle_id) && {
-  return std::move(AddToBlocklist(bundle_id));
+    const web_package::SignedWebBundleId& web_bundle_id) && {
+  return std::move(AddToBlocklist(web_bundle_id));
 }
 
 KeyDistributionComponentBuilder&
 KeyDistributionComponentBuilder::WithManagedAllowlist(
     const std::vector<web_package::SignedWebBundleId>& bundle_ids) & {
   for (const auto& bundle_id : bundle_ids) {
-    (*component_.component_data.mutable_iwa_access_control()
-          ->mutable_managed_allowlist())[bundle_id.id()] = {};
+    AddToManagedAllowlist(bundle_id);
   }
   return *this;
 }
@@ -163,8 +142,10 @@ KeyDistributionComponentBuilder::WithManagedAllowlist(
 KeyDistributionComponentBuilder&
 KeyDistributionComponentBuilder::AddToManagedAllowlist(
     const web_package::SignedWebBundleId& web_bundle_id) & {
-  (*component_.component_data.mutable_iwa_access_control()
-        ->mutable_managed_allowlist())[web_bundle_id.id()] = {};
+  component_.component_data.mutable_iwa_access_control()
+      ->mutable_managed_allowlist()
+      ->emplace(web_bundle_id.id(),
+                IwaAccessControl_ManagedAllowlistItemData{});
   return *this;
 }
 
@@ -198,6 +179,21 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
   auto path = component_install_dir.GetPath().AppendASCII("krc");
   CHECK(base::WriteFile(path, kd_proto.SerializeAsString()));
   return UpdateKeyDistributionInfo(version, path);
+}
+
+base::CallbackListSubscription SetOnComponentUpdatedForTesting(
+    base::RepeatingCallback<void(ComponentMetadataOrError)> callback) {
+  return IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+      .OnComponentUpdatedForTesting(
+          base::BindRepeating([](base::expected<void, IwaComponentUpdateError>
+                                     result) {
+            return result.transform([]() -> IwaComponentMetadata {
+              auto& instance =
+                  IwaKeyDistributionInfoProvider::GetInstanceForTesting();
+              return {.version = *instance.GetVersion(),
+                      .is_preloaded = *instance.IsPreloadedForTesting()};
+            });
+          }).Then(callback));
 }
 
 base::expected<void, IwaComponentUpdateError>

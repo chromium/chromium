@@ -9,20 +9,20 @@
 #include "base/types/expected_macros.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace multi_capture {
 
 MultiCaptureDataService::MultiCaptureDataService(
     web_app::WebAppProvider* provider,
     PrefService* prefs)
-    : data_provider_(web_app::ChromeIwaRuntimeDataProvider::GetInstance()),
+    : data_provider_(web_app::IwaRuntimeDataProvider::GetInstance()),
       provider_(provider),
       prefs_(prefs) {
   CHECK(provider_);

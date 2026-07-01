@@ -7,14 +7,20 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
-#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace web_app::test {
 
@@ -114,6 +120,11 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
 base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,
     const IwaKeyDistribution& kd_proto);
+
+base::CallbackListSubscription SetOnComponentUpdatedForTesting(
+    base::RepeatingCallback<
+        void(base::expected<IwaComponentMetadata, IwaComponentUpdateError>)>
+        callback);
 
 // Writes `kd_proto` into `DIR_COMPONENT_USER/IwaKeyDistribution/{version}` and
 // triggers the registration process with the component updater. The directory
