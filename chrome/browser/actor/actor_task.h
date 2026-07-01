@@ -138,7 +138,7 @@ class ActorTask : public base::SupportsUserData {
     kFailed = 8,
     kMaxValue = kFailed,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ActorTaskState)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ActorTaskState, //tools/metrics/histograms/metadata/actor/enums.xml:ActorTaskState)
 
   // LINT.IfChange(StoppedReason)
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.actor

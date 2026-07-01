@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.TabStateThemeResourceProvider;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
+import org.chromium.chrome.browser.actor.ActorMetrics;
 import org.chromium.chrome.browser.actor.ActorPictureInPictureController;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
@@ -1366,6 +1367,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         getManualFillingComponent().onResume();
         checkForDeviceLockOnAutomotive();
+
+        // Log task state if the activity was launched or brought to front via an actor notification
+        // click.
+        ActorMetrics.maybeRecordMetricsFromIntent(getIntent(), mTabModelProfileSupplier.get());
     }
 
     @Override
@@ -1643,6 +1648,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         super.onNewIntentWithNative(intent);
         getLaunchCauseMetrics().onReceivedIntent();
+
+        // Log task state if a new intent from an actor notification click is received.
+        ActorMetrics.maybeRecordMetricsFromIntent(intent, mTabModelProfileSupplier.get());
     }
 
     /**

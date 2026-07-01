@@ -313,6 +313,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/actor/glic_actor_policy_checker.h:CannotActReason) -->
 
+<!-- LINT.IfChange(ActorTaskState) -->
+
+<enum name="ActorTaskState">
+  <int value="0" label="Created"/>
+  <int value="1" label="Acting"/>
+  <int value="2" label="Reflecting"/>
+  <int value="3" label="PausedByActor"/>
+  <int value="4" label="PausedByUser"/>
+  <int value="5" label="Cancelled"/>
+  <int value="6" label="Finished"/>
+  <int value="7" label="WaitingOnUser"/>
+  <int value="8" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State, histograms.xml:ActorTaskState) -->
+
 <!-- LINT.IfChange(ActorUiTabControllerError) -->
 
 <enum name="ActorUiTabControllerError">

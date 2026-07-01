@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Pair;
 
@@ -13,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,6 +27,8 @@ import java.util.Map;
 /** Helper class for recording Actor-related UMA metrics. */
 @NullMarked
 public class ActorMetrics implements ActorKeyedService.Observer {
+    private static final int INVALID_TASK_ID = -1;
+    private static final int INVALID_TASK_STATE = -1;
 
     // LINT.IfChange(ActorPipStatus)
 
@@ -129,6 +134,57 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     public static void recordPipUserInteraction(@ActorPipUserInteraction int interaction) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Actor.Pip.UserInteractions", interaction, ActorPipUserInteraction.NUM_ENTRIES);
+    }
+
+    /**
+     * Records ActorTaskState metrics from active task or intent.
+     *
+     * @param intent The intent to inspect.
+     * @param profile The current Profile.
+     */
+    public static void maybeRecordMetricsFromIntent(
+            @Nullable Intent intent, @Nullable Profile profile) {
+        if (intent == null) return;
+        if (!intent.hasExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID)) return;
+
+        int taskId = intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, INVALID_TASK_ID);
+        if (taskId == INVALID_TASK_ID) return;
+
+        int state = INVALID_TASK_STATE;
+        if (profile != null) {
+            // Prioritize live task state from ActorKeyedService.
+            state = getActorTaskStateFromTaskId(taskId, profile);
+        }
+
+        // Fallback to the state extra if the task is no longer in memory.
+        if (state == INVALID_TASK_STATE) {
+            state =
+                    intent.getIntExtra(
+                            NotificationConstants.EXTRA_ACTOR_TASK_STATE, INVALID_TASK_STATE);
+        }
+
+        if (state != INVALID_TASK_STATE) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Actor.Notification.ClickTaskState", state, ActorTaskState.MAX_VALUE + 1);
+        }
+
+        // Consume the extras so that we don't record the same intent multiple times.
+        intent.removeExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID);
+        intent.removeExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE);
+    }
+
+    private static int getActorTaskStateFromTaskId(int taskId, Profile profile) {
+        int state = INVALID_TASK_STATE;
+        // Prioritize live task state from the service.
+        ActorKeyedService service =
+                ActorKeyedServiceFactory.getForProfile(profile.getOriginalProfile());
+        if (service != null) {
+            ActorTask task = service.getTask(taskId);
+            if (task != null) {
+                state = task.getState();
+            }
+        }
+        return state;
     }
 
     /**

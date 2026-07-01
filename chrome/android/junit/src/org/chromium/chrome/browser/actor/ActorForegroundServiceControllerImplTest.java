@@ -139,7 +139,9 @@ public class ActorForegroundServiceControllerImplTest {
     public void testCreateTrustedBringTabToFrontIntent() {
         int tabId = 123;
         int taskId = 456;
+        int taskState = ActorTaskState.ACTING;
         when(mActorTask.getId()).thenReturn(taskId);
+        when(mActorTask.getState()).thenReturn(taskState);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(tabId));
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
@@ -155,12 +157,18 @@ public class ActorForegroundServiceControllerImplTest {
                 "Intent should have the correct taskId.",
                 taskId,
                 intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
+        assertEquals(
+                "Intent should have the correct task state.",
+                taskState,
+                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, -1));
     }
 
     @Test
     public void testCreateTrustedBringTabToFrontIntent_EmptyTabs() {
         int taskId = 456;
+        int taskState = ActorTaskState.FINISHED;
         when(mActorTask.getId()).thenReturn(taskId);
+        when(mActorTask.getState()).thenReturn(taskState);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.emptySet());
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
@@ -176,6 +184,10 @@ public class ActorForegroundServiceControllerImplTest {
                 "Intent should have the correct taskId.",
                 taskId,
                 intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
+        assertEquals(
+                "Intent should have the correct task state.",
+                taskState,
+                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, -1));
     }
 
     @Test

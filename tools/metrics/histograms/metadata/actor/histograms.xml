@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
   <variant name="WaitingOnUser" summary="WaitingOnUser"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State, enums.xml:ActorTaskState) -->
 
 <!-- LINT.IfChange(StoppedReason) -->
 
@@ -472,6 +472,18 @@ chromium-metrics-reviews@google.com.
     actor can navigate to a new origin. Includes time for synchronous and
     asynchronous checks, but does not include time for user prompts. Recorded
     when the actor navigates the main frame.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Notification.ClickTaskState" enum="ActorTaskState"
+    expires_after="2027-03-31">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when the user clicks an Actor notification to bring Chrome to the
+    foreground. Captures the state of the task associated with the notification
+    at the moment the intent is processed. Note that this metric is only
+    recorded on Android.
   </summary>
 </histogram>
 

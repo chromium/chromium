@@ -254,7 +254,10 @@ android_library("unit_device_javatests") {
 
 android_library("javatests") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureIntegrationTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/actor/ActorNotificationClickIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureIntegrationTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
@@ -266,6 +269,7 @@ android_library("javatests") {
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/notifications/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_core_core_pip_java",

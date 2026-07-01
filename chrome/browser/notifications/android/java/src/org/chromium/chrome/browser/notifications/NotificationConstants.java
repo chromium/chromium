@@ -69,6 +69,8 @@ public class NotificationConstants {
     static final String EXTRA_SUSPICIOUS_NOTIFICATION_COUNT = "suspicious_notification_count";
 
     public static final String EXTRA_ACTOR_TASK_ID = "org.chromium.chrome.browser.actor.TASK_ID";
+    public static final String EXTRA_ACTOR_TASK_STATE =
+            "org.chromium.chrome.browser.actor.TASK_STATE";
     public static final String EXTRA_ACTOR_PAUSE_RESUME_SOURCE =
             "org.chromium.chrome.browser.actor.PAUSE_RESUME_SOURCE";
 
