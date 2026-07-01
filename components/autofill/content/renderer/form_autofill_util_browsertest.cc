@@ -4,9 +4,17 @@
 
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
+#include <algorithm>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
@@ -17,6 +25,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "base/types/optional_util.h"
+#include "build/build_config.h"
+#include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -24,6 +37,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -44,10 +58,16 @@
 #include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/blink/public/web/web_view.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/public/web/win/web_font_rendering.h"
+#endif
+
 namespace autofill::form_util {
 namespace {
 
 using ::autofill::mojom::ButtonTitleType;
+using ::base::UTF8ToUTF16;
+using ::blink::WebAutofillState;
 using ::blink::WebDocument;
 using ::blink::WebElement;
 using ::blink::WebElementCollection;
@@ -58,15 +78,25 @@ using ::blink::WebNode;
 using ::blink::WebString;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AllOfArray;
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
+using ::testing::Matcher;
+using ::testing::Message;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointwise;
 using ::testing::Property;
+using ::testing::ResultOf;
+using ::testing::TestParamInfo;
 using ::testing::Values;
+using ::testing::ValuesIn;
+using ::testing::WithParamInterface;
 
 struct AutofillFieldUtilCase {
   std::string_view description;
@@ -2839,6 +2869,675 @@ TEST_P(FormAutofillUtilsTest_AdmissibleUrls, FindFormForContentEditable) {
     EXPECT_NE(form, std::nullopt);
   } else {
     EXPECT_EQ(form, std::nullopt);
+  }
+}
+
+// This constant defines a regular form in HTML with multiple fields of
+// different types.
+constexpr std::string_view kFormHtml =
+    R"(<form id=TestForm name=TestForm action='http://abc.com'>
+         <input id=firstname>
+         <input id=lastname>
+         <input type=hidden id=imhidden>
+         <input id=notempty value=Hi>
+         <input autocomplete=off id=noautocomplete>
+         <input disabled=disabled id=notenabled>
+         <input readonly id=readonly>
+         <input style='visibility: hidden' id=invisible>
+         <input style='display: none' id=displaynone>
+         <input type=month id=month>
+         <input type=month id='month-nonempty' value='2011-12'>
+         <input type=date id='date'>
+         <select id=select>
+           <option></option>
+           <option value=CA>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-nonempty'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-unchanged'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-displaynone' style='display:none'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <textarea id=textarea></textarea>
+         <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+         <input type=submit name='reply-send' value=Send>
+       </form>)";
+
+// This constant uses a mixed-case title tag to be sure that the title match is
+// not case-sensitive. Other tests in this file use an all-lower title tag.
+constexpr std::string_view kUnownedFormHtml =
+    R"(<head><title>Enter Shipping Info</title></head>
+       <input id=firstname>
+       <input id=lastname>
+       <input type=hidden id=imhidden>
+       <input id=notempty value=Hi>
+       <input autocomplete=off id=noautocomplete>
+       <input disabled=disabled id=notenabled>
+       <input readonly id=readonly>
+       <input style='visibility: hidden' id=invisible>
+       <input style='display: none' id=displaynone>
+       <input type=month id=month>
+       <input type=month id='month-nonempty' value='2011-12'>
+       <input type=date id='date'>
+       <select id=select>
+         <option></option>
+         <option value=CA>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-nonempty'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-unchanged'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-displaynone' style='display:none'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <textarea id=textarea></textarea>
+       <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+       <input type=submit name='reply-send' value=Send>)";
+
+// This constant has no title tag, and should be passed to
+// LoadHTMLWithURLOverride to test the detection of unowned forms by URL.
+constexpr std::string_view kUnownedUntitledFormHtml =
+    R"(<input id=firstname>
+       <input id=lastname>
+       <input type=hidden id=imhidden>
+       <input id=notempty value=Hi>
+       <input autocomplete=off id=noautocomplete>
+       <input disabled=disabled id=notenabled>
+       <input readonly id=readonly>
+       <input style='visibility: hidden' id=invisible>
+       <input style='display: none' id=displaynone>
+       <input type=month id=month>
+       <input type=month id='month-nonempty' value='2011-12'>
+       <input type=date id='date'>
+       <select id=select>
+         <option></option>
+         <option value=CA>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-nonempty'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-unchanged'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-displaynone' style='display:none'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <textarea id=textarea></textarea>
+       <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+       <input type=submit name='reply-send' value=Send>)";
+
+// This constant does not have a title tag, but should match an unowned form
+// anyway because it is not English.
+constexpr std::string_view kUnownedNonEnglishFormHtml =
+    R"(<html lang=fr>
+         <input id=firstname>
+         <input id=lastname>
+         <input type=hidden id=imhidden>
+         <input id=notempty value=Hi>
+         <input autocomplete=off id=noautocomplete>
+         <input disabled=disabled id=notenabled>
+         <input readonly id=readonly>
+         <input style='visibility: hidden' id=invisible>
+         <input style='display: none' id=displaynone>
+         <input type=month id=month>
+         <input type=month id='month-nonempty' value='2011-12'>
+         <input type=date id='date'>
+         <select id=select>
+           <option></option>
+           <option value=CA>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-nonempty'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-unchanged'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-displaynone' style='display:none'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <textarea id=textarea></textarea>
+         <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+         <input type=submit name='reply-send' value=Send>
+       </html>)";
+
+constexpr std::string_view kNonAsciiHeaderHtml =
+    R"(<head><title>accented latin: \xC3\xA0, )"
+    R"(thai: \xE0\xB8\x81, control: \x04, )"
+    R"(nbsp: \xEF\xBB\xBF, non-BMP: \xF0\x9F\x8C\x80; )"
+    R"(This should match a CHECKOUT flow )"
+    R"(despite the non-ASCII chars</title></head>)";
+
+FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
+  static constexpr CallTimerState kUpdateFormCacheCallTimerStateDummy = {
+      .call_site = CallTimerState::CallSite::kExtractForms,
+      .last_autofill_agent_reset = {},
+      .last_dom_content_loaded = {},
+  };
+
+  return form_cache.UpdateFormCache(*base::MakeRefCounted<FieldDataManager>(),
+                                    kUpdateFormCacheCallTimerStateDummy);
+}
+
+// Helper to retrieve a value from a map. Return default-constructed value if
+// the key does not exist.
+template <typename MapType, typename KeyType>
+auto Get(const MapType& map, const KeyType& key) {
+  return base::OptionalFromPtr(base::FindOrNull(map, key)).value_or({});
+}
+
+class UnownedFormToFormDataTest : public test::AutofillRendererTest {};
+
+// Tests that the extraction of an unowned form fails if only an owned form
+// exists.
+TEST_F(UnownedFormToFormDataTest, UnownedFormElementsToFormDataWithForm) {
+  LoadHTML(kFormHtml);
+  EXPECT_FALSE(ExtractFormData(WebFormElement()));
+}
+
+// Tests that the extraction of an unowned form succeeds.
+TEST_F(UnownedFormToFormDataTest, FormlessForms) {
+  LoadHTML(kUnownedUntitledFormHtml);
+  EXPECT_TRUE(ExtractFormData(WebFormElement()));
+}
+
+struct FormFillPreviewTestParam {
+  std::string html;
+  std::optional<std::string> url_override;
+  bool unowned = false;
+};
+
+class FormFillAndPreviewTest
+    : public test::AutofillRendererTest,
+      public WithParamInterface<FormFillPreviewTestParam> {
+ public:
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+    form_cache_.emplace(&autofill_agent());
+
+#if BUILDFLAG(IS_WIN)
+    // Autofill uses the system font to render suggestion previews. On
+    // Windows an extra step is required to ensure that the system font is
+    // configured.
+    blink::WebFontRendering::SetMenuFontMetrics(WebString::FromAscii("Arial"),
+                                                12);
+#endif
+  }
+
+  void TearDown() override {
+    form_cache_.reset();
+    test::AutofillRendererTest::TearDown();
+  }
+
+ protected:
+  // Contains the initial value for non-empty fields by their HTML id. Used in
+  // combination with `kPreviewValuesById`/`kFillValuesById`.
+  static constexpr auto kInitialValuesById =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {"notempty", "Hi"},
+          {"month-nonempty", "2011-12"},
+          {"select-nonempty", "CA"},
+          {"select-unchanged", "CA"},
+          {"select-displaynone", "CA"},
+          {"textarea-nonempty", "Go\naway!"},
+      });
+  // Contains HTML ids of fields that should be autofilled. Used in combination
+  // with `kPreviewValuesById`/`kFillValuesById`.
+  static constexpr auto kActiveFieldIds = std::to_array<std::string_view>({
+      "firstname",
+      "lastname",
+      "notempty",
+      "noautocomplete",
+      "month",
+      "month-nonempty",
+      "date",
+      "select",
+      "select-nonempty",
+      "select-unchanged",
+      "select-displaynone",
+      "textarea",
+      "textarea-nonempty",
+  });
+
+  FormCache::UpdateFormCacheResult UpdateFormCache() {
+    return form_util::UpdateFormCache(*form_cache_);
+  }
+
+  template <size_t FieldsCount>
+  AssertionResult ExecuteAutofillAction(
+      std::string_view initial_focus_element_id,
+      mojom::ActionPersistence action_persistence,
+      const base::fixed_flat_map<std::string_view,
+                                 std::string_view,
+                                 FieldsCount>& suggestions_by_id) {
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
+    if (forms.size() != 1U) {
+      return AssertionFailure() << "Found incorrect number of forms!\n"
+                                << "Expected: 1, Actual: " << forms.size();
+    }
+    FormData& form = forms.front();
+
+    // Setup the suggestions in the FormFields
+    for (const auto& [id, suggestion] : suggestions_by_id) {
+      FormFieldData* field =
+          test_api(form).FindFieldByNameForTest(UTF8ToUTF16(id));
+      if (!field) {
+        return AssertionFailure()
+               << "Unable to find field with ID '" << id << "'";
+      }
+      field->set_value(UTF8ToUTF16(suggestion));
+      field->set_is_autofilled_according_to_renderer(true);
+    }
+
+    // Trigger the fill/preview action
+    GetDocument()
+        .GetElementById(WebString::FromUtf8(initial_focus_element_id))
+        .Focus();
+    form_util::ApplyFieldsAction(
+        GetDocument(),
+        base::ToVector(form.fields(),
+                       [](const FormFieldData& field) {
+                         return FormFieldData::FillData(field);
+                       }),
+        mojom::FormActionType::kFill, action_persistence,
+        *base::MakeRefCounted<FieldDataManager>());
+
+    return AssertionSuccess();
+  }
+
+ private:
+  // We use a fresh `FormCache` in this fixture because the
+  // `AutofillAgent`'s cache is used and populated by `AutofillAgent`.
+  std::optional<FormCache> form_cache_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormFillAndPreviewTest,
+    ValuesIn(std::to_array<FormFillPreviewTestParam>({
+        // Tests filling a regular, owned form.
+        {.html = std::string(kFormHtml), .unowned = false},
+        // Tests filling an unowned form with a title tag in the HTML header.
+        {.html = std::string(kUnownedFormHtml), .unowned = true},
+        // Tests filling an unowned and untitled form. Use URL override to
+        // indicate that the unowned fields are a form.
+        {.html = std::string(kUnownedUntitledFormHtml),
+         .url_override = "http://example.test/checkout_flow",
+         .unowned = true},
+        {.html = std::string(kUnownedUntitledFormHtml),
+         .url_override = "http://example.test/Enter_Shipping_Address/",
+         .unowned = true},
+        // Tests filling an unowned form with a non-English language
+        // configured.
+        {.html = std::string(kUnownedNonEnglishFormHtml), .unowned = true},
+        // Tests filling an unowned form with non-ASCII characters in the HTML.
+        {.html = base::StrCat({kNonAsciiHeaderHtml, kUnownedUntitledFormHtml}),
+         .unowned = true},
+    })),
+    [](const TestParamInfo<FormFillAndPreviewTest::ParamType>& info) {
+      constexpr auto kNames = std::to_array<std::string_view>(
+          {"OwnedForm", "UnownedForm", "UnownedUntitledFormCheckoutUrl",
+           "UnownedUntitledFormAddressUrl", "UnownedNonEnglishForm",
+           "NonAsciiForm"});
+      return std::string{kNames[info.index]};
+    });
+
+// Tests filling different form configurations (owned, unowned, ...).
+TEST_P(FormFillAndPreviewTest, FillForm) {
+  constexpr auto kFillValuesById =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          // Regular empty fields (firstname & lastname) should be autofilled.
+          {"firstname", "filled firstname"},
+          {"lastname", "filled lastname"},
+          // Already filled fields should be previewed.
+          {"notempty", "filled notempty"},
+          {"noautocomplete", "filled noautocomplete"},
+          // Disabled fields should not be autofilled.
+          {"notenabled", "filled notenabled"},
+          // Readonly fields should not be autofilled.
+          {"readonly", "filled readonly"},
+          // Fields with "visibility: hidden" should not be autofilled.
+          {"invisible", "filled invisible"},
+          // Fields with "display:none" should not be autofilled.
+          {"displaynone", "filled displaynone"},
+          // Regular <input type=month> should be autofilled.
+          {"month", "2017-11"},
+          {"month-nonempty", "2017-11"},
+          // Regular <input type=date> should be be autofilled.
+          {"date", "2017-11-12"},
+          // Regular select fields should be autofilled.
+          {"select", "TX"},
+          // Select fields should be autofilled even if they already have a
+          // non-empty value.
+          {"select-nonempty", "TX"},
+          {"select-unchanged", "CA"},
+          // Select fields that are not focusable should be filled.
+          {"select-displaynone", "TX"},
+          // Regular textarea elements should be autofilled.
+          {"textarea", "some multi-\nline value"},
+          {"textarea-nonempty", "some multi-\nline value"},
+      });
+
+  if (GetParam().url_override) {
+    LoadHTMLWithUrlOverride(GetParam().html, *GetParam().url_override);
+  } else {
+    LoadHTML(GetParam().html);
+  }
+
+  // Verify initial state of form.
+  for (const auto& [id, fill_value] : kFillValuesById) {
+    EXPECT_THAT(GetFormControlElementById(id),
+                test::WebFormControlElementEq({
+                    .value = std::string(Get(kInitialValuesById, id)),
+                    .suggested_value = "",
+                    .is_autofilled = false,
+                    .is_previewed = false,
+                }));
+  }
+
+  ASSERT_TRUE(ExecuteAutofillAction(
+      "firstname", mojom::ActionPersistence::kFill, kFillValuesById));
+
+  // Verify state of form after filling.
+  for (const auto& [id, fill_value] : kFillValuesById) {
+    bool is_active = std::ranges::contains(kActiveFieldIds, id);
+    EXPECT_THAT(GetFormControlElementById(id),
+                test::WebFormControlElementEq({
+                    // Use `fill_value` for filled fields and the initial value
+                    // to verify that non-filled fields were not modified.
+                    .value = std::string(
+                        is_active ? fill_value : Get(kInitialValuesById, id)),
+                    .suggested_value = "",
+                    .is_autofilled = is_active,
+                    .is_previewed = false,
+                }));
+  }
+  WebInputElement first_input = GetInputElementById("firstname");
+  ASSERT_FALSE(first_input.IsNull());
+  EXPECT_EQ(first_input.Value().length(), first_input.SelectionStart());
+  EXPECT_EQ(first_input.Value().length(), first_input.SelectionEnd());
+}
+
+// Tests previewing different form configurations (owned, unowned, ...).
+TEST_P(FormFillAndPreviewTest, PreviewForm) {
+  constexpr auto kPreviewValuesById =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          // Normal empty fields should be previewed.
+          {"firstname", "suggested firstname"},
+          {"lastname", "suggested lastname"},
+          // Already filled fields should be previewed.
+          {"notempty", "suggested notempty"},
+          {"noautocomplete", "filled noautocomplete"},
+          // Disabled fields should not be previewed.
+          {"notenabled", "suggested notenabled"},
+          // Readonly fields should not be previewed.
+          {"readonly", "suggested readonly"},
+          // Fields with "visibility: hidden" should not be previewed.
+          {"invisible", "suggested invisible"},
+          // Fields with "display:none" should not previewed.
+          {"displaynone", "suggested displaynone"},
+          // Regular <input type=month> should be previewed.
+          {"month", "2017-11"},
+          {"month-nonempty", "2017-11"},
+          // Regular <input type=date> should be previewed.
+          {"date", "2017-11-12"},
+          // Regular select fields should be previewed.
+          {"select", "TX"},
+          // Select fields should be previewed even if they already have a
+          // non-empty value.
+          {"select-nonempty", "TX"},
+          // Select fields should be previewed even if no suggestion is passed.
+          {"select-unchanged", ""},
+          // Select fields that are not focusable should always be filled.
+          {"select-displaynone", "CA"},
+          // Normal textarea elements should be previewed.
+          {"textarea", "suggested multi-\nline value"},
+          // Nonempty textarea elements should not be previewed.
+          {"textarea-nonempty", "suggested multi-\nline value"},
+      });
+
+  if (GetParam().url_override) {
+    LoadHTMLWithUrlOverride(GetParam().html, *GetParam().url_override);
+  } else {
+    LoadHTML(GetParam().html);
+  }
+
+  // Verify initial state of form.
+  for (const auto& [id, preview_value] : kPreviewValuesById) {
+    EXPECT_THAT(GetFormControlElementById(id),
+                test::WebFormControlElementEq({
+                    .value = std::string(Get(kInitialValuesById, id)),
+                    .suggested_value = "",
+                    .is_autofilled = false,
+                    .is_previewed = false,
+                }));
+  }
+
+  ASSERT_TRUE(ExecuteAutofillAction(
+      "firstname", mojom::ActionPersistence::kPreview, kPreviewValuesById));
+
+  // Verify state of form after previewing.
+  for (const auto& [id, preview_value] : kPreviewValuesById) {
+    bool is_active = std::ranges::contains(kActiveFieldIds, id);
+    EXPECT_THAT(
+        GetFormControlElementById(id),
+        test::WebFormControlElementEq({
+            // Ensure that no fields were actually modified.
+            .value = std::string(Get(kInitialValuesById, id)),
+            .suggested_value = std::string(is_active ? preview_value : ""),
+            .is_autofilled = false,
+            .is_previewed = is_active,
+        }));
+  }
+  WebInputElement first_input = GetInputElementById("firstname");
+  ASSERT_FALSE(first_input.IsNull());
+  // Since the suggestion is previewed as a placeholder, there should be no
+  // selected text.
+  EXPECT_EQ(0u, first_input.SelectionStart());
+  EXPECT_EQ(0u, first_input.SelectionEnd());
+}
+
+class FormClearPreviewTest : public FormFillAndPreviewTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormClearPreviewTest,
+    ValuesIn(std::to_array<FormFillPreviewTestParam>({
+        {.html = R"(<form name=TestForm action='http://abc.com'>
+                      <input id=firstname value=Wyatt>
+                      <input id=lastname>
+                      <input id=email>
+                      <input type=email id=email2>
+                      <input type=tel id=phone>
+                      <input type=submit value=Send>
+                    </form>)",
+         .unowned = false},
+        {.html = R"(<head><title>store checkout</title></head>
+                    <input id=firstname value=Wyatt>
+                    <input id=lastname>
+                    <input id=email>
+                    <input type=email id=email2>
+                    <input type=tel id=phone>
+                    <input type=submit value=Send>)",
+         .unowned = true},
+    })),
+    [](const TestParamInfo<FormFillAndPreviewTest::ParamType>& param_info) {
+      return param_info.param.unowned ? "Unowned" : "Owned";
+    });
+
+// Tests that previewed elements are reverted to their original state after
+// calling `form_util::ClearPreviewedElements`.
+TEST_P(FormClearPreviewTest, ClearPreviewedElements) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
+  elements.emplace_back(GetInputElementById("firstname"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("lastname"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("email"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("email2"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("phone"),
+                        WebAutofillState::kNotFilled);
+  WebInputElement firstname = elements[0].first.To<WebInputElement>();
+  WebInputElement lastname = elements[1].first.To<WebInputElement>();
+
+  // Set the auto-filled attribute.
+  for (auto& [element, state] : elements) {
+    element.SetAutofillState(WebAutofillState::kPreviewed);
+  }
+
+  // Set the suggested values on two of the elements.
+  firstname.SetSuggestedValue(WebString::FromAscii("Wyatt"));
+  lastname.SetSuggestedValue(WebString::FromAscii("Earp"));
+  elements[2].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+  elements[3].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+  elements[4].first.SetSuggestedValue(WebString::FromAscii("650-777-9999"));
+
+  std::vector<bool> is_value_empty(elements.size());
+  for (size_t i = 0; i < elements.size(); ++i) {
+    is_value_empty[i] = elements[i].first.Value().IsEmpty();
+  }
+
+  // Clear the previewed fields.
+  form_util::ClearPreviewedElements(elements);
+
+  // Verify the previewed fields are cleared.
+  for (size_t i = 0; i < elements.size(); ++i) {
+    WebFormControlElement& element = elements[i].first;
+    SCOPED_TRACE(Message() << "Element " << i);
+    EXPECT_EQ(element.Value().IsEmpty(), is_value_empty[i]);
+    EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+    EXPECT_FALSE(element.IsAutofilled());
+  }
+}
+
+// Tests that previously non-empty but non-autofilled elements restore their
+// original value after calling `form_util::ClearPreviewedElements`.
+TEST_P(FormClearPreviewTest, ClearPreviewedFormWithNonEmptyInitiatingNode) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
+  elements.emplace_back(GetInputElementById("firstname"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("lastname"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("email"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("email2"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("phone"),
+                        WebAutofillState::kNotFilled);
+  WebInputElement firstname = elements[0].first.To<WebInputElement>();
+  WebInputElement lastname = elements[1].first.To<WebInputElement>();
+
+  // Set the auto-filled attribute.
+  for (auto& [element, state] : elements) {
+    element.SetAutofillState(WebAutofillState::kPreviewed);
+  }
+
+  // Set the suggested values on all of the elements.
+  firstname.SetSuggestedValue(WebString::FromAscii("Wyatt X."));
+  lastname.SetSuggestedValue(WebString::FromAscii("Earp"));
+  elements[2].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+  elements[3].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+  elements[4].first.SetSuggestedValue(WebString::FromAscii("650-777-9999"));
+
+  // Clear the previewed fields.
+  form_util::ClearPreviewedElements(elements);
+
+  // Fields with non-empty values are restored.
+  EXPECT_EQ(u"Wyatt", firstname.Value().Utf16());
+  EXPECT_TRUE(firstname.SuggestedValue().IsEmpty());
+  EXPECT_FALSE(firstname.IsAutofilled());
+
+  // Verify the previewed fields are cleared.
+  for (size_t i = 1; i < elements.size(); ++i) {
+    WebFormControlElement& element = elements[i].first;
+    SCOPED_TRACE(Message() << "Element " << i);
+    EXPECT_TRUE(element.Value().IsEmpty());
+    EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+    EXPECT_FALSE(element.IsAutofilled());
+  }
+}
+
+// Tests that previously autofilled elements restore their original autofilled
+// value after calling `form_util::ClearPreviewedElements`.
+TEST_P(FormClearPreviewTest, ClearPreviewedFormWithAutofilledInitiatingNode) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
+  elements.emplace_back(GetInputElementById("firstname"),
+                        WebAutofillState::kAutofilled);
+  elements.emplace_back(GetInputElementById("lastname"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("email"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("email2"),
+                        WebAutofillState::kNotFilled);
+  elements.emplace_back(GetInputElementById("phone"),
+                        WebAutofillState::kNotFilled);
+  WebInputElement firstname = elements[0].first.To<WebInputElement>();
+  WebInputElement lastname = elements[1].first.To<WebInputElement>();
+
+  // Set the auto-filled attribute.
+  for (auto& [element, state] : elements) {
+    element.SetAutofillState(WebAutofillState::kPreviewed);
+  }
+
+  // Set the suggested values on all of the elements.
+  firstname.SetSuggestedValue(WebString::FromAscii("Wyatt X."));
+  lastname.SetSuggestedValue(WebString::FromAscii("Earp"));
+  elements[2].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+  elements[3].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+  elements[4].first.SetSuggestedValue(WebString::FromAscii("650-777-9999"));
+
+  // Clear the previewed fields.
+  form_util::ClearPreviewedElements(elements);
+
+  // Fields with non-empty values are restored.
+  EXPECT_EQ(u"Wyatt", firstname.Value().Utf16());
+  EXPECT_TRUE(firstname.SuggestedValue().IsEmpty());
+  EXPECT_TRUE(firstname.IsAutofilled());
+
+  // Verify the previewed fields are cleared.
+  for (size_t i = 1; i < elements.size(); ++i) {
+    WebFormControlElement& element = elements[i].first;
+    SCOPED_TRACE(Message() << "Element " << i);
+    EXPECT_TRUE(element.Value().IsEmpty());
+    EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+    EXPECT_FALSE(element.IsAutofilled());
   }
 }
 
