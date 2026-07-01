@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
@@ -138,9 +139,11 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
           autofill::FormControlType::kInputPassword)),
       generation_element_id_(ui_data.generation_element_id),
       max_length_(ui_data.max_length),
-      controller_common_(bounds, ui_data.text_direction),
+      controller_common_(autofill::LocalFrameToken(*frame->GetFrameToken()),
+                         bounds,
+                         ui_data.text_direction),
       state_(kOfferGeneration),
-      key_press_handler_manager_(new KeyPressRegistrator(frame)) {
+      key_press_handler_manager_(std::make_unique<KeyPressRegistrator>(frame)) {
   // There may not always be a ZoomController, e.g. in tests.
   if (auto* zoom_controller =
           zoom::ZoomController::FromWebContents(web_contents)) {

@@ -16,7 +16,7 @@ class MockPasswordSuggestionFlow : public PasswordSuggestionFlow {
   ~MockPasswordSuggestionFlow() override;
   MOCK_METHOD(void,
               RunFlow,
-              (autofill::FieldRendererId,
+              (const autofill::FieldGlobalId&,
                const gfx::RectF&,
                base::i18n::TextDirection),
               (override));

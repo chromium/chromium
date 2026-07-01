@@ -131,10 +131,12 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
   }
 
   AutofillClient::SuggestionUiSessionId ShowSuggestions(
+      const FieldGlobalId& field_id,
       const gfx::RectF& bounds) {
     return client()->ShowAutofillSuggestions(
         ChromeAutofillClient::PopupOpenArgs(
-            bounds, base::i18n::TextDirection::LEFT_TO_RIGHT,
+            field_id.frame_token, bounds,
+            base::i18n::TextDirection::LEFT_TO_RIGHT,
             {Suggestion(u"test", SuggestionType::kAutocompleteEntry)},
             AutofillSuggestionTriggerSource::kFormControlElementClicked,
             /*form_control_ax_id=*/0, PopupAnchorType::kField),
@@ -182,7 +184,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
 
   // Set the bounds such that the Autofill Popup would overlap with the IPH (the
   // IPH is displayed right below `form.fields[0]`, whose bounds are set above).
-  ShowSuggestions(/*bounds=*/gfx::RectF(100, 100));
+  ShowSuggestions(
+      FieldGlobalId(driver()->GetFrameToken(), form.fields()[0].renderer_id()),
+      /*bounds=*/gfx::RectF(100, 100));
   WaitUntilSuggestionsHaveBeenShown();
 
   EXPECT_FALSE(
@@ -197,13 +201,15 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {
 
   // Showing suggestions leads (asynchronously) to showing a popup with the
   // identifier returned by ShowAutofillSuggestions.
-  const AutofillClient::SuggestionUiSessionId first_id =
-      ShowSuggestions(gfx::RectF(50, 50));
+  const AutofillClient::SuggestionUiSessionId first_id = ShowSuggestions(
+      FieldGlobalId(driver()->GetFrameToken(), test::MakeFieldRendererId()),
+      gfx::RectF(50, 50));
   WaitUntilSuggestionsHaveBeenShown();
   EXPECT_THAT(ui_session_id_at_last_show(), std::make_optional(first_id));
 
-  const AutofillClient::SuggestionUiSessionId second_id =
-      ShowSuggestions(gfx::RectF(60, 60));
+  const AutofillClient::SuggestionUiSessionId second_id = ShowSuggestions(
+      FieldGlobalId(driver()->GetFrameToken(), test::MakeFieldRendererId()),
+      gfx::RectF(60, 60));
   EXPECT_NE(first_id, second_id);
   // Since showing suggestions is asynchronous, the identifier returned by
   // ShowAutofillSuggestions can be different from the one currently showing.

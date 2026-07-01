@@ -267,7 +267,8 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
     return AutofillSuggestionController::GetOrCreate(
         client().suggestion_controller(manager()).GetWeakPtr(),
         manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-        PopupControllerCommon(std::move(bounds), base::i18n::UNKNOWN_DIRECTION),
+        PopupControllerCommon(LocalFrameToken(*main_frame()->GetFrameToken()),
+                              std::move(bounds), base::i18n::UNKNOWN_DIRECTION),
         /*form_control_ax_id=*/0,
         AutofillSuggestionTriggerSource::kUnspecified);
   };
@@ -336,7 +337,8 @@ TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
       AutofillSuggestionController::GetOrCreate(
           client().suggestion_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-          PopupControllerCommon(gfx::RectF(), base::i18n::UNKNOWN_DIRECTION),
+          PopupControllerCommon(LocalFrameToken(*main_frame()->GetFrameToken()),
+                                gfx::RectF(), base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0,
           AutofillSuggestionTriggerSource::kUnspecified);
   EXPECT_EQ(0, controller->GetLineCount());

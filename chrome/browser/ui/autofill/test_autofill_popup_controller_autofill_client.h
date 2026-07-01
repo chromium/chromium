@@ -57,7 +57,8 @@ class TestAutofillPopupControllerAutofillClient
     if (!suggestion_controller_) {
       suggestion_controller_ =
           (new Controller(manager.external_delegate().GetWeakPtrForTest(),
-                          &GetWebContents(), gfx::RectF()))
+                          &GetWebContents(), manager.driver().GetFrameToken(),
+                          gfx::RectF()))
               ->GetWeakPtr();
       test_api(cast_suggestion_controller()).SetView(popup_view_.GetWeakPtr());
       manager_of_last_controller_ = manager.GetWeakPtr();

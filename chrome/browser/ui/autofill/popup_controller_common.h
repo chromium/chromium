@@ -7,6 +7,7 @@
 
 #include "base/i18n/rtl.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -17,6 +18,7 @@ namespace autofill {
 struct PopupControllerCommon {
  public:
   PopupControllerCommon(
+      LocalFrameToken frame_token,
       gfx::RectF element_bounds,
       base::i18n::TextDirection text_direction,
       PopupAnchorType anchor_type = PopupAnchorType::kField,
@@ -29,7 +31,11 @@ struct PopupControllerCommon {
 
   ~PopupControllerCommon();
 
-  // The bounds of the text element that is the focus of the popup.
+  // The frame in which the popup is anchored. Typically this is the frame of
+  // the field on which the user triggered Autofill.
+  LocalFrameToken frame_token;
+
+  // The bounds of the DOM element that is the focus of the popup.
   // These coordinates are in screen space.
   gfx::RectF element_bounds;
 

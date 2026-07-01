@@ -22,7 +22,7 @@ class PasswordSuggestionFlow {
 
   // Invokes the flow by collecting necessary data and displaying password
   // suggestions to the user.
-  virtual void RunFlow(autofill::FieldRendererId field_id,
+  virtual void RunFlow(const autofill::FieldGlobalId& field_id,
                        const gfx::RectF& bounds,
                        base::i18n::TextDirection text_direction) = 0;
 };

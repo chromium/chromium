@@ -65,7 +65,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   // Generates suggestions and shows the Autofill popup if the passwords were
   // already read from disk. Otherwise, saves the input parameters to run the
   // flow when the passwords are read from disk.
-  void RunFlow(autofill::FieldRendererId field_id,
+  void RunFlow(const autofill::FieldGlobalId& field_id,
                const gfx::RectF& bounds,
                base::i18n::TextDirection text_direction) override;
 
@@ -167,7 +167,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   base::OnceClosure on_all_password_data_ready_;
 
   // The latest `RunFlow()` call arguments.
-  autofill::FieldRendererId field_id_;
+  autofill::FieldGlobalId field_id_;
   gfx::RectF bounds_;
   base::i18n::TextDirection text_direction_;
 

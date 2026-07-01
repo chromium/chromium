@@ -48,7 +48,6 @@
 namespace autofill {
 
 class AutofillExternalDelegateForPopupTest;
-class AutofillSuggestionControllerForTest;
 
 // A `BrowserAutofillManager` with a modified `AutofillExternalDelegate` that
 // allows verifying interactions with the popup.
@@ -290,8 +289,8 @@ class AutofillSuggestionControllerForTest
   AutofillSuggestionControllerForTest(
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
-      const gfx::RectF& element_bounds
-  );
+      const LocalFrameToken& frame_token,
+      const gfx::RectF& element_bounds);
   ~AutofillSuggestionControllerForTest() override;
 
   // Making protected functions public for testing

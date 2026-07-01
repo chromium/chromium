@@ -44,13 +44,13 @@ namespace {
 using autofill::AutofillClient;
 using autofill::AutofillSuggestionDelegate;
 using autofill::AutofillSuggestionTriggerSource;
+using autofill::FieldGlobalId;
 using autofill::FieldRendererId;
 using autofill::Suggestion;
 using autofill::SuggestionHidingReason;
 using autofill::SuggestionType;
 using autofill::TestAutofillClient;
 using autofill::test::AutofillUnitTestEnvironment;
-using autofill::test::MakeFieldRendererId;
 using base::i18n::TextDirection;
 using base::test::RunOnceCallback;
 using testing::_;
@@ -69,6 +69,11 @@ using testing::Values;
 constexpr const char kUrl[] = "https://example.com/";
 constexpr const char kPSLExtension[] = "https://psl.example.com/";
 constexpr const char kUrlWithNoExactMatches[] = "https://www.foo.com/";
+
+FieldGlobalId MakeFieldGlobalId() {
+  return autofill::test::MakeFieldGlobalId(
+      autofill::test::RandomizeFrame(false));
+}
 
 Matcher<Suggestion> EqualsManualFallbackSuggestion(SuggestionType type,
                                                    bool is_acceptable) {
@@ -344,7 +349,7 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlow_NoSuggestionsReturned) {
 
   EXPECT_CALL(autofill_client(), ShowAutofillSuggestions).Times(0);
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 }
 
@@ -381,7 +386,7 @@ TEST_F(PasswordManualFallbackFlowTest, ReturnSuggestions_InvokeFlow) {
                     AutofillSuggestionTriggerSource::kManualFallbackPasswords)),
           _));
 
-  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
 // Test that the suggestions are shown when the flow is invoked before the
@@ -391,7 +396,7 @@ TEST_F(PasswordManualFallbackFlowTest, InvokeFlow_ReturnSuggestions) {
   InitializeFlow();
 
   const gfx::RectF bounds(1, 1, 2, 2);
-  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(
       autofill_client(),
@@ -417,8 +422,8 @@ TEST_F(PasswordManualFallbackFlowTest, LastRunParametersAreUsed) {
 
   const gfx::RectF bounds_1(1, 1, 2, 2);
   const gfx::RectF bounds_2(2, 2, 4, 4);
-  flow().RunFlow(MakeFieldRendererId(), bounds_1, TextDirection::LEFT_TO_RIGHT);
-  flow().RunFlow(MakeFieldRendererId(), bounds_2, TextDirection::RIGHT_TO_LEFT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds_1, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds_2, TextDirection::RIGHT_TO_LEFT);
 
   EXPECT_CALL(
       autofill_client(),
@@ -458,7 +463,7 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlowMultipleTimes) {
                     &AutofillClient::PopupOpenArgs::trigger_source,
                     AutofillSuggestionTriggerSource::kManualFallbackPasswords)),
           _));
-  flow().RunFlow(MakeFieldRendererId(), bounds_1, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds_1, TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(
       autofill_client(),
@@ -473,7 +478,7 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlowMultipleTimes) {
                     &AutofillClient::PopupOpenArgs::trigger_source,
                     AutofillSuggestionTriggerSource::kManualFallbackPasswords)),
           _));
-  flow().RunFlow(MakeFieldRendererId(), bounds_2, TextDirection::RIGHT_TO_LEFT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds_2, TextDirection::RIGHT_TO_LEFT);
 }
 
 // Manual fallback should not show passwords from different domains in the
@@ -502,7 +507,7 @@ TEST_F(PasswordManualFallbackFlowTest, DifferentDomain_NoSuggestedPasswords) {
                               EqualsSuggestion(
                                   SuggestionType::kAllSavedPasswordsEntry)))),
           _));
-  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
 // Manual fallback should show PSL matched passwords in the "Suggested" section.
@@ -535,7 +540,7 @@ TEST_F(PasswordManualFallbackFlowTest,
                               EqualsSuggestion(
                                   SuggestionType::kAllSavedPasswordsEntry)))),
           _));
-  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
 // Manual fallback should show grouped passwords from different domains in the
@@ -577,7 +582,7 @@ TEST_F(PasswordManualFallbackFlowTest,
                               EqualsSuggestion(
                                   SuggestionType::kAllSavedPasswordsEntry)))),
           _));
-  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
 // Manual fallback should show exact domain matches in the "Suggested" section.
@@ -608,7 +613,7 @@ TEST_F(PasswordManualFallbackFlowTest, SameDomain_SuggestsExactMatches) {
                               EqualsSuggestion(
                                   SuggestionType::kAllSavedPasswordsEntry)))),
           _));
-  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
 // Test that username field-by-field suggestion is previewed into the correct
@@ -617,11 +622,11 @@ TEST_F(PasswordManualFallbackFlowTest, SelectUsernameFieldByFieldSuggestion) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  const FieldRendererId field_id = MakeFieldRendererId();
+  const FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(),
-              PreviewField(field_id, std::u16string(u"username@example.com")));
+  EXPECT_CALL(driver(), PreviewField(field_id.renderer_id,
+                                     std::u16string(u"username@example.com")));
   flow().DidSelectSuggestion(autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordFieldByFieldFilling, u"username@example.com",
       Suggestion::PasswordSuggestionDetails(
@@ -636,14 +641,15 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  const FieldRendererId field_id = MakeFieldRendererId();
+  const FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(),
-              FillField(field_id, std::u16string(u"username@example.com"),
-                        autofill::FieldPropertiesFlags::
-                            kAutofilledPasswordFormFilledViaManualFallback,
-                        _));
+  EXPECT_CALL(
+      driver(),
+      FillField(field_id.renderer_id, std::u16string(u"username@example.com"),
+                autofill::FieldPropertiesFlags::
+                    kAutofilledPasswordFormFilledViaManualFallback,
+                _));
   EXPECT_CALL(
       autofill_client(),
       HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
@@ -666,15 +672,18 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(driver(), PreviewSuggestionById(form.username_element_renderer_id,
@@ -698,15 +707,18 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   // Expect that the password is empty in the preview call. The length of the
@@ -730,15 +742,18 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   // Expect that the password is empty in the preview call. The length of the
@@ -762,14 +777,16 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.password_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.password_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(password_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(driver(), PreviewSuggestionById(FieldRendererId(),
@@ -794,7 +811,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(driver(), PreviewSuggestion).Times(0);
@@ -814,7 +831,7 @@ TEST_F(PasswordManualFallbackFlowTest, SelectWebauthnSignInSuggestion) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
@@ -833,7 +850,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
@@ -853,15 +870,18 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
@@ -891,15 +911,18 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -942,15 +965,18 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -998,14 +1024,16 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.password_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.password_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(password_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(
@@ -1034,7 +1062,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(driver(), FillSuggestionById).Times(0);
@@ -1056,7 +1084,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptWebauthnSignInSuggestion) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
@@ -1078,7 +1106,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
@@ -1101,7 +1129,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(driver(), PreviewField).Times(0);
@@ -1116,13 +1144,13 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  FieldRendererId field_id = MakeFieldRendererId();
+  FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(false));
   EXPECT_CALL(driver(),
-              FillField(field_id, std::u16string(u"password"),
+              FillField(field_id.renderer_id, std::u16string(u"password"),
                         autofill::FieldPropertiesFlags::
                             kAutofilledPasswordFormFilledViaManualFallback,
                         _));
@@ -1138,7 +1166,7 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -1185,16 +1213,18 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
   const GURL domain = driver().GetLastCommittedURL();
   const std::string password_hostname = "password_hostname";
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(Return(&form));
 
-  flow().RunFlow(form.username_element_renderer_id, element_bounds,
-                 text_direction);
+  flow().RunFlow(username_element_global_id, element_bounds, text_direction);
 
   EXPECT_CALL(password_manager_client(),
               ShowCrossDomainConfirmationPopup(
@@ -1227,7 +1257,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  FieldRendererId field_id = MakeFieldRendererId();
+  FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -1241,7 +1271,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   EXPECT_CALL(driver(),
-              FillField(field_id, std::u16string(u"password"),
+              FillField(field_id.renderer_id, std::u16string(u"password"),
                         autofill::FieldPropertiesFlags::
                             kAutofilledPasswordFormFilledViaManualFallback,
                         _));
@@ -1268,7 +1298,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  FieldRendererId field_id = MakeFieldRendererId();
+  FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -1285,7 +1315,7 @@ TEST_F(PasswordManualFallbackFlowTest,
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   EXPECT_CALL(driver(),
-              FillField(field_id, std::u16string(u"password"),
+              FillField(field_id.renderer_id, std::u16string(u"password"),
                         autofill::FieldPropertiesFlags::
                             kAutofilledPasswordFormFilledViaManualFallback,
                         _));
@@ -1311,7 +1341,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthIfPreviousNotFinished) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  FieldRendererId field_id = MakeFieldRendererId();
+  FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator1 =
@@ -1350,7 +1380,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthOnDestroy) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  FieldRendererId field_id = MakeFieldRendererId();
+  FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -1376,7 +1406,7 @@ TEST_F(PasswordManualFallbackFlowTest, SelectManagePasswordsEntry) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(password_manager_client(), NavigateToManagePasswordsPage)
@@ -1395,7 +1425,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptManagePasswordsEntry) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(password_manager_client(),
@@ -1427,7 +1457,7 @@ TEST_F(PasswordManualFallbackFlowTest, ShowPasswordDetails) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(password_manager_client(), OpenPasswordDetailsBubble(form_de));
@@ -1489,9 +1519,12 @@ TEST_F(PasswordManualFallbackFlowTest, Acceptability_OnLoginForm) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
@@ -1513,7 +1546,7 @@ TEST_F(PasswordManualFallbackFlowTest, Acceptability_OnLoginForm) {
                   EqualsSuggestion(SuggestionType::kAllSavedPasswordsEntry)))),
           _));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 }
 
@@ -1523,9 +1556,13 @@ TEST_F(PasswordManualFallbackFlowTest, Acceptability_OnSignupForm) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.new_password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.new_password_element_renderer_id =
+      password_element_global_id.renderer_id;
   // Simulate that the field is classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
@@ -1547,7 +1584,7 @@ TEST_F(PasswordManualFallbackFlowTest, Acceptability_OnSignupForm) {
                   EqualsSuggestion(SuggestionType::kAllSavedPasswordsEntry)))),
           _));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+  flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 }
 
@@ -1557,12 +1594,16 @@ TEST_F(PasswordManualFallbackFlowTest, Acceptability_IrrelevantFocusedElement) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId other_field_id = MakeFieldGlobalId();
+
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
-  FieldRendererId other_field_id = MakeFieldRendererId();
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
   // Simulate that the field is classified as target filling password.
-  EXPECT_CALL(password_form_cache(), GetPasswordForm(_, other_field_id))
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, other_field_id.renderer_id))
       .WillRepeatedly(Return(&form));
 
   EXPECT_CALL(
@@ -1590,16 +1631,16 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
   ProcessPasswordStoreUpdates();
 
   PasswordForm form;
-  form.username_element_renderer_id = MakeFieldRendererId();
-  form.password_element_renderer_id = MakeFieldRendererId();
+  form.username_element_renderer_id = autofill::test::MakeFieldRendererId();
+  form.password_element_renderer_id = autofill::test::MakeFieldRendererId();
   // Simulate that the field is/isn't classified as target filling password.
   EXPECT_CALL(password_form_cache(),
               GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(
           Return(IsClassifiedAsTargetFillingPassword() ? &form : nullptr));
 
-  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
-                 TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(autofill::FieldGlobalId{{}, form.username_element_renderer_id},
+                 gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
   base::HistogramTester histograms;
   autofill::Suggestion suggestion = autofill::test::CreateAutofillSuggestion(

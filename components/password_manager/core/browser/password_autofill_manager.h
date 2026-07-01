@@ -104,13 +104,15 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // This is currently used for cases in which the automatic generation
   // option is offered through a different UI surface than the popup
   // (e.g. via the keyboard accessory on Android).
-  bool MaybeShowPasswordSuggestions(const gfx::RectF& bounds,
+  bool MaybeShowPasswordSuggestions(const autofill::FieldGlobalId& field_id,
+                                    const gfx::RectF& bounds,
                                     base::i18n::TextDirection text_direction);
 
   // If there are relevant credentials for the current frame, shows them with
   // an additional 'generation' option and returns true. Otherwise, does nothing
   // and returns false.
   bool MaybeShowPasswordSuggestionsWithGeneration(
+      const autofill::FieldGlobalId& field_id,
       const gfx::RectF& bounds,
       base::i18n::TextDirection text_direction,
       bool show_password_suggestions);
@@ -145,7 +147,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 
  private:
   // Validates and forwards the given objects to the autofill client.
-  bool ShowPopup(const gfx::RectF& bounds,
+  bool ShowPopup(const autofill::FieldGlobalId& field_id,
+                 const gfx::RectF& bounds,
                  base::i18n::TextDirection text_direction,
                  const std::vector<autofill::Suggestion>& suggestions,
                  bool is_for_webauthn_request);

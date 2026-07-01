@@ -34,7 +34,8 @@ class TestAtMemorySuggestionControllerAutofillClient
     if (!suggestion_controller_) {
       auto* controller = new AtMemorySuggestionController(
           manager.external_delegate().GetWeakPtrForTest(), &GetWebContents(),
-          PopupControllerCommon({}, base::i18n::UNKNOWN_DIRECTION));
+          PopupControllerCommon(manager.driver().GetFrameToken(), {},
+                                base::i18n::UNKNOWN_DIRECTION));
       suggestion_controller_ = controller->GetWeakPtr();
     }
     return *suggestion_controller_;
@@ -137,7 +138,8 @@ TEST_F(AtMemorySuggestionControllerTest, RecreatesControllerIfDelegateChanges) {
       AutofillSuggestionController::GetOrCreate(
           /*previous=*/nullptr,
           manager1.external_delegate().GetWeakPtrForTest(), web_contents(),
-          PopupControllerCommon({}, base::i18n::UNKNOWN_DIRECTION),
+          PopupControllerCommon(manager1.driver().GetFrameToken(), {},
+                                base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0, AutofillSuggestionTriggerSource::kAtMemory);
 
   content::RenderFrameHost* subframe = CreateAndNavigateChildFrame(
@@ -152,7 +154,8 @@ TEST_F(AtMemorySuggestionControllerTest, RecreatesControllerIfDelegateChanges) {
       AutofillSuggestionController::GetOrCreate(
           controller1_weak, manager2.external_delegate().GetWeakPtrForTest(),
           web_contents(),
-          PopupControllerCommon({}, base::i18n::UNKNOWN_DIRECTION),
+          PopupControllerCommon(manager2.driver().GetFrameToken(), {},
+                                base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0, AutofillSuggestionTriggerSource::kAtMemory);
 
   EXPECT_NE(controller1_weak.get(), controller2_weak.get());
@@ -169,14 +172,16 @@ TEST_F(AtMemorySuggestionControllerTest, RecyclesControllerIfDelegateIsSame) {
       AutofillSuggestionController::GetOrCreate(
           /*previous=*/nullptr,
           manager1.external_delegate().GetWeakPtrForTest(), web_contents(),
-          PopupControllerCommon({}, base::i18n::UNKNOWN_DIRECTION),
+          PopupControllerCommon(manager1.driver().GetFrameToken(), {},
+                                base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0, AutofillSuggestionTriggerSource::kAtMemory);
 
   base::WeakPtr<AutofillSuggestionController> controller2_weak =
       AutofillSuggestionController::GetOrCreate(
           controller1_weak, manager1.external_delegate().GetWeakPtrForTest(),
           web_contents(),
-          PopupControllerCommon({}, base::i18n::UNKNOWN_DIRECTION),
+          PopupControllerCommon(manager1.driver().GetFrameToken(), {},
+                                base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0, AutofillSuggestionTriggerSource::kAtMemory);
 
   EXPECT_EQ(controller1_weak.get(), controller2_weak.get());

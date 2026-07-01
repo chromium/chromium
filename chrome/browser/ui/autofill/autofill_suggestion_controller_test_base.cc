@@ -45,11 +45,13 @@ AutofillExternalDelegateForPopupTest::~AutofillExternalDelegateForPopupTest() =
 AutofillSuggestionControllerForTest::AutofillSuggestionControllerForTest(
     base::WeakPtr<AutofillExternalDelegate> external_delegate,
     content::WebContents* web_contents,
+    const LocalFrameToken& frame_token,
     const gfx::RectF& element_bounds)
     : AutofillSuggestionControllerForTestBase(
           external_delegate,
           web_contents,
-          PopupControllerCommon(element_bounds,
+          PopupControllerCommon(frame_token,
+                                element_bounds,
                                 base::i18n::UNKNOWN_DIRECTION)) {}
 
 AutofillSuggestionControllerForTest::~AutofillSuggestionControllerForTest() =

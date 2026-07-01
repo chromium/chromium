@@ -11,12 +11,14 @@
 namespace autofill {
 
 PopupControllerCommon::PopupControllerCommon(
+    LocalFrameToken frame_token,
     gfx::RectF element_bounds,
     base::i18n::TextDirection text_direction,
     PopupAnchorType anchor_type,
     bool show_tabbed_popup,
     bool prefer_prev_arrow_side_on_suggestions_update)
-    : element_bounds(std::move(element_bounds)),
+    : frame_token(std::move(frame_token)),
+      element_bounds(std::move(element_bounds)),
       text_direction(text_direction),
       anchor_type(anchor_type),
       show_tabbed_popup(show_tabbed_popup),

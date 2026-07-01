@@ -433,13 +433,14 @@ class PasswordAutofillManagerTest : public testing::Test {
   std::u16string backup_password_;
 
  private:
-  autofill::PasswordFormFillData fill_data_;
-
-
   // The TestAutofillDriver uses a SequencedWorkerPool which expects the
   // existence of a MessageLoop.
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  autofill::test::AutofillUnitTestEnvironment autofill_environment_;
+
+  autofill::PasswordFormFillData fill_data_;
 };
 
 TEST_F(PasswordAutofillManagerTest, SuccessfulFillSuggestion) {
@@ -1034,7 +1035,8 @@ TEST_F(PasswordAutofillManagerTest,
   gfx::RectF element_bounds;
   EXPECT_FALSE(
       password_autofill_manager_->MaybeShowPasswordSuggestionsWithGeneration(
-          element_bounds, base::i18n::RIGHT_TO_LEFT,
+          autofill::test::MakeFieldGlobalId(), element_bounds,
+          base::i18n::RIGHT_TO_LEFT,
           /*show_password_suggestions=*/true));
 }
 
@@ -1062,7 +1064,8 @@ TEST_F(PasswordAutofillManagerTest,
           SavePopupOpenArgsAndShowSuggestions(autofill_client, open_args));
   EXPECT_TRUE(
       password_autofill_manager_->MaybeShowPasswordSuggestionsWithGeneration(
-          element_bounds, base::i18n::RIGHT_TO_LEFT,
+          autofill::test::MakeFieldGlobalId(), element_bounds,
+          base::i18n::RIGHT_TO_LEFT,
           /*show_password_suggestions=*/true));
   histograms.ExpectUniqueSample(
       kDropdownShownHistogram,
@@ -1121,7 +1124,8 @@ TEST_F(PasswordAutofillManagerTest,
 
   EXPECT_TRUE(
       password_autofill_manager_->MaybeShowPasswordSuggestionsWithGeneration(
-          element_bounds, base::i18n::RIGHT_TO_LEFT,
+          autofill::test::MakeFieldGlobalId(), element_bounds,
+          base::i18n::RIGHT_TO_LEFT,
           /*show_password_suggestions=*/false));
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIconsAre(Suggestion::Icon::kKey,
@@ -2097,8 +2101,9 @@ TEST_F(PasswordAutofillManagerTest, ManualFallback_InvokesFlow) {
       autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;
   field.bounds = gfx::RectF(1, 1, 2, 2);
   field.text_direction = base::i18n::LEFT_TO_RIGHT;
-  EXPECT_CALL(manual_fallback_flow(),
-              RunFlow(kElementId, field.bounds, field.text_direction));
+  EXPECT_CALL(
+      manual_fallback_flow(),
+      RunFlow(kTriggeringField.element_id, field.bounds, field.text_direction));
   password_autofill_manager_->ShowSuggestions(field);
 }
 
@@ -2626,8 +2631,10 @@ TEST_F(PasswordAutofillManagerTest, UpdatePopupIsNoOpForOtherManager) {
   EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
       .WillOnce(testing::DoDefault());
 
-  pam1.MaybeShowPasswordSuggestions(gfx::RectF(0, 0, 10, 10),
-                                    base::i18n::LEFT_TO_RIGHT);
+  pam1.MaybeShowPasswordSuggestions(
+      autofill::FieldGlobalId(autofill::test::MakeLocalFrameToken(),
+                              data.password_element_renderer_id),
+      gfx::RectF(0, 0, 10, 10), base::i18n::LEFT_TO_RIGHT);
 
   // Now pam1 has last_session_id_ set to the generated session ID.
   // We simulate that the client has suggestions.
