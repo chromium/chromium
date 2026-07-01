@@ -1329,7 +1329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DigitalCredentials.Create.IsDelegated" enum="Boolean"
-    expires_after="2026-08-12">
+    expires_after="2027-07-01">
   <owner>mamir@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1349,7 +1349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DigitalCredentials.Get.IsDelegated" enum="Boolean"
-    expires_after="2026-08-12">
+    expires_after="2027-07-01">
   <owner>mamir@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
