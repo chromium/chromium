@@ -1457,7 +1457,7 @@ TEST_F(V4StoreTest, TestVerifyChecksumFastPath) {
 
 TEST_F(V4StoreTest, TestVerifyChecksumValidStoreChecksumEmptyHistogram) {
   base::HistogramTester histograms;
-  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/0,
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/4,
                 /*is_eligible_for_migration=*/true,
                 /*is_extensions_blocklist=*/false);
   store.hash_prefix_map_->Append(4, "000011112222");
