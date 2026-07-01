@@ -67,8 +67,11 @@ class BrowsingDataUtilsTest : public testing::Test {
 TEST_F(BrowsingDataUtilsTest,
        AutofillCounterResultWithReplaceSyncPromosWithSignInPromosDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
 
   autofill::TestPersonalDataManager test_personal_data_manager;
   AutofillCounter counter(&test_personal_data_manager,

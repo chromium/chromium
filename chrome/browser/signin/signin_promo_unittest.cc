@@ -109,8 +109,11 @@ class SigninPromoUrlTest : public testing::Test {
 
 TEST_F(SigninPromoUrlTest, SigninURLForDice) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
 
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
@@ -163,13 +166,15 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceWithHistorySyncOptin) {
 
 TEST_F(SigninPromoUrlTest, SigninURLForDiceMagiChromeExperiments) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      switches::kMagiChromeSignInExperimentsBatch1,
-      {{"magichrome_fre_exp_branch", "test_branch"}});
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{switches::kMagiChromeSignInExperimentsBatch1,
+                             {{"magichrome_fre_exp_branch", "test_branch"}}},
+                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+      /*disabled_features=*/{});
 
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
-      "theme=mn&magichrome_fre_exp_branch=test_branch",
+      "flow=history_opt_in&theme=mn&magichrome_fre_exp_branch=test_branch",
       GetChromeSyncURLForDice({}));
 }
 

@@ -1132,8 +1132,10 @@ TEST_F(SyncPrefsMigrationTest, RunsAgainAfterFeatureReenabled) {
   // On the next startup, the feature is disabled.
   {
     base::test::ScopedFeatureList disable_sync_to_signin;
-    disable_sync_to_signin.InitAndDisableFeature(
-        kReplaceSyncPromosWithSignInPromos);
+    disable_sync_to_signin.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                               kReplaceSyncPromosWithSigninPromosNewSignin});
 
     SyncPrefs prefs(&pref_service_);
 

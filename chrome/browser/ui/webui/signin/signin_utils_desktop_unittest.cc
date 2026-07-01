@@ -133,7 +133,14 @@ class CanOfferSigninWithSigninToSyncFeatureTest
  public:
   CanOfferSigninWithSigninToSyncFeatureTest()
       : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
+            syncer::kReplaceSyncPromosWithSignInPromos) {
+    scoped_feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+        IsParamFeatureEnabled());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,

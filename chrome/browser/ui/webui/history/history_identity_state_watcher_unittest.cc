@@ -24,8 +24,10 @@ using testing::StrictMock;
 class HistorySignInStateWatcherTestBase : public testing::Test {
  public:
   explicit HistorySignInStateWatcherTestBase(bool replace_sync_with_signin) {
-    feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSignInPromos, replace_sync_with_signin);
+    feature_list_.InitWithFeatureStates(
+        {{syncer::kReplaceSyncPromosWithSignInPromos, replace_sync_with_signin},
+         {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+          replace_sync_with_signin}});
     // Start with no signed-in user (this makes the TestSyncService consistent
     // with the IdentityTestEnvironment).
     sync_service_.SetSignedOut();

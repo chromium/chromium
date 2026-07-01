@@ -95,8 +95,11 @@ TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageActive_Syncing) {
 TEST_F(PasswordManagerFeaturesUtilTest,
        ShouldShowAccountStorageSettingToggle_SyncToSigninOff) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
   EXPECT_TRUE(ShouldShowAccountStorageSettingToggle(&sync_service_));

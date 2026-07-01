@@ -677,7 +677,11 @@ TEST_F(AccountNameEmailStoreTest,
 class AccountNameEmailStoreSyncTest : public AccountNameEmailStoreTest {
  public:
   AccountNameEmailStoreSyncTest() {
-    features_.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   }
 };
 

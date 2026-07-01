@@ -637,8 +637,15 @@ class AppMenuModelSigninPromoTest : public base::test::WithFeatureOverride,
                                     public AppMenuModelTest {
  public:
   AppMenuModelSigninPromoTest()
-      : WithFeatureOverride(syncer::kReplaceSyncPromosWithSignInPromos) {}
+      : WithFeatureOverride(syncer::kReplaceSyncPromosWithSignInPromos) {
+    scoped_feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+        IsParamFeatureEnabled());
+  }
   ~AppMenuModelSigninPromoTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(AppMenuModelSigninPromoTest, SignedIn) {

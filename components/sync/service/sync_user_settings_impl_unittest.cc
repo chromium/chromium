@@ -225,7 +225,8 @@ TEST_F(SyncUserSettingsImplTest,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
                             switches::kEnablePreferencesAccountStorage},
-      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                             kReplaceSyncPromosWithSigninPromosNewSignin});
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());

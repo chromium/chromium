@@ -5,6 +5,8 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +20,12 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError) {
 }
 
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_SyncDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   syncer::TestSyncService service;
   service.SetInitialSyncFeatureSetupComplete(false);
   service.SetPassphraseRequired();
