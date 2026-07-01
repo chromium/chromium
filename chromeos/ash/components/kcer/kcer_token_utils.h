@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_KCER_KCER_TOKEN_UTILS_H_
 #define CHROMEOS_ASH_COMPONENTS_KCER_KCER_TOKEN_UTILS_H_
 
+#include "base/containers/span.h"
 #include "chromeos/ash/components/kcer/attributes.pb.h"
 #include "chromeos/ash/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/ash/components/kcer/chaps/session_chaps_client.h"

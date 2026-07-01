@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"

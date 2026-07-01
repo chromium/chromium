@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/kcer/kcer_utils.h"
 
+#include "base/containers/span.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 
 namespace kcer {

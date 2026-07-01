@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "crypto/obsolete/sha1.h"
 #include "crypto/scoped_nss_types.h"

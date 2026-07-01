@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"

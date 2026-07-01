@@ -18,6 +18,7 @@
 
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"

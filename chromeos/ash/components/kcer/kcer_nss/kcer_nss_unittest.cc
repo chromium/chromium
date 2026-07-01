@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"

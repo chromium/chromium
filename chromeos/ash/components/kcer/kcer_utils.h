@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_KCER_KCER_UTILS_H_
 #define CHROMEOS_ASH_COMPONENTS_KCER_KCER_UTILS_H_
 
+#include "base/containers/span.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 
 namespace kcer {

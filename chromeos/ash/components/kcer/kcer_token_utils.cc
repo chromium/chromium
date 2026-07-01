@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/kcer/kcer_token_utils.h"
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
 #include "chromeos/ash/components/kcer/kcer_histograms.h"

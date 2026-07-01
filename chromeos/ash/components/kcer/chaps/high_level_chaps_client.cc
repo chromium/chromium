@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/kcer/chaps/high_level_chaps_client.h"
 
+#include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/ash/components/kcer/key_permissions.pb.h"
