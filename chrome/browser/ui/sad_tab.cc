@@ -49,19 +49,15 @@ constexpr char kCategoryTagCrash[] = "Crash";
 
 // Return true if this function has been called in the last 10 seconds.
 bool IsRepeatedlyCrashing() {
-  const int kMaxSecondsSinceLastCrash = 10;
+  static constexpr base::TimeDelta kMaxTimeSinceLastCrash = base::Seconds(10);
 
-  static int64_t last_called_ts = 0;
-  base::TimeTicks last_called(base::TimeTicks::UnixEpoch());
+  static base::TimeTicks last_called;
 
-  if (last_called_ts) {
-    last_called = base::TimeTicks::FromInternalValue(last_called_ts);
-  }
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const bool crashed_recently =
+      !last_called.is_null() && (now - last_called) < kMaxTimeSinceLastCrash;
 
-  bool crashed_recently = (base::TimeTicks().Now() - last_called).InSeconds() <
-                          kMaxSecondsSinceLastCrash;
-
-  last_called_ts = base::TimeTicks().Now().ToInternalValue();
+  last_called = now;
   return crashed_recently;
 }
 
