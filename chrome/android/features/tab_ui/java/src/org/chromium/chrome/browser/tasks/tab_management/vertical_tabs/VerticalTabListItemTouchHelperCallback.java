@@ -154,9 +154,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         if (isCurrentGroupHeader || isSolitaryChild(current)) {
             // Prevent dropping a group over a child tab within any group to ensure the entire
             // dragged group moves as a single atomic unit and avoids janky intermediate states.
+            Token targetGroupId = getTabGroupId(target);
             boolean isTargetGroupChild =
-                    target.getItemViewType() == TabProperties.UiType.TAB
-                            && getTabGroupId(target) != null;
+                    target.getItemViewType() == TabProperties.UiType.TAB && targetGroupId != null;
             if (isTargetGroupChild) {
                 return false;
             }
@@ -164,7 +164,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             // Allow a group header to float past its own children until it hits a valid
             // target, at which point the entire group (header + children) moves together.
             Token currentGroupId = getTabGroupId(current);
-            Token targetGroupId = getTabGroupId(target);
             if (currentGroupId != null && currentGroupId.equals(targetGroupId)) {
                 return false;
             }
@@ -299,13 +298,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         Token currentGroupId = getTabGroupId(fromViewHolder);
         boolean isStandaloneTab = !isGroupHeader && currentGroupId == null;
         boolean isSolitaryChild = !isGroupHeader && isSolitaryChild(fromViewHolder);
-        boolean isStandaloneEntity = isGroupHeader || isStandaloneTab || isSolitaryChild;
+        boolean isGroup = isGroupHeader || isSolitaryChild;
 
         int distance =
                 toViewHolder.getBindingAdapterPosition()
                         - fromViewHolder.getBindingAdapterPosition();
 
-        if (!isStandaloneEntity) {
+        if (!isStandaloneTab && !isGroup) {
+            // This is a non-solitary child tab.
             Token destGroupId = getTabGroupId(toViewHolder);
             boolean isDestGroupHeader =
                     toViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP;
@@ -328,51 +328,44 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 boolean isDestGroupHeader =
                         toViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP;
                 boolean isDraggingDown = distance > 0;
-                boolean isDraggingUp = distance < 0;
 
                 Tab currentTab = tabModel.getTabById(currentTabId);
                 Tab destinationTab = tabModel.getTabById(destinationTabId);
 
                 if (currentTab != null && destinationTab != null) {
-                    // When dragging down, grouping occurs when swapping with the group header.
-                    if (isDraggingDown && isDestGroupHeader) {
-                        tabModel.mergeListOfTabsToGroup(
-                                List.of(currentTab),
-                                destinationTab,
-                                /* indexInGroup= */ 0,
-                                TabGroupMergeNotificationType.NOTIFY_ALWAYS);
-                        return true;
-                    }
-
-                    // When dragging up, grouping occurs when swapping with the lowest tab in the
-                    // group.
-                    if (isDraggingUp && !isDestGroupHeader) {
+                    // Handle grouping when a standalone tab intersects any part of a group.
+                    Integer indexInGroup = 0;
+                    if (!isDestGroupHeader) {
                         List<Tab> destRelatedTabs = getRelatedTabsForId(destinationTabId);
-                        boolean isTargetLowestTab =
-                                destRelatedTabs != null
-                                        && !destRelatedTabs.isEmpty()
-                                        && destRelatedTabs.get(destRelatedTabs.size() - 1).getId()
-                                                == destinationTabId;
-
-                        if (isTargetLowestTab) {
-                            tabModel.mergeListOfTabsToGroup(
-                                    List.of(currentTab),
-                                    destinationTab,
-                                    /* indexInGroup= */ null,
-                                    TabGroupMergeNotificationType.NOTIFY_ALWAYS);
-                            return true;
+                        if (destRelatedTabs != null) {
+                            boolean isDraggingUp = distance < 0;
+                            boolean isTargetLowestTab =
+                                    destRelatedTabs.get(destRelatedTabs.size() - 1).getId()
+                                            == destinationTabId;
+                            if (isDraggingUp && isTargetLowestTab) {
+                                indexInGroup = null;
+                            } else {
+                                indexInGroup = destRelatedTabs.indexOf(destinationTab);
+                                if (isDraggingDown) {
+                                    indexInGroup++;
+                                }
+                            }
                         }
                     }
+                    tabModel.mergeListOfTabsToGroup(
+                            List.of(currentTab),
+                            destinationTab,
+                            indexInGroup,
+                            TabGroupMergeNotificationType.NOTIFY_ALWAYS);
+                    return true;
                 }
             }
         }
 
         int destinationIndex;
-        if (isStandaloneEntity) {
+        if (isGroup) {
             // Tab groups should maintain the boundaries of target tab groups
-            // so they do not inadvertently split existing groups during drags.
-            // TODO(crbug.com/518307037): This will be updated when standalone tabs can be dragged
-            // into groups.
+            // so they do not split other groups during drags.
             List<Tab> destinationTabGroup = getRelatedTabsForId(destinationTabId);
             destinationIndex =
                     distance >= 0
@@ -381,8 +374,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                             : TabGroupUtils.getFirstTabModelIndexForList(
                                     tabModel, destinationTabGroup);
         } else {
-            // Child tabs should be precisely inserted at the literal destination slot within their
-            // group instead of bouncing to the ends of the group boundaries.
+            //  - Child tabs should reorder inside tab groups.
+            //  - Standalone tabs use this logic too, but only when not intersecting with a group.
             Tab destinationTab = tabModel.getTabById(destinationTabId);
             destinationIndex =
                     destinationTab != null
@@ -398,14 +391,13 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         mSelectedTabIndex = toViewHolder.getBindingAdapterPosition();
 
         // Perform basic list reordering by updating the TabModel immediately.
-        // - Standalone tabs & group headers use moveRelatedTabs() to fire didMoveTabGroup(),
+        // - Group headers use moveRelatedTabs() to fire didMoveTabGroup(),
         //   which TabListMediator observes to update top-level UI rows.
         // - Child tabs use moveTab() because they move within their group, firing
         //   didMoveWithinGroup() which TabListMediator observes.
+        // - Standalone tabs use moveTab() since they are single elements.
 
-        if (isStandaloneEntity) {
-            // TODO(crbug.com/518307037): Needs to handle grouping when a standalone tab is dragged
-            // into the index span of an expanded group.
+        if (isGroup) {
             tabModel.moveRelatedTabs(currentTabId, destinationIndex);
         } else {
             tabModel.moveTab(currentTabId, destinationIndex);

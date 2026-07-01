@@ -247,7 +247,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
-        verify(mTabModel).moveRelatedTabs(1, 5);
+        verify(mTabModel).moveTab(1, 5);
     }
 
     @Test
@@ -721,8 +721,9 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void testOnMove_Downward() {
+    public void testOnMove_GroupHeader_Downward() {
         mPropertyModel.set(TabProperties.TAB_ID, 1);
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
         mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
 
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
@@ -752,8 +753,9 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void testOnMove_Upward() {
+    public void testOnMove_GroupHeader_Upward() {
         mPropertyModel.set(TabProperties.TAB_ID, 1);
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
         mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
 
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(5);
