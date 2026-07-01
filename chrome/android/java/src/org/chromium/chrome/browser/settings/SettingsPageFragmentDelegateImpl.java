@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.settings;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -60,6 +62,9 @@ public class SettingsPageFragmentDelegateImpl
 
     private @Nullable SettingsHostFragment mSettingsHostFragment;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mDependencyProvider;
+    private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
+    private @Nullable Toolbar mToolbar;
+    private @Nullable MultiColumnTitleUpdater mMultiColumnTitleUpdater;
 
     public SettingsPageFragmentDelegateImpl(
             Activity activity,
@@ -114,6 +119,10 @@ public class SettingsPageFragmentDelegateImpl
 
         mContainmentHelper.registerCallbacks(fragmentManager);
 
+        mTitleUpdaterLifecycleCallbacks = new TitleUpdaterLifecycleCallbacks();
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                mTitleUpdaterLifecycleCallbacks, /* recursive= */ true);
+
         // Inflate the settings layout into the container view.
         // TODO(crbug.com/521895796): Rename settings_activity.xml since with settings-in-a-tab it
         // doesn't map directly to its own activity.
@@ -121,7 +130,7 @@ public class SettingsPageFragmentDelegateImpl
                 LayoutInflater.from(mActivity).inflate(R.layout.settings_activity, null);
         containerView.addView(settingsView);
         ViewGroup fragmentContainer = settingsView.findViewById(R.id.content);
-        Toolbar toolbar = settingsView.findViewById(R.id.action_bar);
+        mToolbar = settingsView.findViewById(R.id.action_bar);
 
         // Apply semantic colors to the top-level container and app bar.
         int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(mActivity);
@@ -134,19 +143,17 @@ public class SettingsPageFragmentDelegateImpl
         // Set up the back navigation arrow in the toolbar.
         // TODO(crbug.com/521895796): This is a placeholder for testing. Move the arrow to
         // the right column before launch.
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
-        toolbar.setNavigationOnClickListener(v -> mActivity.onBackPressed());
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
+        mToolbar.setNavigationOnClickListener(v -> mActivity.onBackPressed());
 
-        toolbar.setTitle(R.string.settings);
-
-        // TODO(crbug.com/521895796): Set up title updater.
+        mToolbar.setTitle(R.string.settings);
 
         // TODO(crbug.com/521895796): Set up search coordinator.
 
         // Set up Help Menu on Toolbar.
-        SettingsMenuHelper.onCreateOptionsMenu(toolbar.getMenu(), mActivity);
-        SettingsMenuHelper.onPrepareOptionsMenu(toolbar.getMenu());
-        toolbar.setOnMenuItemClickListener(
+        SettingsMenuHelper.onCreateOptionsMenu(mToolbar.getMenu(), mActivity);
+        SettingsMenuHelper.onPrepareOptionsMenu(mToolbar.getMenu());
+        mToolbar.setOnMenuItemClickListener(
                 item -> SettingsMenuHelper.onOptionsItemSelected(item, mActivity, this));
 
         mSettingsHostFragment =
@@ -169,13 +176,57 @@ public class SettingsPageFragmentDelegateImpl
         mDependencyProvider = null;
         mContainmentHelper.unregisterCallbacks(fragmentManager);
         assumeNonNull(mSettingsHostFragment);
+
+        assumeNonNull(mTitleUpdaterLifecycleCallbacks);
+        fragmentManager.unregisterFragmentLifecycleCallbacks(mTitleUpdaterLifecycleCallbacks);
+        mTitleUpdaterLifecycleCallbacks = null;
+
+        if (mMultiColumnTitleUpdater != null) {
+            MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
+            assumeNonNull(multiColumnSettings);
+            multiColumnSettings.removeObserver(mMultiColumnTitleUpdater);
+            mMultiColumnTitleUpdater = null;
+        }
+
         fragmentManager.beginTransaction().remove(mSettingsHostFragment).commitAllowingStateLoss();
         mSettingsHostFragment = null;
+        mToolbar = null;
+    }
+
+    private void createMultiColumnTitleUpdater(MultiColumnSettings multiColumnSettings, View view) {
+        assert mMultiColumnTitleUpdater == null;
+
+        LinearLayout titleContainer = view.findViewById(R.id.settings_title_in_detailed_pane);
+        assumeNonNull(titleContainer);
+        assumeNonNull(mToolbar);
+
+        // TODO(crbug.com/521895796): Use proper fragment saved state.
+        mMultiColumnTitleUpdater =
+                new MultiColumnTitleUpdater(
+                        /* savedInstanceState= */ null,
+                        multiColumnSettings,
+                        mActivity,
+                        titleContainer,
+                        mToolbar::setTitle,
+                        this::onTitleTapped,
+                        /* initialBreadcrumbPath= */ null);
+        multiColumnSettings.addObserver(mMultiColumnTitleUpdater);
+    }
+
+    private void onTitleTapped(@Nullable String entryName) {
+        SettingsSearchCoordinator searchCoordinator = getSearchCoordinator();
+        if (searchCoordinator != null) {
+            searchCoordinator.onTitleTapped(entryName);
+        }
     }
 
     @Override
     public @Nullable Fragment getMainFragment() {
-        return assumeNonNull(mSettingsHostFragment).getActiveFragment();
+        // Allows tests to simulate activity attachment behavior.
+        if (mSettingsHostFragment == null || !mSettingsHostFragment.isAttachedToActivity()) {
+            return null;
+        }
+        return mSettingsHostFragment.getActiveFragment();
     }
 
     @Override
@@ -223,5 +274,17 @@ public class SettingsPageFragmentDelegateImpl
     @Override
     public void onPreferencesUpdated(PreferenceFragmentCompat fragment) {
         mContainmentHelper.postUpdateContainmentOnLayout(fragment);
+    }
+
+    /** Utility class to handle creating the title updater. */
+    private class TitleUpdaterLifecycleCallbacks
+            extends FragmentManager.FragmentLifecycleCallbacks {
+        @Override
+        public void onFragmentViewCreated(
+                FragmentManager fm, Fragment f, View v, @Nullable Bundle savedFragmentState) {
+            if (f instanceof MultiColumnSettings multiColumnSettings) {
+                createMultiColumnTitleUpdater(multiColumnSettings, v);
+            }
+        }
     }
 }

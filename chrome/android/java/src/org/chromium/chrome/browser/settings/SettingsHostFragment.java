@@ -77,6 +77,14 @@ public class SettingsHostFragment extends Fragment
         return true;
     }
 
+    /**
+     * Returns whether the fragment is attached to an activity. This method can be mocked in tests,
+     * unlike Fragment#isAdded(), which is final.
+     */
+    boolean isAttachedToActivity() {
+        return isAdded();
+    }
+
     /** Returns the currently active fragment hosted by this fragment. */
     public @Nullable Fragment getActiveFragment() {
         return getChildFragmentManager().findFragmentById(CONTAINER_ID);
