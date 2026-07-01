@@ -97,13 +97,14 @@
 #define IDC_TOGGLE_VERTICAL_TABS        34058
 #define IDC_VERTICAL_TABS_SEND_FEEDBACK 34059
 #define IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER 34060
+#define IDC_TOGGLE_VERTICAL_TABS_COLLAPSE 34061
 
 // Web app window commands
-#define IDC_COPY_URL                    34061
-#define IDC_OPEN_IN_CHROME              34062
-#define IDC_WEB_APP_SETTINGS            34063
-#define IDC_WEB_APP_MENU_APP_INFO       34064
-#define IDC_WEB_APP_UPGRADE_DIALOG      34065
+#define IDC_COPY_URL                    34071
+#define IDC_OPEN_IN_CHROME              34072
+#define IDC_WEB_APP_SETTINGS            34073
+#define IDC_WEB_APP_MENU_APP_INFO       34074
+#define IDC_WEB_APP_UPGRADE_DIALOG      34075
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Move window to other user commands

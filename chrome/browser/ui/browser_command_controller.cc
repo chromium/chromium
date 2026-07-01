@@ -681,6 +681,9 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_TOGGLE_VERTICAL_TABS:
       ToggleVerticalTabs(browser_);
       break;
+    case IDC_TOGGLE_VERTICAL_TABS_COLLAPSE:
+      ToggleCollapseVerticalTabs(browser_);
+      break;
     case IDC_VERTICAL_TABS_SEND_FEEDBACK:
       chrome::ShowFeedbackPage(browser_, feedback::kFeedbackSourceVerticalTabs,
                                /*description_template=*/"",
@@ -1699,6 +1702,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_VERTICAL_TABS_SEND_FEEDBACK, true);
   command_updater_->UpdateCommandEnabled(
       IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER, true);
+  command_updater_->UpdateCommandEnabled(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
+                                         true);
 #if BUILDFLAG(IS_CHROMEOS)
   command_updater_->UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
   command_updater_->UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);

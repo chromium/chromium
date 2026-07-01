@@ -278,6 +278,7 @@ void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser);
 void ToggleContextualTasksSidePanelZeroState(BrowserWindowInterface* browser);
 void ToggleVerticalTabs(BrowserWindowInterface* browser);
 void ToggleVerticalTabsExpandOnHover(BrowserWindowInterface* browser);
+void ToggleCollapseVerticalTabs(BrowserWindowInterface* browser);
 bool CanCloseFind(BrowserWindowInterface* browser);
 void CloseFind(BrowserWindowInterface* browser);
 void Zoom(BrowserWindowInterface* browser, content::PageZoom zoom);
