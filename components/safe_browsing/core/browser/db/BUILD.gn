@@ -235,6 +235,21 @@ source_set("v4_rice") {
   }
 }
 
+source_set("v5_rice") {
+  if (safe_browsing_mode != 0 || is_ios) {
+    sources = [
+      "v5_rice.cc",
+      "v5_rice.h",
+    ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    public_deps =
+        [ "//components/safe_browsing/core/common/proto:safebrowsingv5_proto" ]
+    deps = [ "//base" ]
+  }
+}
+
 source_set("sb_store") {
   sources = [
     "hash_prefix_container.cc",
@@ -267,6 +282,7 @@ source_set("sb_store") {
     ":prefix_iterator",
     ":v4_protocol_manager_util",
     ":v4_rice",
+    ":v5_rice",
     "//base",
     "//components/crx_file",
     "//components/safe_browsing/core/common",
@@ -366,6 +382,7 @@ source_set("unit_tests_local_db") {
     "v4_rice_unittest.cc",
     "v4_store_unittest.cc",
     "v4_update_protocol_manager_unittest.cc",
+    "v5_rice_unittest.cc",
     "v5_store_unittest.cc",
     "v5_update_protocol_manager_unittest.cc",
   ]
@@ -381,6 +398,7 @@ source_set("unit_tests_local_db") {
     ":v4_rice",
     ":v4_store_proto",
     ":v4_test_util",
+    ":v5_rice",
     "//base",
     "//build:branding_buildflags",
     "//components/crx_file",
