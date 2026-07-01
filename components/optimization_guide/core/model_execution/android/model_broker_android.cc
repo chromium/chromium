@@ -720,4 +720,9 @@ void ModelBrokerAndroid::OnDownloadProgressUpdated(int64_t downloaded_bytes,
   }
 }
 
+void ModelBrokerAndroid::AddObserver(
+    mojo::PendingRemote<mojom::ModelBrokerDebugObserver>) {
+  // Not yet implemented on Android.
+}
+
 }  // namespace optimization_guide

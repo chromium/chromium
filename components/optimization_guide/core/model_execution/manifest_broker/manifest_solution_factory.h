@@ -99,7 +99,8 @@ class ManifestSolutionFactory {
                           UsageTracker& usage_tracker,
                           on_device_model::ServiceClient& service_client,
                           OnDeviceModelAccessController& access_controller,
-                          base::OnceClosure on_init_complete);
+                          base::OnceClosure on_init_complete,
+                          base::RepeatingClosure on_solutions_updated);
   ~ManifestSolutionFactory();
 
   // Notifies the factory of a change in an asset's state.
@@ -165,6 +166,7 @@ class ManifestSolutionFactory {
   base::flat_map<std::string, SolutionState> solutions_;
 
   base::RepeatingClosure on_asset_init_;
+  base::RepeatingClosure on_solutions_updated_;
 
   base::WeakPtrFactory<ManifestSolutionFactory> weak_ptr_factory_{this};
 };

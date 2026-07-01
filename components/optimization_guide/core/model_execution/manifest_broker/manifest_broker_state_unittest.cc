@@ -10,6 +10,7 @@
 
 #include "base/byte_count.h"
 #include "base/files/file_path.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -33,6 +34,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -177,6 +179,47 @@ TEST_F(ManifestBrokerStateTest, FallbackToDefaultMaxTokens) {
   auto session = session_future.Take();
   ASSERT_TRUE(session);
   EXPECT_EQ(session->GetTokenLimits().max_tokens, kOnDeviceModelMaxTokens);
+}
+
+class TestDebugObserver : public mojom::ModelBrokerDebugObserver {
+ public:
+  TestDebugObserver() = default;
+  ~TestDebugObserver() override = default;
+
+  mojo::PendingRemote<mojom::ModelBrokerDebugObserver> Bind() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void OnBrokerStateChanged() override {
+    call_count_++;
+    run_loop_.Quit();
+  }
+
+  void WaitForNotification() { run_loop_.Run(); }
+
+  int call_count() const { return call_count_; }
+
+ private:
+  mojo::Receiver<mojom::ModelBrokerDebugObserver> receiver_{this};
+  int call_count_ = 0;
+  base::RunLoop run_loop_;
+};
+
+TEST_F(ManifestBrokerStateTest, ModelBrokerDebugObserverNotified) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  fake_.Startup();
+
+  TestDebugObserver observer;
+  fake_.state().AddObserver(observer.Bind());
+
+  // Force initialization to start performance classification and load manifest.
+  base::test::TestFuture<OnDeviceModelEligibilityReason> eligibility_future;
+  fake_.state().GetOnDeviceModelEligibilityAsync(
+      mojom::OnDeviceFeature::kTest, {}, eligibility_future.GetCallback());
+  ASSERT_TRUE(eligibility_future.Wait());
+
+  observer.WaitForNotification();
+  EXPECT_GE(observer.call_count(), 1);
 }
 
 TEST_F(ManifestBrokerStateTest, UninstallModels) {

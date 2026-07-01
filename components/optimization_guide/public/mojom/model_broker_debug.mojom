@@ -83,6 +83,12 @@ struct BrokerStateInfo {
   int32? max_model_crash_count;
 };
 
+// Observer for ModelBrokerDebug.
+interface ModelBrokerDebugObserver {
+  // Notifies the observer that the broker's state has changed.
+  OnBrokerStateChanged();
+};
+
 // A debug interface for ModelBroker. This is primarily exposed for
 // chrome://on-device-internals. We may want to expose it through
 // dev-tools as well.
@@ -103,4 +109,8 @@ interface ModelBrokerDebug {
 
   // Reset the crash count for the model execution.
   ResetModelCrashCount();
+
+  // Adds an observer to listen for changes to the broker's internal state.
+  AddObserver(pending_remote<ModelBrokerDebugObserver> observer);
 };
+

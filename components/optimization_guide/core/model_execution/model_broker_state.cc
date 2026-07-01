@@ -96,8 +96,12 @@ ModelBrokerState::ModelBrokerState(
         service_client_.GetSafeRef(), model_broker_impl_,
         std::move(classifier_delegate));
   }
+  component_state_manager_.AddObserver(this);
 }
-ModelBrokerState::~ModelBrokerState() = default;
+
+ModelBrokerState::~ModelBrokerState() {
+  component_state_manager_.RemoveObserver(this);
+}
 
 void ModelBrokerState::BindModelBroker(
     mojo::PendingReceiver<mojom::ModelBroker> receiver) {
@@ -268,6 +272,17 @@ void ModelBrokerState::UninstallModels() {
 void ModelBrokerState::ResetModelCrashCount() {
   local_state_->SetInteger(
       model_execution::prefs::localstate::kOnDeviceModelCrashCount, 0);
+}
+
+void ModelBrokerState::AddObserver(
+    mojo::PendingRemote<mojom::ModelBrokerDebugObserver> observer) {
+  debug_observers_.Add(std::move(observer));
+}
+
+void ModelBrokerState::StateChanged(MaybeOnDeviceModelComponentState) {
+  for (auto& observer : debug_observers_) {
+    observer->OnBrokerStateChanged();
+  }
 }
 
 }  // namespace optimization_guide

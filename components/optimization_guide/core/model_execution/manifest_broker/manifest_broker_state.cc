@@ -206,7 +206,10 @@ void ManifestBrokerState::OnManifestUpdated() {
       *manifest_monitor_.manifest(), model_broker_impl_, usage_tracker_,
       service_client_, access_controller_,
       base::BindOnce(&ManifestBrokerState::OnInitComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &ManifestBrokerState::NotifyObserversOfBrokerStateChange,
+          weak_ptr_factory_.GetWeakPtr()));
   if (!asset_manager_) {
     asset_manager_ = std::make_unique<ManifestAssetManager>(
         *local_state_, usage_tracker_, *delegate_, component_update_service_,
@@ -214,6 +217,7 @@ void ManifestBrokerState::OnManifestUpdated() {
   } else {
     asset_manager_->UpdateSolutionFactory(std::move(factory));
   }
+  NotifyObserversOfBrokerStateChange();
 }
 
 void ManifestBrokerState::OnInitComplete() {
@@ -232,6 +236,7 @@ void ManifestBrokerState::OnInitComplete() {
           category_config.validations());
     }
   }
+  NotifyObserversOfBrokerStateChange();
 }
 
 on_device_model::Capabilities
@@ -332,6 +337,17 @@ void ManifestBrokerState::UninstallModels() {
 void ManifestBrokerState::ResetModelCrashCount() {
   local_state_->SetInteger(
       model_execution::prefs::localstate::kOnDeviceModelCrashCount, 0);
+}
+
+void ManifestBrokerState::AddObserver(
+    mojo::PendingRemote<mojom::ModelBrokerDebugObserver> observer) {
+  debug_observers_.Add(std::move(observer));
+}
+
+void ManifestBrokerState::NotifyObserversOfBrokerStateChange() {
+  for (auto& observer : debug_observers_) {
+    observer->OnBrokerStateChanged();
+  }
 }
 
 }  // namespace optimization_guide

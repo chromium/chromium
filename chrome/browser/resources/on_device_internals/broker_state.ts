@@ -9,7 +9,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './broker_state.css.js';
 import {getHtml} from './broker_state.html.js';
 import {ModelUnavailableReason} from './model_broker.mojom-webui.js';
-import {BrokerAssetState, ModelBrokerDebugRemote} from './model_broker_debug.mojom-webui.js';
+import {BrokerAssetState, ModelBrokerDebugObserverReceiver, ModelBrokerDebugRemote} from './model_broker_debug.mojom-webui.js';
 import type {BrokerStateInfo} from './model_broker_debug.mojom-webui.js';
 import {browserProxyFactory} from './on_device_internals_page.mojom-webui.js';
 import type {BrowserProxy} from './on_device_internals_page.mojom-webui.js';
@@ -64,11 +64,18 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
 
   private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private brokerDebug_ = new ModelBrokerDebugRemote();
+  private brokerObserverReceiver_ = new ModelBrokerDebugObserverReceiver(this);
 
   constructor() {
     super();
     this.proxy_.handler.bindModelBrokerDebug(
         this.brokerDebug_.$.bindNewPipeAndPassReceiver());
+    this.brokerDebug_.addObserver(
+        this.brokerObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.getBrokerState_();
+  }
+
+  onBrokerStateChanged() {
     this.getBrokerState_();
   }
 

@@ -60,6 +60,8 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
                            bool requested) override;
   void UninstallModels() override;
   void ResetModelCrashCount() override;
+  void AddObserver(
+      mojo::PendingRemote<mojom::ModelBrokerDebugObserver>) override;
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
       proto::ModelExecutionFeature feature);

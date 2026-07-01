@@ -273,7 +273,8 @@ ManifestSolutionFactory::ManifestSolutionFactory(
     UsageTracker& usage_tracker,
     on_device_model::ServiceClient& service_client,
     OnDeviceModelAccessController& access_controller,
-    base::OnceClosure on_init_complete)
+    base::OnceClosure on_init_complete,
+    base::RepeatingClosure on_solutions_updated)
     : broker_impl_(broker_impl),
       service_client_(service_client),
       usage_tracker_(usage_tracker),
@@ -285,7 +286,8 @@ ManifestSolutionFactory::ManifestSolutionFactory(
       safety_models_(MakeSafetyModelsMap(manifest_.GetRecipes())),
       solutions_(MakeSolutionsMap(manifest_.GetRecipes())),
       on_asset_init_(
-          base::BarrierClosure(assets_.size(), std::move(on_init_complete))) {}
+          base::BarrierClosure(assets_.size(), std::move(on_init_complete))),
+      on_solutions_updated_(std::move(on_solutions_updated)) {}
 ManifestSolutionFactory::~ManifestSolutionFactory() = default;
 
 void ManifestSolutionFactory::UpdateAssetState(const std::string& asset_id,
@@ -337,6 +339,9 @@ void ManifestSolutionFactory::UpdateSolutions() {
           .Update(base::unexpected(
               OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled));
     }
+  }
+  if (on_solutions_updated_) {
+    on_solutions_updated_.Run();
   }
 }
 
