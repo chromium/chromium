@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -1387,7 +1386,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void requestToUiModelTime_subsequentKeyStrokesReportTimeSinceLastKeystroke() {
 
-        UnsyncedSuggestionsListAnimationDriver.setAnimationsDisabledForTesting(true);
+        UnsyncedSuggestionsListAnimation.setAnimationsDisabledForTesting(true);
 
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
@@ -1413,7 +1412,7 @@ public class AutocompleteMediatorUnitTest {
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(2, 100, 1, 100);
-        UnsyncedSuggestionsListAnimationDriver.setAnimationsDisabledForTesting(false);
+        UnsyncedSuggestionsListAnimation.setAnimationsDisabledForTesting(false);
     }
 
     @Test
@@ -2198,9 +2197,9 @@ public class AutocompleteMediatorUnitTest {
         var session = createEmptySession();
         mMediator.beginInput(session);
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
-        @Nullable Animator result = mMediator.setupSuggestionsListShowAnimation();
-        UnsyncedSuggestionsListAnimationDriver animationDriver =
-                (UnsyncedSuggestionsListAnimationDriver) mMediator.getAnimationDriverForTesting();
+        OmniboxAnimator result = mMediator.setupSuggestionsListShowAnimation();
+        UnsyncedSuggestionsListAnimation animationDriver =
+                (UnsyncedSuggestionsListAnimation) mMediator.getAnimationDriverForTesting();
         assertFalse(animationDriver.isRunning());
     }
 
@@ -2214,7 +2213,9 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
 
         reset(mAutocompleteDelegate);
-        mMediator.setupSuggestionsListShowAnimation();
+        var animator = mMediator.setupSuggestionsListShowAnimation();
+        animator.start();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true), anyBoolean());
     }
@@ -2229,7 +2230,9 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
 
         reset(mAutocompleteDelegate);
-        mMediator.setupSuggestionsListShowAnimation();
+        var animator = mMediator.setupSuggestionsListShowAnimation();
+        animator.start();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true), anyBoolean());
     }

@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
@@ -95,7 +94,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -151,7 +149,7 @@ class AutocompleteMediator
     private final Callback<String> mBringTabGroupToFrontCallback;
     private final OmniboxActionDelegateImpl mOmniboxActionDelegate;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private final SuggestionsListAnimationDriver mAnimationDriver;
+    private final SuggestionsListAnimation mAnimationDriver;
     private final WindowAndroid mWindowAndroid;
     private final DeferredIMEWindowInsetApplicationCallback
             mDeferredIMEWindowInsetApplicationCallback;
@@ -536,9 +534,7 @@ class AutocompleteMediator
      */
     void endInput() {
         // Always terminate animation driver in case Cached Suggestions were shown.
-        if (mAnimationDriver.isAnimationEnabled()) {
-            mAnimationDriver.onOmniboxSessionStateChange(false);
-        }
+        mAnimationDriver.onOmniboxSessionStateChange(false);
 
         propagateOmniboxSessionStateChange(false);
 
@@ -585,44 +581,30 @@ class AutocompleteMediator
         setFuseboxAttachmentModelList(null);
     }
 
-    @Nullable Animator setupSuggestionsListShowAnimation() {
-        // The fade-in animation is performed in sync with a LocationBar fade. We set it up but
-        // don't start it or set its duration since that's the job of the caller.
-        if (shouldAnimateFuseboxPopover()) {
-            mListPropertyModel.set(SuggestionListProperties.ALPHA, 0.0f);
-            var animator =
-                    PropertyModelAnimatorFactory.ofFloat(
-                            mListPropertyModel, SuggestionListProperties.ALPHA, 1.0f);
-            animator.addListener(
-                    new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                            propagateOmniboxSessionStateChange(true);
+    OmniboxAnimator setupSuggestionsListShowAnimation() {
+        OmniboxAnimator omniboxAnimator = mAnimationDriver.getAnimator();
+
+        omniboxAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        propagateOmniboxSessionStateChange(true);
+                        if (!shouldAnimateFuseboxPopover()) {
+                            if (mAutocompleteInput == null
+                                    || mAutocompleteInput.getAutocompleteState()
+                                            != AutocompleteState.STANDBY_NO_FOCUS) {
+                                mDelegate.setKeyboardVisibility(true, false);
+                            }
                         }
+                    }
 
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            propagateOmniboxSessionStateChange(true);
-                            mListPropertyModel.set(SuggestionListProperties.ALPHA, 1.0f);
-                        }
-                    });
-            return animator;
-        }
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        propagateOmniboxSessionStateChange(true);
+                    }
+                });
 
-        // If not performing the popover fade, we run our own animation that's not synced. We start
-        // it and it runs on its own cadence.
-        if (mAnimationDriver.isAnimationEnabled()) {
-            mAnimationDriver.onOmniboxSessionStateChange(true);
-            // Don't eagerly request the keyboard for STANDBY_NO_FOCUS, it's a fakebox entrypoint
-            // where the user isn't typing text.
-            if (mAutocompleteInput == null
-                    || mAutocompleteInput.getAutocompleteState()
-                            != AutocompleteState.STANDBY_NO_FOCUS) {
-                mDelegate.setKeyboardVisibility(true, false);
-            }
-        }
-
-        return null;
+        return omniboxAnimator;
     }
 
     private void setAutocompleteController(@Nullable AutocompleteController controller) {
@@ -668,21 +650,6 @@ class AutocompleteMediator
                     .addSyncObserver(mOnShouldAutocompleteChanged);
             mAutocompleteInput.getUserTextSupplier().addSyncObserver(mOnUserTextChanged);
         }
-    }
-
-    /**
-     * @see UrlFocusChangeListener#onUrlAnimationFinished(boolean)
-     */
-    void onUrlAnimationFinished() {
-        if (!isInInputSession()) {
-            return;
-        }
-        // mAnimationDriver has the responsibility of calling propagateOmniboxSessionStateChange if
-        // it's present and currently active.
-        if (mAnimationDriver.isAnimationEnabled()) {
-            return;
-        }
-        propagateOmniboxSessionStateChange(true);
     }
 
     /**
@@ -1982,12 +1949,13 @@ class AutocompleteMediator
     }
 
     @VisibleForTesting
-    SuggestionsListAnimationDriver initializeAnimationDriver() {
-        return new UnsyncedSuggestionsListAnimationDriver(
+    SuggestionsListAnimation initializeAnimationDriver() {
+        return new UnsyncedSuggestionsListAnimation(
                 mListPropertyModel,
                 () -> propagateOmniboxSessionStateChange(mAutocompleteInput != null),
                 mDelegate::isToolbarBottomAnchored,
                 mEmbedder::getVerticalTranslationForAnimation,
+                this::shouldAnimateFuseboxPopover,
                 mContext);
     }
 
@@ -2013,7 +1981,7 @@ class AutocompleteMediator
     }
 
     /** Returns the current Animation Driver instance. */
-    SuggestionsListAnimationDriver getAnimationDriverForTesting() {
+    SuggestionsListAnimation getAnimationDriverForTesting() {
         return mAnimationDriver;
     }
 

@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxAnimator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
@@ -173,7 +174,6 @@ class LocationBarMediator
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
     private static final int WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final int WIDTH_CHANGE_ANIMATION_DELAY_MS = 75;
-    public static final int POPOVER_FADE_DURATION_MS = 150;
 
     /** Uma methods for omnibox. */
     public interface OmniboxUma {
@@ -1180,7 +1180,6 @@ class LocationBarMediator
                 }
             }
 
-            mAutocompleteCoordinator.onUrlAnimationFinished();
             for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
                 listener.onUrlAnimationFinished(mUrlHasFocus);
             }
@@ -1351,23 +1350,31 @@ class LocationBarMediator
 
     private void setupSuggestionsListShowAnimation() {
         if (mAutocompleteCoordinator == null) return;
-        @Nullable Animator autocompleteAnimator =
+        OmniboxAnimator autocompleteAnimator =
                 mAutocompleteCoordinator.setupSuggestionsListShowAnimation();
-        if (autocompleteAnimator == null) return;
-        mLocationBarLayout.setAlpha(0.0f);
-        ObjectAnimator alphaAnimator =
-                ObjectAnimator.ofFloat(mLocationBarLayout, View.ALPHA, 0.0f, 1.0f);
-        alphaAnimator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        mLocationBarLayout.setAlpha(1.0f);
-                    }
-                });
-
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(alphaAnimator, autocompleteAnimator);
-        animatorSet.setDuration(POPOVER_FADE_DURATION_MS);
+
+        if (mAutocompleteCoordinator.shouldAnimateFuseboxPopover()) {
+            mLocationBarLayout.setAlpha(autocompleteAnimator.getStartAlpha());
+            ObjectAnimator alphaAnimator =
+                    ObjectAnimator.ofFloat(
+                            mLocationBarLayout,
+                            View.ALPHA,
+                            autocompleteAnimator.getStartAlpha(),
+                            1.0f);
+            alphaAnimator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            mLocationBarLayout.setAlpha(1.0f);
+                        }
+                    });
+            animatorSet.playTogether(alphaAnimator, autocompleteAnimator);
+        } else {
+            animatorSet.playTogether(autocompleteAnimator);
+        }
+
+        animatorSet.setDuration(autocompleteAnimator.getDuration());
         animatorSet.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
         animatorSet.start();
     }

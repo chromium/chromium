@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -365,15 +364,11 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mMediator.serveCachedZeroSuggest(input);
     }
 
-    public void onUrlAnimationFinished() {
-        mMediator.onUrlAnimationFinished();
-    }
-
     /**
      * Setup the animation for showing the suggestions list. If the animation exists and can be
      * synchronized, it is returned in an unstarted state; otherwise null is returned.
      */
-    public @Nullable Animator setupSuggestionsListShowAnimation() {
+    public OmniboxAnimator setupSuggestionsListShowAnimation() {
         return mMediator.setupSuggestionsListShowAnimation();
     }
 
@@ -457,6 +452,11 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
      */
     public boolean hasAutocompleteController() {
         return mMediator.hasAutocompleteController();
+    }
+
+    /** Whether the fusebox popover should be faded in/out when focus is gained/lost. */
+    public boolean shouldAnimateFuseboxPopover() {
+        return mMediator.shouldAnimateFuseboxPopover();
     }
 
     /**

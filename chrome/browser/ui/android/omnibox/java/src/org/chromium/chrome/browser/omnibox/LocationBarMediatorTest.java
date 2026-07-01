@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxAnimator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
@@ -269,6 +270,7 @@ public class LocationBarMediatorTest {
             ObservableSuppliers.createNullable();
     private final SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
+    private final OmniboxAnimator mOmniboxAnimator = new OmniboxAnimator(1.0f, 0);
 
     // Members capturing final state of the LocationBarLayout elements.
     private boolean mNavigateButtonIsVisible;
@@ -282,6 +284,7 @@ public class LocationBarMediatorTest {
         // The reason we use lenient() mocks is to suppress abundant "unused action on mock"
         // warnings being emitted any time each of the 140+ tests below is not using that
         // action.
+        mOmniboxAnimator.setFloatValues(1.0f);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mContext =
                 new ContextThemeWrapper(
@@ -399,6 +402,9 @@ public class LocationBarMediatorTest {
                 .setOnInteractionCompletedCallback(mOnInteractionCompletedCallbackCaptor.capture());
         mOnInteractionCompletedCallback = mOnInteractionCompletedCallbackCaptor.getValue();
         lenient().doReturn(true).when(mScrimHandler).isScrimShown();
+        doReturn(mOmniboxAnimator)
+                .when(mAutocompleteCoordinator)
+                .setupSuggestionsListShowAnimation();
 
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
@@ -1819,6 +1825,9 @@ public class LocationBarMediatorTest {
 
         reset(mAutocompleteCoordinator);
 
+        doReturn(mOmniboxAnimator)
+                .when(mAutocompleteCoordinator)
+                .setupSuggestionsListShowAnimation();
         mMediator.setUrlFocusChangeInProgress(false);
 
         verify(mUrlCoordinator).clearFocus();
