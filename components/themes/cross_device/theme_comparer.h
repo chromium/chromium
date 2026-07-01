@@ -5,9 +5,91 @@
 #ifndef COMPONENTS_THEMES_CROSS_DEVICE_THEME_COMPARER_H_
 #define COMPONENTS_THEMES_CROSS_DEVICE_THEME_COMPARER_H_
 
+#include "components/sync/protocol/theme_android_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 
 namespace themes {
+
+namespace internal {
+
+inline bool Equals(const sync_pb::UserColorTheme& lhs,
+                   const sync_pb::UserColorTheme& rhs) {
+  if (lhs.has_color() != rhs.has_color()) {
+    return false;
+  }
+  if (lhs.has_color() && lhs.color() != rhs.color()) {
+    return false;
+  }
+  if (lhs.has_browser_color_variant() != rhs.has_browser_color_variant()) {
+    return false;
+  }
+  if (lhs.has_browser_color_variant() &&
+      lhs.browser_color_variant() != rhs.browser_color_variant()) {
+    return false;
+  }
+  return true;
+}
+
+inline bool Equals(const sync_pb::NtpCustomBackground& lhs,
+                   const sync_pb::NtpCustomBackground& rhs) {
+  if (lhs.has_url() != rhs.has_url()) {
+    return false;
+  }
+  if (lhs.has_url() && lhs.url() != rhs.url()) {
+    return false;
+  }
+  if (lhs.has_attribution_line_1() != rhs.has_attribution_line_1()) {
+    return false;
+  }
+  if (lhs.has_attribution_line_1() &&
+      lhs.attribution_line_1() != rhs.attribution_line_1()) {
+    return false;
+  }
+  if (lhs.has_attribution_line_2() != rhs.has_attribution_line_2()) {
+    return false;
+  }
+  if (lhs.has_attribution_line_2() &&
+      lhs.attribution_line_2() != rhs.attribution_line_2()) {
+    return false;
+  }
+  if (lhs.has_attribution_action_url() != rhs.has_attribution_action_url()) {
+    return false;
+  }
+  if (lhs.has_attribution_action_url() &&
+      lhs.attribution_action_url() != rhs.attribution_action_url()) {
+    return false;
+  }
+  if (lhs.has_collection_id() != rhs.has_collection_id()) {
+    return false;
+  }
+  if (lhs.has_collection_id() && lhs.collection_id() != rhs.collection_id()) {
+    return false;
+  }
+  if (lhs.has_resume_token() != rhs.has_resume_token()) {
+    return false;
+  }
+  if (lhs.has_resume_token() && lhs.resume_token() != rhs.resume_token()) {
+    return false;
+  }
+  if (lhs.has_refresh_timestamp_unix_epoch_seconds() !=
+      rhs.has_refresh_timestamp_unix_epoch_seconds()) {
+    return false;
+  }
+  if (lhs.has_refresh_timestamp_unix_epoch_seconds() &&
+      lhs.refresh_timestamp_unix_epoch_seconds() !=
+          rhs.refresh_timestamp_unix_epoch_seconds()) {
+    return false;
+  }
+  if (lhs.has_main_color() != rhs.has_main_color()) {
+    return false;
+  }
+  if (lhs.has_main_color() && lhs.main_color() != rhs.main_color()) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace internal
 
 // Helper to compare theme specifics.
 // Each platform must specialize this for its own specifics type to avoid
@@ -81,7 +163,7 @@ struct ThemeComparer<sync_pb::ThemeSpecifics> {
         }
         break;
       case sync_pb::ThemeSpecifics::kUserColorTheme:
-        if (!Equals(lhs.user_color_theme(), rhs.user_color_theme())) {
+        if (!internal::Equals(lhs.user_color_theme(), rhs.user_color_theme())) {
           return false;
         }
         break;
@@ -95,88 +177,42 @@ struct ThemeComparer<sync_pb::ThemeSpecifics> {
       return false;
     }
     if (lhs.has_ntp_background() &&
-        !Equals(lhs.ntp_background(), rhs.ntp_background())) {
+        !internal::Equals(lhs.ntp_background(), rhs.ntp_background())) {
       return false;
     }
 
     return true;
   }
+};
 
- private:
-  static bool Equals(const sync_pb::UserColorTheme& lhs,
-                     const sync_pb::UserColorTheme& rhs) {
-    if (lhs.has_color() != rhs.has_color()) {
+template <>
+struct ThemeComparer<sync_pb::ThemeAndroidSpecifics> {
+  static bool Equals(const sync_pb::ThemeAndroidSpecifics& lhs,
+                     const sync_pb::ThemeAndroidSpecifics& rhs) {
+    if (lhs.has_use_custom_theme() != rhs.has_use_custom_theme()) {
       return false;
     }
-    if (lhs.has_color() && lhs.color() != rhs.color()) {
+    if (lhs.has_use_custom_theme() &&
+        lhs.use_custom_theme() != rhs.use_custom_theme()) {
       return false;
     }
-    if (lhs.has_browser_color_variant() != rhs.has_browser_color_variant()) {
-      return false;
-    }
-    if (lhs.has_browser_color_variant() &&
-        lhs.browser_color_variant() != rhs.browser_color_variant()) {
-      return false;
-    }
-    return true;
-  }
 
-  static bool Equals(const sync_pb::NtpCustomBackground& lhs,
-                     const sync_pb::NtpCustomBackground& rhs) {
-    if (lhs.has_url() != rhs.has_url()) {
+    if (lhs.has_user_color_theme() != rhs.has_user_color_theme()) {
       return false;
     }
-    if (lhs.has_url() && lhs.url() != rhs.url()) {
+    if (lhs.has_user_color_theme() &&
+        !internal::Equals(lhs.user_color_theme(), rhs.user_color_theme())) {
       return false;
     }
-    if (lhs.has_attribution_line_1() != rhs.has_attribution_line_1()) {
+
+    if (lhs.has_ntp_background() != rhs.has_ntp_background()) {
       return false;
     }
-    if (lhs.has_attribution_line_1() &&
-        lhs.attribution_line_1() != rhs.attribution_line_1()) {
+    if (lhs.has_ntp_background() &&
+        !internal::Equals(lhs.ntp_background(), rhs.ntp_background())) {
       return false;
     }
-    if (lhs.has_attribution_line_2() != rhs.has_attribution_line_2()) {
-      return false;
-    }
-    if (lhs.has_attribution_line_2() &&
-        lhs.attribution_line_2() != rhs.attribution_line_2()) {
-      return false;
-    }
-    if (lhs.has_attribution_action_url() != rhs.has_attribution_action_url()) {
-      return false;
-    }
-    if (lhs.has_attribution_action_url() &&
-        lhs.attribution_action_url() != rhs.attribution_action_url()) {
-      return false;
-    }
-    if (lhs.has_collection_id() != rhs.has_collection_id()) {
-      return false;
-    }
-    if (lhs.has_collection_id() && lhs.collection_id() != rhs.collection_id()) {
-      return false;
-    }
-    if (lhs.has_resume_token() != rhs.has_resume_token()) {
-      return false;
-    }
-    if (lhs.has_resume_token() && lhs.resume_token() != rhs.resume_token()) {
-      return false;
-    }
-    if (lhs.has_refresh_timestamp_unix_epoch_seconds() !=
-        rhs.has_refresh_timestamp_unix_epoch_seconds()) {
-      return false;
-    }
-    if (lhs.has_refresh_timestamp_unix_epoch_seconds() &&
-        lhs.refresh_timestamp_unix_epoch_seconds() !=
-            rhs.refresh_timestamp_unix_epoch_seconds()) {
-      return false;
-    }
-    if (lhs.has_main_color() != rhs.has_main_color()) {
-      return false;
-    }
-    if (lhs.has_main_color() && lhs.main_color() != rhs.main_color()) {
-      return false;
-    }
+
     return true;
   }
 };
