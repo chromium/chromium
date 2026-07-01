@@ -801,9 +801,6 @@ BASE_FEATURE_PARAM(bool,
                    "ignore_ip_matching_when_finding_existing_sessions",
                    false);
 
-BASE_FEATURE(kDnsResponseDiscardPartialQuestions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDohFallbackAllowedWithLocalNameservers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

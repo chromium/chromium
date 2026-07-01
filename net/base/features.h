@@ -828,8 +828,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kIgnoreIpMatchingWhenFindingExistingSessions);
 
-NET_EXPORT BASE_DECLARE_FEATURE(kDnsResponseDiscardPartialQuestions);
-
 // When enabled, allows DoH upgrade even if there are local nameservers.
 NET_EXPORT BASE_DECLARE_FEATURE(kDohFallbackAllowedWithLocalNameservers);
 
