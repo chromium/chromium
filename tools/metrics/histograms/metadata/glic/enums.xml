@@ -1084,6 +1084,9 @@ chromium-metrics-reviews@google.com.
       label="Expired: Container was pre-warmed but expired before use."/>
   <int value="3"
       label="Crashed: Container was pre-warmed but crashed before use."/>
+  <int value="4"
+      label="Memory Pressure: Container was not pre-warmed because the pool
+             was disabled by memory pressure."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmingPoolStatus) -->

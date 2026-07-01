@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/feature.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -61,13 +62,18 @@ class GlicWebContentsWarmingPool {
   // Clears the warming pool and destroys any warmed WebContents.
   void Clear(std::optional<ClearReason> reason);
 
+  // Handles memory pressure notifications by clearing or statefully disabling
+  // pre-warming, depending on feature configuration.
+  void OnMemoryPressure(base::MemoryPressureLevel level);
+
   // LINT.IfChange(GlicWarmingPoolStatus)
   enum class WarmingPoolStatus {
     kHit = 0,
     kCold = 1,
     kExpired = 2,
     kCrashed = 3,
-    kMaxValue = kCrashed,
+    kMemoryPressure = 4,
+    kMaxValue = kMemoryPressure,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmingPoolStatus)
 
@@ -96,6 +102,13 @@ class GlicWebContentsWarmingPool {
   // Starts a timer to preload a WebContents after a delay.
   void EnsurePreloadDelayed(ContainerCreationReason reason);
 
+  // Used in stateful mode only: disables background pre-warming due to memory
+  // pressure and clears any existing standby container.
+  void DisableForMemoryPressure();
+  // Used in stateful mode only: re-enables background pre-warming after
+  // memory pressure subsides and schedules a refill if empty.
+  void EnableAfterMemoryPressure();
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<WebUIContentsContainer> warmed_container_;
 
@@ -104,7 +117,12 @@ class GlicWebContentsWarmingPool {
   // Timer for resource cleanup.
   base::OneShotDelayedBackgroundTimer expiry_timer_;
   std::unique_ptr<Metrics> metrics_;
+  // Number of times the standby container has been reloaded after expiring.
   int reload_count_ = 0;
+  // Used in stateful mode only: whether background pre-warming is currently
+  // suspended due to memory pressure. When true, background pre-warming
+  // requests are ignored.
+  bool is_disabled_by_memory_pressure_ = false;
   base::TimeDelta expiry_delay_ = base::Hours(23);
   base::TimeDelta warming_delay_ = base::Seconds(20);
 };

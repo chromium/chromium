@@ -115,6 +115,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       active_instance_sharing_manager_(
           std::make_unique<GlicActiveInstanceSharingManager>(profile,
                                                              enabling)) {
+  if (memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_NONE) {
+    web_contents_warming_pool_->OnMemoryPressure(memory_pressure_level());
+  }
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
@@ -1171,12 +1174,11 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   metrics_.OnMemoryPressure(level);
 
+  web_contents_warming_pool_->OnMemoryPressure(level);
+
   if (level < base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
-
-  web_contents_warming_pool_->Clear(
-      GlicWebContentsWarmingPool::ClearReason::kMemoryPressure);
 
   for (auto& [_, instance] : instances_) {
     if (instance->IsShowing() || instance->IsActuating() ||

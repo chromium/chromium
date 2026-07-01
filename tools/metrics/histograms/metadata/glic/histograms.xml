@@ -3083,8 +3083,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when the Glic WebContents warming pool is used to provide a
     pre-warmed WebContents. Reports whether the container was pre-warmed (hit),
-    not pre-warmed (cold), pre-warmed but expired before use, or pre-warmed but
-    crashed before use.
+    not pre-warmed (cold), pre-warmed but expired before use, pre-warmed but
+    crashed before use, or not pre-warmed because the pool was disabled by
+    memory pressure.
   </summary>
 </histogram>
 

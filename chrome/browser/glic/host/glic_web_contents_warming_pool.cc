@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -63,7 +64,8 @@ class GlicWebContentsWarmingPool::Metrics {
   }
 
   GlicWebContentsWarmingPool::WarmingPoolStatus RecordTakeContainerStatus(
-      const std::unique_ptr<WebUIContentsContainer>& warmed_container) {
+      const std::unique_ptr<WebUIContentsContainer>& warmed_container,
+      bool is_disabled_by_memory_pressure) {
     WarmingPoolStatus status = WarmingPoolStatus::kCold;
     if (warmed_container) {
       status = warmed_container->web_contents()->IsCrashed()
@@ -73,6 +75,8 @@ class GlicWebContentsWarmingPool::Metrics {
       if (status == WarmingPoolStatus::kHit) {
         RecordWarmedContainerFate(WarmedContainerFate::kUsed);
       }
+    } else if (is_disabled_by_memory_pressure) {
+      status = WarmingPoolStatus::kMemoryPressure;
     } else if (was_expired_) {
       status = WarmingPoolStatus::kExpired;
     }
@@ -142,7 +146,8 @@ GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() {
 
 std::unique_ptr<WebUIContentsContainer>
 GlicWebContentsWarmingPool::TakeContainer() {
-  metrics_->RecordTakeContainerStatus(warmed_container_);
+  metrics_->RecordTakeContainerStatus(warmed_container_,
+                                      is_disabled_by_memory_pressure_);
   reload_count_ = 0;
 
   EnsurePreload(ContainerCreationReason::kUserTriggeredColdStart);
@@ -155,6 +160,9 @@ GlicWebContentsWarmingPool::TakeContainer() {
 }
 
 void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
+  CHECK(!is_disabled_by_memory_pressure_ ||
+        reason == ContainerCreationReason::kUserTriggeredColdStart);
+  delay_timer_.Stop();
   if (warmed_container_ && warmed_container_->web_contents()->IsCrashed()) {
     metrics_->RecordWarmedContainerFate(Metrics::WarmedContainerFate::kCrashed);
     warmed_container_ = nullptr;
@@ -180,30 +188,29 @@ GlicWebContentsWarmingPool::CreateContainer() {
 }
 
 void GlicWebContentsWarmingPool::OnContainerExpired() {
-  if (warmed_container_) {
-    TRACE_EVENT_INSTANT("glic",
-                        "GlicWebContentsWarmingPool::OnContainerExpired");
-    metrics_->OnContainerExpired();
-    Clear(std::nullopt);
-    // This only happens if there was a warmed contents at the time of expiry.
-    // If the warmed contents had been removed because of memory pressure or
-    // some other mechanism, we wouldn't rewarm.
-    if (base::FeatureList::IsEnabled(kGlicReloadWebContentsAfterExpiry)) {
-      if (reload_count_ < kGlicMaxReloadCount.Get()) {
-        reload_count_++;
-        metrics_->OnReloadAfterExpiry(
-            GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::kReloaded);
-        EnsurePreload(ContainerCreationReason::kReloadAfterExpiry);
-      } else {
-        metrics_->OnReloadAfterExpiry(
-            GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::
-                kNotReloadedLimitReached);
-      }
+  CHECK(warmed_container_);
+  CHECK(!is_disabled_by_memory_pressure_);
+  TRACE_EVENT_INSTANT("glic", "GlicWebContentsWarmingPool::OnContainerExpired");
+  metrics_->OnContainerExpired();
+  Clear(std::nullopt);
+  // This only happens if there was a warmed contents at the time of expiry.
+  // If the warmed contents had been removed because of memory pressure or
+  // some other mechanism, we wouldn't rewarm.
+  if (base::FeatureList::IsEnabled(kGlicReloadWebContentsAfterExpiry)) {
+    if (reload_count_ < kGlicMaxReloadCount.Get()) {
+      reload_count_++;
+      metrics_->OnReloadAfterExpiry(
+          GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::kReloaded);
+      EnsurePreload(ContainerCreationReason::kReloadAfterExpiry);
     } else {
       metrics_->OnReloadAfterExpiry(
           GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::
-              kNotReloadedFeatureDisabled);
+              kNotReloadedLimitReached);
     }
+  } else {
+    metrics_->OnReloadAfterExpiry(
+        GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::
+            kNotReloadedFeatureDisabled);
   }
 }
 
@@ -214,9 +221,47 @@ void GlicWebContentsWarmingPool::Clear(std::optional<ClearReason> reason) {
   expiry_timer_.Stop();
 }
 
+void GlicWebContentsWarmingPool::OnMemoryPressure(
+    base::MemoryPressureLevel level) {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (level >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      DisableForMemoryPressure();
+    } else {
+      EnableAfterMemoryPressure();
+    }
+  } else {
+    // Stateless behavior: clear on critical memory pressure without disabling
+    // the pool.
+    if (level >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      Clear(ClearReason::kMemoryPressure);
+    }
+  }
+}
+
+void GlicWebContentsWarmingPool::DisableForMemoryPressure() {
+  if (is_disabled_by_memory_pressure_) {
+    return;
+  }
+  is_disabled_by_memory_pressure_ = true;
+  Clear(ClearReason::kMemoryPressure);
+}
+
+void GlicWebContentsWarmingPool::EnableAfterMemoryPressure() {
+  if (!is_disabled_by_memory_pressure_) {
+    return;
+  }
+  is_disabled_by_memory_pressure_ = false;
+  if (!warmed_container_) {
+    EnsurePreloadDelayed(ContainerCreationReason::kRefill);
+  }
+}
+
 void GlicWebContentsWarmingPool::EnsurePreloadDelayed(
     ContainerCreationReason reason) {
   CHECK(!warmed_container_);
+  if (is_disabled_by_memory_pressure_) {
+    return;
+  }
   if (delay_timer_.IsRunning()) {
     return;
   }
