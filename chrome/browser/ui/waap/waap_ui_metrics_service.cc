@@ -139,10 +139,12 @@ void RecordStartupPaintMetric(std::string_view paint_metric_base,
     return;
   }
 
-  std::string scenario_suffix;
   if (startup_metric_utils::GetBrowser().IsFirstRun()) {
-    scenario_suffix = ".FirstRun";
-  } else if (SessionRestore::IsAnySessionRestored()) {
+    return;
+  }
+
+  std::string scenario_suffix;
+  if (SessionRestore::IsAnySessionRestored()) {
     scenario_suffix = ".SessionRestore";
   }
 

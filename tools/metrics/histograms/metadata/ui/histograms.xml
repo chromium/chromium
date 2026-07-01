@@ -121,7 +121,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Scenario">
   <variant name="" summary="standard"/>
-  <variant name=".FirstRun" summary="first run"/>
   <variant name=".SessionRestore"
       summary="session restored (without showing the Profile Picker)"/>
 </variants>
