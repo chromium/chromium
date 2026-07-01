@@ -89,8 +89,6 @@ void WebXRSessionTracker::ReportFeatureUsed(
     case XRSessionFeature::FRONT_FACING:
     case XRSessionFeature::WEBGPU:
       // Not recording metrics for these features currently.
-      // TODO(crbug.com/41460317): Add metrics for the AR-related features
-      // that are enabled by default.
       break;
   }
 }
@@ -136,8 +134,6 @@ void WebXRSessionTracker::SetFeatureRequest(
     case XRSessionFeature::FRONT_FACING:
     case XRSessionFeature::WEBGPU:
       // Not recording metrics for these features currently.
-      // TODO(crbug.com/41460317): Add metrics for the AR-related features
-      // that are enabled by default.
       break;
   }
 }

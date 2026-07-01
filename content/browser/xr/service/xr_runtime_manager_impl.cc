@@ -402,7 +402,6 @@ void XRRuntimeManagerImpl::SupportsSession(
     return;
   }
 
-  // TODO(http://crbug.com/842025): Pass supports session on to the runtimes.
   std::move(callback).Run(true);
 }
 
@@ -572,8 +571,6 @@ void XRRuntimeManagerImpl::InitializeProviders(WebContents* web_contents) {
 
   for (const auto& provider : providers_) {
     if (!provider) {
-      // TODO(crbug.com/40673158): Remove this logging after investigation.
-      LOG(ERROR) << __func__ << " got null XR provider";
       continue;
     }
 
@@ -626,7 +623,6 @@ void XRRuntimeManagerImpl::AddRuntime(
   }
 
   for (VRServiceImpl* service : services_) {
-    // TODO(sumankancherla): Consider combining with XRRuntimeManager::Observer.
     service->RuntimesChanged();
     runtimes_[id]->OnServiceAdded(service);
   }

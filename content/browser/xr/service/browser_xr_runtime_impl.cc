@@ -127,8 +127,6 @@ BrowserXRRuntimeImpl::BrowserXRRuntimeImpl(
 
   runtime_->ListenToDeviceChanges(receiver_.BindNewEndpointAndPassRemote());
 
-  // TODO(crbug.com/40662458): Convert this to a query for the client off of
-  // ContentBrowserClient once BrowserXRRuntimeImpl moves to content.
   auto* integration_client = GetXrIntegrationClient();
 
   if (integration_client) {
