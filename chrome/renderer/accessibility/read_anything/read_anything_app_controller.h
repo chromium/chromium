@@ -456,6 +456,10 @@ class ReadAnythingAppController
   // new distillation if the tree is ready.
   void DistillNewTree();
 
+  // Helper function that resets the distillation state and metrics in
+  // preparation for a new content distillation.
+  void PrepareForNewContentDistillation();
+
   // Returns the initial distillation method state based on feature flags and
   // page type (e.g. if it's PDF).
   ReadAnythingAppModel::DistillationMethod GetInitialDistillationMethod(

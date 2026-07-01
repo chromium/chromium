@@ -214,6 +214,17 @@ class ReadAnythingAppModel {
     requires_distillation_ = requires_distillation;
   }
 
+  bool requires_readability_distillation() const {
+    if (!features::IsReadAnythingWithReadabilityEnabled()) {
+      return false;
+    }
+    return requires_readability_distillation_;
+  }
+  void set_requires_readability_distillation(
+      bool requires_readability_distillation) {
+    requires_readability_distillation_ = requires_readability_distillation;
+  }
+
   bool requires_post_process_selection() const {
     return requires_post_process_selection_;
   }
@@ -956,6 +967,7 @@ class ReadAnythingAppModel {
   SelectionEndpoint end_;
 
   bool requires_distillation_ = false;
+  bool requires_readability_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
   bool has_pending_selection_ = false;

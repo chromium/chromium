@@ -154,6 +154,7 @@ class MockReadAnythingUntrustedPageHandler
               (read_anything::mojom::ReadAnythingDistillationState new_state),
               (override));
   MOCK_METHOD(void, OnSpeechEngineStalled, (), (override));
+  MOCK_METHOD(void, RequestReadabilityDistillation, (), (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -200,6 +201,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     // Create a tree id.
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 
+    DoInitialDistillation();
+  }
+
+  virtual void DoInitialDistillation() {
     // Create simple AXTreeUpdate with a root node and 3 children.
     std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
     test::SetUpdateTreeID(snapshot.get(), tree_id_);
@@ -5262,16 +5267,27 @@ class ReadAnythingAppControllerReadabilitySelectTextTest
   ~ReadAnythingAppControllerReadabilitySelectTextTest() override = default;
 
   void SetUp() override {
-    ReadAnythingAppControllerTest::SetUp();
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingWithReadability,
          features::kReadAnythingReadabilitySelectText},
         {});
+    ReadAnythingAppControllerTest::SetUp();
     model().set_next_distillation_method(
         ReadAnythingAppModel::DistillationMethod::kReadability);
     model().set_current_content_distillation_method(
         ReadAnythingAppModel::DistillationMethod::kReadability);
+  }
+
+ protected:
+  void DoInitialDistillation() override {
+    // Perform basic navigation setup to initialize timers and the AXTree root,
+    // but skip the manual Screen2x distillation callback.
+    std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
+    test::SetUpdateTreeID(snapshot.get(), tree_id_);
+    AccessibilityEventReceived({*snapshot});
+    controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                         false);
   }
 };
 
@@ -5471,4 +5487,22 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   // Verification: PostProcessSelection was called, which reset
   // requires_post_process_selection to false.
   EXPECT_FALSE(model().requires_post_process_selection());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       ProcessModelUpdates_Readability_RequiresDistillation) {
+  // Provide  "stale" content.
+  std::string stale_content = "<div>Old stale article content</div>";
+  controller().UpdateContent("Old Title", stale_content);
+  model().set_requires_readability_distillation(true);
+
+  // Sanity check: Ensure content is actually there before we start.
+  ASSERT_EQ(controller().GetDomDistillerContentHtml(), stale_content);
+
+  EXPECT_CALL(page_handler_, RequestReadabilityDistillation()).Times(1);
+
+  ProcessModelUpdates();
+
+  EXPECT_FALSE(model().requires_readability_distillation());
+  EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
 }

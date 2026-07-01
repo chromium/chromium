@@ -224,6 +224,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnDistillationStateChanged(
       read_anything::mojom::ReadAnythingDistillationState new_state) override;
   void OnSpeechEngineStalled() override;
+  void RequestReadabilityDistillation() override;
 
   // PinnedToolbarModel::Observer
   void OnActionsChanged() override;

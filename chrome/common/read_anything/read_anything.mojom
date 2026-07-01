@@ -338,6 +338,10 @@ interface UntrustedPageHandler {
 
   // Informs the browser that the TTS engine has stalled.
   OnSpeechEngineStalled();
+
+  // Requests a fresh Readability distillation for the current page, used to
+  // synchronize content during Single Page Application (SPA) navigations.
+  RequestReadabilityDistillation();
 };
 
 // Untrusted WebUI-side handler for requests from the browser.

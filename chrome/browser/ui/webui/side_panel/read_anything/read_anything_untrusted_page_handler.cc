@@ -1122,6 +1122,13 @@ void ReadAnythingUntrustedPageHandler::OnSpeechEngineStalled() {
 #endif
 }
 
+void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation() {
+  if (!features::IsReadAnythingWithReadabilityEnabled()) {
+    return;
+  }
+  RequestDomDistillerDistillation(tab_->GetContents());
+}
+
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
     const ui::AXActionData& data) {
   CHECK(IsObservingTree(data.target_tree_id));

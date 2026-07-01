@@ -682,6 +682,11 @@ void ReadAnythingAppController::ProcessModelUpdates() {
     Distill();
   }
 
+  if (IsReadabilityEnabled() && model_.requires_readability_distillation()) {
+    PrepareForNewContentDistillation();
+    page_handler_->RequestReadabilityDistillation();
+  }
+
   if (model_.redraw_required()) {
     model_.reset_redraw_required();
     Draw(/* recompute_display_nodes= */ true);
@@ -786,14 +791,13 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   }
   VLOG(1) << "On active tree changed with new id: " << tree_id;
 
-  rendered_text_blocks_ready_recorded_ = false;
-  active_tree_changed_start_time_ = base::TimeTicks::Now();
-
   // If the previous tree was not unknown (e.g. this is not the first tree
   // seen), log session metrics for the previous tree.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
     RecordSessionMetricsIfShownOrRecentlyHidden();
   }
+
+  PrepareForNewContentDistillation();
 
   // Cancel any running draw timers.
   post_user_entry_draw_timer_->Stop();
@@ -819,15 +823,6 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.set_requires_distillation(false);
   model_.set_page_finished_loading(false);
 
-  // Clear any stale distillation content.
-  dom_distiller_title_.clear();
-  dom_distiller_content_html_.clear();
-
-  // Reset mapping state for the new page. Since no readability distillation is
-  // displayed yet, the mapping algorithm is not yet in progress.
-  model_.set_is_readability_mapping_in_progress(false);
-  model_.set_has_logged_early_selection(false);
-
   // Reset the distillation method for the new page. Every navigation
   // starts with the flag-determined distillation method before potentially
   // falling back to Screen2x if needed. If the new page is a PDF, the
@@ -844,6 +839,27 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     return;
   }
   DistillNewTree();
+}
+
+void ReadAnythingAppController::PrepareForNewContentDistillation() {
+  if (!IsReadabilityEnabled()) {
+    return;
+  }
+  rendered_text_blocks_ready_recorded_ = false;
+  active_tree_changed_start_time_ = base::TimeTicks::Now();
+
+  model_.set_requires_readability_distillation(false);
+
+  // TODO: crbug.com/526701545: Show Loading screen when re-distilling.
+
+  // Clear any stale distillation content.
+  dom_distiller_title_.clear();
+  dom_distiller_content_html_.clear();
+
+  // Reset mapping state for the new page. Since no readability distillation is
+  // displayed yet, the mapping algorithm is not yet in progress.
+  model_.set_is_readability_mapping_in_progress(false);
+  model_.set_has_logged_early_selection(false);
 }
 
 ReadAnythingAppModel::DistillationMethod

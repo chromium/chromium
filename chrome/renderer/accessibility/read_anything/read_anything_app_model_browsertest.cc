@@ -2360,6 +2360,61 @@ TEST_F(ReadAnythingAppModelReadabilityTest,
   EXPECT_EQ(model().end_offset(), 1);
 }
 
+TEST_F(
+    ReadAnythingAppModelReadabilityTest,
+    ProcessNonGeneratedEvents_Readability_kLoadComplete_SetsRequiresDistillation) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXEvent load_complete(1, ax::mojom::Event::kLoadComplete);
+
+  ReadAnythingAppModel::Updates updates = {update};
+  std::vector<ui::AXEvent> events = {load_complete};
+  model().ApplyAccessibilityUpdates(tree_id_, updates, events);
+
+  EXPECT_TRUE(model().requires_readability_distillation());
+  EXPECT_TRUE(model().page_finished_loading());
+}
+
+TEST_F(
+    ReadAnythingAppModelReadabilityTest,
+    ProcessGeneratedEvents_Readability_TitleChanged_SetsRequiresDistillation) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Set node as document
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, tree_id_);
+  initial_update.tree_data.title = "Initial Title";
+  initial_update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("Initial Title");
+  initial_update.nodes = {root};
+
+  ReadAnythingAppModel::Updates updates1 = {initial_update};
+  std::vector<ui::AXEvent> events;
+  model().ApplyAccessibilityUpdates(tree_id_, updates1, events);
+
+  model().set_requires_readability_distillation(false);
+
+  // Change Title name to trigger DOCUMENT_TITLE_CHANGED event.
+  ui::AXTreeUpdate title_update;
+  test::SetUpdateTreeID(&title_update, tree_id_);
+  title_update.tree_data.title = "New SPA Title";
+  title_update.root_id = 1;
+  root.SetName("New SPA Title");
+  title_update.nodes = {root};
+
+  ReadAnythingAppModel::Updates updates2 = {title_update};
+  model().ApplyAccessibilityUpdates(tree_id_, updates2, events);
+
+  EXPECT_TRUE(model().requires_readability_distillation());
+}
+
 TEST_F(ReadAnythingAppModelTest, IsWhatsNew_FalseForOtherPage) {
   ui::AXTreeID tree_id = SetupTree("https://www.google.com");
   model().SetRootTreeId(tree_id);

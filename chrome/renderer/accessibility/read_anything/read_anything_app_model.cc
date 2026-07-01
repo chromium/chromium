@@ -936,9 +936,17 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       has_pending_selection_ = true;
     }
 
-    // Readability distillation ignores state change events as selection
-    // post-processing is the only required dynamic update.
+    // Readability distillation reacts to major document changes to support
+    // SPA navigations.
     if (is_readability_next_distillation_method()) {
+      switch (event.event_type) {
+        case ax::mojom::Event::kLoadComplete:
+          requires_readability_distillation_ = true;
+          page_finished_loading_ = true;
+          break;
+        default:
+          break;
+      }
       continue;
     }
 
@@ -1063,17 +1071,24 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
     VLOG(2) << "Generated event type: " << event.event_params->event;
 #endif
 
-    // Readability only requires selection events. This ensures the side
-    // panel selection stays synchronized with the main panel.
+    // Readability only requires selection and title change events. This ensures
+    // the side panel content and selection stays synchronized with the main
+    // panel.
     if (is_readability_next_distillation_method()) {
-      if (event.event_params->event ==
-          ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED) {
-        requires_post_process_selection_ = true;
-        if (event.event_params->event_from == ax::mojom::EventFrom::kUser) {
-          // Direct main panel user interaction fully supersedes any stale
-          // reading-mode-initiated selection actions.
-          selections_from_reading_mode_ = 0;
-        }
+      switch (event.event_params->event) {
+        case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
+          requires_post_process_selection_ = true;
+          if (event.event_params->event_from == ax::mojom::EventFrom::kUser) {
+            // Direct main panel user interaction fully supersedes any stale
+            // reading-mode-initiated selection actions.
+            selections_from_reading_mode_ = 0;
+          }
+          break;
+        case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
+          requires_readability_distillation_ = true;
+          break;
+        default:
+          break;
       }
       continue;
     }
