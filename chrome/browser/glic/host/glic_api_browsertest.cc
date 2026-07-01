@@ -1287,18 +1287,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
   ExecuteJsTest();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-// No file picker on ChromeOS.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testShowProfilePicker) {
-  base::test::TestFuture<void> profile_picker_opened;
-  ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
-      profile_picker_opened.GetCallback());
-  ExecuteJsTest();
-  ASSERT_TRUE(profile_picker_opened.Wait());
-  // TODO(harringtond): Try to test changing profiles.
-}
-#endif
-
 // TODO(https://crbug.com/512641949): Fix flakes.
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
 #define MAYBE_testPanelActive DISABLED_testPanelActive

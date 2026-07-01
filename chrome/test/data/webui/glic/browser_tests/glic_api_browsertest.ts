@@ -353,15 +353,6 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testErrorShownOnMojoPipeError() {}
 
-  async testShowProfilePicker() {
-    assertDefined(this.host.showProfilePicker);
-    this.host.showProfilePicker();
-    // There is a problem with InProcessBrowserTest::QuitBrowsers(). Opening the
-    // profile picker at the same time as exiting a test results in
-    // QuitBrowsers() never exiting. This sleep avoids this problem.
-    await sleep(500);
-  }
-
   async testPanelActive() {
     assertDefined(this.host.panelActive);
     const activeSequence = observeSequence(this.host.panelActive());

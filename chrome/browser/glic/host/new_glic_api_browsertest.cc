@@ -91,6 +91,10 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/media/audio_ducker.h"
@@ -588,6 +592,17 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testClosePanel) {
   ExecuteJsTest();
   ASSERT_OK(WaitForGlicClose());
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testShowProfilePicker) {
+  base::test::TestFuture<void> profile_picker_opened;
+  ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+      profile_picker_opened.GetCallback());
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_TRUE(profile_picker_opened.Wait());
+}
+#endif
 
 class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
  public:
