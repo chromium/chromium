@@ -27,6 +27,8 @@
 
 namespace media {
 
+class CrasUnifiedStreamProxy;
+
 // Implementation of AudioOuputStream for Chrome OS using the Chrome OS audio
 // server.
 // TODO(dgreid): This class is used for only output, either remove all the
@@ -58,6 +60,8 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   void GetVolume(double* volume) override;
 
  private:
+  friend class CrasUnifiedStreamProxy;
+
   // Handles captured audio and fills the output with audio to be played.
   static int UnifiedCallback(struct libcras_stream_cb_data* data);
 
@@ -66,6 +70,12 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
                          cras_stream_id_t stream_id,
                          int err,
                          void* arg);
+
+  // Forwarded to from the static callbacks via CrasUnifiedStreamProxy, but only
+  // after the proxy has confirmed under its lock that this stream is still
+  // alive. This guarantees these never run on a freed stream.
+  int OnUnifiedCallback(struct libcras_stream_cb_data* data);
+  int OnStreamError(cras_client* client, cras_stream_id_t stream_id, int err);
 
   // Writes audio for a playback stream.
   uint32_t WriteAudio(base::span<int16_t> buffer, const timespec* latency_ts);
@@ -135,6 +145,11 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 
   std::unique_ptr<AmplitudePeakDetector> peak_detector_;
+
+  // Thread-safe proxy registered with libcras as the callback user argument.
+  // It is detached on Stop()/Close() so that a late real-time callback from the
+  // libcras thread cannot reach this stream after it has been freed.
+  std::unique_ptr<CrasUnifiedStreamProxy> proxy_;
 };
 
 }  // namespace media

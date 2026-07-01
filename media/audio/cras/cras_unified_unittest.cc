@@ -152,4 +152,43 @@ TEST_F(CrasUnifiedStreamTest, RenderFrames) {
   test_stream->Close();
 }
 
+// Regression test for the output sibling of the CrasInputStream UAF fix.
+// AudioOutputDispatcherImpl pools physical output streams: the same
+// CrasUnifiedStream is Stop()'d and later Start()'d again *without* an
+// intervening Close() (StopPhysicalStream() pushes it onto idle_streams_ and
+// StartStream() reuses it). The fix registers a single persistent libcras
+// callback proxy that is detached on Stop() and re-attached on Start(); it must
+// survive these reuse cycles and keep delivering callbacks to the re-attached
+// stream. A naive port that recreated the proxy on every Start() would free a
+// proxy still referenced by a late callback from the just-removed stream.
+//
+// Note: this drives the real libcras callback flow, so it exercises the reuse
+// lifecycle the fix changed but does not deterministically reproduce the
+// teardown *race* (a callback arriving after free); that is covered by device
+// testing, as for the input-stream fix.
+TEST_F(CrasUnifiedStreamTest, RestartedStreamKeepsRendering) {
+  CrasUnifiedStream* test_stream = CreateStream(ChannelLayoutConfig::Mono());
+  MockAudioSourceCallback mock_callback;
+
+  ASSERT_TRUE(test_stream->Open());
+
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  EXPECT_CALL(mock_callback, OnMoreData(_, _, AudioGlitchInfo(), _))
+      .WillRepeatedly(
+          DoAll(InvokeWithoutArgs(&event, &base::WaitableEvent::Signal),
+                Return(kTestFramesPerPacket)));
+
+  // Restart the same physical stream several times, mimicking dispatcher
+  // pooling. Each cycle must keep producing callbacks without a crash.
+  for (int i = 0; i < 3; ++i) {
+    test_stream->Start(&mock_callback);
+    EXPECT_TRUE(event.TimedWait(TestTimeouts::action_timeout()));
+    test_stream->Stop();
+  }
+
+  test_stream->Close();
+}
+
 }  // namespace media

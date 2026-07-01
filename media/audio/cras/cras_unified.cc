@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/trace_event/typed_macros.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 #include "media/audio/cras/cras_util.h"
@@ -76,6 +77,73 @@ constexpr auto kSampleFormat = SND_PCM_FORMAT_S16;
 
 }  // namespace
 
+// Thread-safe shim between the libcras real-time callback thread and
+// CrasUnifiedStream. libcras invokes the static callbacks with this proxy as
+// the user argument; the proxy forwards to the stream only while holding
+// `lock_` and only if the stream is still attached.
+// CrasUnifiedStream::Stop()/Close() call Detach(), which acquires the same
+// lock and nulls the pointer, so it both blocks until any in-flight callback
+// finishes and prevents future callbacks from reaching a stream that is about
+// to be (or has been) freed. This mirrors the fix for the input stream (see
+// CrasAudioInputStreamProxy).
+class CrasUnifiedStreamProxy {
+ public:
+  explicit CrasUnifiedStreamProxy(CrasUnifiedStream* stream)
+      : stream_(stream) {}
+
+  CrasUnifiedStreamProxy(const CrasUnifiedStreamProxy&) = delete;
+  CrasUnifiedStreamProxy& operator=(const CrasUnifiedStreamProxy&) = delete;
+
+  void Detach() {
+    base::AutoLock auto_lock(lock_);
+    stream_ = nullptr;
+  }
+
+  // (Re-)attaches the proxy to its stream for the libcras stream identified by
+  // `stream_id`. Used when a pooled output stream is restarted via Stop() then
+  // Start() without an intervening Close(). Only callbacks with this exact
+  // `stream_id` are forwarded, so a callback from a previous run delayed
+  // across a restart (and therefore carries the previous stream id) is dropped
+  // instead of writing into a stale buffer for the new run.
+  void Attach(CrasUnifiedStream* stream, cras_stream_id_t stream_id) {
+    base::AutoLock auto_lock(lock_);
+    stream_ = stream;
+    active_stream_id_ = stream_id;
+  }
+
+  int UnifiedCallback(struct libcras_stream_cb_data* data) {
+    cras_stream_id_t stream_id;
+    libcras_stream_cb_data_get_stream_id(data, &stream_id);
+    base::AutoLock auto_lock(lock_);
+    // Forward only if the stream is still attached AND this callback belongs to
+    // the currently active libcras stream. A callback from a previous run of a
+    // pooled (restarted) stream that is delayed past the re-attach carries a
+    // different id and is dropped, rather than writing into a stale buffer.
+    if (stream_ && stream_id == active_stream_id_) {
+      return stream_->OnUnifiedCallback(data);
+    }
+    // The stream has been detached, or this is a stale callback from a previous
+    // run; report that no frames were filled.
+    return 0;
+  }
+
+  int StreamError(cras_client* client, cras_stream_id_t stream_id, int err) {
+    base::AutoLock auto_lock(lock_);
+    if (stream_ && stream_id == active_stream_id_) {
+      return stream_->OnStreamError(client, stream_id, err);
+    }
+    return 0;
+  }
+
+ private:
+  base::Lock lock_;
+  raw_ptr<CrasUnifiedStream> stream_ GUARDED_BY(lock_);
+  // The id of the libcras stream the proxy is currently attached to. A callback
+  // for any other id (e.g. a late callback from a previous run of a pooled
+  // stream) is dropped. Only meaningful while `stream_` is non-null.
+  cras_stream_id_t active_stream_id_ GUARDED_BY(lock_) = 0;
+};
+
 // Overview of operation:
 // 1) An object of CrasUnifiedStream is created by the AudioManager
 // factory: audio_man->MakeAudioStream().
@@ -128,6 +196,12 @@ CrasUnifiedStream::CrasUnifiedStream(
       log_callback_(std::move(log_callback)) {
   DCHECK(manager_);
   DCHECK_GT(params_.channels(), 0);
+  // The proxy lives for the entire lifetime of this stream; it only ever guards
+  // `this`, which never changes. Recreating it per Start() would be unsafe:
+  // pooled output streams are restarted in place (Stop() then Start() without
+  // Close(), see AudioOutputDispatcherImpl), and a late libcras callback from a
+  // previous run could still reference the old proxy.
+  proxy_ = std::make_unique<CrasUnifiedStreamProxy>(this);
 }
 
 CrasUnifiedStream::~CrasUnifiedStream() {
@@ -176,10 +250,22 @@ bool CrasUnifiedStream::Open() {
 }
 
 void CrasUnifiedStream::Close() {
+  // Close() may be called without a preceding Stop(); detach the proxy here too
+  // so the libcras thread can no longer reach this stream before it is freed.
+  if (proxy_) {
+    proxy_->Detach();
+  }
+
   if (client_) {
     libcras_client_stop(client_);
     libcras_client_destroy(client_.ExtractAsDangling());
     client_ = nullptr;
+  }
+
+  // The libcras client (and its callback thread) has been stopped above, so no
+  // callback can be using the proxy anymore; it is now safe to destroy it.
+  if (proxy_) {
+    proxy_.reset();
   }
 
   // Signal to the manager that we're closed and can be removed.
@@ -224,11 +310,19 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
 
   unsigned int frames_per_packet = params_.frames_per_buffer();
 
+  // Register the persistent thread-safe proxy (rather than `this`) as the
+  // libcras callback user argument, so that a late real-time callback cannot
+  // reach this stream after it has been stopped or freed. See
+  // CrasAudioInputStreamProxy for the input-stream equivalent. The proxy is
+  // (re-)attached further below, only once the stream is fully initialized and
+  // right before callbacks can start, so a forwarded callback never observes a
+  // half-(re)initialized stream (e.g. a null `peak_detector_`).
   int rc = libcras_stream_params_set(
       stream_params, stream_direction_, frames_per_packet * 2,
       frames_per_packet, CRAS_STREAM_TYPE_DEFAULT, manager_->GetClientType(), 0,
-      this, CrasUnifiedStream::UnifiedCallback, CrasUnifiedStream::StreamError,
-      params_.sample_rate(), kSampleFormat, params_.channels());
+      proxy_.get(), CrasUnifiedStream::UnifiedCallback,
+      CrasUnifiedStream::StreamError, params_.sample_rate(), kSampleFormat,
+      params_.channels());
 
   if (rc) {
     LOG(WARNING) << "Error setting up stream parameters.";
@@ -270,7 +364,10 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
       &AudioManager::TraceAmplitudePeak, base::Unretained(manager_),
       /*trace_start=*/false));
 
-  // Adding the stream will start the audio callbacks requesting data.
+  // Adding the stream will start the audio callbacks requesting data. libcras
+  // assigns the new stream's id into `stream_id_` here. `peak_detector_` was
+  // (re)created just above, so the stream is fully initialized before any
+  // callback can be forwarded.
   if (libcras_client_add_pinned_stream(client_, pin_device_, &stream_id_,
                                        stream_params)) {
     LOG(WARNING) << "Failed to add the stream.";
@@ -280,6 +377,15 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
     libcras_stream_params_destroy(stream_params);
     return;
   }
+
+  // Attach the proxy now that the libcras stream id is known, so it forwards
+  // callbacks for exactly this stream. Attaching after add_pinned_stream()
+  // (rather than before) means a delayed callback from a previous run of this
+  // pooled stream -- carrying the previous id -- is dropped even though the
+  // stream object is reused. Any callback that arrives in the brief window
+  // before this point is dropped while the proxy is still detached, costing at
+  // most an initial buffer of silence.
+  proxy_->Attach(this, stream_id_);
 
   // Set initial volume.
   libcras_client_set_stream_volume(client_, stream_id_, volume_);
@@ -295,6 +401,13 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
 void CrasUnifiedStream::Stop() {
   if (!client_) {
     return;
+  }
+
+  // Instantly fence off the libcras real-time thread: after Detach() returns no
+  // further callback can reach this stream, and Detach() blocks until any
+  // in-flight callback has finished, so the teardown below is safe.
+  if (proxy_) {
+    proxy_->Detach();
   }
 
   // Removing the stream from the client stops audio.
@@ -319,36 +432,40 @@ void CrasUnifiedStream::GetVolume(double* volume) {
   *volume = volume_;
 }
 
-// Static callback asking for samples.
+// Static callback asking for samples. Runs on the libcras real-time thread.
 int CrasUnifiedStream::UnifiedCallback(struct libcras_stream_cb_data* data) {
+  void* usr_arg;
+  libcras_stream_cb_data_get_usr_arg(data, &usr_arg);
+  CrasUnifiedStreamProxy* proxy = static_cast<CrasUnifiedStreamProxy*>(usr_arg);
+  return proxy->UnifiedCallback(data);
+}
+
+int CrasUnifiedStream::OnUnifiedCallback(struct libcras_stream_cb_data* data) {
   unsigned int frames;
   uint8_t* buf;
   struct timespec latency;
-  void* usr_arg;
   struct timespec underrun_duration_ts;
   cras_stream_id_t stream_id;
   libcras_stream_cb_data_get_frames(data, &frames);
   libcras_stream_cb_data_get_buf(data, &buf);
   libcras_stream_cb_data_get_latency(data, &latency);
-  libcras_stream_cb_data_get_usr_arg(data, &usr_arg);
   libcras_stream_cb_data_get_underrun_duration(data, &underrun_duration_ts);
   libcras_stream_cb_data_get_stream_id(data, &stream_id);
   TRACE_EVENT_BEGIN(
       "audio", "CrasUnifiedStream::UnifiedCallback",
       perfetto::Flow::ProcessScoped(static_cast<uint64_t>(stream_id)));
 
-  CrasUnifiedStream* me = static_cast<CrasUnifiedStream*>(usr_arg);
   base::TimeDelta underrun_duration =
       base::TimeDelta::FromTimeSpec(underrun_duration_ts);
-  me->CalculateAudioGlitches(underrun_duration);
+  CalculateAudioGlitches(underrun_duration);
   static_assert(kSampleFormat == SND_PCM_FORMAT_S16,
                 "cras_unified.cc assumes SND_PCM_FORMAT_S16");
   // SAFETY: CRAS guarantees that `buf` points to a buffer with at least
   // `frames` capacity. Since the stream is configured with S16 format, the
   // buffer has space for `frames * channels` of `int16_t` samples.
   auto buffer_span = UNSAFE_BUFFERS(base::span<int16_t>(
-      reinterpret_cast<int16_t*>(buf), frames * me->params_.channels()));
-  uint32_t filled_frames = me->WriteAudio(buffer_span, &latency);
+      reinterpret_cast<int16_t*>(buf), frames * params_.channels()));
+  uint32_t filled_frames = WriteAudio(buffer_span, &latency);
   TRACE_EVENT_END("audio", [&](perfetto::EventContext ctx) {
     auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
     auto* data = event->set_chromeos_cras_unified();
@@ -358,13 +475,19 @@ int CrasUnifiedStream::UnifiedCallback(struct libcras_stream_cb_data* data) {
   return filled_frames;
 }
 
-// Static callback for stream errors.
+// Static callback for stream errors. Runs on the libcras real-time thread.
 int CrasUnifiedStream::StreamError(cras_client* client,
                                    cras_stream_id_t stream_id,
                                    int err,
                                    void* arg) {
-  CrasUnifiedStream* me = static_cast<CrasUnifiedStream*>(arg);
-  me->NotifyStreamError(err);
+  CrasUnifiedStreamProxy* proxy = static_cast<CrasUnifiedStreamProxy*>(arg);
+  return proxy->StreamError(client, stream_id, err);
+}
+
+int CrasUnifiedStream::OnStreamError(cras_client* client,
+                                     cras_stream_id_t stream_id,
+                                     int err) {
+  NotifyStreamError(err);
   return 0;
 }
 
