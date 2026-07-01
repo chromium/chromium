@@ -954,6 +954,17 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   if (!SandboxConfigurationsMatch(GetSiteInfo(), url_info))
     return false;
 
+  if (!base::FeatureList::IsEnabled(
+          features::kIsSuitableForUrlInfoEarlyReturnHoldback)) {
+    // TODO(crbug.com/527302857): Remove the duplicated check below in
+    // !HasProcess() once the holdback experiment concludes.
+    // If there is no process or site, then this is a new SiteInstance that can
+    // be used for anything. Avoid computing DeriveSiteInfo in this case.
+    if (!HasProcess() && !HasSite()) {
+      return true;
+    }
+  }
+
   // If the site URL is an extension (e.g., for hosted apps or WebUI) but the
   // process is not (or vice versa), make sure we notice and fix it.
 
@@ -974,6 +985,8 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   // available. We want to use such a process in the IsSuitableHost check, so we
   // may end up assigning process_ in the GetProcess() call below.
   if (!HasProcess()) {
+    // TODO(crbug.com/527302857): Remove this check once the early return above
+    // (guarded by kIsSuitableForUrlInfoEarlyReturnHoldback) is made default.
     // If there is no process or site, then this is a new SiteInstance that can
     // be used for anything.
     if (!HasSite())

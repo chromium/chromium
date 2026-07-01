@@ -413,6 +413,11 @@ BASE_FEATURE(kInterestGroupUpdateIfOlderThan, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIOSurfaceCapturer, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// When enabled, holds back (disables) the early-return optimization in
+// SiteInstanceImpl::IsSuitableForUrlInfo.
+BASE_FEATURE(kIsSuitableForUrlInfoEarlyReturnHoldback,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, child process will not terminate itself when IPC is reset.
 BASE_FEATURE(kKeepChildProcessAfterIPCReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
