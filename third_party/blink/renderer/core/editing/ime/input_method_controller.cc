@@ -1819,7 +1819,7 @@ int InputMethodController::TextInputFlags() const {
     }
   }
 
-  if (RuntimeEnabledFeatures::AutocorrectByDefaultEnabled()) {
+  if (RuntimeEnabledFeatures::WebAutocorrectByDefaultEnabled()) {
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       // https://html.spec.whatwg.org/multipage/interaction.html#autocorrection
       // The used autocorrection state is always On or Off (HTMLElement::

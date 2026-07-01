@@ -3639,7 +3639,7 @@ TEST_F(InputMethodControllerTest, AutoCompleteTextInputFlags) {
 }
 
 TEST_F(InputMethodControllerTest, AutoCorrectTextInputFlags) {
-  ScopedAutocorrectByDefaultForTest autocorrect_by_default(true);
+  ScopedWebAutocorrectByDefaultForTest autocorrect_by_default(true);
   constexpr int default_flags = kWebTextInputFlagAutocapitalizeSentences;
   EXPECT_EQ(TextInputFlags("<input autocorrect=off>"),
             kWebTextInputFlagAutocorrectOff | default_flags);

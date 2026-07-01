@@ -758,14 +758,6 @@
       status: "stable",
     },
     {
-      // Reflects the HTML `autocorrect` content attribute's used autocorrection
-      // state to the platform IME: autocorrection is On by default and forced
-      // Off for URL/Email/Password inputs (and an `autocorrect=off` form owner).
-      // https://html.spec.whatwg.org/multipage/interaction.html#autocorrection
-      name: "AutocorrectByDefault",
-      status: "experimental",
-    },
-    {
       name: "AutoDarkMode",
       base_feature: "none",
     },
@@ -6872,6 +6864,14 @@
       name: "WebAuthenticationRemoteDesktopSupport",
       base_feature: "none",
       public: true,
+    },
+    {
+      // Reflects the HTML `autocorrect` content attribute's used autocorrection
+      // state to the platform IME: autocorrection is On by default and forced
+      // Off for URL/Email/Password inputs (and an `autocorrect=off` form owner).
+      // https://html.spec.whatwg.org/multipage/interaction.html#autocorrection
+      name: "WebAutocorrectByDefault",
+      status: "experimental",
     },
 
     // WebBluetooth is enabled by default on Android, ChromeOS, iOS, macOS and

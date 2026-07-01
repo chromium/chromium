@@ -252,9 +252,9 @@ class RenderWidgetHostViewMacTest : public ContentBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     // UpdateInputFlags asserts the spec-default autocorrect IME mapping, which
-    // is gated behind the AutocorrectByDefault runtime feature.
+    // is gated behind the WebAutocorrectByDefault runtime feature.
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "AutocorrectByDefault");
+                                    "WebAutocorrectByDefault");
   }
 
  private:
