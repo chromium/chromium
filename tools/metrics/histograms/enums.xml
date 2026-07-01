@@ -9720,6 +9720,7 @@ from previous Chrome versions.
   <int value="-1533450851" label="EnablePerDeskZOrder:enabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
+  <int value="-1532704297" label="AimEligibilityComponentExtension:enabled"/>
   <int value="-1532645183" label="ReleaseNotesNotification:enabled"/>
   <int value="-1532501905"
       label="MediaPlaybackWhileNotVisiblePermissionPolicy:disabled"/>
@@ -12712,6 +12713,7 @@ from previous Chrome versions.
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
   <int value="-580051880" label="BirchWeather:disabled"/>
   <int value="-579897981" label="EnableEdgeDetection:enabled"/>
+  <int value="-579771734" label="AimEligibilityComponentExtension:disabled"/>
   <int value="-579656054" label="CCTResizableSideSheetForThirdParties:enabled"/>
   <int value="-579655251"
       label="AutofillEnableVcnGrayOutForMerchantOptOut:enabled"/>

@@ -6665,6 +6665,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAimUsePecApiDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kAimUsePecApi)},
 
+    {"aim-eligibility-component-extension",
+     flag_descriptions::kAimEligibilityComponentExtensionName,
+     flag_descriptions::kAimEligibilityComponentExtensionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kAimEligibilityComponentExtension)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"omnibox-asynchronous-view-inflation",
      flag_descriptions::kOmniboxAsyncViewInflationName,

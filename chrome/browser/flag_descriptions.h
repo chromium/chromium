@@ -6301,6 +6301,12 @@ inline constexpr char kAimUsePecApiDescription[] =
     "When enabled, all composebox context menus will use the `SearchboxConfig` "
     "from the PEC API.";
 
+inline constexpr char kAimEligibilityComponentExtensionName[] =
+    "AIM Eligibility Component Extension";
+inline constexpr char kAimEligibilityComponentExtensionDescription[] =
+    "When enabled, registers the AIM Eligibility debugger as a component "
+    "extension.";
+
 inline constexpr char kUseAngleDescriptionAndroid[] =
     "Choose the graphics backend for ANGLE. The Vulkan backend is still "
     "experimental, and may contain bugs that "

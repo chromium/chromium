@@ -111,6 +111,14 @@
     "expiry_milestone": 153
   },
   {
+    "name": "aim-eligibility-component-extension",
+    "owners": [
+      "mahmadi@chromium.org",
+      "chrome-desktop-search@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "aim-eligibility-refresh-ntp-modules",
     "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
     "expiry_milestone": 149
