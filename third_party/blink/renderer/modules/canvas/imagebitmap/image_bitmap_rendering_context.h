@@ -164,7 +164,7 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   bool has_presented_since_last_set_image_ = false;
   bool is_opaque_ = false;
   scoped_refptr<cc::TextureLayer> layer_;
-  std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  std::unique_ptr<CanvasNon2DResourceProvider>
       resource_provider_for_offscreen_canvas_;
 };
 

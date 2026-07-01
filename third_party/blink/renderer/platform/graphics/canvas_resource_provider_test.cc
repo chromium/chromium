@@ -152,7 +152,7 @@ TEST_F(CanvasResourceProviderTest, BeginExternalOverwrite) {
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = CanvasNon2DResourceProvider::Create(
       gfx::Size(10, 10), color_params, context_provider_wrapper_,
       shared_image_usage_flags);
 
@@ -181,7 +181,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = CanvasNon2DResourceProvider::Create(
       kSize, color_params, context_provider_wrapper_, shared_image_usage_flags);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -211,7 +211,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = CanvasNon2DResourceProvider::Create(
       kSize, color_params, context_provider_wrapper_,
       gpu::SharedImageUsageSet());
 
@@ -294,7 +294,7 @@ TEST_F(CanvasResourceProviderTest,
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = CanvasNon2DResourceProvider::Create(
       gfx::Size(10, 10), color_params,
       SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags);
 
@@ -515,12 +515,11 @@ TEST_F(CanvasResourceProviderTest,
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-  EXPECT_FALSE(
-      CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-          gfx::Size(10, 10),
-          Canvas2DColorParams(PredefinedColorSpace::kSRGB, gfx::HDRMetadata(),
-                              CanvasPixelFormat::kUint8, /*has_alpha=*/true),
-          test_web_shared_image_interface_provider.get()));
+  EXPECT_FALSE(CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
+      gfx::Size(10, 10),
+      Canvas2DColorParams(PredefinedColorSpace::kSRGB, gfx::HDRMetadata(),
+                          CanvasPixelFormat::kUint8, /*has_alpha=*/true),
+      test_web_shared_image_interface_provider.get()));
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -538,10 +537,8 @@ TEST_F(CanvasResourceProviderTest,
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider =
-      CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-          kSize, color_params,
-          test_web_shared_image_interface_provider.get());
+  auto provider = CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
+      kSize, color_params, test_web_shared_image_interface_provider.get());
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider && provider->IsValid());
@@ -565,7 +562,7 @@ TEST_F(CanvasResourceProviderTest,
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = CanvasNon2DResourceProvider::Create(
       kSize, color_params, context_provider_wrapper_, shared_image_usage_flags);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -591,15 +588,15 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = CanvasNon2DResourceProvider::Create(
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
       context_provider_wrapper_, gpu::SharedImageUsageSet());
   EXPECT_TRUE(provider && provider->IsValid());
-  provider = CanvasNon2DResourceProviderSharedImage::Create(
+  provider = CanvasNon2DResourceProvider::Create(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
       context_provider_wrapper_, gpu::SharedImageUsageSet());
   EXPECT_TRUE(provider && provider->IsValid());
-  provider = CanvasNon2DResourceProviderSharedImage::Create(
+  provider = CanvasNon2DResourceProvider::Create(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       context_provider_wrapper_, gpu::SharedImageUsageSet());
   // The CanvasResourceProvider for SharedImage should not be created

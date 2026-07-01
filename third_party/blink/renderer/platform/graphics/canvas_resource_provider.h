@@ -64,7 +64,7 @@ PLATFORM_EXPORT extern const base::FeatureParam<int> kMaxPinnedImageKB;
 
 class CanvasResource;
 class CanvasResourceSharedImage;
-class CanvasNon2DResourceProviderSharedImage;
+class CanvasNon2DResourceProvider;
 class Canvas2DResourceProviderSharedImage;
 class CanvasImageProvider;
 class MemoryManagedPaintCanvas;
@@ -434,7 +434,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
 // * by non-Canvas2D clients.
-class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
+class PLATFORM_EXPORT CanvasNon2DResourceProvider
     : public CanvasMemoryDumpClient,
       public MemoryManagedPaintRecorder::Client,
       public CanvasResourceSharedImage::Client,
@@ -444,7 +444,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       public BitmapGpuChannelLostObserver,
       public ScopedRasterTimer::Host {
  public:
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
+  static std::unique_ptr<CanvasNon2DResourceProvider> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -453,7 +453,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
+  static std::unique_ptr<CanvasNon2DResourceProvider> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -466,33 +466,33 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
                   context_provider_wrapper, shared_image_usage_flags, delegate);
   }
 
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
+  static std::unique_ptr<CanvasNon2DResourceProvider> Create(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags);
 
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
-  CreateForWebGPU(gfx::Size size,
-                  viz::SharedImageFormat format,
-                  SkAlphaType alpha_type,
-                  const gfx::ColorSpace& color_space,
-                  const gfx::HDRMetadata& hdr_metadata,
-                  gpu::SharedImageUsageSet shared_image_usage_flags = {},
-                  CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
-  CreateForWebGPU(gfx::Size size,
-                  viz::SharedImageFormat format,
-                  SkAlphaType alpha_type,
-                  const gfx::ColorSpace& color_space,
-                  gpu::SharedImageUsageSet shared_image_usage_flags = {},
-                  CanvasResourceProviderDelegate* delegate = nullptr) {
+  static std::unique_ptr<CanvasNon2DResourceProvider> CreateForWebGPU(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
+      gpu::SharedImageUsageSet shared_image_usage_flags = {},
+      CanvasResourceProviderDelegate* delegate = nullptr);
+  static std::unique_ptr<CanvasNon2DResourceProvider> CreateForWebGPU(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      gpu::SharedImageUsageSet shared_image_usage_flags = {},
+      CanvasResourceProviderDelegate* delegate = nullptr) {
     return CreateForWebGPU(size, format, alpha_type, color_space,
                            gfx::HDRMetadata(), shared_image_usage_flags,
                            delegate);
   }
 
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  static std::unique_ptr<CanvasNon2DResourceProvider>
   CreateForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -501,7 +501,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       const gfx::HDRMetadata& hdr_metadata,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  static std::unique_ptr<CanvasNon2DResourceProvider>
   CreateForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -514,13 +514,13 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
         shared_image_interface_provider, delegate);
   }
 
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  static std::unique_ptr<CanvasNon2DResourceProvider>
   CreateForSoftwareCompositor(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider);
 
-  CanvasNon2DResourceProviderSharedImage(
+  CanvasNon2DResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,
       SkAlphaType,
@@ -529,15 +529,14 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProviderDelegate*);
-  CanvasNon2DResourceProviderSharedImage(
-      gfx::Size,
-      viz::SharedImageFormat,
-      SkAlphaType,
-      const gfx::ColorSpace&,
-      const gfx::HDRMetadata&,
-      WebGraphicsSharedImageInterfaceProvider*,
-      CanvasResourceProviderDelegate*);
-  ~CanvasNon2DResourceProviderSharedImage() override;
+  CanvasNon2DResourceProvider(gfx::Size,
+                              viz::SharedImageFormat,
+                              SkAlphaType,
+                              const gfx::ColorSpace&,
+                              const gfx::HDRMetadata&,
+                              WebGraphicsSharedImageInterfaceProvider*,
+                              CanvasResourceProviderDelegate*);
+  ~CanvasNon2DResourceProvider() override;
 
   void ClearUnusedResources();
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
@@ -646,10 +645,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   sk_sp<SkSurface> CreateSkSurface() const;
   gpu::raster::RasterInterface* RasterInterface() const;
 
-  base::WeakPtr<CanvasNon2DResourceProviderSharedImage> CreateWeakPtr();
+  base::WeakPtr<CanvasNon2DResourceProvider> CreateWeakPtr();
 
   static void NotifyGpuContextLostTask(
-      base::WeakPtr<CanvasNon2DResourceProviderSharedImage>);
+      base::WeakPtr<CanvasNon2DResourceProvider>);
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
@@ -728,8 +727,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
 
-  base::WeakPtrFactory<CanvasNon2DResourceProviderSharedImage>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<CanvasNon2DResourceProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

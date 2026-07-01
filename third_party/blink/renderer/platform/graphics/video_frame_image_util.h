@@ -35,7 +35,7 @@ class PaintFlags;
 }  // namespace cc
 
 namespace blink {
-class CanvasNon2DResourceProviderSharedImage;
+class CanvasNon2DResourceProvider;
 class StaticBitmapImage;
 
 // Converts a media orientation into a blink one or vice versa.
@@ -72,7 +72,7 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
 CreateAcceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasNon2DResourceProviderSharedImage* snapshot_provider,
+    CanvasNon2DResourceProvider* snapshot_provider,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false,

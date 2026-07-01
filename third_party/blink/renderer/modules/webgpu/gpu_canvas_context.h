@@ -119,7 +119,7 @@ class GPUCanvasContext : public ScriptWrappable,
   bool IsGPUDeviceDestroyed() override;
 
  private:
-  CanvasNon2DResourceProviderSharedImage* GetOrCreateCanvasResourceProvider();
+  CanvasNon2DResourceProvider* GetOrCreateCanvasResourceProvider();
   scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
   void DetachSwapBuffers();
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
@@ -132,7 +132,7 @@ class GPUCanvasContext : public ScriptWrappable,
 
   bool CopyTextureToResourceProvider(
       const wgpu::Texture& texture,
-      CanvasNon2DResourceProviderSharedImage* resource_provider) const;
+      CanvasNon2DResourceProvider* resource_provider) const;
 
   void CopyToSwapTexture();
 
@@ -148,7 +148,7 @@ class GPUCanvasContext : public ScriptWrappable,
 
   Member<GPUDevice> device_;
 
-  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider_;
+  std::unique_ptr<CanvasNon2DResourceProvider> resource_provider_;
 
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.

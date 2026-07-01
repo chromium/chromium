@@ -268,7 +268,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   if (base::FeatureList::IsEnabled(kAllowAcceleratedTexElement) &&
       SharedGpuContext::IsGpuCompositingEnabled()) {
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
+      auto resource_provider = CanvasNon2DResourceProvider::Create(
           dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage);

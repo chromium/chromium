@@ -72,7 +72,7 @@ scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::MakeAccelerated(
   constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #endif  // BUILDFLAG(IS_LINUX)
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = CanvasNon2DResourceProvider::Create(
       source->Size(), source->GetSharedImageFormat(), source->GetAlphaType(),
       source->GetColorSpace(), source->GetHdrMetadata(),
       context_provider_wrapper, kSharedImageUsageFlags);
@@ -472,13 +472,13 @@ ImageBitmapRenderingContext::GetResourceForPushFrame(
     const gfx::HDRMetadata hdr_metadata;
     if (is_gpu_compositing_enabled) {
       resource_provider_for_offscreen_canvas_ =
-          CanvasNon2DResourceProviderSharedImage::Create(
+          CanvasNon2DResourceProvider::Create(
               image->Size(), format, alpha_type, color_space, hdr_metadata,
               SharedGpuContext::ContextProviderWrapper(),
               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
     } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
       resource_provider_for_offscreen_canvas_ =
-          CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
+          CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
               image->Size(), format, alpha_type, color_space, hdr_metadata,
               SharedGpuContext::SharedImageInterfaceProvider(), Host());
     }

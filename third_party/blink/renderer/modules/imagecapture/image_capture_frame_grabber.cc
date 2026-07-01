@@ -175,7 +175,7 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
     cached_draw_info_.reset();
     snapshot_provider_.reset();
     if (ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
-      snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
+      snapshot_provider_ = CanvasNon2DResourceProvider::Create(
           required_provider_info.size, required_provider_info.format,
           required_provider_info.alpha_type, required_provider_info.color_space,
           required_provider_info.hdr_metadata,

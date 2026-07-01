@@ -82,7 +82,7 @@ class OffscreenCanvasPlaceholderTest : public Test {
   test::TaskEnvironment task_environment_;
   OffscreenCanvasPlaceholder placeholder_;
   std::unique_ptr<MockPlaceholderClient> placeholder_client_;
-  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider_;
+  std::unique_ptr<CanvasNon2DResourceProvider> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider_;
   DOMNodeId placeholder_id_ = 0;
@@ -106,11 +106,10 @@ void OffscreenCanvasPlaceholderTest::TearDown() {
 void OffscreenCanvasPlaceholderTest::CreateClient() {
   placeholder_client_ =
       std::make_unique<MockPlaceholderClient>(placeholder_id_);
-  resource_provider_ =
-      CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-          gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-          gfx::ColorSpace::CreateSRGB(),
-          test_web_shared_image_interface_provider_.get());
+  resource_provider_ = CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
+      gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+      gfx::ColorSpace::CreateSRGB(),
+      test_web_shared_image_interface_provider_.get());
 }
 
 scoped_refptr<CanvasResource> OffscreenCanvasPlaceholderTest::DrawSomething() {

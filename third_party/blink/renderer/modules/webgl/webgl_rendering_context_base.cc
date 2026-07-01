@@ -962,10 +962,10 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider;
+  std::unique_ptr<CanvasNon2DResourceProvider> resource_provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     // Create an accelerated CRP in order to produce an accelerated snapshot.
-    resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
+    resource_provider = CanvasNon2DResourceProvider::Create(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         GetDrawingBuffer()->GetHdrMetadata(),
         SharedGpuContext::ContextProviderWrapper(), shared_image_usages);
@@ -2065,7 +2065,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     }
   }
 
-  CanvasNon2DResourceProviderSharedImage* resource_provider =
+  CanvasNon2DResourceProvider* resource_provider =
       GetSharedImageResourceProvider();
   if (!resource_provider) {
     // As a last resort, try to create and return an unaccelerated snapshot.
@@ -2167,7 +2167,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
   return CopyRenderingResultsFromDrawingBufferToResource(source_buffer);
 }
 
-CanvasNon2DResourceProviderSharedImage*
+CanvasNon2DResourceProvider*
 WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   // If `cached_snapshot_` is non-null, it means that
   // PaintRenderingResultsToSnapshot() was unable to populate
@@ -2220,13 +2220,13 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     if (UseOverlaysForWebGL()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
-    resource_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
+    resource_provider_ = CanvasNon2DResourceProvider::Create(
         size, format, alpha_type, color_space, hdr_metadata,
         SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags,
         Host());
   } else {
     resource_provider_ =
-        CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
+        CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
             size, format, alpha_type, color_space, hdr_metadata,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
@@ -2252,7 +2252,7 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
                "WebGLRenderingContextBase::"
                "CopyRenderingResultsFromDrawingBufferToResource");
 
-  CanvasNon2DResourceProviderSharedImage* resource_provider =
+  CanvasNon2DResourceProvider* resource_provider =
       GetSharedImageResourceProvider();
   if (!resource_provider) {
     return nullptr;
@@ -2306,7 +2306,7 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
 
 bool WebGLRenderingContextBase::
     CopyRenderingResultsFromDrawingBufferAccelerated(
-        CanvasNon2DResourceProviderSharedImage* resource_provider,
+        CanvasNon2DResourceProvider* resource_provider,
         SourceDrawingBuffer source_buffer) {
   DCHECK(resource_provider);
   DCHECK(!resource_provider->IsSingleBuffered());
@@ -6712,7 +6712,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   auto info = CreateSnapshotProviderInfoForVideoFrame(
       *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
 
-  CanvasNon2DResourceProviderSharedImage* provider = nullptr;
+  CanvasNon2DResourceProvider* provider = nullptr;
   if (can_upload_via_gpu) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -9078,12 +9078,12 @@ WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
     LRUCanvasResourceProviderCache(wtf_size_t capacity)
     : capacity_(capacity), providers_(capacity) {}
 
-CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
+CanvasNon2DResourceProvider* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
         const CanvasSnapshotInfo& info) {
   wtf_size_t i;
   for (i = 0; i < capacity_; ++i) {
-    CanvasNon2DResourceProviderSharedImage* provider = providers_[i].get();
+    CanvasNon2DResourceProvider* provider = providers_[i].get();
     if (!provider) {
       break;
     }
@@ -9094,8 +9094,8 @@ CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
     return provider;
   }
 
-  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> temp =
-      CanvasNon2DResourceProviderSharedImage::Create(
+  std::unique_ptr<CanvasNon2DResourceProvider> temp =
+      CanvasNon2DResourceProvider::Create(
           info.size, info.format, info.alpha_type, info.color_space,
           info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
@@ -9107,7 +9107,7 @@ CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
   i = std::min(capacity_ - 1, i);
   providers_[i] = std::move(temp);
 
-  CanvasNon2DResourceProviderSharedImage* provider = providers_[i].get();
+  CanvasNon2DResourceProvider* provider = providers_[i].get();
   BubbleToFront(i);
   return provider;
 }

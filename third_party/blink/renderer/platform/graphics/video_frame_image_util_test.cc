@@ -118,7 +118,7 @@ class VideoFrameImageUtilTest
     auto info =
         CreateSnapshotProviderInfoForVideoFrame(*frame, dest_rect.size());
     if (ShouldCreateAcceleratedImages(raster_context_provider())) {
-      auto snapshot_provider = CanvasNon2DResourceProviderSharedImage::Create(
+      auto snapshot_provider = CanvasNon2DResourceProvider::Create(
           info.size, info.format, info.alpha_type, info.color_space,
           info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);

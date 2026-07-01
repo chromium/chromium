@@ -60,7 +60,7 @@ class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
   TaskHandle timeout_task_handle_;
 
   media::PaintCanvasVideoRenderer video_renderer_;
-  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> snapshot_provider_;
+  std::unique_ptr<CanvasNon2DResourceProvider> snapshot_provider_;
   std::optional<CanvasSnapshotInfo> cached_draw_info_;
 
   THREAD_CHECKER(thread_checker_);

@@ -94,7 +94,7 @@ sk_sp<SkSurface> CreateSoftwareSurface(const CanvasSnapshotInfo& info) {
 
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasNon2DResourceProviderSharedImage* snapshot_provider,
+    CanvasNon2DResourceProvider* snapshot_provider,
     std::optional<CanvasSnapshotInfo> sw_draw_info,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
@@ -163,7 +163,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
                                   orientation);
   }
 
-  return static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider)
+  return static_cast<CanvasNon2DResourceProvider*>(snapshot_provider)
       ->DoExternalOverdrawAndSnapshot(draw_callback, orientation);
 }
 
@@ -277,7 +277,7 @@ bool WillCreateAcceleratedImagesFromVideoFrame() {
 
 scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasNon2DResourceProviderSharedImage* snapshot_provider,
+    CanvasNon2DResourceProvider* snapshot_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb,

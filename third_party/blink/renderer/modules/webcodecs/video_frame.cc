@@ -353,8 +353,7 @@ class CanvasNon2DResourceProviderCache
   CanvasNon2DResourceProviderCache(const CanvasNon2DResourceProviderCache&) =
       delete;
 
-  CanvasNon2DResourceProviderSharedImage* CreateProvider(
-      const media::VideoFrame& frame) {
+  CanvasNon2DResourceProvider* CreateProvider(const media::VideoFrame& frame) {
     if (providers_.empty()) {
       PostMonitoringTask();
     }
@@ -374,8 +373,8 @@ class CanvasNon2DResourceProviderCache
       providers_.clear();
     }
 
-    std::unique_ptr<CanvasNon2DResourceProviderSharedImage> provider =
-        CanvasNon2DResourceProviderSharedImage::Create(
+    std::unique_ptr<CanvasNon2DResourceProvider> provider =
+        CanvasNon2DResourceProvider::Create(
             required_provider_info.size, required_provider_info.format,
             required_provider_info.alpha_type,
             required_provider_info.color_space,
@@ -431,7 +430,7 @@ class CanvasNon2DResourceProviderCache
     PostMonitoringTask();
   }
 
-  Vector<std::unique_ptr<CanvasNon2DResourceProviderSharedImage>> providers_;
+  Vector<std::unique_ptr<CanvasNon2DResourceProvider>> providers_;
   base::TimeTicks last_access_time_;
   TaskHandle task_handle_;
 };

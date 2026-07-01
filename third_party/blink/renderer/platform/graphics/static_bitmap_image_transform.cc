@@ -269,7 +269,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   const auto source_orientation = GetSourceOrientation(source, options);
   if (source_paint_image.IsTextureBacked() &&
       source->ContextProviderWrapper()) {
-    auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
+    auto resource_provider = CanvasNon2DResourceProvider::Create(
         gfx::Size(dest_size.width(), dest_size.height()), dest_format,
         dest_alpha_type, dest_color_space, dest_hdr_metadata,
         source->ContextProviderWrapper(), source->GetSharedImage()->usage());
