@@ -1021,8 +1021,8 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   Vector<StringView> script_path_tokens =
       StringView(script_path).substr(1).SplitSkippingEmpty('/');
 
-  size_t common_prefix_len = 0;
-  size_t min_len =
+  wtf_size_t common_prefix_len = 0;
+  wtf_size_t min_len =
       std::min(document_path_tokens.size(), script_path_tokens.size());
   while (common_prefix_len < min_len &&
          document_path_tokens[common_prefix_len] ==
@@ -1030,14 +1030,13 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
     common_prefix_len++;
   }
 
-  int level_difference = document_path_tokens.size() - common_prefix_len;
+  wtf_size_t level_difference = document_path_tokens.size() - common_prefix_len;
   Vector<StringView> relative_path_tokens;
-  for (int i = 0; i < level_difference; i++) {
+  for (wtf_size_t i = 0; i < level_difference; ++i) {
     relative_path_tokens.push_back("..");
   }
-  for (size_t i = common_prefix_len; i < script_path_tokens.size(); i++) {
-    relative_path_tokens.push_back(script_path_tokens[i]);
-  }
+  relative_path_tokens.append_range(
+      base::span(script_path_tokens).subspan(common_prefix_len));
   return JoinPath(relative_path_tokens);
 }
 

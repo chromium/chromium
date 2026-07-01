@@ -34,6 +34,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
@@ -570,7 +571,7 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
       disallow_script_for_synthetic_response_ = false;
       base::UmaHistogramCounts100(
           kSyntheticResponseBlockedResourceCountHistogramName,
-          blocked_count_for_synthetic_response_);
+          base::saturated_cast<int>(blocked_count_for_synthetic_response_));
     }
   }
 }

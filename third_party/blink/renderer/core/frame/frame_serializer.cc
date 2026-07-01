@@ -120,8 +120,8 @@ String ReplaceAllCaseInsensitive(
     String source,
     const String& from,
     base::FunctionRef<String(const String&)> transform) {
-  size_t offset = 0;
-  size_t pos;
+  wtf_size_t offset = 0;
+  wtf_size_t pos;
   StringBuilder builder;
   for (;;) {
     pos = source.FindIgnoringAsciiCase(from, offset);

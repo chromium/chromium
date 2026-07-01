@@ -176,7 +176,7 @@ bool CrashReportContext::WriteToSharedMemory(ExceptionState& exception_state) {
 
   // Write the leading integer which tells the reader how many bytes of report
   // data are written after the said integer.
-  writer.WriteU32NativeEndian(utf8.size());
+  writer.WriteU32NativeEndian(base::checked_cast<uint32_t>(utf8.size()));
 
   // Write the JSONified body to the buffer.
   writer.Write(base::as_bytes(base::as_byte_span(utf8.AsStringView())));
