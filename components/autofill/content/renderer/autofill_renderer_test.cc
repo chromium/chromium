@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/map_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
@@ -44,16 +43,6 @@ using ::testing::AssertionResult;
 using ::testing::Assign;
 using ::testing::DoAll;
 using ::testing::Property;
-
-namespace {
-
-constexpr CallTimerState kCallTimerStateDummy = {
-    .call_site = CallTimerState::CallSite::kUpdateFormCache,
-    .last_autofill_agent_reset = {},
-    .last_dom_content_loaded = {},
-};
-
-}  // namespace
 
 MockAutofillDriver::MockAutofillDriver() = default;
 
@@ -104,8 +93,14 @@ std::unique_ptr<AutofillAgent> AutofillRendererTest::CreateAutofillAgent(
 
 std::optional<FormData> AutofillRendererTest::ExtractFormData(
     blink::WebFormElement form_element) {
+  constexpr CallTimerState kCallTimerStateDummy = {
+      .call_site = CallTimerState::CallSite::kUpdateFormCache,
+      .last_autofill_agent_reset = {},
+      .last_dom_content_loaded = {},
+  };
+
   return form_util::ExtractFormData(GetDocument(), form_element,
-                                    *base::MakeRefCounted<FieldDataManager>(),
+                                    autofill_agent_->field_data_manager(),
                                     kCallTimerStateDummy,
                                     /*button_titles_cache=*/nullptr);
 }
