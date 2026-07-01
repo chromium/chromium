@@ -4939,16 +4939,6 @@ static_library("ui") {
       # c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/send_tab_to_self:impl",
 
-      # TODO(crbug.com/353332589): This entry produces no gn check failure on
-      # the linux/wayland or linux-chromeos configs; it may be stale or its
-      # cycle may be specific to another platform (win/mac/android).
-      "//chrome/browser/ui/dialogs:impl",
-
-      # TODO(crbug.com/353332589): This entry produces no gn check failure on
-      # the linux/wayland or linux-chromeos configs; it may be stale or its
-      # cycle may be specific to another platform (win/mac/android).
-      "//chrome/browser/ui/views",
-
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
       # c/b/ui/browser.h
