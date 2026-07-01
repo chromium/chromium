@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -65,13 +64,6 @@ SVGParsingError SVGPointList::Parse(base::span<const CharType> span) {
       SkipOptionalSVGSpaces(span);
     }
   }
-  if (!RuntimeEnabledFeatures::SvgPointListClearOnParsingFailureEnabled()) {
-    // We parsed an uneven number of numbers or had a trailing comma.
-    if (number_count % 2 == 1 || seen_comma) {
-      return SVGParsingError(SVGParseStatus::kExpectedNumber,
-                             list_start_size - span.size());
-    }
-  }
   return SVGParseStatus::kNoError;
 }
 
@@ -83,8 +75,7 @@ SVGParsingError SVGPointList::SetValueAsString(const String& value) {
   }
   SVGParsingError status =
       VisitCharacters(value, [&](auto chars) { return Parse(chars); });
-  if (status != SVGParseStatus::kNoError &&
-      RuntimeEnabledFeatures::SvgPointListClearOnParsingFailureEnabled()) {
+  if (status != SVGParseStatus::kNoError) {
     Clear();
   }
   return status;
