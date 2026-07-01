@@ -2417,6 +2417,9 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
       [targetInterface.bvc appendTabAddedCompletion:tabOpenedCompletion];
       UrlLoadParams savedParams = urlLoadParams;
       savedParams.in_incognito = targetMode == ApplicationMode::INCOGNITO;
+      if (IsChromeNextIaEnabled()) {
+        savedParams.switch_mode_if_needed = false;
+      }
       UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
           ->Load(savedParams);
     } else {
