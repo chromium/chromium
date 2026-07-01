@@ -32,6 +32,7 @@
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -1241,10 +1242,18 @@ TEST_F(TemplateURLServiceTest,
 }
 
 TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          /*regional_engines=*/{&TemplateURLPrepopulateData::google,
+                                &TemplateURLPrepopulateData::yahoo,
+                                &TemplateURLPrepopulateData::bing},
+          /*other_known_engines=*/{&TemplateURLPrepopulateData::brave});
+
   test_util()->VerifyLoad();
 
   // Edit Google search engine.
-  TemplateURL* google = model()->GetTemplateURLForKeyword(u"google.com");
+  TemplateURL* google = model()->GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::google.keyword);
   ASSERT_TRUE(google);
   model()->ResetTemplateURL(google, u"trash", u"xxx",
                             "http://www.foo.com/s?q={searchTerms}");
@@ -1259,21 +1268,26 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
 
   // Remove bing. Despite the extension added below, it will still be restored.
-  TemplateURL* bing = model()->GetTemplateURLForKeyword(u"bing.com");
+  TemplateURL* bing = model()->GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::bing.keyword);
   ASSERT_TRUE(bing);
   model()->Remove(bing);
-  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"bing.com"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::bing.keyword));
 
   // Register an extension with bing keyword.
   model()->RegisterExtensionControlledTURL(
       "abcdefg", "extension_name", "bing.com", "http://abcdefg", Time(), false);
-  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"bing.com"));
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::bing.keyword));
 
   // Remove yahoo. It will be restored later, but for now verify we removed it.
-  TemplateURL* yahoo = model()->GetTemplateURLForKeyword(u"yahoo.com");
+  TemplateURL* yahoo = model()->GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::yahoo.keyword);
   ASSERT_TRUE(yahoo);
   model()->Remove(yahoo);
-  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"yahoo.com"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::yahoo.keyword));
 
   // Now perform the actual repair that should restore Yahoo and Bing.
   model()->RepairPrepopulatedSearchEngines();
@@ -1298,7 +1312,8 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
   EXPECT_THAT(bing, NotNull());
 
   // Yahoo was repaired and is now restored.
-  yahoo = model()->GetTemplateURLForKeyword(u"yahoo.com");
+  yahoo = model()->GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::yahoo.keyword);
   EXPECT_TRUE(yahoo);
 
   // User search engine is preserved.
@@ -3444,9 +3459,8 @@ class TemplateURLServiceEnterpriseSearchForSearchAggregator
 INSTANTIATE_TEST_SUITE_P(
     ,
     TemplateURLServiceEnterpriseSearchForSearchAggregator,
-    ::testing::Values(
-        EnterpriseSearchTestParam{
-            .policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator}),
+    ::testing::Values(EnterpriseSearchTestParam{
+        .policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator}),
     &EnterpriseSearchTestParamToTestSuffix);
 
 TEST_P(TemplateURLServiceEnterpriseSearchForSearchAggregator,
@@ -3611,9 +3625,8 @@ class TemplateURLServiceEnterpriseSearchForSiteSearch
 INSTANTIATE_TEST_SUITE_P(
     ,
     TemplateURLServiceEnterpriseSearchForSiteSearch,
-    ::testing::Values(
-        EnterpriseSearchTestParam{
-            .policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch}),
+    ::testing::Values(EnterpriseSearchTestParam{
+        .policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch}),
     &EnterpriseSearchTestParamToTestSuffix);
 
 TEST_P(TemplateURLServiceEnterpriseSearchForSiteSearch,
