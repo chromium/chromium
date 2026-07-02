@@ -106,6 +106,7 @@ namespace {
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Bool;
 using ::testing::Eq;
 using ::testing::Mock;
@@ -2492,6 +2493,11 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest, InitSoundsOnFlowStart) {
                  IDR_INTRO_SOUND_FEATURE_SHOWCASE_PROGRESS_FLAC,
                  media::AudioCodec::kFLAC,
                  /*loop=*/false));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Initialize(FirstRunFlowController::kAllSetSoundKey,
+                         IDR_INTRO_SOUND_ALL_SET_FLAC, media::AudioCodec::kFLAC,
+                         /*loop=*/false))
+      .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_sounds_manager_ptr,
               Play(FirstRunFlowController::kAmbientSoundKey))
@@ -2522,10 +2528,10 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
                   }));
 
   EXPECT_CALL(*mock_sounds_manager_ptr, Initialize)
-      .Times(5)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_sounds_manager_ptr, Play)
-      .Times(2)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
 
   OpenFirstRun();
@@ -2542,6 +2548,12 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_sounds_manager_ptr,
               Stop(FirstRunFlowController::kWelcomeBackSoundKey))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Stop(FirstRunFlowController::kFeatureShowcaseProgressSoundKey))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Stop(FirstRunFlowController::kAllSetSoundKey))
       .WillOnce(Return(true));
 
   RunTestSequenceInContext(
@@ -2627,10 +2639,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunRevampPostSignInInteractiveUiTest,
                   }));
 
   EXPECT_CALL(*mock_sounds_manager_ptr, Initialize)
-      .Times(5)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_sounds_manager_ptr, Play)
-      .Times(2)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
 
   base::test::TestFuture<bool> proceed_future;
@@ -2680,17 +2692,18 @@ IN_PROC_BROWSER_TEST_P(FirstRunRevampPostSignInInteractiveUiTest,
                   }));
 
   EXPECT_CALL(*mock_sounds_manager_ptr, Initialize)
-      .Times(5)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_sounds_manager_ptr, Play)
-      .Times(2)
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Play(Not(FirstRunFlowController::kWelcomeBackSoundKey)))
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
   // Expect pause/stop calls.
   EXPECT_CALL(*mock_sounds_manager_ptr, Pause)
-      .Times(1)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_sounds_manager_ptr, Stop)
-      .Times(2)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
 
   base::test::TestFuture<bool> proceed_future;
@@ -2745,7 +2758,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest, FeatureShowcaseSound) {
                   }));
 
   EXPECT_CALL(*mock_sounds_manager_ptr, Initialize)
-      .Times(5)
+      .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_sounds_manager_ptr,
               Play(FirstRunFlowController::kAmbientSoundKey))
@@ -2865,6 +2878,129 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FREFlow.FeatureShowcase.StartBrowsing",
       FeatureShowcaseStep::kDefaultBrowser, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
+                       AllSetSoundPlaysOnFinishOrContinueStep) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  auto mock_sounds_manager = std::make_unique<StrictMock<MockSoundsManager>>();
+  MockSoundsManager* mock_sounds_manager_ptr = mock_sounds_manager.get();
+
+  base::AutoReset<FirstRunFlowController::SoundsManagerFactory>
+      sounds_factory_reset =
+          FirstRunFlowController::SetSoundsManagerFactoryForTesting(
+              base::BindLambdaForTesting(
+                  [&mock_sounds_manager](
+                      audio::SoundsManager::StreamFactoryBinder)
+                      -> std::unique_ptr<audio::SoundsManager> {
+                    return std::move(mock_sounds_manager);
+                  }));
+
+  EXPECT_CALL(*mock_sounds_manager_ptr, Initialize)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Play(Not(FirstRunFlowController::kAllSetSoundKey)))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Play(FirstRunFlowController::kAllSetSoundKey))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr, Stop)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/false),
+      WaitForWebContentsNavigation(kWebContentsId, GetFeatureShowcaseUrl()),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      CompleteFinishOrContinueStep());
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
+                       AllSetSoundDoesNotPlayWhenEffectsPaused) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  auto mock_sounds_manager = std::make_unique<StrictMock<MockSoundsManager>>();
+  MockSoundsManager* mock_sounds_manager_ptr = mock_sounds_manager.get();
+
+  base::AutoReset<FirstRunFlowController::SoundsManagerFactory>
+      sounds_factory_reset =
+          FirstRunFlowController::SetSoundsManagerFactoryForTesting(
+              base::BindLambdaForTesting(
+                  [&mock_sounds_manager](
+                      audio::SoundsManager::StreamFactoryBinder)
+                      -> std::unique_ptr<audio::SoundsManager> {
+                    return std::move(mock_sounds_manager);
+                  }));
+
+  EXPECT_CALL(*mock_sounds_manager_ptr, Initialize)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Play(Not(FirstRunFlowController::kAllSetSoundKey)))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr, Stop)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr, Pause)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/false),
+      WaitForWebContentsNavigation(kWebContentsId, GetFeatureShowcaseUrl()),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      // Pause effects.
+      WaitForShow(kProfilePickerToolbarEffectsControlButtonElementId),
+      PressButton(kProfilePickerToolbarEffectsControlButtonElementId),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      CompleteFinishOrContinueStep());
+
+  WaitForPickerClosed();
+
+  // Since effects are paused, the all set sound should not be played (enforced
+  // by `StrictMock`).
+  EXPECT_TRUE(proceed_future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,

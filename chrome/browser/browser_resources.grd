@@ -86,6 +86,7 @@
     <includes>
       <if expr="is_win or is_macosx or is_linux">
         <!-- First Run audio resources -->
+        <include name="IDR_INTRO_SOUND_ALL_SET_FLAC" file="resources\intro\sounds\all_set.flac" type="BINDATA" />
         <include name="IDR_INTRO_SOUND_AMBIENT_FLAC" file="resources\intro\sounds\ambient.flac" type="BINDATA" />
         <include name="IDR_INTRO_SOUND_FEATURE_SHOWCASE_AMBIENT_FLAC" file="resources\intro\sounds\feature_showcase_ambient.flac" type="BINDATA" />
         <include name="IDR_INTRO_SOUND_FEATURE_SHOWCASE_PROGRESS_FLAC" file="resources\intro\sounds\feature_showcase_progress.flac" type="BINDATA" />

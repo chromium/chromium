@@ -66,7 +66,8 @@ std::unique_ptr<ProfileManagementStepController> CreateFinishOrContinueStep(
     ProfilePickerWebContentsHost* host,
     base::OnceCallback<bool()> eligibility_callback,
     base::RepeatingCallback<bool()> query_effects_callback,
-    base::OnceCallback<void(FinishOrContinueChoice)> step_completed_callback);
+    base::OnceCallback<void(FinishOrContinueChoice)> step_completed_callback,
+    base::OnceClosure play_all_set_sound_callback);
 
 class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
  public:
@@ -77,6 +78,7 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
       kFeatureShowcaseAmbientSoundKey = 3;
   static constexpr audio::SoundsManager::SoundKey
       kFeatureShowcaseProgressSoundKey = 4;
+  static constexpr audio::SoundsManager::SoundKey kAllSetSoundKey = 5;
 
   // Profile management flow controller that will run the FRE for `profile` in
   // `host`.
@@ -139,6 +141,8 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
   void ToggleFeatureShowcaseAmbientSound(bool active);
 
   void PlayFeatureShowcaseProgressSound();
+
+  void PlayAllSetSound();
 
   bool AreEffectsEnabled() const;
 

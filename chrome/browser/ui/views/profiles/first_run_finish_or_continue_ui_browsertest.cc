@@ -85,7 +85,8 @@ class FirstRunFinishOrContinuePixelTest
                                  eligible),
                   /*query_effects_callback=*/
                   base::BindRepeating([] { return false; }),
-                  /*step_completed_callback=*/base::DoNothing());
+                  /*step_completed_callback=*/base::DoNothing(),
+                  /*play_all_set_sound_callback=*/base::DoNothing());
             },
             GetParam().is_feature_showcase_eligible));
     profile_picker_view_tracker_.SetView(view);
