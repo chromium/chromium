@@ -73,11 +73,8 @@ IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ViewSource) {
             ExecuteViewSourceCommand(tab_applescript));
 }
 
-IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascript) {
-  // TODO(crbug.com/527722086): Flaky on Mac13 Tests builder.
-  if (base::mac::MacOSMajorVersion() == 13) {
-    GTEST_SKIP() << "Test disabled on macOS 13 due to flakiness.";
-  }
+// TODO(crbug.com/527722086): Flaky tests.
+IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, DISABLED_ExecuteJavascript) {
   Profile* profile = browser()->profile();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
