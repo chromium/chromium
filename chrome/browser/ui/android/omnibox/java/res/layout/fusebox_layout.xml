@@ -80,7 +80,7 @@ found in the LICENSE file.
         app:layout_constraintTop_toBottomOf="@id/url_bar"/>
 
     <org.chromium.ui.widget.ButtonCompat
-        style="@style/OutlinedButton"
+        style="@style/TextButton"
         android:id="@+id/fusebox_activation_chip"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/min_touch_target_size"
@@ -96,7 +96,6 @@ found in the LICENSE file.
         android:textAlignment="viewStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:buttonBorderStyle="solid"
         app:verticalInset="8dp"
         app:rippleCornerRadius="36dp"
         android:foreground="@drawable/activation_chip_focus_ring"/>
