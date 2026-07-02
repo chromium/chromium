@@ -171,7 +171,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_HistorySyncDisabled) {
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)))
       .Times(1);
 
-  service_->ExtractAnnotation(0, kUrl);
+  service_->ExtractAnnotation(0, kUrl, std::nullopt);
 }
 
 TEST_F(MultistepFilterServiceTest,
@@ -213,7 +213,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation) {
   EXPECT_CALL(*mock_observer_,
               OnExtractionFinished(testing::Optional(mock_uuid)));
 
-  service_->ExtractAnnotation(kTestNavigationId, kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl, std::nullopt);
 }
 
 TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotSignedIn) {
@@ -223,7 +223,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotSignedIn) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kTestNavigationId, kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl, std::nullopt);
 }
 
 TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NullIdentityManager) {
@@ -233,7 +233,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NullIdentityManager) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kTestNavigationId, kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl, std::nullopt);
 }
 
 TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotAllowedDomain) {
@@ -253,7 +253,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotAllowedDomain) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kTestNavigationId, kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl, std::nullopt);
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
@@ -375,7 +375,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_MsbbDisabled) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kTestNavigationId, kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl, std::nullopt);
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_MsbbDisabled) {
@@ -413,7 +413,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_EmptySupportedTasks) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kTestNavigationId, kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl, std::nullopt);
 }
 
 TEST_F(MultistepFilterServiceTest,

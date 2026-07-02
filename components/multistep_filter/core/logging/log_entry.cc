@@ -46,6 +46,8 @@ constexpr std::string_view LogEventTypeToString(LogEventType type) {
       return "SuggestionShown";
     case LogEventType::kSuggestionAccepted:
       return "SuggestionAccepted";
+    case LogEventType::kSuggestionApplied:
+      return "SuggestionApplied";
     case LogEventType::kSuggestionDismissed:
       return "SuggestionDismissed";
     case LogEventType::kSuggestionIgnored:

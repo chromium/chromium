@@ -4,10 +4,13 @@
 
 #include "components/multistep_filter/content/filter_navigation_observer.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
+#include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
@@ -16,6 +19,7 @@
 #include "components/multistep_filter/core/switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -31,9 +35,12 @@ struct NavigationMetadata {
   GURL prev_url;
   bool is_cryptographic_scheme;
   bool is_http_allowed_for_testing;
+  int net_error_code;
+  int http_response_code;
   bool is_error_page_navigation;
   bool has_user_gesture;
   bool was_filter_initiated_navigation;
+  std::optional<UrlFilterSuggestion> applied_suggestion;
   bool is_same_document_navigation;
 
   explicit NavigationMetadata(NavigationHandle* handle)
@@ -44,11 +51,23 @@ struct NavigationMetadata {
             url.SchemeIs(url::kHttpScheme) &&
             base::CommandLine::ForCurrentProcess()->HasSwitch(
                 switches::kMultistepFilterAllowHttpForTesting)),
-        is_error_page_navigation(handle->IsErrorPage()),
+        net_error_code(handle->GetNetErrorCode()),
+        http_response_code(handle->GetResponseHeaders()
+                               ? handle->GetResponseHeaders()->response_code()
+                               : 200),
+        is_error_page_navigation(
+            handle->IsErrorPage() || net_error_code != 0 ||
+            (http_response_code >= 400 && http_response_code <= 599)),
         has_user_gesture(handle->HasUserGesture()),
         was_filter_initiated_navigation(
             FilterInitiatedNavigationMarker::GetForNavigationHandle(*handle) !=
             nullptr),
+        applied_suggestion(
+            was_filter_initiated_navigation
+                ? FilterInitiatedNavigationMarker::GetForNavigationHandle(
+                      *handle)
+                      ->suggestion()
+                : std::nullopt),
         is_same_document_navigation(handle->IsSameDocument()) {}
 };
 
@@ -106,6 +125,19 @@ void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
                        LogEventType::kSuggestionGenerationStarted, host);
 }
 
+void LogSuggestionApplicationFailure(MultistepFilterLogRouter* log_router,
+                                     int64_t navigation_id,
+                                     std::string_view host,
+                                     int net_error_code,
+                                     int http_response_code) {
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kSuggestionApplied, host)
+      << LogDetail{"application_outcome", "failure"}
+      << LogDetail{"is_error_page", true}
+      << LogDetail{"net_error_code", net_error_code}
+      << LogDetail{"http_response_code", http_response_code};
+}
+
 }  // namespace
 
 FilterNavigationObserver::FilterNavigationObserver(
@@ -155,6 +187,11 @@ void FilterNavigationObserver::DidFinishNavigation(
   // Allow same-document navigations as they often represent Single Page
   // Application (SPA) state changes, but ignore other re-commits.
   if (metadata.is_error_page_navigation) {
+    if (metadata.applied_suggestion) {
+      LogSuggestionApplicationFailure(
+          log_router_, navigation_id, metadata.url.GetHost(),
+          metadata.net_error_code, metadata.http_response_code);
+    }
     LogUrlEligibilityCheck(log_router_, navigation_id, metadata.url.GetHost(),
                            /*eligible=*/false, "error_page");
     return;
@@ -185,7 +222,8 @@ void FilterNavigationObserver::DidFinishNavigation(
 
   LogAnnotationExtractionStarted(log_router_, navigation_id,
                                  metadata.url.GetHost());
-  service_->ExtractAnnotation(navigation_id, metadata.url);
+  service_->ExtractAnnotation(navigation_id, metadata.url,
+                              metadata.applied_suggestion);
 
   // Don't re-trigger if the navigation was already initiated by
   // the filter UI.
@@ -195,7 +233,8 @@ void FilterNavigationObserver::DidFinishNavigation(
     return;
   }
 
-  LogSuggestionGenerationStarted(log_router_, navigation_id, metadata.url.GetHost());
+  LogSuggestionGenerationStarted(log_router_, navigation_id,
+                                 metadata.url.GetHost());
   service_->GenerateFilterSuggestions(
       navigation_id, metadata.url,
       base::BindOnce(&MultistepFilterUiDelegate::OnSuggestionGenerated,

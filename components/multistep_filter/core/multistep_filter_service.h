@@ -85,7 +85,10 @@ class MultistepFilterService : public KeyedService,
 
   // Parses the given url to extract a `FilterAnnotation`. A filter annotation
   // is a set of normalized filter attributes.
-  virtual void ExtractAnnotation(int64_t navigation_id, const GURL& url);
+  virtual void ExtractAnnotation(
+      int64_t navigation_id,
+      const GURL& url,
+      std::optional<UrlFilterSuggestion> applied_suggestion);
 
   // Generates a filter suggestion for `url`. Based on URL analysis, the
   // suggestion may be stored for later use. Results are returned via the
@@ -116,7 +119,11 @@ class MultistepFilterService : public KeyedService,
   friend class MultistepFilterServiceTestApi;
 
   // Callback for when an annotation is extracted.
-  void OnExtractionFinished(std::optional<FilterAnnotation> annotation);
+  void OnExtractionFinished(
+      std::optional<UrlFilterSuggestion> applied_suggestion,
+      std::string host,
+      int64_t navigation_id,
+      std::optional<FilterAnnotation> annotation);
 
   // Callback for when a suggestion is generated.
   void OnSuggestionGenerated(
@@ -124,9 +131,11 @@ class MultistepFilterService : public KeyedService,
       std::optional<UrlFilterSuggestion> suggestion);
 
   // Callback for when `GetSupportedTaskForUrl` finishes for extraction.
-  void OnUrlAllowedForExtraction(const GURL& url,
-                                 std::vector<std::string> supported_task_types,
-                                 int64_t navigation_id);
+  void OnUrlAllowedForExtraction(
+      const GURL& url,
+      std::vector<std::string> supported_task_types,
+      int64_t navigation_id,
+      std::optional<UrlFilterSuggestion> applied_suggestion);
 
   // Callback for when `GetSupportedTaskForUrl` finishes for suggestion
   // generation.

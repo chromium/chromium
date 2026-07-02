@@ -51,6 +51,8 @@ std::string_view LogEventTypeToString(multistep_filter::LogEventType type) {
       return "Suggestion Shown";
     case multistep_filter::LogEventType::kSuggestionAccepted:
       return "Suggestion Accepted";
+    case multistep_filter::LogEventType::kSuggestionApplied:
+      return "Suggestion Applied";
     case multistep_filter::LogEventType::kSuggestionDismissed:
       return "Suggestion Dismissed";
     case multistep_filter::LogEventType::kSuggestionIgnored:

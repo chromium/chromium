@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("verification") {
+  sources = [
+    "filter_application_verifier.cc",
+    "filter_application_verifier.h",
+  ]
+  deps = [
+    "//base",
+    "//components/multistep_filter/core/data_models",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "filter_application_verifier_unittest.cc" ]
+  deps = [
+    ":verification",
+    "//base",
+    "//base/test:test_support",
+    "//components/multistep_filter/core/data_models",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

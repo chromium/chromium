@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
@@ -20,6 +21,7 @@
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
+#include "components/multistep_filter/core/verification/filter_application_verifier.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -103,6 +105,62 @@ void LogSuggestionSuppressed(MultistepFilterLogRouter* log_router,
       << LogDetail{"reason", std::string(reason)};
 }
 
+void LogSuggestionApplicationNoAnnotations(
+    MultistepFilterLogRouter* log_router,
+    int64_t navigation_id,
+    std::string_view host,
+    std::optional<UrlFilterSuggestion> suggested_filters) {
+  if (!suggested_filters) {
+    return;
+  }
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kSuggestionApplied, host)
+      << LogDetail{"application_outcome", "error_no_extracted_annotations"};
+}
+
+void LogSuggestionApplicationOutcome(
+    MultistepFilterLogRouter* log_router,
+    int64_t navigation_id,
+    std::string_view host,
+    const std::optional<UrlFilterSuggestion>& suggested_filters,
+    const std::optional<FilterAnnotation>& extracted_annotation) {
+  if (!suggested_filters) {
+    return;
+  }
+  if (!extracted_annotation) {
+    LogSuggestionApplicationNoAnnotations(log_router, navigation_id, host,
+                                          suggested_filters);
+    return;
+  }
+  const FilterApplicationVerifier::Result result =
+      FilterApplicationVerifier::Verify(*suggested_filters,
+                                        *extracted_annotation);
+
+  switch (result.outcome) {
+    case FilterApplicationVerifier::Result::Outcome::kNoExtractedAnnotations:
+      LogSuggestionApplicationNoAnnotations(log_router, navigation_id, host,
+                                            suggested_filters);
+      break;
+    case FilterApplicationVerifier::Result::Outcome::kCountMismatch:
+      MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                           LogEventType::kSuggestionApplied, host)
+          << LogDetail{"application_outcome", "error_filter_count_mismatch"};
+      break;
+    case FilterApplicationVerifier::Result::Outcome::kSuccess:
+      MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                           LogEventType::kSuggestionApplied, host)
+          << LogDetail{"application_outcome", "success"};
+      break;
+    case FilterApplicationVerifier::Result::Outcome::kAttributeMismatch:
+      MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                           LogEventType::kSuggestionApplied, host)
+          << LogDetail{"application_outcome", "error_attribute_mismatch"}
+          << LogDetail{"missing_filter_keys",
+                       base::JoinString(result.missing_keys, ", ")};
+      break;
+  }
+}
+
 }  // namespace
 
 MultistepFilterService::MultistepFilterService(Params params)
@@ -146,9 +204,13 @@ void MultistepFilterService::RecordUserInteractionWithSuggestion(
   RecordUserInteraction(pref_service_, decision);
 }
 
-void MultistepFilterService::ExtractAnnotation(int64_t navigation_id,
-                                               const GURL& url) {
+void MultistepFilterService::ExtractAnnotation(
+    int64_t navigation_id,
+    const GURL& url,
+    std::optional<UrlFilterSuggestion> applied_suggestion) {
   if (!HasUserProvidedConsent(navigation_id, url.GetHost())) {
+    LogSuggestionApplicationNoAnnotations(log_router_, navigation_id,
+                                          url.GetHost(), applied_suggestion);
     if (observer_for_test_) {
       observer_for_test_->OnExtractionFinished(std::nullopt);
     }
@@ -160,21 +222,27 @@ void MultistepFilterService::ExtractAnnotation(int64_t navigation_id,
       base::BindOnce(
           [](base::WeakPtr<MultistepFilterService> service, const GURL& url,
              int64_t navigation_id,
+             std::optional<UrlFilterSuggestion> applied_suggestion,
              std::vector<std::string> supported_task_types) {
             if (service) {
               service->OnUrlAllowedForExtraction(
-                  url, std::move(supported_task_types), navigation_id);
+                  url, std::move(supported_task_types), navigation_id,
+                  std::move(applied_suggestion));
             }
           },
-          weak_ptr_factory_.GetWeakPtr(), url, navigation_id),
+          weak_ptr_factory_.GetWeakPtr(), url, navigation_id,
+          std::move(applied_suggestion)),
       navigation_id);
 }
 
 void MultistepFilterService::OnUrlAllowedForExtraction(
     const GURL& url,
     std::vector<std::string> supported_task_types,
-    int64_t navigation_id) {
+    int64_t navigation_id,
+    std::optional<UrlFilterSuggestion> applied_suggestion) {
   if (supported_task_types.empty()) {
+    LogSuggestionApplicationNoAnnotations(log_router_, navigation_id,
+                                          url.GetHost(), applied_suggestion);
     LogExtractionFailed(log_router_, navigation_id, url.GetHost(),
                         "no_supported_tasks");
     if (observer_for_test_) {
@@ -188,7 +256,9 @@ void MultistepFilterService::OnUrlAllowedForExtraction(
   filter_extractor_->ExtractAnnotationFromUrl(
       url,
       base::BindOnce(&MultistepFilterService::OnExtractionFinished,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(applied_suggestion), url.GetHost(),
+                     navigation_id),
       navigation_id);
 }
 
@@ -252,11 +322,15 @@ void MultistepFilterService::OnUrlAllowedForSuggestion(
 }
 
 void MultistepFilterService::OnExtractionFinished(
+    std::optional<UrlFilterSuggestion> applied_suggestion,
+    std::string host,
+    int64_t navigation_id,
     std::optional<FilterAnnotation> annotation) {
+  LogSuggestionApplicationOutcome(log_router_, navigation_id, host,
+                                  applied_suggestion, annotation);
   if (observer_for_test_) {
     observer_for_test_->OnExtractionFinished(
-        annotation.has_value() ? std::make_optional(annotation.value().id)
-                               : std::nullopt);
+        annotation ? std::optional(annotation->id) : std::nullopt);
   }
 }
 

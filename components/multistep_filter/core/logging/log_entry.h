@@ -30,6 +30,7 @@ enum class LogEventType {
   kSuggestionCleared,
   kSuggestionShown,
   kSuggestionAccepted,
+  kSuggestionApplied,
   kSuggestionDismissed,
   kSuggestionIgnored,
   kServerRequestFailed,
