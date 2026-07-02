@@ -45,8 +45,28 @@ final class SidePanelContainerCoordinatorImpl
     private final FrameLayout mContainerView;
     private final SideUiCoordinator mSideUiCoordinator;
 
-    // TODO(crbug.com/496407828): Use this to notify native side of events like panel opened/closed.
+    /** JNI bridge to read/write C++ side panel states. */
     private @Nullable SidePanelCoordinatorAndroid mSidePanelCoordinatorAndroid;
+
+    /**
+     * See {@link #startOpeningPanel}.
+     *
+     * <p>TODO(crbug.com/530328329): Use {@link #mSidePanelCoordinatorAndroid} to update C++ side
+     * panel states, then delete this field. The C++ side is the source of truth for all mutable
+     * states, but this state is essentially a duplicate of the C++ {@code
+     * SidePanelCoordinatorAndroid::state_}.
+     */
+    private @Nullable Runnable mOnPanelOpenedRunnable;
+
+    /**
+     * See {@link #startClosingPanel}.
+     *
+     * <p>TODO(crbug.com/530328329): Use {@link #mSidePanelCoordinatorAndroid} to update C++ side
+     * panel states, then delete this field. The C++ side is the source of truth for all mutable
+     * states, but this state is essentially a duplicate of the C++ {@code
+     * SidePanelCoordinatorAndroid::state_}.
+     */
+    private @Nullable Runnable mOnPanelClosedRunnable;
 
     private @Nullable SidePanelDevFeatureImpl mSidePanelPureJavaDevFeature;
 
@@ -134,15 +154,16 @@ final class SidePanelContainerCoordinatorImpl
         mContainerView.removeAllViews();
         mContainerView.addView(content.mView);
 
+        // TODO(crbug.com/530328329): Delete this assert after directly calling into
+        // mSidePanelCoordinatorAndroid. The C++ side already ensures this state consistency.
+        assert mOnPanelClosedRunnable == null : "side panel hasn't finished closing";
+        mOnPanelOpenedRunnable = onPanelOpened;
+
         assert !mIsPreparingForAutoClose;
         if (!mIsPreparingForAutoRestore) {
             mSideUiCoordinator.updateUi(
                     new UiUpdateRequest(SideUiId.SIDE_PANEL, suppressAnimations));
         }
-
-        // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
-        //  finished.
-        onPanelOpened.run();
     }
 
     @Override
@@ -150,15 +171,16 @@ final class SidePanelContainerCoordinatorImpl
         log(TAG, "startClosingPanel", suppressAnimations);
         ThreadUtils.assertOnUiThread();
 
+        // TODO(crbug.com/530328329): Delete this assert after directly calling into
+        // mSidePanelCoordinatorAndroid. The C++ side already ensures this state consistency.
+        assert mOnPanelOpenedRunnable == null : "side panel hasn't finished opening";
+        mOnPanelClosedRunnable = onPanelClosed;
+
         assert !mIsPreparingForAutoRestore;
         if (!mIsPreparingForAutoClose) {
             mSideUiCoordinator.updateUi(
                     new UiUpdateRequest(SideUiId.SIDE_PANEL, suppressAnimations));
         }
-
-        // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
-        //  finished.
-        onPanelClosed.run();
     }
 
     @Override
@@ -300,7 +322,22 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void onUiUpdateCompleted(@Px int oldWidth, @Px int newWidth) {}
+    public void onUiUpdateCompleted(@Px int oldWidth, @Px int newWidth) {
+        // The side panel is fully opened.
+        if (mOnPanelOpenedRunnable != null) {
+            assert oldWidth == 0 && newWidth > 0;
+            mOnPanelOpenedRunnable.run();
+            mOnPanelOpenedRunnable = null;
+            return;
+        }
+
+        // The side panel is fully closed.
+        if (mOnPanelClosedRunnable != null) {
+            assert oldWidth > 0 && newWidth == 0;
+            mOnPanelClosedRunnable.run();
+            mOnPanelClosedRunnable = null;
+        }
+    }
 
     @Override
     public void onWillAutoClose() {
