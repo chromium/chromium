@@ -10,6 +10,7 @@
 
 #include "base/allocator/dispatcher/tls.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
