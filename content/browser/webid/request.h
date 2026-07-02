@@ -123,11 +123,6 @@ class CONTENT_EXPORT Request
   void OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
                                  bool idp_signin_status) override;
 
-  void SetNetworkManagerForTests(
-      std::unique_ptr<IdpNetworkRequestManager> manager);
-  void SetDialogControllerForTests(
-      std::unique_ptr<IdentityRequestDialogController> controller);
-
   base::WeakPtr<Request> GetWeakPtr();
 
   // content::FederatedIdentityModalDialogViewDelegate:
@@ -412,8 +407,6 @@ class CONTENT_EXPORT Request
       const std::optional<GURL>& selected_idp_config_url,
       std::optional<base::Value> token_data,
       bool is_auto_selected);
-
-  std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager();
 
   // Creates an inspector issue related to a federated authentication request to
   // the Issues panel in DevTools.

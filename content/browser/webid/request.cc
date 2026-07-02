@@ -357,7 +357,7 @@ bool Request::RequestToken(
   auth_request_token_callback_ = std::move(callback);
   GetPageData(render_frame_host().GetPage())
       ->SetPendingWebIdentityRequest(this);
-  network_manager_ = CreateNetworkManager();
+  network_manager_ = request_service_->CreateNetworkManager();
 
   start_time_ = base::TimeTicks::Now();
   if (!fedcm_metrics_) {
@@ -2105,21 +2105,6 @@ void Request::AddConsoleErrorMessage(FederatedAuthRequestResult result) {
 
 url::Origin Request::GetEmbeddingOrigin() const {
   return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
-}
-
-std::unique_ptr<IdpNetworkRequestManager> Request::CreateNetworkManager() {
-  return request_service_->CreateNetworkManager();
-}
-
-
-void Request::SetNetworkManagerForTests(
-    std::unique_ptr<IdpNetworkRequestManager> manager) {
-  request_service_->SetNetworkManagerForTests(std::move(manager));
-}
-
-void Request::SetDialogControllerForTests(
-    std::unique_ptr<IdentityRequestDialogController> controller) {
-  request_service_->SetDialogControllerForTests(std::move(controller));
 }
 
 IdentityRequestDialogController* Request::GetDialogController() {

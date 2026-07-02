@@ -306,7 +306,7 @@ TEST_F(IdentityCredentialSourceImplTest, SelectAccountSameSite) {
 
   TestIdentityCredentialSourceImpl::InitializeRequest(
       &request, std::make_unique<NiceMock<MockIdpNetworkRequestManager>>());
-  request.SetDialogControllerForTests(
+  service->SetDialogControllerForTests(
       std::make_unique<NiceMock<MockIdentityRequestDialogController>>());
 
   RequestPageData::GetOrCreateForPage(main_rfh()->GetPage())
@@ -384,7 +384,7 @@ TEST_F(IdentityCredentialSourceImplTest, SelectAccountCrossSiteFail) {
 
   TestIdentityCredentialSourceImpl::InitializeRequest(
       &request, std::make_unique<NiceMock<MockIdpNetworkRequestManager>>());
-  request.SetDialogControllerForTests(
+  service->SetDialogControllerForTests(
       std::make_unique<NiceMock<MockIdentityRequestDialogController>>());
 
   RequestPageData::GetOrCreateForPage(main_rfh()->GetPage())
@@ -463,7 +463,7 @@ TEST_F(IdentityCredentialSourceImplTest,
 
   TestIdentityCredentialSourceImpl::InitializeRequest(
       &request, std::make_unique<NiceMock<MockIdpNetworkRequestManager>>());
-  request.SetDialogControllerForTests(
+  service->SetDialogControllerForTests(
       std::make_unique<NiceMock<MockIdentityRequestDialogController>>());
 
   RequestPageData::GetOrCreateForPage(main_rfh()->GetPage())
@@ -553,7 +553,7 @@ TEST_F(IdentityCredentialSourceImplTest,
 
   TestIdentityCredentialSourceImpl::InitializeRequest(
       &request, std::make_unique<NiceMock<MockIdpNetworkRequestManager>>());
-  request.SetDialogControllerForTests(
+  service->SetDialogControllerForTests(
       std::make_unique<NiceMock<MockIdentityRequestDialogController>>());
 
   RequestPageData::GetOrCreateForPage(subframe->GetPage())

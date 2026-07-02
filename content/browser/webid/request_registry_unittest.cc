@@ -135,10 +135,10 @@ class RequestRegistryTest : public RenderViewHostImplTestHarness {
 
     auto mock_dialog_controller =
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
-    request_->SetDialogControllerForTests(std::move(mock_dialog_controller));
+    service->SetDialogControllerForTests(std::move(mock_dialog_controller));
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
-    request_->SetNetworkManagerForTests(std::move(network_request_manager));
+    service->SetNetworkManagerForTests(std::move(network_request_manager));
   }
 
   void TearDown() override {

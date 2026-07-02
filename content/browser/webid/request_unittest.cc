@@ -9132,7 +9132,8 @@ TEST_P(RequestNotifyAutofillParamTest, NotifyAutofillSuggestionAccepted) {
       std::make_unique<TestDialogController>(kConfigurationValid);
 
   dialog_controller->SetState(&dialog_controller_state_);
-  request_->SetDialogControllerForTests(std::move(dialog_controller));
+  RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+      ->SetDialogControllerForTests(std::move(dialog_controller));
 
   GURL idp = params.unknown_idp ? GURL("https://unknownidp.example/")
                                 : GURL(kProviderUrlFull);
