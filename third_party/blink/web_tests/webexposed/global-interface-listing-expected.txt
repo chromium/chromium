@@ -5426,6 +5426,7 @@ interface HTMLTemplateElement : HTMLElement
     getter shadowRootDelegatesFocus
     getter shadowRootMode
     getter shadowRootSerializable
+    getter shadowRootSlotAssignment
     method constructor
     setter htmlFor
     setter shadowRootAdoptedStyleSheets
@@ -5434,6 +5435,7 @@ interface HTMLTemplateElement : HTMLElement
     setter shadowRootDelegatesFocus
     setter shadowRootMode
     setter shadowRootSerializable
+    setter shadowRootSlotAssignment
 interface HTMLTextAreaElement : HTMLElement
     attribute @@toStringTag
     getter autocomplete

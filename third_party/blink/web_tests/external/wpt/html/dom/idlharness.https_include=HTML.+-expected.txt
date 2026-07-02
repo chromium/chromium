@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute headingOffset
   assert_own_property: expected property "headingOffset" missing
 [FAIL] HTMLElement interface: attribute headingReset
@@ -40,10 +40,6 @@ Found 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "fastSeek" missing
 [FAIL] HTMLMediaElement interface: operation getStartDate()
   assert_own_property: interface prototype object missing non-static operation expected property "getStartDate" missing
-[FAIL] HTMLTemplateElement interface: attribute shadowRootSlotAssignment
-  assert_true: The prototype object must have a property "shadowRootSlotAssignment" expected true got false
-[FAIL] HTMLTemplateElement interface: document.createElement("template") must inherit property "shadowRootSlotAssignment" with the proper type
-  assert_inherits: property "shadowRootSlotAssignment" not found in prototype chain
 [FAIL] HTMLFrameSetElement interface: attribute onpagereveal
   assert_true: The prototype object must have a property "onpagereveal" expected true got false
 [FAIL] HTMLFrameSetElement interface: attribute onpageswap

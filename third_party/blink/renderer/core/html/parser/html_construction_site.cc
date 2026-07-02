@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/html/parser/patch.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/script/ignore_destructive_write_count_incrementer.h"
@@ -1021,9 +1022,18 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
                                 html_names::kShadowrootdelegatesfocusAttr)
                                 ? FocusDelegation::kDelegateFocus
                                 : FocusDelegation::kNone;
-    // TODO(crbug.com/1063157): Add an attribute for imperative slot
-    // assignment.
-    auto slot_assignment_mode = SlotAssignmentMode::kNamed;
+
+    // The `shadowrootslotassignment` content attribute selects between
+    // "named" (default) and "manual". Any other value resolves to "named".
+    bool use_manual_slot_assignment =
+        RuntimeEnabledFeatures::ShadowRootSlotAssignmentEnabled() &&
+        EqualIgnoringAsciiCase(template_element->FastGetAttribute(
+                                   html_names::kShadowrootslotassignmentAttr),
+                               keywords::kManual);
+    auto slot_assignment_mode = use_manual_slot_assignment
+                                    ? SlotAssignmentMode::kManual
+                                    : SlotAssignmentMode::kNamed;
+
     bool serializable = template_element->FastHasAttribute(
         html_names::kShadowrootserializableAttr);
     bool clonable =

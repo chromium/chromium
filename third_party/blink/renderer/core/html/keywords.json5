@@ -185,6 +185,10 @@
     "open",
     "closed",
 
+    // shadowrootslotassignment attribute
+    // https://github.com/whatwg/html/pull/12267
+    "named",
+
     // visibilityState
     // https://w3c.github.io/page-visibility/#visibilitystate-enum
     "hidden",

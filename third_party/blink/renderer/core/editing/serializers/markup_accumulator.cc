@@ -647,6 +647,11 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     template_element->SetBooleanAttribute(
         html_names::kShadowrootserializableAttr, true);
   }
+  if (RuntimeEnabledFeatures::ShadowRootSlotAssignmentEnabled() &&
+      shadow_root->GetSlotAssignmentMode() == SlotAssignmentMode::kManual) {
+    template_element->setAttribute(html_names::kShadowrootslotassignmentAttr,
+                                   keywords::kManual);
+  }
   if (shadow_root->clonable()) {
     template_element->SetBooleanAttribute(html_names::kShadowrootclonableAttr,
                                           true);

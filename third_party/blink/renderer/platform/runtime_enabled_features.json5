@@ -5654,6 +5654,12 @@
       name: "ShadowRootReferenceTargetAriaOwns",
     },
     {
+      // Lets declarative shadow roots opt into manual slot assignment.
+      // crbug.com/493315747
+      name: "ShadowRootSlotAssignment",
+      status: "experimental",
+    },
+    {
       name: "SharedArrayBuffer",
       base_feature: "none",
       public: true,

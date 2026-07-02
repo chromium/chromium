@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
@@ -430,6 +431,11 @@ void WebFrameSerializerImpl::ShadowRootTagToString(ShadowRoot* shadow_root,
 
   if (shadow_root->delegatesFocus()) {
     result.Append(" shadowrootdelegatesfocus");
+  }
+
+  if (RuntimeEnabledFeatures::ShadowRootSlotAssignmentEnabled() &&
+      shadow_root->GetSlotAssignmentMode() == SlotAssignmentMode::kManual) {
+    result.Append(" shadowrootslotassignment=\"manual\"");
   }
 
   result.Append('>');
