@@ -22,6 +22,7 @@
 namespace base::i18n {
 
 class BASE_I18N_EXPORT LanguageTagConverter;
+class BASE_I18N_EXPORT LanguageSubtag;
 class BASE_I18N_EXPORT RegionSubtag;
 
 // A type-safe wrapper for BCP47 language tags (locales).
@@ -69,13 +70,25 @@ class BASE_I18N_EXPORT LanguageTag {
   // TODO(crbug.com/517510055): Convert unicode extensions to the legacy format.
   std::string ToLegacyICUFormat() const;
 
+  // Returns the language subtag in the language tag if present.
+  // Examples:
+  // - "en-US" -> "en"
+  // - "zh-Hant-TW" -> "zh"
+  // - "en" -> "en"
+  // - "sr-Latn" -> "sr"
+  // - "und-BR" -> "und"
+  //
+  // Notice that this does not necessarily represent the language itself as some
+  // of them need their region, script and variant to be properly represented.
+  LanguageSubtag GetLanguageSubtag() const;
+
   // Returns the region subtag in the language tag if present.
   // Examples:
   // - "en-US" -> "US"
   // - "zh-Hant-TW" -> "TW"
   // - "en" -> std::nullopt
   // - "sr-Latn" -> std::nullopt
-  std::optional<RegionSubtag> region_subtag() const;
+  std::optional<RegionSubtag> GetRegionSubtag() const;
 
   // Retrieves the singleton and subtag(s) for an extension to a BCP47 language
   // tag.
@@ -168,6 +181,21 @@ class BASE_I18N_EXPORT Bcp47Subtag {
 
 }  // namespace internal
 
+// Represents the language subtag extracted from a LanguageTag.
+// The spec definition can be found here:
+// https://www.rfc-editor.org/info/rfc5646/#section-2.1
+// They are defined as:
+// language      = 2*3ALPHA            ; shortest ISO 639 code
+//                 ["-" extlang]       ; sometimes followed by
+//                                     ; extended language subtags
+//               / 4ALPHA              ; or reserved for future use
+//               / 5*8ALPHA            ; or registered language subtag
+class LanguageSubtag : public internal::Bcp47Subtag<2, 3> {
+ public:
+  using base_type = internal::Bcp47Subtag<2, 3>;
+  using base_type::base_type;
+};
+
 // Represents the region subtag extracted from a LanguageTag.
 // The spec definition can be found here:
 // https://www.rfc-editor.org/info/rfc5646/#section-2.1
@@ -195,6 +223,14 @@ template <>
 struct hash<base::i18n::RegionSubtag> {
   std::size_t operator()(const base::i18n::RegionSubtag& region_subtag) const {
     return std::hash<std::string_view>()(region_subtag.subtag_string());
+  }
+};
+
+template <>
+struct hash<base::i18n::LanguageSubtag> {
+  std::size_t operator()(
+      const base::i18n::LanguageSubtag& language_subtag) const {
+    return std::hash<std::string_view>()(language_subtag.subtag_string());
   }
 };
 

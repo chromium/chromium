@@ -95,7 +95,13 @@ LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
   CHECK(tag_string().size() >= 2);
 }
 
-std::optional<RegionSubtag> LanguageTag::region_subtag() const {
+LanguageSubtag LanguageTag::GetLanguageSubtag() const {
+  std::string_view tag = tag_.AsString();
+  size_t lang_subtag_end = std::min(tag.find('-'), tag.size());
+  return LanguageSubtag(tag.substr(0, lang_subtag_end));
+}
+
+std::optional<RegionSubtag> LanguageTag::GetRegionSubtag() const {
   std::string_view tag = tag_.AsString();
   // Region tags are at least 2 chars, and language is at least 2.
   // "en-US" is 5 chars.
