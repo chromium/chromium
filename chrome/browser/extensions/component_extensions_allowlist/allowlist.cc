@@ -62,6 +62,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
 #if !BUILDFLAG(IS_ANDROID)
       extension_misc::kAimEligibilityExtensionId,
       extension_misc::kIndigoExtensionId,
+      extension_misc::kDictationConnectorExtensionId,
 #endif  // !BUILDFLAG(IS_ANDROID)
   });
 
