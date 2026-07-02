@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/multistep_filter/core/annotation_index/annotation_index_client_impl.h"
+#include "components/multistep_filter/core/annotation_index/network_annotation_index_client.h"
 
 #include <memory>
 #include <optional>
@@ -17,8 +17,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/multistep_filter/core/annotation_index/annotation_index_client_impl_test_api.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_test_utils.h"
+#include "components/multistep_filter/core/annotation_index/network_annotation_index_client_test_api.h"
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
@@ -95,16 +95,16 @@ bool GetRequestProtoFromPendingRequest(
   return out_proto->ParseFromString(body_content);
 }
 
-class AnnotationIndexClientImplTest : public testing::Test {
+class NetworkAnnotationIndexClientTest : public testing::Test {
  public:
-  AnnotationIndexClientImplTest()
+  NetworkAnnotationIndexClientTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     identity_test_env_.MakePrimaryAccountAvailable(
         "user@gmail.com", signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-    client_ = std::make_unique<AnnotationIndexClientImpl>(
+    client_ = std::make_unique<NetworkAnnotationIndexClient>(
         test_shared_loader_factory_, identity_test_env_.identity_manager(),
         /*log_router=*/nullptr);
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -112,7 +112,7 @@ class AnnotationIndexClientImplTest : public testing::Test {
         {{kMultistepFilterIndexServerApiBaseUrl.name, kTestApiUrl}});
   }
 
-  ~AnnotationIndexClientImplTest() override = default;
+  ~NetworkAnnotationIndexClientTest() override = default;
 
   void TearDown() override {
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -162,10 +162,10 @@ class AnnotationIndexClientImplTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
-  std::unique_ptr<AnnotationIndexClientImpl> client_;
+  std::unique_ptr<NetworkAnnotationIndexClient> client_;
 };
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetFilterSuggestionCandidates_Success_ReturnsCandidates) {
   GetTaskExecutionStrategiesResponse proto_response =
       CreateTaskExecutionStrategiesResponse(
@@ -198,7 +198,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_EQ((*result)[0].navigation_url.spec(), kTestSuggestionUrl);
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetFilterSuggestionCandidates_HttpError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<FilterSuggestionCandidate>>>
       future;
@@ -213,7 +213,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetFilterSuggestionCandidates_NetworkError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<FilterSuggestionCandidate>>>
       future;
@@ -227,7 +227,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetFilterSuggestionCandidates_InvalidResponse_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<FilterSuggestionCandidate>>>
       future;
@@ -241,7 +241,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetFilterSuggestionCandidates_EmptyResponse_ReturnsEmptyVector) {
   base::test::TestFuture<std::optional<std::vector<FilterSuggestionCandidate>>>
       future;
@@ -257,7 +257,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_TRUE(result->empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetFilterSuggestionCandidates_Timeout_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<FilterSuggestionCandidate>>>
       future;
@@ -271,7 +271,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetSupportedTasks_Success_ReturnsTaskTypes) {
   GetSupportedTasksResponse proto_response =
       CreateSupportedTasksResponse({kTask1, kTask2});
@@ -297,7 +297,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_EQ(result[1], kTask2);
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetSupportedTasks_HttpError_ReturnsEmptyVector) {
   base::test::TestFuture<std::vector<std::string>> future;
 
@@ -310,7 +310,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetSupportedTasks_NetworkError_ReturnsEmptyVector) {
   base::test::TestFuture<std::vector<std::string>> future;
 
@@ -322,7 +322,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetSupportedTasks_InvalidResponse_ReturnsEmptyVector) {
   base::test::TestFuture<std::vector<std::string>> future;
 
@@ -334,7 +334,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetSupportedTasks_EmptyResponse_ReturnsEmptyVector) {
   base::test::TestFuture<std::vector<std::string>> future;
 
@@ -346,7 +346,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetSupportedTasks_Timeout_ReturnsEmptyVector) {
   base::test::TestFuture<std::vector<std::string>> future;
 
@@ -358,7 +358,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        GetSupportedTasks_NotAllowedDomain_ReturnsEmptyVector) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -372,7 +372,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        ExtractFilterAnnotation_Success_ReturnsAnnotation) {
   ExtractTaskAttributesResponse proto_response =
       CreateExtractTaskAttributesResponse(
@@ -401,7 +401,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_EQ(result->attributes[0].value, kTestAttributeValue);
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        ExtractFilterAnnotation_HttpError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
@@ -414,7 +414,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        ExtractFilterAnnotation_NetworkError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
@@ -426,7 +426,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        ExtractFilterAnnotation_InvalidResponse_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
@@ -438,7 +438,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        ExtractFilterAnnotation_EmptyResponse_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
@@ -450,7 +450,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest,
+TEST_F(NetworkAnnotationIndexClientTest,
        ExtractFilterAnnotation_Timeout_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
@@ -462,7 +462,7 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest, BaseUrlOverriddenBySwitch) {
+TEST_F(NetworkAnnotationIndexClientTest, BaseUrlOverriddenBySwitch) {
   OverrideBaseUrlWithSwitch(kTestSwitchApiUrl);
   base::test::TestFuture<std::vector<std::string>> future;
 
@@ -476,7 +476,7 @@ TEST_F(AnnotationIndexClientImplTest, BaseUrlOverriddenBySwitch) {
       pending_request->request.url.spec().starts_with(kTestSwitchApiUrl));
 }
 
-TEST_F(AnnotationIndexClientImplTest, InvalidBaseUrlFailsQuickly) {
+TEST_F(NetworkAnnotationIndexClientTest, InvalidBaseUrlFailsQuickly) {
   OverrideBaseUrlWithSwitch(kTestInvalidUrl);
   base::test::TestFuture<std::vector<std::string>> future;
 
@@ -487,7 +487,7 @@ TEST_F(AnnotationIndexClientImplTest, InvalidBaseUrlFailsQuickly) {
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest, HandlesConcurrentRequests) {
+TEST_F(NetworkAnnotationIndexClientTest, HandlesConcurrentRequests) {
   GetSupportedTasksResponse proto_response1 =
       CreateSupportedTasksResponse({kTask1});
   GetSupportedTasksResponse proto_response2 =
@@ -515,7 +515,7 @@ TEST_F(AnnotationIndexClientImplTest, HandlesConcurrentRequests) {
   EXPECT_EQ(result2[0], kTask2);
 }
 
-TEST_F(AnnotationIndexClientImplTest, LoaderCleanedUpAfterCompletion) {
+TEST_F(NetworkAnnotationIndexClientTest, LoaderCleanedUpAfterCompletion) {
   base::test::TestFuture<std::vector<std::string>> future;
 
   client_->GetSupportedTasks(GURL(kTestUrl), future.GetCallback(),
@@ -526,10 +526,10 @@ TEST_F(AnnotationIndexClientImplTest, LoaderCleanedUpAfterCompletion) {
   EXPECT_TRUE(future.Take().empty());
 }
 
-TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthSuccess) {
+TEST_F(NetworkAnnotationIndexClientTest, ExecuteRequest_OAuthSuccess) {
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
-  auto client = std::make_unique<AnnotationIndexClientImpl>(
+  auto client = std::make_unique<NetworkAnnotationIndexClient>(
       test_shared_loader_factory_, identity_test_env_.identity_manager(),
       nullptr);
 
@@ -564,13 +564,13 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthSuccess) {
   EXPECT_EQ(*result, kTestFakeSuccessResponse);
 }
 
-TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_SignedOutFails) {
+TEST_F(NetworkAnnotationIndexClientTest, ExecuteRequest_SignedOutFails) {
   // We use a local IdentityTestEnvironment here instead of the fixture's one
   // because we need a signed-out state, and ClearPrimaryAccount() hits a
   // NOTREACHED() on ChromeOS.
   signin::IdentityTestEnvironment identity_test_env;
 
-  auto client = std::make_unique<AnnotationIndexClientImpl>(
+  auto client = std::make_unique<NetworkAnnotationIndexClient>(
       test_shared_loader_factory_, identity_test_env.identity_manager(),
       nullptr);
 
@@ -590,10 +590,10 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_SignedOutFails) {
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthFailure) {
+TEST_F(NetworkAnnotationIndexClientTest, ExecuteRequest_OAuthFailure) {
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
-  auto client = std::make_unique<AnnotationIndexClientImpl>(
+  auto client = std::make_unique<NetworkAnnotationIndexClient>(
       test_shared_loader_factory_, identity_test_env_.identity_manager(),
       nullptr);
 
@@ -616,7 +616,8 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthFailure) {
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_NonGoogleDomainNoToken) {
+TEST_F(NetworkAnnotationIndexClientTest,
+       ExecuteRequest_NonGoogleDomainNoToken) {
   OverrideBaseUrlWithSwitch("https://non-google.com/api/");
   base::test::TestFuture<std::optional<std::string>> future;
 

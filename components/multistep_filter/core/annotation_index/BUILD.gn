@@ -5,9 +5,9 @@ static_library("annotation_index") {
   ]
 
   sources = [
-    "annotation_index_client_impl.cc",
-    "annotation_index_client_impl.h",
     "annotation_index_conversion_util.cc",
+    "network_annotation_index_client.cc",
+    "network_annotation_index_client.h",
   ]
 
   friend = [ ":*" ]
@@ -37,13 +37,13 @@ static_library("annotation_index") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "annotation_index_client_impl_test_api.h",
     "annotation_index_test_utils.cc",
     "annotation_index_test_utils.h",
     "fake_annotation_index_server.cc",
     "fake_annotation_index_server.h",
     "mock_annotation_index_client.cc",
     "mock_annotation_index_client.h",
+    "network_annotation_index_client_test_api.h",
   ]
 
   deps = [
@@ -65,8 +65,8 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "annotation_index_client_impl_unittest.cc",
     "annotation_index_conversion_util_unittest.cc",
+    "network_annotation_index_client_unittest.cc",
   ]
 
   deps = [

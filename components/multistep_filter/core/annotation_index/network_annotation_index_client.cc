@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/multistep_filter/core/annotation_index/annotation_index_client_impl.h"
+#include "components/multistep_filter/core/annotation_index/network_annotation_index_client.h"
 
 #include <algorithm>
 #include <iterator>
@@ -82,9 +82,8 @@ constexpr std::string_view kExtractTaskAttributesEndpoint =
 // Network traffic annotation for `SiteAutomationIndexServer` API calls.
 constexpr net::NetworkTrafficAnnotationTag
     kMultiStepFilterServerRequestsTrafficAnnotation =
-        net::DefineNetworkTrafficAnnotation(
-            "multistep_filter_server_requests",
-            R"(
+        net::DefineNetworkTrafficAnnotation("multistep_filter_server_requests",
+                                            R"(
           semantics {
             sender: "Multistep Filter Service"
             description:
@@ -326,13 +325,13 @@ std::unique_ptr<AnnotationIndexClient> AnnotationIndexClient::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     MultistepFilterLogRouter* log_router) {
-  return std::make_unique<AnnotationIndexClientImpl>(
+  return std::make_unique<NetworkAnnotationIndexClient>(
       std::move(url_loader_factory), identity_manager, log_router);
 }
 
 // TODO(crbug.com/483673955): Add UMA metrics for latency, traffic, and error
 // tracking.
-AnnotationIndexClientImpl::AnnotationIndexClientImpl(
+NetworkAnnotationIndexClient::NetworkAnnotationIndexClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     MultistepFilterLogRouter* log_router)
@@ -340,9 +339,9 @@ AnnotationIndexClientImpl::AnnotationIndexClientImpl(
       identity_manager_(identity_manager),
       log_router_(log_router) {}
 
-AnnotationIndexClientImpl::~AnnotationIndexClientImpl() = default;
+NetworkAnnotationIndexClient::~NetworkAnnotationIndexClient() = default;
 
-void AnnotationIndexClientImpl::GetFilterSuggestionCandidates(
+void NetworkAnnotationIndexClient::GetFilterSuggestionCandidates(
     const GURL& url,
     base::span<const FilterAnnotation> filter_annotations,
     base::OnceCallback<
@@ -373,7 +372,7 @@ void AnnotationIndexClientImpl::GetFilterSuggestionCandidates(
       navigation_id, url.GetHost());
 }
 
-void AnnotationIndexClientImpl::GetSupportedTasks(
+void NetworkAnnotationIndexClient::GetSupportedTasks(
     const GURL& url,
     base::OnceCallback<void(std::vector<std::string>)> callback,
     int64_t navigation_id) {
@@ -392,7 +391,8 @@ void AnnotationIndexClientImpl::GetSupportedTasks(
     return;
   }
 
-  GetSupportedTasksRequest proto = ToGetSupportedTasksRequest(GetEtldPlusOne(url));
+  GetSupportedTasksRequest proto =
+      ToGetSupportedTasksRequest(GetEtldPlusOne(url));
   LogGetSupportedTasksRequestSent(
       log_router_, navigation_id, url.GetHost(),
       api_base_url.Resolve(kGetSupportedTasksEndpoint).spec());
@@ -413,7 +413,7 @@ void AnnotationIndexClientImpl::GetSupportedTasks(
       navigation_id, url.GetHost());
 }
 
-void AnnotationIndexClientImpl::ExtractFilterAnnotation(
+void NetworkAnnotationIndexClient::ExtractFilterAnnotation(
     const GURL& url,
     base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
     int64_t navigation_id) {
@@ -434,12 +434,12 @@ void AnnotationIndexClientImpl::ExtractFilterAnnotation(
       CreatePostResourceRequest(api_base_url, kExtractTaskAttributesEndpoint),
       proto.SerializeAsString(),
       BindParseAndConvert(std::move(callback),
-                          base::BindOnce(&ToFilterAnnotation, url),
-                          log_router_, navigation_id, url.GetHost()),
+                          base::BindOnce(&ToFilterAnnotation, url), log_router_,
+                          navigation_id, url.GetHost()),
       navigation_id, url.GetHost());
 }
 
-void AnnotationIndexClientImpl::ExecuteRequest(
+void NetworkAnnotationIndexClient::ExecuteRequest(
     std::unique_ptr<network::ResourceRequest> request,
     std::string request_body,
     base::OnceCallback<void(std::optional<std::string>, int)> callback,
@@ -476,7 +476,7 @@ void AnnotationIndexClientImpl::ExecuteRequest(
           account_id, signin::OAuthConsumerId::kMultistepFilter,
           base::BindOnce(
               [](scoped_refptr<base::RefCountedData<bool>> fin,
-                 base::WeakPtr<AnnotationIndexClientImpl> client,
+                 base::WeakPtr<NetworkAnnotationIndexClient> client,
                  base::UnguessableToken fetcher_id,
                  std::unique_ptr<network::ResourceRequest> request,
                  std::string request_body,
@@ -503,7 +503,7 @@ void AnnotationIndexClientImpl::ExecuteRequest(
   }
 }
 
-void AnnotationIndexClientImpl::OnAccessTokenFetched(
+void NetworkAnnotationIndexClient::OnAccessTokenFetched(
     base::UnguessableToken fetcher_id,
     std::unique_ptr<network::ResourceRequest> request,
     std::string request_body,
@@ -530,7 +530,7 @@ void AnnotationIndexClientImpl::OnAccessTokenFetched(
               navigation_id, std::move(host));
 }
 
-void AnnotationIndexClientImpl::StartLoader(
+void NetworkAnnotationIndexClient::StartLoader(
     std::unique_ptr<network::ResourceRequest> request,
     std::string request_body,
     base::OnceCallback<void(std::optional<std::string>, int)> callback,
@@ -547,13 +547,13 @@ void AnnotationIndexClientImpl::StartLoader(
   loader->SetTimeoutDuration(kNetworkRequestTimeout);
   loader->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&AnnotationIndexClientImpl::OnSimpleURLLoaderComplete,
+      base::BindOnce(&NetworkAnnotationIndexClient::OnSimpleURLLoaderComplete,
                      weak_ptr_factory_.GetWeakPtr(), loader_it,
                      std::move(callback), navigation_id, std::move(host)),
       kMaxDownloadSize);
 }
 
-void AnnotationIndexClientImpl::OnSimpleURLLoaderComplete(
+void NetworkAnnotationIndexClient::OnSimpleURLLoaderComplete(
     SimpleURLLoaderList::iterator loader_it,
     base::OnceCallback<void(std::optional<std::string>, int)> callback,
     int64_t navigation_id,
@@ -578,7 +578,7 @@ void AnnotationIndexClientImpl::OnSimpleURLLoaderComplete(
   std::move(callback).Run(std::move(response_body), response_code);
 }
 
-GURL AnnotationIndexClientImpl::GetIndexServerApiBaseUrl() const {
+GURL NetworkAnnotationIndexClient::GetIndexServerApiBaseUrl() const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(
           switches::kMultistepFilterIndexServerApiBaseUrl)) {

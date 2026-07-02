@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_ANNOTATION_INDEX_CLIENT_IMPL_H_
-#define COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_ANNOTATION_INDEX_CLIENT_IMPL_H_
+#ifndef COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_NETWORK_ANNOTATION_INDEX_CLIENT_H_
+#define COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_NETWORK_ANNOTATION_INDEX_CLIENT_H_
 
 #include <list>
 #include <map>
@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
-#include "components/version_info/channel.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -28,6 +27,7 @@ struct ResourceRequest;
 }  // namespace network
 
 namespace signin {
+class IdentityManager;
 class AccessTokenFetcher;
 struct AccessTokenInfo;
 }  // namespace signin
@@ -38,13 +38,28 @@ class MultistepFilterLogRouter;
 struct FilterAnnotation;
 struct FilterSuggestionCandidate;
 
-class AnnotationIndexClientImpl : public AnnotationIndexClient {
+// `NetworkAnnotationIndexClient` serves as the dedicated network and
+// translation layer between the `multistep_filter` component and the remote
+// `SiteAutomationIndexServer`.
+//
+// This class abstracts away the complexities of network communication and
+// Protocol Buffer handling from the core `multistep_filter` logic. It
+// achieves this by:
+//  - Accepting standard C++ types as input and serializing them into the
+//    specific Protocol Buffer format required by the backend API.
+//  - Managing asynchronous network requests, including internal handling of
+//    network state, timeouts, and HTTP response codes.
+//  - Deserializing the raw Protocol Buffer byte stream received in the
+//    response.
+//  - Extracting client-relevant data from the deserialized proto and
+//    packaging it into clean, lightweight C++ structs for callers.
+class NetworkAnnotationIndexClient : public AnnotationIndexClient {
  public:
-  AnnotationIndexClientImpl(
+  NetworkAnnotationIndexClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       MultistepFilterLogRouter* log_router);
-  ~AnnotationIndexClientImpl() override;
+  ~NetworkAnnotationIndexClient() override;
 
   // AnnotationIndexClient overrides:
   void GetFilterSuggestionCandidates(
@@ -65,7 +80,7 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
       int64_t navigation_id) override;
 
  private:
-  friend class AnnotationIndexClientImplTestApi;
+  friend class NetworkAnnotationIndexClientTestApi;
 
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
@@ -130,9 +145,9 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.
-  base::WeakPtrFactory<AnnotationIndexClientImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<NetworkAnnotationIndexClient> weak_ptr_factory_{this};
 };
 
 }  // namespace multistep_filter
 
-#endif  // COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_ANNOTATION_INDEX_CLIENT_IMPL_H_
+#endif  // COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_NETWORK_ANNOTATION_INDEX_CLIENT_H_
