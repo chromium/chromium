@@ -100,6 +100,8 @@ class SendTabToSelfBubbleController
 
   bool show_back_button() const { return show_back_button_; }
 
+  std::optional<ShareEntryPoint> entry_point() const { return entry_point_; }
+
   base::WeakPtr<SendTabToSelfBubbleController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

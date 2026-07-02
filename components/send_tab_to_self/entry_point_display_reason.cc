@@ -20,6 +20,7 @@ namespace {
 
 bool ShouldOfferSignin(syncer::SyncService* sync_service,
                        PrefService* pref_service) {
+  // TODO(crbug.com/529721376): Handle "signin pending" state (sync paused).
   return pref_service->GetBoolean(prefs::kSigninAllowed) &&
          sync_service->GetAccountInfo().IsEmpty() &&
          !sync_service->HasDisableReason(
