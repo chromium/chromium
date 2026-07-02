@@ -90,6 +90,10 @@ POLICY_EXPORT extern const base::FeatureParam<bool>
 // even if they are in the incognito allowlist.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kURLBlocklistOverridesIncognitoAllowlist);
 
+// Controls checking if the public key in the policy verification data matches
+// the expected public key.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kVerifyVerificationDataKey);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_
