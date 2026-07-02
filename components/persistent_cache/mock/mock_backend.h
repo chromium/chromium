@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_H_
 #define COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_H_
 
+#include "base/containers/span.h"
 #include "components/persistent_cache/backend.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

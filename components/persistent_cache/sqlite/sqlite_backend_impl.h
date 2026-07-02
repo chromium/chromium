@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"

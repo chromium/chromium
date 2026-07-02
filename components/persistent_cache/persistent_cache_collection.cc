@@ -13,6 +13,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"

@@ -5,6 +5,7 @@
 #include "base/memory_coordinator/multi_memory_consumer.h"
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
 

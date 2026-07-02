@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"

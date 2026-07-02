@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/test/gmock_expected_support.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/persistent_cache_collection.h"

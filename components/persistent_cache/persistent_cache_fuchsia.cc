@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"

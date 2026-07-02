@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
