@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wrapped_window_proc.h"
@@ -34,6 +35,7 @@
 #include "content/public/common/result_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
@@ -414,4 +416,82 @@ TEST_F(ProcessSingletonTest, DeterministicDestructionOrder) {
   // CHECKPOINT C: Lock is released and the lockfile is deleted.
   base::FilePath lock_file_path = profile_dir.GetPath().AppendASCII(kLockfile);
   EXPECT_FALSE(base::PathExists(lock_file_path));
+}
+
+// Verifies that if the lock file is temporarily busy during startup,
+// ProcessSingleton will successfully wait, retry, and acquire it once
+// it is released by the terminating process.
+// (Uses the Sleep Hook to run 100% synchronously and flake-free in 0ms).
+TEST_F(ProcessSingletonTest, LockFileRetrySuccess) {
+  base::ScopedTempDir profile_dir;
+  ASSERT_TRUE(profile_dir.CreateUniqueTempDir());
+  base::FilePath lock_file_path = profile_dir.GetPath().AppendASCII(kLockfile);
+
+  // 1. Lock the lockfile exclusively ourselves to simulate the race.
+  base::File external_lock(::CreateFile(
+      lock_file_path.value().c_str(), GENERIC_WRITE, 0,  // 0 = No sharing
+      NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
+  ASSERT_TRUE(external_lock.IsValid());
+  bool sleep_callback_ran = false;
+
+  // 2. Set the sleep callback to release our lock SYNCHRONOUSLY
+  // instead of physically sleeping the thread.
+  ProcessSingleton::SetSleepCallbackForTesting(
+      base::BindLambdaForTesting([&](base::TimeDelta delay) {
+        sleep_callback_ran = true;
+        external_lock.Close();
+      }));
+  absl::Cleanup cleanup = [&] {
+    ProcessSingleton::SetSleepCallbackForTesting(base::NullCallback());
+  };
+
+  // 3. Create ProcessSingleton directly with base::NullCallback() and trigger
+  // startup.
+  ProcessSingleton ps(profile_dir.GetPath(), base::NullCallback());
+  ProcessSingleton::NotifyResult result = ps.NotifyOtherProcessOrCreate();
+
+  // 4. Verify it successfully started as the master.
+  EXPECT_EQ(result, ProcessSingleton::PROCESS_NONE);
+
+  // Verify that the retry loop was actually entered and the sleep hook ran.
+  EXPECT_TRUE(sleep_callback_ran);
+}
+
+// Verifies that if the lock file remains busy indefinitely, ProcessSingleton
+// will eventually fail with LOCK_ERROR after the 5-second timeout.
+// (Uses Mock Time + the Sleep Hook to run the 5-second timeout instantly in
+// 0ms).
+TEST_F(ProcessSingletonTest, LockFileTimeoutFailure) {
+  // 1. Initialize TaskEnvironment with MOCK_TIME.
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  base::ScopedTempDir profile_dir;
+  ASSERT_TRUE(profile_dir.CreateUniqueTempDir());
+  base::FilePath lock_file_path = profile_dir.GetPath().AppendASCII(kLockfile);
+
+  // 2. Lock the lockfile exclusively and keep it locked.
+  base::File external_lock(::CreateFile(
+      lock_file_path.value().c_str(), GENERIC_WRITE, 0,  // 0 = No sharing
+      NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
+  ASSERT_TRUE(external_lock.IsValid());
+
+  // 3. Set the sleep callback to fast-forward the VIRTUAL clock
+  // instead of physically sleeping the thread.
+  ProcessSingleton::SetSleepCallbackForTesting(base::BindLambdaForTesting(
+      [&](base::TimeDelta delay) { task_environment.FastForwardBy(delay); }));
+  absl::Cleanup cleanup = [&] {
+    ProcessSingleton::SetSleepCallbackForTesting(base::NullCallback());
+  };
+
+  base::TimeTicks start = base::TimeTicks::Now();
+
+  // 4. Create ProcessSingleton and trigger startup.
+  // This will loop 50 times (50 * 100ms = 5s of virtual time) and fail
+  // instantly.
+  ProcessSingleton ps(profile_dir.GetPath(), base::NullCallback());
+  EXPECT_EQ(ps.NotifyOtherProcessOrCreate(), ProcessSingleton::LOCK_ERROR);
+
+  // 5. Verify that 5 seconds of VIRTUAL time elapsed.
+  EXPECT_GE(base::TimeTicks::Now() - start, base::Seconds(5));
 }

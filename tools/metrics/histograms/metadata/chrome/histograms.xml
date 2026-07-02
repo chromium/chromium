@@ -236,6 +236,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.ProcessSingleton.CreateLockFileWithTimeout.ErrorCode"
+    enum="WinGetLastError" expires_after="2027-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Records the Windows last error code (GetLastError) when lock file creation
+    fails for a reason other than a sharing violation. Recorded once per fatal
+    failure on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.CreateLockFileWithTimeout.Result"
+    enum="BooleanSuccess" expires_after="2027-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Records whether creating the lock file eventually succeeded. Recorded once
+    per attempt to create the lock file with a timeout on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.CreateLockFileWithTimeout.RetryCount"
+    units="retries" expires_after="2027-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Records the number of retries it took to successfully acquire the lock file.
+    Recorded once per successful lock file creation on Windows. A value of 0
+    indicates that the lock file was successfully acquired on the first attempt
+    with no retries.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
     expires_after="2027-06-29">
   <owner>gab@chromium.org</owner>

@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -37,6 +38,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "content/public/common/result_codes.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/gfx/win/hwnd_util.h"
@@ -215,7 +217,81 @@ void TerminateProcessWithHistograms(const base::Process& process,
   }
 }
 
+// Returns the thread-safe, exit-time destructor-safe callback instance.
+ProcessSingleton::SleepCallbackForTesting& GetSleepCallbackForTesting() {
+  static base::NoDestructor<ProcessSingleton::SleepCallbackForTesting> callback;
+  return *callback;
+}
+
+base::File CreateLockFileWithTimeout(const base::FilePath& lock_file_path,
+                                     base::TimeDelta timeout) {
+  base::ElapsedTimer elapsed_timer;
+  const base::TimeDelta delay = base::Milliseconds(100);  // Poll every 100ms.
+  base::File lock_file;
+  DWORD error;
+
+  absl::Cleanup cleanup = [&] {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Chrome.ProcessSingleton.CreateLockFileWithTimeout.Result",
+        lock_file.IsValid());
+  };
+
+  int retries = 0;
+  while (true) {
+    HANDLE lock_file_handle = nullptr;
+    {
+      TRACE_EVENT0("startup", "ProcessSingleton::Create:CreateLockFile");
+      lock_file_handle = ::CreateFile(
+          lock_file_path.value().c_str(), GENERIC_WRITE, FILE_SHARE_READ,
+          nullptr, CREATE_ALWAYS,
+          FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    }
+    error = ::GetLastError();
+
+    if (lock_file_handle != INVALID_HANDLE_VALUE) {
+      LOG_IF(WARNING, error == ERROR_ALREADY_EXISTS)
+          << "Lock file exists but is writable.";
+      UMA_HISTOGRAM_COUNTS_100(
+          "Chrome.ProcessSingleton.CreateLockFileWithTimeout.RetryCount",
+          retries);
+      return base::File(lock_file_handle);
+    }
+
+    if (error != ERROR_SHARING_VIOLATION) {
+      // If it failed for any reason other than a lock collision, abort
+      // immediately.
+      base::UmaHistogramSparse(
+          "Chrome.ProcessSingleton.CreateLockFileWithTimeout.ErrorCode", error);
+      break;
+    }
+
+    // Check if timeout has expired.
+    if (elapsed_timer.Elapsed() >= timeout) {
+      break;
+    }
+
+    // Sleep before retrying (or run the test hook).
+    if (auto& callback = GetSleepCallbackForTesting()) [[unlikely]] {
+      callback.Run(delay);  // IN-TEST
+    } else {
+      base::PlatformThread::Sleep(delay);
+    }
+
+    ++retries;
+  }
+
+  // Timeout or fatal error.
+  PLOG(ERROR) << "Lock file can not be created";
+  return base::File(base::File::OSErrorToFileError(error));
+}
+
 }  // namespace
+
+// static
+void ProcessSingleton::SetSleepCallbackForTesting(
+    SleepCallbackForTesting callback) {
+  GetSleepCallbackForTesting() = std::move(callback);  // IN-TEST
+}
 
 // Microsoft's Softricity virtualization breaks the sandbox processes.
 // So, if we detect the Softricity DLL we use WMI Win32_Process.Create to
@@ -394,25 +470,11 @@ bool ProcessSingleton::Create() {
     if (!remote_window_) {
       // We have to make sure there is no Chrome instance running on another
       // machine that uses the same profile.
-      HANDLE lock_file_handle = nullptr;
-      {
-        TRACE_EVENT0("startup", "ProcessSingleton::Create:CreateLockFile");
-        base::FilePath lock_file_path = user_data_dir_.AppendASCII(kLockfile);
-        lock_file_handle = ::CreateFile(
-            lock_file_path.value().c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-            NULL, CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, NULL);
-      }
-
-      DWORD error = ::GetLastError();
-      if (lock_file_handle != INVALID_HANDLE_VALUE) {
-        lock_file_ = base::File(std::exchange(lock_file_handle, nullptr));
-        LOG_IF(WARNING, error == ERROR_ALREADY_EXISTS)
-            << "Lock file exists but is writable.";
-      } else {
-        lock_file_ = base::File(base::File::OSErrorToFileError(error));
-        PLOG(ERROR) << "Lock file can not be created";
-      }
+      // The lockfile can also exist for a short amount of time while another
+      // Chrome process is getting terminated.
+      const base::TimeDelta kTimeout = base::Seconds(5);
+      lock_file_ = CreateLockFileWithTimeout(
+          user_data_dir_.AppendASCII(kLockfile), kTimeout);
 
       if (lock_file_.IsValid()) {
         // Set the window's title to the path of our user data directory so
@@ -442,5 +504,6 @@ void ProcessSingleton::OverrideShouldKillRemoteProcessCallbackForTesting(
 
 void ProcessSingleton::SetOnWindowDestroyedCallbackForTesting(
     base::OnceClosure callback) {
-  on_window_destroyed_for_testing_.ReplaceClosure(std::move(callback));
+  on_window_destroyed_for_testing_.ReplaceClosure(  // IN-TEST
+      std::move(callback));
 }

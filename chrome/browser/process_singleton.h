@@ -26,6 +26,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/time/time.h"
 #include "base/win/message_window.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -149,6 +150,13 @@ class ProcessSingleton {
   // Test-only callback triggered during destruction after the window is
   // reset but before the lock file is closed.
   void SetOnWindowDestroyedCallbackForTesting(base::OnceClosure callback);
+
+  // Overrides the sleep/delay between retries during lock acquisition.
+  using SleepCallbackForTesting =
+      base::RepeatingCallback<void(base::TimeDelta)>;
+
+  // Test-only callback triggered after a sleep.
+  static void SetSleepCallbackForTesting(SleepCallbackForTesting callback);
 #endif
 
  protected:
@@ -191,6 +199,8 @@ class ProcessSingleton {
   base::File lock_file_;
   base::ScopedClosureRunner on_window_destroyed_for_testing_;
   base::win::MessageWindow window_;
+
+  base::OnceClosure on_sleep_called_for_testing_;
 
   base::FilePath user_data_dir_;
   ShouldKillRemoteProcessCallback should_kill_remote_process_callback_;
