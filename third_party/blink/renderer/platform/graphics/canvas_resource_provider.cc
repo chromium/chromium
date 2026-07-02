@@ -310,44 +310,6 @@ Canvas2DResourceProvider::WillDrawInternal() {
   return dst_access;
 }
 
-void CanvasNon2DResourceProvider::SetAnimatedImageFrameIndexes(
-    scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes) {
-  CHECK(canvas_image_provider_);
-  canvas_image_provider_->SetAnimatedImageFrameIndexes(indexes);
-}
-
-bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
-    PaintImage::ContentId content_id) {
-  // If the canvas is single buffered, concurrent read/writes to the resource
-  // are allowed. Note that we ignore the resource lost case as well since
-  // that only indicates that we did not get a sync token for read/write
-  // synchronization which is not a requirement for single buffered canvas.
-  if (IsSingleBuffered()) {
-    return false;
-  }
-
-  // If the resource was lost, we can not use it for writes again.
-  if (resource()->IsLost()) {
-    return true;
-  }
-
-  // We have the only ref to the resource which implies there are no active
-  // readers.
-  if (resource_->HasOneRef()) {
-    return false;
-  }
-
-  // Its possible to have deferred work in skia which uses this resource. Try
-  // flushing once to see if that releases the read refs. We can avoid a copy
-  // by queuing this work before writing to this resource.
-  if (!is_software_) {
-    // Another context may have a read reference to this resource. Flush the
-    // deferred queue in that context so that we don't need to copy.
-    FlushForImageListener::Get()->NotifyFlushForImage(content_id);
-  }
-
-  return !resource_->HasOneRef();
-}
 
 std::unique_ptr<gpu::RasterScopedAccess>
 CanvasNon2DResourceProvider::WillDrawInternal() {
@@ -408,11 +370,6 @@ void Canvas2DResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
   }
 }
 
-void CanvasNon2DResourceProvider::PrepareForWebGPUDummyMailbox() {
-  if (resource()) {
-    resource()->PrepareForWebGPUDummyMailbox();
-  }
-}
 
 bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
                                            const void* pixels,
@@ -551,27 +508,6 @@ bool CanvasNon2DResourceProvider::CopyToBackingSharedImage(
   return true;
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-CanvasNon2DResourceProvider::BeginExternalOverwrite(
-    gpu::SyncToken& internal_access_sync_token) {
-  DCHECK(!is_software_);
-
-  if (IsGpuContextLost()) {
-    return nullptr;
-  }
-
-  // End the internal write access before calling WillDrawInternal(), which
-  // has a precondition that there should be no current write access on the
-  // resource.
-  EndWriteAccess();
-
-  // NOTE: Invoking WillDrawInternal() ensures that this invocation of
-  // EndAccess() will generate a new sync token.
-  auto access = WillDrawInternal();
-  resource_->EndAccess(std::move(access));
-  internal_access_sync_token = resource_->sync_token();
-  return resource_->GetSharedImage();
-}
 
 base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
@@ -682,14 +618,6 @@ void Canvas2DResourceProvider::TransferBackFromWebGPU(
   resource()->EndExternalWrite(webgpu_write_sync_token);
 }
 
-void CanvasNon2DResourceProvider::EndExternalWrite(
-    const gpu::SyncToken& external_write_sync_token) {
-  if (IsGpuContextLost()) {
-    return;
-  }
-
-  resource()->EndExternalWrite(external_write_sync_token);
-}
 
 gpu::SharedImageUsageSet Canvas2DResourceProvider::GetSharedImageUsageFlags()
     const {
@@ -697,61 +625,6 @@ gpu::SharedImageUsageSet Canvas2DResourceProvider::GetSharedImageUsageFlags()
 }
 
 
-scoped_refptr<CanvasResource>
-CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  cached_snapshot_.reset();
-
-  if (!IsSoftware() && IsGpuContextLost()) {
-    return nullptr;
-  }
-
-  scoped_refptr<CanvasResource> software_resource;
-  if (IsSoftware()) {
-    software_resource = NewOrRecycledResource();
-    if (!software_resource) {
-      return nullptr;
-    }
-  }
-
-  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
-  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
-  }
-
-  if (IsSoftware()) {
-    // Note that the resource *must* be a CanvasResourceSharedImage as this
-    // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(software_resource.get())
-        ->UploadSoftwareRenderingResults(GetSkSurface());
-
-    return software_resource;
-  }
-
-  // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must give up the current write access
-  // (if any).
-  EndWriteAccess();
-
-  return resource_;
-}
-
-scoped_refptr<StaticBitmapImage>
-CanvasNon2DResourceProvider::DoExternalOverdrawAndSnapshot(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-    ImageOrientation orientation) {
-  cached_snapshot_.reset();
-
-  if (!IsValid()) {
-    return nullptr;
-  }
-
-  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
-  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
-  }
-  return Snapshot(orientation);
-}
 
 void Canvas2DResourceProvider::EnsureWriteAccess() {
   DCHECK(resource_);
