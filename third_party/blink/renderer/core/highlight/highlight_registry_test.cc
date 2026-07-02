@@ -20,9 +20,15 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/replaced_painter.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -590,6 +596,92 @@ TEST_F(HighlightRegistryTest, MultipleHighlightsAppearInActiveSet) {
   EXPECT_EQ(2u, active.size());
   EXPECT_TRUE(active.Contains(name_a));
   EXPECT_TRUE(active.Contains(name_b));
+}
+
+TEST_F(HighlightRegistryTest,
+       ReplacedElementTrackingCurrentColorResolvesAgainstPreviousLayer) {
+  // A higher-priority ::highlight() rule with `background-color: currentColor`
+  // must resolve currentColor against the *previous* layer's resolved current
+  // color, matching the text-marker pipeline (HighlightOverlay::ComputeParts),
+  // not against the host's own ComputedStyle::color. Without the fix, an <img>
+  // covered by the same range as surrounding text gets a different visible
+  // color.
+  InsertStyleElement(
+      "body { color: blue; }"
+      "::highlight(low) { background-color: red; color: green; }"
+      "::highlight(high) { background-color: currentColor; }");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id='w'><img id='i' style='width:50px;height:50px;'></div>");
+  auto* wrapper = GetDocument().getElementById(AtomicString("w"));
+  ASSERT_TRUE(wrapper);
+  auto* img = To<Element>(GetDocument().getElementById(AtomicString("i")));
+  ASSERT_TRUE(img);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto build_wrapper_anchored_highlight = [&]() -> Highlight* {
+    auto* init = StaticRangeInit::Create();
+    init->setStartContainer(wrapper);
+    init->setStartOffset(0);
+    init->setEndContainer(wrapper);
+    init->setEndOffset(1);
+    auto* static_range = StaticRange::Create(init, ASSERT_NO_EXCEPTION);
+    HeapVector<Member<AbstractRange>> ranges;
+    ranges.push_back(static_range);
+    return Highlight::Create(ranges);
+  };
+
+  auto* low = build_wrapper_anchored_highlight();
+  auto* high = build_wrapper_anchored_highlight();
+  AtomicString low_name("low");
+  AtomicString high_name("high");
+
+  HighlightRegistry* registry =
+      HighlightRegistry::From(*GetDocument().domWindow());
+  registry->SetForTesting(low_name, low);
+  registry->SetForTesting(high_name, high);
+  // Force `high` to paint on top of `low` regardless of registration order.
+  low->setPriority(0);
+  high->setPriority(1);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Sanity-check that the highlight pseudo styles resolved as expected.
+  const ComputedStyle& host_style = img->ComputedStyleRef();
+  ASSERT_TRUE(HighlightStyleUtils::HighlightPseudoStyle(
+      host_style, kPseudoIdHighlight, low_name));
+  ASSERT_TRUE(HighlightStyleUtils::HighlightPseudoStyle(
+      host_style, kPseudoIdHighlight, high_name));
+
+  auto* layout_replaced = DynamicTo<LayoutReplaced>(img->GetLayoutObject());
+  ASSERT_TRUE(layout_replaced);
+
+  // The painter sorts active names by overlay stacking position
+  // (lowest-priority first) before passing them into the helper. We
+  // build the same order explicitly so the assertion is deterministic
+  // and doesn't depend on the registry sort.
+  Vector<AtomicString> sorted_names{low_name, high_name};
+
+  PaintController controller;
+  GraphicsContext context(controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
+
+  Vector<Color> backgrounds =
+      ReplacedPainter::ResolveStackedCustomHighlightBackgrounds(
+          *layout_replaced, sorted_names, paint_info);
+
+  ASSERT_EQ(2u, backgrounds.size())
+      << "Both highlight layers must produce a non-transparent tint over the "
+         "<img>.";
+  // The low layer keeps its explicit `background-color: red`.
+  EXPECT_EQ(Color::FromRGB(255, 0, 0), backgrounds[0]);
+  // The high layer's `background-color: currentColor` must resolve to
+  // the low layer's resolved current color (green), NOT the host's
+  // own `color` (blue).
+  EXPECT_EQ(Color::FromRGB(0, 128, 0), backgrounds[1])
+      << "currentColor on the high layer must resolve against the previous "
+         "layer's resolved color (green), matching the text-marker pipeline. ";
 }
 
 // ---------------------------------------------------------------------------

@@ -68,6 +68,7 @@ class PLATFORM_EXPORT DisplayItem {
     kCapsLockIndicator,
     kCaret,
     kColumnRules,
+    kCustomHighlightTint,
     kDocumentRootBackdrop,
     kDocumentBackground,
     kDragCaret,

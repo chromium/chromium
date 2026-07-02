@@ -123,6 +123,7 @@ static String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(Caret);
     DEBUG_STRING_CASE(CapsLockIndicator);
     DEBUG_STRING_CASE(ColumnRules);
+    DEBUG_STRING_CASE(CustomHighlightTint);
     DEBUG_STRING_CASE(DocumentRootBackdrop);
     DEBUG_STRING_CASE(DocumentBackground);
     DEBUG_STRING_CASE(DragCaret);

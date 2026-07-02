@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
+#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -208,12 +210,24 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     // Otherwise the resizer will be painted by the scroll corner layer.
   }
 
+  // Custom ::highlight() backgrounds and the ::selection tint are both painted
+  // only in the foreground phase and are suppressed while printing.
+  const bool should_draw_highlight_and_selection =
+      local_paint_info.phase == PaintPhase::kForeground &&
+      !layout_replaced_.GetDocument().Printing();
+  if (!should_draw_highlight_and_selection) {
+    return;
+  }
+
+  // Paint custom ::highlight() backgrounds over replaced content. These paint
+  // before any ::selection tint (custom highlights are below selection in the
+  // overlay stacking order) and regardless of selection state.
+  PaintCustomHighlights(local_paint_info, paint_offset);
+
   // The selection tint never gets clipped by border-radius rounding, since we
   // want it to run right up to the edges of surrounding content.
-  bool draw_selection_tint =
-      local_paint_info.phase == PaintPhase::kForeground &&
-      layout_replaced_.IsSelected() && layout_replaced_.CanBeSelectionLeaf() &&
-      !layout_replaced_.GetDocument().Printing();
+  const bool draw_selection_tint =
+      layout_replaced_.IsSelected() && layout_replaced_.CanBeSelectionLeaf();
   if (!draw_selection_tint)
     return;
 
@@ -252,6 +266,125 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
                           DarkModeFilter::ElementRole::kBackground));
   }
+}
+
+void ReplacedPainter::PaintCustomHighlights(
+    const PaintInfo& paint_info,
+    const PhysicalOffset& paint_offset) {
+  // The caller only invokes this in the foreground phase and not while
+  // printing (see the shared gate in Paint()).
+  DCHECK_EQ(paint_info.phase, PaintPhase::kForeground);
+  if (layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
+    return;
+  }
+  auto* element = DynamicTo<Element>(layout_replaced_.GetNode());
+  if (!element) {
+    return;
+  }
+  HighlightRegistry* registry =
+      HighlightRegistry::GetHighlightRegistry(element);
+  if (!registry) {
+    return;
+  }
+  const HashSet<AtomicString>& active_highlights =
+      registry->GetActiveHighlightsForReplacedElement(*element);
+  if (active_highlights.empty()) {
+    return;
+  }
+
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          paint_info.context, layout_replaced_,
+          DisplayItem::kCustomHighlightTint)) {
+    return;
+  }
+
+  // Tint the area the replaced content occupies. Per css-pseudo-4 3.4, the
+  // overlay "must cover at least the entire replaced object, and may extend
+  // outward to include the element's entire content box". When the content is
+  // clipped to the content box, tint that box; otherwise the object can
+  // overflow it (e.g. object-fit / object-view-box), so tint
+  // ReplacedContentRect() to cover the whole object. This mirrors the visual
+  // rect ImagePainter paints the image into.
+  PhysicalRect highlight_rect = layout_replaced_.ClipsToContentBox()
+                                    ? layout_replaced_.PhysicalContentBoxRect()
+                                    : layout_replaced_.ReplacedContentRect();
+  highlight_rect.Move(paint_offset);
+  gfx::Rect snapped_content_rect = ToPixelSnappedRect(highlight_rect);
+  if (snapped_content_rect.IsEmpty()) {
+    return;
+  }
+
+  // Collect highlight names sorted by overlay stacking position so that
+  // higher-priority highlights are painted on top. The comparator returns
+  // true when `a` is *below* `b` in the stack, so iterating the sorted
+  // vector paints lowest-priority first.
+  Vector<AtomicString> sorted_names(active_highlights);
+  std::stable_sort(sorted_names.begin(), sorted_names.end(),
+                   [registry](const AtomicString& a, const AtomicString& b) {
+                     return registry->CompareOverlayStackingPosition(a, b) ==
+                            HighlightRegistry::kOverlayStackingPositionBelow;
+                   });
+
+  // Resolve all background colors up front so we can avoid recording an
+  // empty drawing if every highlight resolves to a fully-transparent color
+  // (e.g. the cascade did not produce a background-color on this name).
+  Vector<Color> backgrounds = ResolveStackedCustomHighlightBackgrounds(
+      layout_replaced_, sorted_names, paint_info);
+  if (backgrounds.empty()) {
+    return;
+  }
+
+  DrawingRecorder recorder(paint_info.context, layout_replaced_,
+                           DisplayItem::kCustomHighlightTint,
+                           snapped_content_rect);
+  const auto auto_dark_mode = PaintAutoDarkMode(
+      layout_replaced_.StyleRef(), DarkModeFilter::ElementRole::kBackground);
+  for (const Color& background : backgrounds) {
+    paint_info.context.FillRect(snapped_content_rect, background,
+                                auto_dark_mode);
+  }
+}
+
+// static
+Vector<Color> ReplacedPainter::ResolveStackedCustomHighlightBackgrounds(
+    const LayoutReplaced& replaced,
+    const Vector<AtomicString>& sorted_names,
+    const PaintInfo& paint_info) {
+  // Mirrors the per-layer chain that HighlightOverlay::ComputeParts uses
+  // for text painting: seed `previous_layer_style.style.current_color`
+  // with the host's resolved `color`, then for each highlight layer
+  // (lowest priority first) compute the layer's resolved colors by
+  // running HighlightPaintingStyle followed by
+  // ResolveColorsFromPreviousLayer. The chain step carries the resolved
+  // current color forward so a higher-priority layer with
+  // `background-color: currentColor` reflects the lower layer's color,
+  // not the host's.
+  const ComputedStyle& style = replaced.StyleRef();
+  Node* node = replaced.GetNode();
+  HighlightStyleUtils::HighlightTextPaintStyle previous_layer_style;
+  previous_layer_style.style =
+      TextPainter::TextPaintingStyle(replaced.GetDocument(), style, paint_info);
+  Vector<Color> backgrounds;
+  backgrounds.ReserveInitialCapacity(sorted_names.size());
+
+  for (const AtomicString& name : sorted_names) {
+    const ComputedStyle* pseudo_style =
+        HighlightStyleUtils::HighlightPseudoStyle(style, kPseudoIdHighlight,
+                                                  name);
+    HighlightStyleUtils::HighlightTextPaintStyle layer_style =
+        HighlightStyleUtils::HighlightPaintingStyle(
+            replaced.GetDocument(), style, pseudo_style, node,
+            kPseudoIdHighlight, previous_layer_style.style, paint_info,
+            SearchTextIsActiveMatch::kNo);
+    HighlightStyleUtils::ResolveColorsFromPreviousLayer(layer_style,
+                                                        previous_layer_style);
+    if (!layer_style.background_color.IsFullyTransparent()) {
+      backgrounds.push_back(layer_style.background_color);
+    }
+    previous_layer_style = layer_style;
+  }
+
+  return backgrounds;
 }
 
 bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
