@@ -1856,7 +1856,7 @@
     },
     {
       name: "CSSPseudoElementBackdrop",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPseudoElementInterface",
@@ -1865,7 +1865,7 @@
     {
       name: "CSSPseudoElementViewTransitions",
       depends_on: ["CSSPseudoElementInterface"],
-      status: "test",
+      status: "stable",
     },
     {
       // Enables the :has-slotted pseudo-selector.
