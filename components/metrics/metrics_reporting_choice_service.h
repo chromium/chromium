@@ -4,11 +4,6 @@
 
 #ifndef COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
 #define COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
-
-#include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
-#include "components/prefs/pref_change_registrar.h"
 class PrefRegistrySimple;
 class PrefService;
 
@@ -22,13 +17,7 @@ namespace metrics {
 // TODO(crbug.com/483043192): This feature is still under development.
 class MetricsReportingChoiceService {
  public:
-  explicit MetricsReportingChoiceService(PrefService* local_state);
-
-  MetricsReportingChoiceService(const MetricsReportingChoiceService&) = delete;
-  MetricsReportingChoiceService& operator=(
-      const MetricsReportingChoiceService&) = delete;
-
-  ~MetricsReportingChoiceService();
+  MetricsReportingChoiceService() = delete;
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -62,17 +51,7 @@ class MetricsReportingChoiceService {
   static bool IsMetricsReportingDisabledByPolicy(
       const PrefService* local_state);
 
-  // Adds a callback to be notified when the metrics reporting level changes.
-  base::CallbackListSubscription AddOnMetricsReportingLevelChangedCallback(
-      base::RepeatingClosure callback);
-
  private:
-  void OnReportingLevelPrefChanged();
-
-  const raw_ptr<PrefService> local_state_;
-  PrefChangeRegistrar pref_registrar_;
-  base::RepeatingCallbackList<void()> callback_list_;
-
   friend class MetricsReportingChoiceServiceTest;
 };
 

@@ -54,10 +54,6 @@ namespace metrics {
 class MetricsService;
 }
 
-namespace metrics_services_manager {
-class MetricsServicesManager;
-}
-
 namespace network {
 class TestNetworkConnectionTracker;
 class TestNetworkQualityTracker;
@@ -215,9 +211,6 @@ class TestingBrowserProcess
   // TaskEnvironment::DestructionObserver:
   void WillDestroyCurrentTaskEnvironment() override;
 
-  void SetMetricsServicesManager(
-      metrics_services_manager::MetricsServicesManager*
-          metrics_services_manager);
   void SetMetricsService(metrics::MetricsService* metrics_service);
   void SetProfileManager(std::unique_ptr<ProfileManager> profile_manager);
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
@@ -288,8 +281,6 @@ class TestingBrowserProcess
       browser_policy_connector_;
   std::unique_ptr<network::TestNetworkQualityTracker>
       test_network_quality_tracker_;
-  raw_ptr<metrics_services_manager::MetricsServicesManager>
-      metrics_services_manager_ = nullptr;
   raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
   raw_ptr<variations::VariationsService> variations_service_ = nullptr;
 

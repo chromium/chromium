@@ -9,8 +9,6 @@
 
 #include "base/memory/scoped_refptr.h"
 
-class PrefService;
-
 namespace metrics {
 class EnabledStateProvider;
 class MetricsServiceClient;
@@ -44,9 +42,6 @@ class MetricsServicesManagerClient {
   // Gets the MetricsStateManager, creating it if it has not already been
   // created.
   virtual metrics::MetricsStateManager* GetMetricsStateManager() = 0;
-
-  // Gets the local state.
-  virtual PrefService* GetLocalState() = 0;
 
   // Returns the URL loader factory which the metrics services should use.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
