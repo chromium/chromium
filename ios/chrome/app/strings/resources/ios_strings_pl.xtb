@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} klucz dostępu}few{{count} klucze dostępu}many{{count} kluczy dostępu}other{{count} klucza dostępu}}</translation>
 <translation id="1005023885865154304">Otwórz ustawienia autouzupełniania haseł</translation>
 <translation id="1005230401424685968">RRRR</translation>
+<translation id="1013852467930342108">Live to nowa funkcja w Gemini w Chrome</translation>
 <translation id="1013952917065545813">Możesz wrócić tu później, by ponownie otworzyć ostatnio zamknięte karty</translation>
 <translation id="1016495303386450659">Zaktualizowano element</translation>
 <translation id="1018804590490383958">Zeskanuj i wypełnij automatycznie</translation>
@@ -1737,6 +1738,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6761393919622941301">Dźwięk</translation>
 <translation id="6765551480308401897">Nie ustawiaj jako domyślnego</translation>
 <translation id="6770452996697898492">[ZAREZERWOWANO]</translation>
+<translation id="6775952316617222141">Korzystanie z trybu Live w Gemini w Chrome</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6782531425936234573">Eksportuj dane</translation>
 <translation id="6791425686608802741">Kliknij „Dodaj kartę do nowej grupy”</translation>

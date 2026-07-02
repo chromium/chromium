@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromiumకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium మెనూను క్లిక్ చేయండి</translation>
 <translation id="1157985233335035034">ఇటీవలి భాషలు</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ఎక్స్‌టెన్షన్ కారణంగా Chromium పని చేసే విధానం మారవచ్చు.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">మీ Windows వెర్షన్‌ సపోర్ట్ చేయనందున ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1186645291482254714">మీ ఫోన్‌లో Chromiumతో ధర ట్రాకింగ్ అలర్ట్‌లను పొందండి</translation>
@@ -53,7 +50,6 @@
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="154404805518949443">Chromiumకు సైన్ ఇన్ చేయండి</translation>
 <translation id="1547469039832541117">హైలైట్ అయిన టాస్క్‌ను ముగిస్తుంది.</translation>
-<translation id="1553461853655228091">మీ పరిసరాల 3D మ్యాప్‌ను క్రియేట్ చేయడానికి Chromiumకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
 <translation id="1562320819937089394">Chromiumను పిన్ చేయండి</translation>
 <translation id="1574377791422810894">Chromium భద్రతా టూల్స్</translation>
 <translation id="1594928384848033697">Chromium మీ Password Manager డేటాను తొలగించాలనుకుంటోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
@@ -215,9 +211,6 @@
 <translation id="3155163173539279776">Chromiumను పునఃప్రారంభించండి</translation>
 <translation id="3161522574479303604">అన్ని భాషలు</translation>
 <translation id="3179665906251668410">Chromium అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
-<translation id="3183357154200327217">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన థీమ్ కారణంగా, Chromium పని చేసే విధానం మారవచ్చు.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">మీ కొత్త Chromium ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="3189205223539394158">మీరు ట్యాబ్‌లను మార్చకుండానే AI మోడ్‌తో చాట్ చేయవచ్చు. ప్రారంభించడానికి, Chromiumకు సైన్ ఇన్ చేయండి. మీ డివైజ్‌లన్నిటిలో మీ పాస్‌వర్డ్‌లు, మరిన్ని ప్రయోజనాలను కూడా పొందుతారు.</translation>
 <translation id="3224847870593914902">Chromium నుండి మీ Google ఖాతాను తీసివేయడానికి, సెట్టింగ్‌ల పేజీలోని Chromium నుండి సైన్ అవుట్ చేయండి</translation>
@@ -294,9 +287,6 @@
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయడం ద్వారా Chromiumను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="4050175100176540509">ముఖ్యమైన భద్రతా మెరుగుదలలు మరియు కొత్త ఫీచర్‌లు తాజా వెర్షన్‌లో అందుబాటులో ఉన్నాయి.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
-<translation id="4061696872429826774">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన ఎక్స్‌టెన్షన్ కారణంగా Chromium పని చేసే విధానం మారవచ్చు.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromiumను 1 నిమిషం పాటు ఉపయోగించనప్పుడు, మీ సంస్థ ఆటోమేటిక్‌గా దాన్ని మూసివేస్తుంది. బ్రౌజింగ్ డేటాను తొలగించడం జరుగుతుంది. ఇందులో భాగంగా హిస్టరీ, ఆటోఫిల్, డౌన్‌లోడ్‌లు ఉండవచ్చు.}other{Chromiumను # నిమిషాల పాటు ఉపయోగించనప్పుడు, మీ సంస్థ ఆటోమేటిక్‌గా దాన్ని మూసివేస్తుంది. బ్రౌజింగ్ డేటాను తొలగించడం జరుగుతుంది. ఇందులో భాగంగా హిస్టరీ, ఆటోఫిల్, డౌన్‌లోడ్‌లు ఉండవచ్చు.}}</translation>
 <translation id="4118474109249235144">Chromium అజ్ఞాత మోడ్</translation>
 <translation id="4122186850977583290">Chromium పేజీ వివరాలకు వెళ్లండి</translation>
@@ -409,7 +399,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{మీ బ్రౌజర్ వేగాన్ని తగ్గించే ట్యాబ్‌ను పాజ్ చేయమని Chromium సిఫార్సు చేస్తుంది}other{మీ బ్రౌజర్ వేగాన్ని తగ్గించే ట్యాబ్‌లను పాజ్ చేయమని Chromium సిఫార్సు చేస్తుంది}}</translation>
 <translation id="5473971139929175403">Chromiumకు ఇక ఈ Linux డిస్ట్రిబ్యూషన్‌లో సపోర్ట్ లేనందున అది సరిగ్గా పని చేయకపోవచ్చు</translation>
 <translation id="5475924890392386523">ఈ డౌన్‌లోడ్‌ను Chromium బ్లాక్ చేసింది, ఎందుకంటే మీ వ్యక్తిగత, సోషల్ నెట్‌వర్క్ ఖాతాలకు ఆ ఫైల్ హాని కలిగించగలదు</translation>
-<translation id="5480860683791598150">ఈ సైట్‌తో మీ లొకేషన్‌ను షేర్ చేయడానికి Chromiumకు మీ లొకేషన్ యాక్సెస్ అవసరం</translation>
 <translation id="549669000822060376">దయచేసి Chromium తాజా సిస్టమ్ అప్‌డేట్‌లను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="5496810170689441661">పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి Chromium ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="549975168243349205">Chromiumతో ప్రయాణంలోనూ Google Drive, YouTube వంటి మీకు ఇష్టమైన యాప్‌లను అవాంతరాలు లేకుండా సులభంగా ఉపయోగించుకోండి.</translation>
@@ -476,9 +465,6 @@
 <translation id="6174920971222007286">ఈ ఫైల్ ప్రమాదకరమైనది కావచ్చు<ph name="LINE_BREAK" />మీరు పాస్‌వర్డ్‌ను అందించినట్లయితే Chromium మీ కోసం ఈ డౌన్‌లోడ్‌ను చెక్ చేస్తుంది. ఫైల్ గురించిన సమాచారం Google సురక్షిత బ్రౌజింగ్‌కు పంపబడుతుంది, అయితే ఫైల్ కంటెంట్, పాస్‌వర్డ్ మీ పరికరంలో ఉంటాయి.</translation>
 <translation id="6182736845697986886">అప్‌డేట్ సర్వర్ అంతర్గత ఎర్రర్ కారణంగా ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
 <translation id="6183079672144801177">మీ <ph name="TARGET_DEVICE_NAME" />లో మీరు Chromiumకు సైన్ ఇన్ చేశారని నిర్ధారించుకుని, ఆపై మళ్లీ పంపడానికి ట్రై చేయండి.</translation>
-<translation id="6204922163963157461">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ జోడించిన యాప్ కారణంగా, Chromium పని చేసే విధానం మారవచ్చు.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">ఈ కంప్యూటర్‌లో ఇప్పటికే మరింత తాజాదైన Chromium వెర్షన్ ఉంది. సాఫ్ట్‌వేర్ పని చేయకపోతే, దయచేసి Chromiumను అన్ఇన్‌స్టాల్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ఇప్పుడు తిరిగి ప్రారంభించబడుతుంది}=1{1 సెకనులో Chromium తిరిగి ప్రారంభించబడుతుంది}other{# సెకన్లలో Chromium తిరిగి ప్రారంభించబడుతుంది}}</translation>
 <translation id="6239161312595354541">ఈ వీడియో గురించి వివరాలు తెలుసుకోవడానికి ఇమేజ్ సెర్చ్‌ను అడగండి</translation>
@@ -580,7 +566,6 @@
 <translation id="6964305034639999644">Chromium అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6985329841647292029">ChromiumOS నియమాలు</translation>
-<translation id="6990124437352146030">ఈ సైట్ కోసం మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>
 <translation id="7003299027384820442">మీ ఖాతా <ph name="ACCOUNT_EMAIL" />‌లో Chromium డేటాను ఉపయోగించడానికి, సేవ్ చేయడానికి మీ రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>
 <translation id="7011190694940573312">ఈ వెర్షన్ ఆపరేటింగ్ సిస్టమ్ సపోర్ట్ చేయనందున ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
 <translation id="7024536598735240744">డెవలపర్ మోడ్‌లో ఉన్న ఎర్రర్: <ph name="UNPACK_ERROR" />.</translation>
@@ -623,7 +608,6 @@
 3. క్విక్ యాక్సెస్ కోసం Chromiumను మీ టాస్క్‌బార్‌కు పిన్ చేయడానికి, Windows నోటిఫికేషన్‌లో <ph name="BUTTON_3" />‌ను క్లిక్ చేయండి</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">టెక్స్ట్ కాపీ చేయబడింది</translation>
-<translation id="7451052299415159299">ఈ సైట్ కోసం మీ కెమెరాను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>
 <translation id="7458892263350425044">మైక్రోఫోన్‌ను ఉపయోగించడానికి, <ph name="BEGIN_LINK" />సిస్టమ్ సెట్టింగ్‌ల<ph name="END_LINK" />‌లో Chromiumకు యాక్సెస్ ఇవ్వండి</translation>
 <translation id="7461356015007898716">భవిష్యత్తులో Chromium అప్‌డేట్‌లను పొందడానికి, మీకు Windows 10 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ Windows 7ను ఉపయోగిస్తోంది.</translation>
 <translation id="7467949745582939695">Chromiumను రీ-లాంచ్ చేయాలా?</translation>
@@ -748,8 +732,8 @@
 <translation id="8719993436687031146">Chromiumకు సైన్ ఇన్ చేయాలా?</translation>
 <translation id="8747073452963259673">సెర్చ్ ఏరియాకు దిగువ ఎడమ మూలన: ఎడమ వైపు <ph name="LEFT" />%, దిగువ <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">ఇన్‌స్టలేషన్ ఎర్రర్: మీ నెట్‌వర్క్ అడ్మినిస్ట్రేటర్ ఇన్‌స్టాలేషన్‌ను నిరోధించే గ్రూప్ పాలసీని వర్తింపజేశారు: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">ఈ సైట్ కోసం మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>
 <translation id="8813277370772331957">నాకు తర్వాత గుర్తు చేయి</translation>
+<translation id="8816416449795340678">త్వరగా ఓవర్‌వ్యూ పొందడానికి, ఫాలో-అప్ ప్రశ్నలు అడగడానికి, Chromium లోని Gemini తో ఈ డాక్యుమెంట్‌ను షేర్ చేయండి</translation>
 <translation id="8818550178040858407">Chromiumకు సైన్ ఇన్ చేయాలా?</translation>
 <translation id="8823401858233292222">Chromiumను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసి, టాస్క్‌బార్‌కు పిన్ చేయండి</translation>
 <translation id="8826492472752484139">“Password Manager”ను క్లిక్ చేయండి</translation>

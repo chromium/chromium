@@ -690,7 +690,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :</translatio
 <translation id="8163152278172770963">Ne pas autoriser les sites à passer en Picture-in-picture automatiquement</translation>
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="818487310457576362">Balayez l'écran vers le côté pour quitter le plein écran.</translation>
-<translation id="8186479265534291036">Impossible d'accéder au site ? Les cookies tiers sont bloqués.</translation>
 <translation id="8197286292360124385">Autorisation accordée : <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8211406090763984747">La connexion est sécurisée</translation>
@@ -761,7 +760,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :</translatio
 <translation id="8805385115381080995">La navigation est plus rapide, car les sites sont moins susceptibles de vous demander de confirmer que vous êtes une personne bien réelle</translation>
 <translation id="881644524232657178">Lorsque cette option est activée, les sites peuvent utiliser les capteurs de mouvement et de luminosité de votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les capteurs.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="8889294078294184559">Lorsque vous continuez à naviguer, les sites peuvent vérifier avec Chrome et avec un site que vous avez déjà visité si vous êtes une personne réelle</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
@@ -787,7 +785,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :</translatio
 <translation id="913657688200966289">Activez les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notifications autorisées</translation>
 <translation id="9138217887606523162">Le zoom actuel est de <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Les sites utilisent cette fonctionnalité pour passer en Picture-in-picture automatiquement. Cela vous permet de continuer à regarder une vidéo tout en libérant votre écran pour d'autres tâches.</translation>
 <translation id="9156722768168878035">Autorisez Chrome à afficher vos onglets récents dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option à tout moment dans les paramètres de Chrome.</translation>
 <translation id="9162462602695099906">Cette page est dangereuse</translation>
 <translation id="9182556968660520230">Ne pas autoriser les sites à lire du contenu protégé</translation>

@@ -690,7 +690,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="8163152278172770963">Sitelerin otomatik olarak pencere içinde pencere moduna girmesine izin verme</translation>
 <translation id="8168435359814927499">İçerik</translation>
 <translation id="818487310457576362">Tam ekrandan çıkmak için ekranın kenarından sürükleyin.</translation>
-<translation id="8186479265534291036">Site çalışmıyor mu? Üçüncü taraf çerezleri engellendi</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> için izin verildi</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
@@ -761,7 +760,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="8805385115381080995">Sitelerin gerçek bir kişi olduğunuzu doğrulamanızı isteme olasılığı daha düşük olduğundan daha hızlı bir göz atma deneyimi yaşarsınız</translation>
 <translation id="881644524232657178">Bu düğme açıkken siteler cihazınızın hareket ve ışık sensörlerini kullanabilir. Düğme kapalıyken siteler sensörleri kullanamaz.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
 <translation id="8889294078294184559">Siz sitelere göz atarken siteler de Chrome'dan kontrol ederek ziyaret ettiğiniz önceki bir siteden büyük olasılıkla gerçek bir kişi olduğunuzu doğrular</translation>
 <translation id="8899807382908246773">Araya giren reklamlar</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>
@@ -787,7 +785,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>
 <translation id="9138037198177304356">Bildirimlere izin veriliyor</translation>
 <translation id="9138217887606523162">Şu anki yakınlaştırma düzeyi %%<ph name="ZOOM_LEVEL" /></translation>
-<translation id="915112772806845021">Siteler, otomatik olarak pencere içinde pencere moduna girmek için bu özelliği kullanır. Bu sayede hem video izlemeye devam edebilir hem de ekranınızda diğer görevler için yer açabilirsiniz.</translation>
 <translation id="9156722768168878035">Chrome'un son sekmelerinizi cihazınızın uygulama listesinde ve arama sonuçlarında göstermesine izin verin. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
 <translation id="9162462602695099906">Bu sayfa tehlikeli</translation>
 <translation id="9182556968660520230">Sitelerin korumalı içeriği oynatmasına izin verme</translation>

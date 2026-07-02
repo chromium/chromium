@@ -243,6 +243,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2056878612599315956">Strona wstrzymana</translation>
 <translation id="2063047797624276601">Twoja organizacja włączyła Ulepszone bezpieczne przeglądanie</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Nie udało się pobrać 1 pliku}few{Nie udało się pobrać # plików}many{Nie udało się pobrać # plików}other{Nie udało się pobrać # pliku}}</translation>
+<translation id="2066690553719545730">Zawsze pokazuj Tryb AI</translation>
 <translation id="2067805253194386918">Tekst</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2082238445998314030">Wynik <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2149968176347646218">Połączenie nie jest bezpieczne</translation>
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2163089732491971196">Wpisz hasło wielowyrazowe, aby móc zapisywać dane z Chrome na koncie Google i ich używać</translation>
+<translation id="2164015935042801524">Kliknij tutaj prawym przyciskiem myszy, aby wyświetlić karty w pionie</translation>
 <translation id="2166228530126694506">Wersja <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Opisy do obrazów są wyłączone</translation>
 <translation id="2172905120685242547">Zamknąć okno?</translation>
@@ -305,6 +307,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2327445548174191329">Z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />”, a wszystkie linki z zaproszeniami zostaną wyłączone</translation>
+<translation id="2329500425421091035">Przedstawiamy Tryb AI w Chrome</translation>
 <translation id="2330186936255788117">Więcej zakładek</translation>
 <translation id="2332515770639153015">Włączono Ulepszone Bezpieczne przeglądanie</translation>
 <translation id="233375395665273385">Usuń i wyloguj się</translation>
@@ -1057,7 +1060,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5436928407363358055">Aby łatwo wracać do tego samego miejsca, zsynchronizuj historię i karty</translation>
 <translation id="5438292632479953702">Pobierz ponownie</translation>
 <translation id="5439191312780166229">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
-<translation id="5441137934526263133">Strona nie działa? Blokowane są pliki cookie innych firm</translation>
 <translation id="5441466871879044658">Tłumacz na ten język</translation>
 <translation id="5444999712122199445">Wróć do witryny</translation>
 <translation id="544776284582297024">Aby otworzyć karty i jednocześnie wejść na kilka stron, kliknij przycisk otwierania kart</translation>
@@ -1112,7 +1114,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="569536719314091526">Możesz przetłumaczyć tę stronę na dowolny język, używając przycisku Więcej opcji</translation>
 <translation id="5696597120588531049">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami</translation>
 <translation id="5698878456427040674">Sprawdź, czy wybrane konto jest obsługiwane.</translation>
-<translation id="5700415746238689851">Otwórz Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> chce się połączyć z portem szeregowym</translation>
 <translation id="5715150588940290235">Usunąć zapisane kody zabezpieczające?</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>
@@ -1418,7 +1419,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6835182496791325827">Otrzymuj powiadomienia, jeśli przeglądarka Chrome znajdzie najlepsze wyniki wyszukiwania w czasie, gdy z niej nie korzystasz.</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>
-<translation id="6850409657436465440">Pobieranie wciąż trwa</translation>
 <translation id="6850830437481525139">Zamknięte karty: <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Znaleziono 1 wynik}few{Znaleziono # wyniki}many{Znaleziono # wyników}other{Znaleziono # wyniku}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Pliki audio, 1 plik audio na liście}few{Pliki audio, # pliki audio na liście}many{Pliki audio, # plików audio na liście}other{Pliki audio, # pliku audio na liście}}</translation>
@@ -1968,12 +1968,14 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="9001604755921395912">Otwórz na karcie incognito w Chrome</translation>
 <translation id="9010094279589497751">Szybko otwieraj Gemini, kiedy tylko go potrzebujesz</translation>
 <translation id="9012585441087414258">Chroni przed stronami, pobieranymi plikami i rozszerzeniami, o których wiadomo, że są niebezpieczne. Jeśli strona robi coś podejrzanego, adresy URL i fragmenty jej zawartości są wysyłane do usługi Bezpieczne przeglądanie Google.</translation>
+<translation id="9014097371980259227">Niektóre narzędzia przenieśliśmy, aby ułatwić Ci wyszukiwanie w Trybie AI</translation>
 <translation id="9019199799064251516">Kontynuować bez blokady profilu samochodu?</translation>
 <translation id="9022774213089566801">Często odwiedzane</translation>
 <translation id="9022871169049522985">Witryny i reklamodawcy mogą mierzyć skuteczność reklam</translation>
 <translation id="9024318700713112071">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="9027728231343310283">Cofnij w przypadku <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Przenieś do\u2026</translation>
+<translation id="904146253922032365">Naciśnij i przytrzymaj, aby wyświetlić karty w pionie</translation>
 <translation id="9042893549633094279">Prywatność i bezpieczeństwo</translation>
 <translation id="9047347135558855162">Szybko rozpocznij wyszukiwanie w Chrome</translation>
 <translation id="9050666287014529139">Hasło</translation>

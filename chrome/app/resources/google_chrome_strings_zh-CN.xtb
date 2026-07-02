@@ -13,9 +13,6 @@
 <translation id="1055295352198814912">在 Mac 菜单栏中显示 Chrome 中的 Gemini 并开启键盘快捷键</translation>
 <translation id="1059838145689930908">如要以 <ph name="USER_EMAIL_ADDRESS" /> 的身份使用此扩展程序，请登录 Chrome。</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
-<translation id="1070377999570795893">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的扩展程序。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chrome</translation>
 <translation id="110877069173485804">这是您的专属Chrome</translation>
@@ -56,9 +53,6 @@
 <translation id="1547295885616600893">Chrome 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="1547469039832541117">结束突出显示的任务。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
-<translation id="1585717515139318619">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的主题背景。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome 正在使用您的摄像头。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="1597911401261118146">若要检查您的密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chrome<ph name="END_LINK" />。</translation>
@@ -95,7 +89,6 @@
 <translation id="1843347690926158494">使用 Google 智能镜头搜索此标签页</translation>
 <translation id="1849248141818021764">只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了口令或想更改此设置，将需要<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="1856809424654973980">使用 Chrome 应用，随时随地接续浏览体验</translation>
-<translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
 <translation id="1867503717113754604">使用 Google 账号登录 Chrome，即可使用 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
@@ -146,7 +139,6 @@
 <translation id="2307973900865360088">保留在程序坞中</translation>
 <translation id="2309047409763057870">这是 Google Chrome 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="2345992953227471816">Chrome 发现这些扩展程序包含恶意软件：</translation>
-<translation id="2348335408836342058">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
@@ -185,7 +177,6 @@
 <translation id="2747021967398957654">{count,plural, =1{某些 Chrome 数据尚未保存到您的 Google 账号中。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据（1 项）将被删除。}other{某些 Chrome 数据尚未保存到您的 Google 账号中。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据（{count} 项）将被删除。}}</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{高级保护计划要求您重新启动 Chrome 以应用一项更新}=1{高级保护计划要求您重新启动 Chrome 以应用一项更新。无痕式窗口将不会重新打开。}other{高级保护计划要求您重新启动 Chrome 以应用一项更新。# 个无痕式窗口将不会重新打开。}}</translation>
-<translation id="2765403129283291972">Chrome 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
 <translation id="2797864378188255696">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chrome</translation>
 <translation id="2799162042226656283">您的 Chrome</translation>
 <translation id="2799223571221894425">重新启动</translation>
@@ -261,7 +252,6 @@
 <translation id="345171907106878721">将您自己添加到Chrome</translation>
 <translation id="3453763134178591239">Chrome 操作系统条款</translation>
 <translation id="3475778264501649775">借助手机上的 Chrome 应用，随时随地同步您的密码、标签页等内容</translation>
-<translation id="3503306920980160878">Chrome 需要获得位置权限，才能将您的位置信息共享给此网站</translation>
 <translation id="3512495006767217696">内置于 Chrome 中，可帮助您创建、保存和自动填充安全系数高的密码。添加快捷方式，访问更轻松</translation>
 <translation id="3539955434060988644">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="354621070532799440">温馨提示：Google 顶级安全防护，随身守护</translation>
@@ -354,6 +344,7 @@
 <translation id="4400772909124543403">没有可用的更新</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">与 Chrome 中的 Gemini 分享此文档，快速了解概要并追问相关问题</translation>
 <translation id="4450664632294415862">Chrome - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在执行另一项操作，请稍后重试。</translation>
 <translation id="4459234553906210702">借助 Ad measurement，您访问的网站可向 Chrome 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
@@ -521,9 +512,6 @@
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6192058120268468905">设置 Chrome 账号</translation>
-<translation id="6220551899604141979"><ph name="PARTNER_NAME" />添加了一个扩展程序，可能会改变 Chrome 的工作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
 <translation id="624230925347970731">Chrome 即将关闭</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
@@ -665,9 +653,6 @@
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
 <translation id="7596160425942761210">您可随时使用 Chrome 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="7602868996817972616">问问 Google 有关此页面的问题</translation>
-<translation id="760353356052806707">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的应用。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">为保护您的数据，对于您近期未访问的网站，请允许 Chrome 移除网站权限。</translation>
 <translation id="7629695634924605473">Chrome 会让您知道您的密码是否曾被泄露</translation>
@@ -783,7 +768,6 @@
 <translation id="8590782867495422699">重新打开 Google 搜索 AI 模式</translation>
 <translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
 <translation id="8614913330719544658">Google Chrome 未响应。是否立即重新启动？</translation>
-<translation id="861702415419836452">Chrome 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
 <translation id="8623450603356630491">在手机上登录 Chrome</translation>
 <translation id="8624541899164515475">“设置”页面，在新标签页中打开。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 将在 1 分钟后重新启动}other{Chrome 将在 # 分钟后重新启动}}</translation>

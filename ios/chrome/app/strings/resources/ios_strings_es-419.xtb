@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} llave de acceso}other{{count} llaves de acceso}}</translation>
 <translation id="1005023885865154304">Abrir la configuración de Autocompletar contraseñas</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">Live es una nueva función de Gemini en Chrome</translation>
 <translation id="1013952917065545813">Puedes volver aquí para abrir las pestañas que cerraste recientemente</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
 <translation id="1018804590490383958">Escanear y autocompletar</translation>
@@ -1737,6 +1738,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">No establecer como predeterminado</translation>
 <translation id="6770452996697898492">[PROGRAMADO]</translation>
+<translation id="6775952316617222141">Usar Live con Gemini en Chrome</translation>
 <translation id="6779455296366983087">Se borrarán tus datos de navegación</translation>
 <translation id="6782531425936234573">Exportar datos</translation>
 <translation id="6791425686608802741">Presiona "Agregar pestaña a un grupo nuevo".</translation>

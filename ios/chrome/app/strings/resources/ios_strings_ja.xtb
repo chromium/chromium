@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} 件のパスキー}other{{count} 件のパスキー}}</translation>
 <translation id="1005023885865154304">[パスワードの自動入力] 設定を開く</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live は Gemini in Chrome の新機能です</translation>
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
 <translation id="1018804590490383958">スキャンして自動入力</translation>
@@ -1737,6 +1738,7 @@
 <translation id="6761393919622941301">音声</translation>
 <translation id="6765551480308401897">デフォルトにしない</translation>
 <translation id="6770452996697898492">[予約済み]</translation>
+<translation id="6775952316617222141">Chrome で Gemini と Live で会話する</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
 <translation id="6782531425936234573">データをエクスポート</translation>
 <translation id="6791425686608802741">[タブを新しいグループに追加] をタップします</translation>

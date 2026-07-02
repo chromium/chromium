@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} clau d'accés}other{{count} claus d'accés}}</translation>
 <translation id="1005023885865154304">Obre la configuració d'Emplenament automàtic de contrasenyes</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">Live és una funció nova de Gemini a Chrome</translation>
 <translation id="1013952917065545813">Pots tornar aquí per obrir de nou les pestanyes que has tancat fa poc</translation>
 <translation id="1016495303386450659">S'ha actualitzat l'element.</translation>
 <translation id="1018804590490383958">Escaneja i emplena automàticament</translation>
@@ -103,6 +104,7 @@
 <translation id="1335767868357998043">Tria la posició de la barra d'adreces</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1353169676553627502">Desactiva les actualitzacions de progrés</translation>
 <translation id="1355337783640312381">Per canviar de compte, toca la icona corresponent</translation>
 <translation id="135806768612505061">Totes les pestanyes</translation>
 <translation id="1358106883354237005">Compte gestionat</translation>
@@ -613,6 +615,7 @@
 <translation id="3073633853887034268">Entesos</translation>
 <translation id="3080525922482950719">Pots desar pàgines per llegir-les més endavant o sense connexió</translation>
 <translation id="3081338492074632642">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya de: <ph name="WEBSITE" /></translation>
+<translation id="3084484227247071193">Activa les actualitzacions de progrés</translation>
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="309710370695886264">Tens 1 contrasenya reutilitzada. Corregeix el problema per protegir-te.</translation>
 <translation id="3099402981545350675">Se suprimiran les adreces desades en aquest dispositiu. També se suprimirà la informació seleccionada de Chrome, però no se suprimirà del teu Compte de Google.</translation>
@@ -713,6 +716,7 @@
 <translation id="3449029510150690417">Crea un grup de pestanyes nou i posa-li un nom i un color</translation>
 <translation id="345348365500626747">S'ha trobat l'adreça</translation>
 <translation id="3459644598174926977">Utilitza Live amb Gemini per fer preguntes sobre una pàgina, fer una pluja d'idees en veu alta i parlar de viva veu.</translation>
+<translation id="3462768334899086950">Perdràs el fitxer sense desar i les pestanyes actuals</translation>
 <translation id="3464194322481586217">No s'ha pogut fer el seguiment del preu.</translation>
 <translation id="346831467152294287">S'ha completat Contrasenyes i emplenament automàtic.</translation>
 <translation id="3469117812148449995">Opcions per desar la contrasenya</translation>
@@ -973,6 +977,7 @@
 <translation id="4326912346867677256">Per iniciar la sessió de manera segura, toca Fes servir la contrasenya.</translation>
 <translation id="4328843285884395590">La meva unitat</translation>
 <translation id="4331177082088332784">Pots gestionar aquesta opció a BEGIN_LINKConfiguració del contingutEND_LINK</translation>
+<translation id="4331712008356052424">Per enviar aquest enllaç, inicia la sessió a l'altre dispositiu amb <ph name="USER_EMAIL" /></translation>
 <translation id="4334428914252001502">Un article no llegit.</translation>
 <translation id="4338258232580025606">No es pot iniciar la sessió</translation>
 <translation id="4338650699862464074">Envia a Google els URL de les pàgines que visites.</translation>
@@ -1483,6 +1488,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
 <translation id="6045460247888249350">Afegeix un títol</translation>
+<translation id="6050237559175440178">Verifica la teva identitat per utilitzar i desar la teva informació en tots els teus dispositius</translation>
 <translation id="6052269326659653305">Canvia de perfil</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
@@ -1731,6 +1737,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6761393919622941301">Àudio</translation>
 <translation id="6765551480308401897">No defineixis com a predeterminat</translation>
 <translation id="6770452996697898492">[RESERVAT]</translation>
+<translation id="6775952316617222141">Utilitza Live amb Gemini a Chrome</translation>
 <translation id="6779455296366983087">Les dades de navegació se suprimiran</translation>
 <translation id="6782531425936234573">Exporta dades</translation>
 <translation id="6791425686608802741">Toca Afegeix una pestanya al grup nou</translation>
@@ -1858,6 +1865,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="722339453342442311">Comprova ara</translation>
 <translation id="7227235818314667565">Gestiona la compartició</translation>
 <translation id="7233006041370588369">Selecciona una contrasenya per emplenar.</translation>
+<translation id="723874023660911012">Canvia de perfil</translation>
 <translation id="7241135764990439166">El mode d'incògnit no està disponible</translation>
 <translation id="7248046129087111453">És possible que l'<ph name="BEGIN_LINK" />historial de cerques<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> es desin al teu Compte de Google.</translation>
 <translation id="7253951228444156601">S'estan comprovant les contrasenyes…</translation>
@@ -2084,6 +2092,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7996239959906074962">Configura…</translation>
 <translation id="800361585186029508">Obre els URL introduïts a Google Chrome.</translation>
 <translation id="8005666035647241369">Ves al gestor de contrasenyes de Google en aquest dispositiu</translation>
+<translation id="8007106936382123905">{count,plural, =1{1 tasca completada}other{# tasques completades}}</translation>
 <translation id="8010488806779226127">Explora les funcions que et poden ajudar a fer més coses mentre navegues</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verifica la teva identitat per emplenar automàticament la informació sensible</translation>
@@ -2168,6 +2177,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="826614135184049678">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPad. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8273982424131314219">Emplenaràs informació a <ph name="URL" /></translation>
+<translation id="8274795744553482834">Estàs a punt de canviar de perfil</translation>
 <translation id="8275068909952022340">Més…</translation>
 <translation id="8280797717392145626">Enllaços rebuts</translation>
 <translation id="8281781826761538115">Idioma predeterminat: <ph name="DEFAULT_LOCALE" /></translation>

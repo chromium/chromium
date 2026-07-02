@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Clique no menu do Chromium</translation>
 <translation id="1157985233335035034">Idiomas recentes</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> adicionou uma extensão que pode alterar o funcionamento do Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">A instalação falhou porque a sua versão do Windows não é compatível.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1186645291482254714">Receba alertas de acompanhamento de preço com o Chromium no telemóvel</translation>
@@ -53,7 +50,6 @@
 <translation id="1524282610922162960">Partilhe um separador do Chromium</translation>
 <translation id="154404805518949443">Iniciar sessão no Chromium</translation>
 <translation id="1547469039832541117">Termina a tarefa realçada.</translation>
-<translation id="1553461853655228091">O Chromium necessita de autorização de acesso à câmara para criar um mapa 3D do ambiente à sua volta.</translation>
 <translation id="1562320819937089394">Afixar Chromium</translation>
 <translation id="1574377791422810894">Ferramentas de segurança do Chromium</translation>
 <translation id="1594928384848033697">O Chromium quer eliminar os seus dados do Gestor de Palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
@@ -215,9 +211,6 @@
 <translation id="3155163173539279776">Reiniciar o Chromium</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
 <translation id="3179665906251668410">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
-<translation id="3183357154200327217">Outro programa do computador adicionou um tema que pode alterar o funcionamento do Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalize o seu novo perfil do Chromium</translation>
 <translation id="3189205223539394158">Pode continuar a conversar com o Modo IA sem mudar de separador. Para começar, inicie sessão no Chromium. Também terá acesso às suas palavras-passe e muito mais em todos os seus dispositivos.</translation>
 <translation id="3224847870593914902">Para remover a sua Conta Google do Chromium, termine sessão no Chromium na página Definições</translation>
@@ -296,9 +289,6 @@
 <translation id="4036079820698952681">Ajude a melhorar o Chromium ao comunicar as <ph name="BEGIN_LINK" />definições atuais<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Estão disponíveis na versão mais recente melhorias de segurança importantes e novas funcionalidades.</translation>
 <translation id="4055805654398742145">Gestor de P&amp;alavras-passe</translation>
-<translation id="4061696872429826774">Outro programa no computador adicionou uma extensão que pode alterar o funcionamento do Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{A sua organização fecha automaticamente o Chromium quando não é usado durante 1 minuto. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}other{A sua organização fecha automaticamente o Chromium quando não é usado durante # minutos. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}}</translation>
 <translation id="4118474109249235144">Navegação anónima do Chromium</translation>
 <translation id="4122186850977583290">Aceder à página Acerca do Chromium</translation>
@@ -411,7 +401,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{O Chromium recomenda pausar o separador que está a abrandar o navegador}other{O Chromium recomenda pausar os separadores que estão a abrandar o navegador}}</translation>
 <translation id="5473971139929175403">O Chromium pode não funcionar corretamente, uma vez que já não é suportado nesta distribuição do Linux</translation>
 <translation id="5475924890392386523">O Chromium bloqueou esta transferência porque o ficheiro pode prejudicar as suas contas pessoais e de redes sociais</translation>
-<translation id="5480860683791598150">O Chromium necessita de aceder à sua localização para a partilhar com este site.</translation>
 <translation id="549669000822060376">Aguarde até que o Chromium instale as atualizações do sistema mais recentes.</translation>
 <translation id="5496810170689441661">O Chromium está a tentar editar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="549975168243349205">Trabalhe de forma integrada com as suas apps favoritas, como o Google Drive e o YouTube, em qualquer lugar com o Chromium.</translation>
@@ -478,9 +467,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6174920971222007286">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chromium pode verificar esta transferência se facultar a palavra-passe. As informações sobre o ficheiro são enviadas para a Navegação Segura do Google, mas o conteúdo do ficheiro e a palavra-passe permanecem no seu dispositivo.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6183079672144801177">Certifique-se de que tem sessão iniciada no Chromium no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
-<translation id="6204922163963157461">Outro programa no computador adicionou uma app que pode alterar o funcionamento do Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver a funcionar, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado dentro de 1 segundo}other{O Chromium será reiniciado dentro de # segundos}}</translation>
 <translation id="6239161312595354541">Pergunte à pesquisa de imagens acerca deste vídeo</translation>
@@ -582,7 +568,6 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="6964305034639999644">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985329841647292029">Termos do ChromiumOS</translation>
-<translation id="6990124437352146030">O Chromium necessita de autorização de acesso ao microfone para este site.</translation>
 <translation id="7003299027384820442">Introduza a sua frase de acesso para usar e guardar dados do Chromium na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">A instalação falhou porque esta versão do sistema operativo não é suportada.</translation>
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
@@ -627,7 +612,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para afixar o Chromium à barra de tarefas para um acesso rápido</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
-<translation id="7451052299415159299">O Chromium necessita de autorização de acesso à câmara para este site.</translation>
 <translation id="7458892263350425044">Para usar o microfone, dê acesso ao Chromium nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 7.</translation>
 <translation id="7467949745582939695">Reiniciar o Chromium?</translation>
@@ -752,7 +736,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8719993436687031146">Iniciar sessão no Chromium?</translation>
 <translation id="8747073452963259673">canto inferior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte inferior <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">O Chromium necessita de autorização de acesso à câmara e ao microfone para este site.</translation>
 <translation id="8813277370772331957">Lembrar-me mais tarde</translation>
 <translation id="8816416449795340678">Partilhe este documento com o Gemini no Chromium para obter uma vista geral rápida e fazer perguntas de seguimento</translation>
 <translation id="8818550178040858407">Iniciar sessão no Chromium?</translation>

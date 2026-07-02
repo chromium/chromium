@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} මුරයතුරක්}one{මුරයතුරු {count}ක්}other{මුරයතුරු {count}ක්}}</translation>
 <translation id="1005023885865154304">ස්වයං පිරවුම් මුරපද සැකසීම් විවෘත කරන්න</translation>
 <translation id="1005230401424685968">ව.ව.ව.ව.</translation>
+<translation id="1013852467930342108">සජීවී යනු Chrome හි Gemini තුළ ඇති නව විශේෂාංගයකි</translation>
 <translation id="1013952917065545813">ඔබ මෑතකදී වසා දැමූ ටැබ නැවත විවෘත කිරීමට ඔබට නැවත මෙහි පැමිණිය හැකිය</translation>
 <translation id="1016495303386450659">අයිතමය යාවත්කාලීන කරන ලදි</translation>
 <translation id="1018804590490383958">ස්කෑන් කර ස්වයං පුරවන්න</translation>
@@ -1737,6 +1738,7 @@
 <translation id="6761393919622941301">ශ්‍රව්‍ය</translation>
 <translation id="6765551480308401897">පෙරනිමි නොකරන්න</translation>
 <translation id="6770452996697898492">[වෙන් කළා]</translation>
+<translation id="6775952316617222141">Chrome හි Gemini සමග සජීවීව යන්න</translation>
 <translation id="6779455296366983087">ඔබේ බ්‍රවුස් කිරීමේ දත්ත මකා දැමෙනු ඇත</translation>
 <translation id="6782531425936234573">දත්ත නිර්යාත කරන්න</translation>
 <translation id="6791425686608802741">"නව සමූහයට පටිත්ත එක් කරන්න" තට්ටු කරන්න</translation>

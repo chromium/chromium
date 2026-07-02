@@ -17,9 +17,6 @@
 <translation id="1131805035311359397">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="1153368717515616349">Chromium 메뉴를 클릭합니다</translation>
 <translation id="1157985233335035034">최근에 사용한 언어</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" />에서 Chromium 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">지원되지 않는 Windows 버전으로 인해 설치할 수 없습니다.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1186645291482254714">휴대전화에서 Chromium으로 가격 추적 알림을 받으세요</translation>
@@ -54,7 +51,6 @@
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
 <translation id="154404805518949443">Chromium에 로그인</translation>
 <translation id="1547469039832541117">강조 표시된 작업을 종료합니다.</translation>
-<translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="1562320819937089394">Chromium 고정</translation>
 <translation id="1574377791422810894">Chromium의 안전 도구</translation>
 <translation id="1594928384848033697">Chromium에서 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
@@ -216,9 +212,6 @@
 <translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3161522574479303604">모든 언어</translation>
 <translation id="3179665906251668410">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
-<translation id="3183357154200327217">컴퓨터의 다른 프로그램에서 Chromium 작동에 영향을 줄 수 있는 테마를 추가했습니다.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">새로운 Chromium 프로필 맞춤설정</translation>
 <translation id="3189205223539394158">탭을 전환하지 않고도 AI 모드로 계속 채팅할 수 있습니다. 시작하려면 Chromium에 로그인하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
 <translation id="3224847870593914902">Chromium에서 Google 계정을 삭제하려면 설정 페이지를 통해 Chromium에서 로그아웃하세요</translation>
@@ -297,9 +290,6 @@
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chromium 개선에 참여</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4055805654398742145">비밀번호 관리자(&amp;A)</translation>
-<translation id="4061696872429826774">컴퓨터의 다른 프로그램에서 Chromium 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="4118474109249235144">Chromium 시크릿 모드</translation>
 <translation id="4122186850977583290">Chromium 정보 페이지로 이동</translation>
@@ -412,7 +402,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}other{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}}</translation>
 <translation id="5473971139929175403">이 Linux 배포판에서 더 이상 Chromium을 지원하지 않으므로 Chromium이 올바르게 작동하지 않을 수 있습니다.</translation>
 <translation id="5475924890392386523">파일이 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>
-<translation id="5480860683791598150">이 사이트와 위치를 공유하려면 Chromium에 내 위치 액세스 권한이 있어야 합니다</translation>
 <translation id="549669000822060376">Chromium에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="5496810170689441661">Chromium에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="549975168243349205">Chromium을 사용하면 이동 중에도 Google Drive, YouTube와 같은 즐겨 사용하는 앱을 원활하게 사용할 수 있습니다.</translation>
@@ -479,9 +468,6 @@
 <translation id="6174920971222007286">위험한 파일일 수도 있습니다.<ph name="LINE_BREAK" />비밀번호를 제공하면 Chromium에서 이 다운로드 항목을 확인할 수 있습니다. 파일에 관한 정보는 Google 세이프 브라우징으로 전송되지만 파일 콘텐츠와 비밀번호는 기기에 보관됩니다.</translation>
 <translation id="6182736845697986886">업데이트 서버 내부 오류로 인해 설치할 수 없습니다.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" />에서 Chromium에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
-<translation id="6204922163963157461">컴퓨터의 다른 프로그램에서 Chromium 작동에 영향을 줄 수 있는 앱을 추가했습니다.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">컴퓨터에 이미 최신 버전의 Chromium이 있습니다. 소프트웨어가 작동하지 않으면 Chromium의 설치를 제거한 뒤 다시 시도하세요.</translation>
 <translation id="6219195342503754812">{0,plural, =0{곧 Chromium이 다시 시작됩니다}=1{1초 후 Chromium이 다시 시작됩니다}other{#초 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="6239161312595354541">이미지 검색에 이 동영상에 관해 질문하기</translation>
@@ -583,7 +569,6 @@
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6985329841647292029">ChromiumOS 약관</translation>
-<translation id="6990124437352146030">이 사이트에서 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="7003299027384820442"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="7011190694940573312">이 운영체제 버전은 지원되지 않으므로 설치에 실패했습니다.</translation>
 <translation id="7024536598735240744">압축해제 오류(<ph name="UNPACK_ERROR" />)가 발생했습니다.</translation>
@@ -628,7 +613,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 3. 빠른 액세스를 위해 Windows 알림에서 <ph name="BUTTON_3" /> 버튼을 클릭하여 Chromium을 작업 표시줄에 고정합니다.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - 개발자용 Chromium</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
-<translation id="7451052299415159299">이 사이트에서 카메라에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="7458892263350425044">마이크를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chromium에 액세스 권한을 부여하세요.</translation>
 <translation id="7461356015007898716">향후 Chromium 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 7을 사용 중입니다.</translation>
 <translation id="7467949745582939695">Chromium을 다시 시작하시겠습니까?</translation>
@@ -753,8 +737,8 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8719993436687031146">Chromium에 로그인하시겠습니까?</translation>
 <translation id="8747073452963259673">검색 영역의 왼쪽 하단: 왼쪽 <ph name="LEFT" />%, 하단 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">설치 오류: 네트워크 관리자가 설치를 방지하는 그룹 정책을 적용했습니다: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">이 사이트에서 카메라와 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="8813277370772331957">나중에 알림</translation>
+<translation id="8816416449795340678">Chromium의 Gemini와 이 문서를 공유하여 간략한 개요를 확인하고 후속 질문을 하세요</translation>
 <translation id="8818550178040858407">Chromium에 로그인하시겠습니까?</translation>
 <translation id="8823401858233292222">Chromium을 기본 브라우저로 설정하고 작업 표시줄에 고정합니다.</translation>
 <translation id="8826492472752484139">'비밀번호 관리자'를 클릭합니다</translation>

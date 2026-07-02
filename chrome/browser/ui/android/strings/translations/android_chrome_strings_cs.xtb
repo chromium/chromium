@@ -243,6 +243,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2056878612599315956">Web je pozastaven</translation>
 <translation id="2063047797624276601">Vaše organizace zapnula Vylepšené Bezpečné prohlížení</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo}few{Stažení # souborů se nezdařilo}many{Stažení # souboru se nezdařilo}other{Stažení # souborů se nezdařilo}}</translation>
+<translation id="2066690553719545730">Vždy zobrazovat režim AI</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2149968176347646218">Připojení není zabezpečené</translation>
 <translation id="2149973817440762519">Upravit záložku</translation>
 <translation id="2163089732491971196">Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, zadejte svou heslovou frázi</translation>
+<translation id="2164015935042801524">Kliknutím sem pravým tlačítkem zobrazíte karty svisle</translation>
 <translation id="2166228530126694506">Verze <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Popisy obrázků jsou vypnuté</translation>
 <translation id="2172905120685242547">Zavřít okno?</translation>
@@ -305,6 +307,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2323763861024343754">Úložiště webů</translation>
 <translation id="2327445548174191329">Ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
+<translation id="2329500425421091035">Představujeme režim AI v Chromu</translation>
 <translation id="2330186936255788117">Další záložky</translation>
 <translation id="2332515770639153015">Vylepšené Bezpečné prohlížení je zapnuté</translation>
 <translation id="233375395665273385">Vymazat a odhlásit se</translation>
@@ -1057,7 +1060,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5436928407363358055">Pokud chcete snadno pokračovat tam, kde jste skončili, synchronizujte svou historii a karty</translation>
 <translation id="5438292632479953702">Stáhnout znovu</translation>
 <translation id="5439191312780166229">Varuje vás před nebezpečnými weby (včetně těch, o kterých Google dříve nevěděl) tím, že analyzuje více dat z webů než standardní ochrana. Upozornění prohlížeče Chrome můžete přeskočit.</translation>
-<translation id="5441137934526263133">Web nefunguje? Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="5441466871879044658">Přeložit do tohoto jazyka</translation>
 <translation id="5444999712122199445">Zpět na web</translation>
 <translation id="544776284582297024">Pokud chcete otevřít karty a prohlížet si několik různých stránek najednou, klepněte na tlačítko otevření karet</translation>
@@ -1112,7 +1114,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="569536719314091526">Pomocí tlačítka Další možnosti můžete tuto stránku přeložit do libovolného jazyka.</translation>
 <translation id="5696597120588531049">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami</translation>
 <translation id="5698878456427040674">Zkontrolujte, zda je vybraný účet podporován.</translation>
-<translation id="5700415746238689851">Otevřít Gemini</translation>
 <translation id="5709213329446699338">Web <ph name="SITE" /> se chce připojit k sériovému portu</translation>
 <translation id="5715150588940290235">Vymazat uložené bezpečnostní kódy?</translation>
 <translation id="572328651809341494">Nedávno použité karty</translation>
@@ -1418,7 +1419,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6835182496791325827">Nechte si zaslat oznámení, až Chrome najde nejlepší výsledky pro vaše vyhledávání, když budete pryč.</translation>
 <translation id="6846298663435243399">Načítání…</translation>
-<translation id="6850409657436465440">Stahování stále probíhá</translation>
 <translation id="6850830437481525139">Zavřené karty: <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Byl nalezen 1 výsledek}few{Byly nalezeny # výsledky}many{Bylo nalezeno # výsledku}other{Bylo nalezeno # výsledků}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Zvukové soubory, 1 zvukový soubor v seznamu}few{Zvukové soubory, # zvukové soubory v seznamu}many{Zvukové soubory, # zvukového souboru v seznamu}other{Zvukové soubory, # zvukových souborů v seznamu}}</translation>
@@ -1968,12 +1968,14 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9001604755921395912">Otevřít na anonymní kartě v Chromu</translation>
 <translation id="9010094279589497751">Rychle Gemini otevřete, kdykoli potřebujete</translation>
 <translation id="9012585441087414258">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Pokud stránka provede něco podezřelého, odešlou se adresy URL a části obsahu stránky do Bezpečného prohlížení Google.</translation>
+<translation id="9014097371980259227">Některé nástroje byly přesunuty, aby vám pomohly vyhledávat pomocí režimu AI</translation>
 <translation id="9019199799064251516">Pokračovat bez zámku profilu auta?</translation>
 <translation id="9022774213089566801">Často navštěvované</translation>
 <translation id="9022871169049522985">Weby a inzerenti mohou měřit výkon svých reklam</translation>
 <translation id="9024318700713112071">Nastavte si Chrome jako výchozí prohlížeč</translation>
 <translation id="9027728231343310283">Vrátit web <ph name="SITE" /> zpět</translation>
 <translation id="9035378196785279980">Přesunout do\u2026</translation>
+<translation id="904146253922032365">Podržením zobrazíte karty svisle</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9047347135558855162">Rychlé zahájení vyhledávání v Chromu</translation>
 <translation id="9050666287014529139">Heslová fráze</translation>

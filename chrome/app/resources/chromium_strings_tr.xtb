@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">Şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium menüsünü tıklayın</translation>
 <translation id="1157985233335035034">Son kullanılan diller</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" />, Chromium'un çalışma şeklini değiştirebilecek bir uzantı ekledi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Windows sürümünüz desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1186645291482254714">Telefonunuzda Chromium ile fiyat takibi uyarıları alın</translation>
@@ -52,7 +49,6 @@
 <translation id="1524282610922162960">Chromium sekmesini paylaşın</translation>
 <translation id="154404805518949443">Chromium'da oturum aç</translation>
 <translation id="1547469039832541117">Vurgulanan görevi sonlandırır.</translation>
-<translation id="1553461853655228091">Çevrenizin 3D haritasını oluşturmak için Chromium'un kameranıza erişim iznine ihtiyacı var</translation>
 <translation id="1562320819937089394">Chromium'u sabitle</translation>
 <translation id="1574377791422810894">Chromium'un güvenlik araçları</translation>
 <translation id="1594928384848033697">Chromium, Şifre Yöneticisi verilerinizi silmek istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -214,9 +210,6 @@
 <translation id="3155163173539279776">Chromium'u Yeniden Başlat</translation>
 <translation id="3161522574479303604">Tüm diller</translation>
 <translation id="3179665906251668410">Bağlantıyı Chromium &amp;Gizli Penceresinde Aç</translation>
-<translation id="3183357154200327217">Bilgisayarınızdaki başka bir program, Chromium'un çalışma şeklini değiştirebilecek bir tema ekledi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Yeni Chromium profilinizi özelleştirin</translation>
 <translation id="3189205223539394158">Sekme değiştirmeden AI Modu ile sohbet etmeye devam edebilirsiniz. Başlamak için Chromium'da oturum açın. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz.</translation>
 <translation id="3224847870593914902">Google Hesabınızı Chromium'dan kaldırmak için Ayarlar sayfasında Chromium oturumunu kapatın</translation>
@@ -293,9 +286,6 @@
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Mevcut ayarlarınızı<ph name="END_LINK" /> bildirerek Chromium'u daha iyi hale getirmemize yardımcı olun</translation>
 <translation id="4050175100176540509">Son sürümde güvenlikle ilgili önemli iyileştirmeler ve yeni özellikler mevcuttur.</translation>
 <translation id="4055805654398742145">Ş&amp;ifre Yöneticisi</translation>
-<translation id="4061696872429826774">Bilgisayarınızdaki başka bir program, Chromium'un çalışma şeklini değiştirebilecek bir uzantı ekledi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Kuruluşunuz, # dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="4118474109249235144">Chromium Gizli Modu</translation>
 <translation id="4122186850977583290">Chromium hakkında sayfasına gidin</translation>
@@ -408,7 +398,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium, Tarayıcınızı Yavaşlatan Sekmeyi Duraklatmanızı Öneriyor}other{Chromium, Tarayıcınızı Yavaşlatan Sekmeleri Duraklatmanızı Öneriyor}}</translation>
 <translation id="5473971139929175403">Chromium artık bu Linux dağıtım sisteminde desteklenmediği için doğru şekilde çalışmayabilir</translation>
 <translation id="5475924890392386523">Dosya kişisel ve sosyal ağ hesaplarınıza zarar verebileceği için Chromium bu indirme işlemini engelledi</translation>
-<translation id="5480860683791598150">Konumunuzu bu siteyle paylaşabilmek için Chromium'un konum bilgilerinize erişmesi gerekiyor</translation>
 <translation id="549669000822060376">Chromium en son sistem güncellemelerini yüklerken lütfen bekleyin.</translation>
 <translation id="5496810170689441661">Chromium şifreleri düzenlemeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="549975168243349205">Chromium ile hareket halindeyken Google Drive ve YouTube gibi en sevdiğiniz uygulamalarla sorunsuz bir şekilde çalışın.</translation>
@@ -475,9 +464,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="6174920971222007286">Bu dosya tehlikeli olabilir<ph name="LINE_BREAK" />Şifreyi sağlarsanız Chromium, indirme işlemini sizin için kontrol edebilir. Dosyayla ilgili bilgiler Google Güvenli Tarama'ya gönderilir ancak dosya içeriği ve şifresi cihazınızda kalır.</translation>
 <translation id="6182736845697986886">Güncelleme sunucusundaki dahili hata nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> cihazınızdan Chromium'da oturum açtığınızdan emin olup tekrar göndermeyi deneyin.</translation>
-<translation id="6204922163963157461">Bilgisayarınızdaki başka bir program, Chromium'un çalışma şeklini değiştirebilecek bir uygulama ekledi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Bu bilgisayarda Chromium'un daha yeni bir sürümü de var. Yazılım çalışmıyorsa, Chromium'u kaldırın ve tekrar deneyin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium şimdi yeniden başlatılacak}=1{Chromium 1 saniye içinde yeniden başlatılacak}other{Chromium # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="6239161312595354541">Görsel aramaya bu video hakkında soru sorun</translation>
@@ -579,7 +565,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="6964305034639999644">Bağlantıyı Chromium &amp;gizli penceresinde aç</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6985329841647292029">ChromiumOS şartları</translation>
-<translation id="6990124437352146030">Chromium'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="7003299027384820442">Chromium verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için parolanızı girin</translation>
 <translation id="7011190694940573312">İşletim sisteminin bu sürümü desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
@@ -624,7 +609,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 3. Hızlı erişim için Chromium'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BUTTON_3" /> düğmesini tıklayın.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Metin kopyalandı</translation>
-<translation id="7451052299415159299">Chromium'un bu sitede kameranıza erişmesi için izin gerekiyor</translation>
 <translation id="7458892263350425044">Mikrofonunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chromium'a erişim izni verin</translation>
 <translation id="7461356015007898716">Gelecekteki Chromium güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="7467949745582939695">Chromium yeniden başlatılsın mı?</translation>
@@ -749,8 +733,8 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8719993436687031146">Chromium'da oturum açmak istiyor musunuz?</translation>
 <translation id="8747073452963259673">arama alanının sol alt köşesi: sol %<ph name="LEFT" />, alt %<ph name="BOTTOM" /></translation>
 <translation id="878572486461146056">Yükleme hatası: Ağ yöneticiniz, yükleme işlemini engelleyen bir grup politikası uygulamış: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="8813277370772331957">Sonra hatırlat</translation>
+<translation id="8816416449795340678">Kısa bir genel bakış almak ve ek sorular sormak için bu dokümanı Chromium'da Gemini ile paylaşın</translation>
 <translation id="8818550178040858407">Chromium'da oturum açılsın mı?</translation>
 <translation id="8823401858233292222">Chromium'u varsayılan tarayıcı yapın ve görev çubuğuna sabitleyin</translation>
 <translation id="8826492472752484139">"Şifre Yöneticisi"ni tıklayın</translation>

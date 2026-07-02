@@ -209,7 +209,7 @@
 <translation id="3084983642903364837">Vào trình đơn có biểu tượng 3 dấu chấm để chỉnh sửa trang chủ của bạn sau.</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
 <translation id="3108122610701115301">Đặt làm mặc định</translation>
-<translation id="310979712355504754">Xóa tất cả</translation>
+<translation id="310979712355504754">Xoá tất cả</translation>
 <translation id="311394601889664316">Không cho phép các trang web chỉnh sửa tệp hoặc thư mục trên thiết bị</translation>
 <translation id="3114012059975132928">Trình phát video</translation>
 <translation id="3115898365077584848">Hiển thị thông tin</translation>
@@ -690,7 +690,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8163152278172770963">Không cho phép các trang web tự động chuyển sang chế độ hình trong hình</translation>
 <translation id="8168435359814927499">Nội dung</translation>
 <translation id="818487310457576362">Kéo từ bên cạnh màn hình để thoát khỏi chế độ toàn màn hình.</translation>
-<translation id="8186479265534291036">Trang web không hoạt động? Bạn đã chặn cookie của bên thứ ba</translation>
 <translation id="8197286292360124385">Đã cho phép: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8211406090763984747">Kết nối này an toàn</translation>
@@ -761,7 +760,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8805385115381080995">Duyệt web nhanh hơn vì trang web ít khi yêu cầu xác minh bạn là người thực hơn</translation>
 <translation id="881644524232657178">Khi bạn bật tuỳ chọn này, các trang web sẽ có thể sử dụng cảm biến chuyển động và cảm biến ánh sáng trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web sẽ không thể sử dụng cảm biến.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Hãy thử tạm thời cho phép cookie của bên thứ ba. Chế độ cài đặt này sẽ làm giảm khả năng bảo vệ khi duyệt web nhưng các tính năng của trang có thể sẽ hoạt động đúng như mong đợi.</translation>
 <translation id="8889294078294184559">Khi bạn tiếp tục duyệt web, các trang web có thể kiểm tra qua Chrome và xác minh qua trang web mà bạn truy cập trước đó rằng bạn có thể là người thực</translation>
 <translation id="8899807382908246773">Quảng cáo xâm nhập</translation>
 <translation id="8903921497873541725">Phóng to</translation>
@@ -787,7 +785,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Cho phép thông báo</translation>
 <translation id="9138217887606523162">Mức thu phóng hiện tại là <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Các trang web dùng tính năng này để tự động chuyển sang dạng xem hình trong hình. Nhờ đó, bạn vừa có thể xem tiếp video, vừa thoải mái dùng màn hình để thực hiện các tác vụ khác.</translation>
 <translation id="9156722768168878035">Cho phép Chrome hiển thị các thẻ gần đây trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
 <translation id="9182556968660520230">Không cho phép trang web phát nội dung được bảo vệ</translation>

@@ -690,7 +690,6 @@
 <translation id="8163152278172770963">Ekki leyfa vefsvæðum að fara sjálfkrafa í mynd í mynd</translation>
 <translation id="8168435359814927499">Efni</translation>
 <translation id="818487310457576362">Dragðu að brún skjásins til að loka yfirliti á öllum skjánum.</translation>
-<translation id="8186479265534291036">Virkar vefsvæðið ekki? Lokað fyrir fótspor þriðju aðila</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> leyft</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8211406090763984747">Tengingin er örugg</translation>
@@ -761,7 +760,6 @@
 <translation id="8805385115381080995">Vefskoðun verður hraðari vegna þess að ólíklegra er að vefsvæði biðji þig um að staðfesta að þú sért manneskja.</translation>
 <translation id="881644524232657178">Þegar kveikt er á þessu geta vefsvæði notað hreyfi- og birtuskynjara tækisins þíns. Þegar slökkt er á þessu geta vefsvæði ekki notað skynjara.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi.</translation>
 <translation id="8889294078294184559">Þegar þú heldur áfram að vafra geta vefsvæði athugað upplýsingarnar hjá Chrome og staðfest frá fyrra vefsvæði að þú sért líklega mennskur notandi</translation>
 <translation id="8899807382908246773">Ágengar auglýsingar</translation>
 <translation id="8903921497873541725">Auka aðdrátt</translation>
@@ -787,7 +785,6 @@
 <translation id="913657688200966289">Kveiktu á heimildum fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Tilkynningar leyfðar</translation>
 <translation id="9138217887606523162">Aðdráttur er nú <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Vefsvæði nota þennan eiginleika til að nota mynd í mynd sjálfkrafa. Þetta gerir þér kleift að horfa áfram á vídeó á meðan skjárinn er laus fyrir önnur verkefni.</translation>
 <translation id="9156722768168878035">Láta Chrome sýna nýlega flipa á forritalista og í leitarniðurstöðum tækisins. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="9162462602695099906">Þessi síða er hættuleg</translation>
 <translation id="9182556968660520230">Ekki leyfa vefsvæðum að spila varið efni</translation>

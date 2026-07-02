@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{‫{count} گذرکلید}one{‫{count} گذرکلید}other{‫{count} گذرکلید}}</translation>
 <translation id="1005023885865154304">باز کردن تنظیمات «تکمیل خودکار گذرواژه‌ها»</translation>
 <translation id="1005230401424685968">yyyy</translation>
+<translation id="1013852467930342108">‏‫Live ویژگی جدیدی در Gemini در Chrome است</translation>
 <translation id="1013952917065545813">می‌توانید به اینجا برگردید و برگه‌هایی را که اخیراً بسته‌اید مجدداً باز کنید</translation>
 <translation id="1016495303386450659">مورد به‌روز شد</translation>
 <translation id="1018804590490383958">اسکن و تکمیل خودکار</translation>
@@ -1737,6 +1738,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6761393919622941301">صدا</translation>
 <translation id="6765551480308401897">عدم تنظیم به‌عنوان پیش‌فرض</translation>
 <translation id="6770452996697898492">[رزروشده]</translation>
+<translation id="6775952316617222141">‏‫Live شدن با Gemini در Chrome</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
 <translation id="6782531425936234573">صادر کردن داده‌ها</translation>
 <translation id="6791425686608802741">روی «افزودن زبانه به گروه جدید» تک‌ضرب بزنید</translation>

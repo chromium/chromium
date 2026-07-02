@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} ಪಾಸ್‌ಕೀ}one{{count} ಪಾಸ್‌ಕೀಗಳು}other{{count} ಪಾಸ್‌ಕೀಗಳು}}</translation>
 <translation id="1005023885865154304">ಆಟೋಫಿಲ್ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1005230401424685968">ವವವವ</translation>
+<translation id="1013852467930342108">Live ಎಂಬುದು Chrome ನಲ್ಲಿ Gemini ನ ಹೊಸ ಫೀಚರ್ ಆಗಿದೆ</translation>
 <translation id="1013952917065545813">ನೀವು ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪುನಃ ತೆರೆಯಲು, ನೀವು ಇಲ್ಲಿಗೆ ಮರಳಿ ಬರಬಹುದು</translation>
 <translation id="1016495303386450659">ಐಟಂ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1018804590490383958">ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
@@ -1737,6 +1738,7 @@
 <translation id="6761393919622941301">ಆಡಿಯೊ</translation>
 <translation id="6765551480308401897">ಡೀಫಾಲ್ಟ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="6770452996697898492">[ಬುಕ್ ಮಾಡಲಾಗಿದೆ]</translation>
+<translation id="6775952316617222141">Chrome ನಲ್ಲಿ Gemini ನೊಂದಿಗೆ Live ಅಲ್ಲಿ ಮಾತನಾಡಿ</translation>
 <translation id="6779455296366983087">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6782531425936234573">ಡೇಟಾ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ</translation>
 <translation id="6791425686608802741">"ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>

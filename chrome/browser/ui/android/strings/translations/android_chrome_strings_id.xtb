@@ -243,6 +243,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2056878612599315956">Situs dijeda</translation>
 <translation id="2063047797624276601">Organisasi Anda mengaktifkan Safe Browsing yang Disempurnakan</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download gagal}other{# download gagal}}</translation>
+<translation id="2066690553719545730">Selalu Tampilkan Mode AI</translation>
 <translation id="2067805253194386918">teks</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2082238445998314030">Hasil <ph name="RESULT_NUMBER" /> dari <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2149968176347646218">Koneksi tidak aman</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2163089732491971196">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, masukkan frasa sandi</translation>
+<translation id="2164015935042801524">Klik kanan di sini untuk menampilkan tab secara vertikal</translation>
 <translation id="2166228530126694506">Versi <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Deskripsi gambar nonaktif</translation>
 <translation id="2172905120685242547">Tutup jendela?</translation>
@@ -305,6 +307,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2323763861024343754">Penyimpanan situs</translation>
 <translation id="2327445548174191329">Dari <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Semua orang akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan semua link undangan akan dinonaktifkan</translation>
+<translation id="2329500425421091035">Memperkenalkan Mode AI di Chrome</translation>
 <translation id="2330186936255788117">Bookmark lainnya</translation>
 <translation id="2332515770639153015">Safe Browsing yang Disempurnakan aktif</translation>
 <translation id="233375395665273385">Hapus dan logout</translation>
@@ -1057,7 +1060,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5436928407363358055">Untuk melanjutkan dari bagian terakhir yang dibuka dengan mudah, sinkronkan histori dan tab Anda</translation>
 <translation id="5438292632479953702">Download lagi</translation>
 <translation id="5439191312780166229">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chrome.</translation>
-<translation id="5441137934526263133">Situs tidak berfungsi? Cookie pihak ketiga diblokir</translation>
 <translation id="5441466871879044658">Terjemahkan ke bahasa ini</translation>
 <translation id="5444999712122199445">Kembali ke situs</translation>
 <translation id="544776284582297024">Untuk membuka tab dan mengunjungi halaman yang berbeda secara bersamaan, ketuk tombol tab terbuka</translation>
@@ -1112,7 +1114,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="569536719314091526">Terjemahkan halaman ini ke bahasa apa pun dari tombol Opsi lainnya</translation>
 <translation id="5696597120588531049">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya</translation>
 <translation id="5698878456427040674">Periksa apakah akun yang dipilih didukung.</translation>
-<translation id="5700415746238689851">Buka Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ingin terhubung ke port serial</translation>
 <translation id="5715150588940290235">Hapus kode keamanan yang tersimpan?</translation>
 <translation id="572328651809341494">Tab terbaru</translation>
@@ -1418,7 +1419,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6835182496791325827">Dapatkan notifikasi saat Chrome menemukan hasil terbaik untuk penelusuran Anda saat Anda sedang tidak aktif.</translation>
 <translation id="6846298663435243399">Memuat...</translation>
-<translation id="6850409657436465440">Download sedang berlangsung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tab ditutup</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 hasil ditemukan}other{# hasil ditemukan}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{File audio, 1 file audio dalam daftar}other{File audio, # file audio dalam daftar}}</translation>
@@ -1968,12 +1968,14 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9001604755921395912">Buka di tab Chrome Samaran</translation>
 <translation id="9010094279589497751">Buka Gemini dengan cepat saat Anda membutuhkannya</translation>
 <translation id="9012585441087414258">Melindungi dari situs, download, dan ekstensi yang diketahui berbahaya. Jika halaman melakukan hal yang mencurigakan, URL dan contoh kecil konten halaman akan dikirim ke Google Safe Browsing.</translation>
+<translation id="9014097371980259227">Beberapa alat telah dipindahkan untuk membantu Anda menelusuri dengan Mode AI</translation>
 <translation id="9019199799064251516">Lanjutkan tanpa kunci profil mobil?</translation>
 <translation id="9022774213089566801">Sering dikunjungi</translation>
 <translation id="9022871169049522985">Situs dan pengiklan dapat mengukur performa iklannya</translation>
 <translation id="9024318700713112071">Setel Chrome sebagai browser default</translation>
 <translation id="9027728231343310283">Urungkan <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Pindahkan ke\u2026</translation>
+<translation id="904146253922032365">Sentuh lama untuk menampilkan tab secara vertikal</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
 <translation id="9047347135558855162">Mulai penelusuran dengan cepat di Chrome</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>

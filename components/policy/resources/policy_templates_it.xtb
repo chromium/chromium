@@ -1241,6 +1241,19 @@ Questa policy non ha effetto se l'opzione per mantenere i dati di navigazione es
 <translation id="1829839214911753838">Se la policy viene impostata su Attivata, l'host di assistenza remota viene eseguito in un processo con autorizzazioni <ph name="UIACCESS_PERMISSION_NAME" />. In questo modo gli utenti remoti possono interagire con finestre con privilegi più elevati sul desktop dell'utente locale.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, l'host di assistenza remota viene eseguito nel contesto dell'utente e gli utenti remoti non possono interagire con finestre con privilegi più elevati sul desktop.</translation>
+<translation id="1832480890076796592">Questa policy consente di controllare le impostazioni di isolamento dei processi per <ph name="PRODUCT_NAME" />.
+
+L'attivazione dell'isolamento dei processi migliora la sicurezza di <ph name="PRODUCT_NAME" /> impedendo alle applicazioni autorizzate sul sistema di manomettere o leggere i contenuti dei processi in esecuzione di <ph name="PRODUCT_NAME" />. In questo modo, si impedisce ad altre applicazioni sul sistema di accedere ai dati criptati di <ph name="PRODUCT_NAME" />.
+
+L'attivazione dell'isolamento dei processi potrebbe causare incompatibilità con applicazioni di terze parti che si basano sulla possibilità di manomettere o di inserire codice nei processi di <ph name="PRODUCT_NAME" />, come antivirus, screen reader o applicazioni di gestione delle finestre.
+
+Se la policy viene attivata, l'isolamento dei processi viene attivato in <ph name="PRODUCT_NAME" />.
+
+Se la policy viene disattivata, l'isolamento dei processi viene disattivato in <ph name="PRODUCT_NAME" />.
+
+Se questa policy non viene configurata, <ph name="PRODUCT_NAME" /> seguirà il processo di rilascio predefinito per la funzionalità di isolamento dei processi, il che significa che la funzionalità viene rilasciata gradualmente per un numero crescente di utenti.
+
+Nota: questa policy viene applicata all'avvio di <ph name="PRODUCT_NAME" />. Se la policy viene modificata mentre <ph name="PRODUCT_NAME" /> è in esecuzione, la nuova impostazione verrà applicata al prossimo riavvio.</translation>
 <translation id="1834796168555733063">Disattiva il salvataggio delle passkey utilizzando Gestore delle password</translation>
 <translation id="1836380138559328229">Salva le credenziali Wi-Fi attive a livello di dispositivo</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
@@ -1604,6 +1617,7 @@ In genere, questa policy è disattivata per difendere gli utenti da tentativi di
       Se non viene configurata, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>
 <translation id="2039801473506609891">Disattiva il supporto HTTP/0.9 sulle porte non predefinite</translation>
 <translation id="2040479044912658454">Modalità rasterizzazione stampa</translation>
+<translation id="2041894060487590789">È possibile utilizzare l'isolamento dei processi, a seconda del processo di rilascio della funzionalità.</translation>
 <translation id="2043749682619281558">Attiva l'evidenziazione del cursore sulla schermata di accesso</translation>
 <translation id="2043770014371753404">Stampanti aziendali disattivate</translation>
 <translation id="2054093043033461396">Schermata di accesso salvaschermo del dispositivo attivata.</translation>
@@ -2284,6 +2298,7 @@ Se la policy viene impostata su <ph name="POLICY_VALUE_DISABLEDE" />, la funzion
 
 Se la policy non viene configurata, <ph name="POLICY_VALUE_VISIBLE" /> è la selezione predefinita.</translation>
 <translation id="2488455166114458307">Consenti l'API attributi dispositivo su questi siti</translation>
+<translation id="2489454942579368665">Non consentire l'utilizzo degli Strumenti per sviluppatori in nessun caso</translation>
 <translation id="2489558694350871332">Consenti al dispositivo di eseguire macchine virtuali</translation>
 <translation id="2492240920793040106">Attiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
@@ -2828,6 +2843,7 @@ Se questo elenco è vuoto o non viene impostato, nessun contenuto in background 
 
       Se non viene configurata, la variazione dei picchi energetici è inizialmente disattivata. Gli utenti non possono modificare questa impostazione.</translation>
 <translation id="2773288106548584039">Supporto dei browser precedenti</translation>
+<translation id="2773911169897970305">Disattiva l'isolamento dei processi.</translation>
 <translation id="2774906947252258544">La lista bloccata consente di stabilire i tipi di installazione delle estensioni vietati.
 
 L'impostazione del valore "command_line" impedirà il caricamento delle estensioni dalla riga di comando.</translation>
@@ -4072,6 +4088,7 @@ Ricorda di non tenere questa policy sempre attiva, soprattutto nelle distribuzio
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
 <translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="3596112486106491038">Attiva l'accesso alla riga di comando delle macchine virtuali</translation>
+<translation id="3600342552601917721">Consenti l'utilizzo degli Strumenti per sviluppatori per la navigazione web standard, ma limita l'utilizzo per le estensioni installate a livello aziendale e per le estensioni integrate per gli utenti gestiti. A partire dalla versione M150, sono bloccati anche su qualsiasi pagina che incorpora queste estensioni, con la sola eccezione del visualizzatore PDF integrato.</translation>
 <translation id="3603469950773500315">Consente di attivare le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" />, consentendo alle estensioni di mantenere un comportamento compatibile e a <ph name="PRODUCT_NAME" /> di inviare le intestazioni specificate senza controlli <ph name="CORS" />.
 
       Se questo elenco viene lasciato vuoto, <ph name="PRODUCT_NAME" /> prova a eseguire le estensioni in modalità compatibili e non introduce modifiche <ph name="API" /> per la versione 79 di <ph name="PRODUCT_NAME" />, come spiegato all'indirizzo <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -4315,6 +4332,7 @@ Questa policy è deprecata a partire dalla versione 144 di <ph name="PRODUCT_NAM
 <translation id="376375951585423504">Disattiva la quota permanente.</translation>
 <translation id="3765260570442823273">Durata del messaggio di avviso di uscita per inattività</translation>
 <translation id="3766695867369523703">Consenti il partizionamento dello spazio di archiviazione di terze parti per impostazione predefinita.</translation>
+<translation id="377001726927041812">Attiva l'isolamento dei processi.</translation>
 <translation id="3770044943398389276">Per impostazione predefinita, SSO mobile sposta solo i cookie permanenti tra i dispositivi. Questa policy consente di stabilire se includere anche i cookie di sessione. Viene applicata soltanto se la policy <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> è abilitata.
 
 Se questa policy viene abilitata, SSO mobile sincronizzerà sia i cookie di sessione sia quelli permanenti.
@@ -6806,6 +6824,7 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
       Se la policy non viene configurata, gli utenti che usano lo sblocco rapido devono inserire la password nella schermata di blocco ogni giorno.</translation>
 <translation id="5306186200045823863">Considera attendibile l'infrastruttura PKI precedente di Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilità della modalità Incognito</translation>
+<translation id="5308289216279695777">Consenti l'utilizzo degli Strumenti per sviluppatori in tutti i contesti, incluse le estensioni installate o gestite in base a una policy aziendale</translation>
 <translation id="5308551343115571396">Dopo la disattivazione di <ph name="LACROS_NAME" />, tentiamo di conservare il maggior numero possibile di dati utente, rimuovendo tutti i dati del browser.</translation>
 <translation id="53086358353377307">Consente di impostare un elenco di pattern URL che specificano i siti nei quali è consentito impostare i cookie.
 
@@ -12567,6 +12586,25 @@ attivazione dall'utente per chiamare questa API.</translation>
 <translation id="8892286064305622118">Spazio libero su disco necessario per <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892771980172542172">Il nome del canale di rilascio/aggiornamento dell'IWA. Questo valore può essere una stringa qualsiasi; non sono applicate limitazioni. Se non viene fornito alcun valore, verrà utilizzato il canale "predefinito".</translation>
 <translation id="8892783613915541293">Ritardi e azioni da compiere quando il dispositivo è inattivo durante l'utilizzo dell'alimentazione CA.</translation>
+<translation id="8895045875428227171">Impostazione 0 (predefinita): gli strumenti per sviluppatori sono disponibili per la navigazione web standard, ma sono limitati per le estensioni installate a livello aziendale e per le estensioni integrate per gli utenti gestiti. A partire dalla versione M150, sono bloccati anche su qualsiasi pagina che incorpora queste estensioni, con la sola eccezione del visualizzatore PDF integrato.
+
+Impostazione 1: gli strumenti per sviluppatori e la console sono completamente sbloccati e accessibili in tutti i contesti, incluse le estensioni installate o gestite in base a una policy aziendale.
+
+Impostazione 2: gli strumenti per sviluppatori e l'ispezione degli elementi sono completamente disattivati a livello di browser.
+
+Questa impostazione disattiva anche le scorciatoie da tastiera e le voci dei menu o dei menu contestuali per aprire gli strumenti per sviluppatori o la console JavaScript.
+
+A partire dalla versione 99 di <ph name="PRODUCT_NAME" />, questa impostazione consente anche di controllare gli entry point per la funzionalità "Visualizza il codice sorgente della pagina". Se imposti questa policy su "DeveloperToolsDisallowed" (valore 2), gli utenti non possono accedere alla visualizzazione del codice sorgente tramite la scorciatoia da tastiera o il menu contestuale. Per bloccare completamente la visualizzazione del codice sorgente, devi anche aggiungere "view-source:*" alla policy <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+A partire dalla versione 119 di <ph name="PRODUCT_NAME" />, questa impostazione consente anche di stabilire se è possibile attivare e utilizzare la modalità sviluppatore per le app web isolate.
+
+A partire dalla versione 128 di <ph name="PRODUCT_NAME" />, questa impostazione non controllerà la modalità sviluppatore nella pagina delle estensioni se è impostata la policy <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />.
+
+La disponibilità degli Strumenti per sviluppatori è determinata nel seguente ordine di precedenza:
+1. Se un URL corrisponde a un pattern nella policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, gli Strumenti per sviluppatori sono consentiti.
+2. Se <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> è impostata e <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> non lo è, qualsiasi URL non presente nella lista consentita viene bloccato.
+3. Se un URL corrisponde a un pattern nella policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, gli Strumenti per sviluppatori vengono bloccati.
+4. Se un URL non è coperto dalla lista consentita o dalla lista bloccata, questa policy (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) è di riserva.</translation>
 <translation id="8897796778265450949">Limita il tempo per cui un utente autenticato tramite GAIA senza SAML può accedere offline</translation>
 <translation id="889814528399907891">Consenti agli utenti di attivare <ph name="LACROS_NAME" /> e impostarlo come browser principale</translation>
 <translation id="8900312706328930425">Frequenza del reporting su cloud in ore</translation>
@@ -12978,6 +13016,7 @@ Questa policy non ha effetto se la policy <ph name="METRICS_REPORTING_ENABLED_PO
 <translation id="9180108183162961002">Consenti gli accessi come ospite al browser</translation>
 <translation id="9185963199234034321">Attiva l'alto contrasto nella schermata di accesso e consenti all'utente di disattivarlo temporaneamente</translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>
+<translation id="9188142767272053574">Attiva l'isolamento dei processi</translation>
 <translation id="9190022798664427644">Attiva l'audio in formato mono</translation>
 <translation id="9190456586252617675">Questa policy consente di stabilire la modalità dell'esperienza di onboarding dell'assistente.
 

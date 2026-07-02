@@ -690,7 +690,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="8163152278172770963">Ära luba saitidel automaatselt pilt pildis režiimi siseneda</translation>
 <translation id="8168435359814927499">Sisu</translation>
 <translation id="818487310457576362">Täisekraanilt väljumiseks lohistage ekraani küljelt.</translation>
-<translation id="8186479265534291036">Kas sait ei tööta? Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> on lubatud</translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8211406090763984747">Ühendus on turvaline</translation>
@@ -761,7 +760,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="8805385115381080995">Sirvimine on kiirem, kuna sait ei palu teil nii tihti kinnitada seda, et olete päris inimene</translation>
 <translation id="881644524232657178">Kui see on sisse lülitatud, saavad saidid kasutada teie seadme liikumis- ja valgusandureid. Kui see on välja lülitatud, ei saa saidid andureid kasutada.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada. See vähendab sirvimiskaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega oodatud moel.</translation>
 <translation id="8889294078294184559">Kui jätkate sirvimist, saavad saidid Chrome’iga kontrollida ja teie eelmisel külastatud saidil kinnitada, et olete tõenäoliselt päris inimene</translation>
 <translation id="8899807382908246773">Sekkuvad reklaamid</translation>
 <translation id="8903921497873541725">Suurendab</translation>
@@ -787,7 +785,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="913657688200966289">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse load rakendusele <ph name="APP_NAME" />.</translation>
 <translation id="9138037198177304356">Märguanded on lubatud</translation>
 <translation id="9138217887606523162">Praegune suumitase on <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Saidid kasutavad seda funktsiooni, et lubada automaatselt pilt pildis režiimi siseneda. See võimaldab teil video vaatamist jätkata, vabastades ekraanikuval ruumi muude toimingute jaoks.</translation>
 <translation id="9156722768168878035">Laske Chrome'il kuvada teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
 <translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>

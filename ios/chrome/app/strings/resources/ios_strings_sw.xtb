@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{Ufunguo {count} wa siri}other{Funguo {count} za siri}}</translation>
 <translation id="1005023885865154304">Fungua mipangilio ya Kujaza Manenosiri Kiotomatiki</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live ni kipengele kipya katika Gemini kwenye Chrome</translation>
 <translation id="1013952917065545813">Unaweza kurudi hapa ili ufungue tena vichupo ambavyo ulifunga hivi majuzi</translation>
 <translation id="1016495303386450659">Umesasisha kipengee</translation>
 <translation id="1018804590490383958">Changanua na ujaze kiotomatiki</translation>
@@ -1737,6 +1738,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6761393919622941301">Sauti</translation>
 <translation id="6765551480308401897">Usiweke Iwe Chaguomsingi</translation>
 <translation id="6770452996697898492">[UMEWEKA NAFASI]</translation>
+<translation id="6775952316617222141">Tiririsha Mubashara na Gemini kwenye Chrome</translation>
 <translation id="6779455296366983087">Data yako ya kuvinjari itafutwa</translation>
 <translation id="6782531425936234573">Hamisha data</translation>
 <translation id="6791425686608802741">Gusa "Weka Kichupo kwenye Kikundi Kipya"</translation>

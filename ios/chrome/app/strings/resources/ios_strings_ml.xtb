@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} പാസ്‌കീ}other{{count} പാസ്‌കീകൾ}}</translation>
 <translation id="1005023885865154304">പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കൽ ക്രമീകരണം തുറക്കുക</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Chrome-ലെ Gemini-യിലെ പുതിയ ഫീച്ചറാണ് Live</translation>
 <translation id="1013952917065545813">നിങ്ങൾ അടുത്തിടെ അടച്ച ടാബുകൾ ഇവിടേക്ക് തിരികെ വന്ന് നിങ്ങൾക്ക് വീണ്ടും തുറക്കാം</translation>
 <translation id="1016495303386450659">ഇനം അപ്‌ഡേറ്റ് ചെയ്‌തു</translation>
 <translation id="1018804590490383958">സ്കാൻ ചെയ്ത് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
@@ -1737,6 +1738,7 @@
 <translation id="6761393919622941301">ഓഡിയോ</translation>
 <translation id="6765551480308401897">ഡിഫോൾട്ട് ആക്കരുത്</translation>
 <translation id="6770452996697898492">[ബുക്ക് ചെയ്‌തു]</translation>
+<translation id="6775952316617222141">Chrome-ലെ Gemini ഉപയോഗിച്ച് Live പോകൂ</translation>
 <translation id="6779455296366983087">നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും</translation>
 <translation id="6782531425936234573">ഡാറ്റ എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="6791425686608802741">"പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക" ടാപ്പ് ചെയ്യുക</translation>

@@ -15,9 +15,6 @@
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />ลงชื่อเข้าใช้ Chromium<ph name="END_LINK" /> เพื่อตรวจสอบว่ารหัสผ่านของคุณไม่ได้รับผลกระทบจากการละเมิดข้อมูลและปัญหาด้านความปลอดภัยอื่นๆ</translation>
 <translation id="1153368717515616349">คลิกเมนู Chromium</translation>
 <translation id="1157985233335035034">ภาษาล่าสุด</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ได้เพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chromium
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">ติดตั้งไม่สำเร็จเนื่องจากระบบไม่รองรับ Windows เวอร์ชันที่คุณใช้</translation>
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1186645291482254714">รับการแจ้งเตือนการติดตามราคาด้วย Chromium ในโทรศัพท์</translation>
@@ -52,7 +49,6 @@
 <translation id="1524282610922162960">แชร์แท็บ Chromium</translation>
 <translation id="154404805518949443">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1547469039832541117">สิ้นสุดงานที่ไฮไลต์ไว้</translation>
-<translation id="1553461853655228091">Chromium ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="1562320819937089394">ปักหมุด Chromium</translation>
 <translation id="1574377791422810894">เครื่องมือด้านความปลอดภัยของ Chromium</translation>
 <translation id="1594928384848033697">Chromium ต้องการลบข้อมูลในเครื่องมือจัดการรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
@@ -214,9 +210,6 @@
 <translation id="3155163173539279776">เรียกใช้งาน Chromium อีกครั้ง</translation>
 <translation id="3161522574479303604">ทุกภาษา</translation>
 <translation id="3179665906251668410">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
-<translation id="3183357154200327217">โปรแกรมอื่นในคอมพิวเตอร์เพิ่มธีมที่อาจเปลี่ยนวิธีการทำงานของ Chromium
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">ปรับแต่งโปรไฟล์ Chromium ใหม่</translation>
 <translation id="3189205223539394158">คุณสามารถแชทกับโหมด AI ต่อไปได้โดยไม่ต้องเปลี่ยนแท็บ หากต้องการเริ่มต้นใช้งาน ให้ลงชื่อเข้าใช้ Chromium นอกจากนี้ คุณยังรับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="3224847870593914902">หากต้องการนำบัญชี Google ออกจาก Chromium ให้ออกจากระบบ Chromium ในหน้าการตั้งค่า</translation>
@@ -295,9 +288,6 @@
 <translation id="4036079820698952681">ช่วยให้ Chromium ดียิ่งขึ้นด้วยการรายงาน<ph name="BEGIN_LINK" />การตั้งค่าปัจจุบัน<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">การปรับปรุงด้านความปลอดภัยที่สำคัญและฟีเจอร์ใหม่ๆ พร้อมให้บริการในเวอร์ชันล่าสุด</translation>
 <translation id="4055805654398742145">เครื่องมือจัดการรหัสผ่าน</translation>
-<translation id="4061696872429826774">โปรแกรมอื่นในคอมพิวเตอร์เพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chromium
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}other{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}}</translation>
 <translation id="4118474109249235144">โหมดไม่ระบุตัวตนของ Chromium</translation>
 <translation id="4122186850977583290">ไปที่หน้าเกี่ยวกับ Chromium</translation>
@@ -410,7 +400,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chromium แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>
 <translation id="5473971139929175403">Chromium อาจทำงานไม่ถูกต้องเพราะไม่รองรับใน Linux Distribution นี้แล้ว</translation>
 <translation id="5475924890392386523">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์อาจเป็นอันตรายต่อบัญชีส่วนตัวและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
-<translation id="5480860683791598150">Chromium ต้องการสิทธิ์เข้าถึงตำแหน่งของคุณเพื่อแชร์ตำแหน่งกับเว็บไซต์นี้</translation>
 <translation id="549669000822060376">โปรดรอขณะที่ Chromium ติดตั้งการอัปเดตระบบล่าสุด</translation>
 <translation id="5496810170689441661">Chromium กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="549975168243349205">ทำงานร่วมกับแอปโปรดอย่าง Google ไดรฟ์และ YouTube ได้อย่างราบรื่นทุกที่ทุกเวลาด้วย Chromium</translation>
@@ -477,9 +466,6 @@
 <translation id="6174920971222007286">ไฟล์นี้อาจเป็นอันตราย<ph name="LINE_BREAK" />Chromium ตรวจสอบการดาวน์โหลดนี้ให้คุณได้หากคุณให้รหัสผ่าน ข้อมูลเกี่ยวกับไฟล์จะส่งไปยัง Google Safe Browsing แต่เนื้อหาและรหัสผ่านของไฟล์จะยังอยู่ในอุปกรณ์ของคุณ</translation>
 <translation id="6182736845697986886">การติดตั้งไม่สำเร็จเนื่องจากเกิดข้อผิดพลาดภายในเซิร์ฟเวอร์การอัปเดต</translation>
 <translation id="6183079672144801177">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chromium ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
-<translation id="6204922163963157461">โปรแกรมอื่นในคอมพิวเตอร์เพิ่มแอปที่อาจเปลี่ยนวิธีการทำงานของ Chromium
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">คอมพิวเตอร์เครื่องนี้ติดตั้ง Chromium รุ่นที่ใหม่กว่าอยู่แล้ว ถ้าซอฟต์แวร์ไม่ทำงาน โปรดถอนการติดตั้ง Chromium และลองอีกครั้ง</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium จะเปิดขึ้นมาใหม่ตอนนี้}=1{Chromium จะเปิดขึ้นมาใหม่ใน 1 วินาที}other{Chromium จะเปิดขึ้นมาใหม่ใน # วินาที}}</translation>
 <translation id="6239161312595354541">ถามการค้นหารูปภาพเกี่ยวกับวิดีโอนี้</translation>
@@ -581,7 +567,6 @@
 <translation id="6964305034639999644">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6985329841647292029">ข้อกำหนดของ Chromium OS</translation>
-<translation id="6990124437352146030">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="7003299027384820442">ป้อนพาสเฟรสเพื่อใช้และบันทึกข้อมูล Chromium ในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">การติดตั้งไม่สำเร็จเนื่องจากระบบไม่รองรับระบบปฏิบัติการเวอร์ชันนี้</translation>
 <translation id="7024536598735240744">ข้อผิดพลาดในการคลายการแพคข้อมูล: <ph name="UNPACK_ERROR" /></translation>
@@ -626,7 +611,6 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 3. คลิก <ph name="BUTTON_3" /> ในการแจ้งเตือนของ Windows เพื่อปักหมุด Chromium ไว้ที่แถบงานเพื่อให้เข้าถึงได้รวดเร็ว</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">คัดลอกข้อความแล้ว</translation>
-<translation id="7451052299415159299">Chromium ต้องการสิทธิ์เข้าถึงกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="7458892263350425044">หากต้องการใช้ไมโครโฟน โปรดให้สิทธิ์เข้าถึงแก่ Chromium ใน<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Chromium ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 7</translation>
 <translation id="7467949745582939695">เปิด Chromium อีกครั้งใช่ไหม</translation>
@@ -751,8 +735,8 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8719993436687031146">ลงชื่อเข้าใช้ Chromium ไหม</translation>
 <translation id="8747073452963259673">มุมซ้ายล่างของพื้นที่การค้นหา: ซ้าย <ph name="LEFT" />% ล่าง <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">ข้อผิดพลาดในการติดตั้ง: ผู้ดูแลเครือข่ายของคุณใช้นโยบายระดับกลุ่มซึ่งป้องกันการติดตั้ง: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนและกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="8813277370772331957">เตือนฉันภายหลัง</translation>
+<translation id="8816416449795340678">แชร์เอกสารนี้กับ Gemini ใน Chromium เพื่อดูภาพรวมคร่าวๆ และถามคำถามต่อเนื่อง</translation>
 <translation id="8818550178040858407">ลงชื่อเข้าใช้ Chromium ไหม</translation>
 <translation id="8823401858233292222">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นและปักหมุดไว้ที่แถบงาน</translation>
 <translation id="8826492472752484139">คลิก "เครื่องมือจัดการรหัสผ่าน"</translation>

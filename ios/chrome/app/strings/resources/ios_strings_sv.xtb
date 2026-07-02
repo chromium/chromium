@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} nyckel}other{{count} nycklar}}</translation>
 <translation id="1005023885865154304">Öppna inställningarna för automatisk ifyllnad av lösenord</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
+<translation id="1013852467930342108">Live är en ny funktion i Gemini i Chrome</translation>
 <translation id="1013952917065545813">Du kan återkomma hit och öppna nyligen stängda flikar</translation>
 <translation id="1016495303386450659">Bokmärket har uppdaterats</translation>
 <translation id="1018804590490383958">Skanna och autofyll</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Delade enheter</translation>
 <translation id="2580306219079937316">Öppna översättningsinställningarna</translation>
 <translation id="2583688836549072561">Flikgrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> flikar, ny aktivitet.</translation>
+<translation id="2584994295315085351">Öppna en ny flik när du återvänder till Chrome efter fyra timmar</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Bevaka prissänkningar på produkter</translation>
 <translation id="2602372807870028932">Detta raderar vald information som har sparats på den här enheten</translation>
@@ -1737,6 +1739,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6761393919622941301">Ljud</translation>
 <translation id="6765551480308401897">Använd inte som standard</translation>
 <translation id="6770452996697898492">[BOKAT]</translation>
+<translation id="6775952316617222141">Använda Live med Gemini i Chrome</translation>
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
 <translation id="6782531425936234573">Exportera data</translation>
 <translation id="6791425686608802741">Tryck på Lägg till fliken i en ny grupp</translation>

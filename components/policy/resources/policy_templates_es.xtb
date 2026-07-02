@@ -1203,6 +1203,19 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 <translation id="1829839214911753838">Si se habilita esta política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. Así, los usuarios remotos podrán interactuar con ventanas a las que se puede acceder con permisos de administrador en el ordenador del usuario local.
 
       Si se inhabilita esta política o no se le asigna ningún valor, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con las ventanas que requieren permisos de administrador en el ordenador.</translation>
+<translation id="1832480890076796592">Esta política controla la configuración de aislamiento de procesos de <ph name="PRODUCT_NAME" />.
+
+Habilitar el aislamiento de procesos mejora la seguridad de <ph name="PRODUCT_NAME" />, ya que impide que las aplicaciones autorizadas del sistema manipulen o lean el contenido de los procesos en ejecución de <ph name="PRODUCT_NAME" />. De esta forma, se evita que otras aplicaciones del sistema accedan a los datos cifrados de <ph name="PRODUCT_NAME" />.
+
+Si habilitas el aislamiento de procesos, puede que haya incompatibilidades con aplicaciones de terceros que dependan de poder inyectar o manipular los procesos de <ph name="PRODUCT_NAME" />, como aplicaciones de antivirus, de lector de pantalla o de gestión de ventanas.
+
+Si se habilita esta política, se activará el aislamiento de procesos en <ph name="PRODUCT_NAME" />.
+
+Si se inhabilita esta política, se desactivará el aislamiento de procesos en <ph name="PRODUCT_NAME" />.
+
+Si no se define esta política, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado de la función de aislamiento de procesos, lo que significa que la función se lanzará de forma gradual para un número progresivamente mayor de usuarios.
+
+Nota: Esta política se aplica cuando se inicia <ph name="PRODUCT_NAME" />. Si se cambia esta política mientras <ph name="PRODUCT_NAME" /> está en ejecución, el nuevo ajuste se aplicará la próxima vez que se reinicie.</translation>
 <translation id="1834796168555733063">Inhabilitar el almacenamiento de llaves de acceso con el Gestor de contraseñas</translation>
 <translation id="1836380138559328229">Guardar las credenciales de la red Wi-Fi activa a nivel de dispositivo</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros</translation>
@@ -1567,6 +1580,7 @@ Esta política suele estar inhabilitada para ofrecer protección contra phishing
       Si no se asigna ningún valor a esta política, el comportamiento estará inhabilitado para los usuarios gestionados y habilitado para el resto de los usuarios de forma predeterminada.</translation>
 <translation id="2039801473506609891">Inhabilitar la compatibilidad con HTTP/0.9 en puertos no predeterminados</translation>
 <translation id="2040479044912658454">Modo de rasterización de impresión</translation>
+<translation id="2041894060487590789">El aislamiento de procesos se puede usar en función del proceso de lanzamiento de funciones.</translation>
 <translation id="2043749682619281558">Habilita el resaltado del cursor en la pantalla de inicio de sesión</translation>
 <translation id="2043770014371753404">Impresoras de empresa inhabilitadas</translation>
 <translation id="2054093043033461396">Salvapantallas del dispositivo habilitado en la pantalla de inicio de sesión.</translation>
@@ -2239,6 +2253,7 @@ Si se le asigna el valor <ph name="POLICY_VALUE_DISABLEDE" /> a esta política, 
 
 Si no se define esta política, la opción predeterminada será <ph name="POLICY_VALUE_VISIBLE" />.</translation>
 <translation id="2488455166114458307">Permitir la API Device Attributes en estos sitios</translation>
+<translation id="2489454942579368665">No permitir el uso de las herramientas de desarrollo en ningún caso</translation>
 <translation id="2489558694350871332">Permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="2492240920793040106">Habilitar los informes sobre datos del sistema y contenido de páginas para ayudar a mejorar la función Navegación segura</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
@@ -2783,6 +2798,7 @@ Si esta lista está vacía o no se define, no se forzará la prioridad de primer
 
       Si no se establece, el cambio de alimentación en picos está desactivado en un principio. Los usuarios no pueden cambiar esta opción.</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores antiguos</translation>
+<translation id="2773911169897970305">Inhabilitar aislamiento de procesos.</translation>
 <translation id="2774906947252258544">La lista de bloqueados controla qué tipos de instalación de extensiones no están permitidos.
 
 Si se asigna el valor "command_line" a una extensión, se impedirá que se cargue
@@ -4012,6 +4028,7 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>
 <translation id="3593905652755912452">Se usará el comportamiento anterior de envío de eventos en controles de formulario inhabilitados.</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de las máquinas virtuales</translation>
+<translation id="3600342552601917721">Permitir el uso de las herramientas de desarrollo en la navegación web estándar, pero restringir su uso en extensiones instaladas por la empresa y en extensiones integradas de usuarios gestionados. A partir de la versión M150, también se bloquean en cualquier página que incluya estas extensiones, con la única excepción del visor de PDFs integrado.</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />. Así, las extensiones continúan siendo compatibles y <ph name="PRODUCT_NAME" /> puede enviar encabezados definidos sin comprobaciones de <ph name="CORS" />.
 
       Si esta lista se deja vacía, <ph name="PRODUCT_NAME" /> intentará ejecutar las extensiones de forma compatible y no introducirá cambios de <ph name="API" /> en <ph name="PRODUCT_NAME" /> 79, tal y como se explica en <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -4256,6 +4273,7 @@ Esta política queda obsoleta a partir de la versión 144 de <ph name="PRODUCT_N
 <translation id="376375951585423504">Inhabilitar la cuota persistente.</translation>
 <translation id="3765260570442823273">Duración del mensaje que advierte al usuario de que se cerrará la sesión porque se encuentra inactivo</translation>
 <translation id="3766695867369523703">Permitir la partición del almacenamiento de terceros de forma predeterminada.</translation>
+<translation id="377001726927041812">Habilitar aislamiento de procesos.</translation>
 <translation id="3770044943398389276">De forma predeterminada, el SSO flotante solo mueve las cookies persistentes entre dispositivos. Esta política controla si también se deben incluir las cookies de sesión. Solo tiene efecto cuando la política <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> está habilitada.
 
 Si se habilita esta política, el SSO flotante sincronizará las cookies de sesión y las persistentes.
@@ -6740,6 +6758,7 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
       Si no se establece esta política, los usuarios que utilicen el desbloqueo rápido deben introducir su contraseña en la pantalla de bloqueo cada día.</translation>
 <translation id="5306186200045823863">Confiar en la infraestructura de PKI antigua de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo Incógnito</translation>
+<translation id="5308289216279695777">Permitir el uso de las herramientas de desarrollo en todos los contextos, incluso en extensiones de políticas de empresa</translation>
 <translation id="5308551343115571396">Después de que se inhabilite <ph name="LACROS_NAME" />, intentaremos conservar tantos datos de usuario como sea posible y eliminaremos todos los datos del navegador.</translation>
 <translation id="53086358353377307">Permite definir una lista de patrones de URL donde se especifica qué sitios pueden establecer cookies.
 
@@ -12420,6 +12439,25 @@ Los orígenes no especificados en la política ni en la configuración del usuar
 <translation id="8892286064305622118">Espacio disponible en disco necesario para <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892771980172542172">El nombre del canal de actualización/lanzamiento de la IWA. Este valor puede ser cualquier cadena, no hay restricciones. Si no se proporciona ningún valor, se usará el canal "default".</translation>
 <translation id="8892783613915541293">Retrasos y acciones que se deben llevar a cabo cuando el dispositivo esté inactivo y conectado a la red eléctrica</translation>
+<translation id="8895045875428227171">Valor 0 (predeterminado): las herramientas de desarrollo están disponibles para la navegación web estándar, pero están restringidas para las extensiones instaladas por la empresa y las extensiones integradas de usuarios gestionados. A partir de la versión M150, también se bloquean en cualquier página que incluya estas extensiones, con la única excepción del visor de PDFs integrado.
+
+Valor 1: Las herramientas de desarrollo y la consola están completamente desbloqueadas y son accesibles en todos los contextos, incluso en las extensiones de políticas de empresa.
+
+Valor 2: Las herramientas de desarrollo y la inspección de elementos están totalmente inhabilitadas en todo el navegador.
+
+Este ajuste también desactiva las combinaciones de teclas y las entradas de menús o menús contextuales que permiten abrir las herramientas para desarrolladores y la consola de JavaScript.
+
+A partir de la versión 99 de <ph name="PRODUCT_NAME" />, este ajuste también controla los puntos de entrada de la función Ver código fuente de la página. Si se asigna el valor "DeveloperToolsDisallowed" (valor 2) a esta política, los usuarios no podrán visualizar el código fuente a través de una combinación de teclas ni mediante el menú contextual. Para bloquear completamente la visualización del código fuente, también debes añadir "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+A partir de la versión 119 de <ph name="PRODUCT_NAME" />, este ajuste también controla si se puede activar y usar el modo Desarrollador para aplicaciones web aisladas.
+
+A partir de la versión 128 de <ph name="PRODUCT_NAME" />, este ajuste no controlará el modo Desarrollador en la página de extensiones si se define la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />.
+
+La disponibilidad de las herramientas de desarrollo se determina según este orden de prioridad:
+1. Si una URL coincide con un patrón de la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, se permitirán las herramientas de desarrollo.
+2. Si se define <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> y no se define <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las URLs que no estén incluidas en la lista de permitidas.
+3. Si una URL coincide con un patrón de la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, se bloquearán las herramientas de desarrollo.
+4. Si una URL no está incluida en la lista de permitidas ni en la de bloqueadas, se usará esta política (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) como alternativa.</translation>
 <translation id="8897796778265450949">Limita el tiempo durante el que un usuario autenticado mediante GAIA sin SAML puede iniciar sesión sin conexión</translation>
 <translation id="889814528399907891">Permitir que los usuarios habiliten <ph name="LACROS_NAME" /> y lo conviertan en el navegador principal</translation>
 <translation id="8900312706328930425">Frecuencia de los informes en la nube en horas</translation>
@@ -12841,6 +12879,7 @@ Esta política no tendrá efecto si se inhabilita <ph name="METRICS_REPORTING_EN
 <translation id="9180108183162961002">Permitir que se inicie sesión en el navegador con el modo Invitado</translation>
 <translation id="9185963199234034321">Habilitar el contraste alto en la pantalla de inicio de sesión y permitir que el usuario lo inhabilite temporalmente</translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
+<translation id="9188142767272053574">Habilitar aislamiento de procesos</translation>
 <translation id="9190022798664427644">Habilitar el audio en mono</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de incorporación del Asistente.
 

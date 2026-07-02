@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="10146536653536065">Faka okuthi "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="1070377999570795893">Olunye uhlelo kukhompuyutha yakho lungeze isandiso esingaguqula indlela i-Chrome esebenza ngayo.
+
+I-<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Nika amandla itimu</translation>
 <translation id="1135328998467923690">Iphakheji alivumelekile: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Ukubhekana nemvelo</translation>
+<translation id="1171831736360285680">U-<ph name="PARTNER_NAME" /> wengeze isandiso esingaguqula indlela iChromium esebenza ngayo.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Yehlulekile ukuthumela ukhiye oyimfihlo.</translation>
 <translation id="132960226125594336">Ayikwazanga ukulayisha ifayela le-'<ph name="RELATIVE_PATH" />' lesikripthi sokuqukethwe njengoba lizodlula usayizi omkhulu wesikripthi noma inani selilonke lobukhulu besandiso besayizi yesikripthi sokuqukethwe.</translation>
 <translation id="1445572445564823378">Lesi sandiso senza i-<ph name="PRODUCT_NAME" /> ihambe kancane. Kuzomele uyikhubaze ukuze ubuyisele ukusebenza kwe-<ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">I-WebGL ayisekelwe</translation>
 <translation id="1478607704480248626">Ukufakwa akunikiwe amandla</translation>
+<translation id="1483493594462132177">Thumela</translation>
+<translation id="1485015260175968628">Manje ingakhona:</translation>
 <translation id="1556537182262721003">Ayikwazanga ukuhambisa umkhombandlela wesandiso kuphrofayela.</translation>
+<translation id="1585717515139318619">Olunye uhlelo kukhompuyutha yakho lungeze itimu engaguqula indlela i-Chrome esebenza ngayo.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Ayikwazanga ukulayisha 'i-<ph name="RELATIVE_PATH" />' ye-css yesikripthi.</translation>
 <translation id="1616298854599875024">Ayikwazi ukungenisa isandiso se-"<ph name="IMPORT_NAME" />" ngoba akuyona imojuli eyabiwe</translation>
+<translation id="175772926354468439">Nika amandla itimu</translation>
 <translation id="1757786065507923842">Isicelo semvume yomzali sihlulekile.</translation>
 <translation id="1803557475693955505">Ayikwazanga ukulayisha ikhasi elingemuva le-'<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Lokhu kungangezwa kuphela kusukela ku-<ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Ayikwazi ukufaka i-"<ph name="APP_NAME" />" ngoba ayivunyelwe yi-"<ph name="IMPORT_NAME" />"</translation>
+<translation id="2150661552845026580">Engeza i-"<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Ayikwazanga ukukhipha ikhodi kusithombe: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">Umzali wakho akasigunyazanga lesi sandiso</translation>
+<translation id="23030561267973084">I-"<ph name="EXTENSION_NAME" />" icele izimvume ezingeziwe.</translation>
+<translation id="2327492829706409234">Nika amandla uhlelo lokusebenza</translation>
 <translation id="2350172092385603347">Kusetshenziswe ukwenza okwasendaweni, kodwa okwasendaweni_okuzenzakalelayo azange kucaciswe ekuvezweni.</translation>
 <translation id="2576842806987913196">Sekuvele kukhona ifayela le-CRX elinale gama.</translation>
 <translation id="2662876636500006917">Isitolo sewebhu se-Chrome</translation>
+<translation id="2678063897982469759">Phinda unike amandla</translation>
 <translation id="2743583586211388067">Ukufinyelela kulesi sandiso kuvinjelwe ngaphansi kwenqubomgomo yenhlangano yakho yobungozi besandiso.</translation>
+<translation id="2766161002040448006">Buza umzali</translation>
 <translation id="2785530881066938471">Ayikwazanga ukulayisha ifayela le-'<ph name="RELATIVE_PATH" />' ngesikripthi sokuqukethwe. Ayibhalwanga ngekhodi ye-UTF-8.</translation>
+<translation id="2850541429955027218">Engeza itimu</translation>
+<translation id="2883143988769190738">Lesi sandiso sicela izimvume ezilandelayo:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (i-ID yesandiso "<ph name="EXTENSION_ID" />") sivinjelwe umlawuli. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Uthumela isicelo sokufaka i-"<ph name="EXTENSION_NAME" />" kumlawuli wakho?</translation>
 <translation id="2988488679308982380">Ayikwazanga ukufaka iphakheji: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Yehlulekile ukufaka esikhundleni sefayela le-crx. Hlola ukuze ubone uma ngabe ifayela lisetshenziswa.</translation>
 <translation id="3163201441334626963">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Ukufinyelela kulesi sandiso kuvinjwe inhlangano yakho.</translation>
+<translation id="3183357154200327217">Olunye uhlelo kukhompyutha yakho lwengeze itimu engaguqula indlela iChromium esebenza ngayo.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Izinhelo zokusebenza ezinesibaluli se-manifest se-'kiosk_only' kumele sifakwe kumodi yekhiyoski ye-ChromeOS</translation>
 <translation id="3364986687961713424">Kuvela kumlawuli wakho: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020">I-<ph name="PRODUCT_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inani elingavumelekile lokhiye oyimfihlo kumele kube yindlela evumelekile.</translation>
+<translation id="3788401245189148511">Ingahle:</translation>
 <translation id="3834775135533257713">Ayikwazi ukungeza uhlelo lokusebenza lwe-"<ph name="TO_INSTALL_APP_NAME" />" ngoba lushayisana ne-"<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Ayikwazanga ukulayisha ikhasi lezinketho i-'<ph name="OPTIONS_PAGE" />'.</translation>
+<translation id="3905761538810670789">Lungisa uhlelo lokusebenza</translation>
+<translation id="3908501907586732282">Nika amandla isandiso</translation>
+<translation id="3927932062596804919">Phika</translation>
 <translation id="3984413272403535372">Iphutha ngenkathi isayina isandiso.</translation>
+<translation id="4014432863917027322">Lungisa i-"<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="4061696872429826774">Olunye uhlelo olukukhompyutha yakho lwengeze isandiso esingaguqula indlela iChromium esebenza ngayo.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Ukufinyelela kulesi sigaba sesandiso kuvinjwe inhlangano yakho.</translation>
 <translation id="4233778200880751280">Ayikwazanga ukulayisha ikhasi elimayelana ne-'<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Izinhlelo zokusebenza kumele zinikezwe kusukela kumsingathi ezingamthinta</translation>
 <translation id="4306119971288449206">Izinhlelo zokusebenza kumele zinikezwe ngohlobo lokuqukethwe kwe-"<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4625078469366263107">Nika amandla uhlelo lokusebenza</translation>
 <translation id="4633003931260532286">Kudingeka isandiso esingu-"<ph name="IMPORT_NAME" />" ngenguqulo encane engu-"<ph name="IMPORT_VERSION" />", kodwa inguqulo kuphela engu-"<ph name="INSTALLED_VERSION" />" efakiwe</translation>
 <translation id="4660476621274971848">Inguqulo elindelwe ngu-"<ph name="EXPECTED_VERSION" />", kodwa inguqulo ibikade ingu-"<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Yehlulekile ukukhipha ukhiye oyimfihlo.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Yehlulekile ukuthumela ukhiye osesidlangalaleni.</translation>
 <translation id="501057610015570208">I-app enesibaluli se-manifest ye-'kiosk_only' kumele ifakwe kumodi ye-kiosk ye-ChromeOS Flex.</translation>
 <translation id="5026754133087629784">Ukubuka iwebhu: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Engeza isandiso</translation>
+<translation id="5039804452771397117">Vumela</translation>
 <translation id="5098647635849512368">Ayikwazi ukuthola indlela okuyiyo eya kumkhombandlela wokupakisha.</translation>
 <translation id="5160071981665899014">Ayikwazanga ukulayisha 'i-<ph name="RELATIVE_PATH" />' ye-javascript yesikripthi.</translation>
+<translation id="5185386675596372454">Inguqulo entsha ye-"<ph name="EXTENSION_NAME" />" ikhutshaziwe ngoba idinga izimvume eziningi.</translation>
+<translation id="5242724311594467048">Nika amandla i-"<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Ukubuka kohlelo lokusebenza: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Susa kusuka  ku-Chromium</translation>
 <translation id="5456409301717116725">Lesi sandiso sifaka ifayela lokhiye i-'<ph name="KEY_PATH" />'. Awufuni ukwenza lokho.</translation>
+<translation id="5485102783864353244">Engeza uhlelo lokusbenza</translation>
 <translation id="5486326529110362464">Inani lokufaka lokhiye oyimfihlo kumele libe khona.</translation>
 <translation id="5527463195266282916">Izame ukwehlisa isandiso.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Yehlulekile ukulayisha isandiso kusuka ku-:</translation>
 <translation id="5972529113578162692">Umlawuli walo mshini udnga i--<ph name="EXTENSION_NAME" /> ukuthi ifakwe. Ayikwazi ukukhishwa.</translation>
 <translation id="6027032947578871493">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela ku-<ph name="VENDOR_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Olunye uhlelo kukhompuyutha yakho lwengeze i-app engaguqula indlela iChromium esebenza ngayo.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Iphutha ukulayisha isandiso</translation>
+<translation id="6220551899604141979">U-<ph name="PARTNER_NAME" /> wengeze isandiso esingaguqula indlela iChrome esebenza ngayo.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Yehlulekile ukufunda ukhiye oyimfihlo.</translation>
+<translation id="6326175484149238433">Susa kusuka ku-Chrome</translation>
 <translation id="6391538222494443604">Kumele kube khona umkhombandlela wokokufaka.</translation>
 <translation id="641087317769093025">Ayikwazanga ukususa ukuzipha kusandiso</translation>
 <translation id="6542618148162044354">I-"<ph name="APP_NAME" />" icela ukufinyelela kudivayisi yakho eyodwa noma amaningi:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> abasebenzisi</translation>
 <translation id="657064425229075395">Ayikwazanga ukulayisha isikripthi esingemuva se-'<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167">I-<ph name="PRODUCT_NAME" /> kusukela ku-<ph name="VENDOR_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">I-Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Ifayela le-manifest alivumelekile</translation>
 <translation id="7217838517480956708">Umlawuli walo mshini udinga ukuthi i-<ph name="EXTENSION_NAME" /> ifakwe. Ayikwazi ukususwa noma iguqulwe.</translation>
 <translation id="7287143125007575591">Ukufinyelela kunqatshelwe.</translation>
+<translation id="760353356052806707">Olunye uhlelo kukhompuyutha yakho lungeze uhlelo lokusebenza olungaguqula indlela i-Chrome esebenza ngayo.
+
+I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Inani lokufaka lokhiye wobumfihlo kumele libe ifomethi evumelekile (PKCS#8-ifomethi PEM-ukhiye we-RSA obetheliwe).</translation>
 <translation id="765293928828334535">Izinhlelo zokusebenza, izandiso, namaskripthi omsebenzisi awakwazi ukungezwa kusukela kule webhusayithi</translation>
+<translation id="7658239707568436148">Khansela</translation>
+<translation id="7766838926148951335">Yamukela izimvume</translation>
 <translation id="7876803335449432072">Ayikwazanga ukulayisha ifayela elithi '<ph name="RELATIVE_PATH" />' leskripthi sekhontenti, amashidi esitayela eskripthi sekhontenti singalayishwa kuphela ukusuka kumafayela eshidi lesitayela asekelwayo njengamafayela okuthi .css.</translation>
 <translation id="7939686037314084444">Isandiso sihlulekile ukulayisha ngokufanelekile. Kungenzeka singakwazi ukuhlangabeza izicelo zenethiwekhi.</translation>
 <translation id="7952904276017482715">I-ID elindelwe ngu-"<ph name="EXPECTED_ID" />", kodwa i-ID kube ngu-"<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Izinketho: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Gunyaza</translation>
 <translation id="8035920974645200807">Ukubhekana nomsebenzisi</translation>
 <translation id="8047248493720652249">Lesi sandiso sihlulekile ukuqamba ukulanda kwe-"<ph name="ATTEMPTED_FILENAME" />" ngoba esinye isandiso (<ph name="EXTENSION_NAME" />) sinqume igama lefayela elihlukile elingu-"<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">I-Google imake i-"<ph name="EXTENSION_NAME" />" njengenobungozi futhi ukufakwa kuvinjelwe</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> kusuka ku-<ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Ingakwazi:</translation>
 <translation id="8517576857589387417">Ifayela le-manifest alikho noma alifundeki</translation>
 <translation id="8565650234829130278">Izame ukwehlisa ukuthuthukiswa kohlelo lokusebenza.</translation>
 <translation id="8621383749470166852">Ayikwazanga ukulayisha ifayela elithi '<ph name="RELATIVE_PATH" />' leskripthi sekhontenti, iskripthi sekhontenti singalayishwa kuphela ukusuka kumafayela eJavaScript asekelwayo njengamafayela okuthi .js.</translation>
 <translation id="8636666366616799973">Iphakheji alivumelekile. Imininingwane: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">Usuvele ucele i-"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8761756413268424715">I-"<ph name="APP_NAME" />" icela ukufinyelela kweyodwa  yamadivayisi akho.</translation>
 <translation id="8885905466771744233">Ukhiye oyimfihlo wesandiso esicacisiwe sowuvele ukhona. Phinda usebenzise loyo khiye noma wususe kuqala.</translation>
 <translation id="9039223174332979184">Umlawuli walo mshini udinga i-<ph name="EXTENSION_NAME" /> ibe nohlobo lobuncane be-manifest engu-3.</translation>
 <translation id="907841381057066561">Yehlulekile ukudala ifayela le-zip lesikhashana ngesikhathi sokuphakheja.</translation>
+<translation id="9102610709270966160">Nika amandla isandiso</translation>
+<translation id="93766956588638423">Lungisa isandiso</translation>
 <translation id="941543339607623937">Ukhiye oyimfihlo ongavumelekile</translation>
 </translationbundle>

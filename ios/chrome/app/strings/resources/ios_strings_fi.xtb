@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} avainkoodi}other{{count} avainkoodia}}</translation>
 <translation id="1005023885865154304">Avaa automaattisen täytön salasana-asetukset</translation>
 <translation id="1005230401424685968">VVVV</translation>
+<translation id="1013852467930342108">Live on uusi ominaisuus Gemini in Chromessa</translation>
 <translation id="1013952917065545813">Voit palata tähän avataksesi uudelleen äskettäin sulkemasi välilehdet</translation>
 <translation id="1016495303386450659">Kohde päivitettiin</translation>
 <translation id="1018804590490383958">Skannaa ja täytä automaattisesti</translation>
@@ -1737,6 +1738,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Älä aseta oletukseksi</translation>
 <translation id="6770452996697898492">[VARATTU]</translation>
+<translation id="6775952316617222141">Avaa Gemini in Chromen Live-ominaisuus</translation>
 <translation id="6779455296366983087">Selausdatasi poistetaan</translation>
 <translation id="6782531425936234573">Eksportoi data</translation>
 <translation id="6791425686608802741">Valitse "Lisää välilehti uuteen ryhmään"</translation>

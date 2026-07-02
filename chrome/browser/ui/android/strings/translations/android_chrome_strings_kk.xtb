@@ -243,6 +243,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2056878612599315956">Сайттың жұмысы уақытша тоқтады.</translation>
 <translation id="2063047797624276601">Ұйымыңыз күшейтілген Safe Browsing функциясын қосты.</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 файл жүктеп алынбады}other{# файл жүктеп алынбады}}</translation>
+<translation id="2066690553719545730">AI режимін үнемі көрсету</translation>
 <translation id="2067805253194386918">мәтін</translation>
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ішінен <ph name="RESULT_NUMBER" /> нәтиже</translation>
@@ -263,6 +264,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2149968176347646218">Байланыс қауіпсіз емес</translation>
 <translation id="2149973817440762519">Бетбелгіні өзгерту</translation>
 <translation id="2163089732491971196">Chrome деректерін Google аккаунтыңызда пайдалану және сақтау үшін құпия фразаңызды енгізіңіз.</translation>
+<translation id="2164015935042801524">Қойындыларды тігінен көрсету үшін осы жерді тінтуірдің оң жақ түймесімен басыңыз.</translation>
 <translation id="2166228530126694506">Нұсқасы: <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Кескін сипаттамалары өшірулі.</translation>
 <translation id="2172905120685242547">Терезені жабу керек пе?</translation>
@@ -305,6 +307,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2323763861024343754">Сайт деректері</translation>
 <translation id="2327445548174191329">Жіберген: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Барлығы "<ph name="GROUP_NAME" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Барлық шақыру сілтемесі өшіріледі.</translation>
+<translation id="2329500425421091035">Chrome-дағы ЖИ режимімен танысыңыз</translation>
 <translation id="2330186936255788117">Басқа бетбелгілер</translation>
 <translation id="2332515770639153015">Күшейтілген Safe Browsing қосулы</translation>
 <translation id="233375395665273385">Жою және шығу</translation>
@@ -1057,7 +1060,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5436928407363358055">Тоқтаған жеріңізден оңай жалғастыру үшін тарих пен қойындыларды синхрондаңыз.</translation>
 <translation id="5438292632479953702">Қайта жүктеп алу</translation>
 <translation id="5439191312780166229">Стандартты қорғанысқа қарағанда сайттардағы көбірек деректерді талдау арқылы қауіпті сайттар, тіпті Google-ға бұрын белгісіз болған сайттар туралы ескертеді. Chrome ескертулерін өткізіп жіберуді таңдауға болады.</translation>
-<translation id="5441137934526263133">Сайт жұмыс істемей ме? Үшінші тараптың cookie файлдары блокталды.</translation>
 <translation id="5441466871879044658">Осы тілге аудару</translation>
 <translation id="5444999712122199445">Сайтқа оралу</translation>
 <translation id="544776284582297024">Бір уақытта қойындыларды ашып, неше түрлі беттерге кіру үшін "ашық қойындылар" түймесін басыңыз.</translation>
@@ -1112,7 +1114,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="569536719314091526">"Қосымша опциялар" түймесі арқылы осы бетті кез келген тілге аударыңыз</translation>
 <translation id="5696597120588531049">Chrome деректердің қолды болуынан, қауіпті веб-сайттардан және басқа зиянды нәрселерден қорғайды.</translation>
 <translation id="5698878456427040674">Таңдалған аккаунтқа қолдау көрсетілетінін тексеріңіз.</translation>
-<translation id="5700415746238689851">Gemini-ды ашу</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> сериялық портқа қосылғысы келеді.</translation>
 <translation id="5715150588940290235">Сақталған қауіпсіздік кодтарын жою керек пе?</translation>
 <translation id="572328651809341494">Соңғы қойындылар</translation>
@@ -1418,7 +1419,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6835182496791325827">Chrome сіз жоқта іздеу сұрауларыңызға ең жақсы нәтижелерді тапқан кезде, хабарландыру алыңыз.</translation>
 <translation id="6846298663435243399">Жүктелуде…</translation>
-<translation id="6850409657436465440">Жүктеп алу әлі аяқталған жоқ</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> қойынды жабылған</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 нәтиже табылды}other{# нәтиже табылды}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудиофайлдар, тізімдегі 1 аудиофайл}other{Аудиофайлдар, тізімдегі # аудиофайл}}</translation>
@@ -1968,12 +1968,14 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="9001604755921395912">Chrome "Инкогнитосынан" ашу</translation>
 <translation id="9010094279589497751">Gemini-ды қажет кезде лезде ашыңыз.</translation>
 <translation id="9012585441087414258">Қауіпті деп танылған сайттардан, жүктеп алынғандардан және кеңейтімдерден қорғайды. Бет күдікті нәрсе жасаса, URL мекенжайлары мен бет контентінің биттері Google Safe Browsing қызметіне жіберіледі.</translation>
+<translation id="9014097371980259227">Кейбір құралдар ЖИ режимімен іздеуге көмектесу үшін жылжытылды.</translation>
 <translation id="9019199799064251516">Көліктің профиль құлпынсыз жалғастыру қажет пе?</translation>
 <translation id="9022774213089566801">Жиі пайдаланатындар</translation>
 <translation id="9022871169049522985">Сайттар мен жарнама берушілер өз жарнамаларының өнімділігін өлшей алады.</translation>
 <translation id="9024318700713112071">Chrome-ды әдепкі браузер етіп орнату</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> рұқсатын қайтарып алу</translation>
 <translation id="9035378196785279980">Мынаған жылжыту\u2026</translation>
+<translation id="904146253922032365">Қойындыларды тігінен көрсету үшін басып тұрыңыз.</translation>
 <translation id="9042893549633094279">Құпиялық және қауіпсіздік</translation>
 <translation id="9047347135558855162">Chrome арқылы жылдам іздеңіз.</translation>
 <translation id="9050666287014529139">Құпия фраза</translation>

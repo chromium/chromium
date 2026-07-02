@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" кеңейтімін орнату</translation>
+<translation id="1070377999570795893">Компьютеріңіздегі басқа бір бағдарлама жаңа кеңейтім қосты, ол Chrome жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Тақырыпты қосу</translation>
 <translation id="1135328998467923690">Пакет жарамсыз: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Артқы</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> кеңейтім қосты, ол Chromium жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Жеке кілтті экспорттау сәтсіз аяқталды.</translation>
 <translation id="132960226125594336">Контент скриптіне арналған "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін емес, себебі ол максималды скрипт өлшемінен немесе кеңейтімнің максималды жалпы контент скрипті өлшемінен асып түседі.</translation>
 <translation id="1445572445564823378">Бұл кеңейтім <ph name="PRODUCT_NAME" /> жұмысын баяулатады. <ph name="PRODUCT_NAME" /> жұмысын қалпына келтіру үшін кеңейтімді өшіруіңіз керек.</translation>
 <translation id="1468038450257740950">WebGL қолдау көрсетілмеген.</translation>
 <translation id="1478607704480248626">Орнату мүмкіндігі қосылмаған</translation>
+<translation id="1483493594462132177">Жіберу</translation>
+<translation id="1485015260175968628">Енді келесі мүмкіндіктерге ие:</translation>
 <translation id="1556537182262721003">Кеңейтім каталогін профиль ішіне жылжыту мүмкін емес.</translation>
+<translation id="1585717515139318619">Компьютеріңіздегі басқа бір бағдарлама жаңа тақырып қосты, ол Chrome жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Скриптіге арналған CSS "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
 <translation id="1616298854599875024">Бөлісілмеген модуль болғандықтан, "<ph name="IMPORT_NAME" />" кеңейтімін импорттау мүмкін емес.</translation>
+<translation id="175772926354468439">Тақырыпты қосу</translation>
 <translation id="1757786065507923842">Ата-ана рұқсатының сұрауы орындалмады.</translation>
 <translation id="1803557475693955505">"<ph name="BACKGROUND_PAGE" />" фондық бетін жүктеу мүмкін болмады.</translation>
 <translation id="1875387611427697908">Мұны тек <ph name="CHROME_WEB_STORE" /> дүкенінен енгізуге болады</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" орнату мүмкін емес, себебі оған "<ph name="IMPORT_NAME" />" рұқсат бермеген</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" қосасыз ба?</translation>
 <translation id="2159915644201199628">Кескінді шифрсыздандыру мүмкін емес: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Ата-анаңыз бұл кеңейтімді мақұлдамады.</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" қосымша рұқсат сұрады.</translation>
+<translation id="2327492829706409234">Қолданбаны қосу</translation>
 <translation id="2350172092385603347">Локализациялау пайдаланылды, бірақ default_locale манифестте көрсетілмеген.</translation>
 <translation id="2576842806987913196">Мұндай атауға ие CRX файлы бұрыннан бар.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Қайта қосу</translation>
 <translation id="2743583586211388067">Бұл кеңейтімді пайдалану рұқсаты ұйымыңыздың кеңейтім қауіпсіздігі саясатына сәйкес блокталған.</translation>
+<translation id="2766161002040448006">Ата-анадан сұрау</translation>
 <translation id="2785530881066938471">Контент сценарийіне арналған "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін емес. Бұл UTF-8 кодталмаған.</translation>
+<translation id="2850541429955027218">Тақырып қосу</translation>
+<translation id="2883143988769190738">Бұл кеңейтім келесі рұқсаттарды сұрайды:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (кеңейтім идентификаторы "<ph name="EXTENSION_ID" />") әкімші тыйым салған. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Әкімшіңізге "<ph name="EXTENSION_NAME" />" орнату туралы сұрау жіберу керек пе?</translation>
 <translation id="2988488679308982380">Пакетті орнату мүмкін болмады: "<ph name="ERROR_CODE" />"</translation>
 <translation id="3115238746683532089">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX файлын ауыстыру мүмкін болмады. Файл пайдаланылып жатқан болуы мүмкін.</translation>
 <translation id="3163201441334626963">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">Бұл кеңейтімді пайдалану рұқсатын ұйымыңыз блоктаған.</translation>
+<translation id="3183357154200327217">Компьютеріңіздегі басқа бір бағдарлама тақырып қосты, ол Chromium жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">"kiosk_only" манифест төлсипатына ие қолданба ChromeOS киоск режимінде орнатылуы тиіс.</translation>
 <translation id="3364986687961713424">Әкімшіден: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Жеке кілт үшін енгізілетін мән жарамды жол болуы керек.</translation>
+<translation id="3788401245189148511">Мына артықшылықтарға ие:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" қолданбасы қосылмады, себебі ол "<ph name="INSTALLED_APP_NAME" />" қолданбасымен қайшы.</translation>
 <translation id="388442998277590542">"<ph name="OPTIONS_PAGE" />" опциялар бетін жүктеу мүмкін емес.</translation>
+<translation id="3905761538810670789">Қолданбаны жөндеу</translation>
+<translation id="3908501907586732282">Кеңейтімді қосу</translation>
+<translation id="3927932062596804919">Тыйым салу</translation>
 <translation id="3984413272403535372">Кеңейтімді белгілеу кезіндегі қате.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" жөндейсіз бе?</translation>
+<translation id="4061696872429826774">Компьютеріңіздегі басқа бір бағдарлама кеңейтім қосты, ол Chromium жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Бұл кеңейтім санатын пайдалану рұқсатын ұйымыңыз блоктаған.</translation>
 <translation id="4233778200880751280">"<ph name="ABOUT_PAGE" />" анықтама бетін жүктеу мүмкін емес.</translation>
 <translation id="424963718355121712">Қолданбаларға олар қолданылатын хостан қызмет көрсетілуі керек</translation>
 <translation id="4306119971288449206">Қолданбаларға "<ph name="CONTENT_TYPE" />" контентімен қызмет көрсетілуі керек</translation>
+<translation id="4625078469366263107">Қолданбаны қосу</translation>
 <translation id="4633003931260532286">Кеңейтім кемінде "<ph name="IMPORT_VERSION" />" нұсқалы "<ph name="IMPORT_NAME" />" интерфейсін қажет етеді, бірақ тек "<ph name="INSTALLED_VERSION" />" нұсқасы орнатылған</translation>
 <translation id="4660476621274971848">"<ph name="NEW_ID" />" нұсқасы күтілген "<ph name="EXPECTED_VERSION" />" нұсқасына сәйкес келмейді</translation>
 <translation id="471800408830181311">Жеке кілтті шығару әрекеті сәтсіз аяқталды.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Ортақ кілтті экспорттау сәтсіз аяқталды.</translation>
 <translation id="501057610015570208">"kiosk_only" манифест төлсипатына ие қолданба ChromeOS Flex киоск режимінде орнатылуы тиіс.</translation>
 <translation id="5026754133087629784">Веб-көрініс: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Кеңейтім қосу</translation>
+<translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5098647635849512368">Пакетке қосу үшін каталогтің абсолютті жолын табу мүмкін емес.</translation>
 <translation id="5160071981665899014">Скриптіге арналған JavaScript "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ең жаңа нұсқасы өшірілді, себебі ол қосымша рұқсаттарды талап етеді.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" қосасыз ба?</translation>
 <translation id="5356315618422219272">Қолданба көрінісі: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium-нен жою</translation>
 <translation id="5456409301717116725">Бұл кеңейтім "<ph name="KEY_PATH" />" кілт файлын қамтиды. Оны қолданбаған дұрыс шығар.</translation>
+<translation id="5485102783864353244">Қолданба қосу</translation>
 <translation id="5486326529110362464">Жеке кілт үшін енгізілетін мән болуы қажет.</translation>
 <translation id="5527463195266282916">Кеңейтімнің ескі нұсқасын орнатуға әрекет жасалды.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Келесіден кеңейтімді жүктеу сәтсіз аяқталды:</translation>
 <translation id="5972529113578162692">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімін орнатуды қажет етеді. Оны жою мүмкін емес.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">Компьютеріңіздегі басқа бір бағдарлама қолданба қосты, ол Chromium жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Кеңейтім жүктеу қатесі</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> кеңейтім қосты, ол Chrome жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Жеке кілтті оқу әрекеті сәтсіз аяқталды.</translation>
+<translation id="6326175484149238433">Chrome бағдарламасынан жою</translation>
 <translation id="6391538222494443604">Кіріс каталогі бар болуы керек.</translation>
 <translation id="641087317769093025">Кеңейтімді мұрағаттан шығару мүмкін болмады</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" бір не бірнеше құрылғыға кіруге рұқсат сұрауда:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> пайдаланушы</translation>
 <translation id="657064425229075395">"<ph name="BACKGROUND_SCRIPT" />" фондық сценарийін жүктеу мүмкін болмады.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> ұсынған <ph name="PRODUCT_NAME" /> (сериялық нөмірі: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Манифест файлы жарамсыз</translation>
 <translation id="7217838517480956708">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімін орнатуды қажет етеді. Оны жою не өзгерту мүмкін емес.</translation>
 <translation id="7287143125007575591">Кіруге тыйым салынған.</translation>
+<translation id="760353356052806707">Компьютеріңіздегі басқа бір бағдарлама жаңа қолданба қосты, ол Chrome жұмысын өзгертуі мүмкін.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Жеке кілт үшін енгізілетін мән жарамды болуы керек (PKCS#8 форматындағы PEM кодталған RSA кілті).</translation>
 <translation id="765293928828334535">Қолданбаларды, кеңейтімдерді және пайдаланушы сценарийлерін бұл вебсайттан енгізу мүмкін емес</translation>
+<translation id="7658239707568436148">Бас тарту</translation>
+<translation id="7766838926148951335">Рұқсаттарды қабылдау</translation>
 <translation id="7876803335449432072">Контент скрипті үшін "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін болмады. Контент скриптінің стильдер кестесін тек қолдау көрсетілетін стильдер кестесі түріндегі файлдардан (мысалы, .css) жүктеуге болады.</translation>
 <translation id="7939686037314084444">Кеңейтім дұрыс жүктелмеді. Ол желі сұрауларын қабылдай алмауы мүмкін.</translation>
 <translation id="7952904276017482715">"<ph name="NEW_ID" />" идентификаторы күтілген "<ph name="EXPECTED_ID" />" идентификаторына сәйкес келмейді</translation>
 <translation id="7972881773422714442">Опциялар: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Растау</translation>
 <translation id="8035920974645200807">Алдыңғы</translation>
 <translation id="8047248493720652249">Бұл кеңейтімнің жүктеу "<ph name="ATTEMPTED_FILENAME" />" файлының атын өзгерту әрекеті сәтсіз аяқталды, себебі басқа кеңейтім (<ph name="EXTENSION_NAME" />) басқа файл атауын "<ph name="ACTUAL_FILENAME" />" анықтады.</translation>
 <translation id="8049705080247101012">Google қызметі "<ph name="EXTENSION_NAME" />" кеңейтімін зиянды деп белгілегендіктен, ол орнатылмады</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> ұсынған <ph name="PRODUCT_NAME" /> өнімі</translation>
+<translation id="8353683614194668312">Мына артықшылықтарға ие:</translation>
 <translation id="8517576857589387417">Манифест файлы жоқ немесе оқылмайды</translation>
 <translation id="8565650234829130278">Қолданбаның ескі нұсқасын орнатуға әрекет еттіңіз.</translation>
 <translation id="8621383749470166852">Контент скрипті үшін "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін болмады. Контент скрипттерін тек қолдау көрсетілетін JavaScript файлдарынан (мысалы, .js) жүктеуге болады.</translation>
 <translation id="8636666366616799973">Пакет жарамсыз. Мәліметтер: "<ph name="ERROR_MESSAGE" />".</translation>
+<translation id="8746654918629346731">Бұған дейін "<ph name="EXTENSION_NAME" />" деп сұрап қойғансыз.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" бір құрылғыға кіруге рұқсат сұрауда:</translation>
 <translation id="8885905466771744233">Көрсетілген кеңейтім үшін жеке кілт бұрыннан бар. Айтылған кілтті қайта пайдаланыңыз немесе алдымен оны өшіріңіз.</translation>
 <translation id="9039223174332979184">Бұл машина әкімшісінің талабына сәйкес <ph name="EXTENSION_NAME" /> кеңейтімінің манифесі кем дегенде 3-нұсқаға ие болуы қажет.</translation>
 <translation id="907841381057066561">Пакеттеу барысында уақытша ZIP файлын жасау сәтсіз аяқталды.</translation>
+<translation id="9102610709270966160">Кеңейтімді қосу</translation>
+<translation id="93766956588638423">Кеңейтімді жөндеу</translation>
 <translation id="941543339607623937">Жеке кілт жарамсыз.</translation>
 </translationbundle>

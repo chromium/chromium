@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} passnøkkel}other{{count} passnøkler}}</translation>
 <translation id="1005023885865154304">Åpne innstillingene for autofylling av passord</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
+<translation id="1013852467930342108">Live er en ny funksjon i Gemini i Chrome</translation>
 <translation id="1013952917065545813">Du kan komme tilbake hit for å gjenåpne faner du nylig har lukket</translation>
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
 <translation id="1018804590490383958">Skann og fyll ut automatisk</translation>
@@ -1737,6 +1738,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6765551480308401897">Ikke gjør til standard</translation>
 <translation id="6770452996697898492">[BESTILT]</translation>
+<translation id="6775952316617222141">Bruk Live med Gemini i Chrome</translation>
 <translation id="6779455296366983087">Nettlesingsdataene dine blir slettet</translation>
 <translation id="6782531425936234573">Eksporter data</translation>
 <translation id="6791425686608802741">Trykk på «Legg til fane i ny gruppe»</translation>

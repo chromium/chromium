@@ -690,7 +690,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="8163152278172770963">Nepovoliť webom automaticky spúšťať obraz v obraze</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="818487310457576362">Režim celej obrazovky ukončíte presunutím z okraja obrazovky.</translation>
-<translation id="8186479265534291036">Web nefunguje? Súbory cookie tretích strán sú blokované.</translation>
 <translation id="8197286292360124385">Povolené: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8211406090763984747">Spojenie je zabezpečené</translation>
@@ -761,7 +760,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="8805385115381080995">Prehliadanie je rýchlejšie, pretože daný web vás pravdepodobne nepožiada o overenie, že ste skutočná osoba</translation>
 <translation id="881644524232657178">Keď je táto možnosť zapnutá, weby môžu používať senzory pohybu a svetla vášho zariadenia. Keď je táto možnosť vypnutá, weby senzory používať nemôžu.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
 <translation id="8889294078294184559">Pri ďalšom prehliadaní môžu weby pomocou Chromu overiť informácie z predchádzajúceho navštíveného webu, že ste zrejme skutočná osoba</translation>
 <translation id="8899807382908246773">Obťažujúce reklamy</translation>
 <translation id="8903921497873541725">Priblížiť</translation>
@@ -787,7 +785,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="913657688200966289">Zapnite v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" /> povolenia pre aplikáciu <ph name="APP_NAME" />.</translation>
 <translation id="9138037198177304356">Upozornenia sú povolené</translation>
 <translation id="9138217887606523162">Aktuálna úroveň lupy je <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Weby pomocou tejto funkcie aktomaticky aktivujú obraz v obraze. Umožňuje vám to pokračovať v pozeraní videa a zároveň uvoľniť obrazovku pre iné úlohy.</translation>
 <translation id="9156722768168878035">Povoľte Chromu zobrazovať vaše nedávne karty v zozname aplikácií a výsledkoch vyhľadávania v zariadení. Túto možnosť môžete kedykoľvek vypnúť v nastaveniach Chromu.</translation>
 <translation id="9162462602695099906">Táto stránka je nebezpečná</translation>
 <translation id="9182556968660520230">Nepovoliť webom prehrávať chránený obsah</translation>

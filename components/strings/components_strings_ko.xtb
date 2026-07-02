@@ -2370,6 +2370,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" />을(를) 사용하는 사이트에서 <ph name="AUTHENTICATOR" />로 인증하도록 선택했습니다. 이 제공업체에서 결제 방식에 관한 정보를 저장했을 수 있으며 직접 <ph name="LINK_TEXT" />할 수 있습니다.</translation>
 <translation id="4708268264240856090">연결이 끊김</translation>
 <translation id="4708276642004148190">상수도 및 수처리</translation>
+<translation id="4710249055485272920">이 정보를 찾을 수 없습니다</translation>
 <translation id="4711628883879888561">탭 그룹에서 공동작업하기</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">이 사이트에 방문할 수 있는 권한이 없습니다.</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5707154300732650394">탐색 여정 재개</translation>
 <translation id="57094364128775171">강력한 비밀번호 추천...</translation>
 <translation id="570953204696852961">빨간색 3</translation>
+<translation id="5710907191777451677">대신 Chrome의 Gemini에게 물어보세요</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">수의사</translation>
 <translation id="5715150588940290235">저장된 보안 코드를 삭제하시겠습니까?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">임시 및 계약직</translation>
 <translation id="7110368079836707726">단과 대학 및 종합 대학</translation>
 <translation id="7111507312244504964">부동산 감정</translation>
-<translation id="7117290130383718594">텍스트 주석</translation>
 <translation id="7118618213916969306">클립보드 URL <ph name="SHORT_URL" /> 검색</translation>
 <translation id="7118852830504022370">이 사이트에서 HTTPS를 지원하지 않기 때문에 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">TV 드라마</translation>
@@ -5046,7 +5047,6 @@
 <translation id="8871485335898060555">골동품 및 수집품</translation>
 <translation id="8871553383647848643">브라우저 테마 맞춤설정</translation>
 <translation id="887350038812854047">이 정책은 머신 및 사용자 수준 모두에서 동일한 값을 갖습니다. 정책이 의도한 대로 작동하고 있습니다.</translation>
-<translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8874824191258364635">올바른 카드 번호를 입력하세요.</translation>
 <translation id="8877780815363510165">낚시</translation>
 <translation id="888117890813270681">'<ph name="DATA_CONTROLS_RESTRICTION" />'을(를) '<ph name="DATA_CONTROLS_LEVEL" />'(으)로 설정할 수 없습니다.</translation>

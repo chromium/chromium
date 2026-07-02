@@ -2370,6 +2370,7 @@
 <translation id="4705573018059932476">Изабрали сте да верификујете помоћу <ph name="AUTHENTICATOR" /> на сајтовима који користе <ph name="PROVIDER_ORIGIN" />. Овај добављач је можда сачувао информације о начину плаћања, за које можете да <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Веза је прекинута</translation>
 <translation id="4708276642004148190">Снабдевање водом и прерада</translation>
+<translation id="4710249055485272920">Нисмо пронашли те информације</translation>
 <translation id="4711628883879888561">Сарађујте на групи картица</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Немате дозволу да посетите овај сајт</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5707154300732650394">Наставите пут</translation>
 <translation id="57094364128775171">Предложи јаку лозинку…</translation>
 <translation id="570953204696852961">Црвена 3</translation>
+<translation id="5710907191777451677">Уместо тога упитајте Gemini у Chrome-у</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5715150588940290235">Желите да избришете сачуване безбедносне кодове?</translation>
@@ -3923,7 +3925,6 @@
 <translation id="7110116949943042888">Привремени и сезонски послови</translation>
 <translation id="7110368079836707726">Колеџи и универзитети</translation>
 <translation id="7111507312244504964">Преглед и процена вредности имовине</translation>
-<translation id="7117290130383718594">Текстуалне напомене</translation>
 <translation id="7118618213916969306">Потражите URL у привременој меморији, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ТВ драме</translation>
@@ -5047,7 +5048,6 @@
 <translation id="8871485335898060555">Антиквитети и колекционарство</translation>
 <translation id="8871553383647848643">Прилагодите изглед прегледача</translation>
 <translation id="887350038812854047">Ове смернице имају исту вредност која се примењује на нивоу уређаја и корисника. Смернице функционишу како треба.</translation>
-<translation id="8874790741333031443">Пробајте привремено да дозволите колачиће треће стране, што значи слабију заштиту прегледања, али већу вероватноћу да ће функције сајта радити на очекивани начин.</translation>
 <translation id="8874824191258364635">Унесите важећи број картице</translation>
 <translation id="8877780815363510165">Пецање</translation>
 <translation id="888117890813270681">„<ph name="DATA_CONTROLS_RESTRICTION" />“ не може да се подеси на „<ph name="DATA_CONTROLS_LEVEL" />“</translation>

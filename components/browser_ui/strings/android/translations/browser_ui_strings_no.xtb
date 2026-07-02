@@ -690,7 +690,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="8163152278172770963">Ikke la nettsteder bruke bilde-i-bilde automatisk</translation>
 <translation id="8168435359814927499">Innhold</translation>
 <translation id="818487310457576362">Dra fra siden av skjermen for å avslutte fullskjerm.</translation>
-<translation id="8186479265534291036">Virker ikke nettstedet? Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> er tillatt</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
@@ -761,7 +760,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="8805385115381080995">Surfing går raskere fordi det er mindre sannsynlig at nettsteder ber deg om å bekrefte at du er en ekte person</translation>
 <translation id="881644524232657178">Når dette er på, kan nettsteder bruke bevegelses- og lyssensorene på enheten din. Når dette er av, kan ikke nettsteder bruke sensorer.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Prøv å tillate informasjonskapsler fra tredjeparter midlertidig. Det innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>
 <translation id="8899807382908246773">Forstyrrende annonser</translation>
 <translation id="8903921497873541725">Zoom inn</translation>
@@ -787,7 +785,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="913657688200966289">Slå på tillatelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Varsler er tillatt</translation>
 <translation id="9138217887606523162">Gjeldende zoom er <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Nettsteder bruker denne funksjonen for å starte bilde-i-bilde automatisk. Da kan du fortsette å se på videoer, samtidig som du frigjør skjermen til andre oppgaver.</translation>
 <translation id="9156722768168878035">La Chrome vise de nylige fanene dine på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="9162462602695099906">Denne siden er farlig</translation>
 <translation id="9182556968660520230">Ikke la nettsteder spille av beskyttet innhold</translation>

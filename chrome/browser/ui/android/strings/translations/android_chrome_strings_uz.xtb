@@ -243,6 +243,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2056878612599315956">Sayt pauzalangan</translation>
 <translation id="2063047797624276601">Tashkilotingiz tomonidan Saytlarni kuchaytirilgan rejimda xavfsiz kezish yoqilgan</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinmadi}other{# ta fayl yuklab olinmadi}}</translation>
+<translation id="2066690553719545730">AI rejimi doim chiqarilsin</translation>
 <translation id="2067805253194386918">matn</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2082238445998314030">Natija: <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
@@ -1059,7 +1060,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5436928407363358055">Ishni kelgan joyidan davom ettirish uchun tarix va varaqlarni sinxronlang</translation>
 <translation id="5438292632479953702">Qayta yuklab olish</translation>
 <translation id="5439191312780166229">Standart himoyadan koʻra koʻproq saytlardan olingan maʼlumotlarni tahlil qilish orqali sizni xavfli saytlar, hatto Google ilgari bilmagan saytlar haqida ogohlantiradi. Chrome ogohlantirishlarini eʼtiborsiz qoldirishni tanlashingiz mumkin.</translation>
-<translation id="5441137934526263133">Sayt ishlamayaptimi? Tashqi cookie fayllar bloklandi</translation>
 <translation id="5441466871879044658">Bu tilga tarjima qilish</translation>
 <translation id="5444999712122199445">Saytga qaytish</translation>
 <translation id="544776284582297024">Bir vaqtda varaqlar ochish va turli sahifalarga tashrif buyurish uchun varaqlarni ochish tugmasini bosing</translation>
@@ -1114,7 +1114,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="569536719314091526">“Yana” tugmasidan bu sahifani boshqa tilga tarjima qilishingiz mumkin</translation>
 <translation id="5696597120588531049">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
 <translation id="5698878456427040674">Tanlangan hisob ishlashini tekshiring.</translation>
-<translation id="5700415746238689851">Geminini ochish</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> seriyali portga ulanmoqchi</translation>
 <translation id="5715150588940290235">Saqlangan xavfsizlik kodlari oʻchirilsinmi?</translation>
 <translation id="572328651809341494">Oxirgi varaqlar</translation>
@@ -1420,7 +1419,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6835182496791325827">Chrome siz yoʻqligingizda qidiruvlaringiz boʻyicha eng yaxshi natijalarni topganda bildirishnoma oling.</translation>
 <translation id="6846298663435243399">Yuklanmoqda…</translation>
-<translation id="6850409657436465440">Fayl hali ham yuklab olinmoqda</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ta varaq yopildi</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 natija topildi}other{# ta natija topildi}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio fayllar, roʻyxatdagi 1 ta fayl}other{Audio fayllar, roʻyxatdagi # ta fayl}}</translation>

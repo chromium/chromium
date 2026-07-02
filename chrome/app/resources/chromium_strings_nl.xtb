@@ -17,9 +17,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1131805035311359397">Als je wilt checken of je wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klik op het Chromium-menu</translation>
 <translation id="1157985233335035034">Recente talen</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> heeft een extensie toegevoegd die de manier kan wijzigen waarop Chromium werkt.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">De installatie is mislukt omdat je versie van Windows niet wordt ondersteund.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1186645291482254714">Krijg meldingen voor het volgen van prijzen met Chromium op je telefoon</translation>
@@ -54,7 +51,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1524282610922162960">Een Chromium-tabblad delen</translation>
 <translation id="154404805518949443">Inloggen bij Chromium</translation>
 <translation id="1547469039832541117">Beëindigd de gemarkeerde taak.</translation>
-<translation id="1553461853655228091">Chromium heeft toegangsrechten voor de camera nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="1562320819937089394">Chromium vastzetten</translation>
 <translation id="1574377791422810894">Veiligheidstools van Chromium</translation>
 <translation id="1594928384848033697">Chromium wil je Wachtwoordmanager-gegevens verwijderen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
@@ -216,9 +212,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3155163173539279776">Chromium opnieuw starten</translation>
 <translation id="3161522574479303604">Alle talen</translation>
 <translation id="3179665906251668410">Link openen in een Chromium-inco&amp;gnitovenster</translation>
-<translation id="3183357154200327217">Een ander programma op je computer heeft een thema toegevoegd dat de manier waarop Chromium werkt kan wijzigen.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Je nieuwe Chromium-profiel aanpassen</translation>
 <translation id="3189205223539394158">Je kunt blijven chatten met de AI-modus zonder van tabblad te wisselen. Log in bij Chromium om aan de slag te gaan. Je kunt ook onder andere je wachtwoorden op al je apparaten gebruiken.</translation>
 <translation id="3224847870593914902">Als je je Google-account uit Chromium wilt verwijderen, log je uit bij Chromium via de pagina Instellingen</translation>
@@ -297,9 +290,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4036079820698952681">Help Chromium beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>
 <translation id="4050175100176540509">Er zijn belangrijke beveiligingsverbeteringen en nieuwe functies beschikbaar in de nieuwste versie.</translation>
 <translation id="4055805654398742145">W&amp;achtwoordmanager</translation>
-<translation id="4061696872429826774">Een ander programma op je computer heeft een extensie toegevoegd die de manier waarop Chromium werkt kan wijzigen.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Je organisatie sluit Chromium automatisch als deze 1 minuut niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}other{Je organisatie sluit Chromium automatisch als deze # minuten niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}}</translation>
 <translation id="4118474109249235144">Chromium-incognitomodus</translation>
 <translation id="4122186850977583290">Naar de pagina Over Chromium</translation>
@@ -412,7 +402,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium raadt aan het tabblad dat je browser vertraagt te onderbreken}other{Chromium raadt aan de tabbladen die je browser vertragen te onderbreken}}</translation>
 <translation id="5473971139929175403">Chromium werkt misschien niet goed omdat dit niet meer wordt ondersteund in deze Linux-distributie</translation>
 <translation id="5475924890392386523">Chromium heeft deze download geblokkeerd, omdat het bestand schadelijk kan zijn voor je persoonlijke en socialmedia-accounts</translation>
-<translation id="5480860683791598150">Chromium heeft toegang tot je locatie nodig om je locatie met deze site te delen</translation>
 <translation id="549669000822060376">Wacht terwijl Chromium de nieuwste systeemupdates installeert.</translation>
 <translation id="5496810170689441661">Chromium probeert wachtwoorden te bewerken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="549975168243349205">Gebruik je favoriete apps, zoals Google Drive en YouTube, als je onderweg bent naadloos met Chromium.</translation>
@@ -479,9 +468,6 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="6174920971222007286">Dit bestand kan gevaarlijk zijn<ph name="LINE_BREAK" />Chromium kan deze download voor je checken als je het wachtwoord verstrekt. Informatie over het bestand wordt naar Google Safe Browsing gestuurd, maar de content en het wachtwoord van het bestand blijven op je apparaat staan.</translation>
 <translation id="6182736845697986886">De installatie is mislukt vanwege een interne fout met de updateserver.</translation>
 <translation id="6183079672144801177">Zorg dat je bent ingelogd bij Chromium op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
-<translation id="6204922163963157461">Een ander programma op je computer heeft een app toegevoegd die de manier waarop Chromium werkt kan wijzigen.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Deze computer beschikt al over een recentere versie van Chromium. Als de software niet werkt, moet je Chromium verwijderen en het opnieuw proberen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wordt nu opnieuw gestart}=1{Chromium wordt over één seconde opnieuw gestart}other{Chromium wordt over # seconden opnieuw gestart}}</translation>
 <translation id="6239161312595354541">Vragen over deze video stellen aan Zoeken met afbeelding</translation>
@@ -583,7 +569,6 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="6964305034639999644">Link openen in een Chromium-inco&amp;gnitovenster</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985329841647292029">Voorwaarden van Chromium OS</translation>
-<translation id="6990124437352146030">Chromium heeft toegangsrechten voor je microfoon nodig voor deze site</translation>
 <translation id="7003299027384820442">Voer je wachtwoordzin in om Chromium-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="7011190694940573312">De installatie is mislukt omdat deze versie van het besturingssysteem niet wordt ondersteund.</translation>
 <translation id="7024536598735240744">Fout bij uitpakken: <ph name="UNPACK_ERROR" />.</translation>
@@ -628,7 +613,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 3. Klik op <ph name="BUTTON_3" /> in de Windows-melding om Chromium vast te zetten op je taakbalk voor snelle toegang</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium voor ontwikkelaars</translation>
 <translation id="7450541714075000668">Tekst gekopieerd</translation>
-<translation id="7451052299415159299">Chromium heeft toegangsrechten voor je camera nodig voor deze site</translation>
 <translation id="7458892263350425044">Geef Chromium toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je microfoon te gebruiken</translation>
 <translation id="7461356015007898716">Als je toekomstige Chromium-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 7.</translation>
 <translation id="7467949745582939695">Chromium opnieuw starten?</translation>
@@ -753,7 +737,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8719993436687031146">Inloggen bij Chromium?</translation>
 <translation id="8747073452963259673">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Installatiefout: Je netwerkbeheerder heeft een groepsbeleid toegepast waardoor er niet kan worden geïnstalleerd: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium heeft toegangsrechten voor je camera en microfoon nodig voor deze site</translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8816416449795340678">Deel dit document met Gemini in Chromium om een snel overzicht te krijgen en follow-upvragen te stellen</translation>
 <translation id="8818550178040858407">Inloggen bij Chromium?</translation>

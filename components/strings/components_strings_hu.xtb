@@ -2367,6 +2367,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4705573018059932476">Úgy döntött, hogy <ph name="AUTHENTICATOR" /> használatával igazolja magát a következőt használó webhelyeken: <ph name="PROVIDER_ORIGIN" />. Ez a szolgáltató eltárolhatott információkat az Ön fizetési jellemzőiről, amelynek <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Kapcsolata megszakadt</translation>
 <translation id="4708276642004148190">Vízellátás és -kezelés</translation>
+<translation id="4710249055485272920">Nem található ez az információ</translation>
 <translation id="4711628883879888561">Együttműködés lapcsoporton</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nincs jogosultsága a webhely felkereséséhez</translation>
@@ -3019,6 +3020,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5707154300732650394">Utazás folytatása</translation>
 <translation id="57094364128775171">Erős jelszó ajánlása…</translation>
 <translation id="570953204696852961">Piros 3</translation>
+<translation id="5710907191777451677">Kérdezés a Geminitől a Chrome-ban</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Állatorvosok</translation>
 <translation id="5715150588940290235">Törli a mentett biztonsági kódokat?</translation>
@@ -3921,7 +3923,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="7110116949943042888">Alkalmi és idényjellegű állások</translation>
 <translation id="7110368079836707726">Főiskolák és egyetemek</translation>
 <translation id="7111507312244504964">Ingatlanvizsgálat és -felmérés</translation>
-<translation id="7117290130383718594">Szöveges jelölések</translation>
 <translation id="7118618213916969306">Vágólapon lévő URL, <ph name="SHORT_URL" /> keresése</translation>
 <translation id="7118852830504022370">Azért látja ezt a figyelmeztetést, mert ez a webhely nem támogatja a HTTPS-t. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7119063404975271297">Televíziós filmdrámák</translation>
@@ -5046,7 +5047,6 @@ További részletek:
 <translation id="8871485335898060555">Antikvitás, gyűjtemények</translation>
 <translation id="8871553383647848643">Személyre szabhatja a böngésző megjelenését</translation>
 <translation id="887350038812854047">Ez a házirend ugyanazt az értéket alkalmazza a gép és a felhasználó szintjén. A házirend a várakozásoknak megfelelően működik.</translation>
-<translation id="8874790741333031443">Próbálja meg átmenetileg engedélyezni a harmadik felektől származó cookie-kat, ami kisebb böngészési védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel működnek majd megfelelően.</translation>
 <translation id="8874824191258364635">Érvényes kártyaszámot adjon meg</translation>
 <translation id="8877780815363510165">Halászat és horgászat</translation>
 <translation id="888117890813270681">A(z) „<ph name="DATA_CONTROLS_RESTRICTION" />” nem állítható a következőre: „<ph name="DATA_CONTROLS_LEVEL" />”</translation>

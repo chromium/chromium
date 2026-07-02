@@ -1218,6 +1218,19 @@ Chính sách này không có hiệu lực nếu không có tuỳ chọn lưu gi�
 <translation id="1829839214911753838">Nếu bạn đặt chính sách này thành Bật, máy chủ hỗ trợ từ xa sẽ chạy trong một quy trình có các quyền <ph name="UIACCESS_PERMISSION_NAME" />. Nhờ đó, người dùng từ xa có thể thao tác với các cửa sổ bật lên trên màn hình của người dùng trên máy.
 
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì máy chủ hỗ trợ từ xa sẽ chạy trong bối cảnh của người dùng và người dùng từ xa không thể thao tác với các cửa sổ bật lên trên màn hình.</translation>
+<translation id="1832480890076796592">Chính sách này kiểm soát chế độ cài đặt Cô lập tiến trình cho <ph name="PRODUCT_NAME" />.
+
+Khi bạn bật tính năng Cô lập tiến trình, khả năng bảo mật của <ph name="PRODUCT_NAME" /> sẽ được cải thiện bằng cách ngăn các ứng dụng được uỷ quyền trên hệ thống can thiệp hoặc đọc nội dung của các quy trình đang chạy của <ph name="PRODUCT_NAME" />. Việc này giúp ngăn các ứng dụng khác trên hệ thống có quyền truy cập vào dữ liệu đã mã hoá của <ph name="PRODUCT_NAME" />.
+
+Việc bật tính năng Cô lập tiến trình có thể gây ra sự không tương thích với các ứng dụng bên thứ ba dựa vào khả năng chèn mã hoặc can thiệp vào các quy trình của <ph name="PRODUCT_NAME" />, chẳng hạn như các ứng dụng diệt virus, trình đọc màn hình hoặc ứng dụng quản lý cửa sổ.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật), thì tính năng cô lập tiến trình trong <ph name="PRODUCT_NAME" /> sẽ bật.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt), thì tính năng cô lập tiến trình trong <ph name="PRODUCT_NAME" /> sẽ tắt.
+
+Nếu bạn không đặt chính sách này thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình triển khai mặc định dành cho tính năng Cô lập tiến trình. Nói cách khác, tính năng này sẽ được triển khai dần cho số lượng người dùng ngày càng tăng.
+
+Lưu ý: Chính sách này được áp dụng khi <ph name="PRODUCT_NAME" /> khởi động. Nếu bạn thay đổi chính sách này trong khi <ph name="PRODUCT_NAME" /> đang chạy, thì chế độ cài đặt mới sẽ có hiệu lực vào lần khởi động lại tiếp theo.</translation>
 <translation id="1834796168555733063">Tắt tính năng lưu khoá truy cập bằng trình quản lý mật khẩu</translation>
 <translation id="1836380138559328229">Lưu thông tin đăng nhập Wi-Fi đang hoạt động ở cấp thiết bị</translation>
 <translation id="1837165432382702436">Chiều cao của trang (tính bằng micromet)</translation>
@@ -1580,6 +1593,7 @@ Thông thường, chính sách này bị Disabled (Tắt) để chống lừa đ
       Nếu bạn không đặt chính sách này, chế độ mặc định sẽ là tắt đối với người dùng được quản lý và bật đối với người dùng khác.</translation>
 <translation id="2039801473506609891">Tắt hỗ trợ HTTP/0.9 trên các cổng không phải cổng mặc định</translation>
 <translation id="2040479044912658454">Chế độ tạo điểm ảnh bản in</translation>
+<translation id="2041894060487590789">Tính năng Cô lập tiến trình có thể được sử dụng tuỳ theo quy trình triển khai tính năng.</translation>
 <translation id="2043749682619281558">Bật tính năng làm nổi bật con trỏ trên màn hình đăng nhập</translation>
 <translation id="2043770014371753404">Đã tắt máy in dành cho doanh nghiệp</translation>
 <translation id="2054093043033461396">Đã bật màn hình đăng nhập trên trình bảo vệ màn hình của thiết bị.</translation>
@@ -2797,6 +2811,7 @@ Nếu danh sách này trống hoặc bạn không đặt danh sách này, thì k
 
       Nếu bạn không đặt chính sách này, thì ban đầu, chế độ chuyển đổi nguồn điện vào giờ cao điểm sẽ tắt. Người dùng không thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="2773288106548584039">Hỗ trợ trình duyệt cũ</translation>
+<translation id="2773911169897970305">Tắt tính năng Cô lập tiến trình.</translation>
 <translation id="2774906947252258544">Danh sách chặn kiểm soát việc những loại cài đặt tiện ích nào không được phép.
 
 Thao tác đặt "command_line" sẽ chặn hoạt động tải tiện ích từ dòng lệnh.</translation>
@@ -4287,6 +4302,7 @@ Chính sách này không còn được dùng kể từ <ph name="PRODUCT_NAME" /
 <translation id="376375951585423504">Tắt hạn mức cố định.</translation>
 <translation id="3765260570442823273">Thời lượng hiển thị thông điệp cảnh báo đăng xuất khi không hoạt động</translation>
 <translation id="3766695867369523703">Cho phép phân vùng bộ nhớ của bên thứ ba theo mặc định.</translation>
+<translation id="377001726927041812">Bật tính năng Cô lập tiến trình.</translation>
 <translation id="3770044943398389276">Theo mặc định, SSO nổi chỉ di chuyển cookie cố định giữa các thiết bị. Chính sách này kiểm soát việc có nên bao gồm cả cookie của phiên hay không. Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> thành Bật.
 
 Khi bạn Bật chính sách này, tính năng SSO nổi sẽ đồng bộ hoá cả cookie của phiên và cookie cố định.
@@ -12646,6 +12662,27 @@ Vui lòng truy cập https://support.google.com/chrome/a/answer/9301891 để bi
 <translation id="8931555638815157255">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ định kỳ báo cáo phiên bản hệ điều hành và chương trình cơ sở của thiết bị đó.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo thông tin phiên bản.</translation>
+<translation id="8931984670731745012">Khi đặt chính sách này, bạn có thể chỉ định những loại dữ liệu Tự động điền nào sẽ bị chặn trên các mẫu URL cụ thể.
+
+Chính sách này được cấu trúc dưới dạng một danh sách các từ điển. Mỗi từ điển phải chứa:
+* "url_pattern": Mẫu URL của chế độ cài đặt nội dung (ví dụ: "https://[*.]example.com").
+* "blocked_types": Danh sách các chuỗi đại diện cho danh mục dữ liệu Tự động điền cần chặn.
+
+Các giá trị được hỗ trợ cho "blocked_types" là:
+* "contact_info": Chặn việc điền và lưu thông tin liên hệ.
+* "payments": Chặn việc điền và lưu thẻ tín dụng cũng như phương thức thanh toán.
+* "identity_docs": Chặn việc điền và lưu giấy tờ tuỳ thân (ví dụ: hộ chiếu, giấy phép lái xe, thẻ căn cước).
+* "travel": Chặn việc điền và lưu thông tin về việc đi lại (ví dụ: đặt vé máy bay, đăng ký xe).
+* "shopping": Chặn việc điền và lưu thông tin mua sắm (ví dụ: đơn đặt hàng trực tuyến, lô hàng).
+
+Nếu một loại dữ liệu bị chặn trên một trang web, thì cả tính năng tạo đề xuất và lời nhắc lưu/nhập dữ liệu mới thuộc loại đó đều bị tắt trên trang web đó.
+
+Nếu một URL khớp với nhiều mục mẫu trong danh sách, thì các loại dữ liệu bị chặn từ tất cả các mục trùng khớp sẽ được kết hợp (hợp nhất theo phép hợp). Các mẫu URL không hợp lệ trong danh sách sẽ bị bỏ qua.
+
+Nếu bạn không đặt chính sách này, thì không có loại dữ liệu Tự động điền nào bị chặn theo miền.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập:
+https://chromeenterprise.google/policies/url-patterns. Hệ thống hỗ trợ ký tự đại diện *, mẫu này khớp với mọi URL, có giao thức, cổng và đường dẫn bất kỳ.</translation>
 <translation id="8934296213794658971">Chế độ cài đặt cho tính năng tích hợp Gemini</translation>
 <translation id="8937282917198525844"> Kể từ phiên bản M81, các thành phần điều khiển biểu mẫu tiêu chuẩn (ví dụ: &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) đều có giao diện mới, với khả năng tiếp cận tốt hơn và nền tảng đồng nhất hơn. Chính sách này khôi phục các thành phần điều khiển biểu mẫu "cũ" cho đến phiên bản M84.
 
@@ -13010,6 +13047,7 @@ Chính sách này không có hiệu lực nếu bạn đặt <ph name="METRICS_R
 <translation id="9180108183162961002">Cho phép đăng nhập vào trình duyệt với tư cách khách</translation>
 <translation id="9185963199234034321">Bật chế độ tương phản cao trên màn hình đăng nhập và cho phép người dùng tạm thời tắt tính năng này</translation>
 <translation id="9187743794267626640">Vô hiệu hóa việc lắp bộ nhớ ngoài</translation>
+<translation id="9188142767272053574">Bật tính năng Cô lập tiến trình</translation>
 <translation id="9190022798664427644">Bật chế độ đơn âm</translation>
 <translation id="9190456586252617675">Chính sách này kiểm soát chế độ của trải nghiệm làm quen với Trợ lý.
 

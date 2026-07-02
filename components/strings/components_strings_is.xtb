@@ -2370,6 +2370,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4705573018059932476">Þú valdir að staðfesta með <ph name="AUTHENTICATOR" /> á vefsvæðum sem nota <ph name="PROVIDER_ORIGIN" />. Þessi þjónustuaðili kann að hafa vistað upplýsingar um hvernig þú greiðir, sem þú getur <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Tengingin þín var rofin</translation>
 <translation id="4708276642004148190">Vatnsból og vatnshreinsun</translation>
+<translation id="4710249055485272920">Þessar upplýsingar fundust ekki</translation>
 <translation id="4711628883879888561">Vinna saman í flipahópi</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Þú hefur ekki heimild til að fara á þetta vefsvæði</translation>
@@ -3022,6 +3023,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5707154300732650394">Haltu ferðinni áfram</translation>
 <translation id="57094364128775171">Tillaga að traustu aðgangsorði…</translation>
 <translation id="570953204696852961">Rauður 3</translation>
+<translation id="5710907191777451677">Spyrðu Gemini í Chrome í staðinn</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Dýralæknar</translation>
 <translation id="5715150588940290235">Eyða vistuðum öryggisnúmerum?</translation>
@@ -3924,7 +3926,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7110116949943042888">Tímabundin og árstíðabundin störf</translation>
 <translation id="7110368079836707726">Háskólar</translation>
 <translation id="7111507312244504964">Fasteignaskoðun og -mat</translation>
-<translation id="7117290130383718594">Textaskýringar</translation>
 <translation id="7118618213916969306">Leita að vefslóð á klippiborði, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Dramatískir sjónvarpsþættir</translation>
@@ -5046,7 +5047,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8871485335898060555">Fornmunir og safngripir</translation>
 <translation id="8871553383647848643">Sérsníddu útlit vafrans</translation>
 <translation id="887350038812854047">Þessi regla er með sama gildi á vélar- og notendastigi. Reglan virkar sem skyldi.</translation>
-<translation id="8874790741333031443">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi.</translation>
 <translation id="8874824191258364635">Færðu inn gilt kortanúmer</translation>
 <translation id="8877780815363510165">Stangveiði</translation>
 <translation id="888117890813270681">Ekki er hægt að stilla „<ph name="DATA_CONTROLS_RESTRICTION" />“ á „<ph name="DATA_CONTROLS_LEVEL" />“</translation>

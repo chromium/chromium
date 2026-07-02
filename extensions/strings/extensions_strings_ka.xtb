@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="10146536653536065">„<ph name="EXTENSION_NAME" />“-ის ინსტალაცია</translation>
+<translation id="1070377999570795893">თქვენს კომპიუტერში არსებულმა სხვა პროგრამამ დაამატა გაფართოება, რომელსაც Chrome-ის მუშაობის შეცვლა შეუძლია.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">თემის ჩართვა</translation>
 <translation id="1135328998467923690">პაკეტი არასწორია: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">უკანა</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" />-მა დაამატა გაფართოება, რომელმაც შეიძლება შეცვალოს Chromium-ის მუშაობის პრინციპი.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">პირადი გასაღები ვერ დაექსპორტდა.</translation>
 <translation id="132960226125594336">ფაილი „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა კონტენტის სცენარისთვის, რადგან ის გადააჭარბებდა სცენარის მაქსიმალურ ზომას ან კონტენტის სცენარის მაქსიმალურ ჯამურ ზომას გაფართოებისთვის.</translation>
 <translation id="1445572445564823378">ეს გაფართოება ანელებს <ph name="PRODUCT_NAME" />-ის მუშაობას. უნდა გამორთოთ, რათა აღადგინოთ <ph name="PRODUCT_NAME" />-ის ეფექტურობა.</translation>
 <translation id="1468038450257740950">WebGL არ არის მხარდაჭერილი.</translation>
 <translation id="1478607704480248626">ინსტალაცია არ არის ჩართული</translation>
+<translation id="1483493594462132177">გაგზავნა</translation>
+<translation id="1485015260175968628">ახლა შეუძლია შემდეგის გაკეთება:</translation>
 <translation id="1556537182262721003">გაფართოების დირექტორიის გადატანა პროფილში ვერ მოხერხდა.</translation>
+<translation id="1585717515139318619">თქვენს კომპიუტერში არსებულმა სხვა პროგრამამ დაამატა თემა, რომელსაც Chrome-ის მუშაობის შეცვლა შეუძლია.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">css „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა სცენარისთვის.</translation>
 <translation id="1616298854599875024">გაფართოების „<ph name="IMPORT_NAME" />“ იმპორტირება ვერ მოხერხდა, რადგან ის არ არის გაზიარებული მოდული</translation>
+<translation id="175772926354468439">თემის ჩართვა</translation>
 <translation id="1757786065507923842">მშობლის ნებართვის მოთხოვნა ვერ მოხერხდა.</translation>
 <translation id="1803557475693955505">ფონური გვერდი ვერ ჩაიტვირთა „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">ამის დამატება შესაძლებელია მხოლოდ <ph name="CHROME_WEB_STORE" />-დან</translation>
 <translation id="2131077480075264">„<ph name="APP_NAME" />“-ის ინსტალაცია შეუძლებელია, რადგან იგი არ არის ნებადართული „<ph name="IMPORT_NAME" />“-ის მიერ</translation>
+<translation id="2150661552845026580">დავამატოთ „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2159915644201199628">გამოსახულების გაშიფვრა ვერ მოხერხდა: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2193567467390483943">თქვენმა მშობელმა არ დაადასტურა ეს გაფართოება</translation>
+<translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“-მა მოითხოვა დამატებითი ნებართვები.</translation>
+<translation id="2327492829706409234">პროგრამის ჩართვა</translation>
 <translation id="2350172092385603347">გამოყენებულია ლოკალიზაცია, მაგრამ ნაგულისხმევი ლოკალი არ არის მითითებული მანიფესტში.</translation>
 <translation id="2576842806987913196">უკვე არსებობს CRX ფაილი ამ სახელით.</translation>
 <translation id="2662876636500006917">Chrome-ის ვებ მაღაზია</translation>
+<translation id="2678063897982469759">ხელახლა ჩართვა</translation>
 <translation id="2743583586211388067">ამ გაფართოებაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის გაფართოების რისკის წესების მიხედვით.</translation>
+<translation id="2766161002040448006">მშობლისთვის თხოვნა</translation>
 <translation id="2785530881066938471">ფაილი „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა შიგთავსის სკრიპტისთვის. იგი არ არის UTF-8 დაშიფრული.</translation>
+<translation id="2850541429955027218">თემის დამატება</translation>
+<translation id="2883143988769190738">ეს გაფართოება ითხოვს შემდეგ ნებართვებს:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) დაბლოკილია ადმინისტრატორის მიერ. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">გსურთ, გაუგზავნოთ ადმინისტრატორს „<ph name="EXTENSION_NAME" />“-ის ინსტალაციის მოთხოვნა?</translation>
 <translation id="2988488679308982380">პაკეტი ვერ დაინსტალირდა: „<ph name="ERROR_CODE" />“</translation>
 <translation id="3115238746683532089">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ფაილის შეცვლა ვერ მოხერხდა. შეამოწმეთ, რომ ფაილი არ გამოიყენება.</translation>
 <translation id="3163201441334626963">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">ამ გაფართოებაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის მიერ.</translation>
+<translation id="3183357154200327217">სხვა პროგრამამ თქვენს კომპიუტერში დაამატა თემა, რომელმაც შეიძლება შეცვალოს Chromium-ის მუშაობის პრინციპი.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს ChromeOS-ის კიოსკის რეჟიმში</translation>
 <translation id="3364986687961713424">თქვენი ადმინისტრატორისგან: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">შეყვანილი მნიშვნელობა პირადი გასაღებისთვის უნდა იყოს სწორი მისამართი.</translation>
+<translation id="3788401245189148511">შესაძლებლობები:</translation>
 <translation id="3834775135533257713">აპლიკაცია „<ph name="TO_INSTALL_APP_NAME" />“ ვერ დაემატა, რადგან „<ph name="INSTALLED_APP_NAME" />“ მასთან კონფლიქტშია.</translation>
 <translation id="388442998277590542">პარამეტრების გვერდი „<ph name="OPTIONS_PAGE" />“ ვერ ჩაიტვირთა.</translation>
+<translation id="3905761538810670789">აპის აღდგენა</translation>
+<translation id="3908501907586732282">გაფართოების ჩართვა</translation>
+<translation id="3927932062596804919">უარყოფა</translation>
 <translation id="3984413272403535372">შეცდომა გაფართოების ხელმოწერისას.</translation>
+<translation id="4014432863917027322">აღვადგინოთ „<ph name="EXTENSION_NAME" />“?</translation>
+<translation id="4061696872429826774">სხვა პროგრამამ თქვენს კომპიუტერში დაამატა გაფართოება, რომელმაც შეიძლება შეცვალოს Chromium-ის მუშაობის პრინციპი.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">ამ გაფართოების კატეგორიაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის მიერ.</translation>
 <translation id="4233778200880751280">ინფორმაციის გვერდი ვერ ჩაიტვირთა: '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">აპები მოწოდებული უნდა იყოს იმ საიტის მიერ, რომელზეც ისინი გავლენას ახდენს</translation>
 <translation id="4306119971288449206">მოწოდებული აპების კონტენტის ტიპი უნდა იყოს „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4625078469366263107">აპის ჩართვა</translation>
 <translation id="4633003931260532286">გაფართოებას სჭირდება „<ph name="IMPORT_NAME" />“ მინიმალური ვერსიით „<ph name="IMPORT_VERSION" />“, თუმცა დაინსტალირებულია მხოლოდ ვერსია „<ph name="INSTALLED_VERSION" />“</translation>
 <translation id="4660476621274971848">მოსალოდნელი ვერსია: „<ph name="EXPECTED_VERSION" />“, მიღებული ვერსია: „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">პირადი კოდის მიღება ვერ მოხერხდა.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">საჯარო გასაღების ექსპორტი ვერ განხორციელდა.</translation>
 <translation id="501057610015570208">პროგრამა „მხოლოდ_კიოსკი“ მანიფესტის ატრიბუტით უნდა დაინსტალირდეს ChromeOS Flex კიოსკის რეჟიმში</translation>
 <translation id="5026754133087629784">ვებგვერდის ხედი: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">გაფართოების დამატება</translation>
+<translation id="5039804452771397117">დაშვება</translation>
 <translation id="5098647635849512368">შეუძლებელია აბსოლუტური მდებარეობის პოვნა პაკეტის დირექტორიისკენ.</translation>
 <translation id="5160071981665899014">javascript „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა სცენარისთვის.</translation>
+<translation id="5185386675596372454">„<ph name="EXTENSION_NAME" />“-ის უახლესი ვერსია გამორთულია, რადგან იგი მოითხოვს დამატებით ნებართვებს.</translation>
+<translation id="5242724311594467048">ჩავრთოთ "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">პროგრამის ხედი: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium-იდან ამოღება</translation>
 <translation id="5456409301717116725">ეს გაფართოება შეიცავს მთვარ ფაილს „<ph name="KEY_PATH" />“. თქვენ ალბათ არ გსურთ ამის გაკეთება.</translation>
+<translation id="5485102783864353244">აპის დამატება</translation>
 <translation id="5486326529110362464">უნდა არსებობდეს შეყვანის მნიშვნელობა პირადი გასაღებისთვის.</translation>
 <translation id="5527463195266282916">განხორციელდა გაფართოების უფრო ძველი ვერსიით შეცვლის მცდელობა.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">გაფართოება ვერ ჩაიტვირთა:</translation>
 <translation id="5972529113578162692">ამ მოწყობილობის ადმინისტრირებისთვის საჭიროა <ph name="EXTENSION_NAME" />-ის ინსტალაცია. მისი წაშლა დაუშვებელია.</translation>
 <translation id="6027032947578871493">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> მომწოდებლისგან: <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">სხვა პროგრამამ თქვენს კომპიუტერში დაამატა აპი, რომელმაც შეიძლება შეცვალოს Chromium-ის მუშაობის პრინციპი.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">გაფართოვების ჩატვირთვის ხარვეზი</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" />-მა დაამატა გაფართოება, რომელმაც შეიძლება შეცვალოს Chrome-ის მუშაობის პრინციპი.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">პირადი კლავიშის წაკითხვის შეცდომა.</translation>
+<translation id="6326175484149238433">Chrome-იდან წაშლა</translation>
 <translation id="6391538222494443604">შეყვანის დირექტორია უნდა არსებობდეს.</translation>
 <translation id="641087317769093025">გაფართოების არქივიდან ამოღება ვერ მოხერხდა</translation>
 <translation id="6542618148162044354">„<ph name="APP_NAME" />“ თქვენს ერთ ან მეტ მოწყობილობაზე წვდომას ითხოვს:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> მომხმარებელი</translation>
 <translation id="657064425229075395">შუძლებელია ფონის სკრიპტის ჩატვირთვა „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> მომწოდებლისგან <ph name="VENDOR_NAME" /> (სერიული ნომერი <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">MIME-ს დამმუშავებელი: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">მანიფესტის ფაილი არასწორია</translation>
 <translation id="7217838517480956708">ამ კომპიუტერის ადმინისტრატორი მოითხოვს <ph name="EXTENSION_NAME" />-ის ინსტალაციას. მისი წაშლა ან შეცვლა შეუძლებელია.</translation>
 <translation id="7287143125007575591">წვდომა აკრძალულია.</translation>
+<translation id="760353356052806707">თქვენს კომპიუტერში არსებულმა სხვა პროგრამამ დაამატა აპი, რომელსაც Chrome-ის მუშაობის შეცვლა შეუძლია.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">პირადი გასაღების ფორმატი შეყვანილი უნდა იყოს სწორად (PEM-ით დაშიფრული RSA გასაღები PKCS#8 ფორმატში).</translation>
 <translation id="765293928828334535">ამ ვებსაიტიდან აპების, გაფართოებებისა და მომხმარებლების სკრიპტების დამატება ვერ მოხერხდება</translation>
+<translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7766838926148951335">ნებართვების მიღება</translation>
 <translation id="7876803335449432072">ვერ ჩაიტვირთა ფაილი „<ph name="RELATIVE_PATH" />“ კონტენტის სცენარისთვის; კონტენტის სცენარის სტილების ცხრილების ჩატვირთვა შესაძლებელია სტილების ცხრილის ფაილებიდან, როგორიცაა .css ფაილები.</translation>
 <translation id="7939686037314084444">გაფართოების მართებულად ჩატვირთვა ვერ მოხერხდა. მან შეიძლება ვერ შეძლოს ქსელის მოთხოვნებში ჩაჭრა.</translation>
 <translation id="7952904276017482715">მოსალოდნელი ID: „<ph name="EXPECTED_ID" />“, მიღებული ID: „<ph name="NEW_ID" />“</translation>
 <translation id="7972881773422714442">პარამეტრები: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">დადასტურება</translation>
 <translation id="8035920974645200807">წინა</translation>
 <translation id="8047248493720652249">ეს გაფართოება ვერ ახერხებს ჩამოტვირთვის დასახელებას „<ph name="ATTEMPTED_FILENAME" />“ იმიტომ, რომ კიდევ ერთმა გაფართოებამ (<ph name="EXTENSION_NAME" />) განსაზღვრა განსხვავებული ფაილის სახელი „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8049705080247101012">Google-მა მონიშნა „<ph name="EXTENSION_NAME" />“, როგორც საზიანო და აკრძალა მისი ინსტალაცია</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" />-დან <ph name="VENDOR_NAME" />-ი</translation>
+<translation id="8353683614194668312">მას შეუძლია:</translation>
 <translation id="8517576857589387417">მანიფესტის ფაილი მიუწვდომელია ან მისი წაკითხვა შეუძლებელია</translation>
 <translation id="8565650234829130278">განხორციელდა პროგრამის ძველ ვერსიაზე გადასვლის მცდელობა.</translation>
 <translation id="8621383749470166852">ვერ ჩაიტვირთა ფაილი „<ph name="RELATIVE_PATH" />“ კონტენტის სცენარისთვის; კონტენტის სცენარის ჩატვირთვა შესაძლებელია JavaScript-ის მხარდაჭერილი ფაილებიდან, როგორიცაა .js ფაილები.</translation>
 <translation id="8636666366616799973">პაკეტი არასწორია. დეტალები: „<ph name="ERROR_MESSAGE" />“-ზე.</translation>
+<translation id="8746654918629346731">თქვენ უკვე მოითხოვეთ „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ თქვენს ერთ-ერთ მოწყობილობაზე წვდომას ითხოვს:</translation>
 <translation id="8885905466771744233">კერძო გასაღები მითითებული გაფართოებისთვის უკვე არსებობს. გამოიყენეთ ის გასაღები ან ჯერ წაშალეთ იგი.</translation>
 <translation id="9039223174332979184">ამ მოწყობილობის ადმინისტრატორი მოითხოვს, რომ <ph name="EXTENSION_NAME" />-ის აღწერის ფაილის ვერსია იყოს მინიმუმ 3.</translation>
 <translation id="907841381057066561">დროებითი zip ფაილი ვერ შეიქმნა ჩალაგების დროს.</translation>
+<translation id="9102610709270966160">გაფართოების ჩართვა</translation>
+<translation id="93766956588638423">გაფართოების აღდგენა</translation>
 <translation id="941543339607623937">არასწორი პირადი გასაღები.</translation>
 </translationbundle>

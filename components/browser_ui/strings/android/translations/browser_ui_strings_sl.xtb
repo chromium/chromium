@@ -690,7 +690,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="8163152278172770963">Spletnim mestom ni dovoljeno samodejno preklapljanje v način slike v sliki</translation>
 <translation id="8168435359814927499">Vsebina</translation>
 <translation id="818487310457576362">Povlecite z roba zaslona, če želite zapreti celozaslonski način.</translation>
-<translation id="8186479265534291036">Ali spletno mesto ne deluje? Piškotki tretjih oseb so blokirani.</translation>
 <translation id="8197286292360124385">Dovoljeno: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8211406090763984747">Povezava je varna</translation>
@@ -761,7 +760,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="8805385115381080995">Brskanje je hitrejše, ker je manj verjetno, da vas bo spletno mesto pozvalo, da potrdite, da ste resnična oseba.</translation>
 <translation id="881644524232657178">Če je ta možnost vklopljena, spletna mesta lahko uporabljajo tipala gibanja in svetlobe naprave. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati tipal.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite brskanja, vendar je bolj verjetno, da bodo funkcije spletnega mesta delovale po pričakovanjih.</translation>
 <translation id="8889294078294184559">Med brskanjem se lahko spletna mesta obrnejo na Chrome in pri prejšnjem spletnem mestu, ki ste ga obiskali, potrdijo, da ste verjetno resnična oseba.</translation>
 <translation id="8899807382908246773">Vsiljivi oglasi</translation>
 <translation id="8903921497873541725">Povečaj</translation>
@@ -787,7 +785,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="913657688200966289">V <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" /> vklopite dovoljenja za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="9138037198177304356">Obvestila so dovoljena</translation>
 <translation id="9138217887606523162">Trenutna povečava/pomanjšava je <ph name="ZOOM_LEVEL" /> %%.</translation>
-<translation id="915112772806845021">Spletna mesta s to funkcijo samodejno preklopijo na način slike v sliki. Tako lahko še naprej gledate videoposnetek, na zaslonu pa izvajate druga opravila.</translation>
 <translation id="9156722768168878035">Chrome naj prikaže vaše nedavne zavihke na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli izklopite v nastavitvah Chroma.</translation>
 <translation id="9162462602695099906">Ta stran je nevarna.</translation>
 <translation id="9182556968660520230">Spletnim mestom ni dovoljeno predvajanje zaščitene vsebine.</translation>

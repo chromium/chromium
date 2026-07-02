@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} पासकी}other{{count} वटा पासकी}}</translation>
 <translation id="1005023885865154304">अटोफिल पासवर्डसम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">लाइभ Chrome मा उपलब्ध Gemini को नयाँ सुविधा हो</translation>
 <translation id="1013952917065545813">तपाईं पछि यहाँ फर्केर आफूले हालसालै बन्द गरेका ट्याबहरू पुनः खोल्न सक्नुहुन्छ</translation>
 <translation id="1016495303386450659">वस्तु अद्यावधिक गरियो</translation>
 <translation id="1018804590490383958">स्क्यान गर्नुहोस् र स्वतः भर्नुहोस्</translation>
@@ -1737,6 +1738,7 @@
 <translation id="6761393919622941301">अडियो</translation>
 <translation id="6765551480308401897">डिफल्ट नबनाउनुहोस्</translation>
 <translation id="6770452996697898492">[बुक गरिएको छ]</translation>
+<translation id="6775952316617222141">Chrome मा उपलब्ध Gemini सँग लाइभ च्याट गर्ने तरिका</translation>
 <translation id="6779455296366983087">तपाईंको ब्राउजिङ डेटा मेटाइने छ</translation>
 <translation id="6782531425936234573">डेटा एक्स्पोर्ट गर्नुहोस्</translation>
 <translation id="6791425686608802741">"ट्याब नयाँ समूहमा हाल्नुहोस्" मा ट्याप गर्नुहोस्</translation>

@@ -690,7 +690,6 @@ A Proteção avançada controla estas definições do Chrome:</translation>
 <translation id="8163152278172770963">Não permitir que os sites entrem automaticamente no modo ecrã no ecrã</translation>
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="818487310457576362">Arraste a partir da parte lateral do ecrã para sair do modo de ecrã inteiro.</translation>
-<translation id="8186479265534291036">O site não funciona? Cookies de terceiros bloqueados</translation>
 <translation id="8197286292360124385">Autorização de <ph name="PERMISSION_1" />.</translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8211406090763984747">A ligação é segura</translation>
@@ -761,7 +760,6 @@ A Proteção avançada controla estas definições do Chrome:</translation>
 <translation id="8805385115381080995">A navegação é mais rápida porque é menos provável que um site lhe peça para validar que é uma pessoa real</translation>
 <translation id="881644524232657178">Quando esta opção está ativada, os sites podem usar os sensores de movimentos e luz do dispositivo. Quando esta opção está desativada, os sites não podem usar sensores.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Experimente permitir temporariamente os cookies de terceiros, o que significa uma menor proteção da navegação, mas é mais provável que as funcionalidades do site funcionem conforme esperado.</translation>
 <translation id="8889294078294184559">À medida que navega, os sites podem verificar com o Chrome e validar com um site anterior que tenha visitado que provavelmente é uma pessoa real</translation>
 <translation id="8899807382908246773">Anúncios intrusivos</translation>
 <translation id="8903921497873541725">Ampliar</translation>
@@ -787,7 +785,6 @@ A Proteção avançada controla estas definições do Chrome:</translation>
 <translation id="913657688200966289">Ative as autorizações para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Acesso às notificações permitido</translation>
 <translation id="9138217887606523162">O zoom atual é de <ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="915112772806845021">Os sites usam esta funcionalidade para entrar automaticamente no modo ecrã no ecrã. Isto permite-lhe continuar a ver um vídeo enquanto liberta o ecrã para outras tarefas.</translation>
 <translation id="9156722768168878035">Permita que o Chrome mostre os seus separadores recentes na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
 <translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>

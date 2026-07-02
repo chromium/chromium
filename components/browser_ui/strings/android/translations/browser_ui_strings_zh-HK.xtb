@@ -690,7 +690,6 @@
 <translation id="8163152278172770963">不允許網站自動進入畫中畫</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="818487310457576362">從螢幕側邊拖曳即可離開全螢幕。</translation>
-<translation id="8186479265534291036">網站無法正常運作嗎？因為第三方 Cookie 已被封鎖</translation>
 <translation id="8197286292360124385">已允許「<ph name="PERMISSION_1" />」</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
@@ -761,7 +760,6 @@
 <translation id="8805385115381080995">降低網站要求驗證您是真人的機率，讓瀏覽體驗更快速</translation>
 <translation id="881644524232657178">開咗之後，網站就可以使用裝置嘅動作同光線感應器。閂咗之後，網站唔可以使用感應器。</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表瀏覽保護程度較低，但網站功能較容易如期運作。</translation>
 <translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="8899807382908246773">滋擾性廣告</translation>
 <translation id="8903921497873541725">放大</translation>
@@ -787,7 +785,6 @@
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
 <translation id="9138037198177304356">批准咗通知</translation>
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">網站會使用此功能自動進入畫中畫模式。你可繼續觀看影片，同時在螢幕上處理其他工作。</translation>
 <translation id="9156722768168878035">讓 Chrome 在裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="9182556968660520230">不允許網站播放受保護的內容</translation>

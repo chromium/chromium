@@ -690,7 +690,6 @@
 <translation id="8163152278172770963">Mos lejo që sajtet të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>
 <translation id="8168435359814927499">Përmbajtja</translation>
 <translation id="818487310457576362">Zvarrit nga ana e ekranit për të dalë nga ekrani i plotë.</translation>
-<translation id="8186479265534291036">Sajti nuk funksionon? Kukit e palëve të treta janë bllokuar</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> është lejuar</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8211406090763984747">Lidhja është e sigurt</translation>
@@ -761,7 +760,6 @@
 <translation id="8805385115381080995">Shfletimi është më i shpejtë pasi një sajt ka më pak gjasa që të të kërkojë të verifikosh që je një person real</translation>
 <translation id="881644524232657178">Kur cilësimi është aktiv, sajtet mund të përdorin sensorët e lëvizjes dhe të dritës të pajisjes. Kur cilësimi është joaktiv, sajtet nuk mund t'i përdorin sensorët.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve me shumë mundësi mund të funksionojnë siç pritet.</translation>
 <translation id="8889294078294184559">Ndërkohë që ti vazhdon të shfletosh, sajtet mund të kontrollojnë në Chrome dhe të verifikojnë nga një sajt i mëparshëm që ke vizituar që ka gjasa të jesh një person real.</translation>
 <translation id="8899807382908246773">Reklamat ndërhyrëse</translation>
 <translation id="8903921497873541725">Zmadho</translation>
@@ -787,7 +785,6 @@
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Njoftimet lejohen</translation>
 <translation id="9138217887606523162">Zmadhimi aktual është në <ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="915112772806845021">Sajtet e përdorin këtë veçori për të kaluar automatikisht në modalitetin "figurë brenda figurës". Kjo të lejon të vazhdosh të shikosh një video, ndërkohë që e liron ekranin për detyra të tjera.</translation>
 <translation id="9156722768168878035">Lejo që Chrome të shfaqë skedat e tua të fundit në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>
 <translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>

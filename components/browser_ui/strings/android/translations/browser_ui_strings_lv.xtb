@@ -690,7 +690,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="8163152278172770963">Neļaut vietnēm automātiski aktivizēt režīmu “Attēls attēlā”</translation>
 <translation id="8168435359814927499">Saturs</translation>
 <translation id="818487310457576362">Lai izietu no pilnekrāna režīma, velciet no ekrāna malas.</translation>
-<translation id="8186479265534291036">Vai vietne nedarbojas? Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="8197286292360124385">Atļauta: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
@@ -761,7 +760,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="8805385115381080995">Pārlūkošana ir ātrāka, jo vietnē, visticamāk, netiks lūgts apstiprināt, ka esat īsts cilvēks</translation>
 <translation id="881644524232657178">Kad šis slēdzis ir ieslēgts, vietnes var izmantot ierīces kustību un gaismas sensorus. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot sensorus.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Īslaicīgi atļaujiet izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts.</translation>
 <translation id="8889294078294184559">Kad turpināsiet pārlūkošanu, vietnes var pieprasīt šo informāciju pārlūkam Chrome un saņemt apstiprinājumu no iepriekš apmeklētās vietnes, ka, visticamāk, esat īsts cilvēks.</translation>
 <translation id="8899807382908246773">Traucējošas reklāmas</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
@@ -787,7 +785,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļaujas lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="9138037198177304356">Paziņojumi ir atļauti</translation>
 <translation id="9138217887606523162">Pašreizējais tālummaiņas iestatījums: <ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="915112772806845021">Vietnēs šī funkcija tiek izmantota, lai automātiski aktivizētu režīmu “Attēls attēlā”. Tādējādi varat turpināt skatīties videoklipu, vienlaikus atbrīvojot ekrānu citiem uzdevumiem.</translation>
 <translation id="9156722768168878035">Ļaujiet pārlūkam Chrome rādīt jūsu nesen atvērtās cilnes ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="9162462602695099906">Šī lapa ir bīstama.</translation>
 <translation id="9182556968660520230">Neļaut vietnēs atskaņot aizsargātu saturu</translation>

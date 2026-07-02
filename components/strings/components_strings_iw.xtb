@@ -1236,6 +1236,7 @@
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">כרטיסייה מהמכשיר הנוסף</translation>
 <translation id="2930577230479659665">חיתוך אחרי כל עותק</translation>
+<translation id="2931453528659195355">ניהול פרטי הקניות</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2935726091208500473">שיתוף הכרטיסיות</translation>
 <translation id="293796669683825859">תגובות</translation>
@@ -1727,6 +1728,7 @@
 <translation id="3681841880472207951">‏סרטון Quicktime</translation>
 <translation id="3687920599421452763">רכבים מסחריים ורכבי מיניוואן</translation>
 <translation id="3693327506115126094">עליך לבחור שיטה לאימות הזהות שלך</translation>
+<translation id="3693516565203081475">בחירת אמצעי תשלום</translation>
 <translation id="3698353241727597930">האדמינים הגדירו שהמערכת תשמור <ph name="FILES" /> באחסון שלך ב-<ph name="CLOUD_STORAGE" /> שמנוהל על ידי הארגון. אם הקבצים האלה ימחקו, יכול להיות שיתבצע מעקב אחריהם, בדיקה ושמירה שלהם.</translation>
 <translation id="3698629142018988477">‏הכפתור ליצירת אתר, מפעילים אותו כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
 <translation id="3700094625653511150">כדי להסתיר את האפשרויות לתשלום אחר כך, צריך לעבור אל <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
@@ -3926,7 +3928,6 @@ Del</translation>
 <translation id="7110116949943042888">משרות לעובדים זמניים ועונתיים</translation>
 <translation id="7110368079836707726">מכללות ואוניברסיטאות</translation>
 <translation id="7111507312244504964">בדיקה ושמאות לקניין</translation>
-<translation id="7117290130383718594">הערות טקסט</translation>
 <translation id="7118618213916969306">‏חיפוש כתובת ה-URL שהועתקה ללוח, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">תוכניות דרמה בטלוויזיה</translation>
@@ -5049,7 +5050,6 @@ Del</translation>
 <translation id="8871485335898060555">עתיקות ואספנות</translation>
 <translation id="8871553383647848643">התאמה אישית של מראה הדפדפן</translation>
 <translation id="887350038812854047">המדיניות הזו מוגדרת עם אותו ערך ברמת המחשב וברמת המשתמש. המדיניות פועלת כצפוי.</translation>
-<translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="8874824191258364635">עליך להזין מספר כרטיס חוקי</translation>
 <translation id="8877780815363510165">דיג</translation>
 <translation id="888117890813270681">לא ניתן להגדיר את '<ph name="DATA_CONTROLS_RESTRICTION" />' כ-'<ph name="DATA_CONTROLS_LEVEL" />'</translation>
@@ -5158,6 +5158,7 @@ Del</translation>
 <translation id="9063800855227801443">לא ניתן לצלם תוכן סודי</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> – חיפוש מההיסטוריה</translation>
+<translation id="9066116644715286230">{NUM_TABS,plural, =1{פרטים על שיתוף כרטיסיות. מתבצע שיתוף של כרטיסייה אחת מ-{WEBSITE_LIST_STR}}one{פרטים על שיתוף כרטיסיות. מתבצע שיתוף של {NUM_TABS} כרטיסיות מ-{WEBSITE_LIST_STR}}two{פרטים על שיתוף כרטיסיות. מתבצע שיתוף של {NUM_TABS} כרטיסיות מ-{WEBSITE_LIST_STR}}other{פרטים על שיתוף כרטיסיות. מתבצע שיתוף של {NUM_TABS} כרטיסיות מ-{WEBSITE_LIST_STR}}}</translation>
 <translation id="90695670378604968">Plastic (Matte)</translation>
 <translation id="9069693763241529744">נחסמה על-ידי תוסף</translation>
 <translation id="9073799351042754113">בחרת להשבית את אזהרות האבטחה לגבי האתר הזה.</translation>

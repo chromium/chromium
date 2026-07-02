@@ -690,7 +690,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="8163152278172770963">A webhelyek nem indíthatják el automatikusan a kép a képben módot</translation>
 <translation id="8168435359814927499">Tartalom</translation>
 <translation id="818487310457576362">A teljes képernyős nézetből való kilépéshez húzza az ujját a képernyő oldalától.</translation>
-<translation id="8186479265534291036">Nem működik a webhely? Harmadik féltől származó cookie-k letiltva</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> engedélyezve</translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
@@ -761,7 +760,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="8805385115381080995">Így gyorsabb a böngészés, mert a webhelyek kisebb valószínűséggel kérik meg arra, hogy igazolja, Ön valódi személy.</translation>
 <translation id="881644524232657178">Ha be van kapcsolva, a webhelyek használhatják az eszköz mozgás- és fényérzékelőit. Ha ki van kapcsolva, a webhelyek nem használhatnak érzékelőket.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Próbálja meg átmenetileg engedélyezni a harmadik felektől származó cookie-kat, ami kisebb böngészési védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel működnek majd megfelelően.</translation>
 <translation id="8889294078294184559">Böngészési tevékenységei során a webhelyek egyeztethetnek a Chrome-mal, és az előzőleg felkeresett webhely segítségével meggyőződhetnek arról, hogy Ön valószínűleg valódi felhasználó.</translation>
 <translation id="8899807382908246773">Tolakodó hirdetések</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
@@ -787,7 +785,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="913657688200966289">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyeket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
 <translation id="9138037198177304356">Értesítések engedélyezve</translation>
 <translation id="9138217887606523162">Jelenlegi nagyítási szint: <ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="915112772806845021">A webhelyek ezzel a funkcióval automatikusan elindíthatják a kép a képben módot. Így folytathatja a videónézést, miközben más feladatokra felszabadíthatja a képernyőt.</translation>
 <translation id="9156722768168878035">Engedélyezze a Chrome-nak, hogy megjeleníthesse a legutóbbi lapokat az eszköz alkalmazáslistáján és a keresési találatok között. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="9162462602695099906">Ez az oldal veszélyes</translation>
 <translation id="9182556968660520230">A webhelyek nem játszhatnak le védett tartalmakat</translation>

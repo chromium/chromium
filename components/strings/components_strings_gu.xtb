@@ -2370,6 +2370,7 @@
 <translation id="4705573018059932476">તમે <ph name="PROVIDER_ORIGIN" />નો ઉપયોગ કરતી સાઇટ પર <ph name="AUTHENTICATOR" /> વડે ચકાસણી કરવાનું પસંદ કર્યું છે. આ પ્રદાતાએ તમારી ચુકવણી કરવાની રીત વિશેની માહિતી કદાચ સ્ટોર કરી હોઈ શકે છે, જેને તમે <ph name="LINK_TEXT" /> કરી શકો છો.</translation>
 <translation id="4708268264240856090">તમારું કનેક્શન અવરોધાયું હતું</translation>
 <translation id="4708276642004148190">પાણી પુરવઠો અને તેનું શુદ્ધિકરણ</translation>
+<translation id="4710249055485272920">આ માહિતી શોધી શક્યા નથી</translation>
 <translation id="4711628883879888561">ટૅબના ગ્રૂપ પર સહયોગ કરો</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">તમારી પાસે આ સાઇટની મુલાકાત લેવાની પરવાનગી નથી</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5707154300732650394">તમારો પ્રવાસ ફરી શરૂ કરો</translation>
 <translation id="57094364128775171">સશક્ત પાસવર્ડ સૂચવો…</translation>
 <translation id="570953204696852961">લાલ 3</translation>
+<translation id="5710907191777451677">તેના બદલે Gemini in Chromeને પૂછો</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">પશુચિકિત્સકો</translation>
 <translation id="5715150588940290235">શું સાચવેલા સુરક્ષા કોડ ડિલીટ કરીએ?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">હંગામી અને મોસમી નોકરીઓ</translation>
 <translation id="7110368079836707726">કૉલેજ અને યુનિવર્સિટી</translation>
 <translation id="7111507312244504964">સંપત્તિ નિરીક્ષણ અને મૂલ્યાંકન</translation>
-<translation id="7117290130383718594">ટેક્સ્ટ સંબંધિત ટીકાટિપ્પણીઓ</translation>
 <translation id="7118618213916969306">ક્લિપબોર્ડ URL શોધો, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ટીવી ડ્રામા</translation>
@@ -5047,7 +5048,6 @@
 <translation id="8871485335898060555">પ્રાચીન વસ્તુઓ અને સંગ્રહણીય વસ્તુઓ</translation>
 <translation id="8871553383647848643">તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરો</translation>
 <translation id="887350038812854047">આ પૉલિસીમાં મશીન અને વપરાશકર્તાના લેવલ પર સમાન મૂલ્ય લાગુ કરવામાં આવ્યું છે. પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે.</translation>
-<translation id="8874790741333031443">ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે બ્રાઉઝિંગ સંરક્ષણ સાઇટ સુવિધાઓની અપેક્ષા મુજબ કાર્ય કરવાની સંભાવના વધુ છે.</translation>
 <translation id="8874824191258364635">એક માન્ય કાર્ડ નંબર દાખલ કરો</translation>
 <translation id="8877780815363510165">ફિશિંગ</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />"ને "<ph name="DATA_CONTROLS_LEVEL" />" પર સેટ કરી શકાશે નહીં</translation>

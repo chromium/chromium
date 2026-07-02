@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="10146536653536065">Instalējiet paplašinājumu “<ph name="EXTENSION_NAME" />”</translation>
+<translation id="1070377999570795893">Citā datorā instalētā programmā ir pievienots tāds paplašinājums, kura dēļ var tikt izmainīta pārlūkprogrammas Chrome darbība.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Iespējot motīvu</translation>
 <translation id="1135328998467923690">Pakotne nav derīga: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Vērsta uz aizmuguri</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> pievienoja paplašinājumu, kas var ietekmēt pārlūka Chromium darbību.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Neizdevās eksportēt privāto atslēgu.</translation>
 <translation id="132960226125594336">Nevarēja ielādēt failu “<ph name="RELATIVE_PATH" />” satura apstrādes skriptam, jo tādējādi tiktu pārsniegts maksimālais skripta lielums vai paplašinājuma maksimālais kopējais satura apstrādes skripta lielums.</translation>
 <translation id="1445572445564823378">Šis paplašinājums palēnina <ph name="PRODUCT_NAME" /> darbību. Atspējojiet to, lai atjaunotu <ph name="PRODUCT_NAME" /> veiktspēju.</translation>
 <translation id="1468038450257740950">Tehnoloģija WebGL netiek atbalstīta.</translation>
 <translation id="1478607704480248626">Instalēšana nav iespējota</translation>
+<translation id="1483493594462132177">Sūtīt</translation>
+<translation id="1485015260175968628">Tagad var:</translation>
 <translation id="1556537182262721003">Nevarēja pārvietot paplašinājuma katalogu uz profilu.</translation>
+<translation id="1585717515139318619">Citā datorā instalētā programmā ir pievienots tāds motīvs, kura dēļ var tikt izmainīta pārlūkprogrammas Chrome darbība.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Nevarēja ielādēt CSS “<ph name="RELATIVE_PATH" />” skriptam.</translation>
 <translation id="1616298854599875024">Nevar importēt paplašinājumu <ph name="IMPORT_NAME" />, jo tas nav kopīgots modulis.</translation>
+<translation id="175772926354468439">Iespējot motīvu</translation>
 <translation id="1757786065507923842">Vecāku atļaujas pieprasījums bija nesekmīgs.</translation>
 <translation id="1803557475693955505">Nevarēja ielādēt fona lapu “<ph name="BACKGROUND_PAGE" />”.</translation>
 <translation id="1875387611427697908">To var pievienot tikai no veikala <ph name="CHROME_WEB_STORE" />.</translation>
 <translation id="2131077480075264">Nevar instalēt lietotni “<ph name="APP_NAME" />”, jo to neatļauj “<ph name="IMPORT_NAME" />”.</translation>
+<translation id="2150661552845026580">Vai pievienot paplašinājumu <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2159915644201199628">Nevarēja dekodēt attēlu: <ph name="IMAGE_NAME" /></translation>
 <translation id="2193567467390483943">Viens no jūsu vecākiem neapstiprināja šo paplašinājumu.</translation>
+<translation id="23030561267973084"><ph name="EXTENSION_NAME" /> pieprasīja papildu atļaujas.</translation>
+<translation id="2327492829706409234">Iespējot lietotni</translation>
 <translation id="2350172092385603347">Lokalizācija ir lietota, tomēr manifestā nav norādīta default_locale.</translation>
 <translation id="2576842806987913196">CRX fails ar šādu nosaukumu jau pastāv.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Atkārtoti iespējot</translation>
 <translation id="2743583586211388067">Piekļuve šim paplašinājumam ir bloķēta saskaņā ar jūsu organizācijas paplašinājumu riska politiku.</translation>
+<translation id="2766161002040448006">Lūgt kādam no vecākiem</translation>
 <translation id="2785530881066938471">Nevar ielādēt failu "<ph name="RELATIVE_PATH" />" satura skriptam. Tas nav UTF-8 kodēts.</translation>
+<translation id="2850541429955027218">Pievienot motīvu</translation>
+<translation id="2883143988769190738">Šis paplašinājums pieprasa tālāk norādītās atļaujas.</translation>
 <translation id="2903070246402204397">Administrators bloķēja paplašinājumu <ph name="EXTENSION_NAME" /> (paplašinājuma ID “<ph name="EXTENSION_ID" />”). <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Vai nosūtīt administratoram pieprasījumu instalēt <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2988488679308982380">Nevarēja instalēt pakotni: <ph name="ERROR_CODE" />.</translation>
 <translation id="3115238746683532089">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_ID" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Neizdevās aizstāt crx failu. Pārbaudiet, vai fails tiek izmantots.</translation>
 <translation id="3163201441334626963">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Jūsu organizācija ir bloķējusi piekļuvi šim paplašinājumam.</translation>
+<translation id="3183357154200327217">Cita datorā instalēta programma pievienoja motīvu, kas var ietekmēt pārlūka Chromium darbību.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Lai instalētu lietotni ar manifesta atribūtu kiosk_only, ir jāizmanto Chrome OS kioska režīms.</translation>
 <translation id="3364986687961713424">Ziņojums no administratora: “<ph name="ADMIN_MESSAGE" />”</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" />, ko piedāvā <ph name="VENDOR_ID" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privātās atslēgas ievades vērtībai jābūt derīgam ceļam.</translation>
+<translation id="3788401245189148511">Varētu:</translation>
 <translation id="3834775135533257713">Neizdevās pievienot lietojumprogrammu “<ph name="TO_INSTALL_APP_NAME" />”, jo rodas konflikts ar “<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="388442998277590542">Nevarēja ielādēt opciju lapu “<ph name="OPTIONS_PAGE" />”.</translation>
+<translation id="3905761538810670789">Lietotnes labošana</translation>
+<translation id="3908501907586732282">Iespējot paplašinājumu</translation>
+<translation id="3927932062596804919">Neatļaut</translation>
 <translation id="3984413272403535372">Kļūda paplašinājuma parakstīšanas laikā.</translation>
+<translation id="4014432863917027322">Vai labot “<ph name="EXTENSION_NAME" />”?</translation>
+<translation id="4061696872429826774">Cita datorā instalēta programma pievienoja paplašinājumu, kas var ietekmēt pārlūka Chromium darbību.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Jūsu organizācija ir bloķējusi piekļuvi šai paplašinājumu kategorijai.</translation>
 <translation id="4233778200880751280">Nevarēja ielādēt lapu “Par” (<ph name="ABOUT_PAGE" />).</translation>
 <translation id="424963718355121712">Lietotnēm ir jābūt no tā paša saimniekdatora, kuru tās ietekmē.</translation>
 <translation id="4306119971288449206">Instalētajām lietotnēm ir jābūt ar šāda veida saturu: <ph name="CONTENT_TYPE" />.</translation>
+<translation id="4625078469366263107">Iespējot lietotni</translation>
 <translation id="4633003931260532286">Paplašinājumam ir nepieciešama “<ph name="IMPORT_NAME" />” versija <ph name="IMPORT_VERSION" /> (vismaz), taču ir instalēta tikai versija <ph name="INSTALLED_VERSION" />.</translation>
 <translation id="4660476621274971848">Paredzētā versija bija <ph name="EXPECTED_VERSION" />, bet faktiskā versija bija <ph name="NEW_ID" />.</translation>
 <translation id="471800408830181311">Neizdevās izvadīt privāto atslēgu.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Neizdevās eksportēt publisko atslēgu.</translation>
 <translation id="501057610015570208">Lai instalētu lietotni ar manifesta atribūtu kiosk_only, ir jāizmanto Chrome OS Flex kioska režīms.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Pievienot paplašinājumu</translation>
+<translation id="5039804452771397117">Atļaut</translation>
 <translation id="5098647635849512368">Nevar atrast ceļu uz direktoriju, lai to atpakotu.</translation>
 <translation id="5160071981665899014">Nevarēja ielādēt JavaScript “<ph name="RELATIVE_PATH" />” skriptam.</translation>
+<translation id="5185386675596372454"><ph name="EXTENSION_NAME" /> jaunākā versija ir atspējota, jo tai ir nepieciešams vairāk atļauju.</translation>
+<translation id="5242724311594467048">Vai iespējot “<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5356315618422219272">Lietotnes skats: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Noņemt no pārlūka Chromium</translation>
 <translation id="5456409301717116725">Šis paplašinājums ietver atslēgas failu <ph name="KEY_PATH" />. Iespējams, jūs to nevēlaties izmantot.</translation>
+<translation id="5485102783864353244">Pievienot lietotni</translation>
 <translation id="5486326529110362464">Privātās atslēgas ievades vērtībai jābūt.</translation>
 <translation id="5527463195266282916">Mēģināja atkāpties uz vecāku paplašinājuma versiju.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Neizdevās ielādēt paplašinājumu no:</translation>
 <translation id="5972529113578162692">Šīs ierīces administrators pieprasa, lai būtu instalēts paplašinājums <ph name="EXTENSION_NAME" />. To nevar atinstalēt.</translation>
 <translation id="6027032947578871493">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_NAME" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" />, ko piedāvā <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Cita datorā instalēta programma pievienoja lietotni, kas var ietekmēt pārlūka Chromium darbību.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Paplašinājuma ielādes kļūda</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> pievienoja paplašinājumu, kas var ietekmēt pārlūka Chrome darbību.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Neizdevās nolasīt privāto atslēgu.</translation>
+<translation id="6326175484149238433">Noņemt no pārlūka Chrome</translation>
 <translation id="6391538222494443604">Ievades katalogam jābūt.</translation>
 <translation id="641087317769093025">Paplašinājumu nevarēja izgūt no ZIP arhīva.</translation>
 <translation id="6542618148162044354">Lietotne <ph name="APP_NAME" /> pieprasa piekļuvi vienai vai vairākām jūsu ierīcēm:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> lietotāji</translation>
 <translation id="657064425229075395">Nevarēja ielādēt fona skriptu <ph name="BACKGROUND_SCRIPT" />.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />, ko piedāvā <ph name="VENDOR_NAME" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">MIME apdarinātājs: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Manifesta fails nav derīgs.</translation>
 <translation id="7217838517480956708">Šīs ierīces administrators uzskata, ka paplašinājumam <ph name="EXTENSION_NAME" /> ir jābūt instalētam. To nevar noņemt vai pārveidot.</translation>
 <translation id="7287143125007575591">Piekļuve liegta.</translation>
+<translation id="760353356052806707">Citā datorā instalētā programmā ir pievienota tāda lietotne, kuras dēļ var tikt izmainīta pārlūkprogrammas Chrome darbība.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Privātās atslēgas ievades vērtībai jābūt derīgam formātam (PKCS#8-formāta PEM-kodēta RSA atslēga).</translation>
 <translation id="765293928828334535">No šīs vietnes nevar pievienot lietotnes, paplašinājumus un lietotāja skriptus.</translation>
+<translation id="7658239707568436148">Atcelt</translation>
+<translation id="7766838926148951335">Piekrist atļaujām</translation>
 <translation id="7876803335449432072">Nevarēja ielādēt failu “<ph name="RELATIVE_PATH" />” satura apstrādes skriptam. Satura apstrādes skriptu stilu lapas var ielādēt tikai no atbalstītiem stilu lapu failiem, piemēram, .css failiem.</translation>
 <translation id="7939686037314084444">Neizdevās pareizi ielādēt paplašinājumu. Iespējams, tas nevarēs pārtvert tīkla pieprasījumus.</translation>
 <translation id="7952904276017482715">Paredzētais ID bija <ph name="EXPECTED_ID" />, bet faktiskais ID bija <ph name="NEW_ID" />.</translation>
 <translation id="7972881773422714442">Iespējas: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Apstiprināt</translation>
 <translation id="8035920974645200807">Vērsta uz lietotāju</translation>
 <translation id="8047248493720652249">Šim paplašinājumam neizdevās piešķirt nosaukumu lejupielādei “<ph name="ATTEMPTED_FILENAME" />”, jo cits paplašinājums (<ph name="EXTENSION_NAME" />) noteica citu faila nosaukumu “<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8049705080247101012">Google atzīmēja paplašinājumu <ph name="EXTENSION_NAME" /> kā ļaunprātīgu un nepieļāva instalēšanu.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> no <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Var:</translation>
 <translation id="8517576857589387417">Manifesta fails nav atrodams vai nolasāms.</translation>
 <translation id="8565650234829130278">Mēģināja atkāpties uz vecāku lietotnes versiju.</translation>
 <translation id="8621383749470166852">Nevarēja ielādēt failu “<ph name="RELATIVE_PATH" />” satura apstrādes skriptam. Satura apstrādes skriptus var ielādēt tikai no atbalstītiem JavaScript failiem, piemēram, .js failiem.</translation>
 <translation id="8636666366616799973">Pakotne nav derīga. Detaļas: <ph name="ERROR_MESSAGE" />.</translation>
+<translation id="8746654918629346731">Jūs jau pieprasījāt instalēt <ph name="EXTENSION_NAME" />.</translation>
 <translation id="8761756413268424715">Lietotne <ph name="APP_NAME" /> pieprasa piekļuvi kādai jūsu ierīcei:</translation>
 <translation id="8885905466771744233">Norādītajam paplašinājumam jau eksistē privāta atslēga. Atkārtoti izmantojiet šo atslēgu vai vispirms to izdzēsiet.</translation>
 <translation id="9039223174332979184">Šīs ierīces administrators pieprasa, lai paplašinājuma <ph name="EXTENSION_NAME" /> manifesta versijas numurs būtu vismaz 3.</translation>
 <translation id="907841381057066561">Pakošanas laikā neizdevās izveidot pagaidu zip failu.</translation>
+<translation id="9102610709270966160">Iespējot paplašinājumu</translation>
+<translation id="93766956588638423">Labot paplašinājumu</translation>
 <translation id="941543339607623937">Nederīga privātā atslēga.</translation>
 </translationbundle>

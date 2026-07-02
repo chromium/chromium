@@ -17,9 +17,6 @@
 <translation id="1131805035311359397">За да проверите дали вашите лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Кликнете на менито на Chromium</translation>
 <translation id="1157985233335035034">Неодамнешни јазици</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> додаде екстензија што може да го промени начинот на функционирање на Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Инсталирањето не успеа бидејќи вашата верзија на Windows не е поддржана.</translation>
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1186645291482254714">Добивајте известувања за „Следење цена“ со Chromium на телефонот</translation>
@@ -55,7 +52,6 @@
 <translation id="1524282610922162960">Споделете картичка на Chromium</translation>
 <translation id="154404805518949443">Најавете се на Chromium</translation>
 <translation id="1547469039832541117">Ја завршува нагласената задача.</translation>
-<translation id="1553461853655228091">На Chromium му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
 <translation id="1562320819937089394">Закачи го Chromium</translation>
 <translation id="1574377791422810894">Алатки за безбедност на Chromium</translation>
 <translation id="1594928384848033697">Chromium сака да ги избрише вашите податоци во Password Manager. За да го дозволите тоа, внесете ја вашата лозинка за Windows.</translation>
@@ -217,9 +213,6 @@
 <translation id="3155163173539279776">Рестартирајте го Chromium</translation>
 <translation id="3161522574479303604">Сите јазици</translation>
 <translation id="3179665906251668410">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
-<translation id="3183357154200327217">Друга програма на компјутерот додаде тема што може да го промени начинот на функционирање на Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Приспособете го вашиот нов профил на Chromium</translation>
 <translation id="3189205223539394158">Може да продолжите да разговарате со „AI-режимот“ без да се префрлате на друга картичка. За да започнете, најавете се на Chromium. Ќе ги добиете и вашите лозинки и друго на сите ваши уреди.</translation>
 <translation id="3224847870593914902">Одјавете се од Chromium на страницата „Поставки“ за да се отстрани вашата сметка на Google од Chromium</translation>
@@ -298,9 +291,6 @@
 <translation id="4036079820698952681">Помогнете да го подобриме Chromium со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
-<translation id="4061696872429826774">Друга програма на компјутерот додаде екстензија што може да го промени начинот на функционирање на Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Вашата организација го затвора Chromium автоматски кога не се користи 1 минута. Податоците од прелистувањето се бришат. Тоа може да ги опфати историјата, автоматското пополнување и преземањата.}one{Вашата организација го затвора Chromium автоматски кога не се користи # минута. Податоците од прелистувањето се бришат. Тоа може да ги опфати историјата, автоматското пополнување и преземањата.}other{Вашата организација го затвора Chromium автоматски кога не се користи # минути. Податоците од прелистувањето се бришат. Тоа може да ги опфати историјата, автоматското пополнување и преземањата.}}</translation>
 <translation id="4118474109249235144">„Инкогнито“ на Chromium</translation>
 <translation id="4122186850977583290">Одете на страницата „За Chromium“</translation>
@@ -413,7 +403,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium препорачува да ја паузирате картичката што го забавува прелистувачот}one{Chromium препорачува да ги паузирате картичките што го забавуваат прелистувачот}other{Chromium препорачува да ги паузирате картичките што го забавуваат прелистувачот}}</translation>
 <translation id="5473971139929175403">Chromium може да не работи правилно затоа што веќе не е поддржан на овој систем на Linux</translation>
 <translation id="5475924890392386523">Chromium го блокираше преземањево бидејќи датотеката може да им наштети на вашите лични сметки и на вашите сметки на друштвените мрежи</translation>
-<translation id="5480860683791598150">На Chromium му треба пристап до вашата локација за да ја сподели со сајтов</translation>
 <translation id="549669000822060376">Почекајте додека Chromium ги инсталира последните системски ажурирања.</translation>
 <translation id="5496810170689441661">Chromium се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
 <translation id="549975168243349205">Работете непречено со омилените апликации како Google Drive и YouTube во движење со Chromium.</translation>
@@ -480,9 +469,6 @@
 <translation id="6174920971222007286">Датотекава можеби е опасна<ph name="LINE_BREAK" />Chromium може да го провери преземањево за вас ако ја внесете лозинката. Детали за датотеката се испраќаат до „Безбедно прелистување со Google“, но содржините и лозинката на датотеката остануваат на уредот.</translation>
 <translation id="6182736845697986886">Инсталацијата не успеа поради внатрешна грешка на серверот за ажурирање.</translation>
 <translation id="6183079672144801177">Проверете дали сте најавени на Chromium на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
-<translation id="6204922163963157461">Друга програма на компјутерот додаде апликација што може да го промени начинот на функционирање на Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Овој компјутер веќе има најнова верзија на Chromium. Доколку софтверот не работи, деинсталирајте го Chromium и обидете се повторно.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ќе се рестартира сега}=1{Chromium ќе се рестартира по 1 секунда}one{Chromium ќе се рестартира по # секунда}other{Chromium ќе се рестартира по # секунди}}</translation>
 <translation id="6239161312595354541">Прашајте ја „Пребарување слики“ за видеово</translation>
@@ -584,7 +570,6 @@
 <translation id="6964305034639999644">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6985329841647292029">Услови на Chromium OS</translation>
-<translation id="6990124437352146030">На Chromium му треба дозвола за да пристапи до микрофонот за сајтов</translation>
 <translation id="7003299027384820442">Внесете ја вашата лозинка за да користите и зачувувате податоци од Chromium во вашата сметка <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Инсталацијата не успеа бидејќи оваа верзија на оперативниот систем не е поддржана.</translation>
 <translation id="7024536598735240744">Грешка при отпакување: <ph name="UNPACK_ERROR" />.</translation>
@@ -628,7 +613,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 2. Кликнете <ph name="BUTTON_2" /> во поставките за Windows Кликнете <ph name="BUTTON_3" /> во известувањето на Windows за да го закачите Chromium на лентата со задачи за брз пристап</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
-<translation id="7451052299415159299">На Chromium му треба дозвола за да пристапи до камерата за сајтов</translation>
 <translation id="7458892263350425044">За да го користи микрофонот, дајте му пристап на Chromium во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">За да добивате идни ажурирања на Chromium, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 7.</translation>
 <translation id="7467949745582939695">Да се рестартира Chromium?</translation>
@@ -753,8 +737,8 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8719993436687031146">Ќе се најавите на Chromium?</translation>
 <translation id="8747073452963259673">долен лев агол на областа за пребарување: лево <ph name="LEFT" /> %, долу <ph name="BOTTOM" /> %</translation>
 <translation id="878572486461146056">Грешка при инсталирање: вашиот мрежен администратор применил групно правило што спречува инсталирање: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">На Chromium му треба дозвола за да пристапи до камерата и микрофонот за сајтов</translation>
 <translation id="8813277370772331957">Потсети ме подоцна</translation>
+<translation id="8816416449795340678">Споделете го документов со Gemini во Chromium за да добиете брз преглед и да поставувате дополнителни прашања</translation>
 <translation id="8818550178040858407">Ќе се најавите на Chromium?</translation>
 <translation id="8823401858233292222">Поставете го Chromium како стандарден прелистувач и закачете го на „Лентата со задачи“</translation>
 <translation id="8826492472752484139">Кликнете „Password Manager“</translation>

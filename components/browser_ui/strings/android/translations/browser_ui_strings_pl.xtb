@@ -690,7 +690,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="8163152278172770963">Nie zezwalaj witrynom na automatyczne włączanie obrazu w obrazie</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="818487310457576362">Aby zamknąć pełny ekran, przeciągnij od krawędzi ekranu.</translation>
-<translation id="8186479265534291036">Strona nie działa? Pliki cookie innych firm zostały zablokowane</translation>
 <translation id="8197286292360124385">Dozwolone: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
@@ -761,7 +760,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="8805385115381080995">Przeglądanie działa szybciej, bo witryny rzadziej proszą o potwierdzenie, że jesteś prawdziwą osobą.</translation>
 <translation id="881644524232657178">Gdy ta opcja jest włączona, strony internetowe mogą używać dostępnych na urządzeniu czujników ruchu i światła. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę podczas przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami.</translation>
 <translation id="8889294078294184559">Witryny, które przeglądasz, mogą sprawdzać te informacje w Chrome i uzyskiwać potwierdzenie z wcześniej odwiedzonej witryny, że prawdopodobnie jesteś prawdziwą osobą.</translation>
 <translation id="8899807382908246773">Uciążliwe reklamy</translation>
 <translation id="8903921497873541725">Powiększ</translation>
@@ -787,7 +785,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Powiadomienia są dozwolone</translation>
 <translation id="9138217887606523162">Obecne powiększenie: <ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="915112772806845021">Strony używają tego ustawienia, aby automatycznie włączać obraz w obrazie. Dzięki temu możesz kontynuować oglądanie filmu, a jednocześnie zyskać miejsce na ekranie na inne zadania.</translation>
 <translation id="9156722768168878035">Pozwól Chrome wyświetlać ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>

@@ -1,45 +1,75 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" इन्स्टल गर्नुहोस्</translation>
+<translation id="1070377999570795893">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विस्तार थप्यो जसले Chrome को कार्य गर्ने तरिकालाई बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">विषयवस्तुलाई सक्षम पार्नुहोस्</translation>
 <translation id="1135328998467923690">प्याकेज अवैध छ: '<ph name="ERROR_CODE" />'।</translation>
 <translation id="1140871961407805696">वातावरणतिर फार्काइएको</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ले Chromium ले काम गर्ने तरिका परिवर्तन गर्न सक्ने एक्स्टेन्सन हालेको छ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">निजी कुञ्जी निर्यात गर्न असफल भयो।</translation>
 <translation id="132960226125594336">सामग्रीको स्क्रिप्टसम्बन्धी फाइल '<ph name="RELATIVE_PATH" />' को आकार स्क्रिप्टको अधिकतम आकार वा एक्स्टेन्सनको सामग्रीको स्क्रिप्टको अधिकतम कुल आकारभन्दा बढी हुने भएकाले उक्त फाइल लोड गर्न मिल्दैन।</translation>
 <translation id="1445572445564823378">यस एक्स्टेन्शनले <ph name="PRODUCT_NAME" /> लाई सुस्त बनाइरहेको छ। तपाईंले <ph name="PRODUCT_NAME" /> को कार्यसम्पादन पुन: स्थापना गर्न यसलाई असक्षम पार्नुपर्छ।</translation>
 <translation id="1468038450257740950">WebGL समर्थित छैन।</translation>
 <translation id="1478607704480248626">स्थापना गर्ने सेवा सक्षम पारिएको छैन</translation>
+<translation id="1483493594462132177">पठाउनुहोस्</translation>
+<translation id="1485015260175968628">यसले अब गर्न सक्छ:</translation>
 <translation id="1556537182262721003">प्रोफाइलमा एक्स्टेन्शन निर्देशिका सार्न सकिएन।</translation>
+<translation id="1585717515139318619">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विषयवस्तु थप्यो जसले Chrome को कार्य गर्ने तरिका बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">स्क्रिप्टको css '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="1616298854599875024">विस्तार "<ph name="IMPORT_NAME" />" कुनै साझेदारी गरिएको मोड्युल नभएका कारण यसलाई इम्पोर्ट गर्न सकिएन</translation>
+<translation id="175772926354468439">विषयवस्तु सक्षम गर्नुहोस्</translation>
 <translation id="1757786065507923842">अभिभावकसँग अनुमति माग्दै अनुरोध पठाउन सकिएन।</translation>
 <translation id="1803557475693955505">पृष्ठभूमि पृष्ठ '<ph name="BACKGROUND_PAGE" />' लोड गर्न सकिएन।</translation>
 <translation id="1875387611427697908">यसलाई <ph name="CHROME_WEB_STORE" /> बाट मात्रै थप्न सकिन्छ</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" स्थापना गर्न असक्षम किनभने त्यो "<ph name="IMPORT_NAME" />" द्वारा अनुमति गरिएको छैन</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" थप्ने?</translation>
 <translation id="2159915644201199628">फोटो डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">तपाईंका अभिभावकले यो एक्स्टेन्सन अनुमोदन गर्नुभएन</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ले थप अनुमति मागेको छ।</translation>
+<translation id="2327492829706409234">एप सक्षम गर्नुहोस्</translation>
 <translation id="2350172092385603347">अनुवाद प्रयोग गरिएको, तर सूचीमा पूर्वनिर्धारित_लोकेल तोकिएको</translation>
 <translation id="2576842806987913196">त्यहाँ पहिले नै यो नाम भएको CRX फाइल उपस्थित छ।</translation>
 <translation id="2662876636500006917">Chrome वेब स्टोर</translation>
+<translation id="2678063897982469759">पुन: सक्षम गर्नुहोस्</translation>
 <translation id="2743583586211388067">तपाईंको सङ्गठनको एक्स्टेन्सनको जोखिमसम्बन्धी नीतिअन्तर्गत यो एक्स्टेन्सन एक्सेस गर्न रोक लगाइएको छ।</translation>
+<translation id="2766161002040448006">अभिभावकलाई सोध्नुहोस्</translation>
 <translation id="2785530881066938471">सामग्री स्क्रिप्टको लागि फाइल '<ph name="RELATIVE_PATH" />' लोड गर्न सकेन। त्यो UFT-8 इन्कोडेड छैन।</translation>
+<translation id="2850541429955027218">विषयवस्तु थप्नुहोस्</translation>
+<translation id="2883143988769190738">यो एक्स्टेन्सनले निम्न अनुमतिहरू माग्दै छ:</translation>
 <translation id="2903070246402204397">प्रशासकले <ph name="EXTENSION_NAME" /> (विस्तारको ID "<ph name="EXTENSION_ID" />") लाई रोक लगाउनुभएको छ। <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">आफ्ना प्रशासकलाई "<ph name="EXTENSION_NAME" />" स्थापना गरिदिन आग्रह गर्दै एउटा अनुरोध पठाउने हो?</translation>
 <translation id="2988488679308982380">प्याकेज स्थापना गर्न सकेन: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="3144135466825225871">crx फाइललाई प्रतिस्थापन गर्न असफल भयो। फाइल प्रयोगमा भए नभएको हेर्न जाँच गर्नुहोस्।</translation>
 <translation id="3163201441334626963">बिक्रेता <ph name="VENDOR_ID" /> बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">तपाईंको सङ्गठनले यो एक्स्टेन्सन एक्सेस गर्न रोक लगाएको छ।</translation>
+<translation id="3183357154200327217">तपाईंको कम्प्युटरमा भएको अर्को प्रोग्रामले Chromium ले काम गर्ने तरिका परिवर्तन गर्न सक्ने थिम हालेको छ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">'kiosk_only' म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किअस्क मोडमा इन्स्टल गर्नु पर्छ</translation>
 <translation id="3364986687961713424">तपाईंका प्रशासकको सन्देश: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> )</translation>
 <translation id="3466070586188012397">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट <ph name="PRODUCT_NAME" /></translation>
 <translation id="3561217442734750519">निजी कुञ्जीको लागि आगत मूल्य वैध मार्ग हुनैपर्छ।</translation>
+<translation id="3788401245189148511">यसले सक्छ:</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" सँग नमिल्दो भएको हुनाले एप "<ph name="TO_INSTALL_APP_NAME" />" लाई थप्न सकिएन।</translation>
 <translation id="388442998277590542">विकल्पहरूको पृष्ठ '<ph name="OPTIONS_PAGE" />' लोड गर्न सकिएन।</translation>
+<translation id="3905761538810670789">एप मर्मत गर्नुहोस्</translation>
+<translation id="3908501907586732282">एक्स्टेन्सन सक्षम बनाउनुहोस्</translation>
+<translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
 <translation id="3984413272403535372">विस्तार साइनइन गर्दा त्रुटि भयो।</translation>
+<translation id="4014432863917027322">मर्मत गर्नुहोस् "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="4061696872429826774">तपाईंको कम्प्युटरमा भएको अर्को प्रोग्रामले Chromium ले काम गर्ने तरिका परिवर्तन गर्न सक्ने एक्स्टेन्सन हालेको छ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">तपाईंको सङ्गठनले एक्स्टेन्सनको यो कोटी एक्सेस गर्न रोक लगाएको छ।</translation>
 <translation id="4233778200880751280">पृष्ठ बारे '<ph name="ABOUT_PAGE" />'लाई लोड गर्न सकिएन।</translation>
 <translation id="424963718355121712">एपहरू अनिवार्य रूपमा तिनले प्रभाव पार्ने होस्टबाट सञ्चालित हुनु पर्छ</translation>
 <translation id="4306119971288449206">एपहरू अनिवार्य रूपमा "<ph name="CONTENT_TYPE" />" नामक सामग्रीको प्रकारबाट सञ्चालित हुनु पर्छ</translation>
+<translation id="4625078469366263107">एप सक्षम पार्नुहोस्</translation>
 <translation id="4633003931260532286">विस्तारलाई कम्तीमा "<ph name="IMPORT_VERSION" />" संस्करणको "<ph name="IMPORT_NAME" />" आवश्यक पर्छ तर स्थापना संस्करण भने केवल "<ph name="INSTALLED_VERSION" />" हो</translation>
 <translation id="4660476621274971848">अपेक्षित संस्करण "<ph name="EXPECTED_VERSION" />" हो, तर भएको संस्करण भने "<ph name="NEW_ID" />" छ</translation>
 <translation id="471800408830181311">निजी कुञ्जी निर्यात गर्न असफल।</translation>
@@ -47,21 +77,36 @@
 <translation id="4988792151665380515">सार्वजनिक कुञ्जी निर्यात गर्न असफल भयो।</translation>
 <translation id="501057610015570208">'kiosk_only' म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS Flex को किअस्क मोडमा इन्स्टल गर्नु पर्छ</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">विस्तार थप्नुहोस्</translation>
+<translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5098647635849512368">प्याक गर्नको लागि डाइरेक्टरीमा वस्तुत: पथ फेला पार्न सक्दैन।</translation>
 <translation id="5160071981665899014">स्क्रिप्टको javascript '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन।</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" को नयाँ संस्करणलाई अक्षम गरिएको छ किनकी यसलाई धेरै अनुमतिहरूको आवश्यकता पर्छ।</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" /> " सक्षम गर्ने?</translation>
 <translation id="5356315618422219272">अनुप्रयोगदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">क्रोमियमबाट हटाउनुहोस्</translation>
 <translation id="5456409301717116725">विस्तारले कुञ्जी फाइल '<ph name="KEY_PATH" />' समावेश गर्छ। तपाइँले सम्भव्य रूपमा त्यो गर्न चाहनुहुन्न।</translation>
+<translation id="5485102783864353244">एप थप्नुहोस्</translation>
 <translation id="5486326529110362464">निजी कुञ्जीको लागि मान विद्यमान हुनु पर्छ।</translation>
 <translation id="5527463195266282916">विस्तार अधोगमन गर्न प्रयास गरियो।</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">यहाँबाट विस्तार लोड गर्न असफल भयो।</translation>
 <translation id="5972529113578162692">यस कम्प्युटरका प्रशासक यहाँ <ph name="EXTENSION_NAME" /> स्थापना होस् भन्ने चाहान्छन्। यसलाई हटाउन मिल्दैन।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="6068932090455285721">बिक्रेता <ph name="VENDOR_ID" /> बाट <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">तपाईंको कम्प्युटरमा भएको अर्को प्रोग्रामले Chromium ले काम गर्ने तरिका परिवर्तन गर्न सक्ने एप हालेको छ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">एक्सटेन्सन लोड गर्दा त्रुटि</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ले Chrome ले काम गर्ने तरिका परिवर्तन गर्न सक्ने एक्स्टेन्सन हालेको छ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">निजी कुञ्जी पढ्न असफल भयो।</translation>
+<translation id="6326175484149238433">Chrome बाट हटाउनुहोस्</translation>
 <translation id="6391538222494443604">इनपुट डाइरेक्ट्री हुनैपर्छ।</translation>
 <translation id="641087317769093025">विस्तार अनजिप गर्न सकेन</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ले तपाईंको एक वा धेरै यन्त्र माथिको पहुँचका लागि अनुरोध गरिरहेको छ:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> प्रयोगकर्ताहरू</translation>
 <translation id="657064425229075395">पृष्ठभूमि स्क्रिपट '<ph name="BACKGROUND_SCRIPT" />' लोड गर््न सकिएन।</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> बाट <ph name="PRODUCT_NAME" /> (क्रमिक सङ्ख्या <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">माइमह्यान्डलर: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +115,31 @@
 <translation id="7068383018033524534">म्यानिफेस्ट फाइल अमान्य छ</translation>
 <translation id="7217838517480956708">स्थापना हुनको लागि यस मेसिनको व्यवस्थापकले <ph name="EXTENSION_NAME" /> को आवश्यकता जनाउँछ। यसलाई हटाउन वा परिमार्जन गर्न सकिँदैन।</translation>
 <translation id="7287143125007575591">पहुँच अस्वीकार गरियो।</translation>
+<translation id="760353356052806707">तपाईँको कम्प्युटरमा भएको अर्को प्रोग्रामले एउटा एप थपेको छ त्यसले Chrome ले कार्य गर्ने तरिका बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">निजी कुञ्जीको इनपुट मान अनिवार्य रूपमा मान्य ढाँचा हुनु पर्छ (PKCS#8-ढाँचा PEM-इनकोड गरिएको RSA कुञ्जी)।</translation>
 <translation id="765293928828334535">यो वेबसाइटबाट एप, विस्तार र प्रयोगकर्ताका स्क्रिप्टहरू थप गर्न मिल्दैन</translation>
+<translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
+<translation id="7766838926148951335">अनुमतिहरू स्वीकार गर्नुहोस्</translation>
 <translation id="7876803335449432072">कन्टेन्ट स्क्रिप्टका रूपमा प्रयोग गर्नका लागि '<ph name="RELATIVE_PATH" />' फाइल लोड गर्न सकिएन। .css फाइलहरू जस्ता कम्प्याटिबल स्टाइल सिट फाइलबाट मात्र कन्टेन्ट स्क्रिप्ट स्टाइल सिटहरू लोड गर्न सकिन्छ।</translation>
 <translation id="7939686037314084444">यो विस्तार ठिकसँग लोड हुन सकेन। यसले नेटवर्कसम्बन्धी अनुरोधहरू रोक्न सक्षम नहुन सक्छ।</translation>
 <translation id="7952904276017482715">अपेक्षित ID "<ph name="EXPECTED_ID" />" हो, तर भएको ID भने "<ph name="NEW_ID" />" छ</translation>
 <translation id="7972881773422714442">विकल्पहरू: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">अनुमोदन गर्नुहोस्</translation>
 <translation id="8035920974645200807">प्रयोगकर्तातिर फर्काइको</translation>
 <translation id="8047248493720652249">यस विस्तारले डाउनलोड "<ph name="ATTEMPTED_FILENAME" />" लाई नाम दिन असफल भयो किनभने अर्को विस्तार (<ph name="EXTENSION_NAME" />) ले एक फरक फाइलनाम "<ph name="ACTUAL_FILENAME" />" पत्ता लगायो।</translation>
 <translation id="8049705080247101012">Google ले "<ph name="EXTENSION_NAME" />" लाई खराब भएको भनी फ्ल्याग गरेको हुनाले यसको स्थापना कार्य रोकिएको छ</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />बाट<ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">यसले निम्न गर्न सक्छ:</translation>
 <translation id="8517576857589387417">म्यानिफेस्ट फाइल हराइरहेको छ वा पढ्न नमिल्ने छ</translation>
 <translation id="8565650234829130278">एपलाई डाउनग्रेज गर्ने प्रयत्न भयो।</translation>
 <translation id="8621383749470166852">कन्टेन्ट स्क्रिप्टका रूपमा प्रयोग गर्नका लागि '<ph name="RELATIVE_PATH" />' फाइल लोड गर्न सकिएन। .js फाइलहरू जस्ता कम्प्याटिबल JavaScript फाइलबाट मात्र कन्टेन्ट स्क्रिप्ट लोड गर्न सकिन्छ।</translation>
 <translation id="8636666366616799973">प्याकेज अवैध छ। विवरणहरू: '<ph name="ERROR_MESSAGE" />'।</translation>
+<translation id="8746654918629346731">तपाईंले "<ph name="EXTENSION_NAME" />" का लागि अनुरोध गरिसक्नुभएको छ</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ले तपाईंका डिभाइसहरू मध्ये एक माथिको पहुँचका लागि अनुरोध गरिरहेको छ:</translation>
 <translation id="8885905466771744233">तोकिएकै विस्तार लागि एक निजी कुञ्जी पहिले नै अवस्थित छ। त्यो कुञ्जी पुनः प्रयोग गर्नुहोस् वा त्यसलाई पहिले मेटाउनुहोस् ।</translation>
 <translation id="9039223174332979184">यो मेसिनका एड्मिनले तोकेको नीतिअनुसार <ph name="EXTENSION_NAME" /> को म्यानिफेस्टको न्यूनतम संस्करण ३ हुनु पर्छ।</translation>
 <translation id="907841381057066561">प्याकेजिङ्ग समयमा अस्थायी जिप फाइल सिर्जना गर्न असफल भयो ।</translation>
+<translation id="9102610709270966160">विस्तारलाई सक्षम पार्नुहोस्</translation>
+<translation id="93766956588638423">विस्तार मर्मत गर्नुहोस्</translation>
 <translation id="941543339607623937">अमान्य नीजि कुँजी ।</translation>
 </translationbundle>

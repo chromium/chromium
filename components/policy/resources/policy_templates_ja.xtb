@@ -1169,6 +1169,19 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 <translation id="1829839214911753838">このポリシーを有効に設定した場合、リモート サポート ホストは <ph name="UIACCESS_PERMISSION_NAME" /> 権限付きのプロセスで実行されます。これにより、リモート ユーザーはローカル ユーザーのデスクトップ上の権限昇格ウィンドウとやり取りできるようになります。
 
       このポリシーを無効に設定するか未設定のままにした場合、リモート サポート ホストはユーザーのコンテキストで実行され、リモート ユーザーはデスクトップ上の権限昇格ウィンドウとやり取りできません。</translation>
+<translation id="1832480890076796592">このポリシーでは、<ph name="PRODUCT_NAME" /> のプロセス分離設定を制御します。
+
+プロセス分離を有効にすると、システム上の承認済みアプリケーションによる <ph name="PRODUCT_NAME" /> の実行中プロセスの内容の改ざんや読み取りを防止して、<ph name="PRODUCT_NAME" /> のセキュリティを強化できます。これにより、システム上の他のアプリケーションによる <ph name="PRODUCT_NAME" /> の暗号化データへのアクセスを防止できます。
+
+プロセス分離を有効にすると、<ph name="PRODUCT_NAME" /> のプロセスへの挿入や改ざんを必要とするサードパーティ製アプリケーション（ウイルス対策、スクリーン リーダー、ウィンドウ マネージャーなど）との間で、互換性の問題が生じる可能性があります。
+
+このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> でプロセス分離がオンになります。
+
+このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> でプロセス分離がオフになります。
+
+このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> はプロセス分離機能のデフォルトのロールアウト プロセスに従います。つまり、機能は段階的により多くのユーザーに提供されます。
+
+注: このポリシーは、<ph name="PRODUCT_NAME" /> の起動時に適用されます。<ph name="PRODUCT_NAME" /> の実行中にこのポリシーを変更した場合、新しい設定は次回の再起動時に適用されます。</translation>
 <translation id="1834796168555733063">パスワード マネージャーを使用したパスキーの保存を無効にする</translation>
 <translation id="1836380138559328229">アクティブな Wi-Fi 認証情報をデバイスレベルで保存する</translation>
 <translation id="1837165432382702436">ページの高さ（マイクロメートル）</translation>
@@ -1525,6 +1538,7 @@ accounts.google.com など一部の URL は認証に必要です。オンライ�
       このポリシーを未設定のままにした場合、デフォルトの動作は管理対象ユーザーに対して無効になり、それ以外のユーザーに対しては有効になります。</translation>
 <translation id="2039801473506609891">デフォルトでないポートで HTTP/0.9 サポートを無効にする</translation>
 <translation id="2040479044912658454">印刷のラスターモード</translation>
+<translation id="2041894060487590789">機能のリリース プロセスに応じてプロセス分離を使用する。</translation>
 <translation id="2043749682619281558">ログイン画面でカーソルによるハイライト表示を有効にする</translation>
 <translation id="2043770014371753404">無効な企業プリンタ</translation>
 <translation id="2054093043033461396">ログイン画面でデバイスのスクリーンセーバーを有効にする。</translation>
@@ -2156,6 +2170,7 @@ ServiceWorkerAutoPreload 機能では、ServiceWorker ブートストラップ �
 
 このポリシーを未設定のままにした場合は、デフォルトで <ph name="POLICY_VALUE_VISIBLE" /> が選択されます。</translation>
 <translation id="2488455166114458307">Device Attributes API を許可するサイトを指定する</translation>
+<translation id="2489454942579368665">デベロッパー ツールの使用を一切禁止する</translation>
 <translation id="2489558694350871332">デバイスでの仮想マシンの実行を許可する</translation>
 <translation id="2492240920793040106">セーフ ブラウジングの改善に役立てるためのシステム情報とページ コンテンツのレポートを有効にする</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
@@ -2689,6 +2704,7 @@ WebSocket 以外のリクエストの上限を変更するには、<ph name="MAX
 
       未設定の場合、電力ピークシフトは最初は無効です。ユーザーはこの設定を変更できません。</translation>
 <translation id="2773288106548584039">従来のブラウザのサポート</translation>
+<translation id="2773911169897970305">プロセス分離を無効にする。</translation>
 <translation id="2774906947252258544">許可しない拡張機能のインストール タイプを拒否リストとして指定します。
 
 「command_line」と指定すると、コマンドラインから拡張機能が読み込まれないようにします。</translation>
@@ -3878,6 +3894,7 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 <translation id="3591584750136265240">ログイン認証の動作を設定する</translation>
 <translation id="3593905652755912452">無効化されたフォーム コントロールでのイベントのディスパッチで従来の動作を使用する。</translation>
 <translation id="3596112486106491038">仮想マシンのコマンドライン アクセスを有効にする</translation>
+<translation id="3600342552601917721">標準的なウェブ閲覧ではデベロッパー ツールの使用を許可するが、企業でインストールされた拡張機能と管理対象ユーザーの組み込み拡張機能では使用を制限する。バージョン M150 以降、デベロッパー ツールは、このような拡張機能を埋め込んでいるページでもブロックされます（組み込みの PDF ビューアは除く）。</translation>
 <translation id="3603469950773500315">新しい <ph name="CORS" /> の実装で <ph name="CORS" /> チェックの緩和措置を有効にして、拡張機能の互換性のある動作が保たれるように、また <ph name="PRODUCT_NAME" /> で <ph name="CORS" /> チェックなしに指定ヘッダーが送信されるようにします。
 
       このリストを空に設定した場合、<ph name="PRODUCT_NAME" /> では拡張機能が互換性を保つように実行され、<ph name="PRODUCT_NAME" /> 79 での <ph name="API" /> の変更（<ph name="WEB_REQUEST_API_MANUAL" /> を参照）は適用されません。
@@ -4137,6 +4154,7 @@ Protected Audience API のサポート終了により、このポリシーは <p
 <translation id="376375951585423504">永続的な割り当てを無効にする。</translation>
 <translation id="3765260570442823273">アイドル時のログアウト警告メッセージの表示期間</translation>
 <translation id="3766695867369523703">サードパーティのストレージ パーティションをデフォルトで許可する。</translation>
+<translation id="377001726927041812">プロセス分離を有効にする。</translation>
 <translation id="3770044943398389276">フローティング SSO では、デフォルトで永続 Cookie のみをデバイス間で移動します。このポリシーでは、セッション Cookie も含めるかどうかを制御します。このポリシーは、<ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> ポリシーが有効になっている場合にのみ有効になります。
 
 このポリシーを有効に設定した場合、フローティング SSO ではセッション Cookie と永続 Cookie の両方を同期します。
@@ -6497,6 +6515,7 @@ Attribution Reporting API のサポート終了により、このポリシーは
       このポリシーを未設定のままにした場合、ロックのクイック解除を使用しているユーザーは 24 時間おきにロック画面でパスワードを入力することになります。</translation>
 <translation id="5306186200045823863">Symantec Corporation の古い PKI インフラストラクチャを信頼する</translation>
 <translation id="5307432759655324440">シークレット モードが利用可能かどうかを設定する</translation>
+<translation id="5308289216279695777">企業ポリシーの拡張機能内を含むあらゆる状況でデベロッパー ツールの使用を許可する</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" /> が無効になった後、ブラウザデータをすべて削除する一方、ユーザーデータはできるだけ多く保持するよう試みる。</translation>
 <translation id="53086358353377307">Cookie の設定を許可するサイトを指定する URL パターンのリストを設定できます。
 
@@ -11942,6 +11961,25 @@ M119 よりデフォルトで無効になります）。
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> に必要なディスクの空き容量</translation>
 <translation id="8892771980172542172">IWA のアップデート チャンネルまたはリリース チャンネルの名前。この値には任意の文字列を指定できます。制限はありません。値が指定されていない場合は、「default」のチャンネルが使用されます。</translation>
 <translation id="8892783613915541293">AC 電源での使用中、デバイスがアイドル状態になってからの待機時間とその後に行うアクション</translation>
+<translation id="8895045875428227171">0（デフォルト）に設定した場合: デベロッパー ツールは標準的なウェブ閲覧では使用できますが、企業でインストールされた拡張機能と管理対象ユーザーの組み込み拡張機能では使用が制限されます。バージョン M150 以降、デベロッパー ツールは、このような拡張機能を埋め込んでいるページでもブロックされます（組み込みの PDF ビューアは除く）。
+
+1 に設定した場合: デベロッパー ツールとコンソールに制限は一切なく、企業ポリシーの拡張機能内を含むあらゆる状況でアクセスできます。
+
+2 に設定した場合: デベロッパー ツールと要素の検証がブラウザ全体で完全に無効になります。
+
+この設定では、デベロッパー ツールや JavaScript コンソールを開くためのキーボード ショートカット、メニューのエントリ、コンテキスト メニューのエントリも無効になります。
+
+<ph name="PRODUCT_NAME" /> バージョン 99 ではさらに、この設定により「ページのソースを表示」機能のエントリ ポイントも制御されます。このポリシーを「DeveloperToolsDisallowed」（値 2）に設定した場合、ユーザーはキーボード ショートカットまたはコンテキスト メニューを介してソースを表示することはできません。なお、ソースの表示を完全にブロックするには、<ph name="URL_BLOCKLIST_POLICY_NAME" /> ポリシーに「view-source:*」を追加することも必要です。
+
+<ph name="PRODUCT_NAME" /> バージョン 119 以降では、この設定により、独立したウェブアプリのデベロッパー モードを有効にして使用できるかどうかも制御されます。
+
+<ph name="PRODUCT_NAME" /> バージョン 128 以降では、<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ポリシーが設定されている場合、この設定により拡張機能ページのデベロッパー モードは制御されません。
+
+デベロッパー ツールの使用の可否は、次の優先順位で決まります。
+1. URL が <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ポリシーのパターンに一致する場合、デベロッパー ツールの使用が許可されます。
+2. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> を設定し、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> を未設定のままにした場合、許可リストで指定されていない URL はブロックされます。
+3. URL が <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ポリシーのパターンに一致する場合、デベロッパー ツールの使用はブロックされます。
+4. URL が許可リストまたはブロックリストで指定されていない場合、こちらのポリシー（<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />）が代わりに使用されます。</translation>
 <translation id="8897796778265450949">SAML を使用せず GAIA 経由で認証されたユーザーがオフラインでログインできる時間を制限する</translation>
 <translation id="889814528399907891">ユーザーが <ph name="LACROS_NAME" /> を有効にするとともにメインのブラウザとして設定することを許可する</translation>
 <translation id="8900312706328930425">クラウド レポートの送信頻度（時間単位）</translation>
@@ -12353,6 +12391,7 @@ M119 よりデフォルトで無効になります）。
 <translation id="9180108183162961002">ゲスト ブラウジングでのログインを許可する</translation>
 <translation id="9185963199234034321">ログイン画面でハイ コントラストを有効にし、ユーザーが一時的に無効にすることを許可する</translation>
 <translation id="9187743794267626640">外部ストレージのマウントを無効にする</translation>
+<translation id="9188142767272053574">プロセス分離を有効にする</translation>
 <translation id="9190022798664427644">モノラル音声を有効にする</translation>
 <translation id="9190456586252617675">このポリシーでは、アシスタントのオンボーディング エクスペリエンスのモードを管理します。
 

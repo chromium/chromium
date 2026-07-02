@@ -2369,6 +2369,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" /> пайдаланатын сайттарда <ph name="AUTHENTICATOR" /> арқылы растау нұсқасын таңдадыңыз. Бұл провайдерде төлеу әдісіңіз туралы сақталған ақпарат болуы мүмкін, оны <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Байланыс үзілді</translation>
 <translation id="4708276642004148190">Су жеткізу және тазарту</translation>
+<translation id="4710249055485272920">Бұл ақпарат табылмады.</translation>
 <translation id="4711628883879888561">Қойындылар тобында бірлесіп жұмыс істеу</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Бұл сайтқа кіруге рұқсатыңыз жоқ</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5707154300732650394">Шарлауды жалғастыру</translation>
 <translation id="57094364128775171">Күрделі құпия сөз жасау…</translation>
 <translation id="570953204696852961">Қызыл 3</translation>
+<translation id="5710907191777451677">Оның орнына Chrome-дағы Gemini-дан сұраңыз.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Мал дәрігерлері</translation>
 <translation id="5715150588940290235">Сақталған қауіпсіздік кодтарын жою керек пе?</translation>
@@ -3923,7 +3925,6 @@
 <translation id="7110116949943042888">Уақытша және маусымдық жұмыстар</translation>
 <translation id="7110368079836707726">Жоғары оқу орындары</translation>
 <translation id="7111507312244504964">Меншік тексерістері мен бағалаулары</translation>
-<translation id="7117290130383718594">Мәтіндік аннотациялар</translation>
 <translation id="7118618213916969306">Буфердегі URL сілтемесін (<ph name="SHORT_URL" />) іздеу</translation>
 <translation id="7118852830504022370">Бұл сайт HTTPS протоколына қолдау көрсетпейтіндіктен, осы ескерту көрсетілді. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Теледрамалар</translation>
@@ -5045,7 +5046,6 @@
 <translation id="8871485335898060555">Антиквариат және коллекциялық бұйымдар</translation>
 <translation id="8871553383647848643">Браузер көрінісін реттеу</translation>
 <translation id="887350038812854047">Бұл саясаттың мәні құрылғы және пайдаланушы деңгейлерінде бірдей. Саясат ойдағыдай қолданылып жатыр.</translation>
-<translation id="8874790741333031443">Үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз. Бұл жағдайда қорғаныс дәрежесі төмен болады, бірақ сайт функцияларының ойдағыдай жұмыс істеу ықтималдығы артады.</translation>
 <translation id="8874824191258364635">Дұрыс карта нөмірін енгізіңіз</translation>
 <translation id="8877780815363510165">Балық аулау</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" саясатын "<ph name="DATA_CONTROLS_LEVEL" />" мәніне орнату мүмкін емес</translation>

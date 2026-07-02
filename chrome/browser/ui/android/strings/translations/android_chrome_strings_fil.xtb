@@ -243,6 +243,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2056878612599315956">Naka-pause ang site</translation>
 <translation id="2063047797624276601">In-on ng iyong organisasyon ang Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ang hindi na-download}one{# ang hindi na-download}other{# ang hindi na-download}}</translation>
+<translation id="2066690553719545730">Palaging Ipakita ang AI Mode</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2082238445998314030">Resulta <ph name="RESULT_NUMBER" /> sa <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2149968176347646218">Hindi secure ang koneksyon</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
 <translation id="2163089732491971196">Para magamit at ma-save ang data sa Chrome sa iyong Google Account, ilagay ang passphrase mo</translation>
+<translation id="2164015935042801524">Mag-right click dito para ipakita ang mga tab nang patayo</translation>
 <translation id="2166228530126694506">Bersyon <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Naka-off ang mga paglalarawan ng larawan</translation>
 <translation id="2172905120685242547">Isara ang window?</translation>
@@ -305,6 +307,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2323763861024343754">Storage ng site</translation>
 <translation id="2327445548174191329">Mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />,” at mao-off ang lahat ng link ng imbitasyon</translation>
+<translation id="2329500425421091035">Ipinapakilala ang AI Mode sa Chrome</translation>
 <translation id="2330186936255788117">Higit pang bookmark</translation>
 <translation id="2332515770639153015">Naka-on ang Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
@@ -1057,7 +1060,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5436928407363358055">Para madaling magpatuloy sa kung saan ka huminto, i-sync ang iyong history at mga tab</translation>
 <translation id="5438292632479953702">I-download ulit</translation>
 <translation id="5439191312780166229">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chrome.</translation>
-<translation id="5441137934526263133">Hindi gumagana ang site? Bina-block ang third-party na cookies</translation>
 <translation id="5441466871879044658">Isalin sa wikang ito</translation>
 <translation id="5444999712122199445">Bumalik sa site</translation>
 <translation id="544776284582297024">Para magbukas ng mga tab at bisitahin ang iba't ibang page nang sabay-sabay, i-tap ang button na magbukas ng mga tab</translation>
@@ -1112,7 +1114,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="569536719314091526">Isalin ang page na ito sa anumang wika mula sa button na Higit pang opsyon</translation>
 <translation id="5696597120588531049">Makakatulong ang Chrome na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa</translation>
 <translation id="5698878456427040674">Tingnan kung sinusuportahan ang napiling account.</translation>
-<translation id="5700415746238689851">Buksan ang Gemini</translation>
 <translation id="5709213329446699338">Gustong kumonekta ng <ph name="SITE" /> sa isang serial port</translation>
 <translation id="5715150588940290235">I-delete ang mga naka-save na panseguridad na code?</translation>
 <translation id="572328651809341494">Mga kamakailang tab</translation>
@@ -1418,7 +1419,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6835182496791325827">Maabisuhan kapag nahanap ng Chrome ang pinakamagagandang resulta para sa iyong mga paghahanap habang wala ka.</translation>
 <translation id="6846298663435243399">Naglo-load…</translation>
-<translation id="6850409657436465440">Isinasagawa pa rin ang iyong pag-download</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> (na) tab ang isinara</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 resulta ang nakita}one{# resulta ang nakita}other{# na resulta ang nakita}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Mga audio file, may 1 audio file sa listahan}one{Mga audio file, may # audio file sa listahan}other{Mga audio file, may # na audio file sa listahan}}</translation>
@@ -1968,12 +1968,14 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9001604755921395912">Buksan sa Incognito Chrome tab</translation>
 <translation id="9010094279589497751">Mabilis na buksan ang Gemini kapag kailangan mo ito</translation>
 <translation id="9012585441087414258">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kung may kahina-hinalang ginagawa ang isang page, ipinapadala sa Ligtas na Pag-browse sa Google ang mga URL at bit ng content ng page.</translation>
+<translation id="9014097371980259227">Inilipat ang ilang tool para tulungan kang maghanap gamit ang AI Mode</translation>
 <translation id="9019199799064251516">Magpatuloy nang walang lock ng profile ng kotse?</translation>
 <translation id="9022774213089566801">Madalas na binibisita</translation>
 <translation id="9022871169049522985">Puwedeng sukatin ng mga site at advertiser ang performance ng kanilang mga ad</translation>
 <translation id="9024318700713112071">Itakda ang Chrome bilang iyong default</translation>
 <translation id="9027728231343310283">I-undo ang <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Ilipat sa\u2026</translation>
+<translation id="904146253922032365">Pindutin nang matagal para ipakita ang mga tab nang patayo</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
 <translation id="9047347135558855162">Mabilis na magsimula ng paghahanap sa Chrome</translation>
 <translation id="9050666287014529139">Passphrase</translation>

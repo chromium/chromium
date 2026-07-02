@@ -1251,6 +1251,19 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="1829839214911753838">Jika kebijakan disetel ke Aktif, host bantuan jarak jauh akan berjalan dalam proses dengan izin <ph name="UIACCESS_PERMISSION_NAME" />. Ini memungkinkan pengguna jarak jauh berinteraksi dengan jendela administrator di desktop pengguna lokal.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host bantuan jarak jauh akan berjalan dalam konteks pengguna, dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela administrator di desktop.</translation>
+<translation id="1832480890076796592">Kebijakan ini mengontrol setelan Isolasi Proses untuk <ph name="PRODUCT_NAME" />.
+
+Mengaktifkan Isolasi Proses akan meningkatkan keamanan <ph name="PRODUCT_NAME" /> dengan mencegah aplikasi yang tidak sah di sistem memodifikasi atau membaca konten proses <ph name="PRODUCT_NAME" /> yang sedang berjalan. Tindakan ini membantu mencegah aplikasi lain di sistem mendapatkan akses ke data terenkripsi <ph name="PRODUCT_NAME" />.
+
+Mengaktifkan Isolasi Proses dapat menyebabkan inkompatibilitas dengan aplikasi pihak ketiga yang bergantung pada kemampuan untuk memasukkan atau memodifikasi proses <ph name="PRODUCT_NAME" />, seperti aplikasi antivirus, pembaca layar, atau pengelola jendela.
+
+Jika kebijakan ini disetel ke Aktif, isolasi proses di <ph name="PRODUCT_NAME" /> akan diaktifkan.
+
+Jika kebijakan ini disetel ke Nonaktif, isolasi proses di <ph name="PRODUCT_NAME" /> akan dinonaktifkan.
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk fitur Isolasi Proses, yang berarti fitur tersebut akan diluncurkan secara bertahap ke makin banyak pengguna.
+
+Catatan: Kebijakan ini diterapkan saat <ph name="PRODUCT_NAME" /> dimulai. Jika kebijakan diubah saat <ph name="PRODUCT_NAME" /> sedang berjalan, setelan baru akan diterapkan pada saat mulai ulang berikutnya.</translation>
 <translation id="1834796168555733063">Nonaktifkan penyimpanan kunci sandi menggunakan pengelola sandi</translation>
 <translation id="1836380138559328229">Simpan kredensial Wi-Fi aktif di tingkat perangkat</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
@@ -1617,6 +1630,7 @@ Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</tran
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>
 <translation id="2039801473506609891">Nonaktifkan dukungan HTTP/0.9 pada port non-default</translation>
 <translation id="2040479044912658454">Mode Rasterisasi Cetak</translation>
+<translation id="2041894060487590789">Isolasi Proses dapat digunakan bergantung pada proses peluncuran fitur.</translation>
 <translation id="2043749682619281558">Mengaktifkan sorotan kursor di layar login</translation>
 <translation id="2043770014371753404">Menonaktifkan printer perusahaan</translation>
 <translation id="2054093043033461396">Screensaver untuk layar login perangkat diaktifkan.</translation>
@@ -2334,6 +2348,7 @@ secara offline. Pengguna tetap dapat secara manual membuat item tersedia secara 
 Jika kebijakan tidak disetel: <ph name="POLICY_VALUE_VISIBLE" /> adalah
 pilihan default.</translation>
 <translation id="2488455166114458307">Mengizinkan Device Attributes API di situs ini</translation>
+<translation id="2489454942579368665">Jangan izinkan penggunaan Alat Developer sepenuhnya</translation>
 <translation id="2489558694350871332">Izinkan perangkat menjalankan mesin virtual</translation>
 <translation id="2492240920793040106">Aktifkan pelaporan informasi sistem dan konten halaman untuk membantu meningkatkan Safe Browsing</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
@@ -2899,6 +2914,7 @@ Jika daftar ini kosong atau tidak disetel, tidak ada konten latar belakang yang 
 
       Jika tidak disetel, pengaktifan daya baterai akan nonaktif terlebih dahulu. Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="2773288106548584039">Dukungan Browser Lama</translation>
+<translation id="2773911169897970305">Nonaktifkan Isolasi Proses.</translation>
 <translation id="2774906947252258544">Daftar yang tidak diizinkan mengontrol jenis penginstalan ekstensi yang tidak diizinkan.
 
 Menyetel "command_line" akan memblokir ekstensi agar tidak dimuat dari
@@ -4152,6 +4168,7 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
 <translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="3596112486106491038">Aktifkan akses command line mesin virtual</translation>
+<translation id="3600342552601917721">Izinkan penggunaan Alat Developer untuk penjelajahan web standar, tetapi batasi penggunaan untuk ekstensi yang diinstal perusahaan dan ekstensi bawaan pengguna terkelola. Mulai versi M150, ekstensi ini juga diblokir di halaman mana pun yang menyematkan ekstensi ini, dengan satu-satunya pengecualian adalah penampil PDF bawaan.</translation>
 <translation id="3603469950773500315">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> baru, sehingga memungkinkan Ekstensi tetap kompatibel dan mengizinkan <ph name="PRODUCT_NAME" /> mengirim header tertentu tanpa pemeriksaan <ph name="CORS" />.
 
       Jika daftar ini dibiarkan kosong, <ph name="PRODUCT_NAME" /> akan mencoba menjalankan Ekstensi secara kompatibel, dan tidak menerapkan perubahan <ph name="API" /> untuk <ph name="PRODUCT_NAME" /> 79 seperti yang dijelaskan dalam <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -4415,6 +4432,7 @@ Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 se
 <translation id="376375951585423504">Nonaktifkan kuota persisten.</translation>
 <translation id="3765260570442823273">Durasi pesan peringatan proses keluar nganggur</translation>
 <translation id="3766695867369523703">Izinkan partisi penyimpanan pihak ketiga secara default.</translation>
+<translation id="377001726927041812">Aktifkan Isolasi Proses.</translation>
 <translation id="3770044943398389276">Secara default, Floating SSO hanya memindahkan cookie persisten antar-perangkat. Kebijakan ini mengontrol apakah cookie sesi juga harus disertakan. Kebijakan ini hanya berlaku jika kebijakan <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> disetel ke Aktif.
 
 Jika kebijakan ini disetel ke Aktif, Floating SSO akan menyinkronkan cookie sesi dan persisten.
@@ -6967,6 +6985,7 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
       Jika kebijakan tidak disetel, pengguna yang menggunakan mode buka kunci cepat hanya perlu memasukkan sandi di layar kunci satu kali dalam sehari.</translation>
 <translation id="5306186200045823863">Mengaktifkan kepercayaan pada Infrastruktur IKP Lama milik Symantec Corporation</translation>
 <translation id="5307432759655324440">Ketersediaan mode samaran</translation>
+<translation id="5308289216279695777">Izinkan penggunaan Alat Developer di semua konteks, termasuk dalam ekstensi kebijakan perusahaan</translation>
 <translation id="5308551343115571396">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, kami akan mencoba menyimpan data pengguna sebanyak mungkin, sekaligus menghapus semua data browser.</translation>
 <translation id="53086358353377307">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan menyetel cookie.
 
@@ -12897,6 +12916,25 @@ untuk memanggil API ini.</translation>
 <translation id="8892286064305622118">Perlu ruang disk kosong untuk <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892771980172542172">Nama saluran update/rilis IWA. Nilai ini dapat berupa string apa pun; tidak ada batasan yang diterapkan. Jika tidak ada nilai yang diberikan, saluran "default" akan digunakan.</translation>
 <translation id="8892783613915541293">Penundaan dan tindakan yang harus diambil saat perangkat tidak beraktivitas dan menggunakan daya AC.</translation>
+<translation id="8895045875428227171">Setelan 0 (Default): Alat developer tersedia untuk penjelajahan web standar, tetapi dibatasi untuk ekstensi yang diinstal perusahaan dan ekstensi bawaan pengguna terkelola. Mulai versi M150, ekstensi ini juga diblokir di halaman mana pun yang menyematkan ekstensi ini, dengan satu-satunya pengecualian adalah penampil PDF bawaan.
+
+Setelan 1: Alat developer dan konsol sepenuhnya tidak terkunci dan dapat diakses di semua konteks, termasuk dalam ekstensi kebijakan perusahaan.
+
+Setelan 2: Alat developer dan pemeriksaan elemen sepenuhnya dinonaktifkan di seluruh browser.
+
+Setelan ini juga menonaktifkan pintasan keyboard dan entri menu atau menu konteks untuk membuka alat developer atau konsol JavaScript.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 99, setelan ini juga mengontrol titik entri untuk fitur 'Lihat sumber halaman'. Jika Anda menyetel kebijakan ini ke 'DeveloperToolsDisallowed' (nilai 2), pengguna tidak dapat mengakses tampilan sumber melalui pintasan keyboard atau menu konteks. Untuk memblokir tampilan sumber sepenuhnya, Anda juga harus menambahkan 'view-source:*' ke kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 119, setelan ini juga mengontrol apakah mode developer untuk Aplikasi Web Terisolasi (IWA) dapat diaktifkan dan digunakan.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 128, setelan ini tidak akan mengontrol mode developer di halaman ekstensi jika kebijakan <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> disetel.
+
+Ketersediaan Alat Developer ditentukan dalam urutan prioritas berikut:
+1. Jika URL cocok dengan pola di kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, Alat Developer akan diizinkan.
+2. Jika <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL apa pun yang tidak ada dalam daftar yang diizinkan akan diblokir.
+3. Jika URL cocok dengan pola di kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, Alat Developer akan diblokir.
+4. Jika URL tidak tercakup dalam daftar yang diizinkan atau daftar yang tidak diizinkan, kebijakan ini (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) adalah penggantinya.</translation>
 <translation id="8897796778265450949">Membatasi waktu bagi pengguna yang diautentikasi melalui GAIA tanpa SAML untuk dapat login secara offline</translation>
 <translation id="889814528399907891">Izinkan pengguna mengaktifkan <ph name="LACROS_NAME" /> dan menjadikannya sebagai browser utama</translation>
 <translation id="8900312706328930425">Frekuensi pelaporan cloud dalam jam</translation>
@@ -13311,6 +13349,7 @@ Kebijakan ini tidak akan berpengaruh jika <ph name="METRICS_REPORTING_ENABLED_PO
 <translation id="9180108183162961002">Izinkan login browser tamu</translation>
 <translation id="9185963199234034321">Aktifkan kontras tinggi di layar login dan izinkan pengguna menonaktifkannya untuk sementara</translation>
 <translation id="9187743794267626640">Menonaktifkan pemasangan penyimpanan eksternal</translation>
+<translation id="9188142767272053574">Aktifkan Isolasi Proses</translation>
 <translation id="9190022798664427644">Aktifkan audio mono</translation>
 <translation id="9190456586252617675">Kebijakan ini mengontrol mode pengalaman aktivasi Asisten.
 

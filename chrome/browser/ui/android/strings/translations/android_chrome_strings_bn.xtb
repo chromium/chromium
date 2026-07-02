@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">সাইট পজ করা আছে</translation>
 <translation id="2063047797624276601">আপনার সংস্থা উন্নত Safe Browsing চালু করেছে</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{১টি ডাউনলোড করা যায়নি}one{#টি ডাউনলোড করা যায়নি}other{#টি ডাউনলোড করা যায়নি}}</translation>
+<translation id="2066690553719545730">সবসময় AI মোড দেখা যাবে</translation>
 <translation id="2067805253194386918">টেক্সট</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> এর মধ্যে <ph name="RESULT_NUMBER" /> টি ফলাফল</translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2163089732491971196">আপনার Google অ্যাকাউন্টের Chrome ডেটা সেভ ও ব্যবহার করতে, আপনার পাসফ্রেজ লিখুন</translation>
+<translation id="2164015935042801524">ট্যাব ভার্টিক্যালি দেখতে এখানে ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="2166228530126694506">ভার্সন <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">ছবির বিবরণ বন্ধ করা আছে</translation>
 <translation id="2172905120685242547">উইন্ডো বন্ধ করবেন?</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">সাইটের স্টোরেজ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> থেকে</translation>
 <translation id="2328474416100889417">প্রত্যেক ব্যক্তি অবিলম্বে "<ph name="GROUP_NAME" />" ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং সব আমন্ত্রণের লিঙ্ক বন্ধ করা হবে</translation>
+<translation id="2329500425421091035">Chrome-এ AI মোড চালু করা হচ্ছে</translation>
 <translation id="2330186936255788117">আরও বুকমার্ক</translation>
 <translation id="2332515770639153015">উন্নত Safe Browsing চালু আছে</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">যেখানে ছেড়েছেন সেখান থেকে সহজেই পিক আপ করতে, আপনার ইতিহাস ও ট্যাব সিঙ্ক করুন</translation>
 <translation id="5438292632479953702">আবার ডাউনলোড করুন</translation>
 <translation id="5439191312780166229">স্ট্যান্ডার্ড সুরক্ষার চেয়ে সাইট থেকে আরও বেশি ডেটা বিশ্লেষণ করার মাধ্যমে Google আপনাকে বিপজ্জনক সাইট সম্পর্কে সতর্ক করে, এমনকি আগে যার সম্পর্কে জানা নেই সেই বিষয়েও সতর্ক করে। আপনি Chrome সম্পর্কিত সতর্কতা এড়িয়ে যাওয়ার বিকল্প বেছে নিতে পারবেন।</translation>
-<translation id="5441137934526263133">সাইট কাজ করছে না? থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="5441466871879044658">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="5444999712122199445">সাইটে ফিরে যান</translation>
 <translation id="544776284582297024">ট্যাব খুলে বিভিন্ন পৃষ্ঠা একইসাথে ব্রাউজ করার জন্য 'ট্যাব খুলুন' বোতাম টিপুন</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">আরও বিকল্প বোতাম থেকে এই পৃষ্ঠাটিকে যেকোনও ভাষায় অনুবাদ করুন</translation>
 <translation id="5696597120588531049">Chrome আপনাকে ডেটার নিরাপত্তা লঙ্ঘন, ক্ষতিকর ওয়েবসাইট ও আরও অনেক কিছু থেকে সুরক্ষিত থাকতে সাহায্য করে</translation>
 <translation id="5698878456427040674">বেছে নেওয়া অ্যাকাউন্ট কাজ করছে কিনা তা চেক করে দেখে নিন।</translation>
-<translation id="5700415746238689851">Gemini খুলুন</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> সিরিয়াল পোর্টে কানেক্ট করতে চাইছে</translation>
 <translation id="5715150588940290235">সেভ করা নিরাপত্তা কোড মুছবেন?</translation>
 <translation id="572328651809341494">সাম্প্রতিক ট্যাবগুলি</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6835182496791325827">আপনি ইনঅ্যাক্টিভ থাকাকালীন, Chrome আপনার সার্চের জন্য সেরা ফলাফল খুঁজে পেলে বিজ্ঞপ্তি দিয়ে জানাবে।</translation>
 <translation id="6846298663435243399">লোড হচ্ছে...</translation>
-<translation id="6850409657436465440">ডাউনলোডটি এখনও চলছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টি ট্যাব বন্ধ হয়েছে</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{১টি ফলাফল পাওয়া গেছে}one{#টি ফলাফল পাওয়া গেছে}other{#টি ফলাফল পাওয়া গেছে}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{অডিও ফাইল, তালিকাতে ১টি অডিও ফাইল আছে}one{অডিও ফাইল, তালিকাতে #টি অডিও ফাইল আছে}other{অডিও ফাইল, তালিকাতে #টি অডিও ফাইল আছে}}</translation>
@@ -1968,12 +1968,14 @@
 <translation id="9001604755921395912">ছদ্মবেশী Chrome ট্যাবে খুলুন</translation>
 <translation id="9010094279589497751">প্রয়োজন হলেই দ্রুত Gemini খুলুন</translation>
 <translation id="9012585441087414258">বিপজ্জনক হতে পারে এমন সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত রাখে। কোনও পৃষ্ঠাতে সন্দেহজনক কিছু পাওয়া গেলে, URL ও পৃষ্ঠার কন্টেন্টের কিছু অংশ Google Safe Browsing-এ পাঠানো হয়।</translation>
+<translation id="9014097371980259227">AI মোড ব্যবহার করে সার্চ করার জন্য আপনাকে সাহায্য করতে কিছু টুল সরিয়ে দেওয়া হয়েছে</translation>
 <translation id="9019199799064251516">গাড়ির প্রোফাইল লক ছাড়াই চালিয়ে যেতে চান?</translation>
 <translation id="9022774213089566801">আপনি প্রায়ই দেখেন</translation>
 <translation id="9022871169049522985">সাইট এবং বিজ্ঞাপনদাতারা তাদের বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করতে পারে</translation>
 <translation id="9024318700713112071">আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome সেট করুন</translation>
 <translation id="9027728231343310283"><ph name="SITE" />-কে দেওয়া অনুমতি প্রত্যাহার করুন</translation>
 <translation id="9035378196785279980">এখানে যান\u2026</translation>
+<translation id="904146253922032365">ট্যাব ভার্টিক্যালি দেখতে টাচ করে হোল্ড করুন</translation>
 <translation id="9042893549633094279">গোপনীয়তা এবং নিরাপত্তা</translation>
 <translation id="9047347135558855162">Chrome-এ দ্রুত সার্চ করুন</translation>
 <translation id="9050666287014529139">পাসফ্রেজ</translation>

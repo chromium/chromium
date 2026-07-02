@@ -243,6 +243,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2056878612599315956">Hlé gert á vefsvæði</translation>
 <translation id="2063047797624276601">Fyrirtækið þitt kveikti á „Enn öruggari vefskoðun“</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Mistókst að sækja eina skrá}one{Mistókst að sækja # skrá}other{Mistókst að sækja # skrár}}</translation>
+<translation id="2066690553719545730">Alltaf sýna gervigreindarstillingu</translation>
 <translation id="2067805253194386918">texti</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2082238445998314030">Niðurstaða <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2149968176347646218">Tengingin er ekki örugg</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2163089732491971196">Sláðu inn aðgangsorðið þitt til að nota og vista Chrome-gögn á Google-reikningnum þínum</translation>
+<translation id="2164015935042801524">Hægrismelltu hér til að sýna flipa lóðrétt</translation>
 <translation id="2166228530126694506">Útgáfa <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Slökkt er á lýsingum mynda</translation>
 <translation id="2172905120685242547">Loka glugga?</translation>
@@ -305,6 +307,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2323763861024343754">Geymsla vefsvæða</translation>
 <translation id="2327445548174191329">Frá <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og slökkt verður á öllum boðstenglum</translation>
+<translation id="2329500425421091035">Við kynnum gervigreindarstillingu í Chrome</translation>
 <translation id="2330186936255788117">Fleiri bókamerki</translation>
 <translation id="2332515770639153015">Kveikt er á enn öruggari vefskoðun</translation>
 <translation id="233375395665273385">Eyða og skrá út</translation>
@@ -1057,7 +1060,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5436928407363358055">Samstilltu ferilinn þinn og flipa til að halda áfram þaðan sem frá var horfið með einföldum hætti</translation>
 <translation id="5438292632479953702">Sækja aftur</translation>
 <translation id="5439191312780166229">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chrome-viðvörunum.</translation>
-<translation id="5441137934526263133">Virkar vefsvæðið ekki? Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="5441466871879044658">Þýða yfir á þetta tungumál</translation>
 <translation id="5444999712122199445">Fara aftur á vefsvæði</translation>
 <translation id="544776284582297024">Ýttu á hnappinn „Opna flipa“ til að opna flipa og skoða mismunandi síður samtímis</translation>
@@ -1112,7 +1114,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="569536719314091526">Notaðu hnappinn „Fleiri valkostir“ til að þýða þessa síðu yfir á hvaða tungumál sem er</translation>
 <translation id="5696597120588531049">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira</translation>
 <translation id="5698878456427040674">Kannaðu hvort valinn reikningur er studdur.</translation>
-<translation id="5700415746238689851">Opna Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vill tengjast við raðtengi</translation>
 <translation id="5715150588940290235">Eyða vistuðum öryggisnúmerum?</translation>
 <translation id="572328651809341494">Nýlegir flipar</translation>
@@ -1418,7 +1419,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6835182496791325827">Fáðu tilkynningu þegar Chrome finnur bestu niðurstöðurnar fyrir leitirnar þínar á meðan þú ert í burtu.</translation>
 <translation id="6846298663435243399">Hleður…</translation>
-<translation id="6850409657436465440">Enn er verið að sækja</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> flipum lokað</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 niðurstaða fannst}one{# niðurstaða fannst}other{# niðurstöður fundust}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Hljóðskrár, 1 hljóðskrá á lista}one{Hljóðskrár, # hljóðskrá á lista}other{Hljóðskrár, # hljóðskrár á lista}}</translation>
@@ -1968,12 +1968,14 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="9001604755921395912">Opna í huliðsflipa í Chrome</translation>
 <translation id="9010094279589497751">Opnaðu Gemini þegar þú þarft á því að halda</translation>
 <translation id="9012585441087414258">Vernda þig gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Ef grunsamleg virkni greinist á síðu eru vefslóðir og hlutar af innihaldi síðna sendir í örugga vefskoðun Google.</translation>
+<translation id="9014097371980259227">Sum verkfæri hafa verið færð til að auðvelda þér að leita í gervigreindarstillingu</translation>
 <translation id="9019199799064251516">Halda áfram án þess að nota prófíllás bílsins?</translation>
 <translation id="9022774213089566801">Oft skoðað</translation>
 <translation id="9022871169049522985">Vefsvæði og auglýsendur geta mælt árangur auglýsinga sinna</translation>
 <translation id="9024318700713112071">Stilltu Chrome sem sjálfgefinn vafra</translation>
 <translation id="9027728231343310283">Afturkalla <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytja í\u2026</translation>
+<translation id="904146253922032365">Haltu inni til að sýna flipa lóðrétt</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
 <translation id="9047347135558855162">Leitaðu í Chrome í einum grænum</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>

@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">Web je pozastavený</translation>
 <translation id="2063047797624276601">Vaša organizácia zapla Zlepšené bezpečné prehliadanie</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Sťahovanie 1 položky zlyhalo}few{Sťahovanie # položiek zlyhalo}many{# downloads failed}other{Sťahovanie # položiek zlyhalo}}</translation>
+<translation id="2066690553719545730">Vždy zobrazovať režim AI</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Späť</translation>
 <translation id="2082238445998314030">Výsledok <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">Pripojenie nie je zabezpečené</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2163089732491971196">Ak chcete vo svojom účte Google používať a ukladať údaje Chromu, zadajte prístupovú frázu</translation>
+<translation id="2164015935042801524">Ak chcete zobrazovať karty zvisle, kliknite tu pravým tlačidlom</translation>
 <translation id="2166228530126694506">Verzia <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Popisy obrázkov sú vypnuté</translation>
 <translation id="2172905120685242547">Chcete zavrieť okno?</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">Úložisko webu</translation>
 <translation id="2327445548174191329">Zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Všetci okamžite stratia prístup ku skupine kariet <ph name="GROUP_NAME" /> a všetky odkazy na pozvánku sa vypnú</translation>
+<translation id="2329500425421091035">Predstavujeme režim AI v Chrome</translation>
 <translation id="2330186936255788117">Ďalšie záložky</translation>
 <translation id="2332515770639153015">Zlepšené bezpečné prehliadanie je zapnuté</translation>
 <translation id="233375395665273385">Odstrániť a odhlásiť</translation>
@@ -1057,7 +1060,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5436928407363358055">Ak chcete ľahko pokračovať tam, kde ste prestali, synchronizujte si históriu a karty</translation>
 <translation id="5438292632479953702">Stiahnuť znova</translation>
 <translation id="5439191312780166229">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z Chromu môžete preskočiť.</translation>
-<translation id="5441137934526263133">Web nefunguje? Súbory cookie tretích strán sú blokované.</translation>
 <translation id="5441466871879044658">Preložiť do tohto jazyka</translation>
 <translation id="5444999712122199445">Prejdite späť na web</translation>
 <translation id="544776284582297024">Ak chcete otvoriť karty a navštíviť naraz rôzne stránky, klepnite na tlačidlo Otvoriť karty</translation>
@@ -1112,7 +1114,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="569536719314091526">Preložte si túto stránku do ľubovoľného jazyka pomocou tlačidla Ďalšie možnosti</translation>
 <translation id="5696597120588531049">Chrome vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami</translation>
 <translation id="5698878456427040674">Skontrolujte, či je vybraný účet podporovaný.</translation>
-<translation id="5700415746238689851">Otvoriť Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> sa chce pripojiť k sériovému portu</translation>
 <translation id="5715150588940290235">Chcete odstrániť uložené bezpečnostné kódy?</translation>
 <translation id="572328651809341494">Nedávne karty</translation>
@@ -1418,7 +1419,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6835182496791325827">Keď Chrome nájde najlepšie výsledky pre vaše vyhľadávania, kým budete preč, dostanete upozornenia.</translation>
 <translation id="6846298663435243399">Načítava sa…</translation>
-<translation id="6850409657436465440">Sťahovanie stále prebieha</translation>
 <translation id="6850830437481525139">Všetky karty sú zatvorené (<ph name="TAB_COUNT" />)</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Našiel sa 1 výsledok}few{Našli sa # výsledky}many{# results found}other{Našlo sa # výsledkov}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Zvukové súbory, 1 zvukový súbor v zozname}few{Zvukové súbory, # zvukové súbory v zozname}many{Audio files, # audio files in list}other{Zvukové súbory, # zvukových súborov v zozname}}</translation>
@@ -1968,12 +1968,14 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9001604755921395912">Otvoriť na karte inkog. Chromu</translation>
 <translation id="9010094279589497751">Rýchlo otvorte Gemini, keď ho potrebujete</translation>
 <translation id="9012585441087414258">Chráni pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami. Ak stránka vykoná niečo podozrivé, webové adresy a časti jej obsahu budú odoslané do Bezpečného prehliadania Google.</translation>
+<translation id="9014097371980259227">Niektoré nástroje boli presunuté, aby vám pomohli vyhľadávať v režime AI</translation>
 <translation id="9019199799064251516">Chcete pokračovať bez zámky profilu auta?</translation>
 <translation id="9022774213089566801">Často navštevované</translation>
 <translation id="9022871169049522985">Weby a inzerenti môžu merať výkonnosť svojich reklám</translation>
 <translation id="9024318700713112071">Nastavte Chrome ako predvolený prehliadač</translation>
 <translation id="9027728231343310283">Vrátiť web <ph name="SITE" /> späť</translation>
 <translation id="9035378196785279980">Presun do priečinka\u2026</translation>
+<translation id="904146253922032365">Pridržaním zobrazíte karty zvisle</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
 <translation id="9047347135558855162">Rýchle spustenie vyhľadávania v Chrome</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>

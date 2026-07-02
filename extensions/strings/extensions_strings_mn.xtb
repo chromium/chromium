@@ -1,45 +1,78 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />"-г суулгах</translation>
+<translation id="1070377999570795893">Taны компьютерын өөр нэг программ өргөтгөл нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж магад.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Загварыг идэвхжүүлэх</translation>
 <translation id="1135328998467923690">Багц хүчин төгөлдөр бус байна: ' <ph name="ERROR_CODE" /> . '</translation>
 <translation id="1140871961407805696">Хүрээлэн буй орчин руу харсан</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium-н ажиллах зарчмыг өөрчилж болох өргөтгөл нэмсэн.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Хувийн түлхүүрийг экспортлох ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="132960226125594336">Контентын скриптэд '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Учир нь тухайн файл скриптийн дээд хэмжээ эсвэл өргөтгөлийн контентын скриптийн нийт дээд хэмжээнээс хэтэрнэ.</translation>
 <translation id="1445572445564823378">Энэ өргөтгөл <ph name="PRODUCT_NAME" /> удааширч байна. Та <ph name="PRODUCT_NAME" />-ийн гүйцэтгэлийг дахин сэргээхийн тулд идэвхгүй болгох хэрэгтэй.</translation>
 <translation id="1468038450257740950">WebGL-ийг дэмжихгүй байна.</translation>
 <translation id="1478607704480248626">Суулгалтыг идэвхжүүлээгүй байна</translation>
+<translation id="1483493594462132177">Илгээх</translation>
+<translation id="1485015260175968628">Энэ одоо болно:</translation>
 <translation id="1556537182262721003">Өргөтгөлийн директорыг профайл руу зөөж чадсангүй.</translation>
+<translation id="1585717515139318619">Таны компьютерын өөр нэг программ загвар нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж болзошгүй.
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Скриптэд css '<ph name="RELATIVE_PATH" />'-г ачаалж чадсангүй.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" өргөтгөл нь хуваалцсан модуль биш тул үүнийг импорт хийх боломжгүй</translation>
+<translation id="175772926354468439">Загварыг идэвхжүүлэх</translation>
 <translation id="1757786065507923842">Эцэг эхийн зөвшөөрлийн хүсэлт амжилтгүй боллоо.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' үндсэн хуудсыг ачаалж чадсангүй.</translation>
 <translation id="1875387611427697908">Үүнийг зөвхөн <ph name="CHROME_WEB_STORE" />-с нэмэх боломжтой</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" апликейшнийг <ph name="IMPORT_NAME" />-н зөвшөөрөлгүйгээр суулгах боломжгүй байна.</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"-ыг нэмэх үү?</translation>
 <translation id="2159915644201199628">Дүрсний кодыг тайлах боломжгүй байна: <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2193567467390483943">Танай эцэг эх энэ өргөтгөлийг зөвшөөрөөгүй</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" нь нэмэлт зөвшөөрөл хүссэн байна.</translation>
+<translation id="2327492829706409234">Аппликейшнийг идэвхжүүл</translation>
 <translation id="2350172092385603347">Байрлалыг ашигласан, анхдагч байрлалыг контентын жагсаалтанд зааж өгсөн.</translation>
 <translation id="2576842806987913196">Ийм нэртэй CRX файл аль хэдийн байна.</translation>
 <translation id="2662876636500006917">Chrome веб дэлгүүр</translation>
+<translation id="2678063897982469759">Дахин идэвхжүүл</translation>
 <translation id="2743583586211388067">Энэ өргөтгөлд хандах эрхийг танай байгууллагын өргөтгөлийн эрсдэлийн бодлогын дагуу блоклосон.</translation>
+<translation id="2766161002040448006">Эцэг эхээс асуух</translation>
 <translation id="2785530881066938471">Контентын бичвэрийн зорилгоор <ph name="RELATIVE_PATH" /> файлыг ачаалж чадсангүй. Энэ нь UTF-8 кодчилол биш байна.</translation>
+<translation id="2850541429955027218">Загвар нэмэх</translation>
+<translation id="2883143988769190738">Энэ өргөтгөл дараах зөвшөөрлүүдийг хүсэж байна:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />-г (өргөтгөлийн ID "<ph name="EXTENSION_ID" />") таны администратор блоклосон. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Таны администраторт "<ph name="EXTENSION_NAME" />"-г суулгах хүсэлтийг илгээх үү?</translation>
 <translation id="2988488679308982380">Багцыг суулгаж чадсангүй: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_ID" /> тодорхойгүй бүтээгдэхүүн (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлыг солих боломжгүй байна.Файл нээлттэй байгаа эсэхийг шалгана уу.</translation>
 <translation id="3163201441334626963"><ph name="PRODUCT_ID" /> үйлдвэрлэгчийн <ph name="VENDOR_ID" /> тодорхойгүй бүтээгдэхүүн</translation>
 <translation id="3174723475300476613">Энэ өргөтгөлд хандах эрхийг танай байгууллагаас блоклосон.</translation>
+<translation id="3183357154200327217">Taны компьютер дээрх өөр нэг программ Chromium-н ажиллах зарчмыг өөрчилж болох загвар нэмсэн.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">'Kiosk_only' тодорхойлогч атрибуттай аппыг ChromeOS-н kiosk горимд суулгах ёстой</translation>
 <translation id="3364986687961713424">Таны администратораас: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> борлуулагчийн <ph name="VENDOR_ID" /> (сериалын дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Хувийн түлхүүрт оруулах оролтын утга нь хүчин төгөлдөр байх ёстой.</translation>
+<translation id="3788401245189148511">Энэ нь:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" апп нь "<ph name="INSTALLED_APP_NAME" />"-тай зөрчилдөж байгаа тул үүнийг нэмэх боломжгүй байна.</translation>
 <translation id="388442998277590542">Сонголтууд хуудсыг '<ph name="OPTIONS_PAGE" />' ачаалж чадсангүй.</translation>
+<translation id="3905761538810670789">Апп засах</translation>
+<translation id="3908501907586732282">Өргөтгөлийг идэвхжүүлэх</translation>
+<translation id="3927932062596804919">Татгалзах</translation>
 <translation id="3984413272403535372">Өргөтгөл рүү нэвтрэх үед алдаа гарлаа</translation>
+<translation id="4014432863917027322">Та "<ph name="EXTENSION_NAME" />-г" засварлах уу?</translation>
+<translation id="4061696872429826774">Taны компьютер дээрх өөр нэг программ Chromium-н ажиллах зарчмыг өөрчилж болох өргөтгөл нэмсэн.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Энэ өргөтгөлийн ангилалд хандах эрхийг танай байгууллагаас блоклосон.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' Тухай хуудсыг ачаалж чадсангүй.</translation>
 <translation id="424963718355121712">Аппыг нөлөөлдөг толгой компьютероос нь ажиллуулах шаардлагатай</translation>
 <translation id="4306119971288449206">Аппыг заавал "<ph name="CONTENT_TYPE" />" агуулгын төрөлтэй ажиллуулах шаардлагатай</translation>
+<translation id="4625078469366263107">Аппыг идэвхжүүлэх</translation>
 <translation id="4633003931260532286">Өргөтгөлд хамгийн бага "<ph name="IMPORT_VERSION" />" хувилбартай "<ph name="IMPORT_NAME" />" шаардлагатай хэдий ч зөвхөн "<ph name="INSTALLED_VERSION" />" хувилбарыг суулгасан байна</translation>
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" хувилбарыг шаардсан хэдий ч "<ph name="NEW_ID" />" хувилбар байсан</translation>
 <translation id="471800408830181311">Хувийн түлхүүрийг тооцоолох ажиллагаа бүтэлгүйтэв.</translation>
@@ -47,21 +80,36 @@
 <translation id="4988792151665380515">Нийтийн түлхүүрийг экспортлох ажиллагаа амжилтгүй боллоо</translation>
 <translation id="501057610015570208">'Kiosk_only' тодорхойлогч атрибуттай аппыг ChromeOS Flex-н kiosk горимд суулгах ёстой</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Өргөтгөл нэмэх</translation>
+<translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5098647635849512368">Өргөтгөлийн директорын гол замыг олж чадсангүй.</translation>
 <translation id="5160071981665899014">Скриптэд '<ph name="RELATIVE_PATH" />' javaScript-г ачаалж чадсангүй.</translation>
+<translation id="5185386675596372454"><ph name="EXTENSION_NAME" />-ийн хамгийн сүүлийн хувилбар нь олон зөвшөөрөл шаарддаг учир идэвхгүй болсон байна.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />-ыг идэвхжүүлэх үү"?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium-аас устга</translation>
 <translation id="5456409301717116725">Энэхүү өргөтгөлд <ph name="KEY_PATH" /> түлхүүр файл багтана. Та магадгүй энэ үйлдлийг хийх хүсэлгүй байж болох юм.</translation>
+<translation id="5485102783864353244">Апп нэмэх</translation>
 <translation id="5486326529110362464">Хувийн түлхүүрт оролтын утга байх ёстой.</translation>
 <translation id="5527463195266282916">Өргөтгөлийн зэрэглэлийг бууруулахыг оролдсон.</translation>
+<translation id="5588033542900357244">( <ph name="RATING_COUNT" /> )</translation>
 <translation id="5707185214361380026">:-ээс өргөтгөлийг ачаалах ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="5972529113578162692">Энэ машины администратор нь <ph name="EXTENSION_NAME" />-ийг суулгахыг шаарддаг бөгөөд суулгалтыг устгах боломжгүй байдаг.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />-ийн тодорхойгүй бүтээгдэхүүн <ph name="PRODUCT_ID" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">Taны компьютер дээрх өөр нэг программ Chromium-н ажиллах зарчмыг өөрчилж болох апп нэмсэн.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Өргөтгөлийг ачаалахад алдаа гарлаа</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome-н ажиллах зарчмыг өөрчилж болох өргөтгөл нэмсэн.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Хувийн түлхүүрийг унших явцад алдаа гарсан байна.</translation>
+<translation id="6326175484149238433">Chrome-оос устга</translation>
 <translation id="6391538222494443604">Оролтын хадгалалтын сантай байх ёстой.</translation>
 <translation id="641087317769093025">Өргөтгөлийг задалж чадсангүй.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" таны аль нэг, эсвэл хэд хэдэн төхөөрөмжид хандах хүсэлтэй байна:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> хэрэглэгчид</translation>
 <translation id="657064425229075395">Дэвсгэрийн '<ph name="BACKGROUND_SCRIPT" />' скриптыг ачаалах боломжгүй байна.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />-н <ph name="PRODUCT_NAME" /> (Серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +118,33 @@
 <translation id="7068383018033524534">Тодорхойлогч файл буруу байна</translation>
 <translation id="7217838517480956708">Энэ машины админаас суулгах <ph name="EXTENSION_NAME" />-ийг шаардаж байна. Үүнийг устгах юмуу өөрчилж болохгүй.</translation>
 <translation id="7287143125007575591">Хандалтыг зөвшөөрөөгүй.</translation>
+<translation id="760353356052806707">Таны компьютерын өөр нэг программ нь Chrome-н ажиллах зарчмыг өөрчилж болох апп нэмсэн байна.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Хувийн түлхүүрийн оролтын утга хүчинтэй формат байх ёстой (PKCS#8-формат PEM-кодолсон RSA түлхүүр).</translation>
 <translation id="765293928828334535">Энэ вебсайтаас апп, өргөтгөлүүд болон хэрэглэгчийн скриптийг нэмэх боломжгүй</translation>
+<translation id="7658239707568436148">Болих</translation>
+<translation id="7766838926148951335">Зөвшөөрлийг зөвшөөрөх</translation>
 <translation id="7876803335449432072">Контентын скриптэд зориулж '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Контентын скриптийн style sheet-г зөвхөн .css файл зэрэг дэмжигдсэн style sheet файлаас ачаалж болно.</translation>
 <translation id="7939686037314084444">Тус өргөтгөлийг зохих ёсоор ачаалж чадсангүй. Энэ нь сүлжээний хүсэлтийг зогсоох боломжгүй байж болзошгүй.</translation>
 <translation id="7952904276017482715">Хүлээгдэж байсан ID нь "<ph name="EXPECTED_ID" />" хэдий ч ID "<ph name="NEW_ID" />" байсан</translation>
 <translation id="7972881773422714442">Сонголтууд: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Зөвшөөрөх</translation>
 <translation id="8035920974645200807">Хэрэглэгч рүү харсан</translation>
 <translation id="8047248493720652249">Өөр өргөтгөл (<ph name="EXTENSION_NAME" /> ) татсан файлын нэрийг <ph name="ACTUAL_FILENAME" /> өөрөөр тодорхойлсон тул энэхүү өргөтгөлийн зүгээс <ph name="ATTEMPTED_FILENAME" /> гэсэн нэрээр нэрлэх үйлдэл амжилтгүй болсон байна.</translation>
 <translation id="8049705080247101012">Google "<ph name="EXTENSION_NAME" />"-г хортой гэж тэмдэглэсэн бөгөөд суулгахаас сэргийлсэн болно</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />-ний <ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">Энэ нь:</translation>
 <translation id="8517576857589387417">Тодорхойлогч файл байхгүй эсвэл үүнийг унших боломжгүй байна</translation>
 <translation id="8565650234829130278">Програмын хувилбарыг бууруулах оролдлого хийсэн.</translation>
 <translation id="8621383749470166852">Контентын скриптэд зориулж '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Контентын скриптийг зөвхөн .js файл зэрэг JavaScript-н файлаас ачаалж болно.</translation>
 <translation id="8636666366616799973">Багц нь хүчингүй байна. Дэлгэрэнгүй мэдээллийг: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">Та аль хэдийн "<ph name="EXTENSION_NAME" />" өргөтгөлийг суулгах хүсэлт тавьсан</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" таны аль нэг төхөөрөмжид хандах хүсэлтэй байна:</translation>
 <translation id="8885905466771744233">Зааж өгсөн өргөтгөлийн хувийн түлхүүр  аль хэдийн суугдсан байна.  Энэ түлхүүрийг дахин ашиглах эсвэл эхлээд устгана уу.</translation>
 <translation id="9039223174332979184">Энэ машины администратор <ph name="EXTENSION_NAME" />-с тодорхойлогчийн хамгийн бага 3-р хувилбартай байхыг шаардаж байна.</translation>
 <translation id="907841381057066561">Багцлах явцад түр зуурын зип файл үүсгэж чадсангүй.</translation>
+<translation id="9102610709270966160">Өргөтгөлийг идэвхжүүлэх</translation>
+<translation id="93766956588638423">Өргөтгөлийг засах</translation>
 <translation id="941543339607623937">Хүчин төгөлдөр бус хувийн түлхүүр.</translation>
 </translationbundle>

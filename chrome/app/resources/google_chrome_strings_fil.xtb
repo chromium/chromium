@@ -15,9 +15,6 @@
 <translation id="1065672644894730302">Hindi mabasa ang iyong mga kagustuhan.
 
 Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago sa mga kagustuhan.</translation>
-<translation id="1070377999570795893">Isa pang program sa iyong computer ang nagdagdag extension na maaaring magpabago sa paraan ng paggana ng Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
 <translation id="1088300314857992706">Chrome ang dating ginagamit ng <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="110877069173485804">Ito ang iyong Chrome</translation>
@@ -58,9 +55,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1547295885616600893">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS.</translation>
 <translation id="1547469039832541117">Tatapusin ang naka-highlight na gawain.</translation>
 <translation id="1553358976309200471">I-update ang Chrome</translation>
-<translation id="1585717515139318619">Isa pang program sa iyong computer ang nagdagdag tema na maaaring magpabago sa paraan ng paggana ng Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Ginagamit ng Google Chrome ang iyong camera.</translation>
 <translation id="1587325591171447154">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
 <translation id="1597911401261118146">Para makita kung ligtas ang iyong mga password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chrome<ph name="END_LINK" />.</translation>
@@ -99,7 +93,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1843347690926158494">Maghanap sa tab na ito gamit ang Google Lens</translation>
 <translation id="1849248141818021764">Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Gamitin ang Chrome app para patuloy na mag-browse nang on the go</translation>
-<translation id="1860536484129686729">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
 <translation id="1867503717113754604">Mag-sign in sa Chrome gamit ang iyong Google Account para magamit ang <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Hindi Google Chrome ang iyong default na browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -150,7 +143,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2307973900865360088">Panatilihin sa Dock</translation>
 <translation id="2309047409763057870">Pangalawang pag-install ito ng Google Chrome at hindi ito maaaring gawing iyong default na browser.</translation>
 <translation id="2345992953227471816">Napag-alaman ng Chrome na naglalaman ng malware ang mga extension na ito:</translation>
-<translation id="2348335408836342058">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera at mikropono para sa site na ito</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2403703063067034158">Nagkaroon ng error sa startup: May tumatakbo nang isa pang instance ng pag-set up, pakisubukan ulit sa ibang pagkakataon.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID device ang ina-access ng isa o higit pang extension ng Chrome}=1{1 HID device ang ina-access ng isa o higit pang extension ng Chrome}one{# HID device ang ina-access ng isa o higit pang extension ng Chrome}other{# na HID device ang ina-access ng isa o higit pang extension ng Chrome}}</translation>
@@ -189,7 +181,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="2747021967398957654">{count,plural, =1{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito (1 item).}one{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} item).}other{Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} na item).}}</translation>
 <translation id="2753623023919742414">I-click para maghanap</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chrome para ma-apply ang isang update}=1{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chrome para ma-apply ang isang update. Hindi magbubukas ulit ang iyong Incognito window.}one{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chrome para ma-apply ang isang update. Hindi magbubukas ulit ang iyong # Incognito window.}other{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chrome para ma-apply ang isang update. Hindi magbubukas ulit ang iyong # na Incognito window.}}</translation>
-<translation id="2765403129283291972">Kailangan ng Chrome ng pahintulot na i-access ang iyong mikropono para sa site na ito</translation>
 <translation id="2797864378188255696">Kapag nagsa-sign in sa mga serbisyo ng Google tulad ng Gmail o YouTube gamit ang <ph name="USER_EMAIL" />, puwede kang awtomatikong mag-sign in sa Chrome gamit ang parehong account</translation>
 <translation id="2799162042226656283">Ang Iyong Chrome</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
@@ -265,7 +256,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="345171907106878721">Idagdag ang iyong sarili sa Chrome</translation>
 <translation id="3453763134178591239">Mga tuntunin ng ChromeOS</translation>
 <translation id="3475778264501649775">Dalhin ang iyong mga password, tab, at higit pa on the go gamit ang Chrome app sa telepono mo</translation>
-<translation id="3503306920980160878">Kailangan ng Chrome ng access sa iyong lokasyon upang ibahagi ang lokasyon mo sa site na ito</translation>
 <translation id="3512495006767217696">Built in sa Chrome para tulungan kang gumawa, mag-save, at mag-autofill ng malalakas na password. Idagdag ang shortcut para sa madaling pag-access</translation>
 <translation id="3539955434060988644">Buksan ang link sa Inco&amp;gnito window ng Chrome</translation>
 <translation id="354621070532799440">Paalala: Pinakamahuhusay na pangkaligtasang feature ng Google na madadala mo kahit saan</translation>
@@ -359,6 +349,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4400772909124543403">Walang available na update</translation>
 <translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
 <translation id="4434353761996769206">Error sa installer: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">I-share ang dokumentong ito sa Gemini sa Chrome para makakuha ng mabilisang pangkalahatang-ideya at magtanong ng mga follow-up na tanong</translation>
 <translation id="4450664632294415862">Chrome - Pag-sign in sa Network - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">May kasalukuyang isinasagawang isa pang pagpapatakbo sa Google Chrome. Pakisubukang muli sa ibang pagkakataon.</translation>
 <translation id="4459234553906210702">Nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chrome na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
@@ -530,9 +521,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6180522807229584611">Gumagamit ang tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chrome na gawin itong hindi aktibo.</translation>
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
 <translation id="6192058120268468905">Iyong Account sa Chrome</translation>
-<translation id="6220551899604141979">Nagdagdag ang <ph name="PARTNER_NAME" /> ng extension na posibleng bumago sa paraan ng paggana ng Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Inbound na panuntunan para sa Google Chrome upang payagan ang trapiko ng mDNS.</translation>
 <translation id="624230925347970731">Malapit nang magsara ang Chrome</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -674,9 +662,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7583399374488819119">Installer ng <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Magagamit mo ang Chrome sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="7602868996817972616">Magtanong sa Google tungkol sa page na ito</translation>
-<translation id="760353356052806707">Isa pang program sa iyong computer ang nagdagdag app na maaaring magpabago sa paraan ng paggana ng Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Para protektahan ang iyong data, hayaan ang Chrome na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan.</translation>
 <translation id="7629695634924605473">Ipinapaalam sa iyo ng Chrome kung nakompromiso ang mga password mo</translation>
@@ -792,7 +777,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8590782867495422699">Buksan ulit ang Google Search AI Mode</translation>
 <translation id="8601359445272098721">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen sa pamamagitan ng pagpili sa button na "isalin ang screen"</translation>
 <translation id="8614913330719544658">Hindi gumagana ang Google Chrome. Ilunsad muli ngayon?</translation>
-<translation id="861702415419836452">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para gumawa ng 3D na mapa ng kapaligiran mo</translation>
 <translation id="8623450603356630491">Mag-sign in sa Chrome sa iyong telepono</translation>
 <translation id="8624541899164515475">Mga setting, magbubukas sa bagong tab.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Muling ilulunsad ang Chrome sa loob ng 1 minuto}one{Muling ilulunsad ang Chrome sa loob ng # minuto}other{Muling ilulunsad ang Chrome sa loob ng # na minuto}}</translation>

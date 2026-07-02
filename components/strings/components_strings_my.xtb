@@ -2371,6 +2371,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" /> သုံးသည့် ဝဘ်ဆိုက်များတွင် <ph name="AUTHENTICATOR" /> ဖြင့် အတည်ပြုရန် သင်ရွေးထားသည်။ သင်ငွေပေးချေပုံနှင့် ပတ်သက်သော အချက်အလက်များကို ဤပံ့ပိုးသူက သိမ်းထားနိုင်ပြီး ၎င်းတို့ကို <ph name="LINK_TEXT" /> နိုင်သည်။</translation>
 <translation id="4708268264240856090">သင့်ချိတ်ဆက်မှု ကြားဝင်စွတ်ဖက်ခြင်း ခံခဲ့ရပါသည်</translation>
 <translation id="4708276642004148190">ရေပေးခြင်း၊ သန့်စင်ခြင်း</translation>
+<translation id="4710249055485272920">ဤအချက်အလက်ကို ရှာမတွေ့ပါ</translation>
 <translation id="4711628883879888561">တဘ်အုပ်စုတွင် ပူးတွဲလုပ်ကိုင်ခြင်း</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင့်တွင် ခွင့်ပြုချက်မရှိပါ</translation>
@@ -3023,6 +3024,7 @@
 <translation id="5707154300732650394">သင့်ခရီးစဉ်ကို ဆက်လုပ်ရန်</translation>
 <translation id="57094364128775171">ခိုင်မာသည့် စကားဝှက် အကြံပြုရန်…</translation>
 <translation id="570953204696852961">အနီ ၃</translation>
+<translation id="5710907191777451677">၎င်းအစား Chrome ရှိ Gemini ကို မေးပါ</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">တိရစ္ဆာန်ကုဆရာဝန်များ</translation>
 <translation id="5715150588940290235">သိမ်းထားသော လုံခြုံရေးကုဒ်များကို ဖျက်မလား။</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">ယာယီနှင့် ရာသီပေါ် အလုပ်</translation>
 <translation id="7110368079836707726">ကောလိပ်၊ တက္ကသိုလ်</translation>
 <translation id="7111507312244504964">အဆောက်အအုံ စစ်ဆေးခြင်းနှင့် သုံးသပ်ချက်</translation>
-<translation id="7117290130383718594">စာသား မှတ်ချက်များ</translation>
 <translation id="7118618213916969306">ကလစ်ဘုတ် URL <ph name="SHORT_URL" /> အတွက် ရှာဖွေမှု</translation>
 <translation id="7118852830504022370">ဤဝဘ်ဆိုက်သည် HTTPS ကို မပံ့ပိုးသောကြောင့် သင်သည် ဤသတိပေးချက်ကို မြင်ရခြင်းဖြစ်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">အချစ်အလွမ်း TV ဇာတ်လမ်း</translation>
@@ -5048,7 +5049,6 @@
 <translation id="8871485335898060555">ရှေးဟောင်းပစ္စည်း၊ စုဆောင်းစရာ</translation>
 <translation id="8871553383647848643">ဘရောင်ဇာ၏အသွင်ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="887350038812854047">ဤမူဝါဒတွင် စက်အဆင့်နှင့် အသုံးပြုသူအဆင့်တို့တွင် တူညီသော တန်ဖိုးများ သတ်မှတ်ထားသည်။ မူဝါဒသည် ရည်ရွယ်ထားသည့်အတိုင်း လုပ်ဆောင်နေသည်။</translation>
-<translation id="8874790741333031443">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ယာယီ ခွင့်ပြုကြည့်ပါ။ ဘရောက်စ်လုပ်ရာတွင် ကာကွယ်မှု လျော့နည်းသွားသော်လည်း ဝဘ်ဆိုက်အင်္ဂါရပ်များ မျှော်လင့်ထားသည့်အတိုင်း ပိုမိုလုပ်ဆောင်နိုင်ပါမည်။</translation>
 <translation id="8874824191258364635">မှန်ကန်သည့် ကဒ်နံပါတ်ကို ထည့်ပါ</translation>
 <translation id="8877780815363510165">ငါးမျှားခြင်း</translation>
 <translation id="888117890813270681">“<ph name="DATA_CONTROLS_RESTRICTION" />” ကို “<ph name="DATA_CONTROLS_LEVEL" />” သို့ သတ်မှတ်၍မရပါ</translation>

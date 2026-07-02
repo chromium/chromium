@@ -243,6 +243,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2056878612599315956">Site paused</translation>
 <translation id="2063047797624276601">Your organisation turned on Enhanced Safe Browsing</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download failed}other{# downloads failed}}</translation>
+<translation id="2066690553719545730">Always show AI Mode</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2149968176347646218">Connection is not secure</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2163089732491971196">To use and save Chrome data in your Google Account, enter your passphrase</translation>
+<translation id="2164015935042801524">Right-click here to show tabs vertically</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Image descriptions are off</translation>
 <translation id="2172905120685242547">Close window?</translation>
@@ -305,6 +307,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2327445548174191329">From <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
+<translation id="2329500425421091035">Introducing AI Mode in Chrome</translation>
 <translation id="2330186936255788117">More bookmarks</translation>
 <translation id="2332515770639153015">Enhanced Safe Browsing is on</translation>
 <translation id="233375395665273385">Delete and sign out</translation>
@@ -1057,7 +1060,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5436928407363358055">To easily pick up where you left off, sync your history and tabs</translation>
 <translation id="5438292632479953702">Download again</translation>
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>
-<translation id="5441137934526263133">Site not working? Third-party cookies are blocked</translation>
 <translation id="5441466871879044658">Translate into this language</translation>
 <translation id="5444999712122199445">Go back to site</translation>
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
@@ -1112,7 +1114,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
 <translation id="5696597120588531049">Chrome can help keep you safe from data breaches, unsafe websites and more</translation>
 <translation id="5698878456427040674">Check if the selected account is supported.</translation>
-<translation id="5700415746238689851">Open Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> wants to connect to a serial port</translation>
 <translation id="5715150588940290235">Delete saved security codes?</translation>
 <translation id="572328651809341494">Recent tabs</translation>
@@ -1418,7 +1419,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6835182496791325827">Get notified when Chrome finds the best results for your searches while you're away.</translation>
 <translation id="6846298663435243399">Loading…</translation>
-<translation id="6850409657436465440">Your download is still in progress</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabs closed</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 result found}other{# results found}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio files, 1 audio file in list}other{Audio files, # audio files in list}}</translation>
@@ -1968,12 +1968,14 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9001604755921395912">Open in Incognito Chrome tab</translation>
 <translation id="9010094279589497751">Quickly open Gemini when you need it</translation>
 <translation id="9012585441087414258">Protects against sites, downloads and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.</translation>
+<translation id="9014097371980259227">Some tools have moved to help you search with AI Mode</translation>
 <translation id="9019199799064251516">Continue without a car profile lock?</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9022871169049522985">Sites and advertisers can measure the performance of their ads</translation>
 <translation id="9024318700713112071">Set Chrome as your default</translation>
 <translation id="9027728231343310283">Undo <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Move to\u2026</translation>
+<translation id="904146253922032365">Touch and hold to show tabs vertically</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9047347135558855162">Quickly start a search in Chrome</translation>
 <translation id="9050666287014529139">Passphrase</translation>

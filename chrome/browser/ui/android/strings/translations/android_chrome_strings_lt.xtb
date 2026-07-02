@@ -243,6 +243,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2056878612599315956">Svetainė pristabdyta</translation>
 <translation id="2063047797624276601">Organizacija įjungė Sustiprintą saugų naršymą</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo}one{Nepavyko atlikti # atsisiuntimo}few{Nepavyko atlikti # atsisiuntimų}many{Nepavyko atlikti # atsisiuntimo}other{Nepavyko atlikti # atsisiuntimų}}</translation>
+<translation id="2066690553719545730">Visada rodyti DI režimą</translation>
 <translation id="2067805253194386918">teksto pranešimas</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2082238445998314030">Rezultatų: <ph name="RESULT_NUMBER" /> iš <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2149968176347646218">Ryšys nėra saugus</translation>
 <translation id="2149973817440762519">Redaguoti žymes</translation>
 <translation id="2163089732491971196">Jei norite naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje, įveskite slaptafrazę</translation>
+<translation id="2164015935042801524">Spustelėkite čia dešiniuoju klavišu, kad skirtukai būtų rodomi vertikaliai</translation>
 <translation id="2166228530126694506"><ph name="VERSION_NUMBER" /> versija</translation>
 <translation id="2172688499998841696">Vaizdų aprašai išjungti</translation>
 <translation id="2172905120685242547">Uždaryti langą?</translation>
@@ -305,6 +307,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2323763861024343754">Svetainės saugykla</translation>
 <translation id="2327445548174191329">Iš <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Visi iškart neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o visos kvietimų nuorodos bus išjungtos</translation>
+<translation id="2329500425421091035">Pristatome DI režimą naršyklėje „Chrome“</translation>
 <translation id="2330186936255788117">Daugiau žymių</translation>
 <translation id="2332515770639153015">Sustiprintas saugus naršymas įjungtas</translation>
 <translation id="233375395665273385">Ištrinti ir atsijungti</translation>
@@ -1057,7 +1060,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5436928407363358055">Jei norite lengvai tęsti ten, kur baigėte, sinchronizuokite istoriją ir skirtukus</translation>
 <translation id="5438292632479953702">Atsisiųsti dar kartą</translation>
 <translation id="5439191312780166229">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chrome“ įspėjimus.</translation>
-<translation id="5441137934526263133">Neveikia svetainė? Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="5441466871879044658">Versti į šią kalbą</translation>
 <translation id="5444999712122199445">Grįžti į svetainę</translation>
 <translation id="544776284582297024">Norėdami atidaryti skirtukus ir vienu metu lankytis skirtinguose puslapiuose, palieskite mygtuką „Atidaryti skirtukai“</translation>
@@ -1112,7 +1114,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="569536719314091526">Išverskite šį puslapį į bet kokią kalbą spustelėję mygtuką „Daugiau parinkčių“</translation>
 <translation id="5696597120588531049">„Chrome“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir daugiau</translation>
 <translation id="5698878456427040674">Patikrinkite, ar pasirinkta paskyra palaikoma.</translation>
-<translation id="5700415746238689851">Atidaryti „Gemini“</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> nori prisijungti prie nuosekliojo prievado</translation>
 <translation id="5715150588940290235">Ištrinti išsaugotus saugos kodus?</translation>
 <translation id="572328651809341494">Naujausi skirtukai</translation>
@@ -1418,7 +1419,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6835182496791325827">Gaukite pranešimą, kai „Chrome“ randa geriausius paieškos rezultatus, kai jūsų nėra.</translation>
 <translation id="6846298663435243399">Įkeliama…</translation>
-<translation id="6850409657436465440">Atsisiuntimas vis dar vykdomas</translation>
 <translation id="6850830437481525139">Uždaryta skirtukų lapų: <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Rastas vienas rezultatas}one{Rastas # rezultatas}few{Rasti # rezultatai}many{Rasta # rezultato}other{Rasta # rezultatų}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Garso failai, vienas garso failas sąraše}one{Garso failai, # garso failas sąraše}few{Garso failai, # garso failai sąraše}many{Garso failai, # garso failo sąraše}other{Garso failai, # garso failų sąraše}}</translation>
@@ -1968,12 +1968,14 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9001604755921395912">Atidaryti „Chrome“ inkognito skirtuką</translation>
 <translation id="9010094279589497751">Greitai atidarykite „Gemini“, kai tik jo prireikia</translation>
 <translation id="9012585441087414258">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Jei puslapyje atliekami įtartini veiksmai, URL ir puslapio turinio dalys siunčiami „Google“ saugaus naršymo paslaugai.</translation>
+<translation id="9014097371980259227">Kai kurie įrankiai perkelti, kad galėtumėte ieškoti naudodami DI režimą</translation>
 <translation id="9019199799064251516">Tęsti be automobilio profilio užrakto?</translation>
 <translation id="9022774213089566801">Dažnai lankytasi</translation>
 <translation id="9022871169049522985">Svetainės ir reklamuotojai gali vertinti skelbimų našumą</translation>
 <translation id="9024318700713112071">Nustatykite „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="9027728231343310283">Anuliuoti <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Perkelti į\u2026</translation>
+<translation id="904146253922032365">Palieskite ir palaikykite, kad skirtukai būtų rodomi vertikaliai</translation>
 <translation id="9042893549633094279">Privatumas ir sauga</translation>
 <translation id="9047347135558855162">Sparčiai pradėkite paiešką naršyklėje „Chrome“</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>

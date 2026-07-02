@@ -690,7 +690,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="8163152278172770963">Älä salli sivustojen siirtyä pikkuruututilaan automaattisesti</translation>
 <translation id="8168435359814927499">Sisältö</translation>
 <translation id="818487310457576362">Poistu koko näytön tilasta vetämällä näytön reunasta.</translation>
-<translation id="8186479265534291036">Eikö sivusto toimi? Kolmannen osapuolen evästeet estetty</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> sallittu</translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8211406090763984747">Yhteys on turvallinen</translation>
@@ -761,7 +760,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="8805385115381080995">Selaaminen on nopeampaa, koska sivusto ei todennäköisesti pyydä sinua vahvistamaan, että olet oikea ihminen</translation>
 <translation id="881644524232657178">Kun tämä on päällä, sivustot voivat käyttää laitteesi liike- ja valoantureita. Kun tämä on pois päältä, sivustot eivät voi käyttää antureita.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
 <translation id="8889294078294184559">Kun jatkat selaamista, sivustot voivat Chromen avulla tarkistaa edelliseltä avaamasi sivustolta, että olet todennäköisesti oikea ihminen.</translation>
 <translation id="8899807382908246773">Häiritsevät mainokset</translation>
 <translation id="8903921497873541725">Lähennä</translation>
@@ -787,7 +785,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="913657688200966289">Laita luvat (<ph name="APP_NAME" />) päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Ilmoitukset sallittu</translation>
 <translation id="9138217887606523162">Zoomaus on <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Tämän ominaisuuden avulla sivustot siirtyvät automaattisesti pikkuruututilaan. Näin voit jatkaa videon katselua ja tehdä samalla muita asioita näytöllä.</translation>
 <translation id="9156722768168878035">Salli Chromen näyttää viimeaikaiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>
 <translation id="9182556968660520230">Älä salli sivustojen toistaa suojattua sisältöä</translation>

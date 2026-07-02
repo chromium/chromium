@@ -1202,6 +1202,19 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1829839214911753838">Si cette règle est activée, l'hôte d'assistance à distance est exécuté dans un processus avec des autorisations <ph name="UIACCESS_PERMISSION_NAME" />. Les utilisateurs distants peuvent ainsi interagir avec des fenêtres de niveau administrateur sur le bureau de l'utilisateur local.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur, et les utilisateurs distants ne peuvent pas interagir avec des fenêtres de niveau administrateur sur le bureau.</translation>
+<translation id="1832480890076796592">Cette règle contrôle les paramètres d'isolation des processus pour <ph name="PRODUCT_NAME" />.
+
+Si vous activez l'isolation des processus, <ph name="PRODUCT_NAME" /> bénéficiera d'une sécurité renforcée et les applications autorisées sur le système ne pourront pas falsifier ni lire le contenu des processus en cours d'exécution de <ph name="PRODUCT_NAME" />. Cela permet d'empêcher d'autres applications du système d'accéder aux données chiffrées de <ph name="PRODUCT_NAME" />.
+
+L'activation de l'isolation des processus peut entraîner des incompatibilités avec des applications tierces qui dépendent de la possibilité d'injecter du code ou de falsifier les processus de <ph name="PRODUCT_NAME" />, comme les applications antivirus, de lecteur d'écran ou de gestionnaire de fenêtres.
+
+Si cette règle est activée, l'isolation des processus est activée dans <ph name="PRODUCT_NAME" />.
+
+Si cette règle est désactivée, l'isolation des processus est désactivée dans <ph name="PRODUCT_NAME" />.
+
+Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> applique le processus de déploiement par défaut de la fonctionnalité d'isolation des processus, ce qui signifie que la fonctionnalité sera progressivement déployée auprès d'un nombre croissant d'utilisateurs.
+
+Remarque : Cette règle est appliquée au démarrage de <ph name="PRODUCT_NAME" />. Si la règle est modifiée pendant que <ph name="PRODUCT_NAME" /> est en cours d'exécution, le nouveau paramètre prendra effet au prochain redémarrage.</translation>
 <translation id="1834796168555733063">Désactiver l'enregistrement des clés d'accès avec le gestionnaire de mots de passe</translation>
 <translation id="1836380138559328229">Enregistrer les identifiants Wi-Fi actifs au niveau de l'appareil</translation>
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>
@@ -1566,6 +1579,7 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
       Si cette règle n'est pas configurée, le protocole est, par défaut, désactivé pour les utilisateurs gérés et activé pour les autres.</translation>
 <translation id="2039801473506609891">Désactiver la compatibilité avec HTTP 0.9 sur les ports non utilisés par défaut</translation>
 <translation id="2040479044912658454">Mode de rastérisation pour l'impression</translation>
+<translation id="2041894060487590789">L'isolation des processus peut être utilisée, selon le processus de lancement de la fonctionnalité.</translation>
 <translation id="2043749682619281558">Activer la mise en surbrillance du curseur sur l'écran de connexion</translation>
 <translation id="2043770014371753404">Imprimantes d'entreprise désactivées</translation>
 <translation id="2054093043033461396">Écran de connexion de l'économiseur d'écran activé.</translation>
@@ -2237,6 +2251,7 @@ Si cette la règle est définie sur <ph name="POLICY_VALUE_DISABLEDE" />, la syn
 
 Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLICY_VALUE_VISIBLE" />.</translation>
 <translation id="2488455166114458307">Autoriser l'API Device Attributes sur ces sites</translation>
+<translation id="2489454942579368665">Interdire complètement l'utilisation des Outils pour les développeurs</translation>
 <translation id="2489558694350871332">Autoriser l'appareil à exécuter des machines virtuelles</translation>
 <translation id="2492240920793040106">Activer les rapports sur les informations système et du contenu de pages afin d'améliorer la navigation sécurisée</translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
@@ -2781,6 +2796,7 @@ Si cette liste est vide ou n'est pas définie, aucun contenu en arrière-plan n'
 
       Si cette règle n'est pas configurée, ce mode est désactivé par défaut. Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
 <translation id="2773288106548584039">Legacy Browser Support</translation>
+<translation id="2773911169897970305">Désactivez l'isolation des processus.</translation>
 <translation id="2774906947252258544">La liste de blocage contrôle les types d'installations d'extensions qui ne sont pas autorisés.
 
 Définir "command_line" empêche le chargement de l'extension à partir de la ligne de commande.</translation>
@@ -4001,6 +4017,7 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="3596112486106491038">Activer l'accès par ligne de commande aux machines virtuelles</translation>
+<translation id="3600342552601917721">Autoriser l'utilisation des Outils pour les développeurs pour la navigation Web standard, mais limiter leur utilisation pour les extensions installées par l'entreprise et les extensions intégrées pour les utilisateurs gérés. À partir de la version M150, ils sont également bloqués sur toute page qui intègre ces extensions, à la seule exception de la visionneuse PDF intégrée.</translation>
 <translation id="3603469950773500315">Permet d'atténuer les contrôles <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" />. Les extensions peuvent ainsi conserver un comportement compatible, et <ph name="PRODUCT_NAME" /> peut envoyer les en-têtes spécifiés sans contrôles <ph name="CORS" />.
 
       Si aucun paramètre d'atténuation n'est indiqué dans la liste, <ph name="PRODUCT_NAME" /> essaie d'exécuter les extensions de manière compatible, et n'introduit pas de modifications de <ph name="API" /> pour <ph name="PRODUCT_NAME" /> 79 (comme indiqué à la page <ph name="WEB_REQUEST_API_MANUAL" />).
@@ -4244,6 +4261,7 @@ Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />,
 <translation id="376375951585423504">Désactiver le quota persistant.</translation>
 <translation id="3765260570442823273">Durée du message d'avertissement avant la déconnexion pour cause d'inactivité</translation>
 <translation id="3766695867369523703">Autoriser le partitionnement du stockage tiers par défaut.</translation>
+<translation id="377001726927041812">Activez l'isolation des processus.</translation>
 <translation id="3770044943398389276">Par défaut, le service SSO flottant déplace uniquement les cookies persistants entre les appareils. Cette règle détermine si les cookies de session doivent également être inclus. Elle ne prend effet que lorsque la règle <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> est activée.
 
 Lorsque cette règle est activée, le service SSO flottant synchronise les cookies de session et les cookies persistants.
@@ -6713,6 +6731,7 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
       Si cette règle n'est pas configurée, les utilisateurs ayant recours au déverrouillage rapide devront saisir leur mot de passe tous les jours sur l'écran de verrouillage.</translation>
 <translation id="5306186200045823863">Faire confiance à l'ancienne infrastructure PKI de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilité du mode navigation privée</translation>
+<translation id="5308289216279695777">Autoriser l'utilisation des Outils pour les développeurs dans tous les cas, y compris dans les extensions installées par des règles d'entreprise</translation>
 <translation id="5308551343115571396">Une fois <ph name="LACROS_NAME" /> désactivé, nous essayons de conserver le plus de données utilisateur possible, tout en supprimant toutes les données du navigateur.</translation>
 <translation id="53086358353377307">Permet de lister les formats d'URL pour lesquels les sites sont autorisés à placer des cookies.
 
@@ -12355,6 +12374,25 @@ Les origines non spécifiées par la règle ni par les paramètres utilisateur n
 <translation id="8892286064305622118">Espace disque libre requis pour <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892771980172542172">Nom du canal de mise à jour/publication de l'AWI. Cette valeur peut être n'importe quelle chaîne. Aucune restriction n'est imposée. Si aucune valeur n'est spécifiée, le canal "default" sera utilisé.</translation>
 <translation id="8892783613915541293">Délais et actions à effectuer en cas d'inactivité de l'utilisateur quand l'appareil fonctionne sur secteur.</translation>
+<translation id="8895045875428227171">Valeur 0 (par défaut) : les outils pour les développeurs sont disponibles pour la navigation Web standard, mais leur utilisation est limitée pour les extensions installées par l'entreprise et les extensions intégrées pour les utilisateurs gérés. À partir de la version M150, ils sont également bloqués sur toute page qui intègre ces extensions, à la seule exception de la visionneuse PDF intégrée.
+
+Valeur 1 : les outils pour les développeurs et la console sont complètement déverrouillés et accessibles dans tous les contextes, y compris dans les extensions installées par des règles d'entreprise.
+
+Valeur 2 : les outils pour les développeurs et l'inspection des éléments sont entièrement désactivés à l'échelle du navigateur.
+
+En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou la Console JavaScript sont désactivés.
+
+Depuis <ph name="PRODUCT_NAME" /> version 99, ce paramètre contrôle également les points d'entrée de la fonctionnalité "Afficher le code source de la page". Si cette règle est définie sur "DeveloperToolsDisallowed" (valeur 2), les utilisateurs ne peuvent pas accéder à l'affichage du code source via le raccourci clavier ou le menu contextuel. Pour empêcher complètement l'affichage du code source, vous devez également ajouter "view-source:*" à la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Depuis <ph name="PRODUCT_NAME" /> version 119, ce paramètre contrôle également si le mode développeur peut être activé et utilisé pour les applis Web isolées.
+
+Depuis <ph name="PRODUCT_NAME" /> version 128, ce paramètre ne contrôle plus le mode développeur sur la page des extensions si la règle <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est configurée.
+
+La disponibilité des Outils pour les développeurs est déterminée selon l'ordre de priorité suivant :
+1. Si une URL correspond à un format dans la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, les Outils pour les développeurs sont autorisés.
+2. Si la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> est configurée et que la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ne l'est pas, toute URL ne figurant pas dans la liste d'autorisation est bloquée.
+3. Si une URL correspond à un format dans la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, les Outils pour les développeurs sont bloqués.
+4. Si une URL ne figure ni dans la liste d'autorisation, ni dans la liste de blocage, cette règle (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) est utilisée en remplacement.</translation>
 <translation id="8897796778265450949">Limiter la durée pendant laquelle un utilisateur authentifié via GAIA sans SAML peut se connecter hors connexion</translation>
 <translation id="889814528399907891">Autoriser les utilisateurs à activer <ph name="LACROS_NAME" /> et à en faire le navigateur principal</translation>
 <translation id="8900312706328930425">Fréquence des rapports cloud en heures</translation>
@@ -12772,6 +12810,7 @@ Cette règle n'a aucun effet si la règle <ph name="METRICS_REPORTING_ENABLED_PO
 <translation id="9180108183162961002">Autoriser les connexions en mode Invité dans le navigateur</translation>
 <translation id="9185963199234034321">Activer le contraste élevé sur l'écran de connexion et permettre à l'utilisateur de le désactiver temporairement</translation>
 <translation id="9187743794267626640">Désactiver le montage de périphériques de stockage externe</translation>
+<translation id="9188142767272053574">Activer l'isolation des processus</translation>
 <translation id="9190022798664427644">Activer l'audio mono</translation>
 <translation id="9190456586252617675">Cette règle permet de gérer le mode du processus de prise en main de l'Assistant.
 

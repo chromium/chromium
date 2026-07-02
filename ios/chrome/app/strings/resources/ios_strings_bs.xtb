@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} pristupni ključ}one{{count} pristupni ključ}few{{count} pristupna ključa}other{{count} pristupnih ključeva}}</translation>
 <translation id="1005023885865154304">Otvorite postavke za automatsko popunjavanje lozinki.</translation>
 <translation id="1005230401424685968">GGGG</translation>
+<translation id="1013852467930342108">Live je nova funkcija u Geminiju u Chromeu</translation>
 <translation id="1013952917065545813">Možete se vratiti ovdje da ponovo otvorite kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
 <translation id="1018804590490383958">Skenirajte i automatski popunite</translation>
@@ -1737,6 +1738,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6765551480308401897">Nemoj postaviti kao zadano</translation>
 <translation id="6770452996697898492">[REZERVIRANO]</translation>
+<translation id="6775952316617222141">Korištenje Livea putem Geminija u Chromeu</translation>
 <translation id="6779455296366983087">Podaci o pregledanju će se izbrisati</translation>
 <translation id="6782531425936234573">Izvoz podataka</translation>
 <translation id="6791425686608802741">Dodirnite "Dodaj karticu u novu grupu"</translation>
@@ -2291,7 +2293,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="8636825310635137004">Da dobijete svoje kartice s drugih uređaja, uključite sinhronizaciju.</translation>
 <translation id="8637431369725868556">Zaštitite se od opasnih web lokacija.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nema ugroženih lozinki}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
-<translation id="8639963783467694461">Postavke automatske ispune</translation>
+<translation id="8639963783467694461">Postavke automatskog popunjavanja</translation>
 <translation id="8642417828095157370">Kartice se dijele radi relevantnijih odgovora</translation>
 <translation id="8643403533759285912">Izbriši grupu</translation>
 <translation id="8647280737650867362">Zaustavljanje praćenja cijene nije uspjelo.</translation>

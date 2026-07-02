@@ -2369,6 +2369,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" /> вебсайттарында <ph name="AUTHENTICATOR" /> аркылуу ырастоону тандадыңыз. Бул провайдер төлөм ыкмаңызды сактап койгон болушу мүмкүн. Аны <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Туташууңуз үзгүлтүккө учурады</translation>
 <translation id="4708276642004148190">Суу менен камсыздоо жана тазалоо</translation>
+<translation id="4710249055485272920">Бул маалымат табылган жок</translation>
 <translation id="4711628883879888561">Өтмөктөр тобунда кызматташуу</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Бул сайтка кирүүгө уруксатыңыз жок</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5707154300732650394">Саякатты улантуу</translation>
 <translation id="57094364128775171">Татаал сырсөз сунушталсын…</translation>
 <translation id="570953204696852961">Кызыл 3</translation>
+<translation id="5710907191777451677">Анын ордуна Chrome'догу Gemini'дан сураңыз</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринарлар</translation>
 <translation id="5715150588940290235">Сакталган коопсуздук коддору өчүрүлсүнбү?</translation>
@@ -3923,7 +3925,6 @@
 <translation id="7110116949943042888">Убактылуу жана мезгилдик жумуштар</translation>
 <translation id="7110368079836707726">Колледждер жана университеттер</translation>
 <translation id="7111507312244504964">Мүлктү текшерүү жана баалоо</translation>
-<translation id="7117290130383718594">Тексттик аннотациялар</translation>
 <translation id="7118618213916969306">Алмашуу буферинин URL'ин издөө, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Бул эскертүүнү көрүп жатсаңыз, бул сайтта HTTPS колдоого алынбайт. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ТВ драмалары</translation>
@@ -5045,7 +5046,6 @@
 <translation id="8871485335898060555">Антиквариат жана коллекциялар</translation>
 <translation id="8871553383647848643">Cерепчинин көрүнүшүн ыңгайлаштыруу</translation>
 <translation id="887350038812854047">Бул эреже машина жана колдонуучу деңгээлдеринде бирдей мааниге ээ. Эреже талаптагыдай иштеп жатат.</translation>
-<translation id="8874790741333031443">Үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз. Мында Интернетте коопсуздугуңуз азыраак корголот, бирок сайттын функциялары ойдогудай иштеши мүмкүн.</translation>
 <translation id="8874824191258364635">Жарактуу карточканын номерин киргизиңиз</translation>
 <translation id="8877780815363510165">Балык уулоо</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" "<ph name="DATA_CONTROLS_LEVEL" />" үчүн тууралоого болбойт</translation>

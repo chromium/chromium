@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="10146536653536065">Տեղադրեք «<ph name="EXTENSION_NAME" />» հավելվածը</translation>
+<translation id="1070377999570795893">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է ընդլայնում, որը կարող է միջամտել Chrome-ի աշխատանքին:
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Միացնել թեման</translation>
 <translation id="1135328998467923690">Փաթեթն անվավեր է` «<ph name="ERROR_CODE" />»:</translation>
 <translation id="1140871961407805696">Հիմնական</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" />-ն ավելացրել է ընդլայնում, որը կարող է ազդել Chromium-ի աշխատանքի վրա։
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Մասնավոր բանալին չարտահանվեց:</translation>
 <translation id="132960226125594336">Չհաջողվեց բեռնել «<ph name="RELATIVE_PATH" />» ֆայլը բովանդակության հրահանգաշարի համար, քանի որ այն կգերազանցի հրահանգաշարի առավելագույն չափը կամ ընդլայնման բովանդակության հրահանգաշարի առավելագույն ընդհանուր չափը։</translation>
 <translation id="1445572445564823378">Այս ընդլայնումը ծանրացնում է <ph name="PRODUCT_NAME" />-ը: Դուք պետք է անջատեք այն՝ <ph name="PRODUCT_NAME" />-ի կատարողականությունը վերականգնելու համար:</translation>
 <translation id="1468038450257740950">WebGL-ը չի աջակցվում:</translation>
 <translation id="1478607704480248626">Տեղադրում չի թույլատրվում</translation>
+<translation id="1483493594462132177">Ուղարկել</translation>
+<translation id="1485015260175968628">Այժմ կարող է.</translation>
 <translation id="1556537182262721003">Չհաջողվեց պրոֆիլ տեղափոխել ընդլայնման գրացուցակը:</translation>
+<translation id="1585717515139318619">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է թեմա, որը կարող է ազդել Chrome-ի աշխատանքի վրա:
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Չհաջողվեց բեռնել «<ph name="RELATIVE_PATH" />» CSS-ը սկրիպտի համար։</translation>
 <translation id="1616298854599875024">Անհնար է ներմուծել «<ph name="IMPORT_NAME" />» ընդլայնումը, քանի որ այն ընդհանուր մոդուլ չէ</translation>
+<translation id="175772926354468439">Միացնել ոճը</translation>
 <translation id="1757786065507923842">Չհաջողվեց ուղարկել ծնողի թույլտվության հայտը։</translation>
 <translation id="1803557475693955505">Չհաջողվեց բեռնել հետնաշերտի էջը` «<ph name="BACKGROUND_PAGE" />»:</translation>
 <translation id="1875387611427697908">Սա կարող է ավելացվել միայն <ph name="CHROME_WEB_STORE" />-ից</translation>
 <translation id="2131077480075264">Անհնար է տեղադրել «<ph name="APP_NAME" />» հավելվածը, քանի որ այն արգելված է «<ph name="IMPORT_NAME" />»-ի կողմից</translation>
+<translation id="2150661552845026580">Ավելացնե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="2159915644201199628">Չհաջողվեց ապակոդավորել պատկերը` «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2193567467390483943">Ձեր ծնողը չի հաստատել այս ընդլայնումը</translation>
+<translation id="23030561267973084">«<ph name="EXTENSION_NAME" />»-ը լրացուցիչ թույլտվություններ է խնդրել:</translation>
+<translation id="2327492829706409234">Միացնել հավելվածը</translation>
 <translation id="2350172092385603347">Տեղայնացումն օգտագործվում է, սակայն մանիֆեստում նշված չէ default_locale հատկանիշը:</translation>
 <translation id="2576842806987913196">Այս անունով CRX ֆայլ արդեն առկա է:</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Նորից միացնել</translation>
 <translation id="2743583586211388067">Այս ընդլայնման հասանելիությունն արգելափակված է՝ ձեր կազմակերպության՝ ընդլայնումների անվտանգությանը վերաբերող կանոնների համաձայն։</translation>
+<translation id="2766161002040448006">Հարցնել ծնողին</translation>
 <translation id="2785530881066938471">Չհաջողվեց բեռնել «<ph name="RELATIVE_PATH" />» ֆայլը բովանդակության սկրիպտի համար: Այն UTF-8 կոդավորում չունի:</translation>
+<translation id="2850541429955027218">Ավելացնել թեմա</translation>
+<translation id="2883143988769190738">Այս ընդլայնումը հայցում է հետևյալ թույլտվությունները.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />-ը (ընդլայնման ID-ն՝ «<ph name="EXTENSION_ID" />») արգելափակված է ադմինիստրատորի կողմից: <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">«<ph name="EXTENSION_NAME" />» ընդլայնումը տեղադրելու հայտ ուղարկե՞լ ձեր ադմինիստրատորին</translation>
 <translation id="2988488679308982380">Չհաջողվեց տեղադրել փաթեթը` «<ph name="ERROR_CODE" />»</translation>
 <translation id="3115238746683532089">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Չհաջողվեց փոխարինել crx ֆայլը: Ստուգեք՝ արդյոք ֆայլը չի օգտագործվում այս պահին:</translation>
 <translation id="3163201441334626963">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից</translation>
 <translation id="3174723475300476613">Ձեր կազմակերպությունն արգելափակել է այս ընդլայնման հասանելիությունը։</translation>
+<translation id="3183357154200327217">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է թեմա, որը կարող է ազդել Chromium-ի աշխատանքի վրա։
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի ChromeOS-ի կրպակի ռեժիմում</translation>
 <translation id="3364986687961713424">Ձեր ադմինիստրատորից. «<ph name="ADMIN_MESSAGE" />»</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Մասնավոր բանալու համար ներածման արժեքը պետք է ճիշտ ուղի լինի:</translation>
+<translation id="3788401245189148511">Կարող է՝</translation>
 <translation id="3834775135533257713">Չհաջողվեց ավելացնել «<ph name="TO_INSTALL_APP_NAME" />» հավելվածը, քանի որ այն հակասում է «<ph name="INSTALLED_APP_NAME" />» հավելվածին:</translation>
 <translation id="388442998277590542">Չհաջողվեց բեռնել «<ph name="OPTIONS_PAGE" />» ընտրանքների էջը:</translation>
+<translation id="3905761538810670789">Հավելվածի վերանորոգում</translation>
+<translation id="3908501907586732282">Միացնել ընդլայնումը</translation>
+<translation id="3927932062596804919">Մերժել</translation>
 <translation id="3984413272403535372">Ընդլայնումը ստորագրելիս սխալ առաջացավ:</translation>
+<translation id="4014432863917027322">Վերանորոգե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
+<translation id="4061696872429826774">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է ընդլայնում, որը կարող է ազդել Chromium-ի աշխատանքի վրա։
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Ձեր կազմակերպությունն արգելափակել է այս կատեգորիայի ընդլայնումների հասանելիությունը։</translation>
 <translation id="4233778200880751280">Չհաջողվեց բեռնել տեղեկությունների էջը` «<ph name="ABOUT_PAGE" />»:</translation>
 <translation id="424963718355121712">Հավելվածները պետք է բեռնվեն այն կայքից, որի հետ աշխատում են</translation>
 <translation id="4306119971288449206">Հավելվածները պետք է ունենան «<ph name="CONTENT_TYPE" />» բովանդակության տեսակը</translation>
+<translation id="4625078469366263107">Միացնել հավելվածը</translation>
 <translation id="4633003931260532286">Ընդլայնումը պահանջում է «<ph name="IMPORT_NAME" />»՝ «<ph name="IMPORT_VERSION" />» նվազագույն տարբերակով, սակայն տեղադրված է «<ph name="INSTALLED_VERSION" />» տարբերակը</translation>
 <translation id="4660476621274971848">Սպասված տարբերակը՝ «<ph name="EXPECTED_VERSION" />», ստացված տարբերակը՝ «<ph name="NEW_ID" />»</translation>
 <translation id="471800408830181311">Չհաջողվեց արտածել մասնավոր բանալին:</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Չհաջողվեց արտահանել հանրային բանալին:</translation>
 <translation id="501057610015570208">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի ChromeOS Flex-ի կրպակի ռեժիմում</translation>
 <translation id="5026754133087629784">WebView՝ <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Ավելացնել ընդլայնում</translation>
+<translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5098647635849512368">Հնարավոր չէ գտնել գրացուցակի բացարձակ ուղին:</translation>
 <translation id="5160071981665899014">Չհաջողվեց բեռնել «<ph name="RELATIVE_PATH" />» JavaScript-ը սկրիպտի համար։</translation>
+<translation id="5185386675596372454">«<ph name="EXTENSION_NAME" />»-ի նոր տարբերակն անջատվել է, քանի որ նրա համար լրացուցիչ թույլտվություններ են պահանջվում:</translation>
+<translation id="5242724311594467048">Միացնե՞լ «<ph name="EXTENSION_NAME" />» ընդլայնումը:</translation>
 <translation id="5356315618422219272">Appview՝ <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Հեռացնել Chromium-ից</translation>
 <translation id="5456409301717116725">Այս ընդլայնումը պարունակում է «<ph name="KEY_PATH" />» բանալու ֆայլ: Դա հավանաբար ընդունելի չէ:</translation>
+<translation id="5485102783864353244">Ավելացնել հավելված</translation>
 <translation id="5486326529110362464">Մասնավոր բանալու համար անհրաժեշտ է ներածման արժեք:</translation>
 <translation id="5527463195266282916">Ընդլայնման ավելի հին տարբերակի անցնելու փորձ:</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Չհաջողվեց բեռնել ընդլայնումը հետևյալից`</translation>
 <translation id="5972529113578162692">Սարքի ադմինիստրատորը պահանջում, որ <ph name="EXTENSION_NAME" /> ընդլայնումը տեղադրված լինի: Այն հնարավոր չէ ապատեղադրել:</translation>
 <translation id="6027032947578871493">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_NAME" />-ի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից</translation>
+<translation id="6204922163963157461">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է հավելված, որը կարող է ազդել Chromium-ի աշխատանքի վրա։
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Ընդլայնումը բեռնելիս սխալ առաջացավ</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" />-ն ավելացրել է ընդլայնում, որը կարող է ազդել Chrome-ի աշխատանքի վրա։
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Չհաջողվեց կարդալ մասնավոր բանալին:</translation>
+<translation id="6326175484149238433">Հեռացնել Chrome-ից</translation>
 <translation id="6391538222494443604">Մուտքային գրացուցակը պետք է առկա լինի:</translation>
 <translation id="641087317769093025">Չհաջողվեց դուրս բերել ընդլայնումը</translation>
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» հավելվածը մուտքի թույլտվություն է խնդրում ձեր սարքերից մեկի կամ մի քանիսի համար՝</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> օգտատեր</translation>
 <translation id="657064425229075395">Չհաջողվեց բեռնել «<ph name="BACKGROUND_SCRIPT" />» հետնաշերտի սկրիպտը:</translation>
 <translation id="6580950983454333167">Արտադրանք՝ <ph name="PRODUCT_NAME" />, վաճառող՝ <ph name="VENDOR_NAME" /> (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler՝ <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Մանիֆեստի ֆայլը սխալ է</translation>
 <translation id="7217838517480956708">Այս համակարգչի ադմինիստրատորը պահանջում է, որ <ph name="EXTENSION_NAME" />-ը տեղադրված լինի: Դուք չեք կարող հեռացնել կամ փոփոխել այն:</translation>
 <translation id="7287143125007575591">Մուտքը մերժված է:</translation>
+<translation id="760353356052806707">Ձեր համակարգչում մեկ այլ ծրագիր ավելացրել է հավելված, որը կարող է ազդել Chrome-ի աշխատանքի վրա:
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Գաղտնի բանալու արժեքը պետք է մուտքագրվի վավեր ձևաչափով (PKCS#8, PEM կոդավորմամբ RSA բանալի):</translation>
 <translation id="765293928828334535">Այս կայքից հնարավոր չէ ավելացնել հավելվածներ, ընդլայնումներ և օգտատիրոջ հրահանգաշարեր</translation>
+<translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7766838926148951335">Ընդունել</translation>
 <translation id="7876803335449432072">Չհաջողվեց վերբեռնել '<ph name="RELATIVE_PATH" />' ֆայլը՝ բովանդակության սցենարի համար, քանի որ բովանդակության սցենարի ոճերի աղյուսակները կարելի է բեռնել միայն աջակցվող ոճերի աղյուսակի ֆայլերից, օրինակ՝ .css ֆայլերից:</translation>
 <translation id="7939686037314084444">Չհաջողվեց ճիշտ բեռնել ընդլայնումը։ Հնարավոր է՝ այն չի կարող որսալ ցանցային հարցումները։</translation>
 <translation id="7952904276017482715">Սպասված ID-ն՝ «<ph name="EXPECTED_ID" />», ստացված ID-ն՝ «<ph name="NEW_ID" />»</translation>
 <translation id="7972881773422714442">Ընտրանքներ՝ <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Հաստատել</translation>
 <translation id="8035920974645200807">Առջևի</translation>
 <translation id="8047248493720652249">Ընդլայնումը կարողացավ անվանել ներբեռնված «<ph name="ATTEMPTED_FILENAME" />» ֆայլը, քանի որ մեկ այլ ընդլայնում (<ph name="EXTENSION_NAME" />) ֆայլին ուրիշ անուն է տվել՝ «<ph name="ACTUAL_FILENAME" />»:</translation>
 <translation id="8049705080247101012">«<ph name="EXTENSION_NAME" />» ընդլայնումը նշվել է Google-ի կողմից որպես վնասարար, և նրա տեղադրումը կանխվել է</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> <ph name="VENDOR_NAME" />-ից</translation>
+<translation id="8353683614194668312">Թույլտվություններ՝</translation>
 <translation id="8517576857589387417">Մանիֆեստի ֆայլը չկա կամ անընթեռնելի է</translation>
 <translation id="8565650234829130278">Հավելվածի ավելի հին տարբերակի անցնելու փորձ:</translation>
 <translation id="8621383749470166852">Չհաջողվեց վերբեռնել '<ph name="RELATIVE_PATH" />' ֆայլը՝ բովանդակության սցենարի համար, քանի որ բովանդակության սցենարները կարելի է բեռնել միայն աջակցվող JavaScript ֆայլերից, օրինակ՝ .js ֆայլերից:</translation>
 <translation id="8636666366616799973">Փաթեթն անվավեր է: Մանրամասներ՝ «<ph name="ERROR_MESSAGE" />»:</translation>
+<translation id="8746654918629346731">Դուք «<ph name="EXTENSION_NAME" />» ընդլայնումը տեղադրելու հայտ արդեն ուղարկել եք</translation>
 <translation id="8761756413268424715">«<ph name="APP_NAME" />» հավելվածը մուտքի թույլտվություն է խնդրում ձեր սարքերից մեկի համար՝</translation>
 <translation id="8885905466771744233">Նշված ընդլայնման համար արդեն առկա է մասնավոր բանալի: Նորից օգտագործեք այդ բանալին կամ ջնջեք այն:</translation>
 <translation id="9039223174332979184">Սարքի ադմինիստրատորը պահանջում է, որ <ph name="EXTENSION_NAME" /> ընդլայնումն ունենա մանիֆեստի առնվազն տարբերակ 3-ը։</translation>
 <translation id="907841381057066561">Չհաջողվեց ստեղծել ժամանակավոր zip ֆայլ փաթեթավորման ընթացքում:</translation>
+<translation id="9102610709270966160">Միացնել ընդլայնումը</translation>
+<translation id="93766956588638423">Ընդլայնման վերանորոգում</translation>
 <translation id="941543339607623937">Մասնավոր բանալին սխալ է:</translation>
 </translationbundle>

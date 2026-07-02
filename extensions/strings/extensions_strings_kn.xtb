@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
+<translation id="1070377999570795893">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ, Chrome ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದಂತಹ ವಿಸ್ತರಣೆಯನ್ನು ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">ಥೀಮ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1135328998467923690">ಪ್ಯಾಕೇಜ್ ಅಮಾನ್ಯವಾಗಿದೆ: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">ಪರಿಸರಕ್ಕೆ ಮುಖಮಾಡಿದೆ</translation>
+<translation id="1171831736360285680">Chromium ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಒಂದನ್ನು <ph name="PARTNER_NAME" /> ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ರಫ್ತು ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="132960226125594336">ವಿಷಯದ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ '<ph name="RELATIVE_PATH" />' ಫೈಲ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ಗರಿಷ್ಠ ಸ್ಕ್ರಿಪ್ಟ್ ಗಾತ್ರ ಅಥವಾ ವಿಸ್ತರಣೆ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳ ಗರಿಷ್ಠ ಒಟ್ಟು ಗಾತ್ರವನ್ನು ಮೀರುತ್ತದೆ.</translation>
 <translation id="1445572445564823378">ಈ ವಿಸ್ತರಣೆಯು <ph name="PRODUCT_NAME" /> ಅನ್ನು ನಿಧಾನವಾಗಿಸುತ್ತಿದೆ. ನೀವು <ph name="PRODUCT_NAME" /> ರ ಕಾರ್ಯಾಚರಣೆಯನ್ನು ಮತ್ತೊಮ್ಮೆ ಪ್ರಾರಂಭಿಸಲು ಇದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದು ಅವಶ್ಯಕ.</translation>
 <translation id="1468038450257740950">WebGL ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="1478607704480248626">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಸಕ್ರಿಯಗೊಳಿಸಿಲ್ಲ</translation>
+<translation id="1483493594462132177">ಕಳುಹಿಸು</translation>
+<translation id="1485015260175968628">ಇದೀಗ ಸಾಧ್ಯ:</translation>
 <translation id="1556537182262721003">ಫ್ರೋಫೈಲ್‌ಗೆ ಎಕ್ಸ್‌ಟೆನ್ಷನ್ ಡೈರೆಕ್ಟರಿಯನ್ನು ಚಲಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="1585717515139318619">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ Chrome ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದಂತಹ ಥೀಮ್ ಅನ್ನು ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">ಸ್ಕ್ರಿಪ್ಟ್‌‌ಗಾಗಿ css '<ph name="RELATIVE_PATH" />' ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" ವಿಸ್ತರಣೆಯು ಹಂಚಿಕೊಂಡ ಮಾಡ್ಯೂಲ್ ಆಗಿಲ್ಲದಿರುವ ಕಾರಣ ಅದನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="175772926354468439">ಥೀಮ್ ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="1757786065507923842">ಪೋಷಕರ ಅನುಮತಿ ವಿನಂತಿಯು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' ಹಿನ್ನಲೆ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> ಮೂಲಕ ಮಾತ್ರ ಇದನ್ನು ಸೇರಿಸಬಹುದಾಗಿದೆ</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ ಏಕೆಂದರೆ ಇದನ್ನು "<ph name="IMPORT_NAME" />" ರಿಂದ ಅನುಮತಿಸಲಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಸೇರಿಸುವುದೇ?</translation>
 <translation id="2159915644201199628">ಚಿತ್ರವನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">ನಿಮ್ಮ ಪೋಷಕರು ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಅನುಮೋದಿಸಿಲ್ಲ</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ಹೆಚ್ಚುವರಿ ಅನುಮತಿಗಳನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ.</translation>
+<translation id="2327492829706409234">ಆ್ಯಪ್‌ ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="2350172092385603347">ಲೋಕಲೈಜೇಷನ್ ಬಳಸಲಾಗಿದೆ, ಆದರೆ ಡಿಫಾಲ್ಟ್ _ಲೋಕಲ್ ಅನ್ನು ಮ್ಯಾನಿಫಾಸ್ಟ್‌ನಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="2576842806987913196">ಪ್ರಸ್ತುತ ಈ ಹೆಸರಿನೊಂದಿಗೆ ಈಗಾಗಲೇ CRX ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
 <translation id="2662876636500006917">Chrome ವೆಬ್‌ ಸ್ಟೋರ್</translation>
+<translation id="2678063897982469759">ಮರು-ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2743583586211388067">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅಪಾಯದ ನೀತಿಯ ಅಡಿಯಲ್ಲಿ, ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗೆ ಇರುವ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
+<translation id="2766161002040448006">ಪೋಷಕರ ಬಳಿ ಕೇಳಿ</translation>
 <translation id="2785530881066938471">'<ph name="RELATIVE_PATH" />' ಫೈಲ್ ಅನ್ನು ಕಂಟೆಂಟ್‍ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲು ಆಗುವುದಿಲ್ಲ. ಇದು UTF-8 ಎನ್‌ಕೋಡ್ ಆಗಿಲ್ಲ.</translation>
+<translation id="2850541429955027218">ಥೀಮ್ ಸೇರಿಸು</translation>
+<translation id="2883143988769190738">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಈ ಕೆಳಗಿನ ಅನುಮತಿಗಳನ್ನು ವಿನಂತಿಸುತ್ತದೆ:</translation>
 <translation id="2903070246402204397">ನಿರ್ವಾಹಕರಿಂದ <ph name="EXTENSION_NAME" /> (ವಿಸ್ತರಣೆ ಐಡಿ "<ph name="EXTENSION_ID" />") ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆಂದು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ವಿನಂತಿ ಸಲ್ಲಿಸಬೇಕೇ?</translation>
 <translation id="2988488679308982380">ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ಫೈಲ್ ಅನ್ನು ಸ್ಥಾನಾಂತರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ. ಫೈಲ್ ಬಳಕೆಯಲ್ಲಿದೆಯೆ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ</translation>
 <translation id="3174723475300476613">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗೆ ಇರುವ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
+<translation id="3183357154200327217">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ Chromium ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದ ಥೀಮ್ ಒಂದನ್ನು ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">ChromeOS ಕಿಯೋಸ್ಕ್ ಮೋಡ್‌ನಲ್ಲಿ 'kiosk_only' ಮ್ಯಾನಿಫೆಸ್ಟ್‌ ಲಕ್ಷಣದ ಜೊತೆಗಿನ ಆ್ಯಪ್ ಅನ್ನು ಇನ್‍ಸ್ಟಾಲ್ ಮಾಡಿರಬೇಕು</translation>
 <translation id="3364986687961713424">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_NAME" /> (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ಖಾಸಗಿ ಕೀಲಿಗಾಗಿ ಇನ್‌ಪುಟ್ ಮೌಲ್ಯವು ಮಾನ್ಯವಾದ ಹಾದಿಯಾಗಿರಬೇಕು.</translation>
+<translation id="3788401245189148511">ಇದು ಸಾಧ್ಯವಾಗಬಹುದು:</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" ಜೊತೆಗಿನ ಘರ್ಷಣೆಯ ಕಾರಣ "<ph name="TO_INSTALL_APP_NAME" />" ಅಪ್ಲಿಕೇಶನ್‌ ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="388442998277590542">ಆಯ್ಕೆಗಳ ಪುಟ '<ph name="OPTIONS_PAGE" />' ವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="3905761538810670789">ಅಪ್ಲಿಕೇಶನ್ ಸರಿಪಡಿಸು</translation>
+<translation id="3908501907586732282">ವಿಸ್ತರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು</translation>
+<translation id="3927932062596804919">ನಿರಾಕರಿಸಿ</translation>
 <translation id="3984413272403535372">ವಿಸ್ತರಣೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ದೋಷ.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ಸರಿಪಡಿಸಬೇಕೆ?</translation>
+<translation id="4061696872429826774">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ Chromium ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಒಂದನ್ನು ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ವರ್ಗಕ್ಕೆ ಇರುವ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' ಪುಟದ ಕುರಿತು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="424963718355121712">ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಯಾವ ಹೋಸ್ಟ್ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರುತ್ತವೆಯೋ, ಅವುಗಳನ್ನು ಅಲ್ಲಿಂದಲೇ ಒದಗಿಸಬೇಕು</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" ಪ್ರಕಾರದ ವಿಷಯದೊಂದಿಗೆ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಒದಗಿಸಬೇಕು</translation>
+<translation id="4625078469366263107">ಆ್ಯಪ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4633003931260532286">ವಿಸ್ತರಣೆಗೆ "<ph name="IMPORT_NAME" />" ನ ಕನಿಷ್ಠ "<ph name="IMPORT_VERSION" />" ಆವೃತ್ತಿಯ ಅಗತ್ಯವಿದೆ, ಆದರೆ "<ph name="INSTALLED_VERSION" />" ಆವೃತ್ತಿಯನ್ನು ಮಾತ್ರ ಇನ್‍ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4660476621274971848">ನಿರೀಕ್ಷಿತ ಆವೃತ್ತಿ "<ph name="EXPECTED_VERSION" />", ಆದರೆ ಆವೃತ್ತಿಯು "<ph name="NEW_ID" />" ಆಗಿದೆ</translation>
 <translation id="471800408830181311">ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ಔಟ್‌ಪುಟ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">ಸಾರ್ವಜನಿಕ ಕೀಲಿಯನ್ನು ರಫ್ತು ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="501057610015570208">ChromeOS Flex ಕಿಯೋಸ್ಕ್ ಮೋಡ್‌ನಲ್ಲಿ 'kiosk_only' ಮ್ಯಾನಿಫೆಸ್ಟ್‌ ಲಕ್ಷಣದ ಜೊತೆಗಿನ ಆ್ಯಪ್ ಸ್ಥಾಪಿಸಿರಬೇಕು</translation>
 <translation id="5026754133087629784">ವೆಬ್‌ವೀಕ್ಷಣೆ: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">ವಿಸ್ತರಣೆ ಸೇರಿಸು</translation>
+<translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5098647635849512368">ಡೈರೆಕ್ಟರಿಗೆ ಪ್ಯಾಕ್ ಮಾಡಲು ಸರಿಯಾದ ಪಥವನ್ನು ಹುಡುಕಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="5160071981665899014">ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ javascript '<ph name="RELATIVE_PATH" />' ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ನ ಹೊಸ ಆವೃತ್ತಿಗೆ ಹೆಚ್ಚಿನ ಅನುಮತಿಗಳ ಅಗತ್ಯವಿರುವ ಕಾರಣ ಅದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" ಸಕ್ರಿಯಗೊಳಿಸುವುದೆ?</translation>
 <translation id="5356315618422219272">ಅಪ್ಲಿಕೇಶನ್ ವೀಕ್ಷಣೆ: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium ನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5456409301717116725">ಈ ವಿಸ್ತರಣೆಯು ಕೀ ಫೈಲ್ '<ph name="KEY_PATH" />' ಅನ್ನು ಒಳಗೊಂಡಿದೆ. ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಹಾಗೆ ಮಾಡಲು ಬಯಸುವುದಿಲ್ಲ.</translation>
+<translation id="5485102783864353244">ಅಪ್ಲಿಕೇಶನ್‌ ಸೇರಿಸು</translation>
 <translation id="5486326529110362464">ಖಾಸಗಿ ಕೀಲಿಗಾಗಿ ಇನ್‌ಪುಟ್ ಮೌಲ್ಯ ಅಸ್ತಿತ್ವದಲ್ಲಿರಬೇಕು.</translation>
 <translation id="5527463195266282916">ವಿಸ್ತರಣೆಯನ್ನು ಕೆಳಮಟ್ಟಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">ಇದರಿಂದ ವಿಸ್ತರಣೆಯನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ:</translation>
 <translation id="5972529113578162692">ಈ ಯಂತ್ರದ ನಿರ್ವಾಹಕರಿಗೆ <ph name="EXTENSION_NAME" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ಅನ್ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ಅವರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ Chromium ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದ ಆ್ಯಪ್ ಒಂದನ್ನು ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">ವಿಸ್ತರಣೆ ಲೋಡ್ ಮಾಡುವಾಗ ದೋಷ</translation>
+<translation id="6220551899604141979">Chrome ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಒಂದನ್ನು <ph name="PARTNER_NAME" /> ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">ಗೌಪ್ಯತೆ ಕೀಲಿಯನ್ನು ಓದಲು ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="6326175484149238433">Chrome ನಿಂದ ತೆಗೆದುಹಾಕು</translation>
 <translation id="6391538222494443604">ಇನ್‌ಪುಟ್ ಡೈರೆಕ್ಟರಿ ಅಸ್ತಿತ್ವದಲ್ಲಿರಬೇಕು.</translation>
 <translation id="641087317769093025">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್ ಜಿಪ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ನಿಮ್ಮ ಸಾಧನಗಳಲ್ಲಿ ಒಂದು ಅಥವಾ ಹೆಚ್ಚಿನ ಸಾಧನಗಳಿಗೆ ಪ್ರವೇಶವನ್ನು ವಿನಂತಿಸುತ್ತಿದೆ:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> ಬಳಕೆದಾರರು</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' ಹಿನ್ನೆಲೆ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ದಿಂದ <ph name="VENDOR_NAME" /> (ಕ್ರಮಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">ಮೈಮ್‌ಹ್ಯಾಂಡ್ಲರ್: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">ಮ್ಯಾನಿಫೆಸ್ಟ್ ಫೈಲ್ ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="7217838517480956708">ಈ ಯಂತ್ರದ ನಿರ್ವಾಹಕರಿಗೆ <ph name="EXTENSION_NAME" /> ಅನ್ನು ಸ್ಥಾಪಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ತೆಗೆದುಹಾಕಲು ಅಥವಾ ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="7287143125007575591">ಆ್ಯಕ್ಸೆಸ್ ನೀರಾಕರಿಸಲಾಗಿದೆ.</translation>
+<translation id="760353356052806707">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಮ್ Chrome ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದಂತಹ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಸೇರಿಸಿದೆ.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">ಖಾಸಗಿ ಕೀಲಿಗಾಗಿ ಇನ್‌ಪುಟ್ ಮೌಲ್ಯವು ಮಾನ್ಯವಾದ ಫಾರ್ಮ್ಯಾಟ್‌ ಹೊಂದಿರಬೇಕು (PKCS#8-ಫಾರ್ಮ್ಯಾಟ್‌ PEM-ಎನ್‌ಕೋಡೆಡ್ RSA ಕೀ).</translation>
 <translation id="765293928828334535">ಈ ವೆಬ್‌ಸೈಟ್‌ನಿಂದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
+<translation id="7766838926148951335">ಅನುಮತಿಗಳನ್ನು ಸಮ್ಮತಿಸಿ</translation>
 <translation id="7876803335449432072">ಕಂಟೆಂಟ್‌ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ '<ph name="RELATIVE_PATH" />' ಫೈಲ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ಕಂಟೆಂಟ್‌ ಸ್ಕ್ರಿಪ್ಟ್ ಸ್ಟೈಲ್‌ ಶೀಟ್‌ಗಳನ್ನು .css ಫೈಲ್‌ಗಳಂತಹ ಬೆಂಬಲಿತ ಸ್ಟೈಲ್‌ ಶೀಟ್‌ ಫೈಲ್‌ಗಳಿಂದ ಮಾತ್ರ ಲೋಡ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7939686037314084444">ವಿಸ್ತರಣೆಯನ್ನು ಸರಿಯಾಗಿ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ಇದು ನೆಟ್‌ವರ್ಕ್‌ ವಿನಂತಿಗಳನ್ನು ಪ್ರತಿಬಂಧಿಸಲು ಸಾಧ್ಯವಾಗದಿರಬಹುದು.</translation>
 <translation id="7952904276017482715">ನಿರೀಕ್ಷಿತ ಐಡಿ "<ph name="EXPECTED_ID" />", ಆದರೆ ಐಡಿ "<ph name="NEW_ID" />" ಆಗಿದೆ</translation>
 <translation id="7972881773422714442">ಆಯ್ಕೆಗಳು: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">ಅನುಮೋದಿಸಿ</translation>
 <translation id="8035920974645200807">ಬಳಕೆದಾರರಿಗೆ ಮುಖಮಾಡಿದೆ</translation>
 <translation id="8047248493720652249">ಈ ವಿಸ್ತರಣೆಯು "<ph name="ATTEMPTED_FILENAME" />" ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವುದನ್ನು ಹೆಸರಿಸಲು ವಿಫಲವಾಗಿದೆ ಏಕೆಂದರೆ ಮತ್ತೊಂದು ವಿಸ್ತರಣೆ (<ph name="EXTENSION_NAME" />) ಯು ವಿಭಿನ್ನ ಫೈಲ್‌ ಹೆಸರು "<ph name="ACTUAL_FILENAME" />" ಗೆ ನಿರ್ಧರಿಸಿದೆ.</translation>
 <translation id="8049705080247101012"><ph name="EXTENSION_NAME" /> ದೋಷಪೂರಿತವೆಂದು Google ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದೆ ಹಾಗೂ ಅದರ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅನ್ನು ತಡೆಗಟ್ಟಲಾಗಿದೆ</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> ರಿಂದ <ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">ಇದು ಸಾಧ್ಯ:</translation>
 <translation id="8517576857589387417">ಮ್ಯಾನಿಫೆಸ್ಟ್ ಫೈಲ್ ಕಾಣದಾಗಿದೆ ಅಥವಾ ಅದನ್ನು ಓದಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8565650234829130278">ಆ್ಯಪ್‌ ಕೆಳಮಟ್ಟಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ.</translation>
 <translation id="8621383749470166852">ಕಂಟೆಂಟ್‌ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ '<ph name="RELATIVE_PATH" />' ಫೈಲ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ಕಂಟೆಂಟ್‌ ಸ್ಕ್ರಿಪ್ಟ್ ಅನ್ನು .js ಫೈಲ್‌ಗಳಂತಹ ಬೆಂಬಲಿತ JavaScript ಫೈಲ್‌ಗಳಿಂದ ಮಾತ್ರ ಲೋಡ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8636666366616799973">ಪ್ಯಾಕೇಜ್ ಅಮಾನ್ಯವಾಗಿದೆ. ವಿವರಗಳು: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">ನೀವು ಈಗಾಗಲೇ "<ph name="EXTENSION_NAME" />" ಗಾಗಿ ವಿನಂತಿಸಿದ್ದೀರಿ</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ನಿಮ್ಮ ಸಾಧನಗಳಲ್ಲಿ ಒಂದಕ್ಕೆ ಪ್ರವೇಶವನ್ನು ವಿನಂತಿಸುತ್ತಿದೆ:</translation>
 <translation id="8885905466771744233">ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ವಿಸ್ತರಣೆಗೆ ಖಾಸಗಿ ಕೀಲಿ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ. ಆ ಕೀಲಿಯನ್ನು ಮರುಬಳಕೆ ಮಾಡಿ ಅಥವಾ ಮೊದಲು ಅದನ್ನು ಅಳಿಸಿ.</translation>
 <translation id="9039223174332979184">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ, <ph name="EXTENSION_NAME" /> ಕನಿಷ್ಠ 3ನೇ ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿರಬೇಕಾಗಿದೆ.</translation>
 <translation id="907841381057066561">ಪ್ಯಾಕೇಜಿಂಗ್ ಸಮಯದಲ್ಲಿ ತಾತ್ಕಾಲಿಕ ಜಿಪ್ ಫೈಲ್ ರಚಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="9102610709270966160">ವಿಸ್ತರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="93766956588638423">ವಿಸ್ತರಣೆ ದುರಸ್ತಿಪಡಿಸಿ</translation>
 <translation id="941543339607623937">ಅಮಾನ್ಯ ಖಾಸಗಿ ಕೀಲಿ.</translation>
 </translationbundle>

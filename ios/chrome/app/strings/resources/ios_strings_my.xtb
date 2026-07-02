@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{လျှို့ဝှက်ကီး {count} ခု}other{လျှို့ဝှက်ကီး {count} ခု}}</translation>
 <translation id="1005023885865154304">‘စကားဝှက် အော်တိုဖြည့်’ ဆက်တင်များကို ဖွင့်ပါ</translation>
 <translation id="1005230401424685968">နှစ်</translation>
+<translation id="1013852467930342108">Chrome ရှိ Gemini တွင် Live သည် လုပ်ဆောင်ချက်အသစ်ဖြစ်သည်</translation>
 <translation id="1013952917065545813">ဤနေရာသို့ပြန်လာပြီး မကြာသေးမီက ပိတ်ထားသောတဘ်များ ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="1016495303386450659">အကောင်းအရာ မွမ်းမံပြီးပါပြီ</translation>
 <translation id="1018804590490383958">စကင်ဖတ်ပြီး အော်တိုဖြည့်ရန်</translation>
@@ -1736,6 +1737,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6761393919622941301">အသံ</translation>
 <translation id="6765551480308401897">မူရင်းအဖြစ် မသတ်မှတ်ပါနှင့်</translation>
 <translation id="6770452996697898492">[ကြိုမှာထားသည်]</translation>
+<translation id="6775952316617222141">Chrome ရှိ Gemini နှင့် တိုက်ရိုက်ပြောဆိုရန်</translation>
 <translation id="6779455296366983087">သင့်ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ပါမည်</translation>
 <translation id="6782531425936234573">ဒေတာထုတ်ယူရန်</translation>
 <translation id="6791425686608802741">“အဖွဲ့အသစ်တွင် တဘ်ထည့်ရန်” ကို တို့ပါ</translation>

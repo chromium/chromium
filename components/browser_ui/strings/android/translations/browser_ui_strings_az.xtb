@@ -690,7 +690,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="8163152278172770963">Saytlara şəkildə şəkil rejiminə avtomatik daxil olmaq icazəsi verməyin</translation>
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="818487310457576362">Tam ekrandan çıxmaq üçün ekranın kənarından dartın.</translation>
-<translation id="8186479265534291036">Sayt işləmir? Üçüncü tərəf kukiləri bloklanıb</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> üçün icazə verilib</translation>
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
@@ -761,7 +760,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="8805385115381080995">Saytın real insan olduğunuzu təsdiqləmək ehtimalı az olduğuna görə daha sürətlə baxmaq olur</translation>
 <translation id="881644524232657178">Aktiv edildikdə saytlar cihazın hərəkət və işıq sensorlarından istifadə edə bilər. Deaktiv edildikdə saytlar sensorlardan istifadə edə bilməz.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Axtarış zamanı qoruma az olsa da, funksiyaların gözlənilən kimi işləmə ehtimalı yüksəkdir.</translation>
 <translation id="8889294078294184559">Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>
@@ -787,7 +785,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> üçün icazələri <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="9138037198177304356">Bildirişlərə icazə verilib</translation>
 <translation id="9138217887606523162">Cari zoom: <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Saytlar şəkildə şəkil rejiminə avtomatik daxil olmaq üçün bu funksiyadan istifadə edir. Digər tapşırıqlar üçün ekranı boşaldaraq video izləməyə davam edə bilərsiniz.</translation>
 <translation id="9156722768168878035">Chrome-un cihazın tətbiq siyahısında və axtarış nəticələrində son tabları göstərməsinə icazə verin. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
 <translation id="9162462602695099906">Bu səhifə təhlükəlidir</translation>
 <translation id="9182556968660520230">Saytlara qorunan məzmunu göstərmək icazəsi verməyin</translation>

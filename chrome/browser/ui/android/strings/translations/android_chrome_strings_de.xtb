@@ -243,6 +243,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2056878612599315956">Website pausiert</translation>
 <translation id="2063047797624276601">Deine Organisation hat das erweiterte Safe Browsing aktiviert</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Fehler bei 1 Download}other{Fehler bei # Downloads}}</translation>
+<translation id="2066690553719545730">KI-Modus immer anzeigen</translation>
 <translation id="2067805253194386918">Text</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2082238445998314030">Ergebnis <ph name="RESULT_NUMBER" /> von <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2149968176347646218">Verbindung ist nicht sicher</translation>
 <translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2163089732491971196">Gib deine Passphrase ein, um Chrome-Daten in deinem Google-Konto verwenden und speichern zu können</translation>
+<translation id="2164015935042801524">Hier mit der rechten Maustaste klicken, um Tabs vertikal anzuzeigen</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Bildbeschreibungen sind deaktiviert</translation>
 <translation id="2172905120685242547">Fenster schließen?</translation>
@@ -305,6 +307,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2323763861024343754">Websitespeicher</translation>
 <translation id="2327445548174191329">Von <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alle Mitglieder verlieren dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und alle Einladungslinks werden deaktiviert</translation>
+<translation id="2329500425421091035">Jetzt neu: KI-Modus in Chrome</translation>
 <translation id="2330186936255788117">Weitere Lesezeichen</translation>
 <translation id="2332515770639153015">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
@@ -328,6 +331,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, ausgewählter Tab mit Audio</translation>
 <translation id="2413014528833954543">Passwörter können auf diesem Gerät nicht geprüft werden</translation>
 <translation id="2414886740292270097">Dunkel</translation>
+<translation id="2415037988255164008">Fenster wiederherstellen?</translation>
 <translation id="2421705177906985956">Momentan sind keine Websites vorhanden</translation>
 <translation id="2426805022920575512">Anderes Konto auswählen</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videos, 1 Video in der Liste}other{Videos, # Videos in der Liste}}</translation>
@@ -1056,7 +1060,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5436928407363358055">Damit du einfach dort weitermachen kannst, wo du aufgehört hast, synchronisiere deinen Verlauf und deine Tabs</translation>
 <translation id="5438292632479953702">Noch einmal herunterladen</translation>
 <translation id="5439191312780166229">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chrome überspringen.</translation>
-<translation id="5441137934526263133">Website funktioniert nicht? Drittanbieter-Cookies werden blockiert.</translation>
 <translation id="5441466871879044658">In diese Sprache übersetzen</translation>
 <translation id="5444999712122199445">Zurück zur Website</translation>
 <translation id="544776284582297024">Auf den Button „Tabs öffnen“ tippen, um Tabs zu öffnen und mehrere Seiten gleichzeitig zu besuchen</translation>
@@ -1111,7 +1114,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="569536719314091526">Über den Button „Weitere Optionen“ kannst du dir diese Seite in eine beliebige Sprache übersetzen lassen</translation>
 <translation id="5696597120588531049">Chrome kann helfen, dich vor Bedrohungen wie Datenpannen und unsicheren Websites zu schützen</translation>
 <translation id="5698878456427040674">Prüfe, ob das ausgewählte Konto unterstützt wird.</translation>
-<translation id="5700415746238689851">Gemini öffnen</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> möchte eine Verbindung zu einem seriellen Port herstellen</translation>
 <translation id="5715150588940290235">Gespeicherte Sicherheitscodes löschen?</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
@@ -1340,6 +1342,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Suche mit Sogou</translation>
 <translation id="656065428026159829">Mehr anzeigen</translation>
+<translation id="6565781844089373403">Fenster wiederherstellen</translation>
 <translation id="6565959834589222080">WLAN wird verwendet, wenn es verfügbar ist</translation>
 <translation id="657177046675873214">Um auf all deinen Geräten auf deine Lesezeichen zugreifen zu können, musst du in den Einstellungen die Option „Lesezeichen“ aktivieren</translation>
 <translation id="6573096386450695060">Immer zulassen</translation>
@@ -1416,7 +1419,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6835182496791325827">Du wirst benachrichtigt, wenn Chrome die besten Ergebnisse für deine Suchanfragen findet, während du nicht da bist.</translation>
 <translation id="6846298663435243399">Wird geladen…</translation>
-<translation id="6850409657436465440">Download noch in Bearbeitung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> Tabs geschlossen</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 Ergebnis gefunden}other{# Ergebnisse gefunden}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiodateien, 1 Audiodatei in der Liste}other{Audiodateien, # Audiodateien in der Liste}}</translation>
@@ -1966,12 +1968,14 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="9001604755921395912">In Chrome-Inkognitotab öffnen</translation>
 <translation id="9010094279589497751">Gemini jederzeit schnell öffnen</translation>
 <translation id="9012585441087414258">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn sich eine Seite verdächtig verhält, werden URLs und Teile von Seiteninhalten an Google Safe Browsing gesendet.</translation>
+<translation id="9014097371980259227">Einige Tools wurden verschoben, damit du mit dem KI-Modus suchen kannst</translation>
 <translation id="9019199799064251516">Ohne Autoprofilsperre fortfahren?</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>
 <translation id="9022871169049522985">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren</translation>
 <translation id="9024318700713112071">Chrome als Standardbrowser festlegen</translation>
 <translation id="9027728231343310283">Für <ph name="SITE" /> rückgängig machen</translation>
 <translation id="9035378196785279980">Verschieben in\u2026</translation>
+<translation id="904146253922032365">Gedrückt halten, um Tabs vertikal anzuzeigen</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="9047347135558855162">Schnell eine Suche in Chrome starten</translation>
 <translation id="9050666287014529139">Passphrase</translation>

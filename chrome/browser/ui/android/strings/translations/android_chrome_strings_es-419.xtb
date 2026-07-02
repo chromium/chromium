@@ -243,6 +243,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2056878612599315956">Se pausó el sitio</translation>
 <translation id="2063047797624276601">Tu organización activó la Navegación segura mejorada</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{No se pudo realizar 1 descarga}other{No se pudieron realizar # descargas}}</translation>
+<translation id="2066690553719545730">Mostrar siempre el Modo IA</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2163089732491971196">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña</translation>
+<translation id="2164015935042801524">Haz clic con el botón derecho aquí para mostrar las pestañas verticalmente</translation>
 <translation id="2166228530126694506">Versión <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Las descripciones de imágenes están desactivadas.</translation>
 <translation id="2172905120685242547">¿Deseas cerrar la ventana?</translation>
@@ -305,6 +307,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se desactivarán todos los vínculos de invitación</translation>
+<translation id="2329500425421091035">Presentamos el Modo IA en Chrome</translation>
 <translation id="2330186936255788117">Más favoritos</translation>
 <translation id="2332515770639153015">Se activó la Navegación segura mejorada</translation>
 <translation id="233375395665273385">Borrar y salir</translation>
@@ -1057,7 +1060,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5436928407363358055">Para retomar fácilmente tu actividad desde donde la dejaste, sincroniza tu historial y tus pestañas</translation>
 <translation id="5438292632479953702">Volver a descargar</translation>
 <translation id="5439191312780166229">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chrome.</translation>
-<translation id="5441137934526263133">¿No funciona el sitio? Se bloquearon las cookies de terceros.</translation>
 <translation id="5441466871879044658">Traducir a este idioma</translation>
 <translation id="5444999712122199445">Volver al sitio</translation>
 <translation id="544776284582297024">Para abrir pestañas y visitar diferentes páginas al mismo tiempo, presiona el botón de pestañas abiertas</translation>
@@ -1112,7 +1114,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="569536719314091526">Traduce esta página a cualquier idioma desde el botón Más opciones</translation>
 <translation id="5696597120588531049">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más</translation>
 <translation id="5698878456427040674">Revisa si se admite la cuenta seleccionada.</translation>
-<translation id="5700415746238689851">Abrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> quiere conectarse a un puerto en serie</translation>
 <translation id="5715150588940290235">¿Quieres borrar los códigos de seguridad guardados?</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
@@ -1418,7 +1419,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6835182496791325827">Recibe una notificación cuando Chrome encuentre los mejores resultados para tus búsquedas mientras no estás.</translation>
 <translation id="6846298663435243399">Cargando…</translation>
-<translation id="6850409657436465440">La descarga sigue en curso</translation>
 <translation id="6850830437481525139">Se cerraron <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Se encontró 1 resultado}other{Se encontraron # resultados}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Archivos de audio, 1 archivo de audio en la lista}other{Archivos de audio, # archivos de audio en la lista}}</translation>
@@ -1968,12 +1968,14 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9001604755921395912">Abrir en Incógnito en Chrome</translation>
 <translation id="9010094279589497751">Abre Gemini rápidamente cuando lo necesites</translation>
 <translation id="9012585441087414258">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Si una página realiza alguna acción sospechosa, las URLs y los bits del contenido de la página se envían a la Navegación segura de Google.</translation>
+<translation id="9014097371980259227">Se movieron algunas herramientas para ayudarte a buscar con el Modo IA</translation>
 <translation id="9019199799064251516">¿Quieres continuar sin un bloqueo de perfil en el automóvil?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9022871169049522985">Los sitios y los anunciantes pueden medir el rendimiento de sus anuncios</translation>
 <translation id="9024318700713112071">Establece Chrome como navegador predeterminado</translation>
 <translation id="9027728231343310283">Deshacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
+<translation id="904146253922032365">Mantén presionado para mostrar las pestañas verticalmente</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9047347135558855162">Inicia rápidamente una búsqueda en Chrome</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>

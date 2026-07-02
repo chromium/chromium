@@ -690,7 +690,6 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="8163152278172770963">No permitir que los sitios activen la función Imagen en imagen automáticamente</translation>
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="818487310457576362">Arrastra desde el lateral de la pantalla para salir de la pantalla completa.</translation>
-<translation id="8186479265534291036">¿El sitio no funciona? Cookies de terceros bloqueadas.</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> permitida</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
@@ -761,7 +760,6 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="8805385115381080995">La navegación es más rápida porque es menos probable que un sitio te pida que verifiques que eres una persona real</translation>
 <translation id="881644524232657178">Cuando esta opción está activada, los sitios pueden usar los sensores de luz y de movimiento de tu dispositivo. Si está desactivada, los sitios no pueden usar los sensores.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="8889294078294184559">A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, con un sitio que hayas visitado anteriormente, que es probable que seas una persona real</translation>
 <translation id="8899807382908246773">Anuncios invasivos</translation>
 <translation id="8903921497873541725">Acercar</translation>
@@ -787,7 +785,6 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="913657688200966289">Activa los permisos para <ph name="APP_NAME" /> en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notificaciones permitidas</translation>
 <translation id="9138217887606523162">Zoom actual: <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Los sitios usan esta función para activar Imagen en imagen automáticamente. De esta forma, puedes seguir viendo un vídeo y liberar espacio en la pantalla para hacer otras tareas.</translation>
 <translation id="9156722768168878035">Permite que Chrome muestre tus pestañas recientes en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta página es peligrosa</translation>
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>

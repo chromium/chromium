@@ -582,6 +582,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1902576642799138955">Període de validesa</translation>
 <translation id="1908217026282415406">Ús i moviment de la càmera</translation>
 <translation id="1908690643053136980">El teu administrador no ha concedit permís de <ph name="PERMISSION" /> a aquest lloc web</translation>
+<translation id="1912750443952232242">Desa el document d'identitat a Google Wallet</translation>
 <translation id="1913037223029790376">Utilitza el CVC per a aquesta targeta virtual</translation>
 <translation id="191374271204266022">Copia com a JSON</translation>
 <translation id="1914326953223720820">Descomprimeix el servei</translation>
@@ -2368,6 +2369,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4705573018059932476">Has decidit verificar-te amb <ph name="AUTHENTICATOR" /> en llocs web que utilitzen <ph name="PROVIDER_ORIGIN" />. Aquest proveïdor pot haver emmagatzemat informació sobre com pagues, que pots <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">La connexió s'ha interromput</translation>
 <translation id="4708276642004148190">Tractament i subministrament d'aigua</translation>
+<translation id="4710249055485272920">No s'ha pogut trobar aquesta informació</translation>
 <translation id="4711628883879888561">Col·labora en un grup de pestanyes</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">No tens permís per visitar aquest lloc web</translation>
@@ -2856,6 +2858,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}other{<ph name="CONTACT_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}}</translation>
 <translation id="5463625433003343978">S'estan cercant dispositius...</translation>
 <translation id="5464236009658034488">Material d'oficina</translation>
+<translation id="5465128270485645058">Obtén respostes més personalitzades compartint automàticament les pestanyes obertes d'aquesta finestra si estan relacionades amb aquest fil de discussió.</translation>
 <translation id="5465724643247062031">Vidre (opac)</translation>
 <translation id="5466018172325111652">No has rebut el codi? <ph name="BEGIN_LINK" />Obtén un codi nou<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplicacions de pagaments</translation>
@@ -3019,6 +3022,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5707154300732650394">Reprèn el recorregut</translation>
 <translation id="57094364128775171">Suggereix una contrasenya segura…</translation>
 <translation id="570953204696852961">Vermell 3</translation>
+<translation id="5710907191777451677">Demana a Gemini a Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinaris</translation>
 <translation id="5715150588940290235">Vols suprimir els codis de seguretat desats?</translation>
@@ -3139,6 +3143,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5911020115933784199">Esdeveniments i agendes culturals</translation>
 <translation id="5911110632211230665">Opció d'obrir bloquejada</translation>
 <translation id="5912796581727968237">Obre Google Wallet</translation>
+<translation id="5914185423510719251">Desa el KTN a Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ha afegit aquesta pestanya</translation>
 <translation id="5915189366813702112">Treball flexible</translation>
 <translation id="59174027418879706">Activat</translation>
@@ -5042,7 +5047,6 @@ Detalls addicionals:
 <translation id="8871485335898060555">Antiguitats i articles de col·leccionista</translation>
 <translation id="8871553383647848643">Personalitza l'aspecte del teu navegador</translation>
 <translation id="887350038812854047">Aquesta política té el mateix valor aplicat als nivells d'equip i d'usuari. La política funciona de la manera prevista.</translation>
-<translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="8874824191258364635">Introdueix un número de targeta vàlid</translation>
 <translation id="8877780815363510165">Pesca</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" no es pot establir en "<ph name="DATA_CONTROLS_LEVEL" />"</translation>

@@ -243,6 +243,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2056878612599315956">사이트 일시중지됨</translation>
 <translation id="2063047797624276601">조직에서 향상된 세이프 브라우징을 사용 설정했습니다.</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
+<translation id="2066690553719545730">AI 모드 항상 표시</translation>
 <translation id="2067805253194386918">텍스트</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
@@ -263,6 +264,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2149968176347646218">연결이 안전하지 않음</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2163089732491971196">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
+<translation id="2164015935042801524">여기에서 마우스 오른쪽 버튼으로 클릭하여 세로로 탭 표시</translation>
 <translation id="2166228530126694506">버전 <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2172905120685242547">창을 닫으시겠습니까?</translation>
@@ -305,6 +307,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2323763861024343754">사이트 저장공간</translation>
 <translation id="2327445548174191329">출처: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
+<translation id="2329500425421091035">Chrome의 AI 모드 소개</translation>
 <translation id="2330186936255788117">북마크 더보기</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
@@ -1057,7 +1060,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5436928407363358055">중단한 부분부터 손쉽게 이어 가려면 방문 기록과 탭을 동기화하세요.</translation>
 <translation id="5438292632479953702">다시 다운로드</translation>
 <translation id="5439191312780166229">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
-<translation id="5441137934526263133">사이트가 작동하지 않나요? 서드 파티 쿠키가 차단되었습니다.</translation>
 <translation id="5441466871879044658">번역 도착어</translation>
 <translation id="5444999712122199445">사이트로 돌아가기</translation>
 <translation id="544776284582297024">탭을 열어 동시에 여러 페이지를 방문하려면 탭 열기 버튼 탭하기</translation>
@@ -1112,7 +1114,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="569536719314091526">옵션 더보기 버튼을 눌러 이 페이지를 원하는 언어로 번역하세요</translation>
 <translation id="5696597120588531049">Chrome은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="5698878456427040674">선택한 계정이 지원되는지 확인하세요.</translation>
-<translation id="5700415746238689851">Gemini 열기</translation>
 <translation id="5709213329446699338"><ph name="SITE" />에서 직렬 포트에 연결하려고 합니다</translation>
 <translation id="5715150588940290235">저장된 보안 코드를 삭제하시겠습니까?</translation>
 <translation id="572328651809341494">최근 탭</translation>
@@ -1418,7 +1419,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6831043979455480757">번역</translation>
 <translation id="6835182496791325827">사용자가 자리를 비운 동안에 Chrome이 검색어에 가장 적합한 결과를 찾으면 알림을 받습니다.</translation>
 <translation id="6846298663435243399">로드 중…</translation>
-<translation id="6850409657436465440">아직 다운로드 중</translation>
 <translation id="6850830437481525139">탭 <ph name="TAB_COUNT" />개를 닫았습니다.</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{검색 결과 1개 찾음}other{검색 결과 #개 찾음}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{오디오 파일, 목록에 있는 오디오 파일 1개}other{오디오 파일, 목록에 있는 오디오 파일 #개}}</translation>
@@ -1968,12 +1968,14 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9001604755921395912">시크릿 모드 Chrome 탭에서 열기</translation>
 <translation id="9010094279589497751">필요할 때 빠르게 Gemini를 여세요.</translation>
 <translation id="9012585441087414258">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 페이지에서 의심스러운 작업을 수행하면 URL 및 페이지 콘텐츠 일부가 Google 세이프 브라우징으로 전송됩니다.</translation>
+<translation id="9014097371980259227">AI 모드로 검색할 수 있도록 일부 도구가 이동되었습니다</translation>
 <translation id="9019199799064251516">자동차 프로필 잠금 없이 계속하시겠습니까?</translation>
 <translation id="9022774213089566801">자주 방문한 웹사이트</translation>
 <translation id="9022871169049522985">사이트 및 광고주가 광고 실적을 측정할 수 있습니다.</translation>
 <translation id="9024318700713112071">Chrome을 기본 브라우저로 설정</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> 실행취소</translation>
 <translation id="9035378196785279980">다음으로 이동\u2026</translation>
+<translation id="904146253922032365">길게 터치하여 세로로 탭 표시</translation>
 <translation id="9042893549633094279">개인 정보 보호 및 보안</translation>
 <translation id="9047347135558855162">Chrome에서 빠르게 검색 시작</translation>
 <translation id="9050666287014529139">암호</translation>

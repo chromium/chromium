@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">האתר מושהה</translation>
 <translation id="2063047797624276601">הארגון שלך הפעיל את הגרסה המשופרת של הגלישה הבטוחה</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{הורדה אחת נכשלה}one{# הורדות נכשלו}two{# הורדות נכשלו}other{# הורדות נכשלו}}</translation>
+<translation id="2066690553719545730">‏תמיד להציג את מצב AI</translation>
 <translation id="2067805253194386918">טקסט</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">החיבור אינו מאובטח</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2163089732491971196">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך</translation>
+<translation id="2164015935042801524">כדי להציג את הכרטיסיות לאורך, צריך ללחוץ לחיצה ימנית</translation>
 <translation id="2166228530126694506">גרסה <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">התכונה 'תיאורי תמונות' מושבתת</translation>
 <translation id="2172905120685242547">לסגור את החלון?</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">נתוני אתר מאוחסנים</translation>
 <translation id="2327445548174191329">מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
+<translation id="2329500425421091035">‏חדש: מצב AI ב-Chrome</translation>
 <translation id="2330186936255788117">עוד סימניות</translation>
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
@@ -1056,7 +1059,6 @@
 <translation id="5436928407363358055">כדי להמשיך בקלות מהנקודה שבה הפסקת, צריך לסנכרן את ההיסטוריה ואת הכרטיסיות</translation>
 <translation id="5438292632479953702">להורדה מחדש</translation>
 <translation id="5439191312780166229">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chrome.</translation>
-<translation id="5441137934526263133">‏האתר לא פועל? קובצי cookie של צד שלישי חסומים</translation>
 <translation id="5441466871879044658">תרגום לשפה הזו</translation>
 <translation id="5444999712122199445">חזרה לאתר</translation>
 <translation id="544776284582297024">כדי לפתוח כרטיסיות ולהיכנס לדפים שונים בו-זמנית, יש ללחוץ על כפתור הכרטיסיות הפתוחות</translation>
@@ -1111,7 +1113,6 @@
 <translation id="569536719314091526">דרך כפתור האפשרויות הנוספות אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="5696597120588531049">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="5698878456427040674">עליך לבדוק אם יש תמיכה בחשבון שנבחר.</translation>
-<translation id="5700415746238689851">‏פתיחת Gemini</translation>
 <translation id="5709213329446699338">האתר <ph name="SITE" /> מבקש להתחבר אל יציאה טורית</translation>
 <translation id="5715150588940290235">למחוק את קודי האבטחה שנשמרו?</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
@@ -1416,7 +1417,6 @@
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6835182496791325827">‏יש לך אפשרות לקבל הודעה כש-Chrome מוצא את התוצאות שהכי מתאימות לחיפושים שלך, גם אם הוא לא בשימוש באותו הרגע.</translation>
 <translation id="6846298663435243399">הטעינה מתבצעת...</translation>
-<translation id="6850409657436465440">ההורדה עדיין מתבצעת</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> כרטיסיות נסגרו</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{נמצאה תוצאה אחת}one{נמצאו # תוצאות}two{נמצאו # תוצאות}other{נמצאו # תוצאות}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{קובצי אודיו, קובץ אודיו אחד ברשימה}one{קובצי אודיו, # קובצי אודיו ברשימה}two{קובצי אודיו, # קובצי אודיו ברשימה}other{קובצי אודיו, # קובצי אודיו ברשימה}}</translation>
@@ -1966,12 +1966,14 @@
 <translation id="9001604755921395912">‏פתיחה בכרטיסייה פרטית ב-Chrome</translation>
 <translation id="9010094279589497751">‏פתיחה מהירה של Gemini ברגע הנכון</translation>
 <translation id="9012585441087414258">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. אם בדף כלשהו מתבצעת פעולה חשודה, כתובות URL וקטעים מהתוכן בדף נשלחים אל הגלישה הבטוחה של Google.</translation>
+<translation id="9014097371980259227">‏כדי לעזור לך לחפש במצב AI, חלק מהכלים עברו למקום אחר</translation>
 <translation id="9019199799064251516">להמשיך בלי נעילת פרופיל במכונית?</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
 <translation id="9022871169049522985">אתרים ומפרסמים יכולים למדוד את ביצועי המודעות שלהם</translation>
 <translation id="9024318700713112071">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="9027728231343310283">ביטול ההרשאה לאתר <ph name="SITE" /></translation>
 <translation id="9035378196785279980">‏העברה אל\u2026</translation>
+<translation id="904146253922032365">כדי להציג את הכרטיסיות לאורך צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
 <translation id="9047347135558855162">‏חיפוש מהיר ב-Chrome</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>

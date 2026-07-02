@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} κλειδί πρόσβασης}other{{count} κλειδιά πρόσβασης}}</translation>
 <translation id="1005023885865154304">Άνοιγμα ρυθμίσεων Αυτόματης συμπλήρωσης κωδικών πρόσβασης</translation>
 <translation id="1005230401424685968">ΕΕΕΕ</translation>
+<translation id="1013852467930342108">Το Live είναι μια νέα λειτουργία στο Gemini στο Chrome</translation>
 <translation id="1013952917065545813">Μπορείτε να επιστρέψετε εδώ για να ανοίξετε ξανά τις καρτέλες που κλείσατε πρόσφατα.</translation>
 <translation id="1016495303386450659">Το στοιχείο ενημερώθηκε</translation>
 <translation id="1018804590490383958">Σάρωση και αυτόματη συμπλήρωση</translation>
@@ -1738,6 +1739,7 @@
 <translation id="6761393919622941301">Ήχος</translation>
 <translation id="6765551480308401897">Να μην οριστεί ως προεπιλογή</translation>
 <translation id="6770452996697898492">[ΕΧΕΙ ΓΙΝΕΙ ΚΡΑΤΗΣΗ]</translation>
+<translation id="6775952316617222141">Χρήση του Live με το Gemini στο Chrome</translation>
 <translation id="6779455296366983087">Τα δεδομένα περιήγησής σας θα διαγραφούν</translation>
 <translation id="6782531425936234573">Εξαγωγή δεδομένων</translation>
 <translation id="6791425686608802741">Πατήστε Προσθήκη καρτέλας σε νέα ομάδα</translation>

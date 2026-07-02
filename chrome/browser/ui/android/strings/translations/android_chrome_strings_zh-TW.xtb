@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">網站已暫停</translation>
 <translation id="2063047797624276601">貴機構已開啟安全瀏覽強化防護功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{無法完成 1 項下載作業}other{無法完成 # 項下載作業}}</translation>
+<translation id="2066690553719545730">一律顯示 AI 模式</translation>
 <translation id="2067805253194386918">文字</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">連線不安全</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2163089732491971196">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語</translation>
+<translation id="2164015935042801524">在這裡按一下滑鼠右鍵即可垂直顯示分頁</translation>
 <translation id="2166228530126694506">版本 <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">圖片說明功能已關閉</translation>
 <translation id="2172905120685242547">要關閉視窗嗎？</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">網站儲存資料量</translation>
 <translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">所有共用對象都將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，邀請連結也會全部失效</translation>
+<translation id="2329500425421091035">隆重推出 Chrome 內建 AI 模式</translation>
 <translation id="2330186936255788117">更多書籤</translation>
 <translation id="2332515770639153015">已啟用安全瀏覽強化防護功能</translation>
 <translation id="233375395665273385">刪除並登出</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">如要輕鬆接續瀏覽，請同步處理歷史記錄和分頁</translation>
 <translation id="5438292632479953702">再次下載</translation>
 <translation id="5439191312780166229">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>
-<translation id="5441137934526263133">網站無法正常運作嗎？這是因為第三方 Cookie 已遭封鎖</translation>
 <translation id="5441466871879044658">翻譯成這種語言</translation>
 <translation id="5444999712122199445">返回網站</translation>
 <translation id="544776284582297024">如果想開啟分頁並同時造訪不同的網頁，請輕觸「開啟的分頁」按鈕</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">透過 [更多選項] 按鈕將這個網頁翻譯成任何語言</translation>
 <translation id="5696597120588531049">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
-<translation id="5700415746238689851">開啟 Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> 要求與序列埠連線</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6835182496791325827">離開期間，在 Chrome 找到最佳搜尋結果時收到通知。</translation>
 <translation id="6846298663435243399">載入中…</translation>
-<translation id="6850409657436465440">下載作業仍在進行中</translation>
 <translation id="6850830437481525139">關閉了 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{找到 1 筆結果}other{找到 # 筆結果}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{音訊檔案，清單中有 1 個音訊檔案}other{音訊檔案，清單中有 # 個音訊檔案}}</translation>
@@ -1968,12 +1968,14 @@
 <translation id="9001604755921395912">在 Chrome 無痕模式分頁中開啟</translation>
 <translation id="9010094279589497751">隨時都能快速開啟 Gemini</translation>
 <translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
+<translation id="9014097371980259227">我們調整了部分工具的位置，方便你使用 AI 模式搜尋</translation>
 <translation id="9019199799064251516">不鎖定汽車設定檔就繼續嗎？</translation>
 <translation id="9022774213089566801">經常造訪</translation>
 <translation id="9022871169049522985">網站和廣告主可評估廣告成效</translation>
 <translation id="9024318700713112071">將 Chrome 設為預設瀏覽器</translation>
 <translation id="9027728231343310283">復原 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="904146253922032365">按住即可垂直顯示分頁</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
 <translation id="9047347135558855162">快速啟動 Chrome 搜尋</translation>
 <translation id="9050666287014529139">通關密語</translation>

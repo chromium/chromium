@@ -1,45 +1,78 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" ઇન્સ્ટૉલ કરો</translation>
+<translation id="1070377999570795893">તમારા કોમ્પ્યુટર પરના અન્ય પ્રોગ્રામે કોઇ એક્સ્ટેન્શન ઉમેર્યું છે જેનાથી Chromeની કાર્યપદ્ધતિમાં ફેરફાર થઇ શકે છે.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">થીમ ચાલુ કરો</translation>
 <translation id="1135328998467923690">પૅકેજ અમાન્ય છે : '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">પાછળનો કૅમેરો</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે, જેને કારણે Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">ખાનગી કી નિકાસ કરવામાં નિષ્ફળ.</translation>
 <translation id="132960226125594336">સ્ક્રિપ્ટના મહત્તમ કદ અથવા એક્સ્ટેન્શનના કન્ટેન્ટ સ્ક્રિપ્ટના મહત્તમ કુલ કદથી વધી જવાને કારણે કન્ટેન્ટ સ્ક્રિપ્ટ માટે '<ph name="RELATIVE_PATH" />' ફાઇલ લોડ કરી શકાઈ નથી.</translation>
 <translation id="1445572445564823378">આ એક્સ્ટેંશન <ph name="PRODUCT_NAME" />ને ધીમુંં કરી રહ્યું છે. <ph name="PRODUCT_NAME" />ના પ્રદર્શનને પહેલાંના જેવું કરવા માટે તમારે તેને બંધ કરવું જોઈએ.</translation>
 <translation id="1468038450257740950">WebGL સમર્થિત નથી.</translation>
 <translation id="1478607704480248626">ઇન્સ્ટૉલેશન ચાલુ કર્યું નથી</translation>
+<translation id="1483493594462132177">મોકલો</translation>
+<translation id="1485015260175968628">તે હવે આ કરી શકે છે:</translation>
 <translation id="1556537182262721003">એક્સટેંશન ડિરેક્ટરીને પ્રોફાઇલમાં ખસેડી શકાઈ નથી.</translation>
+<translation id="1585717515139318619">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે કોઇ થીમ ઉમેરી છે જે Chrome ની કાર્યપદ્ધતિમાં ફેરફાર કરી શકે છે.
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">સ્ક્રિપ્ટ માટે css '<ph name="RELATIVE_PATH" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="1616298854599875024">એક્સટેંશન "<ph name="IMPORT_NAME" />" આયાત કરવામાં અસમર્થ કારણ કે તે કોઈ શેર કરેલ મૉડ્યૂલ નથી</translation>
+<translation id="175772926354468439">થીમ ચાલુ કરો</translation>
 <translation id="1757786065507923842">માતાપિતાની પરવાનગી વિનંતી નિષ્ફળ થઈ.</translation>
 <translation id="1803557475693955505">બૅકગ્રાઉન્ડ પેજ '<ph name="BACKGROUND_PAGE" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="1875387611427697908">આ ફક્ત <ph name="CHROME_WEB_STORE" />માંથી જ ઉમેરી શકાશે</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ને ઇન્સ્ટોલ કરવામાં અસમર્થ કારણ કે "<ph name="IMPORT_NAME" />" દ્વારા તેની મંજૂરી નથી</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" ઉમેરીએ?</translation>
 <translation id="2159915644201199628">છબીને ડિકોડ કરી શક્યાં નથી: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">તમારા માતાપિતાએ આ એક્સ્ટેન્શન મંજૂર કર્યું નથી</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" એ અતિરિક્ત પરવાનગીઓની વિનંતી કરી છે.</translation>
+<translation id="2327492829706409234">ઍપ ચાલુ કરો</translation>
 <translation id="2350172092385603347">લૉકલાઇઝેશન વપરાયુ, પરંતુ default_locale નો ઉલ્લેખ મેનિફેસ્ટમાં નહોતો.</translation>
 <translation id="2576842806987913196">આ નામવાળી એક CRX ફાઇલ પહેલાથી જ અસ્તિત્વમાં છે.</translation>
 <translation id="2662876636500006917">Chrome વેબ બજાર</translation>
+<translation id="2678063897982469759">ફરી ચાલુ કરો</translation>
 <translation id="2743583586211388067">તમારી સંસ્થાની એક્સ્ટેન્શન સાથે સંકળાયેલા જોખમ સંબંધિત પૉલિસી હેઠળ આ એક્સ્ટેન્શનનો ઍક્સેસ બ્લૉક કરવામાં આવ્યો છે.</translation>
+<translation id="2766161002040448006">માતાપિતાને પૂછો</translation>
 <translation id="2785530881066938471">કન્ટેન્ટ સ્ક્રિપ્ટ માટે '<ph name="RELATIVE_PATH" />' ફાઇલ લોડ કરી શકાઈ નથી. તે UTF-8 એન્કોડેડ નથી.</translation>
+<translation id="2850541429955027218">થીમ ઉમેરો</translation>
+<translation id="2883143988769190738">આ એક્સ્ટેન્શન નીચેની પરવાનગીઓની વિનંતી કરે છે:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />")ને વ્યવસ્થાપક દ્વારા અવરોધિત કરવામાં આવેલ છે. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">તમારા વ્યવસ્થાપકને "<ph name="EXTENSION_NAME" />" ઇન્સ્ટૉલ કરવાની વિનંતી મોકલીએ?</translation>
 <translation id="2988488679308982380">પૅકેજ ઇન્સ્ટોલ કરી શકાયું નહીં: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> વિક્રેતાનું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ફાઇલ બદલવામાં નિષ્ફળ થયું. ફાઇલ ઉપયોગમાં છે કે નહીં તે જોવા માટે તપાસો.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> વિક્રેતાનું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">તમારી સંસ્થા દ્વારા આ એક્સ્ટેન્શનનો ઍક્સેસ બ્લૉક કરવામાં આવ્યો છે.</translation>
+<translation id="3183357154200327217">તમારા કમ્પ્યૂટર પરના અન્ય પ્રોગ્રામ દ્વારા કોઈ થીમ ઉમેરવામાં આવી છે જેનાથી Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">'Kiosk_only' મેનિફેસ્ટની વિશેષતા ધરાવતી ઍપ, ChromeOS કિઓસ્ક મોડમાં ઇન્સ્ટૉલ કરેલી હોવી આવશ્યક છે</translation>
 <translation id="3364986687961713424">તમારા વ્યવસ્થાપક તરફથી: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> વિક્રેતા તરફથી <ph name="PRODUCT_NAME" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ખાનગી કી માટેનું ઇનપુટ મૂલ્ય એ એક માન્ય પાથ હોવો આવશ્યક છે.</translation>
+<translation id="3788401245189148511">તે આ કરી શકે છે:</translation>
 <translation id="3834775135533257713">ઍપ્લિકેશન "<ph name="TO_INSTALL_APP_NAME" />" ઉમેરી શક્યાં નથી કારણ કે તે "<ph name="INSTALLED_APP_NAME" />" સાથે વિરોધાભાસ ઉભો કરે છે.</translation>
 <translation id="388442998277590542">વિકલ્પોનું પેજ '<ph name="OPTIONS_PAGE" />' લોડ કરી શકાયું નથી.</translation>
+<translation id="3905761538810670789">ઍપ્લિકેશન સુધારો</translation>
+<translation id="3908501907586732282">એક્સ્ટેંશન ચાલુ કરો</translation>
+<translation id="3927932062596804919">નકારો</translation>
 <translation id="3984413272403535372">એક્સટેંશન હસ્તાક્ષરિત કરતી વખતે ભૂલ.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ને સુધારીએ?</translation>
+<translation id="4061696872429826774">તમારા કમ્પ્યૂટર પરના અન્ય પ્રોગ્રામ દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે જેનાથી Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">તમારી સંસ્થા દ્વારા એક્સ્ટેન્શનની આ કૅટેગરીનો ઍક્સેસ બ્લૉક કરવામાં આવ્યો છે.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' વિશે પેજ લોડ કરી શકાયું નથી.</translation>
 <translation id="424963718355121712">ઍપ જે હોસ્ટને અસર કરે છે તેના તરફથી પ્રદાન થવી આવશ્યક છે</translation>
 <translation id="4306119971288449206">ઍપ "<ph name="CONTENT_TYPE" />" કન્ટેન્ટ-પ્રકાર સાથે ઉપલબ્ધ કરાવવી જોઈએ</translation>
+<translation id="4625078469366263107">ઍપ ચાલુ કરો</translation>
 <translation id="4633003931260532286">એક્સટેંશનને ન્યૂનતમ વર્ઝન "<ph name="IMPORT_VERSION" />" સાથે "<ph name="IMPORT_NAME" />"ની જરૂર પડે છે, પણ ફક્ત વર્ઝન "<ph name="INSTALLED_VERSION" />" જ ઇન્સ્ટૉલ કરેલું છે</translation>
 <translation id="4660476621274971848">અપેક્ષિત વર્ઝન "<ph name="EXPECTED_VERSION" />" છે, પરંતુ વર્ઝન "<ph name="NEW_ID" />" હતું.</translation>
 <translation id="471800408830181311">ખાનગી કી બનાવવામાં નિષ્ફળ.</translation>
@@ -47,21 +80,36 @@
 <translation id="4988792151665380515">ખાનગી કી નિકાસ કરવામાં નિષ્ફળ.</translation>
 <translation id="501057610015570208">'kiosk_only' મેનિફેસ્ટ વિશેષતા ધરાવતી ઍપને ChromeOS Flexના કિઓસ્ક મોડમાં ઇન્સ્ટૉલ કરવી જરૂરી છે</translation>
 <translation id="5026754133087629784">વેબવ્યુ: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">એક્સ્ટેન્શન ઉમેરો</translation>
+<translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5098647635849512368">પૅક કરવા માટે ડિરેક્ટરીનો સંપૂર્ણ પાથ શોધી શકાતો નથી.</translation>
 <translation id="5160071981665899014">સ્ક્રિપ્ટ માટે JavaScript '<ph name="RELATIVE_PATH" />' લોડ કરી શકાયું નથી.</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />"નું સૌથી નવું વર્ઝન બંધ કરવામાં આવ્યું છે, કારણ કે એને વધુ પરવાનગીઓની જરૂર છે.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ને ચાલુ કરીએ?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium માંથી દૂર કરો</translation>
 <translation id="5456409301717116725">આ એક્સટેન્શનમાં '<ph name="KEY_PATH" />' કી ફાઇલ શામેલ છે. તમે કદાચ એ કરવા માંગતા નથી.</translation>
+<translation id="5485102783864353244">ઍપ્લિકેશન ઉમેરો</translation>
 <translation id="5486326529110362464">ખાનગી કી માટે ઇનપુટ મૂલ્ય અસ્તિત્વમાં હોવું જોઈએ.</translation>
 <translation id="5527463195266282916">એક્સ્ટેંશનને ડાઉનગ્રેડ કરવાનો પ્રયાસ કર્યો.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">અહીંથી એક્સ્ટેન્શનને લોડ કરવામાં નિષ્ફળ:</translation>
 <translation id="5972529113578162692">આ મશીનના વ્યવસ્થાપક માટે <ph name="EXTENSION_NAME" /> ઇન્સ્ટોલ કરેલું હોવું જરૂરી છે. તે અનઇન્સ્ટોલ કરી શકાતું નથી.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> વિક્રેતાનું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> વિક્રેતા તરફથી <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">તમારા કમ્પ્યૂટર પરની અન્ય ઍપ દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે જેનાથી Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">એક્સ્ટેન્શન લોડ કરવામાં ભૂલ</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે, જેને કારણે Chromeની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">ખાનગી કી વાંચવામાં નિષ્ફળ છે.</translation>
+<translation id="6326175484149238433">Chrome માંથી દૂર કરો</translation>
 <translation id="6391538222494443604">ઇનપુટ ડિરેક્ટરી અસતિત્વમાં હોવી જોઈએ.</translation>
 <translation id="641087317769093025">એક્સ્ટેન્શન અનઝિપ કરી શકાયું નથી</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />", તમારા એક અથવા વધુ ઉપકરણો પરની ઍક્સેસની વિનંતી કરી રહ્યું છે:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> વપરાશકર્તાઓ</translation>
 <translation id="657064425229075395">બૅકગ્રાઉન્ડ સ્ક્રિપ્ટ '<ph name="BACKGROUND_SCRIPT" />' લોડ કરી શકાઈ નથી.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> નું <ph name="PRODUCT_NAME" /> (સીરિયલ નંબર <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +118,33 @@
 <translation id="7068383018033524534">મેનિફેસ્ટ ફાઇલ અમાન્ય છે</translation>
 <translation id="7217838517480956708">આ મશીનના વ્યવસ્થાપકને ઇન્સ્ટોલ કરવા માટે <ph name="EXTENSION_NAME" /> ની આવશ્કતા છે. તેને દૂર અથવા સંશોધિત કરી શકાશે નહીં.</translation>
 <translation id="7287143125007575591">ઍક્સેસ નિષેધ.</translation>
+<translation id="760353356052806707">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે કોઇ ઍપ્લિકેશન ઉમેરી છે જે Chrome ની કાર્યપદ્ધતિમાં ફેરફાર કરી શકે છે.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">ખાનગી કી માટેનું ઇનપુટ મૂલ્ય માન્ય ફૉર્મેટમાં હોવું જોઈએ (PKCS#8-ફૉર્મેટ PEM-એન્કોડેડ RSA કી).</translation>
 <translation id="765293928828334535">આ વેબસાઇટ પરથી ઍપ, એક્સ્ટેંશન અને વપરાશકર્તા સ્ક્રિપ્ટ ઉમેરી શકાતી નથી</translation>
+<translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7766838926148951335">પરવાનગીઓ સ્વીકારો</translation>
 <translation id="7876803335449432072">કન્ટેન્ટ સ્ક્રિપ્ટ માટે '<ph name="RELATIVE_PATH" />' ફાઇલ લોડ કરી શકાઈ નથી, કન્ટેન્ટ સ્ક્રિપ્ટ સ્ટાઇલ શીટ ફક્ત .css ફાઇલો જેવી સપોર્ટેડ સ્ટાઇલ શીટ ફાઇલોમાંથી જ લોડ કરી શકાય છે.</translation>
 <translation id="7939686037314084444">એક્સ્ટેંશન યોગ્ય રીતે લોડ થવામાં નિષ્ફળ થયું. તે કદાચ નેટવર્ક વિનંતીઓને પકડી ન શકતું હોય.</translation>
 <translation id="7952904276017482715">અપેક્ષિત ID "<ph name="EXPECTED_ID" />" છે, પણ ID "<ph name="NEW_ID" />" હતું.</translation>
 <translation id="7972881773422714442">વિકલ્પો: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">મંજૂર કરો</translation>
 <translation id="8035920974645200807">સામેનો કૅમેરો</translation>
 <translation id="8047248493720652249">આ એક્સટેન્શન "<ph name="ATTEMPTED_FILENAME" />" ને ડાઉનલોડ નામ આપવામાં નિષ્ફળ થયું કારણ કે અન્ય એક્સટેન્શન (<ph name="EXTENSION_NAME" />) એ એક જુદું ફાઇલનામ "<ph name="ACTUAL_FILENAME" />" નક્કી કર્યું છે.</translation>
 <translation id="8049705080247101012">Googleએ "<ph name="EXTENSION_NAME" />"ને બ્લેકલિસ્ટેડ ચિહ્નિત કર્યું છે અને ઇન્સ્ટૉલેશન અટકાવવામાં આવ્યું છે</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> તરફથી <ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">તે આ કરી શકે છે:</translation>
 <translation id="8517576857589387417">મેનિફેસ્ટ ફાઇલ ખૂટે છે અથવા સરળતાથી વાંચી શકાય તેવી નથી</translation>
 <translation id="8565650234829130278">એપ્લિકેશનને ડાઉનગ્રેડ કરવાનો પ્રયાસ કર્યો</translation>
 <translation id="8621383749470166852">કન્ટેન્ટ સ્ક્રિપ્ટ માટે '<ph name="RELATIVE_PATH" />' ફાઇલ લોડ કરી શકાઈ નથી, કન્ટેન્ટ સ્ક્રિપ્ટ ફક્ત .js ફાઇલો જેવી સપોર્ટેડ JavaScript ફાઇલોમાંથી જ લોડ કરી શકાય છે.</translation>
 <translation id="8636666366616799973">પૅકેજ અમાન્ય છે. વિગતો: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">તમે પહેલેથી "<ph name="EXTENSION_NAME" />"ની વિનંતી કરેલી છે</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />", તમારા ઉપકરણો પૈકી એક પરની ઍક્સેસની વિનંતી કરી રહ્યું છે:</translation>
 <translation id="8885905466771744233">ઉલ્લેખિત એક્સટેન્શન માટે ખાનગી કી પહેલાંથી અસતિત્વમાં છે. તે કી ફરીથી વાપરો અથવા પહેલા એને ડિલીટ કરો.</translation>
 <translation id="9039223174332979184">ઓછામાં ઓછા 3નું મેનિફેસ્ટ વર્ઝન હોવા માટે, આ મશીનના ઍડમિનિસ્ટ્રેટરને <ph name="EXTENSION_NAME" />ની આવશ્યકતા છે.</translation>
 <translation id="907841381057066561">પૅકેજીંગ દરમિયાન અસ્થાયી ઝિપ ફાઇલ બનાવવામાં નિષ્ફળ.</translation>
+<translation id="9102610709270966160">એક્સ્ટેંશન ચાલુ કરો</translation>
+<translation id="93766956588638423">એક્સ્ટેન્શન સુધારો</translation>
 <translation id="941543339607623937">અમાન્ય ખાનગી કી.</translation>
 </translationbundle>

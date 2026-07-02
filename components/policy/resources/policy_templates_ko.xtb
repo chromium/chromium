@@ -1223,6 +1223,19 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 <translation id="1829839214911753838">정책을 사용 설정하면 원격 지원 호스트가 <ph name="UIACCESS_PERMISSION_NAME" /> 권한이 있는 프로세스로 실행됩니다. 이를 통해 원격 사용자는 로컬 사용자의 데스크톱에서 관리자 창과 상호작용할 수 있습니다.
 
       정책을 사용 중지하거나 설정하지 않으면 원격 지원 호스트가 사용자의 컨텍스트에서 실행되며 원격 사용자는 데스크톱의 관리자 창에서 상호작용할 수 없습니다.</translation>
+<translation id="1832480890076796592">이 정책은 <ph name="PRODUCT_NAME" />의 프로세스 격리 설정을 제어합니다.
+
+프로세스 격리를 사용 설정하면 시스템의 승인된 애플리케이션이 <ph name="PRODUCT_NAME" />의 실행 중인 프로세스 콘텐츠를 조작하거나 읽지 못하도록 차단하여 <ph name="PRODUCT_NAME" />의 보안이 개선됩니다. 이렇게 하면 시스템의 다른 애플리케이션이 <ph name="PRODUCT_NAME" />의 암호화된 데이터에 액세스하지 못하게 됩니다.
+
+프로세스 격리를 사용 설정하면 <ph name="PRODUCT_NAME" />의 프로세스를 삽입하거나 조작할 수 있는 기능을 사용하는 서드 파티 애플리케이션(예: 바이러스 백신, 스크린 리더 또는 창 관리자 애플리케이션)과의 비호환성 문제가 생길 수 있습니다.
+
+정책을 사용 설정하면 <ph name="PRODUCT_NAME" />에서 프로세스 격리가 설정됩니다.
+
+정책을 사용 중지하면 <ph name="PRODUCT_NAME" />에서 프로세스 격리가 중지됩니다.
+
+정책을 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 프로세스 격리 기능의 기본 출시 프로세스를 따릅니다. 이 기능은 점점 더 많은 사용자에게 점진적으로 출시될 예정입니다.
+
+참고: 이 정책은 <ph name="PRODUCT_NAME" /> 시작 시 적용됩니다. <ph name="PRODUCT_NAME" /> 실행 중 정책이 변경되면 다음에 다시 시작할 때 새 설정이 적용됩니다.</translation>
 <translation id="1834796168555733063">비밀번호 관리자를 통한 패스키 저장 기능 사용 안함</translation>
 <translation id="1836380138559328229">기기 수준에서 활성 Wi-Fi 사용자 인증 정보 저장</translation>
 <translation id="1837165432382702436">페이지의 높이(마이크로미터)입니다.</translation>
@@ -1587,6 +1600,7 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
       정책이 설정되지 않으면 관리 대상인 사용자에게는 이 동작이 사용 중지되며 다른 사용자에게는 기본적으로 사용 설정됩니다.</translation>
 <translation id="2039801473506609891">기본 포트가 아닌 포트에서 HTTP/0.9 지원 사용 중지</translation>
 <translation id="2040479044912658454">인쇄 래스터화 모드</translation>
+<translation id="2041894060487590789">기능 출시 프로세스에 따라 프로세스 격리가 사용될 수 있습니다.</translation>
 <translation id="2043749682619281558">로그인 화면에서 커서 강조표시 사용</translation>
 <translation id="2043770014371753404">사용 중지된 엔터프라이즈 프린터</translation>
 <translation id="2054093043033461396">기기 화면 보호기 로그인 화면이 사용 설정되었습니다.</translation>
@@ -2264,6 +2278,7 @@ ServiceWorkerAutoPreload 기능은 ServiceWorker 부트스트랩 프로세스를
 
 정책을 설정하지 않으면 <ph name="POLICY_VALUE_VISIBLE" />이(가) 기본적으로 선택됩니다.</translation>
 <translation id="2488455166114458307">이 사이트에서 Device Attributes API 허용</translation>
+<translation id="2489454942579368665">개발자 도구의 사용 전면 금지</translation>
 <translation id="2489558694350871332">기기에서 가상 머신을 실행하도록 허용</translation>
 <translation id="2492240920793040106">세이프 브라우징 개선을 위한 시스템 정보 및 페이지 콘텐츠 보고 사용</translation>
 <translation id="2496180316473517155">방문 기록</translation>
@@ -2813,6 +2828,7 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 
       설정하지 않으면 처음부터 전원 피크 시프트가 사용 중지됩니다. 사용자는 이 설정을 변경할 수 없습니다.</translation>
 <translation id="2773288106548584039">이전 브라우저 지원</translation>
+<translation id="2773911169897970305">프로세스 격리를 사용 중지합니다.</translation>
 <translation id="2774906947252258544">차단 목록은 허용되지 않는 확장 프로그램 설치 유형을 설정합니다.
 
 'command_line'을 설정하면 명령줄에서 확장 프로그램이
@@ -4038,6 +4054,7 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 <translation id="3591584750136265240">로그인 인증 동작 설정</translation>
 <translation id="3593905652755912452">disabled 양식 컨트롤에서 기존 이벤트 전달 동작이 사용됩니다.</translation>
 <translation id="3596112486106491038">가상 머신 명령줄 액세스 권한 사용 설정</translation>
+<translation id="3600342552601917721">표준 웹 탐색에는 개발자 도구를 사용하도록 허용하지만 엔터프라이즈에서 설치한 확장 프로그램 및 관리 사용자의 기본 제공 확장 프로그램에 대한 사용은 제한합니다. M150 버전부터는 기본 제공 PDF 뷰어를 제외하고 이러한 확장 프로그램을 삽입하는 모든 페이지에서도 차단됩니다.</translation>
 <translation id="3603469950773500315">새로운 <ph name="CORS" /> 구현에서 <ph name="CORS" /> 확인 완화를 사용 설정하여 확장 프로그램이 호환되는 동작을 유지하도록 허용하고 <ph name="PRODUCT_NAME" />에서 <ph name="CORS" /> 확인 없이 지정된 헤더를 전송하도록 허용합니다.
 
       목록이 빈 상태로 설정되어 있으면 <ph name="PRODUCT_NAME" />은 호환되는 방식으로 확장 프로그램을 실행하도록 시도하고 <ph name="WEB_REQUEST_API_MANUAL" />에 설명된 것처럼 <ph name="PRODUCT_NAME" /> 79의 <ph name="API" /> 변경사항을 적용하지 않습니다.
@@ -4300,6 +4317,7 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="376375951585423504">영구 할당량을 사용 중지합니다.</translation>
 <translation id="3765260570442823273">유휴 로그아웃 경고 메시지 표시 시간</translation>
 <translation id="3766695867369523703">기본적으로 서드 파티 저장용량 파티셔닝을 허용합니다.</translation>
+<translation id="377001726927041812">프로세스 격리를 사용 설정합니다.</translation>
 <translation id="3770044943398389276">기본적으로 플로팅 SSO는 기기 간에 영구 쿠키만 이동합니다. 이 정책은 세션 쿠키 포함 여부를 제어합니다. <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> 정책이 사용 설정된 경우에만 적용됩니다.
 
 이 정책이 사용 설정되면 플로팅 SSO가 세션 쿠키와 영구 쿠키를 모두 동기화합니다.
@@ -6807,6 +6825,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       정책을 설정하지 않으면 빠른 잠금 해제를 이용하는 사용자가 잠금 화면에서 매일 비밀번호를 입력해야 합니다.</translation>
 <translation id="5306186200045823863">Symantec Corporation의 Legacy PKI 인프라에서 트러스트를 사용 설정합니다.</translation>
 <translation id="5307432759655324440">시크릿 모드 사용 가능 여부</translation>
+<translation id="5308289216279695777">엔터프라이즈 정책 확장 프로그램을 포함한 모든 컨텍스트 내에서 개발자 도구 사용 허용</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" />가 사용 중지되면 최대한 많은 사용자 데이터 유지를 시도하는 동시에 모든 브라우저 데이터를 삭제합니다.</translation>
 <translation id="53086358353377307">쿠키 설정이 허용되는 사이트를 지정하는 URL 패턴 목록을 설정할 수 있습니다.
 
@@ -12578,6 +12597,25 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" />에 필요한 디스크 여유 공간</translation>
 <translation id="8892771980172542172">IWA의 업데이트/출시 채널 이름입니다. 이 값은 임의의 문자열이 될 수 있으며 제한이 없습니다. 값을 제공하지 않으면 'default' 채널이 사용됩니다.</translation>
 <translation id="8892783613915541293">기기가 유휴 상태에서 AC 전원으로 구동되는 경우 취할 지연과 작업입니다.</translation>
+<translation id="8895045875428227171">0(기본값) 설정: 표준 웹 탐색에는 개발자 도구를 사용할 수 있지만 엔터프라이즈에서 설치한 확장 프로그램 및 관리 사용자의 기본 제공 확장 프로그램에는 사용할 수 없습니다. M150 버전부터는 기본 제공 PDF 뷰어를 제외하고 이러한 확장 프로그램을 삽입하는 모든 페이지에서도 차단됩니다.
+
+1 설정: 개발자 도구 및 콘솔의 잠금이 완전히 해제되어 엔터프라이즈 정책 확장 프로그램 내를 비롯한 모든 컨텍스트에서 액세스할 수 있습니다.
+
+2 설정: 브라우저 전반에서 개발자 도구 및 요소 검사가 완전히 사용 중지됩니다.
+
+또한 이 설정은 개발자 도구 또는 JavaScript 콘솔을 여는 키보드 단축키, 메뉴 항목, 컨텍스트 메뉴 항목의 사용을 중지합니다.
+
+<ph name="PRODUCT_NAME" /> 버전 99부터는 '페이지 소스 보기' 기능의 진입점도 제어합니다. 이 정책을 'DeveloperToolsDisallowed'(값 2)로 설정하면 사용자가 키보드 단축키 또는 컨텍스트 메뉴를 통해 소스 보기에 액세스할 수 없습니다. 소스 보기를 완전히 차단하려면 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 정책에 'view-source:*'도 추가해야 합니다.
+
+<ph name="PRODUCT_NAME" /> 버전 119부터 이 설정으로 분리형 웹 앱의 개발자 모드 활성화 및 사용 여부도 제어할 수 있습니다.
+
+<ph name="PRODUCT_NAME" /> 버전 128부터는 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 정책이 설정된 경우 이 설정으로 확장 프로그램 페이지의 개발자 모드를 제어할 수 없습니다.
+
+개발자 도구의 사용 가능 여부는 다음 우선순위로 결정됩니다.
+1. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 개발자 도구가 허용됩니다.
+2. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />이(가) 설정되고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />이(가) 설정되지 않은 경우 허용 목록에 없는 모든 URL이 차단됩니다.
+3. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 개발자 도구가 차단됩니다.
+4. 허용 목록 또는 차단 목록에 포함되지 않은 URL의 경우 이 정책(<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />)이 대체 정책으로 사용됩니다.</translation>
 <translation id="8897796778265450949">SAML 없이 GAIA를 통해 인증된 사용자가 오프라인으로 로그인할 수 있는 기간 제한</translation>
 <translation id="889814528399907891">사용자가 <ph name="LACROS_NAME" />를 사용 설정하고 기본 브라우저로 지정하도록 허용</translation>
 <translation id="8900312706328930425">시간 단위 클라우드 보고 실행 빈도</translation>
@@ -12998,6 +13036,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9180108183162961002">게스트로 로그인 허용</translation>
 <translation id="9185963199234034321">로그인 화면에서 고대비를 사용 설정하고 사용자가 일시적으로 사용 중지할 수 있도록 허용</translation>
 <translation id="9187743794267626640">외부 저장소 마운트 사용 중지</translation>
+<translation id="9188142767272053574">프로세스 격리 사용 설정</translation>
 <translation id="9190022798664427644">모노 오디오 사용 설정</translation>
 <translation id="9190456586252617675">이 정책은 어시스턴트 온보딩 환경의 모드를 제어합니다.
 

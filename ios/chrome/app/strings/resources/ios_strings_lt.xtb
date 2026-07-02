@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} prieigos raktas}one{{count} prieigos raktas}few{{count} prieigos raktai}many{{count} prieigos rakto}other{{count} prieigos raktų}}</translation>
 <translation id="1005023885865154304">Atidarykite automatinio slaptažodžių pildymo nustatymus</translation>
 <translation id="1005230401424685968">MMMM</translation>
+<translation id="1013852467930342108">„Live“ yra nauja „Gemini“ naršyklėje „Chrome“ funkcija</translation>
 <translation id="1013952917065545813">Galite grįžę čia atidaryti neseniai uždarytus skirtukus iš naujo</translation>
 <translation id="1016495303386450659">Elementas atnaujintas</translation>
 <translation id="1018804590490383958">Nuskaityti ir automatiškai užpildyti</translation>
@@ -1737,6 +1738,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6761393919622941301">Garsas</translation>
 <translation id="6765551480308401897">Nenustatyti kaip numatytojo</translation>
 <translation id="6770452996697898492">[UŽSAKYTA]</translation>
+<translation id="6775952316617222141">Naudoti „Live“ su „Gemini“ naršyklėje „Chrome“</translation>
 <translation id="6779455296366983087">Naršymo duomenys bus ištrinti</translation>
 <translation id="6782531425936234573">Eksportuoti duomenis</translation>
 <translation id="6791425686608802741">Palieskite „Pridėti skirtuką prie naujos grupės“</translation>

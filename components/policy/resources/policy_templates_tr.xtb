@@ -1230,6 +1230,19 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 <translation id="1829839214911753838">Politika, Etkin değerine ayarlanırsa uzaktan yardım ana makinesi bir işlemde <ph name="UIACCESS_PERMISSION_NAME" /> izinleriyle çalıştırılır. Bu durum, uzak kullanıcıların yerel kullanıcının masaüstünde yükseltilmiş pencerelerle etkileşimde bulunmasına olanak tanır.
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa uzaktan yardım ana makinesi, kullanıcının içeriğinde çalışır ve uzak kullanıcılar, masaüstündeki yükseltilmiş pencerelerle etkileşimde bulunamaz.</translation>
+<translation id="1832480890076796592">Bu politika, <ph name="PRODUCT_NAME" /> için İşlem Yalıtımı ayarlarını kontrol eder.
+
+İşlem Yalıtımı etkinleştirildiğinde, sistemdeki yetkili uygulamaların <ph name="PRODUCT_NAME" /> üzerinde çalışan işlemlerinin içeriğiyle oynaması veya bu içeriği okuması engellenerek <ph name="PRODUCT_NAME" /> için güvenlik artırılır. Bu sayede sistemdeki diğer uygulamalar, <ph name="PRODUCT_NAME" /> ürününün şifrelenmiş verilerine erişemez.
+
+İşlem Yalıtımı'nın etkinleştirilmesi, <ph name="PRODUCT_NAME" /> işlemlerine yerleştirme yapabilmeye veya bu işlemlerle oynayabilmeye dayanan; antivirüs, ekran okuyucu veya pencere yöneticisi uygulamaları gibi üçüncü taraf uygulamalarla uyumsuzluklara neden olabilir.
+
+Politikanın Etkin olarak ayarlanması, <ph name="PRODUCT_NAME" /> üzerinde işlem yalıtımını etkinleştirir.
+
+Politikanın Devre Dışı olarak ayarlanması, <ph name="PRODUCT_NAME" /> üzerinde işlem yalıtımını devre dışı bırakır.
+
+Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, İşlem Yalıtımı için varsayılan kullanıma sunma sürecini uygular. Bu da özelliğin kademeli olarak daha fazla kullanıcıya sunulacağı anlamına gelir.
+
+Not: Bu politika, <ph name="PRODUCT_NAME" /> başlarken uygulanır. <ph name="PRODUCT_NAME" /> çalışırken politika değiştirilirse yeni ayar bir sonraki yeniden başlatma işleminde geçerli olur.</translation>
 <translation id="1834796168555733063">Şifre yöneticisini kullanarak geçiş anahtarı kaydetmeyi devre dışı bırak</translation>
 <translation id="1836380138559328229">Etkin kablosuz ağ kimlik bilgilerini cihaz düzeyinde kaydet</translation>
 <translation id="1837165432382702436">Mikrometre cinsinden sayfanın yüksekliği</translation>
@@ -1594,6 +1607,7 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
       Politika ayarlanmadan bırakılırsa paylaşım keşfi, varsayılan olarak yönetilen kullanıcılar için devre dışı bırakılır, diğer kullanıcılar için etkinleştirilir.</translation>
 <translation id="2039801473506609891">Varsayılan olmayan bağlantı noktalarında HTTP/0.9 desteğini devre dışı bırak</translation>
 <translation id="2040479044912658454">Yazdırmayı Pikselleştirme Modu</translation>
+<translation id="2041894060487590789">İşlem Yalıtımı, özelliğin kullanıma sunma sürecine bağlı olarak kullanılabilir.</translation>
 <translation id="2043749682619281558">Giriş ekranında imleç vurgulamayı etkinleştir</translation>
 <translation id="2043770014371753404">Devre dışı bırakılmış kurumsal yazıcılar</translation>
 <translation id="2054093043033461396">Cihaz ekran koruyucu giriş ekranı etkinleştirildi.</translation>
@@ -2291,6 +2305,7 @@ devam eder. Kullanıcı, öğeleri manuel olarak çevrimdışı kullanılabilir 
 Politika ayarlanmazsa: <ph name="POLICY_VALUE_VISIBLE" />, varsayılan
 seçimdir.</translation>
 <translation id="2488455166114458307">Bu sitelerde Device Attributes API'ye izin ver</translation>
+<translation id="2489454942579368665">Geliştirici Araçları'nın kullanımına izin verme</translation>
 <translation id="2489558694350871332">Cihazın, sanal makineleri çalıştırmasına izin ver</translation>
 <translation id="2492240920793040106">Güvenli Tarama'nın iyileştirilmesine yardımcı olmak için sistem bilgilerinin ve sayfa içeriğinin raporlanmasını etkinleştir</translation>
 <translation id="2496180316473517155">Tarama geçmişi</translation>
@@ -2844,6 +2859,7 @@ Bu liste boşsa veya ayarlanmamışsa hiçbir arka plan içeriği ön plan önce
 
       Ayarlanmadan bırakılırsa yoğun saatler için güç yönetimi başta kapalı olur. Kullanıcılar bu ayarı değiştiremez.</translation>
 <translation id="2773288106548584039">Eski Tarayıcı Desteği</translation>
+<translation id="2773911169897970305">İşlem Yalıtımını devre dışı bırakır.</translation>
 <translation id="2774906947252258544">Engellenenler listesi, izin verilmeyen uzantı yükleme türlerini kontrol eder.
 
 "command_line" değerini ayarlamak, uzantının komut satırından yüklenmesini
@@ -4087,6 +4103,7 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3591584750136265240">Giriş için kimlik doğrulama yöntemini yapılandır</translation>
 <translation id="3593905652755912452">Devre dışı bırakılan form kontrollerinde eski etkinlik gönderme davranışı kullanılacak.</translation>
 <translation id="3596112486106491038">Sanal makine komut satırı erişimini etkinleştir</translation>
+<translation id="3600342552601917721">Standart web'de gezinme için Geliştirici Araçları'nın kullanımına izin ver ancak kurumsal olarak yüklenen uzantılar ve yönetilen kullanıcıların yerleşik uzantıları için kullanımı kısıtla. M150 sürümünden itibaren, yerleşik PDF görüntüleyici dışında bu uzantıları yerleştiren tüm sayfalarda da engellenirler.</translation>
 <translation id="3603469950773500315">Yeni <ph name="CORS" /> uygulamasındaki çözümlerin <ph name="CORS" /> tarafından kontrol edilmesini sağlayarak Uzantıların uyumlu davranışı sürdürmesine ve belirtilen üstbilgilerin <ph name="PRODUCT_NAME" /> tarafından <ph name="CORS" /> kontrolleri olmadan gönderilmesine olanak tanıyın.
 
       Bu liste boş değere ayarlanırsa <ph name="PRODUCT_NAME" />, Uzantıları uyumlu şekillerde çalıştırmayı dener ve <ph name="WEB_REQUEST_API_MANUAL" /> içinde açıklanan <ph name="PRODUCT_NAME" /> 79 için <ph name="API" /> değişikliklerini uygulamaz.
@@ -4348,6 +4365,7 @@ Protected Audience API desteğinin sonlandırılmasıyla birlikte bu politikanı
 <translation id="376375951585423504">Kalıcı kotayı devre dışı bırak.</translation>
 <translation id="3765260570442823273">Boştayken çıkış yapma uyarı mesajının süresi</translation>
 <translation id="3766695867369523703">Üçüncü taraf depolama bölümlendirmesine varsayılan olarak izin ver</translation>
+<translation id="377001726927041812">İşlem yalıtımını etkinleştir.</translation>
 <translation id="3770044943398389276">Geçişli TOA varsayılan olarak cihazlar arasında yalnızca kalıcı çerezleri taşır. Bu politika, oturum çerezlerinin de dahil edilip edilmeyeceğini kontrol eder. Politika yalnızca <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> politikası Etkin değerine ayarlandığında geçerli olur.
 
 Bu politika Etkin değerine ayarlandığında Geçişli TOA hem oturum çerezlerini hem de kalıcı çerezleri senkronize eder.
@@ -6830,6 +6848,7 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
       Politika ayarlanmadan bırakılırsa hızlı kilit açmayı kullanan kullanıcıların kilit ekranında şifrelerini her gün girmeleri gerekir.</translation>
 <translation id="5306186200045823863">Symantec Corporation'ın Eski PKI Altyapısına güveni etkinleştir</translation>
 <translation id="5307432759655324440">Gizli modun kullanılabilirliği</translation>
+<translation id="5308289216279695777">Kurumsal politika uzantıları da dahil olmak üzere tüm bağlamlarda Geliştirici Araçları kullanımına izin ver</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra tüm tarayıcı verilerini kaldırırken mümkün olduğunca fazla kullanıcı verisini saklamaya çalışırız.</translation>
 <translation id="53086358353377307">Çerezleri ayarlamasına izin verilen siteleri belirten url kalıpları listesini ayarlamanıza olanak sağlar.
 
@@ -12607,6 +12626,25 @@ Politika veya kullanıcı ayarları tarafından belirtilmeyen kaynakların bu AP
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> için gereken boş disk alanı</translation>
 <translation id="8892771980172542172">Yalıtılmış web uygulamasının güncelleme/sürüm kanalının adı. Bu değer herhangi bir dize olabilir; kısıtlama yoktur. Değer belirtilmezse "varsayılan" kanal kullanılır.</translation>
 <translation id="8892783613915541293">Cihaz boşta kalıp AC gücünde çalışırken yapılacak işlemler ve gecikmeler</translation>
+<translation id="8895045875428227171">0 (Varsayılan) değerine ayarlandığında: Geliştirici araçları, standart web'de gezinme için kullanılabilir ancak kurumsal olarak yüklenen uzantılar ve yönetilen kullanıcıların yerleşik uzantıları için kısıtlanır. M150 sürümünden itibaren, yerleşik PDF görüntüleyici dışında bu uzantıları yerleştiren tüm sayfalarda da engellenirler.
+
+1 değerine ayarlandığında: Geliştirici araçları ve konsol, kurumsal politika uzantıları da dahil olmak üzere tüm bağlamlarda tamamen kilidi açılmış ve erişilebilir olur.
+
+2 değerine ayarlandığında: Geliştirici araçları ve öğe inceleme, tarayıcı genelinde tamamen devre dışı bırakılır.
+
+Bu ayar, geliştirici araçlarını veya JavaScript konsolunu açmak için klavye kısayollarını ve menü veya içerik menüsü girişlerini de kapatır.
+
+Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 99'dan itibaren "Sayfa kaynağını görüntüle" özelliği için giriş noktalarını da kontrol eder. Bu politikayı "DeveloperToolsDisallowed" (2 değeri) olarak ayarlarsanız kullanıcılar klavye kısayollarını veya içerik menüsünü kullanarak kaynak görüntülemeye erişemez. Kaynak görüntülemeyi tamamen engellemek için <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına "view-source:*" ifadesini de eklemeniz gerekir.
+
+Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 119'dan itibaren yalıtılmış web uygulamaları için geliştirici modunun etkinleştirilip kullanılmasını da kontrol eder.
+
+Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 128'den itibaren <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> politikası ayarlanırsa uzantılar sayfasında geliştirici modunu kontrol etmez.
+
+Geliştirici Araçları'nın kullanılabilirliği aşağıdaki öncelik sırasına göre belirlenir:
+1. Bir URL, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> politikasındaki bir kalıpla eşleşirse Geliştirici Araçları'na izin verilir.
+2. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ayarlanır ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ayarlanmazsa izin verilenler listesinde yer almayan tüm URL'ler engellenir.
+3. Bir URL, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikasındaki bir kalıpla eşleşirse Geliştirici Araçları engellenir.
+4. Bir URL, izin verilenler listesi veya engellenenler listesinde yer almıyorsa yedek olarak bu politika (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) kullanılır.</translation>
 <translation id="8897796778265450949">Kimlik doğrulaması, SAML olmadan GAIA ile yapılan kullanıcının çevrimdışı olarak giriş yapabileceği süreyi sınırlar</translation>
 <translation id="889814528399907891">Kullanıcıların <ph name="LACROS_NAME" /> tarayıcısını etkinleştirmesine ve birincil tarayıcı yapmasına izin ver</translation>
 <translation id="8900312706328930425">Saat bazında bulut raporlama sıklığı</translation>
@@ -13025,6 +13063,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="9180108183162961002">Tarayıcıya misafir girişlerine izin ver</translation>
 <translation id="9185963199234034321">Giriş ekranında yüksek kontrastı etkinleştir ve kullanıcının bunu geçici olarak devre dışı bırakmasına izin ver</translation>
 <translation id="9187743794267626640">Harici depolama birimi eklemeyi devre dışı bırak</translation>
+<translation id="9188142767272053574">İşlem yalıtımını etkinleştir</translation>
 <translation id="9190022798664427644">Mono sesi etkinleştir</translation>
 <translation id="9190456586252617675">Bu politika, Asistan ilk katılım deneyimi modunu kontrol eder.
 

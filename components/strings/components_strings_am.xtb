@@ -2369,6 +2369,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" />ን በሚጠቀሙ ጣቢያዎች ላይ በ<ph name="AUTHENTICATOR" /> ለማረጋገጥ መርጠዋል። ይህ አቅራቢ እንዴት እንደሚከፍሉ መረጃ አከማችቶ ሊሆን ይችላል፣ ይህም እርስዎ <ph name="LINK_TEXT" /> ይችላሉ።</translation>
 <translation id="4708268264240856090">የእርስዎ ግንኙነት ተቋርጧል</translation>
 <translation id="4708276642004148190">የውሃ አቅርቦት እና ህክምና</translation>
+<translation id="4710249055485272920">ይህን መረጃ ማግኘት አልተቻለም</translation>
 <translation id="4711628883879888561">የትር ቡድን ላይ ይተባበሩ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ይህን ጣቢያ የመጎብኘት ፈቃድ የለዎትም</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5707154300732650394">ጉዞዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="57094364128775171">ጠንካራ የይለፍ ቃል ጠቁም...</translation>
 <translation id="570953204696852961">ቀይ 3</translation>
+<translation id="5710907191777451677">በምትኩ Gemini በChrome ውስጥ ይጠይቁ</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">የእንስሳት ሐኪሞች</translation>
 <translation id="5715150588940290235">የተቀመጡ የደህንነት ኮዶች ይሰረዙ?</translation>
@@ -3923,7 +3925,6 @@
 <translation id="7110116949943042888">ጊዜያዊ እና ወቅታዊ ሥራዎች</translation>
 <translation id="7110368079836707726">ኮሌጆች እና ዩኒቨርሲቲዎች</translation>
 <translation id="7111507312244504964">የንብረት ምርመራዎች እና ዋጋ ማስተመኖች</translation>
-<translation id="7117290130383718594">የጽሑፍ ማብራሪያዎች</translation>
 <translation id="7118618213916969306">የቅንጥብ ሰሌዳ ዩአርኤል <ph name="SHORT_URL" /> ይፈልጉ</translation>
 <translation id="7118852830504022370">ይህን ማስጠንቀቂያ እያዩ ያሉት ይህ ጣቢያ ኤችቲቲፒኤስ ስለማይደግፍ ነው። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">የቴሌቪዥን ድራማዎች</translation>
@@ -5047,7 +5048,6 @@
 <translation id="8871485335898060555">ቅርሶች እና የሚሰበሰቡ እቃዎች</translation>
 <translation id="8871553383647848643">የአሳሽዎን ገጽታ ያብጁ</translation>
 <translation id="887350038812854047">ይህ መመሪያ በማሽን እና በተጠቃሚ ደረጃዎች ላይ ተመሳሳይ እሴት አለው። መመሪያው እንደታሰበው እየሰራ ነው።</translation>
-<translation id="8874790741333031443">በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ማለት ያነሰ የአሰሳ ጥበቃ ነው ነገር ግን የጣቢያ ባህሪያት እንደተጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="8874824191258364635">የሚሰራ የካርድ ቁጥር ያስገቡ</translation>
 <translation id="8877780815363510165">አሳ ማጥመድ</translation>
 <translation id="888117890813270681">«<ph name="DATA_CONTROLS_RESTRICTION" />» ወደ «<ph name="DATA_CONTROLS_LEVEL" />» ሊዋቀር አይችልም</translation>

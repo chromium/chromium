@@ -15,9 +15,6 @@
 <translation id="1065672644894730302">Ni ellir darllen eich dewisiadau.
 
 Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiadau yn cael eu cadw.</translation>
-<translation id="1070377999570795893">Ychwanegodd rhaglen arall ar eich cyfrifiadur estyniad a allai newid y ffordd y mae Chrome yn gweithio.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Chwilio â Google Lens</translation>
 <translation id="1088300314857992706">Yn flaenorol roedd <ph name="USER_EMAIL_ADDRESS" /> yn defnyddio Chrome</translation>
 <translation id="110877069173485804">Dyma eich Chrome</translation>
@@ -58,9 +55,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1547295885616600893">Mae ChromeOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol.</translation>
 <translation id="1547469039832541117">Yn gorffen y dasg a amlygwyd.</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
-<translation id="1585717515139318619">Mae rhaglen arall ar eich cyfrifiadur wedi ychwanegu thema a allai newid y ffordd y mae Chrome yn gweithio.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Mae Google Chrome yn defnyddio'ch camera.</translation>
 <translation id="1587325591171447154">Mae <ph name="FILE_NAME" /> yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="1597911401261118146">I wirio a yw'ch cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chrome<ph name="END_LINK" />.</translation>
@@ -99,7 +93,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1843347690926158494">Chwilio'r tab hwn gyda Google Lens</translation>
 <translation id="1849248141818021764">Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, bydd angen i chi <ph name="BEGIN_LINK" />ddileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Defnyddiwch yr ap Chrome i barhau i bori wrth fynd</translation>
-<translation id="1860536484129686729">Mae angen caniatâd ar Chrome i gael mynediad at eich camera ar gyfer y wefan hon</translation>
 <translation id="1867503717113754604">Mewngofnodwch i Chrome gyda'ch Cyfrif Google i ddefnyddio <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Nid Google Chrome yw eich porwr diofyn</translation>
 <translation id="1874309113135274312">Beta Google Chrome (mDNS-In)</translation>
@@ -150,7 +143,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2307973900865360088">Cadw yn y Doc</translation>
 <translation id="2309047409763057870">Mae hwn yn osodiad eilaidd o Google Chrome, ac ni ellir ei wneud eich porwr diofyn.</translation>
 <translation id="2345992953227471816">Gwnaeth Chrome ganfod bod yr estyniadau hyn yn cynnwys drwgwedd:</translation>
-<translation id="2348335408836342058">Mae angen caniatâd ar Chrome i gael mynediad at eich camera a'ch meicroffon ar gyfer y wefan hon</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2403703063067034158">Gwall cychwyn: mae achos arall o osod yn rhedeg ar hyn o bryd, rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Roedd 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chrome}=1{Mae 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chrome}two{Mae # ddyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chrome}few{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chrome}many{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chrome}other{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chrome}}</translation>
@@ -189,7 +181,6 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="2747021967398957654">{count,plural, =1{Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn (1 eitem) yn cael eu dileu.}zero{Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn ({count} eitem) yn cael eu dileu.}two{Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn ({count} eitem) yn cael eu dileu.}few{Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn ({count} eitem) yn cael eu dileu.}many{Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn ({count} eitem) yn cael eu dileu.}other{Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn ({count} eitem) yn cael eu dileu.}}</translation>
 <translation id="2753623023919742414">Cliciwch i chwilio</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chrome i gymhwyso diweddariad}=1{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chrome i gymhwyso diweddariad. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chrome i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chrome i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chrome i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chrome i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
-<translation id="2765403129283291972">Mae angen caniatâd ar Chrome i gael mynediad at eich meicroffon ar gyfer y wefan hon</translation>
 <translation id="2797864378188255696">Wrth fewngofnodi i wasanaethau Google megis Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi yn awtomatig i Chrome gyda'r un cyfrif</translation>
 <translation id="2799162042226656283">Eich Chrome</translation>
 <translation id="2799223571221894425">Ail-lansio</translation>
@@ -265,7 +256,6 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="345171907106878721">Ychwanegu eich hun i Chrome</translation>
 <translation id="3453763134178591239">Telerau ChromeOS</translation>
 <translation id="3475778264501649775">Ewch â'ch cyfrineiriau, tabiau a rhagor gyda chi wrth fynd gyda'r ap Chrome ar eich ffôn</translation>
-<translation id="3503306920980160878">Mae angen mynediad at eich lleoliad ar Chrome i rannu'ch lleoliad gyda'r wefan hon</translation>
 <translation id="3512495006767217696">Wedi'i adeiladu i mewn i Chrome i'ch helpu i greu, cadw ac awtolenwi cyfrineiriau cryf. Ychwanegwch y llwybr byr er mwyn cael mynediad hawdd</translation>
 <translation id="3539955434060988644">Agor y Ddolen mewn ffenestr anhy&amp;sbys Chrome</translation>
 <translation id="354621070532799440">Atgoffwr: Nodweddion diogelwch gorau Google yn eich poced</translation>
@@ -531,9 +521,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6180522807229584611">Mae'r tab hwn yn defnyddio adnoddau ychwanegol. Er mwyn gwella eich perfformiad, gadewch i Chrome ei wneud yn anweithredol.</translation>
 <translation id="6182736845697986886">Methodd y gosodiad oherwydd gwall mewnol yn y gweinydd diweddaru.</translation>
 <translation id="6192058120268468905">Eich Cyfrif yn Chrome</translation>
-<translation id="6220551899604141979">Mae <ph name="PARTNER_NAME" /> wedi ychwanegu estyniad a allai newid y ffordd y mae Chrome yn gweithio.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Rheol dod i mewn ar gyfer Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="624230925347970731">Bydd Chrome yn cau yn fuan</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
@@ -675,9 +662,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7583399374488819119">Gosodwr <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="7602868996817972616">Gofyn i Google am y dudalen hon</translation>
-<translation id="760353356052806707">Ychwanegodd rhaglen arall ar eich cyfrifiadur ap a allai newid y ffordd y mae Chrome yn gweithio.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">I ddiogelu eich data, gadewch i Chrome dynnu caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar.</translation>
 <translation id="7629695634924605473">Mae Chrome yn gadael i chi wybod a yw'ch cyfrineiriau byth wedi'u darganfod</translation>
@@ -793,7 +777,6 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="8590782867495422699">Ailagor Dull AI Google Search</translation>
 <translation id="8601359445272098721">Newydd! Gallwch gyfieithu testun a delweddau ar eich sgrin trwy ddewis y botwm "cyfieithu sgrîn".</translation>
 <translation id="8614913330719544658">Nid yw Google Chrome yn ymateb. Ail-lansio nawr?</translation>
-<translation id="861702415419836452">Mae angen caniatâd ar Chrome i gael mynediad at eich camera i greu map 3D o'ch amgylchoedd</translation>
 <translation id="8623450603356630491">Mewngofnodi i Chrome ar eich ffôn</translation>
 <translation id="8624541899164515475">Gosodiadau, yn agor mewn tab newydd.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Bydd Chrome yn ail-lansio mewn 1 funud}zero{Bydd Chrome yn ail-lansio mewn # munud}two{Bydd Chrome yn ail-lansio mewn # funud}few{Bydd Chrome yn ail-lansio mewn # munud}many{Bydd Chrome yn ail-lansio mewn # munud}other{Bydd Chrome yn ail-lansio mewn # munud}}</translation>

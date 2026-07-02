@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">साइट थांबवली</translation>
 <translation id="2063047797624276601">तुमच्या संस्थेने वर्धित सुरक्षित ब्राउझिंग सुरू केले आहे</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{एक डाउनलोड करता आले नाही}other{# डाउनलोड करता आले नाहीत}}</translation>
+<translation id="2066690553719545730">AI मोड नेहमी दाखवा</translation>
 <translation id="2067805253194386918">मजकूर</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
@@ -1059,7 +1060,6 @@
 <translation id="5436928407363358055">तुम्ही जिथे सोडले आहे तिथून सहजपणे सुरू करण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा</translation>
 <translation id="5438292632479953702">पुन्हा डाउनलोड करा</translation>
 <translation id="5439191312780166229">साधारण संरक्षणापेक्षा साइटवरील अधिक डेटाचे विश्लेषण करून, Google ला यापूर्वी माहीत नसलेल्या धोकादायक साइटबद्दल तुम्हाला चेतावणी देते. तुम्ही Chrome च्या चेतावण्या वगळणे निवडू शकता.</translation>
-<translation id="5441137934526263133">साइट काम करत नाही का? तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="5441466871879044658">या भाषेमध्ये भाषांतर करा</translation>
 <translation id="5444999712122199445">साइटवर परत जा</translation>
 <translation id="544776284582297024">टॅब उघडण्यासाठी आणि एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी, टॅब उघडा बटणावर टॅप करा</translation>
@@ -1114,7 +1114,6 @@
 <translation id="569536719314091526">अधिक पर्याय बटणावरून या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
 <translation id="5696597120588531049">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते</translation>
 <translation id="5698878456427040674">निवडलेल्या खात्याला सपोर्ट आहे का हे तपासा.</translation>
-<translation id="5700415746238689851">Gemini उघडा</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ला सिरीअल पोर्टशी कनेक्ट करायचे आहे</translation>
 <translation id="5715150588940290235">सेव्ह केलेले सुरक्षा कोड हटवायचे आहेत का?</translation>
 <translation id="572328651809341494">अलीकडील टॅब</translation>
@@ -1420,7 +1419,6 @@
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6835182496791325827">तुम्ही दूर असताना Chrome ला तुमच्या शोधांसाठी सर्वोत्तम परिणाम आढळल्यावर सूचना मिळवा.</translation>
 <translation id="6846298663435243399">लोड करत आहे...</translation>
-<translation id="6850409657436465440">तुमचे डाउनलोड अजून प्रगतीपथावर आहे</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> टॅब बंद केले</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{१ परिणाम आढळला}other{# परिणाम आढळले}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ऑडिओ फाइल, सूचीमध्ये १ ऑडिओ फाइल आहे}other{ऑडिओ फाइल, सूचीमध्ये # ऑडिओ फाइल आहेत}}</translation>

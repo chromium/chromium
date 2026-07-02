@@ -690,7 +690,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="8163152278172770963">Tillad ikke, at websites automatisk åbner integreret billede</translation>
 <translation id="8168435359814927499">Indhold</translation>
 <translation id="818487310457576362">Træk fra siden af skærmen for at afslutte fuld skærm.</translation>
-<translation id="8186479265534291036">Fungerer websitet ikke? Tredjepartscookies er blokeret</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> blev tilladt</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8211406090763984747">Forbindelsen er sikker</translation>
@@ -761,7 +760,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="8805385115381080995">Dette skaber færre afbrydelser, når du bruger nettet, da det er mindre sandsynligt, at et website beder dig om at verificere, at du er en rigtig person</translation>
 <translation id="881644524232657178">Når denne indstilling er aktiveret, kan websites anvende din enheds bevægelses- og lyssensorer. Når denne indstilling er deaktiveret, kan websites ikke anvende sensorer.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre browserbeskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
@@ -787,7 +785,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="913657688200966289">Aktivér tilladelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notifikationer er tilladt</translation>
 <translation id="9138217887606523162">Det aktuelle zoomniveau er <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Websites anvender denne funktion til automatisk at åbne integreret billede. På den måde kan du fortsætte med at se en video og samtidig have plads til at udføre andre opgaver på skærmen.</translation>
 <translation id="9156722768168878035">Få Chrome til at vise dine seneste faner på din enheds appliste og i søgeresultaterne. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>
 <translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>

@@ -2368,6 +2368,7 @@
 <translation id="4705573018059932476">तपाईंले <ph name="PROVIDER_ORIGIN" /> प्रयोग गर्ने साइटहरूमा <ph name="AUTHENTICATOR" /> मार्फत पुष्टि गर्ने विकल्प छनौट गर्नुभएको छ। यो प्रदायकले तपाईंको भुक्तानी विधिसम्बन्धी जानकारी भण्डारण गरेको हुन सक्छ। तपाईं सो जानकारी <ph name="LINK_TEXT" /> सक्नुहुन्छ।</translation>
 <translation id="4708268264240856090">तपाईंको जडानमा अवरोध भयो</translation>
 <translation id="4708276642004148190">पानी आपूर्ति तथा शुद्ध पार्ने काम</translation>
+<translation id="4710249055485272920">यो जानकारी भेट्टाउन सकिएन</translation>
 <translation id="4711628883879888561">ट्याब समूहमा सहकार्य गर्नुहोस्</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">तपाईंसँग यो साइटमा जाने अनुमति छैन</translation>
@@ -3020,6 +3021,7 @@
 <translation id="5707154300732650394">खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="57094364128775171">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्…</translation>
 <translation id="570953204696852961">रातो ३</translation>
+<translation id="5710907191777451677">यसको साटो Chrome मा उपलब्ध Gemini लाई सोध्नुहोस्</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">पशु चिकित्सकहरू</translation>
 <translation id="5715150588940290235">सेभ गरिएका सेक्युरिटी कोडहरू मेटाउने हो?</translation>
@@ -3922,7 +3924,6 @@
 <translation id="7110116949943042888">अस्थायी र मौसमीअनुसार उपलब्ध हुने जागिरहरू</translation>
 <translation id="7110368079836707726">कलेज तथा विश्वविद्यालयहरू</translation>
 <translation id="7111507312244504964">प्रोपर्टीको जाँच तथा मूल्याङ्कन</translation>
-<translation id="7117290130383718594">टेक्स्ट एनोटेसन</translation>
 <translation id="7118618213916969306">क्लिपबोर्डको URL <ph name="SHORT_URL" /> खोज्नुहोस्</translation>
 <translation id="7118852830504022370">यो साइटमा HTTPS नचल्ने भएकाले तपाईंलाई यो चेतावनी देखाइएको हो। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">टेलिनाटकहरू</translation>
@@ -5044,7 +5045,6 @@
 <translation id="8871485335898060555">प्राचीन तथा सङ्ग्रहणीय वस्तुहरू</translation>
 <translation id="8871553383647848643">आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्नुहोस्</translation>
 <translation id="887350038812854047">यो नीतिमा मेसिन र प्रयोगकर्ताका स्तरमा एउटै भ्यालू लागू गरिएको छ। यो नीतिले अपेक्षा गरेअनुसार नै काम गरिरहेको छ।</translation>
-<translation id="8874790741333031443">केही बेरका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुहोस्। यसो गर्दा ब्राउजिङको सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले गर्नु पर्ने जसरी काम गर्न सक्छन्।</translation>
 <translation id="8874824191258364635">मान्य कार्ड नम्बर प्रविष्टि गर्नुहोस्</translation>
 <translation id="8877780815363510165">माछा मार्ने कार्य</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" लाई "<ph name="DATA_CONTROLS_LEVEL" />" का रूपमा सेट गर्न मिल्दैन</translation>

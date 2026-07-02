@@ -15,9 +15,6 @@
 <translation id="1065672644894730302">آپ کی ترجیحات کو نہیں پڑھا جا سکتا ہے۔
 
 کچھ خصوصیات غیر دستیاب ہو سکتی ہیں اور ترجیحات میں تبدیلیاں محفوظ نہیں ہونگی۔</translation>
-<translation id="1070377999570795893">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک ایکسٹینشن شامل کیا ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتا ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">‏Google لینز سے تلاش کریں</translation>
 <translation id="1088300314857992706">‏<ph name="USER_EMAIL_ADDRESS" /> پہلے Chrome کا استعمال کر رہا تھا</translation>
 <translation id="110877069173485804">‏یہ آپ کا Chrome ہے</translation>
@@ -58,9 +55,6 @@
 <translation id="1547295885616600893">‏ChromeOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے۔</translation>
 <translation id="1547469039832541117">نمایاں کردہ ٹاسک کو بند کرتا ہے۔</translation>
 <translation id="1553358976309200471">‏Chrome کو اپ ڈیٹ کریں</translation>
-<translation id="1585717515139318619">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک تھیم شامل کی ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">‏Google Chrome آپ کا کیمرا استعمال کر رہا ہے۔</translation>
 <translation id="1587325591171447154">‏<ph name="FILE_NAME" /> خطرناک ہے، اس لیے Chrome نے اسے مسدود کر دیا ہے۔</translation>
 <translation id="1597911401261118146">‏یہ دیکھنے کے لئے کہ آیا آپ کے پاس ورڈز ڈیٹا کی خلاف ورزیوں اور دیگر سیکیورٹی مسائل سے محفوظ ہیں، <ph name="BEGIN_LINK" />Chrome میں سائن ان کریں<ph name="END_LINK" />۔</translation>
@@ -99,7 +93,6 @@
 <translation id="1843347690926158494">‏‫Google لینز کے ساتھ اس ٹیب کو تلاش کریں</translation>
 <translation id="1849248141818021764">‏صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف<ph name="END_LINK" /> کرنا ہوگا۔</translation>
 <translation id="1856809424654973980">‏چلتے پھرتے براؤزنگ جاری رکھنے کے لیے Chrome ایپ کا استعمال کریں</translation>
-<translation id="1860536484129686729">‏Chrome کو اس سائٹ کیلئے آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1867503717113754604">‏<ph name="START_GLIC_STYLING" />‫Gemini<ph name="END_GLIC_STYLING" /> استعمال کرنے کے لیے اپنے Google اکاؤنٹ سے Chrome میں سائن ان کریں</translation>
 <translation id="1873233029667955273">‏Google Chrome آپ کا ڈیفالٹ براؤزر نہیں ہے</translation>
 <translation id="1874309113135274312">‏Google Chrome بی ٹا (mDNS-In)</translation>
@@ -150,7 +143,6 @@
 <translation id="2307973900865360088">ڈاک میں رکھیں</translation>
 <translation id="2309047409763057870">‏یہ Google Chrome کا ثانوی انسٹالیشن ہے اور اسے آپ کا ڈیفالٹ براؤزر نہیں بنایا جا سکتا ہے۔</translation>
 <translation id="2345992953227471816">‏Chrome کو پتا چلا ہے کہ یہ ایکسٹینشنز میلوئیر پر مشتمل ہیں:</translation>
-<translation id="2348335408836342058">‏Chrome کو اس سائٹ کیلئے آپ کے کیمرے اور مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2403703063067034158">اسٹارٹ اپ کی خرابی: سیٹ اپ کی ایک اور مثال فی الحال چل رہی ہے، براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chrome ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی تھی}=1{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chrome ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}other{‏# HID آلات تک ایک یا ایک سے زیادہ Chrome ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}}</translation>
@@ -189,7 +181,6 @@
 <translation id="2747021967398957654">{count,plural, =1{‏آپ کا کچھ Chrome ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔ سائن آؤٹ کرنے سے پہلے چند منٹ انتظار کرنے کی کوشش کریں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا (1 آئٹم) حذف ہو جائے گا۔}other{‏آپ کا کچھ Chrome ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔ سائن آؤٹ کرنے سے پہلے چند منٹ انتظار کرنے کی کوشش کریں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا ({count} آئٹمز) حذف ہو جائے گا۔}}</translation>
 <translation id="2753623023919742414">تلاش کرنے کیلئے کلک کریں</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{‏اعلی تحفظ کا تقاضہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کے لیے Chrome کو بند کر کے دوبارہ چلائیں}=1{‏اعلی تحفظ کا تقاضہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کے لیے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏اعلی تحفظ کا تقاضہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کے لیے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
-<translation id="2765403129283291972">‏Chrome کو اس سائٹ کیلئے آپ کے مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
 <translation id="2797864378188255696">‏<ph name="USER_EMAIL" /> کے ساتھ Gmail یا YouTube جیسی Google سروسز میں سائن ان کرتے وقت، آپ اسی اکاؤنٹ سے خودکار طور پر Chrome میں سائن ان کر سکتے ہیں</translation>
 <translation id="2799162042226656283">‏آپ کا Chrome</translation>
 <translation id="2799223571221894425">دوبارہ شروع کریں</translation>
@@ -265,7 +256,6 @@
 <translation id="345171907106878721">‏خود کو Chrome میں شامل کریں</translation>
 <translation id="3453763134178591239">‏ChromeOS کی شرائط</translation>
 <translation id="3475778264501649775">‏اپنے فون پر Chrome ایپ کے ساتھ اپنے پاس ورڈز، ٹیبز اور بہت کچھ چلتے پھرتے لے جائیں</translation>
-<translation id="3503306920980160878">‏Chrome کو اس سائٹ کے ساتھ آپ کے مقام کا اشتراک کرنے کیلئے آپ کے مقام تک رسائی درکار ہے</translation>
 <translation id="3512495006767217696">‏مضبوط پاس ورڈز تخلیق کرنے، محفوظ کرنے اور آٹو فل کرنے میں آپ کی مدد کرنے کے لیے Chrome میں پہلے سے شامل ہے۔ آسان رسائی کے لیے شارٹ کٹ شامل کریں</translation>
 <translation id="3539955434060988644">‏لنک Chrome کی پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="354621070532799440">‏یاد دہانی: Google کی بہترین حفاظتی خصوصیات آپ کی جیب میں ہے</translation>
@@ -358,6 +348,7 @@
 <translation id="4400772909124543403">کوئی اپ ڈیٹ دستیاب نہیں ہے</translation>
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
 <translation id="4434353761996769206">انسٹالر کی خرابی: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">‏فوری جائزہ حاصل کرنے کے لیے اس دستاویز کا اشتراک Chrome میں Gemini کے ساتھ کریں اور فالو اپ سوالات پوچھیں</translation>
 <translation id="4450664632294415862">‏Chrome - نیٹ ورک سائن ان - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏Google Chrome پر ایک اور کارروائی کی جا رہی ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4459234553906210702">‏Ad measurement آپ کی ملاحظہ کی جانے والی سائٹس کو Chrome سے معلومات کی درخواست کرنے کی اجازت دیتا ہے جس سے سائٹ کو اپنے اشتہارات کی کارکردگی کی پیمائش کرنے میں مدد ملتی ہے۔ Ad measurement سائٹس کے درمیان ممکنہ حد تک کم معلومات کی منتقلی کے ذریعے کراس سائٹ ٹریکنگ کو محدود کرتا ہے۔</translation>
@@ -529,9 +520,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6180522807229584611">‏یہ ٹیب اضافی وسائل کا استعمال کر رہا ہے۔ اپنی کارکردگی کو بہتر بنانے کیلئے، Chrome کو اسے غیر فعال کرنے کی اجازت دیں۔</translation>
 <translation id="6182736845697986886">اپ ڈیٹ سرور کی اندرونی خرابی کی وجہ سے انسٹالیشن ناکام ہو گئی۔</translation>
 <translation id="6192058120268468905">‏‫Chrome میں آپ کا اکاؤنٹ</translation>
-<translation id="6220551899604141979">‏‫<ph name="PARTNER_NAME" /> نے ایک ایکسٹینشن شامل کی ہے جو Chrome کے کام کرنے کے طریقے کو تبدیل کر سکتی ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">‏mDNS ٹریفک کی اجازت دینے کیلئے Google Chrome کیلئے ان باؤنڈ اصول۔</translation>
 <translation id="624230925347970731">کروم جلد ہی بند ہو جائے گا</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
@@ -673,9 +661,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> انسٹالر</translation>
 <translation id="7596160425942761210">‏آپ ہر بار پیغامات، دستاویزات اور دیگر ایپس میں موجود لنکس پر کلک کرتے وقت Chrome کا استعمال کر سکتے ہیں</translation>
 <translation id="7602868996817972616">‏اس صفحہ کے بارے میں Google سے پوچھیں</translation>
-<translation id="760353356052806707">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک ایپ شامل کی ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">‏اپنے ڈیٹا کی حفاظت کے لیے، Chrome کو ان سائٹس سے اجازتیں ہٹانے کی اجازت دیں جنہیں آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔</translation>
 <translation id="7629695634924605473">‏Chrome آپ کو بتاتا ہے کہ آیا آپ کے پاس ورڈز کے ساتھ کبھی چھیڑ چھاڑ کی گئی ہے</translation>
@@ -791,7 +776,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8590782867495422699">‏‫Google تلاش AI وضع کو دوبارہ کھولیں</translation>
 <translation id="8601359445272098721">نیا! "اسکرین کا ترجمہ کریں" بٹن منتخب کر کے آپ اپنی اسکرین پر ٹیکسٹ اور تصاویر دونوں کا ترجمہ کر سکتے ہیں</translation>
 <translation id="8614913330719544658">‏Google Chrome جواب نہیں دے رہا ہے۔ ابھی دوبارہ شروع کریں؟</translation>
-<translation id="861702415419836452">‏اپنے اطراف کا 3D نقشہ تخلیق کرنے کی خاطر Chrome کو آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="8623450603356630491">‏اپنے فون پر Chrome میں سائن ان کریں</translation>
 <translation id="8624541899164515475">ترتیبات، نئے ٹیب میں کھلتی ہیں۔</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏1 منٹ میں Chrome دوبارہ لانچ ہوگا}other{‏# منٹ میں Chrome دوبارہ لانچ ہوگا}}</translation>

@@ -2370,6 +2370,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4705573018059932476">Vous avez choisi la validation avec <ph name="AUTHENTICATOR" /> sur les sites utilisant <ph name="PROVIDER_ORIGIN" />. Ce fournisseur a peut-être stocké des informations sur votre mode de paiement. Vous pouvez <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Votre connexion a été interrompue</translation>
 <translation id="4708276642004148190">Approvisionnement et traitement de l'eau</translation>
+<translation id="4710249055485272920">Impossible de trouver cette information</translation>
 <translation id="4711628883879888561">Collaborer sur un groupe d'onglets</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Vous n'êtes pas autorisé à consulter ce site</translation>
@@ -3022,6 +3023,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5707154300732650394">Reprendre votre parcours</translation>
 <translation id="57094364128775171">Suggérer un mot de passe sécurisé…</translation>
 <translation id="570953204696852961">Rouge 3</translation>
+<translation id="5710907191777451677">Demandez plutôt à Gemini dans Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Vétérinaires</translation>
 <translation id="5715150588940290235">Supprimer les codes de sécurité enregistrés ?</translation>
@@ -3924,7 +3926,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="7110116949943042888">Emplois temporaires et saisonniers</translation>
 <translation id="7110368079836707726">Grandes écoles et universités</translation>
 <translation id="7111507312244504964">Évaluations et expertises immobilières</translation>
-<translation id="7117290130383718594">Annotations de texte</translation>
 <translation id="7118618213916969306">Rechercher l'URL du presse-papier, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Vous voyez cet avertissement, car ce site n'est pas HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Drames (films TV)</translation>
@@ -5048,7 +5049,6 @@ Informations supplémentaires :
 <translation id="8871485335898060555">Antiquités et objets de collection</translation>
 <translation id="8871553383647848643">Personnalisez l'apparence de votre navigateur</translation>
 <translation id="887350038812854047">Cette règle a la même valeur appliquée au niveau de la machine et de l'utilisateur. La règle fonctionne comme prévu.</translation>
-<translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="8874824191258364635">Veuillez saisir un numéro de carte valide</translation>
 <translation id="8877780815363510165">Pêche</translation>
 <translation id="888117890813270681">Impossible de définir "<ph name="DATA_CONTROLS_RESTRICTION" />" sur "<ph name="DATA_CONTROLS_LEVEL" />"</translation>

@@ -2370,6 +2370,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4705573018059932476">Du har valgt at verificere via <ph name="AUTHENTICATOR" /> på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om, hvordan du betaler, som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Din forbindelse blev afbrudt</translation>
 <translation id="4708276642004148190">Vandforsyning og -behandling</translation>
+<translation id="4710249055485272920">Disse oplysninger kunne ikke findes</translation>
 <translation id="4711628883879888561">Samarbejd om fanegruppe</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Du har ikke tilladelse til at besøge dette website</translation>
@@ -3022,6 +3023,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5707154300732650394">Genoptag din søgning</translation>
 <translation id="57094364128775171">Foreslå stærk adgangskode…</translation>
 <translation id="570953204696852961">Rød 3</translation>
+<translation id="5710907191777451677">Spørg Gemini i Chrome i stedet</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Dyrlæger</translation>
 <translation id="5715150588940290235">Vil du slette de gemte sikkerhedskoder?</translation>
@@ -3924,7 +3926,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7110116949943042888">Vikar- og sæsonjobs</translation>
 <translation id="7110368079836707726">Gymnasier og universiteter</translation>
 <translation id="7111507312244504964">Bygningsinspektion og vurderinger</translation>
-<translation id="7117290130383718594">Tekstannoteringer</translation>
 <translation id="7118618213916969306">Søg efter webadresse til udklipsholderen, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Du ser denne advarsel, fordi dette website ikke understøtter HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Tv-dramaer</translation>
@@ -5048,7 +5049,6 @@ Yderligere oplysninger:
 <translation id="8871485335898060555">Antikviteter og samleobjekter</translation>
 <translation id="8871553383647848643">Tilpas din browsers udseende</translation>
 <translation id="887350038812854047">Denne politik har den samme værdi, der anvendes på maskin- og brugerniveau. Politikken fungerer efter hensigten.</translation>
-<translation id="8874790741333031443">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre browserbeskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="8874824191258364635">Angiv et gyldigt kortnummer</translation>
 <translation id="8877780815363510165">Fiskeri</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" kan ikke indstilles til "<ph name="DATA_CONTROLS_LEVEL" />"</translation>

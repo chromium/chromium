@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{מפתח גישה אחד ({count})}one{‫{count} מפתחות גישה}two{‫{count} מפתחות גישה}other{‫{count} מפתחות גישה}}</translation>
 <translation id="1005023885865154304">פתיחת ההגדרות של המילוי האוטומטי לסיסמאות</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">‏מצב Live הוא תכונה חדשה של Gemini ב-Chrome</translation>
 <translation id="1013952917065545813">אפשר לחזור לפה כדי לפתוח כרטיסיות שסגרת לאחרונה</translation>
 <translation id="1016495303386450659">הפריט עודכן</translation>
 <translation id="1018804590490383958">סריקה ומילוי אוטומטי</translation>
@@ -803,6 +804,7 @@
 <translation id="3753618528540214374">עיצוב ירוק כהה</translation>
 <translation id="3759491607478608474">‏כדי לקבל תשובות רלוונטיות יותר, כדאי לשתף את תוכן הכרטיסייה הנוכחית עם Gemini</translation>
 <translation id="3762232513783804601">‏מותאם ל-iPad שלך</translation>
+<translation id="3767529805486761639">עריכת התפריט</translation>
 <translation id="3768725474733206671">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="3779810277399252432">אין חיבור לאינטרנט.</translation>
 <translation id="3782614601387961027">סגירת האזהרה</translation>
@@ -1650,6 +1652,7 @@
 <translation id="6523575793810663688">איך עושים זאת?</translation>
 <translation id="6524082013156754186">שמירה בחשבון</translation>
 <translation id="6524918542306337007">מצב אנונימי אינו זמין</translation>
+<translation id="6525550806864373485">עריכת התפריט</translation>
 <translation id="6527208859483186860">‏רקע {position} מתוך {total}</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6532106788206463496">שמירת השינויים</translation>
@@ -1735,6 +1738,7 @@
 <translation id="6761393919622941301">אודיו</translation>
 <translation id="6765551480308401897">אני לא רוצה להגדיר כברירת מחדל</translation>
 <translation id="6770452996697898492">[בוצעה הזמנה]</translation>
+<translation id="6775952316617222141">‏מעבר למצב Live עם Gemini ב-Chrome</translation>
 <translation id="6779455296366983087">נתוני הגלישה יימחקו</translation>
 <translation id="6782531425936234573">ייצוא נתונים</translation>
 <translation id="6791425686608802741">לוחצים על "הוספת הכרטיסייה לקבוצה חדשה"</translation>

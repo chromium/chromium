@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} 組密碼金鑰}other{{count} 組密碼金鑰}}</translation>
 <translation id="1005023885865154304">開啟「自動填入密碼」設定</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live 是 Chrome 內建 Gemini 的新功能</translation>
 <translation id="1013952917065545813">你可以回到這裡重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">項目已更新</translation>
 <translation id="1018804590490383958">掃描並自動填入</translation>
@@ -1737,6 +1738,7 @@
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6765551480308401897">不要指定為預設</translation>
 <translation id="6770452996697898492">[已預約]</translation>
+<translation id="6775952316617222141">在 Chrome 中使用 Gemini Live</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6782531425936234573">匯出資料</translation>
 <translation id="6791425686608802741">輕觸「將分頁加入新群組」</translation>

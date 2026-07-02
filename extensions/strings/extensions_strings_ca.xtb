@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="10146536653536065">Vols instal·lar <ph name="EXTENSION_NAME" />?</translation>
+<translation id="1070377999570795893">Un altre programa de l'ordinador ha afegit una extensió que pot canviar el funcionament de Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Activa el tema</translation>
 <translation id="1135328998467923690">El paquet no és vàlid: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Càmera posterior</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ha afegit una extensió que pot canviar el funcionament de Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">No s'ha pogut exportar la clau privada.</translation>
 <translation id="132960226125594336">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut perquè superaria la mida màxima de l'script o la mida màxima total de l'script de contingut de l'extensió.</translation>
 <translation id="1445572445564823378">Aquesta extensió està alentint <ph name="PRODUCT_NAME" />. L'heu de desactivar per restaurar el rendiment de: <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL no és compatible.</translation>
 <translation id="1478607704480248626">La instal·lació no està activada</translation>
+<translation id="1483493594462132177">Envia</translation>
+<translation id="1485015260175968628">Ara pot:</translation>
 <translation id="1556537182262721003">No s'ha pogut desplaçar el directori d'extensions al perfil.</translation>
+<translation id="1585717515139318619">Un altre programa de l'ordinador ha afegit un tema que pot canviar el funcionament de Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" de CSS per a l'script.</translation>
 <translation id="1616298854599875024">L'extensió <ph name="IMPORT_NAME" /> no es pot importar perquè no és un mòdul compartit</translation>
+<translation id="175772926354468439">Activa el tema</translation>
 <translation id="1757786065507923842">No s'ha pogut sol·licitar el permís parental.</translation>
 <translation id="1803557475693955505">No s'ha pogut carregar la pàgina en segon pla "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Només pot afegir-se des de <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">No s'ha pogut instal·lar <ph name="APP_NAME" /> perquè <ph name="IMPORT_NAME" /> no ho permet.</translation>
+<translation id="2150661552845026580">Vols afegir "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">No s'ha pogut descodificar la imatge: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">El teu pare o mare no ha aprovat aquesta extensió</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha sol·licitat permisos addicionals.</translation>
+<translation id="2327492829706409234">Activa l'aplicació</translation>
 <translation id="2350172092385603347">S'ha utilitzat localització, però no s'ha especificat default_locale al manifest.</translation>
 <translation id="2576842806987913196">Ja hi ha un fitxer CRX amb aquest nom.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Torna a activar</translation>
 <translation id="2743583586211388067">L'accés a aquesta extensió està bloquejat per la política de riscos de les extensions de la teva organització.</translation>
+<translation id="2766161002040448006">Pregunta al pare o la mare</translation>
 <translation id="2785530881066938471">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" per a l'script de contingut. No està codificat com a UTF-8.</translation>
+<translation id="2850541429955027218">Afegeix el tema</translation>
+<translation id="2883143988769190738">Aquesta extensió sol·licita els permisos següents:</translation>
 <translation id="2903070246402204397">L'administrador ha bloquejat l'extensió <ph name="EXTENSION_NAME" /> (amb l'identificador <ph name="EXTENSION_ID" />). <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Vols enviar una sol·licitud a l'administrador per instal·lar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2988488679308982380">No s'ha pogut instal·lar el paquet: "<ph name="ERROR_CODE" />"</translation>
 <translation id="3115238746683532089">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No s'ha pogut substituir el fitxer crx. Comproveu si el fitxer s'està utilitzant.</translation>
 <translation id="3163201441334626963">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">La teva organització ha bloquejat l'accés a aquesta extensió.</translation>
+<translation id="3183357154200327217">Un altre programa de l'ordinador ha afegit un tema que pot canviar el funcionament de Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar en mode quiosc a Chrome OS</translation>
 <translation id="3364986687961713424">De part de l'administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor d'entrada per a la clau privada ha de ser un camí vàlid.</translation>
+<translation id="3788401245189148511">Podria:</translation>
 <translation id="3834775135533257713">No s'ha pogut afegir l'aplicació <ph name="TO_INSTALL_APP_NAME" /> perquè entra en conflicte amb <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">No s'ha pogut carregar la pàgina d'opcions "<ph name="OPTIONS_PAGE" />".</translation>
+<translation id="3905761538810670789">Repara l'aplicació</translation>
+<translation id="3908501907586732282">Activa l'extensió</translation>
+<translation id="3927932062596804919">Denega</translation>
 <translation id="3984413272403535372">Hi ha hagut un error en signar l'extensió.</translation>
+<translation id="4014432863917027322">Voleu reparar <ph name="EXTENSION_NAME" />?</translation>
+<translation id="4061696872429826774">Un altre programa de l'ordinador ha afegit una extensió que pot canviar el funcionament de Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">La teva organització ha bloquejat l'accés a aquesta categoria d'extensions.</translation>
 <translation id="4233778200880751280">No s'ha pogut carregar la pàgina d'informació "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Les aplicacions s'han de distribuir des de l'amfitrió que afecten</translation>
 <translation id="4306119971288449206">Les aplicacions s'han de distribuir amb el tipus de contingut "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4625078469366263107">Activa l'aplicació</translation>
 <translation id="4633003931260532286">L'extensió requereix <ph name="IMPORT_NAME" /> amb <ph name="IMPORT_VERSION" /> com a versió mínima, però només hi ha instal·lada la versió <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4660476621274971848">La versió esperada era <ph name="EXPECTED_VERSION" />, però la que hi havia era <ph name="NEW_ID" /></translation>
 <translation id="471800408830181311">No s'ha pogut generar la clau privada.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">No s'ha pogut exportar la clau pública.</translation>
 <translation id="501057610015570208">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar al mode quiosc de ChromeOS Flex</translation>
 <translation id="5026754133087629784">Visualització del web: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Afegeix l'extensió</translation>
+<translation id="5039804452771397117">Permet</translation>
 <translation id="5098647635849512368">No es pot trobar el camí absolut al directori per empaquetar.</translation>
 <translation id="5160071981665899014">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" de JavaScript per a l'script.</translation>
+<translation id="5185386675596372454">La darrera versió de "<ph name="EXTENSION_NAME" />" s'ha desactivat perquè necessita més permisos.</translation>
+<translation id="5242724311594467048">Vols activar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Vista de l'aplicació: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Elimina de Chromium</translation>
 <translation id="5456409301717116725">Aquesta extensió inclou el fitxer de clau "<ph name="KEY_PATH" />". És probable que això no sigui convenient.</translation>
+<translation id="5485102783864353244">Afegeix l'aplicació</translation>
 <translation id="5486326529110362464">Ha d'existir el valor d'entrada de la clau privada.</translation>
 <translation id="5527463195266282916">S'ha intentat canviar a una versió anterior de l'extensió.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">No s'ha pogut carregar l'extensió de:</translation>
 <translation id="5972529113578162692">L'administrador d'aquest dispositiu requereix que l'extensió <ph name="EXTENSION_NAME" /> estigui instal·lada. No es pot desinstal·lar.</translation>
 <translation id="6027032947578871493">Producte desconegut <ph name="PRODUCT_ID" /> de: <ph name="VENDOR_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Un altre programa de l'ordinador ha afegit una aplicació que pot canviar el funcionament de Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Error en carregar l'extensió</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha afegit una extensió que pot canviar el funcionament de Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">No s'ha pogut llegir la clau privada.</translation>
+<translation id="6326175484149238433">Suprimeix de Chrome</translation>
 <translation id="6391538222494443604">El directori d'entrada ha d'existir.</translation>
 <translation id="641087317769093025">No s'ha pogut descomprimir l'extensió</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> sol·licita accés a un o més dels teus dispositius:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> usuaris</translation>
 <translation id="657064425229075395">No s'ha pogut carregar l'script en segon pla "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Gestor MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">El fitxer de manifest no és vàlid</translation>
 <translation id="7217838517480956708">L'administrador d'aquest equip necessita que s'instal·li <ph name="EXTENSION_NAME" />. No es pot eliminar o modificar.</translation>
 <translation id="7287143125007575591">Accés denegat.</translation>
+<translation id="760353356052806707">Un altre programa de l'ordinador ha afegit una aplicació que pot canviar el funcionament de Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">El valor d'entrada per a la clau privada ha de ser un format vàlid (clau RSA en format PKCS #8 amb codificació PEM).</translation>
 <translation id="765293928828334535">No es poden afegir aplicacions, extensions ni scripts d'usuari des d'aquest lloc web</translation>
+<translation id="7658239707568436148">Cancel·la</translation>
+<translation id="7766838926148951335">Accepta els permisos</translation>
 <translation id="7876803335449432072">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut. Els fulls d'estil dels scripts de contingut només es poden carregar des de fitxers de fulls d'estil admesos, com ara fitxers .css.</translation>
 <translation id="7939686037314084444">L'extensió no s'ha carregat correctament. És possible que no pugui interceptar les sol·licituds de xarxa.</translation>
 <translation id="7952904276017482715">L'identificador esperat era "<ph name="EXPECTED_ID" />", però el que hi havia era "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Opcions: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Aprova</translation>
 <translation id="8035920974645200807">Càmera frontal</translation>
 <translation id="8047248493720652249">Aquesta extensió no ha pogut posar nom a la baixada "<ph name="ATTEMPTED_FILENAME" />" perquè una altra extensió (<ph name="EXTENSION_NAME" />) ha indicat un nom de fitxer diferent "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Google ha marcat l'extensió <ph name="EXTENSION_NAME" /> com a maliciosa i, per tant, s'ha evitat que s'instal·lés</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> proporcionat per <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Pot:</translation>
 <translation id="8517576857589387417">Falta el fitxer de manifest o no es pot llegir</translation>
 <translation id="8565650234829130278">S'ha intentat canviar a una versió anterior de l'aplicació.</translation>
 <translation id="8621383749470166852">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut. Els scripts de contingut només es poden carregar des de fitxers JavaScript admesos, com ara fitxers .js.</translation>
 <translation id="8636666366616799973">El paquet no és vàlid. Detalls: "<ph name="ERROR_MESSAGE" />".</translation>
+<translation id="8746654918629346731">Ja has sol·licitat "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> sol·licita accés a un dels teus dispositius:</translation>
 <translation id="8885905466771744233">Ja existeix una clau privada per a l'extensió especificada. Torneu a utilitzar-la o suprimiu-la primer.</translation>
 <translation id="9039223174332979184">L'administrador d'aquesta màquina requereix que <ph name="EXTENSION_NAME" /> tingui, com a mínim, la versió 3 del fitxer de manifest.</translation>
 <translation id="907841381057066561">No s'ha pogut crear el fitxer ZIP temporal durant l'empaquetament.</translation>
+<translation id="9102610709270966160">Activa l'extensió</translation>
+<translation id="93766956588638423">Repara l'extensió</translation>
 <translation id="941543339607623937">Clau privada no vàlida.</translation>
 </translationbundle>

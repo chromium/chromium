@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">‏برای بررسی اینکه از گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chromium وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">‏روی منو Chromium کلیک کنید</translation>
 <translation id="1157985233335035034">زبان‌های اخیر</translation>
-<translation id="1171831736360285680">‏‫<ph name="PARTNER_NAME" /> افزونه‌ای اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">‏نصب انجام نشد چون از نسخه Windows شما پشتیبانی نمی‌شود.</translation>
 <translation id="1185134272377778587">‏درباره Chromium</translation>
 <translation id="1186645291482254714">‏با Chromium در تلفنتان، هشدارهای پیگیری قیمت را دریافت کنید</translation>
@@ -53,7 +50,6 @@
 <translation id="1524282610922162960">‏هم‌رسانی برگه Chromium</translation>
 <translation id="154404805518949443">‏ورود به سیستم Chromium</translation>
 <translation id="1547469039832541117">تکلیف برجسته‌شده را به‌پایان می‌رساند.</translation>
-<translation id="1553461853655228091">‏Chromium برای ایجاد نقشه سه‌بعدی محیط شما باید اجازه دسترسی به دوربین داشته باشد</translation>
 <translation id="1562320819937089394">‏سنجاق کردن Chromium</translation>
 <translation id="1574377791422810894">‏ابزارهای ایمنی Chromium</translation>
 <translation id="1594928384848033697">‏‫Chromium می‌خواهد داده‌های «مدیر گذرواژه» شما را حذف کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
@@ -215,9 +211,6 @@
 <translation id="3155163173539279776">‏اجرای مجدد Chromium</translation>
 <translation id="3161522574479303604">همه زبان‌ها</translation>
 <translation id="3179665906251668410">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
-<translation id="3183357154200327217">‏برنامه‌ای دیگر در رایانه شما یک زمینه اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">‏سفارشی کردن نمایه جدید Chromium</translation>
 <translation id="3189205223539394158">‏می‌توانید بدون عوض کردن زبانه، به گپ زدن با «حالت هوشواره‌ای» ادامه دهید. برای شروع، به سیستم Chromium وارد شوید. گذرواژه‌هایتان و اطلاعات دیگر را نیز در همه دستگاه‌هایتان دریافت خواهید کرد.</translation>
 <translation id="3224847870593914902">‏برای برداشتن «حساب Google» خود از Chromium، در صفحه «تنظیمات» از سیستم Chromium خارج شوید</translation>
@@ -295,9 +288,6 @@
 <translation id="4036079820698952681">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chromium کمک کنید</translation>
 <translation id="4050175100176540509">بهبودهای امنیتی مهم و ویژگی‌های جدید در جدیدترین نسخه در دسترس است.</translation>
 <translation id="4055805654398742145">مدیر گذرواژه</translation>
-<translation id="4061696872429826774">‏برنامه‌ای دیگر در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{‏اگر به‌مدت یک دقیقه از Chromium استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد. داده‌های مرور حذف می‌شود. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.}one{‏اگر به‌مدت # دقیقه از Chromium استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد. داده‌های مرور حذف می‌شود. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.}other{‏اگر به‌مدت # دقیقه از Chromium استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد. داده‌های مرور حذف می‌شود. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.}}</translation>
 <translation id="4118474109249235144">‏حالت ناشناس Chromium</translation>
 <translation id="4122186850977583290">‏رفتن به صفحه «درباره Chromium»</translation>
@@ -410,7 +400,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{‏‫Chromium توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{‏‫Chromium توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{‏‫Chromium توصیه می‌کند زبانه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>
 <translation id="5473971139929175403">‏Chromium ممکن است درست کار نکند زیرا این توزیع Linux دیگر از آن پشتیبانی نمی‌کند.</translation>
 <translation id="5475924890392386523">‏‫Chromium این بارگیری را مسدود کرد زیرا این فایل می‌تواند به حساب‌های شخصی و شبکه‌های اجتماعی شما آسیب برساند</translation>
-<translation id="5480860683791598150">‏Chromium برای هم‌رسانی مکانتان با این سایت باید به مکان شما دسترسی داشته باشد</translation>
 <translation id="549669000822060376">‏وقتی Chromium جدیدترین به‌روزرسانی‌های سیستم را نصب می‌کند، لطفاً صبر کنید.</translation>
 <translation id="5496810170689441661">‏Chromium می‌خواهد گذرواژه‌ها را ویرایش کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="549975168243349205">‏با Chromium، در حرکت، به‌صورت یکپارچه با برنامه‌های موردعلاقه‌تان مانند Google Drive و YouTube کار کنید.</translation>
@@ -477,9 +466,6 @@
 <translation id="6174920971222007286">‏این فایل ممکن است خطرناک باشد<ph name="LINE_BREAK" />اگر گذرواژه را ارائه دهید، Chromium می‌تواند این بارگیری را برایتان بررسی کند. اطلاعات فایل به «مرور ایمن Google» ارسال می‌شود، اما محتوای فایل و گذرواژه در دستگاهتان باقی می‌ماند.</translation>
 <translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
 <translation id="6183079672144801177">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chromium وارد شده باشید و سپس دوباره ارسال کنید.</translation>
-<translation id="6204922163963157461">‏برنامه‌ای دیگر در رایانه شما یک برنامه اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">‏این رایانه در حال حاضر دارای یک نسخه جدیدتر از Chromium است. درصورتی‌که نرم‌افزار کار نمی‌کند، لطفاً Chromium را حذف نصب کنید و دوباره سعی کنید.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chromium ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="6239161312595354541">پرسیدن از «جستجوی تصویر» درباره این ویدیو</translation>
@@ -581,7 +567,6 @@
 <translation id="6964305034639999644">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="6965382102122355670">تأیید</translation>
 <translation id="6985329841647292029">‏شرایط ChromiumOS</translation>
-<translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>
 <translation id="7003299027384820442">‏برای استفاده از داده‌های Chromium و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="7011190694940573312">نصب انجام نشد زیرا این نسخه از سیستم‌عامل پشتیبانی نمی‌شود.</translation>
 <translation id="7024536598735240744">خطای لغو فشرده‌سازی: <ph name="UNPACK_ERROR" />.</translation>
@@ -625,7 +610,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 ۳. روی <ph name="BUTTON_3" /> در اعلان Windows کلیک کنید تا Chromium را برای دسترسی سریع به نوار وظیفه سنجاق کنید</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">نوشتار کپی شد</translation>
-<translation id="7451052299415159299">‏Chromium برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
 <translation id="7458892263350425044">‏برای استفاده از میکروفون، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chromium دسترسی دهید</translation>
 <translation id="7461356015007898716">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 7 استفاده می‌کند.</translation>
 <translation id="7467949745582939695">‏Chromium راه‌اندازی مجدد شود؟</translation>
@@ -750,8 +734,8 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8719993436687031146">‏به سیستم Chromium وارد می‌شوید؟</translation>
 <translation id="8747073452963259673">‏گوشه پایین سمت راست ناحیه جستجو: ‎٪<ph name="LEFT" /> سمت راست، ‎٪<ph name="BOTTOM" /> پایین</translation>
 <translation id="878572486461146056">خطای نصب: سرپرست شبکه شما «خط‌مشی گروهی» اعمال کرده است که از نصب جلوگیری می‌کند: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
+<translation id="8816416449795340678">‏این سند را با Gemini در Chromium هم‌رسانی کنید تا نمای کلی و سریعی از آن داشته باشید و سؤالات پیگیری بپرسید</translation>
 <translation id="8818550178040858407">‏به سیستم Chromium وارد می‌شوید؟</translation>
 <translation id="8823401858233292222">‏تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض و سنجاق کردن آن به نوار وظیفه</translation>
 <translation id="8826492472752484139">روی «مدیر گذرواژه» کلیک کنید</translation>

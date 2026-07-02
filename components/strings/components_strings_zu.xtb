@@ -2367,6 +2367,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="4705573018059932476">Ukhethe ukuqinisekisa nge-<ph name="AUTHENTICATOR" /> emasayithini asebenzisa i-<ph name="PROVIDER_ORIGIN" />. Lo mhlinzeki kungenzeka ukuthi ulondoloze ulwazi olumayelana nendlela okhokha ngayo, ongakwazi uku-<ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Ukuxhumeka kwakho kuye kwaphazanyiswa</translation>
 <translation id="4708276642004148190">Ukuhlinzekwa Kwamanzi Nokwelashwa</translation>
+<translation id="4710249055485272920">Ayikwazanga ukuthola lolu lwazi</translation>
 <translation id="4711628883879888561">Hlanganyela kuqembu lethebhu</translation>
 <translation id="4712404868219726379">I-Windows Hello</translation>
 <translation id="471880041731876836">Awunayo imvume yokuvakashela leli sayithi</translation>
@@ -3019,6 +3020,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5707154300732650394">Qhubeka nohambo lwakho</translation>
 <translation id="57094364128775171">Iphakamisa iphasiwedi eqinile…</translation>
 <translation id="570953204696852961">Okubomvu 3</translation>
+<translation id="5710907191777451677">Esikhundleni salokho buza iGemini kuChrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Odokotela bezilwane</translation>
 <translation id="5715150588940290235">Sula amakhodi okuphepha alondoloziwe?</translation>
@@ -3921,7 +3923,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="7110116949943042888">Imisebenzi Yesikhashana Nesizini</translation>
 <translation id="7110368079836707726">Amakolishi Namanyuvesi</translation>
 <translation id="7111507312244504964">Ukuhlola Izakhiwo ne-Appraisals</translation>
-<translation id="7117290130383718594">Izichasiselo zombhalo</translation>
 <translation id="7118618213916969306">Sesha i-URL yeklibhodi, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Ubona lesi sexwayiso ngoba leli sayithi alisekeli i-HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Funda kabanzi mayelana nalesi sixwayiso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Amadrama e-TV</translation>
@@ -5043,7 +5044,6 @@ Imininingwane engeziwe:
 <translation id="8871485335898060555">Izinto Zasendulo Neziqoqwayo</translation>
 <translation id="8871553383647848643">Yenza ngendlela oyifisayo ukubukeka kwe-browser yakho</translation>
 <translation id="887350038812854047">Le nqubomgomo inenani elifanayo elisetshenziswe ezingeni lomshini nelomsebenzisi. Inqubomgomo isebenza njengoba kuhlosiwe.</translation>
-<translation id="8874790741333031443">Zama ukuvumela okwesikhashana amakhukhi ongahlangene ngqo, okusho ukuvikeleka okuncane ekubhrawuzeni kodwa izakhi zesayithi cishe zizosebenza njengoba kulindelekile.</translation>
 <translation id="8874824191258364635">Faka inombolo yekhadi evumelekile</translation>
 <translation id="8877780815363510165">Ukudoba</translation>
 <translation id="888117890813270681">Okuthi "<ph name="DATA_CONTROLS_RESTRICTION" />" ayikwazi ukusethelwa ku-"<ph name="DATA_CONTROLS_LEVEL" />"</translation>

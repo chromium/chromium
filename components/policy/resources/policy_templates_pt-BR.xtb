@@ -124,6 +124,7 @@ Se a política for definida como "0", padrão, ou for deixada sem definição, o
 Se a política for definida como "1", DisabledForBrowser, o processo do navegador <ph name="PRODUCT_NAME" /> não poderá criar código dinâmico.
 
 Observação: leia mais sobre as políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
+<translation id="1067605384506001359">Configurações da Indigo.</translation>
 <translation id="1068801725746725727">Ativar o recebimento de pesquisas da Navegação segura</translation>
 <translation id="107045325503547419">Depende do processo de lançamento do recurso.</translation>
 <translation id="1073983258515362346">Envia informações sobre as luzes de fundo de um dispositivo.
@@ -1335,6 +1336,7 @@ A opção está ativada por padrão para todos os pools, mas essa política perm
 Desativar a política ou deixá-la sem definição faz com que a chave de manifesto <ph name="REQUIRED_PLATFORM_VERSION" /> seja ignorada e a atualização automática continue normalmente.
 
 Alerta: não delegue o controle da versão do <ph name="PRODUCT_OS_NAME" /> para um aplicativo de quiosque, porque isso pode impedir que o dispositivo receba atualizações de software e correções de segurança críticas. Delegar o controle da versão do <ph name="PRODUCT_OS_NAME" /> pode colocar os usuários em risco.</translation>
+<translation id="1865927800836673132">Desativar a Indigo.</translation>
 <translation id="186719019195685253">Ação a ser executada quando o tempo de inatividade for atingido durante operação com alimentação CA</translation>
 <translation id="1869688072690234823">Se a política for definida, ela vai controlar quais fatores de WebAuthn podem ser usados.
 
@@ -9571,6 +9573,7 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="6883050310557769428">Controla se o SSO flutuante está ativado e a lista de bloqueio de domínios de cookies e as exceções dela.</translation>
 <translation id="6889123056995503704">O usuário decide o comportamento de downgrade de canal</translation>
 <translation id="6894178810167845842">URL da página "Nova guia"</translation>
+<translation id="6894938636048011953">Ativar a Indigo sem melhoria do modelo.</translation>
 <translation id="6895437634974956885">A integridade da bateria pode ser afetada por fatores como cargas completas frequentes e carregamentos com duração prolongada. Esta política oferece três opções para otimizar o comportamento de carregamento e reduzir esses fatores, prolongando a vida útil da bateria.
 
 Se a política não for definida, os usuários poderão usar o botão ativar/desativar do carregamento adaptável para controlar essa função.
@@ -9908,6 +9911,7 @@ a otimização do JavaScript será ativada.</translation>
       Se esta política for definida como obrigatória, o usuário não poderá alterá-la ou modificá-la.
 
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
+<translation id="703900496796064997">Ativar a Indigo com melhoria do modelo.</translation>
 <translation id="7039815268521168329">Mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
@@ -11514,6 +11518,15 @@ Se a política for definida, ela não poderá ser mudada pelos usuários no <ph 
 <translation id="8006921530139404577">Se a política for desativada, IUs relacionadas à conexão, como a janela de desconexão, não serão exibidas para conexões de acesso remoto que não estejam no modo cortina. Sessões de acesso remoto e sessões de suporte remotas que estejam no modo cortina não serão afetadas por esta política.
 
           Esta política não terá efeito se for definida como verdadeira, deixada vazia ou sem definição.</translation>
+<translation id="8007695731441786330">Controla se a política Indigo pode transformar imagens na web.
+
+0 = Ativa a Indigo com melhoria do modelo.
+
+1 = Ativa a Indigo sem melhoria do modelo.
+
+2 = Desativa a Indigo.
+
+Se essa política não for definida, o comportamento dela será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="8008421342605619236">Configura políticas para as mensagens nativas. Hosts de mensagens nativas bloqueados não serão permitidos, a menos que estejam na lista de permissões.</translation>
 <translation id="8011935490612940798">Controlar o recurso de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8013646845541206453">Usar qualquer verificador de certificados</translation>
@@ -12956,6 +12969,27 @@ Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891.</trans
 <translation id="8931555638815157255">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a versão do SO e do firmware periodicamente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>
+<translation id="8931984670731745012">Ao definir essa política, é possível especificar quais tipos de dados de preenchimento automático são bloqueados em padrões de URL específicos.
+
+A política é estruturada como uma lista de dicionários. Cada dicionário precisa conter:
+* "url_pattern": um padrão do URL de configuração de conteúdo (por exemplo, "https://[*.]example.com").
+* "blocked_types": uma lista de strings que representam as categorias de dados de preenchimento automático a serem bloqueadas.
+
+Os valores aceitos para "blocked_types" são:
+* "contact_info": bloqueia o preenchimento e o salvamento de dados de contato.
+* "payments": impede o preenchimento e o salvamento de cartões de crédito e formas de pagamento.
+* "identity_docs": impede o preenchimento e o salvamento de documentos de identificação (por exemplo, passaporte, carteira de habilitação, documento de identidade nacional).
+* "travel": impede o preenchimento e o salvamento de informações de viagem (por exemplo, reserva de voo, registro de veículo).
+* "shopping": impede o preenchimento e o salvamento de informações de compras (por exemplo, pedidos on-line, envios).
+
+Se um tipo de dados for bloqueado para um site, a geração de sugestões e o comando para salvar/importar novos dados desse tipo serão desativados nesse site.
+
+Se um URL corresponder a várias entradas de padrão na lista, os tipos bloqueados de todas as entradas correspondentes serão combinados (mesclados por união). Os padrões de URL inválidos na lista são ignorados.
+
+Se a política for deixada sem definição, nenhum tipo de dados de preenchimento automático será bloqueado por domínio.
+
+Para informações mais detalhadas sobre padrões de URL válidos, consulte:
+https://chromeenterprise.google/policies/url-patterns. O caractere curinga * é compatível. Esse padrão corresponde a qualquer URL, com qualquer esquema, porta e caminho.</translation>
 <translation id="8934296213794658971">Configurações da integração do Gemini</translation>
 <translation id="8937282917198525844"> A partir da versão M81, os elementos padrão de controle de formulários (por exemplo, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) foram atualizados para proporcionar melhor acessibilidade e uniformidade na plataforma. Esta política restaura os antigos elementos de controle de formulários "legados" até a M84.
 

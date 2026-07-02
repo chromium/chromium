@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="10146536653536065">Инсталирајте додатак <ph name="EXTENSION_NAME" /></translation>
+<translation id="1070377999570795893">Други програм на рачунару је додао додатак који може да промени начин на који Chrome функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Омогући тему</translation>
 <translation id="1135328998467923690">Пакет је неважећи: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">Задња</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chromium функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Извоз приватног кључа није успео.</translation>
 <translation id="132960226125594336">Учитавања фајла <ph name="RELATIVE_PATH" /> за скрипту садржаја није успело јер би се тиме премашила максимална величина скрипте или максимална укупна величина скрипте за садржај.</translation>
 <translation id="1445572445564823378">Овај додатак успорава <ph name="PRODUCT_NAME" />. Требало би да га онемогућите да би се учинак производа <ph name="PRODUCT_NAME" /> вратио.</translation>
 <translation id="1468038450257740950">WebGL није подржан.</translation>
 <translation id="1478607704480248626">Инсталација није омогућена</translation>
+<translation id="1483493594462132177">Пошаљи</translation>
+<translation id="1485015260175968628">Сада може да:</translation>
 <translation id="1556537182262721003">Каталог додатака није било могуће преместити у профил.</translation>
+<translation id="1585717515139318619">Други програм на рачунару је додао тему која може да промени начин на који Chrome функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Учитавање css-а <ph name="RELATIVE_PATH" /> за скрипту није успело.</translation>
 <translation id="1616298854599875024">Увоз додатка „<ph name="IMPORT_NAME" />“ није успео зато што није дељени модул</translation>
+<translation id="175772926354468439">Омогући тему</translation>
 <translation id="1757786065507923842">Захтев за дозволу родитеља није успео.</translation>
 <translation id="1803557475693955505">Није могуће учитати страницу у позадини „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Ово може да се дода само из услуге <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Није успело инсталирање „<ph name="APP_NAME" />“ јер то не дозвољава „<ph name="IMPORT_NAME" />“</translation>
+<translation id="2150661552845026580">Желите ли да додате „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2159915644201199628">Није могуће декодирати слику: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2193567467390483943">Родитељ није одобрио овај додатак</translation>
+<translation id="23030561267973084">Додатак „<ph name="EXTENSION_NAME" />“ је затражио додатне дозволе.</translation>
+<translation id="2327492829706409234">Омогући апликацију</translation>
 <translation id="2350172092385603347">Коришћена је локализација, али параметар default_locale није наведен у манифесту.</translation>
 <translation id="2576842806987913196">Већ постоји CRX датотека са овим називом.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Поново омогући</translation>
 <translation id="2743583586211388067">Приступ овом додатку је блокиран у складу са смерницама организације у вези са ризиком од додатака.</translation>
+<translation id="2766161002040448006">Замоли родитеља</translation>
 <translation id="2785530881066938471">Учитавање датотеке „<ph name="RELATIVE_PATH" />“ за скрипту садржаја није успело. Нема UTF-8 шифровање.</translation>
+<translation id="2850541429955027218">Додај тему</translation>
+<translation id="2883143988769190738">Овај додатак захтева следеће дозволе:</translation>
 <translation id="2903070246402204397">Администратор је блокирао <ph name="EXTENSION_NAME" /> (ИД додатка је „<ph name="EXTENSION_ID" />“). <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Желите ли да пошаљете захтев администратору да инсталира „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2988488679308982380">Инсталација пакета није била могућа: „<ph name="ERROR_CODE" />“</translation>
 <translation id="3115238746683532089">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_ID" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Замена crx датотеке није успела. Проверите да ли се датотека користи.</translation>
 <translation id="3163201441334626963">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Организација је блокирала приступ овом додатку.</translation>
+<translation id="3183357154200327217">Други програм на рачунару је додао тему која може да промени начин на који Chromium функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Апликација са атрибутом манифеста „kiosk_only“ мора да се инсталира у режиму киоска у Chrome ОС-у</translation>
 <translation id="3364986687961713424">Од администратора: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_ID" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Улазна вредност приватног кључа мора бити важећа путања.</translation>
+<translation id="3788401245189148511">Могли би да:</translation>
 <translation id="3834775135533257713">Додавање апликације „<ph name="TO_INSTALL_APP_NAME" />“ није успело због конфликта са апликацијом „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="388442998277590542">Није могуће учитати страницу опција „<ph name="OPTIONS_PAGE" />“.</translation>
+<translation id="3905761538810670789">Поправи апликацију</translation>
+<translation id="3908501907586732282">Омогући додатак</translation>
+<translation id="3927932062596804919">Одбиј</translation>
 <translation id="3984413272403535372">Дошло је до грешке приликом потписивања додатка.</translation>
+<translation id="4014432863917027322">Желите ли да поправите „<ph name="EXTENSION_NAME" />“?</translation>
+<translation id="4061696872429826774">Други програм на рачунару је додао додатак који може да промени начин на који Chromium функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Организација је блокирала приступ овој категорији додатака.</translation>
 <translation id="4233778200880751280">Није могуће учитати страницу са основним подацима „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="424963718355121712">Апликације морају да се приказују са хоста на који утичу</translation>
 <translation id="4306119971288449206">Апликације морају да се приказују са типом садржаја „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4625078469366263107">Омогући апликацију</translation>
 <translation id="4633003931260532286">Додатак захтева „<ph name="IMPORT_NAME" />“ чија је најстарија верзија „<ph name="IMPORT_VERSION" />“, али инсталирана је само верзија „<ph name="INSTALLED_VERSION" />“</translation>
 <translation id="4660476621274971848">Очекивала се верзија „<ph name="EXPECTED_VERSION" />“, али је верзија била „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">Формирање излазних резултата приватног кључа није успело.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Извоз јавног кључа није успео.</translation>
 <translation id="501057610015570208">Апликација са атрибутом манифеста „kiosk_only“ мора да се инсталира у режиму киоска у Chrome OS Flex-у</translation>
 <translation id="5026754133087629784">Веб-приказ: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Додај додатак</translation>
+<translation id="5039804452771397117">Дозволи</translation>
 <translation id="5098647635849512368">Није могуће пронаћи апсолутну путању до директоријума за паковање.</translation>
 <translation id="5160071981665899014">Учитавање JavaScript-а <ph name="RELATIVE_PATH" /> за скрипту није успело.</translation>
+<translation id="5185386675596372454">Најновија верзија додатка „<ph name="EXTENSION_NAME" />“ је онемогућена јер захтева још дозвола.</translation>
+<translation id="5242724311594467048">Желите ли да омогућите „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5356315618422219272">Приказ апликације: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Уклони из Chromium-а</translation>
 <translation id="5456409301717116725">Овај додатак садржи датотеку кључа „<ph name="KEY_PATH" />“. Вероватно то не желите.</translation>
+<translation id="5485102783864353244">Додај апликацију</translation>
 <translation id="5486326529110362464">Улазна вредност приватног кључа мора да постоји.</translation>
 <translation id="5527463195266282916">Покушали сте да вратите додатак на старију верзију</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Није успело учитавање додатка из:</translation>
 <translation id="5972529113578162692">Администратор овог рачунара захтева да додатак <ph name="EXTENSION_NAME" /> буде инсталиран. Не можете да га деинсталирате.</translation>
 <translation id="6027032947578871493">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_NAME" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Други програм на рачунару је додао апликацију која може да промени начин на који Chromium функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Грешка при учитавању додатка</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chrome функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Читање приватног кључа није успело.</translation>
+<translation id="6326175484149238433">Уклони из Chrome-а</translation>
 <translation id="6391538222494443604">Улазни каталог мора да постоји.</translation>
 <translation id="641087317769093025">Није могуће распаковати додатак</translation>
 <translation id="6542618148162044354">„<ph name="APP_NAME" />“ захтева приступ једном или више уређаја:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> корисника</translation>
 <translation id="657064425229075395">Није могуће учитати скрипту у позадини „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_NAME" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Руковалац за MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Датотека манифеста је неважећа</translation>
 <translation id="7217838517480956708">Администратор овог уређаја захтева да додатак <ph name="EXTENSION_NAME" /> буде инсталиран. Не можете да га уклоните или измените.</translation>
 <translation id="7287143125007575591">Приступ је одбијен.</translation>
+<translation id="760353356052806707">Други програм на рачунару је додао апликацију која може да промени начин на који Chrome функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Улазна вредност за приватни кључ мора да буде важећи формат (PEM кодирани RSA кључ у PKCS#8 формату).</translation>
 <translation id="765293928828334535">Апликације, додаци и скрипте корисника не могу да се додају са овог веб-сајта</translation>
+<translation id="7658239707568436148">Откажи</translation>
+<translation id="7766838926148951335">Прихвати дозволе</translation>
 <translation id="7876803335449432072">Учитавање фајла <ph name="RELATIVE_PATH" /> за скрипту садржаја није успело. Описи стилова за скрипту садржаја могу да се учитају само из подржаних фајлова описа стилова, као што су .css фајлови.</translation>
 <translation id="7939686037314084444">Додатак се није правилно учитао. Можда неће моћи да преусмерава мрежне захтеве.</translation>
 <translation id="7952904276017482715">Очекивао се ИД „<ph name="EXPECTED_ID" />“, али ИД је био „<ph name="NEW_ID" />“</translation>
 <translation id="7972881773422714442">Опције: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Одобри</translation>
 <translation id="8035920974645200807">Предња</translation>
 <translation id="8047248493720652249">Овај додатак није успео да преузетој датотеци дâ назив „<ph name="ATTEMPTED_FILENAME" />“ зато што је један други додатак (<ph name="EXTENSION_NAME" />) одредио другачији назив датотеке „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8049705080247101012">Google је означио додатак „<ph name="EXTENSION_NAME" />“ као злонамеран и инсталација је спречена</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Може да:</translation>
 <translation id="8517576857589387417">Датотека манифеста недостаје или није могла да се чита</translation>
 <translation id="8565650234829130278">Покушали сте да вратите апликацију на старију верзију.</translation>
 <translation id="8621383749470166852">Учитавање фајла <ph name="RELATIVE_PATH" /> за скрипту садржаја није успело. Скрипте садржаја могу да се учитавају само из подржаних JavaScript фајлова, као што су .js фајлови.</translation>
 <translation id="8636666366616799973">Пакет је неважећи. Детаљи: „<ph name="ERROR_MESSAGE" />“.</translation>
+<translation id="8746654918629346731">Већ сте тражили „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ захтева приступ неком од уређаја:</translation>
 <translation id="8885905466771744233">Приватни кључ за наведени додатак већ постоји. Поново користите тај кључ или га прво избришите.</translation>
 <translation id="9039223174332979184">Администратор овог рачунара захтева да <ph name="EXTENSION_NAME" /> има минималну верзију манифеста 3.</translation>
 <translation id="907841381057066561">Прављење привремене zip датотеке није успело током паковања.</translation>
+<translation id="9102610709270966160">Омогући додатак</translation>
+<translation id="93766956588638423">Поправи додатак</translation>
 <translation id="941543339607623937">Неважећи приватни кључ.</translation>
 </translationbundle>

@@ -2369,6 +2369,7 @@
 <translation id="4705573018059932476">你已選擇在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上透過<ph name="AUTHENTICATOR" />驗證。此供應商可能已儲存你的付款方法相關資料，你可以<ph name="LINK_TEXT" />。</translation>
 <translation id="4708268264240856090">您的連線已中斷</translation>
 <translation id="4708276642004148190">食水供應和處理</translation>
+<translation id="4710249055485272920">找不到資料</translation>
 <translation id="4711628883879888561">協作建立分頁群組</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">您沒有此網站的瀏覽權限</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5707154300732650394">恢復瀏覽過程</translation>
 <translation id="57094364128775171">建議安全性強的密碼…</translation>
 <translation id="570953204696852961">紅色 3</translation>
+<translation id="5710907191777451677">改為問 Chrome 版 Gemini</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">獸醫</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
@@ -3923,7 +3925,6 @@
 <translation id="7110116949943042888">臨時和季節性職位</translation>
 <translation id="7110368079836707726">大專和大學</translation>
 <translation id="7111507312244504964">物業檢查和估值</translation>
-<translation id="7117290130383718594">文字註解</translation>
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">此網站不支援 HTTPS，因此瀏覽器顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">電視劇</translation>
@@ -5046,7 +5047,6 @@
 <translation id="8871485335898060555">古董和收藏品</translation>
 <translation id="8871553383647848643">自訂瀏覽器外觀</translation>
 <translation id="887350038812854047">此政策在機器和使用者層級套用相同的值。政策運作正常。</translation>
-<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表瀏覽保護程度較低，但網站功能較容易如期運作。</translation>
 <translation id="8874824191258364635">請輸入有效的信用卡號碼</translation>
 <translation id="8877780815363510165">釣魚</translation>
 <translation id="888117890813270681">「<ph name="DATA_CONTROLS_RESTRICTION" />」無法設定為「<ph name="DATA_CONTROLS_LEVEL" />」</translation>

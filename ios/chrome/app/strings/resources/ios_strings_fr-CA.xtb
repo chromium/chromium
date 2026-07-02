@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} clé d'accès}one{{count} clé d'accès}other{{count} clés d'accès}}</translation>
 <translation id="1005023885865154304">Ouvrir les paramètres de remplissage automatique des mots de passe</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">Live est une nouvelle fonctionnalité de Gemini dans Chrome</translation>
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez fermés récemment</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
 <translation id="1018804590490383958">Balayer et remplir automatiquement</translation>
@@ -1737,6 +1738,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Ne pas définir par défaut</translation>
 <translation id="6770452996697898492">[RÉSERVÉ]</translation>
+<translation id="6775952316617222141">Utiliser Live avec Gemini dans Chrome</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6782531425936234573">Exporter les données</translation>
 <translation id="6791425686608802741">Cliquez sur « Ajouter un onglet au nouveau groupe »</translation>

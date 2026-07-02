@@ -2371,6 +2371,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4705573018059932476">Elegiste realizar la verificación con <ph name="AUTHENTICATOR" /> en los sitios que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre cómo pagas, la que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Se interrumpió la conexión</translation>
 <translation id="4708276642004148190">Tratamiento y suministro del agua</translation>
+<translation id="4710249055485272920">No se pudo encontrar esta información</translation>
 <translation id="4711628883879888561">Colabora en el grupo de pestañas</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">No tienes permiso para visitar este sitio</translation>
@@ -3023,6 +3024,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5707154300732650394">Reanudar tu exploración</translation>
 <translation id="57094364128775171">Sugerir contraseña segura…</translation>
 <translation id="570953204696852961">Rojo 3</translation>
+<translation id="5710907191777451677">Pregúntale a Gemini en Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinarios</translation>
 <translation id="5715150588940290235">¿Quieres borrar los códigos de seguridad guardados?</translation>
@@ -3925,7 +3927,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="7110116949943042888">Trabajos temporales y estacionales</translation>
 <translation id="7110368079836707726">Facultades y universidades</translation>
 <translation id="7111507312244504964">Inspecciones y tasaciones de propiedades</translation>
-<translation id="7117290130383718594">Anotaciones de texto</translation>
 <translation id="7118618213916969306">Buscar la URL <ph name="SHORT_URL" /> del portapapeles</translation>
 <translation id="7118852830504022370">Se muestra esta advertencia porque este sitio no admite HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Dramas de TV</translation>
@@ -5049,7 +5050,6 @@ Detalles adicionales:
 <translation id="8871485335898060555">Antigüedades y objetos de colección</translation>
 <translation id="8871553383647848643">Personaliza el estilo del navegador</translation>
 <translation id="887350038812854047">Esta política tiene el mismo valor aplicado a nivel de la máquina y del usuario. La política funciona según lo previsto.</translation>
-<translation id="8874790741333031443">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección al navegar, pero aumenta las probabilidades de que las funciones del sitio funcionen como se espera.</translation>
 <translation id="8874824191258364635">Ingresa un número de tarjeta válido</translation>
 <translation id="8877780815363510165">Pesca</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" no se puede establecer como "<ph name="DATA_CONTROLS_LEVEL" />"</translation>

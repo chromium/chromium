@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">Du kan tjekke, om dine adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer ved at <ph name="BEGIN_LINK" />logge ind på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klik på Chromium-menuen</translation>
 <translation id="1157985233335035034">Seneste sprog</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> har tilføjet en udvidelse, som kan ændre måden, Chromium fungerer på.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Installationen mislykkedes, da din version af Windows ikke understøttes.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1186645291482254714">Få underretninger om prissporing med Chromium på din telefon</translation>
@@ -53,7 +50,6 @@
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="154404805518949443">Log ind i Chromium</translation>
 <translation id="1547469039832541117">Afslutter den fremhævede opgave.</translation>
-<translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="1562320819937089394">Fastgør Chromium</translation>
 <translation id="1574377791422810894">Chromiums sikkerhedsværktøjer</translation>
 <translation id="1594928384848033697">Chromium anmoder om tilladelse til at slette dine data i Adgangskodeadministrator. Angiv din Windows-adgangskode for at tillade dette.</translation>
@@ -215,9 +211,6 @@
 <translation id="3155163173539279776">Genstart Chromium</translation>
 <translation id="3161522574479303604">Alle sprog</translation>
 <translation id="3179665906251668410">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
-<translation id="3183357154200327217">Et andet program på din computer har tilføjet et tema, som kan ændre måden, Chromium fungerer på.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Tilpas din nye Chromium-profil</translation>
 <translation id="3189205223539394158">Du kan fortsætte med at chatte med AI-tilstand uden at skifte faner. Log ind i Chromium for at komme i gang. Du kan også se dine adgangskoder m.m. på alle dine enheder.</translation>
 <translation id="3224847870593914902">Hvis du vil fjerne din Google-konto fra Chromium, skal du logge ud af Chromium på siden Indstillinger</translation>
@@ -296,9 +289,6 @@
 <translation id="4036079820698952681">Hjælp med at gøre Chromium bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" />.</translation>
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
 <translation id="4055805654398742145">Adgangs­kode­admin­istrator</translation>
-<translation id="4061696872429826774">Et andet program på din computer har tilføjet en udvidelse, som kan ændre måden, Chromium fungerer på.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Din organisation lukker automatisk Chromium, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}one{Din organisation lukker automatisk Chromium, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}other{Din organisation lukker automatisk Chromium, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}}</translation>
 <translation id="4118474109249235144">Inkognitotilstand i Chromium</translation>
 <translation id="4122186850977583290">Gå til siden Om Chromium</translation>
@@ -411,7 +401,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium anbefaler, at du sætter den fane, der gør din browser langsom, på pause}one{Chromium anbefaler, at du sætter den fane, der gør din browser langsom, på pause}other{Chromium anbefaler, at du sætter de faner, der gør din browser langsom, på pause}}</translation>
 <translation id="5473971139929175403">Chromium fungerer muligvis ikke korrekt, da det ikke længere understøttes af denne Linux-distribution</translation>
 <translation id="5475924890392386523">Chromium har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk</translation>
-<translation id="5480860683791598150">Chromium skal have adgang til din lokation for at dele din lokation med dette website</translation>
 <translation id="549669000822060376">Vent, mens Chromium installerer de nyeste systemopdateringer.</translation>
 <translation id="5496810170689441661">Chromium forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="549975168243349205">Brug nemt dine foretrukne apps som f.eks. Google Drev og YouTube på farten med Chromium.</translation>
@@ -478,9 +467,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6174920971222007286">Denne fil kan være skadelig<ph name="LINE_BREAK" />Chromium kan tjekke denne download for dig, hvis du angiver adgangskoden. Oplysninger om filen sendes til Google Beskyttet browsing, men filens indhold og adgangskoden forbliver på din enhed.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
 <translation id="6183079672144801177">Sørg for, at du er logget ind på Chromium på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
-<translation id="6204922163963157461">Et andet program på din computer har tilføjet en app, som kan ændre måden, Chromium fungerer på.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
 <translation id="6239161312595354541">Stil Billedsøgning spørgsmål om denne video</translation>
@@ -582,7 +568,6 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="6964305034639999644">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985329841647292029">Vilkår for Chromium OS</translation>
-<translation id="6990124437352146030">Chromium skal have tilladelse til at bruge din mikrofon på dette website</translation>
 <translation id="7003299027384820442">Angiv din adgangssætning for at bruge og gemme Chromium-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installationen mislykkedes, fordi denne version af operativsystemet ikke understøttes.</translation>
 <translation id="7024536598735240744">Fejl under udpakning: <ph name="UNPACK_ERROR" />.</translation>
@@ -627,7 +612,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 3. Klik på <ph name="BUTTON_3" /> i Windows-notifikationen for at fastgøre Chromium til proceslinjen, så du hurtigt kan tilgå browseren</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for udviklere</translation>
 <translation id="7450541714075000668">Teksten blev kopieret</translation>
-<translation id="7451052299415159299">Chromium skal have tilladelse til at bruge dit kamera på dette website</translation>
 <translation id="7458892263350425044">Giv Chromium adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din mikrofon</translation>
 <translation id="7461356015007898716">Hvis du vil have fremtidige Chromium-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 7.</translation>
 <translation id="7467949745582939695">Vil du genstarte Chromium?</translation>
@@ -752,8 +736,8 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8719993436687031146">Vil du logge ind i Chromium?</translation>
 <translation id="8747073452963259673">nederste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, nederste <ph name="BOTTOM" /> %</translation>
 <translation id="878572486461146056">Installationsfejl: Din netværksadministrator anvender en gruppepolitik, der forhindrer installationen: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium skal have tilladelse til at bruge dit kamera og din mikrofon på dette website</translation>
 <translation id="8813277370772331957">Påmind mig senere</translation>
+<translation id="8816416449795340678">Del dette dokument med Gemini i Chromium for at få en hurtig oversigt og stille opfølgende spørgsmål</translation>
 <translation id="8818550178040858407">Vil du logge ind i Chromium?</translation>
 <translation id="8823401858233292222">Gør Chromium til standardbrowser, og fastgør den til proceslinjen</translation>
 <translation id="8826492472752484139">Klik på "Adgangs­kode­admin­istrator"</translation>

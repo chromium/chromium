@@ -17,9 +17,6 @@
 <translation id="1131805035311359397">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">ຄລິກເມນູ Chromium</translation>
 <translation id="1157985233335035034">ພາສາຫຼ້າສຸດ</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ໄດ້ເພີ່ມສ່ວນຂະຫຍາຍທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກລະບົບບໍ່ຮອງຮັບ Windows ເວີຊັນທີ່ທ່ານໃຊ້.</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
 <translation id="1186645291482254714">ຮັບການແຈ້ງເຕືອນການຕິດຕາມລາຄາດ້ວຍ Chromium ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
@@ -55,7 +52,6 @@
 <translation id="1524282610922162960">ແບ່ງປັນແຖບ Chromium</translation>
 <translation id="154404805518949443">ເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="1547469039832541117">ສິ້ນສຸດໜ້າວຽກທີ່ໄຮໄລ້.</translation>
-<translation id="1553461853655228091">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຂອງທ່ານເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສະພາບແວດລ້ອມອ້ອມຂ້າງຂອງທ່ານ</translation>
 <translation id="1562320819937089394">ປັກໝຸດ Chromium</translation>
 <translation id="1574377791422810894">ເຄື່ອງມືຄວາມປອດໄພຂອງ Chromium</translation>
 <translation id="1594928384848033697">Chromium ຕ້ອງການລຶບຂໍ້ມູນຕົວຈັດການລະຫັດຜ່ານຂອງທ່ານ. ກະລຸນາພິມລະຫັດຜ່ານ Windows ຂອງທ່ານເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
@@ -217,9 +213,6 @@
 <translation id="3155163173539279776">ປິດແລ້ວເປີດ Chromium ຄືນໃໝ່</translation>
 <translation id="3161522574479303604">ທຸກ​ພາ​ສາ</translation>
 <translation id="3179665906251668410">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
-<translation id="3183357154200327217">ໂປຣແກຣມອື່ນໃນຄອມພິວເຕີຂອງທ່ານໄດ້ເພີ່ມຮູບແບບສີສັນທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">ປັບແຕ່ງໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
 <translation id="3189205223539394158">ທ່ານສາມາດສົນທະນາກັບໂໝດ AI ຕໍ່ໄປໄດ້ໂດຍບໍ່ຕ້ອງສະຫຼັບແຖບ. ເພື່ອເລີ່ມຕົ້ນ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium. ນອກຈາກນີ້, ທ່ານຍັງຈະຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="3224847870593914902">ເພື່ອລຶບບັນຊີ Google ຂອງທ່ານອອກຈາກ Chromium, ໃຫ້ອອກຈາກລະບົບ Chromium ໃນໜ້າການຕັ້ງຄ່າ</translation>
@@ -298,9 +291,6 @@
 <translation id="4036079820698952681">ຊ່ວຍເຮັດໃຫ້ Chromium ດີຂຶ້ນໂດຍການລາຍງານ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າປັດຈຸບັນ<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">ການ​ປັບ​ປຸງ​ຄວາມ​ປອດ​ໄພ​ທີ່​ສຳ​ຄັນ ແລະ​ຄຸນ​ສົມ​ບັດ​ໃໝ່​ມີ​ໃຫ້​ຢູ່​ໃນ​ເວີ​ຊັນ​ຫຼ້າ​ສຸດ.</translation>
 <translation id="4055805654398742145">ຕົວຈັດການລະຫັດຜ່ານ</translation>
-<translation id="4061696872429826774">ໂປຣແກຣມອື່ນໃນຄອມພິວເຕີຂອງທ່ານໄດ້ເພີ່ມສ່ວນຂະຫຍາຍທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{ອົງກອນຂອງທ່ານຈະປິດ Chromium ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ 1 ນາທີ. ລຶບຂໍ້ມູນການທ່ອງເວັບອອກແລ້ວ. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.}other{ອົງກອນຂອງທ່ານຈະປິດ Chromium ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ # ນາທີ. ລຶບຂໍ້ມູນການທ່ອງເວັບອອກແລ້ວ. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.}}</translation>
 <translation id="4118474109249235144">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chromium</translation>
 <translation id="4122186850977583290">ເຂົ້າໄປໜ້າກ່ຽວກັບ Chromium</translation>
@@ -413,7 +403,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium ແນະນຳໃຫ້ຢຸດແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງຊົ່ວຄາວ}other{Chromium ແນະນຳໃຫ້ຢຸດແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງຊົ່ວຄາວ}}</translation>
 <translation id="5473971139929175403">Chromium ອາດເຮັດວຽກໄດ້ບໍ່ຖືກຕ້ອງເນື່ອງຈາກ Linux distribution ນີ້ບໍ່ຮອງຮັບມັນອີກຕໍ່ໄປແລ້ວ.</translation>
 <translation id="5475924890392386523">Chromium ບລັອກການດາວໂຫຼດນີ້ເພາະວ່າໄຟລ໌ສາມາດເປັນອັນຕະລາຍຕໍ່ບັນຊີສ່ວນຕົວ ແລະ ບັນຊີເຄືອຂ່າຍສັງຄົມຂອງທ່ານໄດ້</translation>
-<translation id="5480860683791598150">Chromium ຕ້ອງການເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານເພື່ອແບ່ງປັນສະຖານທີ່ຂອງທ່ານກັບເວັບໄຊນີ້</translation>
 <translation id="549669000822060376">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chromium ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
 <translation id="5496810170689441661">Chromium ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດໃຫ້ສຳເນົາໄດ້.</translation>
 <translation id="549975168243349205">ເຮັດວຽກຮ່ວມກັບແອັບທີ່ທ່ານມັກ ເຊັ່ນ: Google Drive ແລະ YouTube ໄດ້ຢ່າງລ່ຽນໄຫຼທຸກບ່ອນທຸກເວລາດ້ວຍ Chromium.</translation>
@@ -480,9 +469,6 @@
 <translation id="6174920971222007286">ໄຟລ໌ນີ້ອາດເປັນອັນຕະລາຍ<ph name="LINE_BREAK" />Chromium ສາມາດກວດສອບການດາວໂຫຼດນີ້ໃຫ້ທ່ານໄດ້ຫາກທ່ານລະບຸລະຫັດຜ່ານ. ຂໍ້ມູນກ່ຽວກັບໄຟລ໌ຈະຖືກສົ່ງໄປຫາ Google Safe Browsing, ແຕ່ເນື້ອຫາໄຟລ໌ ແລະ ລະຫັດຜ່ານຈະຍັງຢູ່ໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="6182736845697986886">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດເກີດຂໍ້ຜິດພາດພາຍໃນ.</translation>
 <translation id="6183079672144801177">ກວດໃຫ້ແນ່ໃຈວ່າທ່ານໄດ້ເຂົ້າສູ່ລະບົບ Chrome ໃນ <ph name="TARGET_DEVICE_NAME" /> ຂອງທ່ານ ແລ້ວລອງສົ່ງໃໝ່.</translation>
-<translation id="6204922163963157461">ໂປຣແກຣມອື່ນໃນຄອມພິວເຕີຂອງທ່ານໄດ້ເພີ່ມແອັບທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">ຄອມພິວເຕີນີ້ມີ Chromium ລຸ້ນໃໝ່ກ່ວາຢູ່ຮຽບຮ້ອຍແລ້ວ. ຖ້າຊອບແວບໍ່ເຮັດວຽກ, ກະລຸນາຖອນຕິດຕັ້ງ Chromium ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ຈະເປີດຄືນໃໝ່ດຽວນີ້}=1{Chromium ຈະເປີດຄືນໃໝ່ໃນ 1 ວິນາທີ}other{Chromium ຈະເປີດຄືນໃໝ່ໃນ # ວິນາທີ}}</translation>
 <translation id="6239161312595354541">ຖາມຄຸນສົມບັດຊອກຫາຮູບກ່ຽວກັບວິດີໂອນີ້</translation>
@@ -584,7 +570,6 @@
 <translation id="6964305034639999644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6985329841647292029">ຂໍ້ກຳນົດ ChromiumOS</translation>
-<translation id="6990124437352146030">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="7003299027384820442">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກລະບົບບໍ່ຮອງຮັບລະບົບປະຕິບັດການເວີຊັນນີ້.</translation>
 <translation id="7024536598735240744">ແຕກໄຟລ໌ຜິດພາດ: <ph name="UNPACK_ERROR" />.</translation>
@@ -629,7 +614,6 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 3. ຄລິກ <ph name="BUTTON_3" /> ໃນການແຈ້ງເຕືອນ Windows ເພື່ອປັກໝຸດ Chromium ໄວ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">ສຳເນົາຂໍ້ຄວາມແລ້ວ</translation>
-<translation id="7451052299415159299">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="7458892263350425044">ເພື່ອໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chromium ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">ເພື່ອໄດ້ຮັບການອັບເດດ Chromium ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ Windows 10 ຫຼື ໃໝ່ກວ່ານັ້ນ. ຄອມພິວເຕີນີ້ກຳລັງນຳໃຊ້ Windows 7.</translation>
 <translation id="7467949745582939695">ເລີ່ມເປີດໃຊ້ Chromium ໃໝ່ບໍ?</translation>
@@ -754,7 +738,6 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="8719993436687031146">ເຂົ້າສູ່ລະບົບ Chromium ບໍ?</translation>
 <translation id="8747073452963259673">ມຸມຊ້າຍລຸ່ມຂອງພື້ນທີ່ຊອກຫາ: ຊ້າຍ <ph name="LEFT" />%, ລຸ່ມ <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຜູ້ເບິ່ງແຍງລະບົບເຄືອຂ່າຍຂອງທ່ານໃຊ້ນະໂຍບາຍລະດັບກຸ່ມເຊິ່ງປ້ອງກັນການຕິດຕັ້ງ: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="8813277370772331957">ແຈ້ງເຕືອນຂ້ອຍໃນພາຍຫຼັງ</translation>
 <translation id="8816416449795340678">ແບ່ງປັນເອກະສານນີ້ກັບ Gemini ໃນ Chromium ເພື່ອຮັບພາບຮວມໂດຍຫຍໍ້ ແລະ ຖາມຄຳຖາມຕິດຕາມຜົນ</translation>
 <translation id="8818550178040858407">ເຂົ້າສູ່ລະບົບ Chromium ບໍ?</translation>

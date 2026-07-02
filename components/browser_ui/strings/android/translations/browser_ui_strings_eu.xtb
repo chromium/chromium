@@ -690,7 +690,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="8163152278172770963">Ez eman pantaila txiki gainjarria automatikoki irekitzeko baimenik webguneei</translation>
 <translation id="8168435359814927499">Edukia</translation>
 <translation id="818487310457576362">Pantaila osotik irteteko, arrastatu pantailaren ertzetik.</translation>
-<translation id="8186479265534291036">Ez al du funtzionatzen webguneak? Hirugarrenen cookieak blokeatuta daude.</translation>
 <translation id="8197286292360124385">Baimena eman zaio honi: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8211406090763984747">Konexioa segurua da</translation>
@@ -761,7 +760,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="8805385115381080995">Bizkorrago arakatuko duzu, probabilitate gutxiago egongo baita webguneek benetako pertsona bat zarela egiaztatzea eskatzeko</translation>
 <translation id="881644524232657178">Aktibatuta dagoenean, webguneek gailuaren mugimendu- eta argi-sentsoreak erabil ditzakete. Desaktibatuta dagoenean, webguneek ezin dute erabili sentsorerik.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Eman hirugarrenen cookieak erabiltzeko baimena aldi baterako. Babes txikiagoa izango duzu arakatzean, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="8889294078294184559">Arakatzen jarraitu ahala, beste webgune batzuek Chrome-ren informazioa ikus dezakete, eta aurrez bisitatu duzun webgune batek benetako pertsonatzat hartu zaituela egiaztatu.</translation>
 <translation id="8899807382908246773">Iragarki oztopatzaileak</translation>
 <translation id="8903921497873541725">Handitu</translation>
@@ -787,7 +785,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="913657688200966289">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimenak <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Eman da jakinarazpenak bidaltzeko baimena</translation>
 <translation id="9138217887606523162">Oraingo zooma: %% <ph name="ZOOM_LEVEL" /></translation>
-<translation id="915112772806845021">Webguneek eginbide hau erabiltzen dute pantaila txiki gainjarria automatikoki irekitzeko. Horrela bideoak ikusten jarrai dezakezu, eta, aldi berean, zure pantaila beste zeregin batzuetarako libre geratzen da.</translation>
 <translation id="9156722768168878035">Eman azkenaldiko fitxak gailuko aplikazioen zerrendan eta bilaketa-emaitzetan erakusteko baimena Chrome-ri. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="9162462602695099906">Orri hau arriskutsua da</translation>
 <translation id="9182556968660520230">Ez eman eduki babestua erreproduzitzeko baimena webguneei</translation>

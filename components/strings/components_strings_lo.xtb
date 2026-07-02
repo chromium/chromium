@@ -2370,6 +2370,7 @@
 <translation id="4705573018059932476">ທ່ານເລືອກທີ່ຈະຢັ້ງຢືນດ້ວຍ <ph name="AUTHENTICATOR" /> ຢູ່ເວັບໄຊທີ່ໃຊ້ <ph name="PROVIDER_ORIGIN" />. ຜູ້ໃຫ້ບໍລິການນີ້ອາດຈັດເກັບຂໍ້ມູນກ່ຽວກັບວິທີທີ່ທ່ານຈ່າຍເງິນໄວ້, ເຊິ່ງທ່ານສາມາດ <ph name="LINK_TEXT" /> ໄດ້.</translation>
 <translation id="4708268264240856090">ການເຊື່ອມຕໍ່ຂອງທ່ານຖືກຂັດຈັງຫວະ</translation>
 <translation id="4708276642004148190">ນ້ຳປະປາ ແລະ ການບຳບັດນ້ຳ</translation>
+<translation id="4710249055485272920">ບໍ່ພົບຂໍ້ມູນນີ້</translation>
 <translation id="4711628883879888561">ຮ່ວມມືຢູ່ກຸ່ມແຖບ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ທ່ານບໍ່ມີການອະນຸຍາດເພື່ອເຂົ້າເບິ່ງເວັບໄຊນີ້</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5707154300732650394">ສືບຕໍ່ບັນທຶກຂອງທ່ານ</translation>
 <translation id="57094364128775171">ແນະນຳລະຫັດຜ່ານທີ່ເດົາຍາກ…</translation>
 <translation id="570953204696852961">ສີແດງທີ 3</translation>
+<translation id="5710907191777451677">ຖາມ Gemini ໃນ Chrome ແທນ</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">ສັດຕະວະແພດ</translation>
 <translation id="5715150588940290235">ລຶບລະຫັດຄວາມປອດໄພທີ່ບັນທຶກໄວ້ອອກບໍ?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">ວຽກຊົ່ວຄາວ ແລະ ຕາມລະດູການ</translation>
 <translation id="7110368079836707726">ວິທະຍາໄລ ແລະ ມະຫາວິທະຍາໄລ</translation>
 <translation id="7111507312244504964">ການກວດສອບ ແລະ ປະເມີນຄ່າສັບສິນ</translation>
-<translation id="7117290130383718594">ຄຳອະທິບາຍປະກອບຂໍ້ຄວາມ</translation>
 <translation id="7118618213916969306">ຊອກຫາ URL ຄລິບບອດ, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">ທ່ານເຫັນຄຳເຕືອນນີ້ເນື່ອງຈາກເວັບໄຊນີ້ບໍ່ຮອງຮັບ HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ລະຄອນໂທລະທັດ</translation>
@@ -5046,7 +5047,6 @@
 <translation id="8871485335898060555">ວັດຖຸບູຮານ ແລະ ຂອງສະສົມ</translation>
 <translation id="8871553383647848643">ປັບແຕ່ງໜ້າຕາຂອງໂປຣແກຣມທ່ອງເວັບທ່ານ</translation>
 <translation id="887350038812854047">ນະໂຍບາຍນີ້ມີຄ່າດຽວກັນທີ່ນຳໃຊ້ໃນລະດັບເຄື່ອງ ແລະ ລະດັບຜູ້ໃຊ້. ນະໂຍບາຍເຮັດວຽກຕາມທີ່ຕັ້ງໃຈໄວ້.</translation>
-<translation id="8874790741333031443">ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມຊົ່ວຄາວ, ເຊິ່ງໝາຍຄວາມວ່າການປົກປ້ອງລະຫວ່າງທ່ອງເວັບຈະຫຼຸດລົງ ແຕ່ຄຸນສົມບັດຂອງເວັບໄຊມີແນວໂນ້ມທີ່ຈະເຮັດວຽກຕາມທີ່ຄາດໄດ້ຫຼາຍກວ່າ.</translation>
 <translation id="8874824191258364635">ປ້ອນເລກບັດທີ່ຖືກຕ້ອງ</translation>
 <translation id="8877780815363510165">ການຕຶກປາ</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" ບໍ່ສາມາດຖືກຕັ້ງເປັນ "<ph name="DATA_CONTROLS_LEVEL" />" ໄດ້</translation>

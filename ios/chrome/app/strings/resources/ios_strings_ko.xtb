@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{패스키 {count}개}other{패스키 {count}개}}</translation>
 <translation id="1005023885865154304">비밀번호 자동 완성 설정 열기</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live는 Chrome의 Gemini에 새로 추가된 기능입니다</translation>
 <translation id="1013952917065545813">여기에 다시 돌아와 최근에 닫았던 탭을 다시 열 수 있습니다.</translation>
 <translation id="1016495303386450659">북마크가 업데이트되었습니다.</translation>
 <translation id="1018804590490383958">스캔 및 자동 완성</translation>
@@ -1737,6 +1738,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6761393919622941301">오디오</translation>
 <translation id="6765551480308401897">기본값으로 설정 안함</translation>
 <translation id="6770452996697898492">[예약됨]</translation>
+<translation id="6775952316617222141">Chrome의 Gemini와 Live로 대화하기</translation>
 <translation id="6779455296366983087">인터넷 사용 기록이 삭제됩니다</translation>
 <translation id="6782531425936234573">데이터 내보내기</translation>
 <translation id="6791425686608802741">'새 그룹에 탭 추가'를 탭합니다.</translation>

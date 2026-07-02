@@ -243,6 +243,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2056878612599315956">Websitet er sat på pause</translation>
 <translation id="2063047797624276601">Din organisation har aktiveret Udvidet beskyttet browsing</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislykkedes}one{# download mislykkedes}other{# downloads mislykkedes}}</translation>
+<translation id="2066690553719545730">Vis altid AI-tilstand</translation>
 <translation id="2067805253194386918">tekst</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2149968176347646218">Forbindelsen er ikke sikker</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
 <translation id="2163089732491971196">Angiv din adgangssætning for at bruge og gemme Chrome-data på din Google-konto</translation>
+<translation id="2164015935042801524">Højreklik her for at se faner lodret</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Billedbeskrivelser er slået fra</translation>
 <translation id="2172905120685242547">Vil du lukke vinduet?</translation>
@@ -305,6 +307,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2323763861024343754">Websitelagerplads</translation>
 <translation id="2327445548174191329">Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alle mister øjeblikkeligt adgang til fanegruppen "<ph name="GROUP_NAME" />", og alle invitationslinks deaktiveres</translation>
+<translation id="2329500425421091035">Vi præsenterer AI-tilstand i Chrome</translation>
 <translation id="2330186936255788117">Flere bogmærker</translation>
 <translation id="2332515770639153015">Udvidet beskyttet browsing er aktiveret</translation>
 <translation id="233375395665273385">Slet, og log ud</translation>
@@ -1057,7 +1060,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5436928407363358055">Synkroniser din historik og dine faner for nemt at fortsætte, hvor du slap</translation>
 <translation id="5438292632479953702">Download igen</translation>
 <translation id="5439191312780166229">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chrome-advarsler over.</translation>
-<translation id="5441137934526263133">Fungerer websitet ikke? Tredjepartscookies er blokeret</translation>
 <translation id="5441466871879044658">Oversæt til dette sprog</translation>
 <translation id="5444999712122199445">Gå tilbage til websitet</translation>
 <translation id="544776284582297024">Hvis du vil åbne faner og besøge forskellige sider på samme tid, skal du trykke på faneknappen</translation>
@@ -1112,7 +1114,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="569536719314091526">Oversæt denne side til et hvilket som helst sprog via knappen Flere valgmuligheder</translation>
 <translation id="5696597120588531049">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere</translation>
 <translation id="5698878456427040674">Tjek, om den valgte konto understøttes.</translation>
-<translation id="5700415746238689851">Åbn Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> anmoder om at oprette forbindelse til en seriel port</translation>
 <translation id="5715150588940290235">Vil du slette de gemte sikkerhedskoder?</translation>
 <translation id="572328651809341494">Seneste faner</translation>
@@ -1418,7 +1419,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="6835182496791325827">Få notifikationer, når Chrome finder de bedste resultater for dine søgninger, mens du er væk.</translation>
 <translation id="6846298663435243399">Indlæser…</translation>
-<translation id="6850409657436465440">Der downloades stadig</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> faner blev lukket</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Der blev fundet 1 resultat}one{Der blev fundet # resultat}other{Der blev fundet # resultater}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Lydfiler, 1 lydfil på listen}one{Lydfiler, # lydfil på listen}other{Lydfiler, # lydfiler på listen}}</translation>
@@ -1968,12 +1968,14 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9001604755921395912">Åbn i inkognito i Chrome</translation>
 <translation id="9010094279589497751">Åbn hurtigt Gemini, når du har brug for det</translation>
 <translation id="9012585441087414258">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Hvis en side udviser mistænkelig adfærd, sendes webadresser og uddrag af sideindhold til Google Beskyttet browsing.</translation>
+<translation id="9014097371980259227">Nogle værktøjer er blevet flyttet for at hjælpe dig med at søge med AI-tilstand</translation>
 <translation id="9019199799064251516">Vil du fortsætte uden en profillås i bilen?</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
 <translation id="9022871169049522985">Websites og annoncører kan måle effektiviteten af deres annoncer</translation>
 <translation id="9024318700713112071">Angiv Chrome som din standardbrowser</translation>
 <translation id="9027728231343310283">Fortryd for <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flyt til\u2026</translation>
+<translation id="904146253922032365">Hold fingeren nede for at se faner lodret</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>
 <translation id="9047347135558855162">Start hurtigt en søgning i Chrome</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>

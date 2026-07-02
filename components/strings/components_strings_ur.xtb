@@ -2371,6 +2371,7 @@
 <translation id="4705573018059932476">آپ نے <ph name="PROVIDER_ORIGIN" /> استعمال کرنے والی سائٹس پر <ph name="AUTHENTICATOR" /> سے تصدیق کرنے کا انتخاب کیا۔ ممکن ہے کہ اس فراہم کنندہ کے پاس آپ کی ادائیگی کے طریقے کے بارے میں معلومات اسٹور کردہ ہوں جن کو آپ <ph name="LINK_TEXT" /> سکتے ہیں۔</translation>
 <translation id="4708268264240856090">آپ کے کنکشن میں مداخلت ہوگئی</translation>
 <translation id="4708276642004148190">پانی کی فراہمی اور علاج</translation>
+<translation id="4710249055485272920">یہ معلومات نہیں مل سکی</translation>
 <translation id="4711628883879888561">ٹیب گروپ پر اکٹھے کام کریں</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">یہ سائٹ ملاحظہ کرنے کیلئے آپ کو اجازت نہیں ہے</translation>
@@ -3023,6 +3024,7 @@
 <translation id="5707154300732650394">اپنا صارف کا تجربہ دوبارہ شروع کریں</translation>
 <translation id="57094364128775171">مضبوط پاس ورڈ تجویز کریں…</translation>
 <translation id="570953204696852961">سرخ 3</translation>
+<translation id="5710907191777451677">‏اس کے بجائے Chrome میں Gemini سے پوچھیں</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">معالجین حیوانات</translation>
 <translation id="5715150588940290235">محفوظ کردہ سیکیورٹی کوڈز حذف کریں؟</translation>
@@ -3926,7 +3928,6 @@
 <translation id="7110116949943042888">عارضی اور موسمی جابز</translation>
 <translation id="7110368079836707726">کالجز اور یونیورسٹیاں</translation>
 <translation id="7111507312244504964">املاک کے معائنے اور تخمینے</translation>
-<translation id="7117290130383718594">ٹیکسٹ تشریحات</translation>
 <translation id="7118618213916969306">‏کلپ بورڈ URL تلاش کریں، <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">‏آپ یہ وارننگ اس لیے دیکھ رہے ہیں کیونکہ یہ سائٹ HTTPS کو سپورٹ نہیں کرتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">‏TV ڈرامے</translation>
@@ -5048,7 +5049,6 @@
 <translation id="8871485335898060555">قدیم اور قابل ذخیرہ چیزیں</translation>
 <translation id="8871553383647848643">اپنے براؤزر کی شکل کو حسب ضرورت بنائیں</translation>
 <translation id="887350038812854047">اس پالیسی کی مشین اور صارف کی سطح پر ایک ہی قدر لاگو ہوتی ہے۔ پالیسی حسب منشا کام کر رہی ہے۔</translation>
-<translation id="8874790741333031443">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="8874824191258364635">درست کارڈ نمبر درج کریں</translation>
 <translation id="8877780815363510165">ماہی گیری</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" کو "<ph name="DATA_CONTROLS_LEVEL" />" پر سیٹ نہیں کیا جا سکتا</translation>

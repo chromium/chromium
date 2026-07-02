@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">سایت موقتاً متوقف شد</translation>
 <translation id="2063047797624276601">سازمانتان «مرور ایمن پیشرفته» را روشن کرده است</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{۱ بارگیری انجام نشد}one{# بارگیری انجام نشد}other{# بارگیری انجام نشد}}</translation>
+<translation id="2066690553719545730">همیشه نشان دادن «حالت هوشواره‌ای»</translation>
 <translation id="2067805253194386918">نوشتار</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">اتصال ایمن نیست</translation>
 <translation id="2149973817440762519">ویرایش نشانک</translation>
 <translation id="2163089732491971196">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، گذرعبارت خود را وارد کنید</translation>
+<translation id="2164015935042801524">برای نمایش عمودی زبانه‌ها، در اینجا کلیک‌راست کنید</translation>
 <translation id="2166228530126694506">نسخه <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">توضیحات تصویر خاموش است</translation>
 <translation id="2172905120685242547">پنجره بسته شود؟</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
 <translation id="2327445548174191329">از <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
+<translation id="2329500425421091035">‏معرفی «حالت هوشواره‌ای» در Chrome</translation>
 <translation id="2330186936255788117">نشانک‌های بیشتر</translation>
 <translation id="2332515770639153015">«مرور ایمن پیشرفته» روشن است</translation>
 <translation id="233375395665273385">حذف و خروج از سیستم</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">برای اینکه به‌راحتی کارتان را از جایی که رها کرده‌اید ادامه دهید، سابقه و زبانه‌هایتان را همگام‌سازی کنید</translation>
 <translation id="5438292632479953702">بارگیری مجدد</translation>
 <translation id="5439191312780166229">‏با تجزیه‌وتحلیل داده‌های بیشتری از سایت‌ها در مقایسه با محافظت استاندارد، درباره سایت‌های خطرناک به شما هشدار می‌دهد، حتی سایت‌هایی که Google قبلاً از آن‌ها اطلاعی نداشته است. می‌توانید هشدارهای Chrome را رد کنید.</translation>
-<translation id="5441137934526263133">سایت کار نمی‌کند؟ کوکی‌های طرف سوم مسدود شده است</translation>
 <translation id="5441466871879044658">به این زبان ترجمه شود</translation>
 <translation id="5444999712122199445">برگشتن به سایت</translation>
 <translation id="544776284582297024">برای باز کردن زبانه‌ها و بازدید هم‌زمان از صفحه‌های مختلف، روی دکمه «بازکردن زبانه‌ها» تک‌ضرب بزنید</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">با استفاده از دکمه «گزینه‌های بیشتر»، این صفحه را به زبان‌های دیگر ترجمه کنید</translation>
 <translation id="5696597120588531049">‏Chrome می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های غیرایمن، و موارد دیگر کمک کند</translation>
 <translation id="5698878456427040674">بررسی کنید از حساب انتخاب‌شده پشتیبانی می‌شود.</translation>
-<translation id="5700415746238689851">‏باز کردن Gemini</translation>
 <translation id="5709213329446699338">‫<ph name="SITE" /> می‌خواهد به درگاه سریالی متصل شود</translation>
 <translation id="5715150588940290235">کدهای امنیتی ذخیره‌شده حذف شود؟</translation>
 <translation id="572328651809341494">زبانه‌های اخیر</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6835182496791325827">‏حتی زمانی که در Chrome نیستید، وقتی بهترین نتایج را برای جستجوهایتان پیدا می‌کند، مطلع می‌شوید.</translation>
 <translation id="6846298663435243399">درحال بارگیری…</translation>
-<translation id="6850409657436465440">بارگیری هنوز درحال انجام است</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> برگه بسته شد</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{یک نتیجه پیدا شد}one{# نتیجه پیدا شد}other{# نتیجه پیدا شد}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{فایل‌های صوتی، ۱ فایل صوتی در فهرست}one{فایل‌های صوتی، # فایل صوتی در فهرست}other{فایل‌های صوتی، # فایل صوتی در فهرست}}</translation>
@@ -1968,12 +1968,14 @@
 <translation id="9001604755921395912">‏باز کردن در زبانه ناشناس Chrome</translation>
 <translation id="9010094279589497751">‏هر زمان که نیاز داشتید می‌توانید Gemini را به‌سرعت باز کنید</translation>
 <translation id="9012585441087414258">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. اگر صفحه‌ای کار مشکوکی انجام دهد، نشانی‌های وب و بیت‌های محتوای صفحه به «مرور ایمن Google» ارسال می‌شود.</translation>
+<translation id="9014097371980259227">برخی‌از ابزارها جابه‌جا شده‌اند تا به شما در جستجو با «حالت هوشواره‌ای» کمک کنند</translation>
 <translation id="9019199799064251516">بدون قفل نمایه خودرو ادامه می‌دهید؟</translation>
 <translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>
 <translation id="9022871169049522985">سایت‌ها و تبلیغ‌کنندگان می‌توانند عملکرد آگهی‌هایشان را بسنجند</translation>
 <translation id="9024318700713112071">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="9027728231343310283">واگرداندن <ph name="SITE" /></translation>
 <translation id="9035378196785279980">‏انتقال به\u2026</translation>
+<translation id="904146253922032365">برای نمایش عمودی زبانه‌ها، لمس کنید و نگه دارید</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>
 <translation id="9047347135558855162">‏شروع سریع جستجو در Chrome</translation>
 <translation id="9050666287014529139">‫گذرعبارت</translation>

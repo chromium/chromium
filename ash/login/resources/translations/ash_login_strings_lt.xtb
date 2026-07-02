@@ -13,7 +13,10 @@
 <translation id="1179902906564467236">Vadovaukitės telefone pateikiamomis instrukcijomis arba naudokite Fotoaparato programą</translation>
 <translation id="1185924365081634987">Taip pat galite bandyti <ph name="GUEST_SIGNIN_LINK_START" />naršyti kaip svečias<ph name="GUEST_SIGNIN_LINK_END" />, kad išspręstumėte šią tinklo klaidą.</translation>
 <translation id="1201402288615127009">Kitas</translation>
+<translation id="1217114730239853757">Ar norite suaktyvinti „ChromeVox“ – integruotą „ChromeOS Flex“ ekrano skaitytuvą? Jei norite, paspauskite tarpo klavišą.</translation>
 <translation id="1222835797152767346">Nustatykite PIN kodą, kad būtų lengviau prisijungti</translation>
+<translation id="1272978324304772054">Ši naudotojo paskyra nepriklauso domenui, prie kurio priregistruotas įrenginys. Jei norite naudoti su kitu domenu, pirma turite atlikti įrenginio atkūrimo procedūrą.</translation>
+<translation id="1307559529304613120">Oi, sistemai nepavyko išsaugoti šio įrenginio ilgalaikio API prieigos kodo.</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Derinimo funkcijos<ph name="END_H3" />
           <ph name="BR" />
           Galite įgalinti derinimo funkcijas „ChromeOS“ įrenginyje, kad įdiegtumėte ir išbandytumėte jame tinkintą kodą. Tada galėsite atlikti toliau nurodytus veiksmus.<ph name="BR" />
@@ -34,22 +37,41 @@
           <ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> vykdant procesą sistema bus paleista iš naujo.</translation>
 <translation id="1347625331607114917">Kodo patvirtinimas „Android“ telefonu</translation>
 <translation id="1347975661240122359">Atnaujinimo procesas prasidės, kai akumuliatoriaus įkrovos lygis bus <ph name="BATTERY_LEVEL" /> %.</translation>
+<translation id="1375557162880614858">Ar norite suaktyvinti „ChromeVox“ – integruotą „ChromeOS Flex“ ekrano skaitytuvą?</translation>
 <translation id="1375938286942050085">Sąranka baigta! Toliau paruoškite įrenginį žaisti</translation>
 <translation id="1377600615067678409">Šį kartą praleisti</translation>
+<translation id="1399261165075500043">Nepavyksta įkelti „Google Play“ paslaugų teikimo sąlygų</translation>
 <translation id="1400243387594338234">Naudodami šį PIN kodą galite prisijungti prie savo įrenginio</translation>
+<translation id="1417497355604638350">Siųskite diagnostikos ir naudojimo duomenis.</translation>
+<translation id="1418882096915998312">Vykdoma „Enterprise“ registracija</translation>
 <translation id="1426410128494586442">Taip</translation>
+<translation id="1440090277117135316">Mokyklos registracija baigta</translation>
 <translation id="1473927070149284123">Bandykite dar kartą arba prisijunkite prie tinklo neautomatiškai</translation>
 <translation id="1503556098270577657">Prisijungėte prie <ph name="USER_EMAIL" /> naudodami „Android“ telefoną</translation>
 <translation id="1521442365706402292">Valdyti sertifikatus</translation>
+<translation id="1540605929960647700">Demonstracinio režimo įgalinimas</translation>
 <translation id="1572876035008611720">Įveskite savo el. pašto adresą</translation>
 <translation id="1642494467033190216">Prieš įgalinant kitas derinimo funkcijas reikia pašalinti „rootfs“ apsaugą ir paleisti įrenginį iš naujo.</translation>
+<translation id="1668435968811469751">Registruotis neautomatiškai</translation>
 <translation id="1678919064276516737">Įvestas PIN kodas neatitinka el. pašto adreso</translation>
+<translation id="1692115862433274081">Naudoti kitą paskyrą</translation>
+<translation id="1695487653372841667">Galite valdyti, kokie duomenys bendrinami su „Google“. Tai galite bet kada pakeisti skiltyje „Nustatymai“.</translation>
 <translation id="169675691788639886">Įrenginyje sukonfigūruotas SSH serveris. Prisijungdami nenaudokite paskyrų, kuriose yra neskelbtinos informacijos.</translation>
 <translation id="1730666151302379551">Pamiršau seną slaptažodį</translation>
+<translation id="177053719077591686">Kurkite atsargines „Android“ programų kopijas „Google“ diske.</translation>
+<translation id="1806335016774576568">Perjungti į kitą atidarytą programą</translation>
 <translation id="1826192255355608658">„Chrome“ naršyklės žymių, slaptažodžių, istorijos ir kt. sinchronizavimas</translation>
 <translation id="1831848493690504725">Nepavyksta pasiekti „Google“ naudojant prijungtą tinklą. Pabandykite pasirinkti kitą tinklą arba patikrinti tinklo ar tarpinio serverio nustatymus (jei naudojate tarpinį serverį).</translation>
+<translation id="1842766183094193446">Ar tikrai norite įgalinti demonstracinį režimą?</translation>
+<translation id="1845060436536902492">Ekrano skaitytuvą sistemoje „ChromeOS Flex“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys, kad galėtų skaityti ekrane rodomą tekstą naudodami kalbos sintezatorių arba Brailio rašmenų ekraną. Jei norite įjungti „ChromeVox“, paspauskite tarpo klavišą. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
+<translation id="1868617395637139709">Naudokite vietovės paslaugas „Android“ programose ir paslaugose.</translation>
+<translation id="189035593835762169">Taisyklės ir nuostatos</translation>
 <translation id="1987574314042117472">Pasirinkti ir įdiegti populiarias programas</translation>
+<translation id="1991829061375381344">Neturite pakankamai pasiekiamų licencijų, kad galėtumėte užregistruoti šį „Google Meet“ aparatinės įrangos įrenginį. Jei norite įsigyti daugiau, susisiekite su perpardavėju. Jei manote, kad šis pranešimas rodomas per klaidą, susisiekite su perpardavėju.</translation>
+<translation id="2040460856718599782">Oi! Kažkas atsitiko bandant nustatyti jūsų tapatybę. Dar kartą patikrinkite prisijungimo duomenis ir bandykite iš naujo.</translation>
 <translation id="2052572566310583903">Įdiegta kituose jūsų įrenginiuose</translation>
+<translation id="2088092308059522196">Registracija palaikoma tik įdiegus „<ph name="DEVICE_OS" />“.</translation>
+<translation id="208928984520943006">Norėdami bet kuriuo metu pereiti į pagrindinį ekraną, perbraukite aukštyn iš apačios.</translation>
 <translation id="2090165459409185032">Jei norite atkurti paskyros informaciją, apsilankykite adresu google.com/accounts/recovery</translation>
 <translation id="2157779167749714207">Įsigiję „<ph name="DEVICE_TYPE" />“ gaunate „Gemini“</translation>
 <translation id="2163470535490402084">Prisijunkite prie interneto, kad galėtumėte prisijungti prie „<ph name="DEVICE_TYPE" />“.</translation>
@@ -61,10 +83,21 @@
 <translation id="2328137272841210255">Nustatykite PIN kodą iš naujo</translation>
 <translation id="2342180549977909852">Vaikas gali naudoti numerį (PIN kodą) vietoj slaptažodžio šiam įrenginiui atrakinti. Jei norite PIN kodą nustatyti vėliau, eikite į skiltį „Nustatymai“.</translation>
 <translation id="2359808026110333948">Tęskite</translation>
+<translation id="2387052489799050037">Eiti į pagrindinį ekraną</translation>
+<translation id="2395616325548404795">„<ph name="DEVICE_TYPE" />“ sėkmingai užregistruotas kaip tvarkomas įmonėje, bet nepavyko išsiųsti jo išteklių ir vietovės informacijos. Įveskite šią informaciją neautomatiškai įrenginio skiltyje „Admin console“.</translation>
 <translation id="2408955596600435184">Įveskite PIN kodą</translation>
+<translation id="243179355394256322">Jūsų organizacija leidžia užregistruoti įrenginius tik prieigos teisę turintiems naudotojams. Šis naudotojas neturi teisės užregistruoti įrenginių. Įsitikinkite, kad administratoriaus pulto skiltyje „Naudotojai“ naudotojui priskirta administratoriaus privilegija „Užregistruoti „Google Meet“ aparatūrinę įrangą“.</translation>
 <translation id="2439152382014731627">Iš naujo nustatyti „<ph name="DEVICE_TYPE" />“ slaptažodį</translation>
 <translation id="2450223707519584812">Negalėsite pridėti naudotojų, nes trūksta „Google“ API raktų. Jei reikia išsamios informacijos, žr. <ph name="DETAILS_URL" />.</translation>
+<translation id="24786041351753425">Įgalinkite duomenų atkūrimo paslaugą.</translation>
+<translation id="2485681265915754872">„Google Play“ paslaugų teikimo sąlygos</translation>
+<translation id="2501278716633472235">Grįžti</translation>
+<translation id="2565214867520763227">Ekrano skaitytuvo įjungimas</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_VERSION" /> versijos „<ph name="PRODUCT_NAME" />“ (platforma „<ph name="PLATFORM_VERSION" />“) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2606454609872547359">Ne, tęsti be „ChromeVox“</translation>
+<translation id="2687407218262674387">„Google“ paslaugų teikimo sąlygos</translation>
+<translation id="2688196195245426394">Įrenginio registravimo serveryje klaida: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="2698147581454716013">Tai yra grupės įrenginys, kurio negalima užregistruoti naudojant viešojo terminalo ir ženklų naujovinimą.</translation>
 <translation id="2725200716980197196">Tinklo ryšys atkurtas</translation>
 <translation id="2731700343119398978">Palaukite...</translation>
 <translation id="2732134891301408122">Papildomas turinys: <ph name="CURRENT_ELEMENT" /> iš <ph name="TOTAL_ELEMENTS" /></translation>
@@ -75,75 +108,112 @@
 <translation id="283669119850230892">Jei norite naudoti tinklą <ph name="NETWORK_ID" />, pirmiausia baikite prisijungti prie toliau nurodyto interneto.</translation>
 <translation id="2849767214114481738">PIN kodas pridėtas</translation>
 <translation id="2893180576842394309">„Google“ gali naudoti jūsų istoriją, kad suasmenintų Paiešką ir kitas „Google“ paslaugas</translation>
+<translation id="2902265136119311513">Naršymas svečio režimu</translation>
 <translation id="2904210161403910217">Nuo paskutinio karto, kai buvote prisijungę, pasikeitė slaptažodis</translation>
+<translation id="2918484644467055090">Šio įrenginio negalima užregistruoti organizacijoje, kuriai priklauso paskyra, nes pažymėta, kad įrenginys tvarkomas kitos organizacijos.</translation>
 <translation id="2921081876747860777">Sukurkite slaptažodį, kad apsaugotumėte vietinius duomenis.</translation>
 <translation id="2950666755714083615">Užsiregistruoti</translation>
 <translation id="2979966855249721010">Atsižvelgiant į jūsų pomėgius, galite matyti programų rekomendacijų, patarimų ir kt.</translation>
 <translation id="3012917896646559015">Nedelsdami susisiekite su aparatinės įrangos gamintoju, kad siųstumėte kompiuterį remonto paslaugų įmonei.</translation>
 <translation id="3028371505549235127">Užuot įvedę „Google“ paskyros slaptažodį, kad prisijungtumėte, galite sukurti šio įrenginio „<ph name="DEVICE_TYPE" />“ slaptažodį</translation>
+<translation id="3033348223765101500">Kontroliuokite duomenis</translation>
 <translation id="3101924772906986970">„Chrome“ naršyklės žymės, slaptažodžiai, istorija ir kt. išsaugomi „Google“ paskyroje</translation>
 <translation id="313205617302240621">Pamiršote slaptažodį?</translation>
+<translation id="3162070126914310576">Dabar šio įrenginio negalima užregistruoti, nes jūsų organizacinis vienetas pasiekė pradinį registracijos apribojimą. Jei reikia pagalbos, susisiekite su administratoriumi.</translation>
+<translation id="3163511056918491211">Lengvai atkurkite duomenis arba pakeiskite įrenginius bet kuriuo metu. Atsarginės kopijos įkeliamos į sistemą „Google“ ir šifruojamos naudojant „Google“ paskyros slaptažodį.</translation>
 <translation id="3170072451822350649">Be to, galite praleisti prisijungimo veiksmą ir <ph name="LINK_START" />naršyti kaip svečias<ph name="LINK_END" />.</translation>
+<translation id="3177914167275935955">Prie jūsų įrenginio yra pridėtas „Chrome Education“ naujovinimas, bet jūsų naudotojo vardas nesusietas su „Google for Education“ paskyra. Sukurkite „Google for Education“ paskyrą apsilankę adresu g.co/workspace/edusignup antriniame įrenginyje.</translation>
 <translation id="3196912927885212665">Kad būtų galima nustatyti naudojant „Android“ telefoną, „Chromebook“ įrenginio „Bluetooth“ ryšys turi būti įjungtas</translation>
 <translation id="3238192140106069382">Prisijungiama ir patvirtinama</translation>
 <translation id="3261268979727295785">Vyresniems vaikams tėvų kontrolę galite pridėti tik baigę sąranką. Informacijos apie tėvų kontrolę rasite programoje „Explore“.</translation>
 <translation id="3278001907972365362">Reikia atkreipti dėmesį į „Google“ paskyrą (-as)</translation>
 <translation id="3283148363895519428">Tęskite sąranką vadovaudamiesi telefono instrukcijomis. Įsitikinkite, kad telefonas yra netoliese ir įjungtas „Bluetooth“.</translation>
+<translation id="3382073616108123819">Oi! Sistemai nepavyko nustatyti šio įrenginio identifikatorių.</translation>
+<translation id="3382200254148930874">Stabdoma priežiūra...</translation>
+<translation id="3391721320619127327">Ekrano skaitytuvą sistemoje „ChromeOS Flex“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys, kad galėtų skaityti ekrane rodomą tekstą naudodami kalbos sintezatorių arba Brailio rašmenų ekraną. Jei norite įjungti „ChromeVox“, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
+<translation id="3433621910545056227">Deja, sistemai vykdant įrenginio diegimo laiko atributų fiksavimą įvyko klaida.</translation>
 <translation id="3435896845095436175">Įgalinti</translation>
 <translation id="3462413494201477527">Atšaukti paskyros sąranką?</translation>
 <translation id="3473241910002674503">Eikite į pagrindinį puslapį, naršykite atgal ir perjunkite programas naudodami mygtukus planšetinio kompiuterio režimu.</translation>
 <translation id="3491669675709357988">Jūsų vaiko paskyra nenustatyta naudoti su „Family Link“ tėvų kontrole. Tėvų kontrolę galite pridėti tik baigę sąranką. Informacijos apie tėvų kontrolę rasite programoje „Explore“.</translation>
+<translation id="3520824492621090923">Patvirtinti viešojo terminalo ir ženklų įrenginio registraciją?</translation>
+<translation id="3577745545227000795">„<ph name="DEVICE_OS" />“ aparatinės įrangos duomenų rinkimas</translation>
 <translation id="3635199270495525546">Aptiktas patikimos platformos modulis (TPM)</translation>
+<translation id="3650753875413052677">Registracijos klaida</translation>
 <translation id="3661106764436337772">Rašykite greičiau ir užtikrinčiau</translation>
 <translation id="3662207097851752847">Patvirtinkite „Google“ paskyrą telefone</translation>
 <translation id="3672681487849735243">Aptikta gamyklos klaida</translation>
 <translation id="3673097791729989571">Prisijungimo prieglobą teikia <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Jūsų PIN kodas atnaujintas</translation>
 <translation id="367645871420407123">Jei norite nustatyti numatytojo bandomojo vaizdo vertės pagrindinį slaptažodį, palikite lauką tuščią.</translation>
+<translation id="370665806235115550">Įkeliama...</translation>
 <translation id="3712050472459130149">Reikia atnaujinti paskyrą</translation>
 <translation id="3733296813637058299">Įdiegsime jums šias programas. Daugiau programų „<ph name="DEVICE_TYPE" />“ įrenginiui galite rasti „Play“ parduotuvėje.</translation>
 <translation id="376841534249795524">Kam naudosite „<ph name="DEVICE_TYPE" />“?</translation>
+<translation id="3772046291955677288">Perskaičiau <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygas<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />papildomas „Chrome“ bei „Chrome“ OS paslaugų teikimo sąlygas<ph name="END_LINK2" /> ir su jomis sutinku.</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
+<translation id="3800828618615365228">„Google Chrome“ ir „Chrome“ OS papildomos sąlygos</translation>
+<translation id="3828953470056652895">Perskaičiau <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygas<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />papildomas „Chrome“ ir „Chrome“ OS paslaugų teikimo sąlygas<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />„Play“ paslaugų teikimo sąlygas<ph name="END_LINK3" /> ir su jomis sutinku.</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3897746662269329507">„<ph name="DEVICE_TYPE" />“ sukurtas žaidimams. Toliau bus atidaryta programa „Explore“, kur galėsite pasiekti daug naujausių žaidimų, peržiūrėti žaidimų pasiūlymus ir atrasti su įrenginiu teikiamas žaidimų funkcijas.</translation>
 <translation id="3910588685973519483">Ekrano fonų kūrimas naudojant DI</translation>
 <translation id="3950820424414687140">Prisijungti</translation>
+<translation id="3983400541576569538">Galite prarasti kai kurių programų duomenis</translation>
 <translation id="3994318741694670028">Deja, jūsų kompiuteris yra sukonfigūruotas naudojant netinkamai suformuotą aparatinės įrangos ID. Tai neleidžia „ChromeOS Flex“ atnaujinti naujausiais saugos pataisymais ir jūsų kompiuteris <ph name="BEGIN_BOLD" />gali būti neatsparus kenkėjiškoms atakoms<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Prisegimo funkcijos nustatymas</translation>
 <translation id="4044883420905480380">Prisijungėte prie „Wi-Fi“ ir <ph name="USER_EMAIL" /> naudodami „Android“ telefoną</translation>
+<translation id="4047726037116394521">Eiti į pagrindinį ekraną</translation>
 <translation id="4062561150282203854">„<ph name="DEVICE_TYPE" />“ programų, nustatymų ir kt. sinchronizavimas</translation>
 <translation id="4089743381329341712">Pasirinktos programos bus įdiegiamos po sąrankos. Daugiau rekomendacijų vėliau rasite programoje „Program. ir žaidimai“.</translation>
 <translation id="4104944259562794668">Tai galite įgalinti vėliau apsilankę skiltyje „Nustatymai“ &gt; „Sauga ir privatumas“ &gt; „Užrakinimo ekranas ir prisijungimas“</translation>
+<translation id="4135746311382563554">„Google Chrome“ ir „Chrome“ OS papildomos paslaugų teikimo sąlygos</translation>
 <translation id="41365691917097717">Tęsdami įgalinsite ADB derinimą, naudojamą „Android“ programoms kurti ir testuoti. Atminkite, kad atlikus šį veiksmą bus leidžiama įdiegti „Android“ programas, kurios nebuvo patvirtintos „Google“, o norint išjungti ADB, reikės atkurti gamyklinius nustatymus.</translation>
+<translation id="4165942112764990069"><ph name="USER_EMAIL" /> nepriklauso tinkamai organizacijai. Susisiekite su administratoriumi. Jei esate administratorius, galite nustatyti savo organizaciją apsilankę adresu šiuo adresu: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4232484478444192782">„Android“ telefone bus suteikta pagalba. „Wi-Fi“ ir slaptažodis perkeliami.</translation>
 <translation id="4242145785130247982">Nepalaikomi keli klientų sertifikatai</translation>
+<translation id="4242577469625748426">Diegiant politikos nustatymus įrenginyje įvyko klaida: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4250680216510889253">Ne</translation>
+<translation id="4251377547188244181">Viešojo terminalo ir ženklų įrenginio registracija</translation>
 <translation id="4263223596040212967">Patikrinkite klaviatūros išdėstymą ir bandykite dar kartą.</translation>
+<translation id="4278498748067682896">Naudosite viešojo terminalo ir ženklų naujovinimą, kurį naudojant įrenginį galima paleisti tik viešojo terminalo arba ženklų režimu. Jei norite, kad naudotojai prisijungtų prie įrenginio, grįžkite ir užsiregistruokite naudoti „Chrome Enterprise“ naujovinimą.</translation>
+<translation id="4287157641315808225">Taip, suaktyvinti „ChromeVox“</translation>
 <translation id="4289732974614035569">Pasirinkite PIN kodą</translation>
+<translation id="4309165024397827958">Leiskite „Android“ programoms ir paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti įrenginio vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir juos naudoti kaip anoniminius, siekdama tiksliau nustatyti vietovę ir gerinti paslaugas pagal vietovę.</translation>
 <translation id="4317733381297736564">Pirkimas programoje</translation>
+<translation id="4341905082470253054">Tikrinama TPM būsena...</translation>
 <translation id="4370975561335139969">Įvestas slaptažodis neatitinka el. pašto adreso</translation>
 <translation id="4373418556073552953">Prisijungimas „Android“ telefonu</translation>
+<translation id="4403266582403435904">Lengvai atkurkite duomenis arba pakeiskite įrenginius bet kuriuo metu. Atsarginės kopijos įkeliamos į sistemą „Google“ ir šifruojamos naudojant vaiko „Google“ paskyros slaptažodį.</translation>
 <translation id="4410545552906060960">Naudokite skaičių (PIN kodą) vietoje slaptažodžio įrenginiui atrakinti. Jei norite PIN kodą nustatyti vėliau, eikite į skiltį „Nustatymai“.</translation>
 <translation id="4415213869328311284">Esate pasirengę naudoti „<ph name="DEVICE_TYPE" />“ įrenginį.</translation>
+<translation id="4449948729197510913">Jūsų naudotojo vardas priklauso organizacijos įmonės paskyrai. Jei norite užregistruoti įrenginių paskyroje, pirmiausia patvirtinkite domeno nuosavybės teisę administratoriaus pulte. Norint patvirtinti reikės paskyros administravimo privilegijų.</translation>
 <translation id="4450974146388585462">Diagnozuoti</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> aptiko aktyvų TPM, kuris gali saugiau saugoti jūsų duomenis.</translation>
 <translation id="4472575034687746823">Pradėkite</translation>
+<translation id="4566170377336116390">Jei užregistravę norėsite perjungti, turėsite atkurti gamyklinius įrenginio nustatymus (naudoti funkciją „Powerwash“).</translation>
 <translation id="4567512141633030272">Netinkama prisijungimo parinktis?</translation>
 <translation id="4568213207643490790">Deja, „Google“ paskyrų negalima naudoti šiame įrenginyje.</translation>
 <translation id="4611759022973144129">Naudodami šį slaptažodį galite prisijungti prie „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="4727847987444062305">Valdoma svečio sesija</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="473936925429402449">Pasirinkta, papildomas turinys: <ph name="CURRENT_ELEMENT" /> iš <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> nėra tinkama „Google for Education“ paskyra. Susisiekite su administratoriumi. Jei esate administratorius, galite nustatyti savo organizaciją apsilankę adresu g.co/workspace/edusignup</translation>
+<translation id="4806457879608775995">Šių sąlygų peržiūra ir duomenų valdymas</translation>
 <translation id="4830502475412647084">Įdiegiamas OS naujinys</translation>
 <translation id="4837926214103741331">Neturite leidimo naudoti šį įrenginį. Susisiekite su įrenginio savininku, kad gautumėte leidimą prisijungti.</translation>
 <translation id="4864369630010738180">Prisijungiama...</translation>
+<translation id="4877652723592270843">Ar norite suaktyvinti „ChromeVox“ – integruotą „ChromeOS Flex“ ekrano skaitytuvą? Jei norite, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus.</translation>
 <translation id="4899696330053002588">Yra skelbimų</translation>
+<translation id="49027928311173603">Iš serverio atsisiųsta politika netinkama: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4941246025622441835">Naudoti šio įrenginio užklausas registruojant įrenginį įmonei valdyti:</translation>
 <translation id="4944310289250773232">Ši autentifikavimo paslauga priglobiama <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">PIN kodo pasirinkimas</translation>
+<translation id="4965808351167763748">Ar tikrai norite nustatyti šį įrenginį, kad būtų galima paleisti „Hangout Meet“?</translation>
 <translation id="5029287942302939687">Slaptažodis nustatytas</translation>
 <translation id="503155457707535043">Programos atsisiunčiamos</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
 <translation id="5062930723426326933">Prisijungiant įvyko klaida. Prisijunkite prie interneto ir bandykite dar kartą.</translation>
+<translation id="5097306410549350357">Sužinokite daugiau apie vietovės informacijos naudojimą</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Kalbėkitės su „Gemini“ ir pradėkite rašyti, planuoti, mokytis ar užsiimti kita veikla naudodami „Google“ DI.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Baigę sąranką pradėkite naudoti „Gemini“ pasirinkdami „Gemini“ programą lentynoje, kuri rodoma ekrano apačioje.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Prijunkite „<ph name="DEVICE_TYPE" />“ prie maitinimo šaltinio.</translation>
@@ -167,22 +237,36 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> vykdant procesą sistema bus paleista iš naujo.</translation>
+<translation id="5234523649284990414">Ekrano skaitytuvą sistemoje „ChromeOS“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys, kad galėtų skaityti ekrane rodomą tekstą naudodami kalbos sintezatorių arba Brailio rašmenų ekraną. Jei norite įjungti „ChromeVox“, paspauskite tarpo klavišą. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="523505283826916779">Pasiekiamumo nustatymai</translation>
 <translation id="5240931875940563122">Prisijungti „Android“ telefonu</translation>
 <translation id="5255859108402770436">Prisijungti dar kartą</translation>
 <translation id="5260508466980570042">Atsiprašome, el. pašto ir slaptažodžio patvirtinti nepavyko. Bandykite dar kartą.</translation>
 <translation id="5264252276333215551">Prisijunkite prie interneto, kad paleistumėte savo programą viešojo terminalo režimu.</translation>
 <translation id="528208740344463258">Kad galėtumėte atsisiųsti ir naudoti „Android“ programas, pirmiausia turite įdiegti šį būtiną naujinį. Kol „<ph name="DEVICE_TYPE" />“ atnaujinamas, negalite jo naudoti. Užbaigus diegimą „<ph name="DEVICE_TYPE" />“ bus paleistas iš naujo.</translation>
+<translation id="5283677936944177147">Oi! Sistemai nepavyko nustatyti įrenginio modelio ar serijos numerio.</translation>
+<translation id="5333896723098573627">Jei norite pašalinti programas, eikite į skiltį „Nustatymai“ &gt; „Programos“ &gt; „Google Play“ parduotuvė“ &gt; „Tvarkyti „Android“ nuostatas“ &gt; „Programos“ arba „Programų tvarkytuvė“. Tada palieskite programą, kurią norite pašalinti (gali reikėti perbraukti į dešinę arba į kairę, kad rastumėte programą). Tada palieskite „Pašalinti“ arba „Išjungti“.</translation>
+<translation id="5355501370336370394">Užregistruoti įmonės įrenginį</translation>
+<translation id="5372529912055771682">Ši operacinė sistema nepalaiko teikiamo registracijos režimo. Įsitikinkite, kad naudojate naujausią versiją ir bandykite dar kartą.</translation>
+<translation id="5397378439569041789">Užregistruoti viešojo terminalo arba ženklų įrenginį</translation>
+<translation id="5411022484772257615">Nepavyko baigti mokyklos registracijos</translation>
+<translation id="5413640305322530561">Sužinokite daugiau apie diagnostikos ir naudojimo duomenis</translation>
+<translation id="542750953150239272">Tęsdami sutinkate, kad šis įrenginys taip pat gali automatiškai atsisiųsti ir įdiegti naujinius bei programas iš „Google“, operatoriaus ir šio įrenginio gamintojo (gali būti naudojami mobiliojo ryšio duomenys). Kai kurios programos gali siūlyti įsigyti pirkinių programoje.</translation>
 <translation id="542948651837270806">Reikia įdiegti patikimo platformos modulio programinės aparatinės įrangos naujinį. Žr. <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Oi, prisijungiant įvyko klaida</translation>
 <translation id="5463450804024056231">Prisiregistruoti gauti „<ph name="DEVICE_TYPE" />“ el. laiškus</translation>
+<translation id="5473099001878321374">Tęsdami sutinkate, kad šis įrenginys taip pat gali automatiškai atsisiųsti ir įdiegti naujinius bei programas iš „Google“, jūsų vaiko operatoriaus ir šio įrenginio gamintojo (gali būti naudojami mobiliojo ryšio duomenys). Kai kurios programos gali siūlyti įsigyti pirkinių programoje.</translation>
+<translation id="5511823366942919280">Ar tikrai norite nustatyti šį įrenginį kaip „Shark“?</translation>
 <translation id="5527474464531963247">Be to, galite pasirinkti kitą tinklą.</translation>
 <translation id="5539070192556911367">Nepavyksta pasiekti „Google“</translation>
 <translation id="557722062034137776">Iš naujo nustačius įrenginį, tai neturės įtakos jūsų „Google“ paskyroms ar šiose paskyrose sinchronizuotiems duomenims. Tačiau bus ištrinti visi įrenginyje saugomi duomenys.</translation>
 <translation id="5626172233890210551">Verčiau naudoti slaptažodį</translation>
 <translation id="5636996382092289526">Kad naudotumėte „<ph name="NETWORK_ID" />“, pirmiausia reikės <ph name="LINK_START" />apsilankyti tinklo prisijungimo puslapyje<ph name="LINK_END" />, kuris bus automatiškai atidarytas po kelių sekundžių. Jei taip nenutiks, negalėsite naudoti tinklo.</translation>
+<translation id="5655296450510165335">Įrenginio registracija</translation>
 <translation id="5659964844710667266">Sukurkite šio „<ph name="DEVICE_TYPE" />“ slaptažodį</translation>
+<translation id="5684661240348539843">Ištekliaus identifikatorius</translation>
 <translation id="5684950556880280580">Slaptažodis atnaujintas</translation>
+<translation id="5705882733397021510">Atgal</translation>
 <translation id="5762787084360227629">Įvesti „Google“ paskyros informaciją</translation>
 <translation id="5764797882307050727">Atlaisvinkite vietos įrenginyje.</translation>
 <translation id="5765425701854290211">Deja, kai kurie failai buvo pažeisti ir atnaujinimo procesas nebuvo sėkmingas. Sinchronizuoti failai yra saugūs.</translation>
@@ -190,66 +274,100 @@
 <translation id="5799478978078236781">Gaukite „<ph name="DEVICE_TYPE" />“ patarimų, pasiūlymų bei naujinių ir pateikite atsiliepimų.</translation>
 <translation id="5804259315582798390">Nepavyko įgalinti vietinių duomenų atkūrimo</translation>
 <translation id="5810809306422959727">Šioje paskyroje tėvų kontrolės naudoti negalima</translation>
+<translation id="5852112051279473187">Oi! Bandant užregistruoti šį įrenginį iškilo rimtų problemų. Bandykite dar kartą arba susisiekite su palaikymo atstovu.</translation>
 <translation id="5852137567692933493">Paleisti iš naujo ir naudoti „Powerwash“</translation>
 <translation id="5856721540245522153">Įgalinti derinimo funkcijas</translation>
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5895335062901455404">Išsaugotos nuostatos ir veikla bus paruoštos bet kuriame „ChromeOS Flex“ įrenginyje, kai prisijungsite naudodami „Google“ paskyrą. Galite pasirinkti, ką norite sinchronizuoti, skiltyje „Nustatymai“.</translation>
+<translation id="5919305207330938913">Visi surinkti duomenys bus naudojami pagal <ph name="BEGIN_LINK" />„Google“ privatumo politiką<ph name="END_LINK" />.</translation>
+<translation id="5932441198730183141">Neturite pakankamai pasiekiamų licencijų, kad galėtumėte užregistruoti šį „Google Meet“ aparatinės įrangos įrenginį. Norėdami įsigyti jų daugiau, susisiekite su pardavimo skyriumi. Jei manote, kad šis pranešimas rodomas per klaidą, susisiekite su palaikymo komanda.</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="5959471481388474538">Tinklas negalimas</translation>
 <translation id="6016178549409952427">Naršyti papildomą turinį: <ph name="CURRENT_ELEMENT" /> iš <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6040143037577758943">Uždaryti</translation>
+<translation id="6051354611314852653">Oi, sistemai suteikiant prieigą prie šio įrenginio API įvyko klaida.</translation>
 <translation id="6055544610007596637">Įdiekite programas „<ph name="DEVICE_TYPE" />“ iš „Google Play“ parduotuvės</translation>
 <translation id="6071181508177083058">patvirtinkite slaptažodį</translation>
+<translation id="6075731018162044558">Oi, sistemai bandant gauti ilgalaikį API prieigos raktą šiam įrenginiui įvyko klaida.</translation>
 <translation id="6125479973208104919">Deja, reikės vėl pridėti paskyrą šiame „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6170498031581934115">Nepavyko įgalinti ADB derinimo. Eikite į „Nustatymų“ skiltį ir bandykite dar kartą.</translation>
 <translation id="6172020488605056255">Spustelėkite dešiniuoju klavišu, kad galėtumėte naudoti funkciją „Pagalba skaitant“</translation>
 <translation id="6173623053897475761">Įveskite PIN kodą dar kartą</translation>
+<translation id="6185132558746749656">Įrenginio vietovė</translation>
 <translation id="6202304368170870640">Naudodami PIN kodą galite prisijungti prie įrenginio arba jį atrakinti.</translation>
+<translation id="6209908325007204267">Prie jūsų įrenginio yra pridėtas „Chrome“ įmonei skirtos versijos licencijos naujovinimas, bet jūsų naudotojo vardas nesusietas su įmonės paskyra. Sukurkite įmonės paskyrą antriniame įrenginyje apsilankę adresu g.co/ChromeEnterpriseAccount.</translation>
 <translation id="623261264391834964">Spustelėkite dešiniuoju klavišu teksto laukelyje, kad galėtumėte naudoti funkciją „Padėkite man rašyti“</translation>
 <translation id="6280215091796946657">Prisijunkite naudodami kitą paskyrą</translation>
+<translation id="6283823201263716145">Įrenginiai, kuriuose įjungtas demonstracinis režimas, automatiškai siunčia strigčių ataskaitas bei diagnostikos ir naudojimo duomenis į sistemą „Google“, kad padėtų tobulinti funkcijas ir našumą.</translation>
 <translation id="6287713404380454515">Saugumo sumetimais administratorius išjungė įrenginio PIN kodą ir slaptažodį. Nuo šiol naudokite <ph name="MANAGER" /> slaptažodį.</translation>
+<translation id="6301300352769835063">Leiskite sistemai „Google“ naudoti jūsų aparatinės įrangos duomenis ir tobulinti „<ph name="DEVICE_OS" />“. Jei atsisakysite, duomenys vis tiek bus siunčiami sistemai „Google“, siekiant nustatyti, kurie naujiniai tinkami, tačiau jie nebus saugomi ar naudojami kitais būdais. Sužinokite daugiau adresu g.co/flex/HWDataCollection.</translation>
+<translation id="6308493641021088955">Prisijungimo duomenis pateikė „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6314819609899340042">Sėkmingai įgalinote derinimo funkcijas šiame „<ph name="IDS_SHORT_PRODUCT_NAME" />“ įrenginyje.</translation>
+<translation id="635609604405270300">Neišjunkite įrenginio</translation>
+<translation id="6367097275976877956">Ar norite suaktyvinti „ChromeVox“ – integruotą „Chrome“ OS ekrano skaitytuvą? Jei norite, paspauskite tarpo klavišą.</translation>
+<translation id="636850387210749493">Įmonės registracija</translation>
 <translation id="6380143666419481200">Sutikti ir tęsti</translation>
+<translation id="640457954117263537">Naudoti vietovę „ChromeOS“ ir „Android“ programoms bei paslaugoms.</translation>
 <translation id="6418511932144861495">Labai svarbaus naujinio diegimas</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
 <translation id="6495266441917713704">Nepavyko perkelti naudojant „Wi-Fi“</translation>
 <translation id="6515620015470298987">Nepavyko prisijungti dėl įrenginio konfigūracijos patikros problemos. Išvalykite „<ph name="DEVICE_TYPE" />“ ir bandykite dar kartą.</translation>
+<translation id="6519689855001245063">Tikrinamas tinkamumas</translation>
 <translation id="6532527800157340614">Nepavyko prisijungti, nes nepavyko gauti jūsų prieigos kodo. Patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
+<translation id="65513682072153627">Piktogramą „Tvarkoma“ matysite, kai nustatymą ar funkciją tvarkys administratorius.</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> jau valdo <ph name="USER_EMAIL" />. Norėdami naudoti tėvų kontrolę kitoje „Google“ paskyroje, baigę sąranką atsijunkite ir prisijungimo ekrane pasirinkite „Pridėti asmenį“.</translation>
+<translation id="6642720633335369752">Norėdami pamatyti visus atidarytus programų langus, perbraukite aukštyn iš apačios ir palaikykite.</translation>
 <translation id="6648911618876616409">Svarbus naujinys paruoštas įdiegti. Prisijunkite ir pradėkite.</translation>
+<translation id="6671497123040790595"><ph name="MANAGER" /> valdymo funkcijų nustatymas</translation>
 <translation id="667752334740867460">Gaunama „Wi-Fi“ informacija...</translation>
 <translation id="6680442031740878064">Pasiekiama: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Galite atkurti <ph name="EMAIL" />, bet vietiniai duomenys bus ištrinti.</translation>
+<translation id="6748980958975836188">Perskaičiau <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygas<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />papildomas „Chrome“ bei „Chrome“ OS paslaugų teikimo sąlygas<ph name="END_LINK2" /> ir su jomis sutinku.</translation>
 <translation id="6789834167207639931">Kitame ekrane dar kartą įveskite „Google“ paskyros slaptažodį, kad užbaigtumėte atkūrimą</translation>
 <translation id="6800893479155997609">Populiariausios programos, skirtos „<ph name="DEVICE_TYPE" />“</translation>
+<translation id="682971198310367122">„Google“ privatumo politika</translation>
 <translation id="6835762382653651563">Prisijunkite prie interneto, kad galėtumėte atnaujinti „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="6839916869147598086">Prisijungimas pakeistas</translation>
+<translation id="6883319974225028188">Oi!  Sistemai nepavyko išsaugoti įrenginio konfigūracijos.</translation>
 <translation id="6903907808598579934">Įjungti sinchronizavimą</translation>
 <translation id="6918733588290914545">Greita sąranka naudojant „Android“ telefoną</translation>
+<translation id="6920473853105515518">Įsitikinkite, kad „<ph name="DEVICE_TYPE" />“ prijungtas prie interneto, ir bandykite dar kartą. Be to, galite apsilankyti adresu play.google/play-terms kitame įrenginyje.</translation>
 <translation id="6955698182324067397">Įgalinsite „Chrome“ OS derinimo funkcijas ir bus nustatyta „sshd daemon“, kad būtų galima paleisti iš atmintuko.</translation>
 <translation id="6965382102122355670">Gerai</translation>
+<translation id="6969216690072714773">Įveskite naują arba atnaujinkite esamą informaciją, kuri bus susieta su šiuo įrenginiu.</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="6984652455487792101">Jei naudojate tarpinį serverį, patikrinkite tarpinio serverio nustatymus arba
         susisiekite su tinklo administratoriumi, kad patikrintų, ar tarpinis
         serveris veikia. Jei manote, kad neturėtumėte naudoti
         tarpinio serverio, koreguokite <ph name="LINK_START" />tarpinio serverio nustatymus<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Įjunkite telefono „Bluetooth“ ir „Wi-Fi“</translation>
+<translation id="7025082428878635038">Pristatome naują būdą naršyti gestais</translation>
+<translation id="7034692021407794547">Administratorius, kuriam suteikta privilegija „Atsiskaitymo valdymas“, pirmiausia turi administratoriaus pulto skiltyje „Google Meet“ aparatinė įranga“ sutikti su „Google Meet“ aparatinės įrangos paslaugų teikimo sąlygomis.</translation>
+<translation id="7065223852455347715">Įrenginys užrakintas įjungus režimą, dėl kurio neleidžiama jo užregistruoti įmonėje. Jei norite užregistruoti įrenginį, pirmiausia turite atkurti nustatymus.</translation>
 <translation id="7077829361966535409">Įkeliant prisijungimo puslapį naudojant dabartinius įgaliotojo serverio nustatymus įvyko klaida. <ph name="GAIA_RELOAD_LINK_START" />Bandykite prisijungti dar kartą<ph name="GAIA_RELOAD_LINK_END" /> arba nustatykite kitus <ph name="PROXY_SETTINGS_LINK_START" />įgaliotojo serverio nustatymus<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="7088674813905715446">Administratorius nustatė šio įrenginio būseną į „neteikiama“. Kad galėtumėte jį užregistruoti, nurodykite administratoriui nustatyti įrenginio būseną į „laukiama“.</translation>
 <translation id="7114054701490058191">Slaptažodžiai neatitinka</translation>
 <translation id="7135729336746831607">Įjungti „Bluetooth“?</translation>
 <translation id="7141105143012495934">Nepavyko prisijungti, nes negalima gauti išsamios paskyros informacijos. Susisiekite su administratoriumi arba bandykite dar kartą.</translation>
 <translation id="7144878232160441200">Kartoti</translation>
+<translation id="7189451821249468368">Neturite pakankamai licencijų naujovinimų, kad galėtumėte užregistruoti šį įrenginį. Susisiekite su pardavimo atstovu, kad įsigytumėte daugiau. Jei manote, kad šį pranešimą gavote per klaidą, susisiekite su palaikymo komanda.</translation>
 <translation id="7202337678781136582">QR kodo nuskaitymas „Android“ telefonu</translation>
+<translation id="7260186537988033909">Viešojo terminalo ir ženklų įrenginio registracija baigta</translation>
 <translation id="7290242001003353852">Ši prisijungimo paslauga, priglobiama <ph name="SAML_DOMAIN" />, pasiekia jūsų fotoaparatą.</translation>
+<translation id="7317831949569936035">Mokyklos registracija</translation>
 <translation id="7329154610228416156">Nepavyko prisijungti, nes buvo sukonfigūruota naudoti nesaugų URL (<ph name="BLOCKED_URL" />). Susisiekite su administratoriumi.</translation>
 <translation id="7345706641791090287">Patvirtinkite slaptažodį</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
+<translation id="7416263748877373774">Nepavyksta įkelti paslaugų teikimo sąlygų. Patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
+<translation id="7475742997309661417">Ekrano skaitytuvą sistemoje „ChromeOS“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys, kad galėtų skaityti ekrane rodomą tekstą naudodami kalbos sintezatorių arba Brailio rašmenų ekraną. Jei norite įjungti „ChromeVox“, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="7476454130948140105">Akumuliatorius per daug išsikrovęs, kad būtų galima atnaujinti (<ph name="BATTERY_PERCENT" /> proc.)</translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Prieš užsiregistruodami turite išvalyti TPM, kad „<ph name="DEVICE_OS" />“ galėtų perimti įrenginio nuosavybės teisę.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Taip pat galite visiškai išjungti TPM įrenginį. Jūsų duomenys bus saugiai saugomi naudojant programinės įrangos šifruotę, bet tam tikros saugos funkcijos (pvz., aparatinės įrangos palaikomi sertifikatai) bus išjungtos.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Galite pakeisti TPM nustatymus iš naujo paleidę sistemą ir atidarę jos BIOS / UEFI nustatymus. Veiksmai gali skirtis atsižvelgiant į įrenginio modelį. Jei reikia daugiau informacijos, atidarykite „<ph name="DEVICE_OS" />“ dokumentus kitame įrenginyje prieš iš naujo paleisdami sistemą: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="7506541170099744506">„<ph name="DEVICE_TYPE" />“ sėkmingai užregistruotas kaip tvarkomas įmonėje.</translation>
+<translation id="7509097596023256288">Valdymo funkcijų nustatymas</translation>
 <translation id="7543104066686362383">Įgalinkite derinimo funkcijas šiame „<ph name="IDS_SHORT_PRODUCT_NAME" />“ įrenginyje</translation>
 <translation id="7553242001898162573">Įveskite slaptažodį</translation>
 <translation id="7556242789364317684">Deja, „<ph name="SHORT_PRODUCT_NAME" />“ nepavyksta atkurti jūsų nustatymų. Kad būtų galima ištaisyti klaidą, „<ph name="SHORT_PRODUCT_NAME" />“ turi iš naujo nustatyti jūsų įrenginį per „Powerwash“.</translation>
@@ -258,13 +376,17 @@
 <translation id="7622114377921274169">Įkraunama.</translation>
 <translation id="7630426712700473382">Šį įrenginį tvarko: <ph name="MANAGER" />. Prisijungti reikia kiekvieną kartą.</translation>
 <translation id="7639914187072011620">Nepavyko gauti SAML peradresavimo URL iš serverio</translation>
+<translation id="7643117827468520640">Peržiūrėkite šias sąlygas</translation>
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7659584679870740384">Neturite leidimo naudoti šį įrenginį. Susisiekite su administratoriumi, kad gautumėte leidimą prisijungti.</translation>
 <translation id="7660116474961254898">Vadovaukitės telefone pateikiamomis instrukcijomis</translation>
+<translation id="7661451191293163002">Nepavyko gauti registracijos sertifikato.</translation>
 <translation id="7671139479636735732">Spustelėkite dešiniuoju klavišu, kad galėtumėte lengvai vizualizuoti idėjas</translation>
 <translation id="770831926727930011">Vietiniai duomenys saugomi naudojant senąjį slaptažodį. Įveskite senąjį slaptažodį, kad atkurtumėte vietinius duomenis.</translation>
 <translation id="7722040605881499779">Kad būtų galima atnaujinti, reikia laisvos vietos: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7760176388948986635">Leiskite „ChromeOS“ ir „Android“ programoms, svetainėms bei paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti šio įrenginio vietovės informaciją. Vietovės nustatymo tikslumo funkcija „Android“ programoms ir paslaugoms teikia tikslesnę vietovės informaciją. Kad galėtų tai daryti, „Google“ periodiškai apdoroja informaciją apie įrenginio jutiklius ir belaidžius signalus iš šio įrenginio, kad galėtų kaupti belaidžio signalo vietovių informaciją. Šie duomenys naudojami neidentifikuojant jokio asmens, kad būtų galima gerinti vietovės nustatymo tikslumą ir paslaugas pagal vietovę bei tobulinti, teikti ir prižiūrėti „Google“ paslaugas, pagrįstas „Google“ ir trečiųjų šalių teisėtu interesu tenkinti naudotojų poreikius.</translation>
+<translation id="7784875615510899699">Neturite pakankamai pasiekiamų licencijų, kad galėtumėte užregistruoti šį „Google Beam“ įrenginį. Jei norite įsigyti daugiau, susisiekite su perpardavėju. Jei manote, kad šis pranešimas rodomas per klaidą, susisiekite su perpardavėju.</translation>
 <translation id="7792012425874949788">Prisijungiant įvyko klaida</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7803657407897251194">Jei norite tęsti sąranką „Android“ įrenginyje, prijunkite „<ph name="DEVICE_TYPE" />“ prie tinklo</translation>
@@ -273,29 +395,45 @@
 <translation id="7883792253546618164">Atsisakyti prenumeratos galėsite bet kuriuo metu.</translation>
 <translation id="7906440585529721295">Vietiniai duomenys bus ištrinti</translation>
 <translation id="7943311690198910993">Prisijungimo metodas atnaujintas</translation>
+<translation id="795240231873601803">Įmonės registracijos funkcijos naudojimas darbo ir mokyklos paskyrose</translation>
 <translation id="7968982339740310781">Žiūrėti išsamią informaciją</translation>
+<translation id="7975504106303186033">Turite užregistruoti šį „Chrome Education“ įrenginį „Education“ paskyroje. Jei norite prisiregistruoti naudoti naują paskyrą, apsilankykite adresu g.co/workspace/edusignup.</translation>
 <translation id="7982083145464587921">Paleiskite įrenginį iš naujo, kad ištaisytumėte šią klaidą.</translation>
 <translation id="7990958035181555539">Automatinis „Wi-Fi“ perkėlimas iš „Android“ telefono</translation>
 <translation id="8054563304616131773">Įveskite tinkamą el. pašto adresą</translation>
 <translation id="8065144531309810062">Naudokite „Google“ DI, kad būtumėte kūrybingesni ir produktyvesni</translation>
+<translation id="8097959162767603171">Jūsų administratorius pirmiausia turi sutikti su paslaugų teikimo sąlygomis administratoriaus pulto „Chrome“ įrenginių sąraše.</translation>
 <translation id="8098616321286360457">Būtina prisijungti prie tinklo</translation>
+<translation id="8129265306888404830">Kad galėtumėte naudoti organizacijos el. pašto adresą (<ph name="EMAIL_DOMAIN" />), turite naudoti įmonės registracijos funkciją. Jei šis įrenginys skirtas naudoti asmeninėms reikmėms, prisijunkite naudodami asmeninę „Google“ paskyrą.</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8146177459103116374">Jei jau esate užsiregistravę šiame įrenginyje, galite <ph name="LINK2_START" />prisijungti kaip esamas naudotojas<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Nepavyko prisijungti. Susisiekite su administratoriumi arba bandykite dar kartą.</translation>
+<translation id="8147346945017130012">Padėkite tobulinti „Chrome“ ir „Chrome“ OS funkcijas bei našumą automatiškai siųsdami strigčių ataskaitas ir diagnostikos bei naudojimo duomenis į sistemą „Google“.</translation>
+<translation id="815491593104042026">Oi! Nepavyko autentifikuoti, nes buvo sukonfigūruoti naudoti nesaugų URL (<ph name="BLOCKED_URL" />). Susisiekite su administratoriumi.</translation>
+<translation id="8157704005178149728">Priežiūros nustatymas</translation>
+<translation id="8174047975335711832">Įrenginio informacija</translation>
 <translation id="8202160505685531999">Iš naujo įveskite slaptažodį, kad galėtumėte atnaujinti „<ph name="DEVICE_TYPE" />“ profilį.</translation>
+<translation id="8239032431519548577">Įmonės registracija užbaigta</translation>
 <translation id="8241806945692107836">Nustatoma įrenginio konfigūracija...</translation>
 <translation id="8242426110754782860">Tęsti</translation>
 <translation id="826905130698769948">Netinkamas kliento sertifikatas</translation>
 <translation id="8274924778568117936">Neišjunkite ar neuždarykite „<ph name="DEVICE_TYPE" />“, kol atnaujinimo procesas nebus baigtas. Kai diegimo procesas baigsis, „<ph name="DEVICE_TYPE" />“ bus paleistas iš naujo.</translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8304383784961451596">Nesate įgalioti naudoti šį įrenginį. Susisiekę su administratoriumi paprašykite prisijungimo leidimo arba prisijunkite naudodami „Google“ paskyrą, prižiūrimą naudojant „Family Link“.</translation>
+<translation id="8321837372750396788">Šį „<ph name="DEVICE_TYPE" />“ įrenginį tvarkys <ph name="MANAGER" />.</translation>
 <translation id="8354034204605718473">Vaiko PIN kodas pridėtas</translation>
 <translation id="8366396658833131068">Tinklo ryšys atkurtas. Pasirinkite kitą tinklą arba paspauskite toliau pateiktą mygtuką „Tęsti“, kad paleistumėte viešojo terminalo programą.</translation>
+<translation id="8401432541486058167">Nurodykite su išmaniąja kortele susietą PIN kodą.</translation>
+<translation id="8408270600235826886">Galite valdyti, kokie duomenys bendrinami su „Google“. Tai galite bet kada pakeisti skiltyje „Nustatymai“. Duomenys bus naudojami atsižvelgiant į „Google“ <ph name="BEGIN_LINK" />privatumo politiką<ph name="END_LINK" />.</translation>
+<translation id="8413956290606243087">Ar norite suaktyvinti „ChromeVox“ – integruotą „Chrome“ OS ekrano skaitytuvą?</translation>
 <translation id="8425768983279799676">Naudodami PIN kodą galite atrakinti įrenginį.</translation>
 <translation id="843173223122814223">Fonų kūrimas naudojant DI</translation>
 <translation id="8452105022015742247">„Google“ paskyros informacijos perkėlimas iš „Android“ telefono</translation>
+<translation id="8464132254133862871">Šioje naudotojo paskyroje negalima naudoti paslaugos.</translation>
 <translation id="8524841856047224176">Suasmeninkite fotoaparato fonus, kad galėtumėte atlikti vaizdo skambučius ir kitus veiksmus</translation>
 <translation id="8569673829373920831">Daugiau apie „<ph name="APP_NAME" />“</translation>
+<translation id="8586421813321819377">Leiskite „ChromeOS“ ir „Android“ programoms, svetainėms bei paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti jūsų įrenginio vietovės informaciją. Vietovės nustatymo tikslumo funkcija „Android“ programoms ir paslaugoms teikia tikslesnę vietovės informaciją. Kad galėtų tai daryti, „Google“ periodiškai apdoroja informaciją apie įrenginio jutiklius ir belaidžius signalus iš jūsų įrenginio, kad galėtų kaupti belaidžio signalo vietovių informaciją. Šie duomenys naudojami neidentifikuojant jūsų, kad būtų galima gerinti vietovės nustatymo tikslumą ir paslaugas pagal vietovę bei tobulinti, teikti ir prižiūrėti „Google“ paslaugas, pagrįstas „Google“ ir trečiųjų šalių teisėtu interesu tenkinti naudotojų poreikius.</translation>
+<translation id="8627804903623428808">Šių sąlygų peržiūra ir vaiko duomenų valdymas</translation>
 <translation id="8628232294964836490">Vykdykite telefone pateiktas instrukcijas, kad nuskaitytumėte QR kodą. Patikrinkite, ar telefone įjungtas „Bluetooth“ ryšys.
         <ph name="BR" />
         <ph name="BR" />
@@ -303,7 +441,9 @@
 <translation id="8655972064210167941">Nepavyko prisijungti, nes negalima patvirtinti slaptažodžio. Susisiekite su administratoriumi arba bandykite dar kartą.</translation>
 <translation id="8674903726754070732">Deja, jūsų kompiuteris sukonfigūruotas naudojant netinkamai suformuotą aparatinės įrangos ID. Tai neleidžia „Chrome“ OS atnaujinti naujausiais saugos pataisymais, o jūsų kompiuteris <ph name="BEGIN_BOLD" />gali būti neatsparus kenkėjiškoms atakoms<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Pridėkite tėvų kontrolę baigę sąranką</translation>
+<translation id="8698269656364382265">Norėdami grįžti į ankstesnį ekraną, perbraukite iš kairės.</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
+<translation id="8726206820263995930">Politikos nustatymų gavimo iš serverio klaida: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8740086188450289493">Naudoti „Google“ paskyros slaptažodį</translation>
 <translation id="8740247629089392745">Galite grąžinti šį „Chromebook“ <ph name="SUPERVISED_USER_NAME" />. Nustatymo procesas beveik baigtas, tada galėsite naršyti.</translation>
@@ -320,13 +460,20 @@
 <translation id="8946359700442089734">Šiame „<ph name="IDS_SHORT_PRODUCT_NAME" />“ įrenginyje įgalintos ne visos derinimo funkcijos.</translation>
 <translation id="8965037249707889821">Įveskite seną slaptažodį</translation>
 <translation id="8975396729541388937">Bet kuriuo metu atšaukite prenumeratą spustelėję nuorodą gautuose pranešimuose.</translation>
+<translation id="8993059306046735527">Jei pamiršite „<ph name="DEVICE_TYPE" />“ slaptažodį, vis tiek galėsite atkurti vietinius duomenis. Turėsite prisijungti prie „Google“ paskyros arba naudoti paskyros atkūrimo funkciją.</translation>
 <translation id="9033765790910064284">Vis tiek tęsti</translation>
 <translation id="903480517321259405">Dar kartą įveskite PIN kodą</translation>
+<translation id="9040473193163777637">Ar norite suaktyvinti „ChromeVox“ – integruotą „Chrome“ OS ekrano skaitytuvą? Jei norite, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus.</translation>
+<translation id="9068298336633421551">Leiskite „Android“ programoms ir paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti šio įrenginio vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir juos naudoti kaip anoniminius, siekdama tiksliau nustatyti vietovę ir gerinti paslaugas pagal vietovę.</translation>
 <translation id="9076523132036239772">Apgailestaujame, nepavyko patvirtinti jūsų el. pašto ir slaptažodžio. Pabandykite pirmiausia prisijungti prie tinklo.</translation>
+<translation id="9158715103698450907">Deja, nustatant tapatybę iškilo tinklo ryšio problema. Patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
+<translation id="919686179725692564">Sužinokite daugiau apie programų atsarginių kopijų kūrimą</translation>
+<translation id="9214520840402538427">Oi! Diegimo trukmės atributų iniciacijos laikas baigėsi. Susisiekite su palaikymo komandos atstovu.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Taikoma tik „<ph name="DEVICE_TYPE" />“.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Generatyvinis DI yra eksperimentinis, dar tik kuriamas ir šiuo metu jo pasiekiamumas ribotas.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="936479314588646618">Lengvai nustatykite „<ph name="DEVICE_TYPE" />“ telefonu. „Google“ paskyrą galite pridėti patys neįvesdami slaptažodžio.
         <ph name="BR" />
         <ph name="BR" />
         Matoma kaip „<ph name="DEVICE_TYPE" />“…</translation>
+<translation id="951991426597076286">Atmesti</translation>
 </translationbundle>

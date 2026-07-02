@@ -2366,6 +2366,7 @@
 <translation id="4705573018059932476">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过<ph name="AUTHENTICATOR" />来验证身份。此身份验证提供方可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
 <translation id="4708268264240856090">您的连接已中断</translation>
 <translation id="4708276642004148190">供水与水处理</translation>
+<translation id="4710249055485272920">找不到此信息</translation>
 <translation id="4711628883879888561">协作处理标签页分组</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">您无权访问此网站</translation>
@@ -3018,6 +3019,7 @@
 <translation id="5707154300732650394">继续您的历程</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
 <translation id="570953204696852961">红色 3</translation>
+<translation id="5710907191777451677">去问问 Chrome 中的 Gemini</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">兽医学</translation>
 <translation id="5715150588940290235">要删除已保存的安全码吗？</translation>
@@ -3919,7 +3921,6 @@
 <translation id="7110116949943042888">临时和季节性职位</translation>
 <translation id="7110368079836707726">学院与大学</translation>
 <translation id="7111507312244504964">不动产检测与评估</translation>
-<translation id="7117290130383718594">文本注释</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">电视剧</translation>
@@ -5043,7 +5044,6 @@
 <translation id="8871485335898060555">古玩与收藏品</translation>
 <translation id="8871553383647848643">自定义您的浏览器外观</translation>
 <translation id="887350038812854047">此政策在计算机级别和用户级别应用了相同的值。政策运行正常。</translation>
-<translation id="8874790741333031443">尝试暂时允许使用第三方 Cookie，这样浏览保护会降低，但网站功能更可能正常运行。</translation>
 <translation id="8874824191258364635">请输入有效的卡号</translation>
 <translation id="8877780815363510165">钓鱼</translation>
 <translation id="888117890813270681">“<ph name="DATA_CONTROLS_RESTRICTION" />”不能设为“<ph name="DATA_CONTROLS_LEVEL" />”</translation>

@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="10146536653536065">Inštalácia rozšírenia <ph name="EXTENSION_NAME" /></translation>
+<translation id="1070377999570795893">Iný program v počítači pridal rozšírenie, ktoré môže zmeniť spôsob fungovania prehliadača Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Povoliť motív</translation>
 <translation id="1135328998467923690">Balík je neplatný: „<ph name="ERROR_CODE" />“</translation>
 <translation id="1140871961407805696">Nasmerovaný na okolie</translation>
+<translation id="1171831736360285680">Partner <ph name="PARTNER_NAME" /> pridal rozšírenie, ktoré môže zmeniť spôsob fungovania prehliadača Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Exportovanie súkromného kľúča zlyhalo.</translation>
 <translation id="132960226125594336">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />, pretože by presiahol maximálnu veľkosť skriptu alebo maximálnu celkovú veľkosť skriptu obsahu.</translation>
 <translation id="1445572445564823378">Toto rozšírenie spomaľuje prehliadač <ph name="PRODUCT_NAME" />. Ak chcete obnoviť výkonnosť prehliadača <ph name="PRODUCT_NAME" />, zakážte ho.</translation>
 <translation id="1468038450257740950">Rozhranie WebGL nie je podporované.</translation>
 <translation id="1478607704480248626">Inštalácia nie je povolená</translation>
+<translation id="1483493594462132177">Odoslať</translation>
+<translation id="1485015260175968628">Teraz môže:</translation>
 <translation id="1556537182262721003">Nepodarilo sa do profilu presunúť adresár rozšírenia.</translation>
+<translation id="1585717515139318619">Iný program v počítači pridal motív, ktorý môže zmeniť spôsob fungovania prehliadača Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Pre skript sa nepodarilo načítať súbor css „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="1616298854599875024">Rozšírenie <ph name="IMPORT_NAME" /> sa nepodarilo importovať, pretože nie je zdieľaným modulom</translation>
+<translation id="175772926354468439">Povoliť motív</translation>
 <translation id="1757786065507923842">Nepodarilo sa požiadať o povolenie rodiča.</translation>
 <translation id="1803557475693955505">Nepodarilo sa načítať stránku na pozadí „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Dá sa pridať iba zo služby <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Aplikáciu <ph name="APP_NAME" /> nie je možné nainštalovať, pretože nie je povolená v importe <ph name="IMPORT_NAME" /></translation>
+<translation id="2150661552845026580">Pridať rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2159915644201199628">Nepodarilo sa dekódovať obrázok: <ph name="IMAGE_NAME" /></translation>
 <translation id="2193567467390483943">Tvoj rodič toto rozšírenie neschválil</translation>
+<translation id="23030561267973084">Rozšírenie <ph name="EXTENSION_NAME" /> vyžaduje ďalšie povolenia.</translation>
+<translation id="2327492829706409234">Povoliť aplikáciu</translation>
 <translation id="2350172092385603347">Lokalizácia sa použila, parameter default_locale však nebol v manifeste určený.</translation>
 <translation id="2576842806987913196">Súbor CRX s týmto názvom už existuje.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Znova povoliť</translation>
 <translation id="2743583586211388067">Prístup k tomuto rozšíreniu je blokovaný na základe pravidiel vašej organizácie týkajúcich sa rizík rozšírení.</translation>
+<translation id="2766161002040448006">Opýtať sa rodiča</translation>
 <translation id="2785530881066938471">Pre skript obsahu sa nepodarilo sa načítať súbor „<ph name="RELATIVE_PATH" />“. Nepoužíva kódovanie UTF-8.</translation>
+<translation id="2850541429955027218">Pridať motív</translation>
+<translation id="2883143988769190738">Toto rozšírenie vyžaduje nasledujúce povolenia:</translation>
 <translation id="2903070246402204397">Rozšírenie <ph name="EXTENSION_NAME" /> (ID rozšírenia: <ph name="EXTENSION_ID" />) je blokované správcom. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Chcete správcovi odoslať žiadosť o inštaláciu rozšírenia <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2988488679308982380">Nepodarilo sa nainštalovať balík: <ph name="ERROR_CODE" /></translation>
 <translation id="3115238746683532089">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_ID" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Súbor crx sa nepodarilo nahradiť. Skontrolujte, či je súbor používaný.</translation>
 <translation id="3163201441334626963">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Prístup k tomuto rozšíreniu blokuje vaša organizácia.</translation>
+<translation id="3183357154200327217">Iný program v počítači pridal motív, ktorý môže zmeniť spôsob fungovania prehliadača Chromium
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Aplikácia s atribútom manifestu „kiosk_only“ musí byť nainštalovaná v režime verejného terminálu systému Chrome OS</translation>
 <translation id="3364986687961713424">Od správcu: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_ID" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vstupná hodnota pre súkromný kľúč musí byť platná cesta.</translation>
+<translation id="3788401245189148511">Mohli by:</translation>
 <translation id="3834775135533257713">Aplikáciu <ph name="TO_INSTALL_APP_NAME" /> sa nepodarilo pridať, pretože je v konflikte s aplikáciou <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">Nepodarilo sa načítať stránku s možnosťami „<ph name="OPTIONS_PAGE" />“.</translation>
+<translation id="3905761538810670789">Opraviť aplikáciu</translation>
+<translation id="3908501907586732282">Povoliť rozšírenie</translation>
+<translation id="3927932062596804919">Odmietnuť</translation>
 <translation id="3984413272403535372">Pri podpisovaní rozšírenia sa vyskytla chyba.</translation>
+<translation id="4014432863917027322">Chcete opraviť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
+<translation id="4061696872429826774">Iný program v počítači pridal rozšírenie, ktoré môže zmeniť spôsob fungovania prehliadača Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Prístup k tejto kategórii rozšírení blokuje vaša organizácia.</translation>
 <translation id="4233778200880751280">Informačnú stránku <ph name="ABOUT_PAGE" /> sa nepodarilo načítať.</translation>
 <translation id="424963718355121712">Aplikácie musia byť poskytované od hostiteľa, ktorého ovplyvňujú</translation>
 <translation id="4306119971288449206">Aplikácie musia byť poskytované s typom obsahu „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4625078469366263107">Povoliť aplikáciu</translation>
 <translation id="4633003931260532286">Rozšírenie vyžaduje <ph name="IMPORT_NAME" /> minimálne vo verzii <ph name="IMPORT_VERSION" />, ale nainštalovaná je iba verzia <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4660476621274971848">Očakávaná verzia bola „<ph name="EXPECTED_VERSION" />“. Skutočná verzia bola „<ph name="NEW_ID" />“.</translation>
 <translation id="471800408830181311">Výstup súkromného kľúča zlyhal.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Exportovanie verejného kľúča zlyhalo.</translation>
 <translation id="501057610015570208">Aplikácia s atribútom manifestu „kiosk_only“ musí byť nainštalovaná v režime verejného terminálu systému Chrome OS Flex</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Pridať rozšírenie</translation>
+<translation id="5039804452771397117">Povoliť</translation>
 <translation id="5098647635849512368">Absolútnu cestu k adresáru na zbalenie nie je možné nájsť.</translation>
 <translation id="5160071981665899014">Pre skript sa nepodarilo načítať súbor javascript „<ph name="RELATIVE_PATH" />“.</translation>
+<translation id="5185386675596372454">Najnovšia verzia doplnku „<ph name="EXTENSION_NAME" />“ bola zakázaná, pretože vyžaduje viac povolení.</translation>
+<translation id="5242724311594467048">Povoliť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5356315618422219272">Značka appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Odstrániť z prehliadača Chromium</translation>
 <translation id="5456409301717116725">Toto rozšírenie obsahuje súbor kľúča <ph name="KEY_PATH" />. Pravdepodobne to nechcete urobiť.</translation>
+<translation id="5485102783864353244">Pridať aplikáciu</translation>
 <translation id="5486326529110362464">Vstupná hodnota pre súkromný kľúč musí existovať.</translation>
 <translation id="5527463195266282916">Došlo k pokusu o prechod rozšírenia na nižšiu verziu.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Nepodarilo sa načítať rozšírenie zo zdroja</translation>
 <translation id="5972529113578162692">Správca tohto počítača vyžaduje, aby bolo nainštalované rozšírenie <ph name="EXTENSION_NAME" />. Nedá sa odinštalovať.</translation>
 <translation id="6027032947578871493">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_NAME" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Iný program v počítači pridal aplikáciu, ktorá môže zmeniť spôsob fungovania prehliadača Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Chyba pri načítaní rozšírenia</translation>
+<translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> pridal rozšírenie, ktoré môže zmeniť spôsob fungovania Chromu.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Prečítanie súkromného kľúča zlyhalo.</translation>
+<translation id="6326175484149238433">Odstrániť z Chromu</translation>
 <translation id="6391538222494443604">Vstupný adresár musí existovať.</translation>
 <translation id="641087317769093025">Rozšírenie sa nepodarilo rozbaliť</translation>
 <translation id="6542618148162044354">Aplikácia <ph name="APP_NAME" /> žiada o prístup k jednému alebo viacerým vašim zariadeniam:</translation>
+<translation id="655384502888039633">Počet používateľov: <ph name="USER_COUNT" /></translation>
 <translation id="657064425229075395">Nepodarilo sa načítať skript na pozadí „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Obslužný nástroj štandardu MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Súbor manifestu je neplatný</translation>
 <translation id="7217838517480956708">Správca tohto zariadenia vyžaduje inštaláciu rozšírenia <ph name="EXTENSION_NAME" />. Nemôže byť odstránené alebo upravené.</translation>
 <translation id="7287143125007575591">Prístup bol odmietnutý</translation>
+<translation id="760353356052806707">Iný program v počítači pridal aplikáciu, ktorá môže zmeniť spôsob fungovania prehliadača Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Vstupná hodnota pre súkromný kľúč musí mať platný formát (kľúč RSA vo formáte PKCS#8 so šifrovaním PEM).</translation>
 <translation id="765293928828334535">Aplikácie, rozšírenia a skripty používateľa sa nedajú pridať z tohto webu</translation>
+<translation id="7658239707568436148">Zrušiť</translation>
+<translation id="7766838926148951335">Prijať povolenia</translation>
 <translation id="7876803335449432072">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />. Šablóny kaskádových štýlov skriptu obsahu sa dajú načítať iba zo súborov podporovaných šablónami kaskádových štýlov, napríklad súborov .css.</translation>
 <translation id="7939686037314084444">Rozšírenie sa nepodarilo správne načítať. Môže sa stať, že nebude môcť zachytávať žiadosti siete.</translation>
 <translation id="7952904276017482715">Očakávané ID bolo „<ph name="EXPECTED_ID" />“. Skutočné ID bolo „<ph name="NEW_ID" />“.</translation>
 <translation id="7972881773422714442">Možnosti: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Schváliť</translation>
 <translation id="8035920974645200807">Nasmerovaný na používateľa</translation>
 <translation id="8047248493720652249">Tomuto rozšíreniu sa nepodarilo pomenovať stiahnutý súbor s názvom „<ph name="ATTEMPTED_FILENAME" />„, pretože ďalšie rozšírenie (<ph name="EXTENSION_NAME" />) určilo odlišný názov súboru „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8049705080247101012">Google označil rozšírenie <ph name="EXTENSION_NAME" /> ako škodlivé a jeho inštalácia bola zakázaná</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Môže:</translation>
 <translation id="8517576857589387417">Súbor manifestu chýba alebo je nečitateľný</translation>
 <translation id="8565650234829130278">Došlo k pokusu o prechod aplikácie na staršiu verziu.</translation>
 <translation id="8621383749470166852">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />. Skripty obsahu sa dajú načítať iba zo súborov podporovaných JavaScriptom, napríklad súborov .js.</translation>
 <translation id="8636666366616799973">Package is invalid. Details: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">O rozšírenie <ph name="EXTENSION_NAME" /> ste už požiadali</translation>
 <translation id="8761756413268424715">Aplikácia <ph name="APP_NAME" /> žiada o prístup k jednému z vašich zariadení:</translation>
 <translation id="8885905466771744233">Pre určené rozšírenie už existuje súkromný kľúč. Použite ho znova, alebo ho najprv odstráňte.</translation>
 <translation id="9039223174332979184">Správca tohto počítača vyžaduje aspoň tretiu verziu rozšírenia <ph name="EXTENSION_NAME" />.</translation>
 <translation id="907841381057066561">Vytvorenie dočasného súboru zip počas balenia zlyhalo.</translation>
+<translation id="9102610709270966160">Povoliť rozšírenie</translation>
+<translation id="93766956588638423">Opraviť rozšírenie</translation>
 <translation id="941543339607623937">Neplatný súkromný kľúč.</translation>
 </translationbundle>

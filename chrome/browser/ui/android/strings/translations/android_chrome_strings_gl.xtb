@@ -243,6 +243,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2056878612599315956">O sitio está en pausa</translation>
 <translation id="2063047797624276601">A túa organización activou Navegación segura mellorada</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Produciuse un erro en 1 descarga}other{Produciuse un erro en # descargas}}</translation>
+<translation id="2066690553719545730">Mostrar sempre modo IA</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2149968176347646218">A conexión non é segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2163089732491971196">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso</translation>
+<translation id="2164015935042801524">Fai clic co botón dereito aquí para mostrar as pestanas en vertical</translation>
 <translation id="2166228530126694506">Versión <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">As descricións das imaxes están desactivadas</translation>
 <translation id="2172905120685242547">Queres pechar a ventá?</translation>
@@ -305,6 +307,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"; ademais, desactivaranse todas as ligazóns de invitación</translation>
+<translation id="2329500425421091035">Presentamos o modo IA en Chrome</translation>
 <translation id="2330186936255788117">Máis marcadores</translation>
 <translation id="2332515770639153015">Está activada a función Navegación segura mellorada</translation>
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
@@ -1057,7 +1060,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5436928407363358055">Para continuar facilmente onde o deixases, sincroniza o historial e as pestanas</translation>
 <translation id="5438292632479953702">Descargar de novo</translation>
 <translation id="5439191312780166229">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
-<translation id="5441137934526263133">O sitio non funciona? As cookies de terceiros están bloqueadas</translation>
 <translation id="5441466871879044658">Traducir texto a este idioma</translation>
 <translation id="5444999712122199445">Volver ao sitio</translation>
 <translation id="544776284582297024">Para abrir pestanas e visitar distintas páxinas ao mesmo tempo, toca o botón de pestanas abertas</translation>
@@ -1112,7 +1114,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="569536719314091526">Traduce esta páxina a calquera idioma desde o botón Máis opcións</translation>
 <translation id="5696597120588531049">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis</translation>
 <translation id="5698878456427040674">Comproba se se admite a conta seleccionada.</translation>
-<translation id="5700415746238689851">Abrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> quere conectarse a un porto en serie</translation>
 <translation id="5715150588940290235">Queres eliminar os códigos de seguranza gardados?</translation>
 <translation id="572328651809341494">Pestanas recentes</translation>
@@ -1418,7 +1419,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6835182496791325827">Recibe notificacións cando Chrome atope os mellores resultados para as túas buscas mentres esteas ausente.</translation>
 <translation id="6846298663435243399">Cargando…</translation>
-<translation id="6850409657436465440">A descarga aínda está en curso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> pestanas pechadas</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 resultado atopado}other{# resultados atopados}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Ficheiros de audio, 1 ficheiro de audio na lista}other{Ficheiros de audio, # ficheiros de audio na lista}}</translation>
@@ -1968,12 +1968,14 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9001604755921395912">Abrir en incógnito en Chrome</translation>
 <translation id="9010094279589497751">Abre rapidamente Gemini cando o necesites</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
+<translation id="9014097371980259227">Algunhas ferramentas cambiaron de lugar para axudarche a facer buscas co modo IA</translation>
 <translation id="9019199799064251516">Queres continuar sen un bloqueo de perfil do coche?</translation>
 <translation id="9022774213089566801">Visitas frecuentes</translation>
 <translation id="9022871169049522985">Os sitios e os anunciantes poden medir o rendemento dos seus anuncios</translation>
 <translation id="9024318700713112071">Define Chrome como o navegador predeterminado.</translation>
 <translation id="9027728231343310283">Desfacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
+<translation id="904146253922032365">Mantén premido para mostrar as pestanas en vertical</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9047347135558855162">Inicia unha busca rápida en Chrome</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>

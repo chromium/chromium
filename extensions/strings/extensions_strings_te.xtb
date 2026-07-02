@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />"ను ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="1070377999570795893">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చగలిగే ఒక ఎక్స్‌టెన్షన్‌ని జోడించింది.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">థీమ్‌ను ప్రారంభించండి</translation>
 <translation id="1135328998467923690">ప్యాకేజీ చెల్లదు: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">పర్యావరణం వైపుగా</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ఎక్స్‌టెన్షన్ కారణంగా Chromium పని చేసే విధానం మారవచ్చు.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">ప్రైవేట్ కీని ఎగుమతి చేయడానికి విఫలమైంది.</translation>
 <translation id="132960226125594336">కంటెంట్ స్క్రిప్ట్‌కు '<ph name="RELATIVE_PATH" />' ఫైల్‌ను లోడ్ చేయడం సాధ్యపడలేదు, ఎందుకంటే ఇది గరిష్ఠ స్క్రిప్ట్ సైజ్ లేదా ఎక్స్‌టెన్షన్ గరిష్ఠ మొత్తం కంటెంట్ స్క్రిప్ట్ సైజ్‌ను మించిపోతుంది.</translation>
 <translation id="1445572445564823378">ఈ ఎక్స్‌టెన్ష‌న్‌ <ph name="PRODUCT_NAME" />ను మందగింప చేస్తోంది. <ph name="PRODUCT_NAME" /> యొక్క పనితీరును పునరుద్ధరించడానికి మీరు దీన్ని నిలిపివేయాలి.</translation>
 <translation id="1468038450257740950">WebGLకి మద్దతు లేదు.</translation>
 <translation id="1478607704480248626">ఇన్‌స్టాలేషన్ ప్రారంభించబడలేదు</translation>
+<translation id="1483493594462132177">పంపు</translation>
+<translation id="1485015260175968628">ఇప్పుడు ఇది వీటిని చేయగలదు:</translation>
 <translation id="1556537182262721003">ఎక్స్‌టెన్షన్ డైరెక్టరీని ప్రొఫైల్ లోపలికి తరలించలేకపోయింది.</translation>
+<translation id="1585717515139318619">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చే థీమ్‌ను జోడించింది.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">స్క్రిప్ట్‌కు css '<ph name="RELATIVE_PATH" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1616298854599875024">ఇది షేర్ చేసిన మాడ్యూల్ కానందున ఎక్స్‌టెన్షన్ "<ph name="IMPORT_NAME" />"ను దిగుమతి చేయడం సాధ్యపడలేదు</translation>
+<translation id="175772926354468439">థీమ్‌ను ప్రారంభించండి</translation>
 <translation id="1757786065507923842">పేరెంట్ అనుమతి రిక్వెస్ట్ విఫలమైంది.</translation>
 <translation id="1803557475693955505">నేపథ్య పేజీ '<ph name="BACKGROUND_PAGE" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1875387611427697908">దీనిని <ph name="CHROME_WEB_STORE" /> నుండి మాత్రమే జోడించవచ్చు</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />"ను అనుమతించనందున దీన్ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ను జోడించాలా?</translation>
 <translation id="2159915644201199628">ఈ చిత్రం డీకోడ్ చేయబడదు: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">మీ తల్లి/తండ్రి ఈ ఎక్స్‌టెన్షన్‌ను ఆమోదించలేదు</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" అదనపు అనుమతులను అభ్యర్థించింది.</translation>
+<translation id="2327492829706409234">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="2350172092385603347">స్థానికీకరణ ఉపయోగించబడుతుంది, అయితే మానిఫెస్ట్‌లో default_localeను పేర్కొనలేదు.</translation>
 <translation id="2576842806987913196">ఈ పేరుతో ఇప్పటికే CRX ఫైల్ ఉంది.</translation>
 <translation id="2662876636500006917">Chrome వెబ్ స్టోర్</translation>
+<translation id="2678063897982469759">మ‌ళ్లీ-ప్రారంభించండి</translation>
 <translation id="2743583586211388067">మీ సంస్థ ఎక్స్‌టెన్షన్ రిస్క్ పాలసీ ప్రకారం ఈ ఎక్స్‌టెన్షన్‌కు యాక్సెస్ బ్లాక్ చేయబడింది.</translation>
+<translation id="2766161002040448006">తల్లి/తండ్రిని అడగండి</translation>
 <translation id="2785530881066938471">కంటెంట్ స్క్రిప్ట్‌కు '<ph name="RELATIVE_PATH" />' ఫైల్‌ను లోడ్ చేయలేకపోయింది. ఈ ఫైల్ UTF-8లో ఎన్‌కోడ్ కాలేదు.</translation>
+<translation id="2850541429955027218">థీమ్‌ను జోడించండి</translation>
+<translation id="2883143988769190738">ఈ ఎక్స్‌టెన్షన్ కింది అనుమతులను రిక్వెస్ట్ చేస్తుంది:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ఎక్స్‌టెన్ష‌న్‌ ID "<ph name="EXTENSION_ID" />") నిర్వాహకుల ద్వారా బ్లాక్ చేయబడింది. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />"ను ఇన్‌స్టాల్ చేయడానికి మీ అడ్మినిస్ట్రేటర్‌కు రిక్వెస్ట్‌ పంపాలా?</translation>
 <translation id="2988488679308982380">ప్యాకేజీని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> విక్రేత నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ఫైల్ భర్తీ విఫలమైంది. ఫైల్ వినియోగంలో ఉందా అని చెక్ చేయండి.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> నుండి <ph name="PRODUCT_ID" /> తెలియని ఉత్పత్తి</translation>
 <translation id="3174723475300476613">ఈ ఎక్స్‌టెన్షన్‌కు యాక్సెస్‌ను మీ సంస్థ బ్లాక్ చేసింది.</translation>
+<translation id="3183357154200327217">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన థీమ్ కారణంగా, Chromium పని చేసే విధానం మారవచ్చు.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">'kiosk_only' మ్యానిఫెస్ట్ లక్షణం గల యాప్‌ను తప్పనిసరిగా ChromeOS కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
 <translation id="3364986687961713424">మీ నిర్వాహకుడి నుండి: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> విక్రేత నుండి <ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా చెల్లుబాటు అయ్యే పాథ్‌గా ఉండాలి.</translation>
+<translation id="3788401245189148511">ఇది వీటిని చేయాలనుకుంటోంది:</translation>
 <translation id="3834775135533257713"><ph name="TO_INSTALL_APP_NAME" /> యాప్ "<ph name="INSTALLED_APP_NAME" />"కి వైరుధ్యంగా ఉన్నందున దాన్ని జోడించలేరు.</translation>
 <translation id="388442998277590542">ఎంపికల పేజీ '<ph name="OPTIONS_PAGE" />'ను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
+<translation id="3905761538810670789">యాప్‌ను సరి చేయి</translation>
+<translation id="3908501907586732282">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించండి</translation>
+<translation id="3927932062596804919">తిరస్కరించు</translation>
 <translation id="3984413272403535372">ఎక్స్‌టెన్షన్‌కు సంతకం చేసేటప్పుడు ఎర్రర్.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />"ని సరి చేయాలా?</translation>
+<translation id="4061696872429826774">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన ఎక్స్‌టెన్షన్ కారణంగా Chromium పని చేసే విధానం మారవచ్చు.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">ఈ ఎక్స్‌టెన్షన్ కేటగిరీకి యాక్సెస్‌ను మీ సంస్థ బ్లాక్ చేసింది.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' పరిచయ పేజీని లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="424963718355121712">యాప్‌లు తప్పనిసరిగా అవి ప్రభావితమయ్యే హోస్ట్ నుండి అందించబడాలి</translation>
 <translation id="4306119971288449206">యాప్‌లు తప్పనిసరిగా "<ph name="CONTENT_TYPE" />" కంటెంట్-రకంతో అందించబడాలి</translation>
+<translation id="4625078469366263107">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="4633003931260532286">"<ph name="IMPORT_NAME" />" యొక్క వెర్షన్ కనీసం "<ph name="IMPORT_VERSION" />" ఉండాలని ఎక్స్‌టెన్షన్ కోరుతోంది, కానీ "<ph name="INSTALLED_VERSION" />" వెర్షన్ మాత్రమే ఇన్‌స్టాల్ చేయబడి ఉంది</translation>
 <translation id="4660476621274971848">ఆశించిన వెర్షన్ "<ph name="EXPECTED_VERSION" />", కానీ ఉన్న వెర్షన్ "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ప్రైవేట్ కీని అవుట్‌పుట్ చేయడంలో విఫలమైంది.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">పబ్లిక్ కీని ఎగుమతి చేయడానికి విఫలమైంది.</translation>
 <translation id="501057610015570208">'kiosk_only' మ్యానిఫెస్ట్ లక్షణం గల యాప్‌ను తప్పనిసరిగా ChromeOS Flex కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
 <translation id="5026754133087629784">వెబ్ వీక్షణ: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">ఎక్స్‌టెన్షన్‌ని జోడించండి</translation>
+<translation id="5039804452771397117">అనుమతించండి</translation>
 <translation id="5098647635849512368">ప్యాక్ చేయడానికి డైరెక్టరీకి ఖచ్చితమైన పాథ్‌ను కనుగొనడం సాధ్యపడదు.</translation>
 <translation id="5160071981665899014">స్క్రిప్ట్‌కు JavaScript '<ph name="RELATIVE_PATH" />' లోడ్ చేయడం సాధ్యపడలేదు.</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" కొత్త వెర్షన్ నిలిపివేయబడింది ఎందుకంటే దానికి మరిన్ని అనుమతులు అవసరం.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ను ప్రారంభించాలా?</translation>
 <translation id="5356315618422219272">యాప్‌ వీక్షణ: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium నుండి తీసివేయండి</translation>
 <translation id="5456409301717116725">ఈ ఎక్స్‌టెన్షన్‌ '<ph name="KEY_PATH" />' కీ ఫైల్‌ను కలిగి ఉంది. బహుశా మీరు దాన్ని చేయకూడదు.</translation>
+<translation id="5485102783864353244">యాప్‌ను జోడించండి</translation>
 <translation id="5486326529110362464">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా ఉండాలి.</translation>
 <translation id="5527463195266282916">ఎక్స్‌టెన్ష‌న్‌ను డౌన్‌గ్రేడ్ చేయడానికి ప్ర‌య‌త్నం జ‌రిగింది.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">దీని నుండి ఎక్స్‌టెన్షన్‌ను లోడ్ చేయడంలో విఫలమైంది:</translation>
 <translation id="5972529113578162692"><ph name="EXTENSION_NAME" />ని ఇన్‌స్టాల్ చేయడం ఈ మెషిన్‌ నిర్వాహకుడికి అవసరం. ఇది అన్ఇన్‌స్టాల్ చేయబడదు.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> విక్రేత నుండి <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ జోడించిన యాప్ కారణంగా, Chromium పని చేసే విధానం మారవచ్చు.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">ఎక్స్‌టెన్షన్‌ను లోడ్ చేయడంలో ఎర్రర్</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ఎక్స్‌టెన్షన్ కారణంగా Chrome పని చేసే విధానం మారవచ్చు.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">ప్రైవేట్ కీని చదవడంలో విఫలమైంది.</translation>
+<translation id="6326175484149238433">Chrome నుండి తీసివేయండి</translation>
 <translation id="6391538222494443604">ఇన్‌పుట్ డైరెక్టరీ తప్పనిసరిగా ఉనికిలో ఉండాలి.</translation>
 <translation id="641087317769093025">ఎక్స్‌టెన్షన్‌ అన్‌జిప్ చేయబడదు</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" మీ ఒకటి లేదా అంతకంటే ఎక్కువ పరికరాలకు యాక్సెస్‌ను అభ్యర్థిస్తోంది:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> వినియోగదారులు</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' నేపథ్య స్క్రిప్ట్‌ను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> నుండి <ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mime హ్యాండ్లర్: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">మానిఫెస్ట్ ఫైల్ చెల్లదు</translation>
 <translation id="7217838517480956708">ఈ మెషిన్‌ యొక్క నిర్వాహకుడికి <ph name="EXTENSION_NAME" /> ఇన్‌స్టాల్ చేయబడి ఉండటం అవసరం. దీన్ని తీసివేయడం లేదా ఎడిట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="7287143125007575591">యాక్సెస్ నిరాకరించబడింది.</translation>
+<translation id="760353356052806707">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చే యాప్‌ను జోడించింది.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా చెల్లుబాటు అయ్యే ఫార్మాట్‌లో ఉండాలి. (PKCS#8-ఫార్మాట్‌లో, PEM-ఎన్‌కోడ్ చేసిన RSA కీ)</translation>
 <translation id="765293928828334535">ఈ వెబ్‌సైట్ నుండి యాప్‌లు, ఎక్స్‌టెన్ష‌న్‌లు మరియు వినియోగదారు స్క్రిప్ట్‌లు జోడించబడవు</translation>
+<translation id="7658239707568436148">రద్దు చేయండి</translation>
+<translation id="7766838926148951335">అనుమతులను ఆమోదించు</translation>
 <translation id="7876803335449432072">కంటెంట్ స్క్రిప్ట్ కోసం '<ph name="RELATIVE_PATH" />' ఫైల్‌ను లోడ్ చేయడం సాధ్యం కాలేదు, కంటెంట్ స్క్రిప్ట్ స్టయిల్ షీట్‌లను .css ఫైల్స్ వంటి సపోర్ట్ ఉన్న స్టయిల్ షీట్ ఫైల్స్ నుండి మాత్రమే లోడ్ చేయవచ్చు.</translation>
 <translation id="7939686037314084444">ఎక్స్‌టెన్షన్ సరిగా లోడ్ అవ్వడంలో విఫలం అయ్యింది. కనుక ఇది నెట్‌వర్క్ రిక్వెస్ట్‌లను అడ్డగించలేకపోవచ్చు.</translation>
 <translation id="7952904276017482715">ఆశించిన ID "<ph name="EXPECTED_ID" />", కానీ ఉన్న ID "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">ఎంపికలు: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">ఆమోదించు</translation>
 <translation id="8035920974645200807">వినియోగదారు వైపుగా</translation>
 <translation id="8047248493720652249">ఈ ఎక్స్‌టెన్ష‌న్‌ డౌన్‌లోడ్ యొక్క పేరును "<ph name="ATTEMPTED_FILENAME" />"గా పేర్కొనడంలో విఫలమైంది. ఎందుకంటే మరో ఎక్స్‌టెన్ష‌న్‌ (<ph name="EXTENSION_NAME" />) "<ph name="ACTUAL_FILENAME" />" అనే వేరే ఫైల్ పేరును నిశ్చయించింది.</translation>
 <translation id="8049705080247101012">Google "<ph name="EXTENSION_NAME" />"ను హానికరమైనదిగా ఫ్లాగ్ చేసినందున ఇన్‌స్టాలేషన్ నిరోధించబడింది</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> నుండి <ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">ఇది వీటిని చేయగలదు:</translation>
 <translation id="8517576857589387417">మానిఫెస్ట్ ఫైల్ లేదు లేదా చదవడం సాధ్యం కాదు</translation>
 <translation id="8565650234829130278">యాప్‌ను డౌన్‌గ్రేడ్ చేయడానికి ప్రయత్నించారు.</translation>
 <translation id="8621383749470166852">కంటెంట్ స్క్రిప్ట్ కోసం '<ph name="RELATIVE_PATH" />' ఫైల్‌ను లోడ్ చేయడం సాధ్యం కాలేదు, కంటెంట్ స్క్రిప్ట్‌లను .js ఫైల్స్ వంటి సపోర్ట్ ఉన్న JavaScript ఫైల్స్ నుండి మాత్రమే లోడ్ చేయవచ్చు.</translation>
 <translation id="8636666366616799973">ప్యాకేజీ చెల్లనిది. వివరాలు: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">మీరు "<ph name="EXTENSION_NAME" />"ను ఇప్పటికే రిక్వెస్ట్ చేశారు</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" మీ పరికరాలలో ఒకదానికి యాక్సెస్‌ను అభ్యర్థిస్తోంది:</translation>
 <translation id="8885905466771744233">నిర్థారించిన ఎక్సటెన్షన్‌కు ఇప్పటికే ప్రైవేట్ కీ ఉంది. ఆ కీని మళ్ళీ ఉపయోగించండి లేదా దాన్ని మొదట తొలగించండి.</translation>
 <translation id="9039223174332979184">ఈ మెషిన్ అడ్మినిస్ట్రేటర్ ప్రకారం <ph name="EXTENSION_NAME" /> కనీసం మ్యానిఫెస్ట్ వెర్షన్ 3ని కలిగి ఉండాలి.</translation>
 <translation id="907841381057066561">ప్యాకేజింగ్ సమయంలో తాత్కాలిక జిప్ ఫైల్‌ను సృష్టించడంలో విఫలమైంది.</translation>
+<translation id="9102610709270966160">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించండి</translation>
+<translation id="93766956588638423">ఎక్స్‌టెన్షన్‌ను సరి చేయి</translation>
 <translation id="941543339607623937">చెల్లని ప్రైవేట్ కీ.</translation>
 </translationbundle>

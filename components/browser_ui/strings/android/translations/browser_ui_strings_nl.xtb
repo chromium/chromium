@@ -690,7 +690,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="8163152278172770963">Niet toestaan dat sites automatisch scherm-in-scherm openen</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="818487310457576362">Sleep vanaf de zijkant van het scherm om het volledige scherm te sluiten.</translation>
-<translation id="8186479265534291036">Werkt de site niet? Cookies van derden geblokkeerd</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> toegestaan</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
@@ -761,7 +760,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="8805385115381080995">Je kunt sneller browsen omdat een site je minder vaak vraagt te verifiëren dat je een echte persoon bent</translation>
 <translation id="881644524232657178">Als deze optie aanstaat, kunnen sites de bewegings- en lichtsensoren van je apparaat gebruiken. Staat de optie uit, dan kunnen sites geen sensoren gebruiken.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
 <translation id="8889294078294184559">Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent</translation>
 <translation id="8899807382908246773">Opdringerige advertenties</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
@@ -787,7 +785,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="913657688200966289">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Meldingen toegestaan</translation>
 <translation id="9138217887606523162">Huidig zoomniveau is <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Sites gebruiken deze instelling om scherm-in-scherm automatisch te openen. Zo kun je een video blijven bekijken en maak je je scherm vrij voor andere taken.</translation>
 <translation id="9156722768168878035">Sta toe dat Chrome je recente tabbladen toont in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
 <translation id="9182556968660520230">Niet toestaan dat sites beschermde content afspelen</translation>

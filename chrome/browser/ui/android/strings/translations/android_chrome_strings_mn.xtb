@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">Сайтыг түр зогсоосон</translation>
 <translation id="2063047797624276601">Танай байгууллага Сайжруулсан аюулгүй хөтчийг асаасан байна</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 таталт амжилтгүй боллоо}other{# таталт амжилтгүй боллоо}}</translation>
+<translation id="2066690553719545730">ХОУ-ы горимыг үргэлж харуулах</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />-ын <ph name="RESULT_NUMBER" /> илэрц байна</translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">Холболт аюултай байна</translation>
 <translation id="2149973817440762519">Хадгалагдсан хуудсыг засах</translation>
 <translation id="2163089732491971196">Google Бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
+<translation id="2164015935042801524">Табуудыг босоо байдлаар харуулахын тулд энд хулганын баруун талыг товшино уу</translation>
 <translation id="2166228530126694506">Хувилбар <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Зургийн тайлбар унтраалттай байна</translation>
 <translation id="2172905120685242547">Цонхыг хаах уу?</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">Сайтын сан</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" />-с</translation>
 <translation id="2328474416100889417">Хүн бүр “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд урилгын бүх холбоосыг унтраана</translation>
+<translation id="2329500425421091035">Chrome-н ХОУ-ы горимыг танилцуулж байна</translation>
 <translation id="2330186936255788117">Бусад хавчуурга</translation>
 <translation id="2332515770639153015">Сайжруулсан аюулгүй хөтөч асаалттай байна</translation>
 <translation id="233375395665273385">Устгаад, гарах</translation>
@@ -1057,7 +1060,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5436928407363358055">Орхисон газраасаа хялбархан үргэлжлүүлэхийн тулд түүх, табаа синк хийнэ үү</translation>
 <translation id="5438292632479953702">Дахин татах</translation>
 <translation id="5439191312780166229">Стандарт хамгаалалтаас илүүтэйгээр сайтуудын бусад өгөгдлийг задлан шинжилснээр танд аюултай сайтуудын талаар сануулах бөгөөд эдгээрт Google-н өмнө нь мэдээгүй сайт ч багтана. Та Chrome-н сануулгыг алгасахаар сонгох боломжтой.</translation>
-<translation id="5441137934526263133">Сайт ажиллахгүй байна уу? Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="5441466871879044658">Энэ хэл рүү орчуулах</translation>
 <translation id="5444999712122199445">Сайт руу буцах</translation>
 <translation id="544776284582297024">Табуудыг нээн, өөр хуудаснуудад нэгэн зэрэг зочлохын тулд табуудыг нээх товчлуурыг товшино уу</translation>
@@ -1112,7 +1114,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="569536719314091526">Энэ хуудсыг Бусад сонголт гэсэн товчлуураас дурын хэл рүү орчуулна уу</translation>
 <translation id="5696597120588531049">Chrome таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс хамгаалахад туслах боломжтой</translation>
 <translation id="5698878456427040674">Сонгосон бүртгэлийг дэмждэг эсэхийг шалгана уу.</translation>
-<translation id="5700415746238689851">Gemini-г нээх</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> цуваа портод холбогдохыг хүсэж байна</translation>
 <translation id="5715150588940290235">Хадгалсан аюулгүй байдлын кодуудыг устгах уу?</translation>
 <translation id="572328651809341494">Саяхан нээсэн табууд</translation>
@@ -1418,7 +1419,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6835182496791325827">Таныг байхгүй үед Chrome таны хайлтуудад хамгийн сайн илэрцүүдийг олоход мэдэгдэл аваарай.</translation>
 <translation id="6846298663435243399">Ачаалж байна...</translation>
-<translation id="6850409657436465440">Таны таталт үргэлжилж байна</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> табыг хаасан</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 илэрц олдлоо}other{# илэрц олдлоо}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудио файлууд, жагсаалтад 1 аудио файл байна}other{Аудио файлууд, жагсаалтад # аудио файл байна}}</translation>
@@ -1968,12 +1968,14 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9001604755921395912">Chrome-н нууцлалтай табд нээх</translation>
 <translation id="9010094279589497751">Gemini-г хэрэгтэй үедээ шуурхай нээгээрэй</translation>
 <translation id="9012585441087414258">Аюултай гэдэг нь мэдэгдсэн сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаална. Хэрэв хуудас ямар нэг сэжигтэй зүйл хийвэл URL болон хуудасны контентын багахан хэсгийг Google-н аюулгүй хөтчид илгээдэг.</translation>
+<translation id="9014097371980259227">ХОУ-ы горимоор хайхад тань туслахын тулд зарим хэрэгслийг зөөсөн</translation>
 <translation id="9019199799064251516">Автомашины профайлын түгжээгүйгээр үргэлжлүүлэх үү?</translation>
 <translation id="9022774213089566801">Байнга зочилдог</translation>
 <translation id="9022871169049522985">Сайтууд болон сурталчлагчид зарынхаа гүйцэтгэлийг хэмжих боломжтой</translation>
 <translation id="9024318700713112071">Chrome-г өгөгдмөлөөрөө тохируулна уу</translation>
 <translation id="9027728231343310283"><ph name="SITE" />-н зөвшөөрлийг цуцлахаа болих</translation>
 <translation id="9035378196785279980">Дараах руу зөөх\u2026</translation>
+<translation id="904146253922032365">Табуудыг босоо байдлаар харуулахын тулд хүрээд удаан дарна уу</translation>
 <translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>
 <translation id="9047347135558855162">Chrome-д түргэн хайж эхэлнэ үү</translation>
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>

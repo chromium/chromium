@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="1070377999570795893">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਜੋੜ ਦਿੱਤੀ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">ਥੀਮ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1135328998467923690">ਪੈਕੇਜ ਅਵੈਧ ਹੈ: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">ਪਿਛਲਾ</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chromium ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">ਨਿੱਜੀ ਕੁੰਜੀ ਨਿਰਯਾਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="132960226125594336">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ '<ph name="RELATIVE_PATH" />' ਫ਼ਾਈਲ ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ ਕਿਉਂਕਿ ਇਸ ਫ਼ਾਈਲ ਦਾ ਆਕਾਰ ਅਧਿਕਤਮ ਸਕ੍ਰਿਪਟ ਆਕਾਰ ਜਾਂ ਐਕਸਟੈਂਸ਼ਨ ਦੇ ਅਧਿਕਤਮ ਕੁੱਲ ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਆਕਾਰ ਤੋਂ ਵੱਧ ਹੈ।</translation>
 <translation id="1445572445564823378">ਇਹ ਐਕਸਟੈਂਸ਼ਨ <ph name="PRODUCT_NAME" /> ਨੂੰ ਹੌਲਾ ਕਰ ਰਿਹਾ ਹੈ। <ph name="PRODUCT_NAME" /> ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="1468038450257740950">WebGL ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1478607704480248626">ਸਥਾਪਨਾ ਚਾਲੂ ਨਹੀਂ ਕੀਤੀ ਹੋਈ ਹੈ</translation>
+<translation id="1483493594462132177">ਭੇਜੋ</translation>
+<translation id="1485015260175968628">ਇਹ ਹੁਣ ਕਰ ਸਕਦਾ ਹੈ:</translation>
 <translation id="1556537182262721003">ਐਕਸਟੈਂਸ਼ਨ ਡਾਇਰੈਕਟਰੀ 'ਚ ਪ੍ਰੋਫਾਈਲ ਦੀ ਹਲਚਲ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
+<translation id="1585717515139318619">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਥੀਮ ਜੋੜ ਦਿੱਤੀ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">ਸਕ੍ਰਿਪਟ ਦੇ ਲਈ css '<ph name="RELATIVE_PATH" />' ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਕਿਉਂਕਿ ਇਹ ਇੱਕ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਮਾਡਿਊਲ ਨਹੀਂ ਹੈ</translation>
+<translation id="175772926354468439">ਥੀਮ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1757786065507923842">ਮਾਂ-ਪਿਓ ਦੀ ਇਜਾਜ਼ਤ ਸੰਬੰਧੀ ਬੇਨਤੀ ਅਸਫਲ ਰਹੀ।</translation>
 <translation id="1803557475693955505">ਬੈਕਗ੍ਰਾਊਂਡ ਪੰਨਾ '<ph name="BACKGROUND_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="1875387611427697908">ਇਸਨੂੰ ਸਿਰਫ਼ <ph name="CHROME_WEB_STORE" /> ਤੋੋਂ ਹੀ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਕਿਉਂਕਿ "<ph name="IMPORT_NAME" />" ਵੱਲੋਂ ਇਸਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
+<translation id="2150661552845026580">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਜੋੜਨਾ ਹੈ?</translation>
 <translation id="2159915644201199628">ਚਿੱਤਰ ਡੀਕੋਡ ਨਹੀਂ ਕਰ ਸਕਿਆ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਦਿੱਤੀ</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ਨੇ ਵਾਧੂ ਅਨੁਮਤੀਆਂ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ।</translation>
+<translation id="2327492829706409234">ਐਪ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2350172092385603347">ਸਥਾਨੀਕਰਨ ਵਰਤਿਆ, ਪਰ default_locale ਮੈਨੀਫ਼ੈਸਟ ਵਿੱਚ ਨਹੀਂ ਦਿੱਤਾ ਹੋਇਆ ਸੀ।</translation>
 <translation id="2576842806987913196">ਇਸ ਨਾਮ ਨਾਲ ਪਹਿਲਾਂ ਹੀ ਇੱਕ CRX ਫਾਈਲ ਮੌਜੂਦ ਹੈ।</translation>
 <translation id="2662876636500006917">Chrome ਵੈੱਬ ਸਟੋਰ</translation>
+<translation id="2678063897982469759">ਮੁੜ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2743583586211388067">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਐਕਸਟੈਂਸ਼ਨ ਜੋਖਮ ਨੀਤੀ ਦੇ ਤਹਿਤ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਤੱਕ ਪਹੁੰਚ ਬਲਾਕ ਹੈ।</translation>
+<translation id="2766161002040448006">ਮਾਂ-ਪਿਓ ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="2785530881066938471">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ ਫ਼ਾਈਲ '<ph name="RELATIVE_PATH" />' ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਇਹ UTF-8 ਇਨਕੋਡ ਵਿੱਚ ਨਹੀਂ ਹੈ।</translation>
+<translation id="2850541429955027218">ਥੀਮ ਜੋੜੋ</translation>
+<translation id="2883143988769190738">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਅੱਗੇ ਦਿੱਤੀਆਂ ਇਜਾਜ਼ਤਾਂ ਦੀ ਬੇਨਤੀ ਕਰਦੀ ਹੈ:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ਐਕਸਟੈਂਸ਼ਨ ਆਈ.ਡੀ. "<ph name="EXTENSION_ID" />") ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ। <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">ਕੀ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਬੇਨਤੀ ਭੇਜਣੀ ਹੈ?</translation>
 <translation id="2988488679308982380">ਪੈਕੇਜ ਸਥਾਪਤ ਨਹੀਂ ਹੋ ਸਕਿਆ: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ਫ਼ਾਈਲ ਬਦਲੀ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਇਹ ਦੇਖਣ ਲਈ ਜਾਂਚ ਕਰੋ ਕਿ ਫ਼ਾਈਲ ਵਰਤੋਂ ਵਿੱਚ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="3163201441334626963">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
+<translation id="3183357154200327217">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਅਜਿਹਾ ਥੀਮ ਸ਼ਾਮਲ ਕੀਤਾ ਹੈ ਜੋ Chromium ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦਾ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">'kiosk_only' ਮੈਨੀਫ਼ੈਸਟ ਵਿਸ਼ੇਸ਼ਤਾ ਵਾਲੀ ਐਪ ਨੂੰ ChromeOS ਕਿਓਸਕ ਮੋਡ ਵਿੱਚ ਸਥਾਪਤ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="3364986687961713424">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ <ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ਨਿੱਜੀ ਕੁੰਜੀ ਲਈ ਇਨਪੁਟ ਵੈਲਯੂ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਮਾਰਗ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
+<translation id="3788401245189148511">ਇਹ ਕਰ ਸਕਦਾ ਹੈ:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਇਸਦੀ "<ph name="INSTALLED_APP_NAME" />" ਨਾਲ ਵਿਰੋਧਤਾ ਹੈ।</translation>
 <translation id="388442998277590542">ਵਿਕਲਪ ਪੰਨਾ '<ph name="OPTIONS_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
+<translation id="3905761538810670789">ਐਪ ਰਿਪੇਅਰ ਕਰੋ</translation>
+<translation id="3908501907586732282">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="3927932062596804919">ਅਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="3984413272403535372">ਐਕਸਟੈਂਸ਼ਨ ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਗੜਬੜ।</translation>
+<translation id="4014432863917027322">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਰਿਪੇਅਰ ਕਰਨਾ ਹੈ?</translation>
+<translation id="4061696872429826774">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chromium ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਸ਼੍ਰੇਣੀ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="4233778200880751280">ਬਾਰੇ ਪੰਨਾ '<ph name="ABOUT_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="424963718355121712">ਐਪਾਂ ਨੂੰ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਉਸ ਹੋਸਟ ਤੋਂ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ ਜਿਸ ਨੂੰ ਉਹ ਪ੍ਰਭਾਵਿਤ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="4306119971288449206">ਐਪਾਂ ਨੂੰ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਸਮੱਗਰੀ-ਪ੍ਰਕਾਰ "<ph name="CONTENT_TYPE" />" ਵਿੱਚ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
+<translation id="4625078469366263107">ਐਪ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4633003931260532286">ਐਕਸਟੈਂਸ਼ਨ ਲਈ "<ph name="IMPORT_NAME" />" ਨੂੰ ਨਿਊਨਤਮ "<ph name="IMPORT_VERSION" />" ਵਰਜਨ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ, ਪਰ ਸਿਰਫ਼ "<ph name="INSTALLED_VERSION" />" ਵਰਜਨ ਹੀ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4660476621274971848">ਸੰਭਾਵਿਤ ਵਰਜਨ "<ph name="EXPECTED_VERSION" />" ਹੈ, ਪਰ ਵਰਜਨ "<ph name="NEW_ID" />" ਸੀ</translation>
 <translation id="471800408830181311">ਨਿੱਜੀ ਕੁੰਜੀ ਨੂੰ ਆਉਟਪੁਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">ਜਨਤਕ ਕੁੰਜੀ ਨਿਰਯਾਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="501057610015570208">'kiosk_only' ਮੈਨੀਫ਼ੈਸਟ ਵਿਸ਼ੇਸ਼ਤਾ ਵਾਲੀ ਐਪ ਨੂੰ ChromeOS Flex ਕਿਓਸਕ ਮੋਡ ਵਿੱਚ ਸਥਾਪਤ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">ਐਕਸਟੈਂਸ਼ਨ ਜੋੜੋ</translation>
+<translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5098647635849512368">ਪੈਕ ਲਈ ਡਾਇਰੈਕਟਰੀ ਵੱਲ ਪੂਰਾ ਪਾਥ ਨਹੀਂ ਲੱਭ ਸਕਦਾ।</translation>
 <translation id="5160071981665899014">ਸਕ੍ਰਿਪਟ ਦੇ ਲਈ JavaScript '<ph name="RELATIVE_PATH" />' ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ਦੇ ਬਿਲਕੁਲ ਨਵੇਂ ਵਰਜਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਇਸਦੇ ਲਈ ਵੱਧ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਹੈ।</translation>
+<translation id="5242724311594467048">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium ਤੋਂ ਹਟਾਓ</translation>
 <translation id="5456409301717116725">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਵਿੱਚ ਮੁੱਖ ਫਾਈਲ '<ph name="KEY_PATH" />' ਸ਼ਾਮਲ ਹੈ। ਸੰਭਵ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਇਹ ਨਹੀਂ ਚਾਹੁੰਦੇ।</translation>
+<translation id="5485102783864353244">ਐਪ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5486326529110362464">ਨਿੱਜੀ ਕੁੰਜੀ ਲਈ ਇਨਪੁਟ ਵੈਲਯੂ ਮੌਜੂਦ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="5527463195266282916">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਡਾਊਨਗ੍ਰੇਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ।</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">ਇਸ ਤੋਂ ਐਕਸਟੈਂਸ਼ਨ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ:</translation>
 <translation id="5972529113578162692">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਇੰਸਟੌਲ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਇਸਨੂੰ ਅਣਇੰਸਟੌਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਪ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chromium ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">ਐਕਸਟੈਂਸ਼ਨ ਲੋਡ ਕਰਨ ਵਿੱਚ ਗੜਬੜ</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">ਨਿੱਜੀ ਕੁੰਜੀ ਪੜ੍ਹਨ ਵਿੱਚ ਅਸਫਲ।</translation>
+<translation id="6326175484149238433">Chrome ਤੋਂ ਹਟਾਓ</translation>
 <translation id="6391538222494443604">ਇਨਪੁਟ ਡਾਇਰੈਕਟਰੀ ਮੌਜੂਦ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="641087317769093025">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਣਜ਼ਿਪ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ਵੱਲੋਂ ਤੁਹਾਡੀਆਂ ਇੱਕ ਜਾਂ ਵਧੇਰੇ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> ਉਪਭੋਗਤਾ</translation>
 <translation id="657064425229075395">ਬੈਕਗ੍ਰਾਊਂਡ ਸਕ੍ਰਿਪਟ '<ph name="BACKGROUND_SCRIPT" />' ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> ਦਾ <ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">ਮੈਨੀਫ਼ੈਸਟ ਫ਼ਾਈਲ ਅਵੈਧ ਹੈ</translation>
 <translation id="7217838517480956708">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਇੰਸਟੌਲ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਇਸਨੂੰ ਹਟਾਇਆ ਜਾਂ ਸੰਸ਼ੋਧਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7287143125007575591">ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ</translation>
+<translation id="760353356052806707">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਤੇ ਦੂਜੇ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਐਪ ਜੋੜਿਆ ਹੈ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦਾ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">ਪ੍ਰਾਈਵੇਟ ਕੁੰਜੀ ਲਈ ਇਨਪੁੱਟ ਮੁੱਲ ਵੈਧ ਫਾਰਮੈਟ ਵਿੱਚ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ (PKCS#8-ਫਾਰਮੈਟ PEM-ਇਨਕੋਡ ਕੀਤੀ ਗਈ RSA ਕੁੰਜੀ)।</translation>
 <translation id="765293928828334535">ਇਸ ਵੈੱਬਸਾਈਟ ਤੋਂ ਐਪਾਂ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਵਰਤੋਂਕਾਰ ਸਕ੍ਰਿਪਟਾਂ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
+<translation id="7766838926148951335">ਇਜਾਜ਼ਤਾਂ ਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="7876803335449432072">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ '<ph name="RELATIVE_PATH" />' ਫ਼ਾਈਲ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਸਟਾਈਲ ਸ਼ੀਟਾਂ ਨੂੰ ਸਿਰਫ਼ ਸਮਰਥਿਤ ਸਟਾਈਲ ਸ਼ੀਟ ਫ਼ਾਈਲਾਂ ਜਿਵੇਂ ਕਿ .CSS ਫ਼ਾਈਲਾਂ ਤੋਂ ਲੋਡ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7939686037314084444">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਇਸ ਲਈ ਸ਼ਾਇਦ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਨੈੱਟਵਰਕ ਬੇਨਤੀਆਂ ਨੂੰ ਨਾ ਰੋਕ ਸਕੇ।</translation>
 <translation id="7952904276017482715">ਸੰਭਾਵਿਤ ਆਈ.ਡੀ. "<ph name="EXPECTED_ID" />" ਹੈ, ਪਰ ਆਈ.ਡੀ. "<ph name="NEW_ID" />" ਸੀ</translation>
 <translation id="7972881773422714442">ਚੋਣਾਂ: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">ਮਨਜ਼ੂਰ ਕਰੋ</translation>
 <translation id="8035920974645200807">ਅਗਲਾ ਕੈਮਰਾ</translation>
 <translation id="8047248493720652249">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਡਾਊਨਲੋਡ "<ph name="ATTEMPTED_FILENAME" />" ਨੂੰ ਨਾਮ ਦੇਣ ਵਿੱਚ ਅਸਫਲ ਰਹੀ ਕਿਉਂਕਿ ਦੂਜੀ ਐਕਸਟੈਂਸ਼ਨ (<ph name="EXTENSION_NAME" />) ਨੇ ਇੱਕ ਵੱਖ ਫ਼ਾਈਲਨਾਮ "<ph name="ACTUAL_FILENAME" />" ਨਿਰਧਾਰਤ ਕੀਤਾ।</translation>
 <translation id="8049705080247101012">Google ਨੇ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਖਰਾਬ ਦੇ ਤੌਰ 'ਤੇ ਫਲੈਗ ਕੀਤਾ ਹੈ ਅਤੇ ਸਥਾਪਨਾ ਨੂੰ ਰੋਕ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> ਤੋਂ <ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">ਇਹ ਕਰ ਸਕਦਾ ਹੈ:</translation>
 <translation id="8517576857589387417">ਮੈਨੀਫ਼ੈਸਟ ਫ਼ਾਈਲ ਮੌਜੂਦ ਨਹੀਂ ਹੈ ਜਾਂ ਪੜ੍ਹਨਯੋਗ ਨਹੀਂ ਹੈ</translation>
 <translation id="8565650234829130278">ਐਪ ਨੂੰ ਡਾਊਨਗ੍ਰੇਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ।</translation>
 <translation id="8621383749470166852">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ '<ph name="RELATIVE_PATH" />' ਫ਼ਾਈਲ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟਾਂ ਨੂੰ ਸਿਰਫ਼ ਸਮਰਥਿਤ JavaScript ਫ਼ਾਈਲਾਂ ਜਿਵੇਂ ਕਿ .js ਫ਼ਾਈਲਾਂ ਤੋਂ ਲੋਡ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8636666366616799973">ਪੈਕੇਜ ਅਵੈਧ ਹੈ। ਵੇਰਵੇ: '<ph name="ERROR_MESSAGE" />'।</translation>
+<translation id="8746654918629346731">ਤੁਸੀਂ "<ph name="EXTENSION_NAME" />" ਲਈ ਪਹਿਲਾਂ ਹੀ ਬੇਨਤੀ ਕਰ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ਵੱਲੋਂ ਤੁਹਾਡੀਆਂ ਡੀਵਾਈਸਾਂ ਵਿੱਚੋਂ ਇੱਕ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ:</translation>
 <translation id="8885905466771744233">ਨਿਸ਼ਚਿਤ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਇੱਕ ਨਿੱਜੀ ਕੁੰਜੀ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਉਹ ਕੁੰਜੀ ਦੁਬਾਰਾ ਵਰਤੋ ਜਾਂ ਪਹਿਲਾਂ ਇਸਨੂੰ ਮਿਟਾਓ।</translation>
 <translation id="9039223174332979184">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਦੇ ਘੱਟੋ-ਘੱਟ 3 ਦੇ ਮੈਨੀਫ਼ੈਸਟ ਵਰਜਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="907841381057066561">ਪੈਕੇਜਿੰਗ ਦੇ ਦੌਰਾਨ ਅਸਥਾਈ ਜ਼ਿਪ ਫਾਈਲ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ।</translation>
+<translation id="9102610709270966160">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="93766956588638423">ਐਕਸਟੈਂਸ਼ਨ ਰਿਪੇਅਰ ਕਰੋ</translation>
 <translation id="941543339607623937">ਅਵੈਧ ਨਿੱਜੀ ਕੁੰਜੀ।</translation>
 </translationbundle>

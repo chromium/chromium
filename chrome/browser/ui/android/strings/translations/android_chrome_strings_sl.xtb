@@ -243,6 +243,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2056878612599315956">Spletno mesto začasno ustavljeno</translation>
 <translation id="2063047797624276601">Vaša organizacija je vklopila izboljšano varno brskanje</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 prenos ni uspel}one{# prenos ni uspel}two{# prenosa nista uspela}few{# prenosi niso uspeli}other{# prenosov ni uspelo}}</translation>
+<translation id="2066690553719545730">Vedno pokaži način umetne inteligence</translation>
 <translation id="2067805253194386918">besedilo</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultat od <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2149968176347646218">Povezava ni varna</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2163089732491971196">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, vnesite geslo</translation>
+<translation id="2164015935042801524">Z desnim gumbom kliknite tukaj za navpični prikaz zavihkov</translation>
 <translation id="2166228530126694506">Različica <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Opisi slik so izklopljeni</translation>
 <translation id="2172905120685242547">Želite zapreti okno?</translation>
@@ -305,6 +307,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2323763861024343754">Shranjeni podatki splet. mesta</translation>
 <translation id="2327445548174191329">Od <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Vsi bodo takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in vse povezave do povabila bodo izklopljene</translation>
+<translation id="2329500425421091035">Predstavljamo način umetne inteligence v Chromu</translation>
 <translation id="2330186936255788117">Več zaznamkov</translation>
 <translation id="2332515770639153015">Izboljšano varno brskanje je vklopljeno</translation>
 <translation id="233375395665273385">Izbriši in se odjavi</translation>
@@ -1057,7 +1060,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5436928407363358055">Če želite preprosto nadaljevati, kjer ste končali, sinhronizirajte zgodovino in zavihke</translation>
 <translation id="5438292632479953702">Znova prenesi</translation>
 <translation id="5439191312780166229">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chrome.</translation>
-<translation id="5441137934526263133">Ali spletno mesto ne deluje? Piškotki tretjih oseb so blokirani.</translation>
 <translation id="5441466871879044658">Prevedi v ta jezik</translation>
 <translation id="5444999712122199445">Nazaj na spletno mesto</translation>
 <translation id="544776284582297024">Če želite hkrati odpreti zavihke in obiskati različne strani, se dotaknite gumba za odprte zavihke</translation>
@@ -1112,7 +1114,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="569536719314091526">Prevedite to stran v kateri koli jezik z gumbom »Več možnosti«</translation>
 <translation id="5696597120588531049">Chrome vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
 <translation id="5698878456427040674">Preverite, ali je izbrani račun podprt.</translation>
-<translation id="5700415746238689851">Odpri Geminija</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> se želi povezati z zaporednimi vrati</translation>
 <translation id="5715150588940290235">Želite izbrisati shranjene varnostne kode?</translation>
 <translation id="572328651809341494">Nedavni zavihki</translation>
@@ -1418,7 +1419,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6835182496791325827">Prejmite obvestilo, ko Chrome najde najboljše rezultate za vaša iskanja, ko vas ni.</translation>
 <translation id="6846298663435243399">Nalaganje poteka …</translation>
-<translation id="6850409657436465440">Prenos še poteka</translation>
 <translation id="6850830437481525139">Zaprtih je bilo toliko zavihkov: <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Najden je bil 1 rezultat}one{Najden je bil # rezultat}two{Najdena sta bila # rezultata}few{Najdeni so bili # rezultati}other{Najdenih je bilo # rezultatov}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Zvočne datoteke, 1 zvočna datoteka na seznamu}one{Zvočne datoteke, # zvočna datoteka na seznamu}two{Zvočne datoteke, # zvočni datoteki na seznamu}few{Zvočne datoteke, # zvočne datoteke na seznamu}other{Zvočne datoteke, # zvočnih datotek na seznamu}}</translation>
@@ -1968,12 +1968,14 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9001604755921395912">Odpri na anonimnem zavihku v Chromu</translation>
 <translation id="9010094279589497751">Hitro odprite Geminija, ko ga potrebujete</translation>
 <translation id="9012585441087414258">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Če se na strani zgodi kaj sumljivega, se URL-ji in delčki vsebine strani pošljejo v Google Varno brskanje.</translation>
+<translation id="9014097371980259227">Nekatera orodja so bila premaknjena, da vam bodo v pomoč pri iskanju z načinom umetne inteligence</translation>
 <translation id="9019199799064251516">Želite nadaljevati brez zaklepanja profila za avtomobil?</translation>
 <translation id="9022774213089566801">Pogosto obiskano</translation>
 <translation id="9022871169049522985">Spletna mesta in oglaševalci lahko merijo uspešnost svojih oglasov.</translation>
 <translation id="9024318700713112071">Nastavite Chrome kot privzeto možnost</translation>
 <translation id="9027728231343310283">Razveljavitev za <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Premakni v \u2026</translation>
+<translation id="904146253922032365">Dotaknite se in pridržite za navpični prikaz zavihkov</translation>
 <translation id="9042893549633094279">Zasebnost in varnost</translation>
 <translation id="9047347135558855162">Hitro začnite iskanje v Chromu</translation>
 <translation id="9050666287014529139">Geslo</translation>

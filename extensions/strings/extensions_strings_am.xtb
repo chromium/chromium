@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="10146536653536065">«<ph name="EXTENSION_NAME" />»ን ይጫኑ</translation>
+<translation id="1070377999570795893">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ቅጥያ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">ገጽታን አንቃ</translation>
 <translation id="1135328998467923690">ጥቅል ልክ የሆነ አይደለም፦ «<ph name="ERROR_CODE" />»።</translation>
 <translation id="1140871961407805696">አካባቢውን የሚመለከት</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium የሚሠራበትን መንገድ ሊለውጥ የሚችል ቅጥያ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">ግላዊ ቁልፍን መላክ አልተሳካም።</translation>
 <translation id="132960226125594336">ፋይል «<ph name="RELATIVE_PATH" />» ከፍተኛውን የስክሪፕት መጠን ወይም የቅጥያዎቹን ከፍተኛ ጠቅላላ የይዘት ስክሪፕት መጠን ስለሚበልጥ እሱን ለይዘት ስክሪፕት መጫን አልተቻለም።</translation>
 <translation id="1445572445564823378">ይህ ቅጥያ <ph name="PRODUCT_NAME" /> እያንቀራፈፈው ነው። የ<ph name="PRODUCT_NAME" /> አፈጻጸም ወደነበረበት ለመመለስ ቅጥያውን ማሰናከል አለብዎት።</translation>
 <translation id="1468038450257740950">WebGL አይደገፍም።</translation>
 <translation id="1478607704480248626">መጫን አልነቃም</translation>
+<translation id="1483493594462132177">ላክ</translation>
+<translation id="1485015260175968628">አሁን እነዚህን ማድረግ ይችላል፦</translation>
 <translation id="1556537182262721003">የቅጥያ ማውጫን ወደ መገለጫ መውሰድ አልተቻለም።</translation>
+<translation id="1585717515139318619">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ገጽታ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">ለስክሪፕት ሲኤስኤስ '<ph name="RELATIVE_PATH" />' መጫን አልተቻለም።</translation>
 <translation id="1616298854599875024">የ«<ph name="IMPORT_NAME" />» ቅጥያ የተጋራ ሞዱል ስላልሆነ እሱን ማስመጣት አልተቻለም</translation>
+<translation id="175772926354468439">ገጽታን አንቃ</translation>
 <translation id="1757786065507923842">የወላጅ ፈቃድ ጥያቄ አልተሳካም።</translation>
 <translation id="1803557475693955505">የጀርባ ገፅ «<ph name="BACKGROUND_PAGE" />»ን መጫን አልተቻለም።</translation>
 <translation id="1875387611427697908">ይሄ ከ<ph name="CHROME_WEB_STORE" /> ብቻ ነው ሊታከል የሚችለው</translation>
 <translation id="2131077480075264">በ«<ph name="IMPORT_NAME" />» ስላልተፈቀደ «<ph name="APP_NAME" />»ን መጫን አልተቻለም</translation>
+<translation id="2150661552845026580">«<ph name="EXTENSION_NAME" />» ይታከል?</translation>
 <translation id="2159915644201199628">የዚህ ምስል ስውሩን መግለጥ አልተቻለም፦ «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2193567467390483943">ወላጅዎ ይህን ቅጥያ አላጸደቁትም</translation>
+<translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» ተጨማሪ ፍቃዶችን ጠይቋል።</translation>
+<translation id="2327492829706409234">መተግበሪያን አንቃ</translation>
 <translation id="2350172092385603347">አካባቢያዊነት ተጠቅሟል ነገር ግን በማኒፌስት ወስጥ default_locale አልተገለጸም።</translation>
 <translation id="2576842806987913196">ይህን ስም የያዘ የCRX ፋይል አስቀድሞ ነበር።</translation>
 <translation id="2662876636500006917">የChrome የድር ገበያ</translation>
+<translation id="2678063897982469759">እንደገና አንቃ</translation>
 <translation id="2743583586211388067">የዚህ ቅጥያ መዳረሻ በድርጅትዎ የቅጥያ ስጋት መመሪያ ስር ታግዷል።</translation>
+<translation id="2766161002040448006">አንድ ወላጅ ጠይቅ</translation>
 <translation id="2785530881066938471">ፋይል «<ph name="RELATIVE_PATH" />»ን ለይዘት ስክሪፕት መጫን አልተቻለም። በUTF-8 ኮድ የተቀመጠ አይደለም።</translation>
+<translation id="2850541429955027218">ገጽታ አክል</translation>
+<translation id="2883143988769190738">ይህ ቅጥያ የሚከተሉትን ፈቃዶች ይጠይቃል፦</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (የቅጥያ መታወቂያ «<ph name="EXTENSION_ID" />») በአስተዳዳሪው ታግዷል። <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">«<ph name="EXTENSION_NAME" />» ለመጫን ለእርስዎ አስተዳዳሪ ጥያቄ ይላክ?</translation>
 <translation id="2988488679308982380">ጥቅል መጫን አልተቻለም፦ «<ph name="ERROR_CODE" />»</translation>
 <translation id="3115238746683532089">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_ID" /> ሻጭ (ተከታታይ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">የcrx ፋይል መተካት አልተቻለም። ፋይሉ ሥራ ላይ እየዋለ ከሆነ ያረጋግጡ።</translation>
 <translation id="3163201441334626963">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_ID" /> ሻጭ</translation>
 <translation id="3174723475300476613">የዚህ ቅጥያ መዳረሻ በድርጅትዎ ታግዷል።</translation>
+<translation id="3183357154200327217">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chromium የሚሠራበትን መንገድ ሊለውጥ የሚችል አንድ ገጽታ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">የ«kiosk_only» ዝርዝር ሰነድ አይነታ ያለው መተግበሪያ በChromeOS የሱቅ ሁኔታ ላይ መጫን አለበት።</translation>
 <translation id="3364986687961713424">ከእርስዎ አስተዳዳሪ፦ <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ተከታታይ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_ID" /> ሻጭ (ተከታታይ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ለግላዊ ቁልፍ የሚገባ እሴት ትክክለኛ ዱካ መሆን አለበት።</translation>
+<translation id="3788401245189148511">ይህንን ሊያደርግ ይችላል፦</translation>
 <translation id="3834775135533257713">ከ«<ph name="TO_INSTALL_APP_NAME" />» ጋር ስለሚጋጭ የ<ph name="INSTALLED_APP_NAME" /> መተግበሪያውን ማከል አልተቻለም።</translation>
 <translation id="388442998277590542">የአማራጮች ገፅ «<ph name="OPTIONS_PAGE" />»ን መጫን አልተቻለም።</translation>
+<translation id="3905761538810670789">መተግበሪያ ይጠግኑ</translation>
+<translation id="3908501907586732282">ቅጥያውን አንቃ</translation>
+<translation id="3927932062596804919">ከልክል</translation>
 <translation id="3984413272403535372">ቅጥያዎችን በመፈረም ጊዜ ስህተት።</translation>
+<translation id="4014432863917027322">«<ph name="EXTENSION_NAME" />» ይጠገን?</translation>
+<translation id="4061696872429826774">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chromium የሚሠራበትን መንገድ ሊለውጥ የሚችል አንድ ቅጥያ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">የዚህ የቅጥያ ምድብ መዳረሻ በድርጅትዎ ታግዷል።</translation>
 <translation id="4233778200880751280">የስለ ገጹ «<ph name="ABOUT_PAGE" />» መጫን አልተቻለም።</translation>
 <translation id="424963718355121712">መተግበሪያዎች ተፅዕኖ ከሚያሳርፉበት አስተናጋጅ መቅረብ አለባቸው</translation>
 <translation id="4306119971288449206">መተግበሪያዎች በይዘት ዓይነት «<ph name="CONTENT_TYPE" />» ሊቀርቡ ይገባል</translation>
+<translation id="4625078469366263107">መተግበሪያን አንቃ</translation>
 <translation id="4633003931260532286">ቅጥያው ቢያንስ የ«<ph name="IMPORT_VERSION" />» ስሪት የሆነ «<ph name="IMPORT_NAME" />» ያስፈልገዋል፣ ነገር ግን «<ph name="INSTALLED_VERSION" />» ስሪት ብቻ ነው የተጫነው</translation>
 <translation id="4660476621274971848">የተጠበቀው ስሪት «<ph name="EXPECTED_VERSION" />» ነበር፣ ግን ስሪቱ «<ph name="NEW_ID" />» ነበር</translation>
 <translation id="471800408830181311">የግላዊ ቁልፍን ውጤት ማውጣት አልተሳካም።</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">ህዝባዊ ቁልፍን መላክ አልተሳካም።</translation>
 <translation id="501057610015570208">የ«kiosk_only» አንጸባራቂ አይነታ ያለው መተግበሪያ በChromeOS Flex ኪዮስክ ሁነታ ላይ መጫን አለበት</translation>
 <translation id="5026754133087629784">የድር ዕይታ፦ <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">ቅጥያ ያክሉ</translation>
+<translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="5098647635849512368">ለማሸግ ወደ አቃፊው የሚወስደው ትክክለኛ ዱካውን ማግኘት አልተቻለም።</translation>
 <translation id="5160071981665899014">ጃቫስክሪፕት «<ph name="RELATIVE_PATH" />»ን ለስክሪፕት መጫን አልተቻለም።</translation>
+<translation id="5185386675596372454">አዲሱ የ«<ph name="EXTENSION_NAME" />» መተግበሪያ ስሪት ተጨማሪ ፍቃዶችን ስለሚፈልግ ተሰናክሏል።</translation>
+<translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» ይንቃ?</translation>
 <translation id="5356315618422219272">የመተግበሪያ ዕይታ፦ <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">ከChromium አስወግድ</translation>
 <translation id="5456409301717116725">ይህ ቅጥያ የቁልፍ ፋይል «<ph name="KEY_PATH" />»ን ያካትታል። ይህንን ማድረግ ላይፈልጉ ይችላሉ።</translation>
+<translation id="5485102783864353244">መተግበሪያ አክል</translation>
 <translation id="5486326529110362464">ለግላዊ ቁልፍ የሚገባ እሴት መኖር አለበት።</translation>
 <translation id="5527463195266282916">የቅጥያ ስሪቱን ለማውረድ ተሞክሯል።</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">ቅጥያዎችን ከሚከተለው መጫን አልተቻለም፦</translation>
 <translation id="5972529113578162692">የዚህ ማሽን አስተዳዳሪ <ph name="EXTENSION_NAME" /> እንዲጫን ይፈልጋል። ከተጫነ በኋላ ሊራገፍ አይችልም።</translation>
 <translation id="6027032947578871493">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_NAME" /> (ተከታታይ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_ID" /> ሻጭ</translation>
+<translation id="6204922163963157461">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሠራበትን መንገድ ሊለውጥ የሚችል አንድ መተግበሪያ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">ቅጥያ መጫን ላይ ስህተት</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome የሚሠራበትን መንገድ ሊለውጥ የሚችል ቅጥያ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">ግላዊ ቁልፍን ማንበብ አልተሳካም።</translation>
+<translation id="6326175484149238433">ከChrome አስወግድ</translation>
 <translation id="6391538222494443604">የግብአት ማውጫ መኖር ይኖርበታል።</translation>
 <translation id="641087317769093025">ቅጥያውን መበተን አልተቻለም</translation>
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» የአንድ ወይም ተጨማሪ መሣሪያዎችዎ መዳረሻ እየጠየቁ ነው።</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> ተጠቃሚዎች</translation>
 <translation id="657064425229075395">የጀርባ ስክሪፕት «<ph name="BACKGROUND_SCRIPT" />» መጫን አልተቻለም።</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_NAME" /> (የመለያ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">የሚሜ ተቆጣጣሪ፦ <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">የዝርዝር ሰነድ ፋይሉ ልክ ያልሆነ ነው</translation>
 <translation id="7217838517480956708">የዚህ ማሽን አስተዳዳሪ <ph name="EXTENSION_NAME" /> እንዲጫን ይፈልጋል። ሊወገድ ወይም ሊቀየር አይችልም።</translation>
 <translation id="7287143125007575591">መዳረሻ ተክልክሏል።</translation>
+<translation id="760353356052806707">Chrome የሚሰራበትን መንገድ የሚለውጥ መተግበሪያ ሌላ ፕሮግም በኮምፒውተርዎ ታክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">የግል ቁልፍ የግቤት እሴት የሚሠራ ቅርጸት (PKCS#8-format በPEM-የተመሠጠረ የRSA ቁልፍ) መሆን አለበት።</translation>
 <translation id="765293928828334535">መተግበሪያዎች፣ ቅጥያዎች እና የተጠቃሚ ስክሪፕቶች ከዚህ ድር ጣቢያ ሊታከሉ አይችሉም</translation>
+<translation id="7658239707568436148">ይቅር</translation>
+<translation id="7766838926148951335">ፈቃዶችን ተቀበል</translation>
 <translation id="7876803335449432072">ለይዘት ስክሪፕት «<ph name="RELATIVE_PATH" />» ፋይልን መጫን አልተቻለም፣ የይዘት ስክሪፕቶች መጫን የሚችሉት እንደ .css ፋይሎች ካሉ የሚደገፉ የቅጥ ሉህ ፋይሎች ላይ ብቻ ነው።</translation>
 <translation id="7939686037314084444">ቅጥያው በአግባቡ ሊጫን አልቻለም። የአውታረ መረብ ጥያቄዎችን መጥለፍ ላይችል ይችላል።</translation>
 <translation id="7952904276017482715">የተጠበቀው መታወቂያ «<ph name="EXPECTED_ID" />» ነበር፣ ነገር ግን መታወቂያው «<ph name="NEW_ID" />» ነበር</translation>
 <translation id="7972881773422714442">አማራጮች፦ <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">አጽድቅ</translation>
 <translation id="8035920974645200807">ተጠቃሚውን የሚመለከት</translation>
 <translation id="8047248493720652249">ይህ ቅጥያ የወረደውን «<ph name="ATTEMPTED_FILENAME" />» ብሎ መሰየም አልተሳካለትም፣ ምክንያቱም ሌላ ቅጥያ (<ph name="EXTENSION_NAME" />) ሌላ የፋይል ስም «<ph name="ACTUAL_FILENAME" />» ስለወሰነ ነው።</translation>
 <translation id="8049705080247101012">Google «<ph name="EXTENSION_NAME" />»ን ተንኮል-አዘል ብሎ ጠቁሞታል፣ እና እንዳይጫን ተከልክሏል</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">ይህንን ማድረግ ይችላል፦</translation>
 <translation id="8517576857589387417">የዝርዝር ሰነድ ፋይሉ ጠፍቷል ወይም ተነባቢ አይደለም</translation>
 <translation id="8565650234829130278">የመተግበሪያውን ስሪት ለማውረድ ተሞክሯል።</translation>
 <translation id="8621383749470166852">ለይዘት ስክሪፕት «<ph name="RELATIVE_PATH" />» ፋይልን መጫን አልተቻለም፣ የይዘት ስክሪፕቶች መጫን የሚችሉት እንደ .js ፋይሎች ካሉ የሚደገፉ ጃቫስክሪፕት ፋይሎች ላይ ብቻ ነው።</translation>
 <translation id="8636666366616799973">ጥቅሉ ልክ አይደለም። ዝርዝሮች፦ «<ph name="ERROR_MESSAGE" />»።</translation>
+<translation id="8746654918629346731">«<ph name="EXTENSION_NAME" />»ን አስቀድመው ጠይቀዋል</translation>
 <translation id="8761756413268424715">«<ph name="APP_NAME" />» የአንዱ መሣሪያዎ መዳረሻ እየጠየቀ ነው።</translation>
 <translation id="8885905466771744233">ለተጠቀሰው ቅጥያ ቀድሞውንም ግላዊ ቁልፍ አለ። ይህን ቁልፍ ዳግም ይጠቀሙ ወይም  ይሰርዙት።</translation>
 <translation id="9039223174332979184">የዚህ ማሽን አስተዳዳሪ <ph name="EXTENSION_NAME" /> ቢያንስ 3 የዝርዝር ሰነድ ስሪት እንዲኖረው ይጠይቃል።</translation>
 <translation id="907841381057066561">በመጠቅለል ጊዜ ጊዜያዊ ዚፕ ፋይል መፍጠር አልተሳካም።</translation>
+<translation id="9102610709270966160">ቅጥያውን አንቃ</translation>
+<translation id="93766956588638423">ቅጥያ ይጠግኑ</translation>
 <translation id="941543339607623937">ልክ ያልሆነ ግላዊ ቁልፍ።</translation>
 </translationbundle>

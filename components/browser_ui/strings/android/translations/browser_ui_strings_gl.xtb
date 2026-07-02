@@ -690,7 +690,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="8163152278172770963">Os sitios non poden acceder ao modo de pantalla superposta automaticamente</translation>
 <translation id="8168435359814927499">Contido</translation>
 <translation id="818487310457576362">Arrastra desde o lateral da pantalla para saír da pantalla completa.</translation>
-<translation id="8186479265534291036">O sitio non funciona? As cookies de terceiros están bloqueadas</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> (permitido)</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
@@ -761,7 +760,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="8805385115381080995">Navegarás máis rápido porque é menos problable que os sitios che pidan que verifiques que es unha persoa real</translation>
 <translation id="881644524232657178">Cando esta opción está activada, os sitios poden usar os sensores de movemento e de luz do dispositivo. Cando está desactivada, non os poden usar.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Proba a permitir de maneira temporal as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian segundo o previsto.</translation>
 <translation id="8889294078294184559">Cando navegues, os sitios poderán facer comprobacións con Chrome e verificar con outros sitios que xa visitases que es unha persoa real</translation>
 <translation id="8899807382908246773">Anuncios intrusivos</translation>
 <translation id="8903921497873541725">Achegar</translation>
@@ -787,7 +785,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="913657688200966289">Activa os permisos para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">O acceso ás notificacións está permitido</translation>
 <translation id="9138217887606523162">Zoom actual: <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Os sitios usan esta función para acceder automaticamente ao modo de pantalla superposta. Isto permíteche seguir vendo un vídeo mentres fas outras tarefas na pantalla.</translation>
 <translation id="9156722768168878035">Permite que Chrome mostre as pestanas recentes na lista de aplicacións e nos resultados de busca do teu dispositivo. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta páxina é perigosa</translation>
 <translation id="9182556968660520230">Non permitir que os sitios reproduzan contido protexido</translation>

@@ -7,14 +7,12 @@
 <translation id="1026101648481255140">Reprèn la instal·lació</translation>
 <translation id="102763973188675173">Personalitza i controla Google Chrome. Hi ha una actualització disponible.</translation>
 <translation id="1028061813283459617">Per suprimir les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
+<translation id="1028770388543831319">Obtén les millors funcions de seguretat de Google siguis on siguis amb l'aplicació Chrome al telèfon</translation>
 <translation id="1042270987544905725">Fes clic per tancar el quadre de diàleg d'inici de sessió de Chrome</translation>
 <translation id="1051793555070215510">Ajuda'ns a millorar la navegació d'incògnit completant aquesta enquesta d'un minut.</translation>
 <translation id="1055295352198814912">Mostra Gemini a Chrome a la barra de menú de Mac i activa les tecles de drecera</translation>
 <translation id="1059838145689930908">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chrome.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
-<translation id="1070377999570795893">Un altre programa de l'ordinador ha afegit una extensió que pot canviar el funcionament de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Cerca amb Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chrome</translation>
 <translation id="110877069173485804">Aquest és el vostre Chrome</translation>
@@ -36,6 +34,7 @@
 <translation id="1341711321000856656">Pots canviar de perfil per veure les contrasenyes d'un altre perfil de Chrome</translation>
 <translation id="1343830902827845050">Inicia la sessió a Chrome</translation>
 <translation id="1356661055722410047">Novetat! Pots traduir tant el text com les imatges en pantalla</translation>
+<translation id="1361351916482714918">Navega millor amb Google Lens</translation>
 <translation id="1363996462118479832">Chrome OS no ha pogut sincronitzar les teves dades a causa d'un error en iniciar la sessió.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -54,9 +53,6 @@
 <translation id="1547295885616600893">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Finalitza la tasca destacada.</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
-<translation id="1585717515139318619">Un altre programa de l'ordinador ha afegit un tema que pot canviar el funcionament de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome està utilitzant la càmera.</translation>
 <translation id="1587325591171447154">Chrome ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
 <translation id="1597911401261118146">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chrome<ph name="END_LINK" />.</translation>
@@ -92,7 +88,6 @@
 <translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="1843347690926158494">Cerca en aquesta pestanya amb Google Lens</translation>
 <translation id="1849248141818021764">Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, has de <ph name="BEGIN_LINK" />suprimir les dades de Chrome del compte<ph name="END_LINK" />.</translation>
-<translation id="1860536484129686729">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera</translation>
 <translation id="1867503717113754604">Inicia la sessió a Chrome amb el teu Compte de Google per utilitzar <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome no és el navegador predeterminat</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -108,6 +103,8 @@
 <translation id="2024959665595762054">Per utilitzar i desar les dades de Chrome al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="2034233344106846793">Quan és possible, Chrome actualitza automàticament les connexions no segures a HTTPS</translation>
 <translation id="2039417478970545937">Configuració.</translation>
+<translation id="2040220733769034247">Escaneja el codi QR amb el telèfon per baixar Chrome i iniciar la sessió al teu Compte de Google.</translation>
+<translation id="2050189601866423230">Pots fixar el mode IA de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="2066690553719545730">Mostra sempre el mode IA</translation>
 <translation id="2091012649849228750">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
 <translation id="2094648590148273905">Condicions de ChromeOS Flex</translation>
@@ -139,7 +136,6 @@
 <translation id="2307973900865360088">Mantén al Dock</translation>
 <translation id="2309047409763057870">Aquesta és una instal·lació secundària de Google Chrome i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="2345992953227471816">Chrome ha detectat que aquestes extensions contenen programari maliciós:</translation>
-<translation id="2348335408836342058">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera i al micròfon</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2403703063067034158">Error d'inici: s'està executant una altra instància de la configuració. Torna-ho a provar més tard.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o més extensions de Chrome estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chrome estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chrome estan accedint a # dispositius d'interfície humana}}</translation>
@@ -178,7 +174,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="2747021967398957654">{count,plural, =1{Algunes dades de Chrome encara no s'han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades (1 element) se suprimiran.}other{Algunes dades de Chrome encara no s'han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades ({count} elements) se suprimiran.}}</translation>
 <translation id="2753623023919742414">Fes clic per cercar</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització}=1{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. La finestra d'incògnit no es tornarà a obrir.}other{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. # finestres d'incògnit no es tornaran a obrir.}}</translation>
-<translation id="2765403129283291972">Per visitar aquest lloc web, Chrome necessita permís per accedir al micròfon</translation>
 <translation id="2797864378188255696">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió automàticament a Chrome</translation>
 <translation id="2799162042226656283">El teu Chrome</translation>
 <translation id="2799223571221894425">Reinicia</translation>
@@ -252,7 +247,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3451115285585441894">S'està afegint a Chrome...</translation>
 <translation id="345171907106878721">Afegeix-me a Chrome</translation>
 <translation id="3453763134178591239">Condicions de Chrome OS</translation>
-<translation id="3503306920980160878">Chrome necessita accedir a la teva ubicació per compartir-la amb aquest lloc web</translation>
+<translation id="3475778264501649775">Mentre et desplaces, porta amb tu les teves contrasenyes, pestanyes i més amb l'aplicació Chrome al telèfon</translation>
 <translation id="3512495006767217696">Integrat a Chrome per ajudar-te a crear, desar i emplenar automàticament contrasenyes segures. Afegeix la drecera per accedir-hi fàcilment</translation>
 <translation id="3539955434060988644">Obre l'enllaç en una finestra d'incò&amp;gnit a Chrome</translation>
 <translation id="3576528680708590453">L'administrador del sistema ha configurat Google Chrome perquè obri un navegador alternatiu per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -325,6 +320,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4242034826641750751">Chrome necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4251615635259297716">Voleu enllaçar les vostres dades de Chrome amb aquest compte?</translation>
+<translation id="4266456958461406346">Obre el menú Més <ph name="THREE_DOTS_ICON" /></translation>
 <translation id="4280647692742956593">Baixa Chrome al telèfon per obrir o crear grups de pestanyes nous siguis on siguis.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="430327780270213103">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chrome</translation>
@@ -342,6 +338,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4400772909124543403">No hi ha cap actualització disponible</translation>
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Comparteix aquest document amb Gemini a Chrome per obtenir-ne una visió general ràpida i fer preguntes de seguiment</translation>
 <translation id="4450664632294415862">Chrome - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hi ha una altra operació en curs a Google Chrome. Torna-ho a provar més tard.</translation>
 <translation id="4459234553906210702">El mesurament d'anuncis permet als llocs web que visites sol·licitar informació de Chrome que els ajudi a mesurar el rendiment dels anuncis. El mesurament d'anuncis restringeix el seguiment entre llocs web transferint la quantitat mínima possible d'informació entre llocs web.</translation>
@@ -431,6 +428,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5465210843490471889">Tria un perfil de Chrome per utilitzar-lo amb <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Ara Chrome s'obre quan s'inicia Windows perquè puguis començar a navegar a l'instant. Pots desactivar aquesta opció a la configuració.</translation>
 <translation id="5486346529181556467">Millora la seguretat en línia per a tothom informant d'un lloc web que creus que és perjudicial. Obtén més informació sobre la <ph name="BEGIN_LINK" />política de llocs web no segurs de Google<ph name="END_LINK" />.</translation>
+<translation id="5503069778428381665">Quan utilitzes Google Lens a l'ordinador, el títol, l'URL i el contingut de la pàgina (inclosos els PDF) s'envien a Google</translation>
 <translation id="5524890928877629608">extrem superior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="TOP" /> % per dalt</translation>
 <translation id="5529390769101499214">Per gestionar les extensions, fes clic a Extensions, al menú principal de Chrome.</translation>
 <translation id="5550137307985173298">Per renovar l'aspecte de Chrome, a la pàgina Pestanya nova, fes clic al botó Personalitza Chrome</translation>
@@ -464,6 +462,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
 <translation id="5894164573378901688">Per utilitzar Gemini a Chrome, inicia la sessió amb un altre Compte de Google</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="5899008323405946573">Utilitza les millors eines d'IA de Google amb l'aplicació Chrome al telèfon</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa</translation>
 <translation id="5924017743176219022">S'està connectant a Internet...</translation>
 <translation id="5925596746603389877">Baixa l'instal·lador de Chrome</translation>
@@ -503,9 +502,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6180522807229584611">Aquesta pestanya utilitza recursos addicionals. Per millorar el rendiment, permet que Chrome la desactivi.</translation>
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6192058120268468905">El teu compte a Chrome</translation>
-<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha afegit una extensió que pot canviar el funcionament de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Regla d'entrada de Google Chrome per permetre el trànsit de mDNS.</translation>
 <translation id="624230925347970731">Chrome es tancarà aviat</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
@@ -561,6 +557,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6706525880530967390">{count,plural, =1{Chrome ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió ara, aquestes dades (1 element) se suprimiran.}other{Chrome ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió ara, aquestes dades ({count} elements) se suprimiran.}}</translation>
 <translation id="6712881677154121168">Error de baixada: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Fes que Chrome sigui més ràpid</translation>
+<translation id="6723445727540769832">Treu el màxim profit de Google amb l'aplicació Chrome al telèfon</translation>
 <translation id="6734827584173583205">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> més.</translation>
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6750954913813541382">Per corregir els errors d'ortografia, Chrome envia a Google el text que escrius al navegador</translation>
@@ -643,9 +640,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7583399374488819119">Instal·lador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Pots utilitzar Chrome cada vegada que facis clic en enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="7602868996817972616">Pregunta a Google sobre aquesta pàgina</translation>
-<translation id="760353356052806707">Un altre programa de l'ordinador ha afegit una aplicació que pot canviar el funcionament de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Per protegir les teves dades, permet que Chrome suprimeixi els permisos dels llocs web que no has visitat recentment.</translation>
 <translation id="7629695634924605473">Chrome et permet saber si les contrasenyes s'han posat en perill</translation>
@@ -674,6 +668,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7804364787702057554">El teu compte a Chrome</translation>
 <translation id="7804947029129221742">El motor de cerca s'ha canviat des de fora de Chrome. Per protegir-te, Chrome l'ha restablert a la configuració predeterminada original. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Suprimeix de Chrome...</translation>
+<translation id="7812800388699096556">Il·lustració que mostra com pots utilitzar Google Lens per cercar un producte</translation>
 <translation id="7827099906024714326">Chrome ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="7832314606810669113">Per obtenir les teves adreces d'interès i altres dades en tots els dispositius, inicia la sessió a Chrome. Aquesta adreça d'interès es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
 <translation id="7845233973568007926">T'agraïm la instal·lació. Has de reiniciar l'equip abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
@@ -691,6 +686,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7951272445806340501">Cal reiniciar ChromeOS Flex per aplicar l'actualització.</translation>
 <translation id="7959172989483770734">Gestiona els perfils de Chrome</translation>
 <translation id="7962410387636238736">Aquest ordinador ja no rebrà més actualitzacions de Google Chrome perquè Windows XP i Windows Vista ja no són compatibles</translation>
+<translation id="7988335136512059384">Rep alertes de baixada de preu dels articles que t'interessen amb l'aplicació Chrome al telèfon</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8005666035647241369">Ves al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="8008534537613507642">Torna a instal·lar Chrome</translation>
@@ -758,7 +754,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="8590782867495422699">Torna a obrir el mode IA de la Cerca de Google</translation>
 <translation id="8601359445272098721">Novetat! Pots traduir tant el text com les imatges en pantalla seleccionant el botó Tradueix la pantalla.</translation>
 <translation id="8614913330719544658">Google Chrome no respon. Voleu tornar-lo a iniciar ara?</translation>
-<translation id="861702415419836452">Chrome necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>
 <translation id="8623450603356630491">Inicia la sessió a Chrome al telèfon</translation>
 <translation id="8624541899164515475">Configuració; s'obre en una pestanya nova.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome es reiniciarà d'aquí a 1 minut}other{Chrome es reiniciarà d'aquí a # minuts}}</translation>
@@ -812,6 +807,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="9018218886431812662">La instal·lació s'ha completat</translation>
 <translation id="9024318700713112071">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="9066987883552592250">Tanca Gemini a Chrome Canary</translation>
+<translation id="9074041031320636790">Fet! Ara pots fer preguntes fàcilment mentre navegues amb el mode IA de la Cerca de Google.</translation>
 <translation id="9090566250983691233">Descobreix per què Chrome bloqueja alguns fitxers</translation>
 <translation id="9106236359747881194">Selecciona text per cercar</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>

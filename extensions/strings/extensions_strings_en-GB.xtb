@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="10146536653536065">Install '<ph name="EXTENSION_NAME" />'</translation>
+<translation id="1070377999570795893">Another program on your computer added an extension that may change the way Chrome works.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Enable Theme</translation>
 <translation id="1135328998467923690">Package is invalid: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Environment-facing</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> has added an extension that may change the way that Chromium works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Failed to export private key.</translation>
 <translation id="132960226125594336">Could not load file '<ph name="RELATIVE_PATH" />' for content script as it would exceed the maximum script size or the extension's maximum total content script size.</translation>
 <translation id="1445572445564823378">This extension is slowing down <ph name="PRODUCT_NAME" />. You should disable it to restore <ph name="PRODUCT_NAME" />'s performance.</translation>
 <translation id="1468038450257740950">WebGL is not supported.</translation>
 <translation id="1478607704480248626">Installation is not enabled</translation>
+<translation id="1483493594462132177">Send</translation>
+<translation id="1485015260175968628">It can now:</translation>
 <translation id="1556537182262721003">Could not move extension directory into profile.</translation>
+<translation id="1585717515139318619">Another program on your computer added a theme that may change the way Chrome works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Could not load CSS '<ph name="RELATIVE_PATH" />' for script.</translation>
 <translation id="1616298854599875024">Unable to import extension '<ph name="IMPORT_NAME" />' because it is not a shared module</translation>
+<translation id="175772926354468439">Enable theme</translation>
 <translation id="1757786065507923842">Parent permission request failed.</translation>
 <translation id="1803557475693955505">Could not load background page '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">This can only be added from the <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2150661552845026580">Add '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2159915644201199628">Could not decode image: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">Your parent didn't approve this extension</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" has requested additional permissions.</translation>
+<translation id="2327492829706409234">Enable app</translation>
 <translation id="2350172092385603347">Localisation used, but default_locale wasn't specified in the manifest.</translation>
 <translation id="2576842806987913196">There is already a CRX file present with this name.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Re-enable</translation>
 <translation id="2743583586211388067">Access to this extension is blocked under your organisation's extension risk policy.</translation>
+<translation id="2766161002040448006">Ask a parent</translation>
 <translation id="2785530881066938471">Could not load file '<ph name="RELATIVE_PATH" />' for content script. It isn't UTF-8 encoded.</translation>
+<translation id="2850541429955027218">Add theme</translation>
+<translation id="2883143988769190738">This extension requests the following permissions:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is blocked by the administrator. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Send a request to your administrator to install '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2988488679308982380">Could not install package: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089">Unknown product <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Failed to replace crx file. Check to see if the file is in use.</translation>
 <translation id="3163201441334626963">Unknown product <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Access to this extension is blocked by your organisation.</translation>
+<translation id="3183357154200327217">Another program on your computer added a theme that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
 <translation id="3364986687961713424">From your administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> from vendor <ph name="VENDOR_ID" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Input value for private key must be a valid path.</translation>
+<translation id="3788401245189148511">It could:</translation>
 <translation id="3834775135533257713">Could not add application "<ph name="TO_INSTALL_APP_NAME" />" because it conflicts with "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Could not load options page '<ph name="OPTIONS_PAGE" />'.</translation>
+<translation id="3905761538810670789">Repair app</translation>
+<translation id="3908501907586732282">Enable extension</translation>
+<translation id="3927932062596804919">Deny</translation>
 <translation id="3984413272403535372">Error while signing extension.</translation>
+<translation id="4014432863917027322">Repair "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="4061696872429826774">Another program on your computer added an extension that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Access to this extension category is blocked by your organisation.</translation>
 <translation id="4233778200880751280">Could not load about page '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Apps must be served from the host they affect</translation>
 <translation id="4306119971288449206">Apps must be served with content-type '<ph name="CONTENT_TYPE" />'</translation>
+<translation id="4625078469366263107">Enable App</translation>
 <translation id="4633003931260532286">Extension requires '<ph name="IMPORT_NAME" />' with a minimum version '<ph name="IMPORT_VERSION" />', but only version '<ph name="INSTALLED_VERSION" />' is installed</translation>
 <translation id="4660476621274971848">Expected version '<ph name="EXPECTED_VERSION" />', but version was '<ph name="NEW_ID" />'</translation>
 <translation id="471800408830181311">Failed to output private key.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Failed to export public key.</translation>
 <translation id="501057610015570208">App with 'kiosk_only' manifest attribute must be installed in Chrome OS Flex kiosk mode</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Add extension</translation>
+<translation id="5039804452771397117">Allow</translation>
 <translation id="5098647635849512368">Can't find the absolute path to the directory to pack.</translation>
 <translation id="5160071981665899014">Could not load JavaScript '<ph name="RELATIVE_PATH" />' for script.</translation>
+<translation id="5185386675596372454">The newest version of "<ph name="EXTENSION_NAME" />" has been disabled because it requires more permissions.</translation>
+<translation id="5242724311594467048">Enable "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Remove from Chromium</translation>
 <translation id="5456409301717116725">This extension includes the key file '<ph name="KEY_PATH" />'. You probably don't want to do that.</translation>
+<translation id="5485102783864353244">Add app</translation>
 <translation id="5486326529110362464">Input value for private key must exist.</translation>
 <translation id="5527463195266282916">Attempted to downgrade extension.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Failed to load extension from:</translation>
 <translation id="5972529113578162692">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to be installed. It cannot be uninstalled.</translation>
 <translation id="6027032947578871493">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> from vendor <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Another program on your computer added an app that may change the way Chromium works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Error Loading Extension</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> has added an extension that may change the way that Chrome works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Failed to read private key.</translation>
+<translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6391538222494443604">Input directory must exist.</translation>
 <translation id="641087317769093025">Could not unzip extension</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" is requesting access to one or more of your devices:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> users</translation>
 <translation id="657064425229075395">Could not load background script '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> from <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Manifest file is invalid</translation>
 <translation id="7217838517480956708">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to be installed. It cannot be removed or modified.</translation>
 <translation id="7287143125007575591">Access denied</translation>
+<translation id="760353356052806707">Another program on your computer added an app that may change the way Chrome works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Input value for private key must be a valid format (PKCS#8-format PEM-encoded RSA key).</translation>
 <translation id="765293928828334535">Apps, extensions and user scripts cannot be added from this website</translation>
+<translation id="7658239707568436148">Cancel</translation>
+<translation id="7766838926148951335">Accept permissions</translation>
 <translation id="7876803335449432072">Could not load file '<ph name="RELATIVE_PATH" />' for content script, content script style sheets can only be loaded from supported style sheet files such as .css files.</translation>
 <translation id="7939686037314084444">The extension failed to load properly. It might not be able to intercept network requests.</translation>
 <translation id="7952904276017482715">Expected ID '<ph name="EXPECTED_ID" />', but ID was '<ph name="NEW_ID" />'</translation>
 <translation id="7972881773422714442">Options: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Approve</translation>
 <translation id="8035920974645200807">User-facing</translation>
 <translation id="8047248493720652249">This extension failed to name the download "<ph name="ATTEMPTED_FILENAME" />" because another extension (<ph name="EXTENSION_NAME" />) determined a different filename "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Google has flagged '<ph name="EXTENSION_NAME" />' as malicious, and installation has been prevented</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> from <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">It can:</translation>
 <translation id="8517576857589387417">Manifest file is missing or unreadable</translation>
 <translation id="8565650234829130278">Attempted to downgrade app.</translation>
 <translation id="8621383749470166852">Could not load file '<ph name="RELATIVE_PATH" />' for content script, content scripts can only be loaded from supported JavaScript files such as .js files.</translation>
 <translation id="8636666366616799973">Package is invalid. Details: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">You already requested '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" is requesting access to one of your devices:</translation>
 <translation id="8885905466771744233">A private key for specified extension already exists. Reuse that key or delete it first.</translation>
 <translation id="9039223174332979184">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to have a minimum manifest version of 3.</translation>
 <translation id="907841381057066561">Failed to create temporary zip file during packaging.</translation>
+<translation id="9102610709270966160">Enable Extension</translation>
+<translation id="93766956588638423">Repair extension</translation>
 <translation id="941543339607623937">Invalid private key.</translation>
 </translationbundle>

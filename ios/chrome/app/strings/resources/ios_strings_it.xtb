@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} passkey}other{{count} passkey}}</translation>
 <translation id="1005023885865154304">Apri le impostazioni di Compila automaticamente le password</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">Live è una nuova funzionalità di Gemini in Chrome</translation>
 <translation id="1013952917065545813">Puoi tornare più tardi per riaprire le schede che hai chiuso di recente</translation>
 <translation id="1016495303386450659">Elemento aggiornato</translation>
 <translation id="1018804590490383958">Scansiona e compila automaticamente</translation>
@@ -1737,6 +1738,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Non impostare come predefinito</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
+<translation id="6775952316617222141">Usa Live con Gemini in Chrome</translation>
 <translation id="6779455296366983087">I tuoi dati di navigazione verranno eliminati</translation>
 <translation id="6782531425936234573">Esporta i dati</translation>
 <translation id="6791425686608802741">Tocca "Aggiungi scheda a nuovo gruppo"</translation>

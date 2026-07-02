@@ -243,6 +243,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2056878612599315956">Web-lokacija pauzirana</translation>
 <translation id="2063047797624276601">Vaša organizacija uključila je poboljšano sigurno pregledavanje</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 preuzimanje nije uspjelo}one{# preuzimanje nije uspjelo}few{# preuzimanja nisu uspjela}other{# preuzimanja nije uspjelo}}</translation>
+<translation id="2066690553719545730">Uvijek prikaži AI način</translation>
 <translation id="2067805253194386918">SMS</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> od <ph name="TOTAL_RESULTS" /> rezultata</translation>
@@ -263,6 +264,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
 <translation id="2163089732491971196">Da biste upotrebljavali i spremali Chromeove podatke spremljene na vašem Google računu, unesite šifru</translation>
+<translation id="2164015935042801524">Kliknite ovdje desnom tipkom za okomiti prikaz kartica</translation>
 <translation id="2166228530126694506">Verzija <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Isključeni su opisi slika</translation>
 <translation id="2172905120685242547">Zatvoriti prozor?</translation>
@@ -305,6 +307,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2323763861024343754">Pohrana web-lokacije</translation>
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i sve će se veze pozivnice isključiti</translation>
+<translation id="2329500425421091035">Predstavljamo AI način u Chromeu</translation>
 <translation id="2330186936255788117">Više oznaka</translation>
 <translation id="2332515770639153015">Uključeno je poboljšano sigurno pregledavanje</translation>
 <translation id="233375395665273385">Izbriši i odjavi se</translation>
@@ -1057,7 +1060,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5436928407363358055">Da biste lako nastavili tamo gdje ste stali, sinkronizirajte svoju povijest i kartice</translation>
 <translation id="5438292632479953702">Ponovno preuzmi</translation>
 <translation id="5439191312780166229">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromeova upozorenja.</translation>
-<translation id="5441137934526263133">Web-lokacija ne funkcionira? Blokirani su kolačići treće strane</translation>
 <translation id="5441466871879044658">Prevedi na ovaj jezik</translation>
 <translation id="5444999712122199445">Natrag na web-lokaciju</translation>
 <translation id="544776284582297024">Da biste otvorili kartice i istovremeno posjetili različite stranice, dodirnite gumb za otvorene kartice</translation>
@@ -1112,7 +1114,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="569536719314091526">Prevedite ovu stranicu na bilo koji jezik pomoću gumba Više opcija</translation>
 <translation id="5696597120588531049">Chrome vam može pomoći da se bolje zaštitite od povrede podataka, nesigurnih web-lokacija i još mnogo toga</translation>
 <translation id="5698878456427040674">Provjerite je li odabrani račun podržan.</translation>
-<translation id="5700415746238689851">Otvori Gemini</translation>
 <translation id="5709213329446699338">Web-lokacija <ph name="SITE" /> želi se povezati sa serijskim priključkom</translation>
 <translation id="5715150588940290235">Izbrisati spremljene sigurnosne kodove?</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>
@@ -1418,7 +1419,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6835182496791325827">Primajte obavijesti kad Chrome pronađe najbolje rezultate za vaša pretraživanja dok ste odsutni.</translation>
 <translation id="6846298663435243399">Učitavanje…</translation>
-<translation id="6850409657436465440">Preuzimanje je još u tijeku</translation>
 <translation id="6850830437481525139">Kartice su zatvorene (njih <ph name="TAB_COUNT" />)</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 pronađeni rezultat}one{# pronađeni rezultat}few{# pronađena rezultata}other{# pronađenih rezultata}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiodatoteke, 1 audiodatoteka na popisu}one{Audiodatoteke, # audiodatoteka na popisu}few{Audiodatoteke, # audiodatoteke na popisu}other{Audiodatoteke, # audiodatoteka na popisu}}</translation>
@@ -1887,7 +1887,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8634050254805484913">Skriveno na uskim zaslonima</translation>
 <translation id="8635399646025169806">Sačuvati grupu kartica?</translation>
 <translation id="8636825310635137004">Da bi se prikazale kartice s vaših ostalih uređaja, uključite sinkronizaciju.</translation>
-<translation id="8639963783467694461">Postavke automatske ispune</translation>
+<translation id="8639963783467694461">Postavke automatskog popunjavanja</translation>
 <translation id="8662474268934425487">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Već postoji datoteka s tim nazivom</translation>
 <translation id="8676276370198826499">Registrirajte se za <ph name="SITE_ETLD_PLUS_ONE" /> pomoću davatelja identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1968,12 +1968,14 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="9001604755921395912">Otvori u anonimnoj Chrome kartici</translation>
 <translation id="9010094279589497751">Brzo otvorite Gemini kad vam je potreban</translation>
 <translation id="9012585441087414258">Štiti od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasni. Ako stranica učini nešto sumnjivo, URL-ovi i dijelovi sadržaja stranice šalju se Google sigurnom pregledavanju.</translation>
+<translation id="9014097371980259227">Neki su alati premješteni kako biste mogli pretraživati u AI načinu</translation>
 <translation id="9019199799064251516">Želite li nastaviti bez zaključavanja profila automobila?</translation>
 <translation id="9022774213089566801">Često posjećeno</translation>
 <translation id="9022871169049522985">Web-lokacije i oglašivači mogu mjeriti izvedbu svojih oglasa</translation>
 <translation id="9024318700713112071">Postavite Chrome kao zadani preglednik</translation>
 <translation id="9027728231343310283">Poništi <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Premjesti u mapu\u2026</translation>
+<translation id="904146253922032365">Dodirnite i zadržite za okomiti prikaz kartica</translation>
 <translation id="9042893549633094279">Privatnost i sigurnost</translation>
 <translation id="9047347135558855162">Brzo pokrenite pretraživanje u Chromeu</translation>
 <translation id="9050666287014529139">Zaporka</translation>

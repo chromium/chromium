@@ -2371,6 +2371,7 @@
 <translation id="4705573018059932476">Та <ph name="PROVIDER_ORIGIN" />-г ашигладаг сайтууд дээр <ph name="AUTHENTICATOR" />-р баталгаажуулахаар сонгосон. Энэ үйлчилгээ үзүүлэгч таны хэрхэн төлбөр төлдөг талаарх мэдээллийг хадгалсан байж магадгүй бөгөөд та <ph name="LINK_TEXT" /> боломжтой.</translation>
 <translation id="4708268264240856090">Таны холболт тасарлаа</translation>
 <translation id="4708276642004148190">Усны хангамж, цэвэршүүлэх</translation>
+<translation id="4710249055485272920">Энэ мэдээллийг олж чадсангүй</translation>
 <translation id="4711628883879888561">Табын бүлэг дээр хамтран ажиллах</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Танд энэ сайтад зочлох зөвшөөрөл алга</translation>
@@ -3023,6 +3024,7 @@
 <translation id="5707154300732650394">Аяллаа үргэлжлүүлэх</translation>
 <translation id="57094364128775171">Хүчтэй нууц үг санал болгох...</translation>
 <translation id="570953204696852961">Улаан 3</translation>
+<translation id="5710907191777451677">Оронд нь Chrome дахь Gemini-с асуугаарай</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Малын эмч</translation>
 <translation id="5715150588940290235">Хадгалсан аюулгүй байдлын кодуудыг устгах уу?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">Түр хугацааны болон улирлын ажлын байрууд</translation>
 <translation id="7110368079836707726">Коллеж, их сургуулиуд</translation>
 <translation id="7111507312244504964">Үл хөдлөх хөрөнгийн шалгалт болон үнэлгээ</translation>
-<translation id="7117290130383718594">Текстэн тэмдэглэгээ</translation>
 <translation id="7118618213916969306">Түр санах ойн URL болох <ph name="SHORT_URL" />-г хайх</translation>
 <translation id="7118852830504022370">Энэ сайт HTTPS-г дэмждэггүй тул та энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ТВ-ийн драмууд</translation>
@@ -5046,7 +5047,6 @@
 <translation id="8871485335898060555">Эртний эд зүйл, цуглуулгууд</translation>
 <translation id="8871553383647848643">Хөтчийнхөө харагдах байдлыг өөрчлөх</translation>
 <translation id="887350038812854047">Энэ бодлого нь машин болон хэрэглэгчийн түвшнүүдэд ижил утга хэрэглэсэн байна. Бодлого зориулалтын дагуу ажиллаж байна.</translation>
-<translation id="8874790741333031443">Гуравдагч талын күүкинүүдийг түр зуур зөвшөөрч үзнэ үү. Энэ нь үзэх хамгаалалт багасах хэдий ч сайтын онцлогууд тооцоолсны дагуу ажиллах магадлал өндөр байна гэсэн үг юм.</translation>
 <translation id="8874824191258364635">Зөв картны дугаар оруулна уу</translation>
 <translation id="8877780815363510165">Загасчлал</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />"-г "<ph name="DATA_CONTROLS_LEVEL" />" болгож тохируулах боломжгүй</translation>

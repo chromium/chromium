@@ -13,9 +13,6 @@
 <translation id="1055295352198814912">Hiện Gemini trong Chrome trong thanh trình đơn của máy Mac và bật phím tắt</translation>
 <translation id="1059838145689930908">Để sử dụng tiện ích này bằng tài khoản <ph name="USER_EMAIL_ADDRESS" />, hãy đăng nhập vào Chrome.</translation>
 <translation id="1065672644894730302">Không thể đọc tùy chọn của bạn. Một số tính năng có thể không khả dụng và các thay đổi đối với tùy chọn sẽ không được lưu.</translation>
-<translation id="1070377999570795893">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> trước đó đã sử dụng Chrome</translation>
 <translation id="110877069173485804">Đây là Chrome của bạn</translation>
@@ -56,9 +53,6 @@
 <translation id="1547295885616600893">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="1547469039832541117">Kết thúc tác vụ được làm nổi bật.</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
-<translation id="1585717515139318619">Một chương trình khác trên máy tính của bạn đã thêm một chủ đề có thể thay đổi cách Chrome hoạt động.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome đang sử dụng máy ảnh của bạn.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="1597911401261118146">Để kiểm tra xem mật khẩu của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chrome<ph name="END_LINK" />.</translation>
@@ -97,7 +91,6 @@
 <translation id="1843347690926158494">Tìm kiếm trên thẻ này bằng Google Ống kính</translation>
 <translation id="1849248141818021764">Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, bạn sẽ cần <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Dùng ứng dụng Chrome để tiếp tục duyệt web mọi lúc, mọi nơi</translation>
-<translation id="1860536484129686729">Chrome cần có quyền truy cập vào máy ảnh của bạn cho trang web này</translation>
 <translation id="1867503717113754604">Hãy đăng nhập vào Chrome bằng Tài khoản Google của bạn để dùng <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome không phải là trình duyệt mặc định của bạn</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -148,7 +141,6 @@
 <translation id="2307973900865360088">Ghim vào thanh Dock</translation>
 <translation id="2309047409763057870">Đây là cài đặt thứ cấp của Google Chrome và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="2345992953227471816">Chrome nhận thấy rằng các tiện ích này chứa phần mềm độc hại:</translation>
-<translation id="2348335408836342058">Chrome cần có quyền truy cập vào máy ảnh và micrô của bạn cho trang web này</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2403703063067034158">Lỗi khi khởi động: một phiên bản thiết lập khác đang chạy, vui lòng thử lại sau.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích của Chrome đã truy cập vào 1 thiết bị HID}=1{Một hoặc nhiều tiện ích của Chrome đang truy cập vào 1 thiết bị HID}other{Một hoặc nhiều tiện ích của Chrome đang truy cập vào # thiết bị HID}}</translation>
@@ -187,7 +179,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="2747021967398957654">{count,plural, =1{Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}other{Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
 <translation id="2753623023919742414">Nhấp để tìm</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật}=1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
-<translation id="2765403129283291972">Chrome cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
 <translation id="2797864378188255696">Khi đăng nhập vào các dịch vụ của Google như Gmail hoặc YouTube bằng <ph name="USER_EMAIL" />, bạn có thể tự động được đăng nhập vào Chrome bằng cùng một tài khoản</translation>
 <translation id="2799162042226656283">Chrome của bạn</translation>
 <translation id="2799223571221894425">Chạy lại</translation>
@@ -263,7 +254,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="345171907106878721">Thêm chính bạn vào Chrome</translation>
 <translation id="3453763134178591239">Điều khoản của ChromeOS</translation>
 <translation id="3475778264501649775">Mang theo mật khẩu, thẻ và nhiều dữ liệu khác mọi lúc, mọi nơi nhờ ứng dụng Chrome trên điện thoại</translation>
-<translation id="3503306920980160878">Chrome cần quyền truy cập vào vị trí của bạn để chia sẻ thông tin vị trí với trang web này</translation>
 <translation id="3512495006767217696">Tích hợp sẵn trong Chrome để giúp bạn tạo, lưu và tự động điền mật khẩu mạnh. Thêm lối tắt để dễ dàng truy cập</translation>
 <translation id="3539955434060988644">Mở đường liên kết trong cửa sổ ẩn d&amp;anh của Chrome</translation>
 <translation id="354621070532799440">Lời nhắc: Các tính năng an toàn tốt nhất của Google ngay trên điện thoại của bạn</translation>
@@ -357,6 +347,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4400772909124543403">Hiện không có bản cập nhật nào</translation>
 <translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
 <translation id="4434353761996769206">Lỗi trình cài đặt: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Chia sẻ tài liệu này với Gemini trong Chrome để xem thông tin tổng quan nhanh và đặt các câu hỏi nối tiếp</translation>
 <translation id="4450664632294415862">Chrome – Đăng nhập vào mạng – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Một hoạt động khác trên Google Chrome đang diễn ra. Vui lòng thử lại sau.</translation>
 <translation id="4459234553906210702">Tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>
@@ -526,9 +517,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6180522807229584611">Thẻ này đang sử dụng thêm tài nguyên. Để cải thiện hiệu suất, hãy cho phép Chrome dừng hoạt động của thẻ này.</translation>
 <translation id="6182736845697986886">Không cài đặt được do lỗi nội bộ của máy chủ cập nhật.</translation>
 <translation id="6192058120268468905">Tài khoản của bạn trong Chrome</translation>
-<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Quy tắc kết nối để Google Chrome cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="624230925347970731">Chrome sắp đóng</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
@@ -670,9 +658,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7583399374488819119">Trình cài đặt <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Bạn có thể sử dụng Chrome mỗi khi nhấp vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="7602868996817972616">Hỏi Google về trang này</translation>
-<translation id="760353356052806707">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Để bảo vệ dữ liệu của bạn, hãy cho phép Chrome loại bỏ quyền của các trang web mà gần đây bạn không truy cập.</translation>
 <translation id="7629695634924605473">Chrome cho bạn biết mật khẩu của bạn có bị đánh cắp hay không</translation>
@@ -788,7 +773,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8590782867495422699">Mở lại Chế độ AI của Google Tìm kiếm</translation>
 <translation id="8601359445272098721">Mới! Bạn có thể dịch cả văn bản và hình ảnh trên màn hình bằng cách chọn nút "dịch màn hình"</translation>
 <translation id="8614913330719544658">Google Chrome không hồi đáp. Chạy lại ngay bây giờ?</translation>
-<translation id="861702415419836452">Chromium cần có quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="8623450603356630491">Đăng nhập vào Chrome trên điện thoại</translation>
 <translation id="8624541899164515475">Trang Cài đặt, mở trong thẻ mới.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sẽ khởi động lại sau 1 phút}other{Chrome sẽ khởi động lại sau # phút}}</translation>

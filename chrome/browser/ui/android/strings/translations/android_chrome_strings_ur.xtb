@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">سائٹ رک گئی</translation>
 <translation id="2063047797624276601">آپ کی تنظیم نے بہتر کردہ محفوظ براؤزنگ کو آن کیا ہے</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہوگیا}other{# ڈاؤن لوڈز ناکام ہو گئے}}</translation>
+<translation id="2066690553719545730">‏ہمیشہ AI وضع دکھائیں</translation>
 <translation id="2067805253194386918">متن</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2082238445998314030">نتیجہ <ph name="RESULT_NUMBER" /> از <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">کنکشن محفوظ نہیں ہے</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2163089732491971196">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کرنے اور اسے محفوظ کرنے کیلئے، اپنا پاس فریز درج کریں</translation>
+<translation id="2164015935042801524">ٹیبز کو عمودی طور پر دکھانے کے لیے یہاں دائیں کلک کریں</translation>
 <translation id="2166228530126694506">ورژن <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">تصویر کی تفصیلات آف ہیں</translation>
 <translation id="2172905120685242547">ونڈو کو بند کر دیں؟</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">سائٹ اسٹوریج</translation>
 <translation id="2327445548174191329">‫<ph name="DEVICE_NAME" /> سے</translation>
 <translation id="2328474416100889417">ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور شامل ہونے کے تمام لنکس آف کر دئے جائیں گے</translation>
+<translation id="2329500425421091035">‏‫Chrome میں AI وضع کا تعارف</translation>
 <translation id="2330186936255788117">مزید بُک مارکس</translation>
 <translation id="2332515770639153015">بہتر کردہ محفوظ براؤزنگ آن ہے</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">آپ نے جہاں سے چھوڑا تھا باآسانی وہیں سے دوبارہ شروع کرنے کیلئے اپنی سرگزشت اور ٹیبز کی مطابقت پذیری کریں</translation>
 <translation id="5438292632479953702">دوبارہ ڈاؤن لوڈ کریں</translation>
 <translation id="5439191312780166229">‏معیاری تحفظ سے زیادہ سائٹس کے ڈیٹا کا تجزیہ کر کے، آپ کو خطرناک سائٹس، یہاں تک کہ جن کے بارے میں Google پہلے نہیں جانتا تھا، کے بارے میں خبردار کرتا ہے۔ آپ Chrome وارننگز کو نظر انداز کرنے کا انتخاب کر سکتے ہیں۔</translation>
-<translation id="5441137934526263133">سائٹ کام نہیں کر رہی ہے؟ فریق ثالث کوکیز مسدود ہیں</translation>
 <translation id="5441466871879044658">اس زبان میں ترجمہ کریں</translation>
 <translation id="5444999712122199445">سائٹ پر واپس جائیں</translation>
 <translation id="544776284582297024">ٹیبز کو کھولنے اور ایک ہی وقت میں مختلف صفحات ملاحظہ کرنے کے لئے، ٹیبز بٹن کھولیں پر تھپتھپائیں</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">مزید اختیارات کے بٹن سے کسی بھی زبان میں اس صفحہ کا ترجمہ کریں</translation>
 <translation id="5696597120588531049">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹوں اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="5698878456427040674">چیک کریں کہ آیا منتخب کردہ اکاؤنٹ تعاون یافتہ ہے۔</translation>
-<translation id="5700415746238689851">‏‫Gemini کھولیں</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ایک سیریل پورٹ سے منسلک ہونا چاہتا ہے</translation>
 <translation id="5715150588940290235">محفوظ کردہ سیکیورٹی کوڈز حذف کریں؟</translation>
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6835182496791325827">‏جب آپ دور ہوں تو Chrome کو آپ کی تلاشوں کے بہترین نتائج ملنے پر اطلاع حاصل کریں۔</translation>
 <translation id="6846298663435243399">لوڈ ہو رہا ہے…</translation>
-<translation id="6850409657436465440">آپ کا ڈاؤن لوڈ ابھی بھی پیشرفت میں ہے</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ٹیبز بند کر دیے گئے</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 نتیجہ ملا}other{‫# نتائج ملے}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{آڈیو فائلز، فہرست میں 1 آڈیو فائل}other{آڈیو فائلز، فہرست میں # آڈیو فائلز}}</translation>
@@ -1968,12 +1968,14 @@
 <translation id="9001604755921395912">‏پوشیدگی Chrome ٹیب میں کھولیں</translation>
 <translation id="9010094279589497751">‏ضرورت پڑنے پر Gemini کو جلدی سے کھولیں</translation>
 <translation id="9012585441087414258">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ صفحے میں کچھ مشکوک لگنے پر، صفحے کے مواد کے کچھ حصے اور URLs کو Google محفوظ براؤزنگ پر بھیجا جاتا ہے۔</translation>
+<translation id="9014097371980259227">‏‫AI وضع کے ساتھ تلاش کرنے میں آپ کی مدد کرنے کے لیے کچھ ٹولز کو منتقل کر دیا گیا ہے</translation>
 <translation id="9019199799064251516">کار پروفائل لاک کے بغیر جاری رکھیں؟</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
 <translation id="9022871169049522985">سائٹس اور مشتہرین اپنے اشتہارات کی کارکردگی کی پیمائش کر سکتے ہیں</translation>
 <translation id="9024318700713112071">‏Chrome کو بطور ڈیفالٹ سیٹ کریں</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> کالعدم کریں</translation>
 <translation id="9035378196785279980">‏اس میں منتقل کریں\u2026</translation>
+<translation id="904146253922032365">ٹیبز کو عمودی طور پر دکھانے کے لیے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>
 <translation id="9047347135558855162">‏‫Chrome میں جلدی سے تلاش شروع کریں</translation>
 <translation id="9050666287014529139">پاس فریز</translation>

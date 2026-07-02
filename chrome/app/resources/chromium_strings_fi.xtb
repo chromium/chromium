@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromiumiin<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klikkaa Chromium-valikkoa</translation>
 <translation id="1157985233335035034">Viimeksi käytetyt kielet</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> on lisännyt laajennuksen, joka voi muuttaa Chromiumin toimintaa.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Asennus epäonnistui, koska käyttämääsi Windows-versiota ei tueta.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1186645291482254714">Saat puhelimeen hintaseurantailmoituksia Chromiumin avulla</translation>
@@ -53,7 +50,6 @@
 <translation id="1524282610922162960">Jaa Chromium-välilehti</translation>
 <translation id="154404805518949443">Kirjaudu Chromiumiin</translation>
 <translation id="1547469039832541117">Lopettaa korostetun tehtävän.</translation>
-<translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="1562320819937089394">Kiinnitä Chromium</translation>
 <translation id="1574377791422810894">Chromiumin turvallisuustyökalut</translation>
 <translation id="1594928384848033697">Chromium haluaa poistaa Salasanat-datasi. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -215,9 +211,6 @@
 <translation id="3155163173539279776">Käynnistä Chromium uudelleen</translation>
 <translation id="3161522574479303604">Kaikki kielet</translation>
 <translation id="3179665906251668410">Avaa linkki Chromiumin inco&amp;gnito-ikkunassa</translation>
-<translation id="3183357154200327217">Toinen tietokoneellasi oleva ohjelma on lisännyt teeman, joka voi muuttaa Chromiumin toimintaa.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Muokkaa uusi Chromium-profiili näköiseksesi</translation>
 <translation id="3189205223539394158">Voit jatkaa keskustelua tekoälytilassa vaihtamatta välilehteä. Aloita kirjautumalla Chromiumiin. Voit myös käyttää salasanojasi ja muita tietoja kaikilla laitteillasi.</translation>
 <translation id="3224847870593914902">Jos haluat poistaa Google-tilisi Chromiumista, kirjaudu ulos Chromiumista Asetukset-sivun kautta</translation>
@@ -296,9 +289,6 @@
 <translation id="4036079820698952681">Auta parantamaan Chromiumia ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
 <translation id="4050175100176540509">Uusimmassa versiossa on käytettävissä tärkeitä turvallisuusparannuksia ja uusia ominaisuuksia.</translation>
 <translation id="4055805654398742145">S&amp;alasanat</translation>
-<translation id="4061696872429826774">Toinen tietokoneellasi oleva ohjelma on lisännyt laajennuksen, joka voi muuttaa Chromiumin toimintaa.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="4118474109249235144">Chromiumin incognito-tila</translation>
 <translation id="4122186850977583290">Siirry Tietoja Chromiumista ‐sivulle</translation>
@@ -411,7 +401,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium suosittelee selainta hidastavan välilehden keskeyttämistä}other{Chromium suosittelee selainta hidastavien välilehtien keskeyttämistä}}</translation>
 <translation id="5473971139929175403">Chromium ei ehkä toimi oikein, koska sen käyttöä tällä Linux-jakelulla ei enää tueta.</translation>
 <translation id="5475924890392386523">Chromium on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‐ ja henkilökohtaisia tilejäsi</translation>
-<translation id="5480860683791598150">Chromium tarvitsee oikeuden käyttää sijaintiasi, jotta se voidaan jakaa tämän sivuston kanssa.</translation>
 <translation id="549669000822060376">Odota hetki, Chromium asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="5496810170689441661">Chromium yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="549975168243349205">Chromiumin avulla käytät suosikkisovelluksiasi, kuten Google Drivea ja YouTubea, vaivatta missä tahansa.</translation>
@@ -478,9 +467,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6174920971222007286">Tämä tiedosto voi olla vaarallinen<ph name="LINE_BREAK" />Chromium voi tarkistaa latauksen puolestasi, jos annat salasanan. Tiedoston tiedot lähetetään Googlen selaussuojalle, mutta tiedoston sisältö ja salasana pysyvät laitteellasi.</translation>
 <translation id="6182736845697986886">Asennus epäonnistui päivityspalvelimen sisäisen virheen takia.</translation>
 <translation id="6183079672144801177">Varmista, että olet kirjautunut Chromiumiin laitteellasi (<ph name="TARGET_DEVICE_NAME" />) ja yritä sitten lähettämistä uudelleen.</translation>
-<translation id="6204922163963157461">Toinen tietokoneellasi oleva ohjelma lisäsi sovelluksen, joka voi muuttaa Chromiumin toimintaa.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Tälle tietokoneelle on jo asennettu Chromiumin uudempi versio. Jos Chromium ei toimi, poista sen asennus ja yritä uudelleen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium käynnistetään uudelleen nyt}=1{Chromium käynnistetään uudelleen 1 sekunnin kuluttua}other{Chromium käynnistetään uudelleen # sekunnin kuluttua}}</translation>
 <translation id="6239161312595354541">Kysy tästä videosta kuvahausta</translation>
@@ -582,7 +568,6 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="6964305034639999644">Avaa linkki Chromiumin inco&amp;gnito-ikkunassa</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985329841647292029">Chromium-käyttöjärjestelmän käyttöehdot</translation>
-<translation id="6990124437352146030">Chromium tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
 <translation id="7003299027384820442">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chromium-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Asennus epäonnistui, koska tätä käyttöjärjestelmän versiota ei tueta.</translation>
 <translation id="7024536598735240744">Purkamisvirhe: <ph name="UNPACK_ERROR" />.</translation>
@@ -627,7 +612,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 3. Klikkaa Windowsin ilmoituksessa olevaa <ph name="BUTTON_3" />, niin voit kiinnittää Chromiumin tehtäväpalkkiin nopeaa käyttöä varten</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Teksti kopioitu</translation>
-<translation id="7451052299415159299">Chromium tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
 <translation id="7458892263350425044">Jos haluat käyttää mikrofonia, anna Chromiumille pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Jotta saat tulevia Chromiumin päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 7.</translation>
 <translation id="7467949745582939695">Käynnistä Chromium uudelleen?</translation>
@@ -752,8 +736,8 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8719993436687031146">Haluatko kirjautua Chromiumiin?</translation>
 <translation id="8747073452963259673">hakualueen vasen alakulma: vasen <ph name="LEFT" /> %, ala <ph name="BOTTOM" /> %</translation>
 <translation id="878572486461146056">Asennusvirhe: Verkon järjestelmänvalvojan käyttämä ryhmäkäytäntö estää asennuksen: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium tarvitsee oikeuden käyttää kameraasi ja mikrofoniasi tällä sivustolla.</translation>
 <translation id="8813277370772331957">Muistuta myöhemmin</translation>
+<translation id="8816416449795340678">Jaa tämä dokumentti Gemini in Chromiumille, niin saat nopean yleiskatsauksen ja voit esittää jatkokysymyksiä</translation>
 <translation id="8818550178040858407">Haluatko kirjautua Chromiumiin?</translation>
 <translation id="8823401858233292222">Tee Chromiumista oletusselain ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="8826492472752484139">Klikkaa Salasanat</translation>

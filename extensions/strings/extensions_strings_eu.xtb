@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="10146536653536065">Instalatu "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="1070377999570795893">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen luzapen bat gehitu du.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Gaitu gaia</translation>
 <translation id="1135328998467923690">Paketeak ez du balio: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Atzeko kamera</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> bazkideak Chromium-en funtzionamenduari agian eragingo dion luzapen bat gehitu du.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Ezin izan da gako pribatua esportatu.</translation>
 <translation id="132960226125594336">Ezin izan da kargatu <ph name="RELATIVE_PATH" /> fitxategia edukiaren scripterako, scriptaren gehieneko tamaina edo luzapenaren edukiaren scripten guztizko tamaina gaindituko lukeelako.</translation>
 <translation id="1445572445564823378">Luzapen hau <ph name="PRODUCT_NAME" /> moteltzen ari da. Hori desgaitzea gomendatzen dizugu <ph name="PRODUCT_NAME" />-ren errendimendua leheneratzeko..</translation>
 <translation id="1468038450257740950">WebGL ez da bateragarria.</translation>
 <translation id="1478607704480248626">Instalazioa ez dago gaituta</translation>
+<translation id="1483493594462132177">Bidali</translation>
+<translation id="1485015260175968628">Hau egin dezake:</translation>
 <translation id="1556537182262721003">Ezin izan da luzapenen direktorioa profilera eraman.</translation>
+<translation id="1585717515139318619">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen gai bat gehitu du.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Ezin izan da kargatu scriptaren "<ph name="RELATIVE_PATH" />" css fitxategia.</translation>
 <translation id="1616298854599875024">Ezin izan da inportatu "<ph name="IMPORT_NAME" />" luzapena, ez baita partekatutako modulua</translation>
+<translation id="175772926354468439">Gaitu gaia</translation>
 <translation id="1757786065507923842">Gurasoaren baimena eskatzeko prozesuak huts egin du.</translation>
 <translation id="1803557475693955505">Ezin izan da atzeko planoko orria ("<ph name="BACKGROUND_PAGE" />") kargatu.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> dendatik soilik gehi daiteke</translation>
 <translation id="2131077480075264">Ezin izan da "<ph name="APP_NAME" />" instalatu "<ph name="IMPORT_NAME" />" zerrendan ez dagoelako</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" gehitu nahi duzu?</translation>
 <translation id="2159915644201199628">Ezin izan da deskodetu irudia: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Gurasoak ez du onartu luzapena</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" luzapenak baimen gehigarriak eskatu ditu.</translation>
+<translation id="2327492829706409234">Gaitu aplikazioa</translation>
 <translation id="2350172092385603347">Kokapena erabili da baina ez da "default_locale" elementua zehaztua manifestuan.</translation>
 <translation id="2576842806987913196">Badago izen hori duen CRX fitxategi bat.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Gaitu berriro</translation>
 <translation id="2743583586211388067">Luzapen honetarako sarbidea blokeatuta dago, erakundearen luzapenen arriskuari buruzko gidalerroak direla eta.</translation>
+<translation id="2766161002040448006">Eskatu guraso bati</translation>
 <translation id="2785530881066938471">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia edukiaren scripta dela-eta. Ez du erabiltzen UTF-8 kodeketa.</translation>
+<translation id="2850541429955027218">Gehitu gaia</translation>
+<translation id="2883143988769190738">Luzapen honek baimen hauek eskatzen ditu:</translation>
 <translation id="2903070246402204397">Administratzaileak <ph name="EXTENSION_NAME" /> blokeatu du (luzapenaren identifikatzailea: "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" instalatzeko eskaera bidali nahi diozu administratzaileari?</translation>
 <translation id="2988488679308982380">Ezin izan da paketea instalatu: "<ph name="ERROR_CODE" />"</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3144135466825225871">Ezin izan da crx fitxategia ordeztu. Begiratu fitxategia nonbait erabiltzen ari den.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
 <translation id="3174723475300476613">Luzapen honetarako sarbidea blokeatu du zure erakundeak.</translation>
+<translation id="3183357154200327217">Ordenagailuko beste programa batek Chromium-en funtzionamenduari agian eragingo dion gai bat gehitu du.
+
+<ph name="EXTENSION_NAME" />.</translation>
 <translation id="3242289508736283383">kiosk_only manifestu-atributua duen aplikazio bat instalatu behar da Chrome OS-ren kiosko moduan</translation>
 <translation id="3364986687961713424">Zure administratzaileak hau dio: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3561217442734750519">Gako pribatuak balio duen bide-izen bat izan behar du.</translation>
+<translation id="3788401245189148511">Hau egin dezake:</translation>
 <translation id="3834775135533257713">Ezin izan da gehitu "<ph name="TO_INSTALL_APP_NAME" />" aplikazioa, "<ph name="INSTALLED_APP_NAME" />" aplikazioarekin gatazkan dagoelako.</translation>
 <translation id="388442998277590542">Ezin izan da "<ph name="OPTIONS_PAGE" />" aukera-orria kargatu.</translation>
+<translation id="3905761538810670789">Konpondu aplikazioa</translation>
+<translation id="3908501907586732282">Gaitu luzapena</translation>
+<translation id="3927932062596804919">Ukatu</translation>
 <translation id="3984413272403535372">Errore bat gertatu da luzapena sinatzean.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" konpondu nahi duzu?</translation>
+<translation id="4061696872429826774">Ordenagailuko beste programa batek Chromium-en funtzionamenduari agian eragingo dion luzapen bat gehitu du.
+
+<ph name="EXTENSION_NAME" />.</translation>
 <translation id="4094452115117798451">Luzapen-kategoria honetarako sarbidea blokeatu du zure erakundeak.</translation>
 <translation id="4233778200880751280">Ezin izan da "<ph name="ABOUT_PAGE" />" orria kargatu.</translation>
 <translation id="424963718355121712">Haien eragina jasaten duten ostalarietatik hornitu behar dira aplikazioak</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" eduki motarekin hornitu behar dira aplikazioak</translation>
+<translation id="4625078469366263107">Gaitu aplikazioa</translation>
 <translation id="4633003931260532286">Luzapenak "<ph name="IMPORT_NAME" />" eskatzen du, gutxienez "<ph name="IMPORT_VERSION" />" bertsiokoa, baina "<ph name="INSTALLED_VERSION" />" bertsioa baino ez dago instalatuta</translation>
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" bertsioa espero zen, baina "<ph name="NEW_ID" />" da bertsioa</translation>
 <translation id="471800408830181311">Ezin izan da gako pribatua eman.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Ezin izan da gako publikoa esportatu.</translation>
 <translation id="501057610015570208">"kiosk_only" manifestu-atributua duen aplikazio bat instalatu behar da ChromeOS Flex sistemaren kiosko moduan</translation>
 <translation id="5026754133087629784">Web-ikuspegia: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Gehitu luzapena</translation>
+<translation id="5039804452771397117">Baimendu</translation>
 <translation id="5098647635849512368">Ezin da aurkitu bide absolutu bat paketatu nahi den direktoriorako.</translation>
 <translation id="5160071981665899014">Ezin izan da kargatu scriptaren "<ph name="RELATIVE_PATH" />" javascript fitxategia.</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" luzapenaren bertsiorik berriena desgaitu egin da baimen gehigarriak behar dituelako.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" gaitu nahi duzu?</translation>
 <translation id="5356315618422219272">Aplikazio-ikuspegia: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Kendu Chromium-etik</translation>
 <translation id="5456409301717116725">Luzapen honek "<ph name="KEY_PATH" />" karaktere-fitxategia du. Ziur aski ez duzu hori egin nahi.</translation>
+<translation id="5485102783864353244">Gehitu aplikazioa</translation>
 <translation id="5486326529110362464">Gako pribatua idatzi behar da.</translation>
 <translation id="5527463195266282916">Luzapenaren aurreko bertsio bat instalatzen saiatu zara.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Ezin izan da kargatu hemengo luzapena:</translation>
 <translation id="5972529113578162692">Gailuaren administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin da desinstalatu.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">Ordenagailuko beste programa batek Chromium-en funtzionamenduari agian eragingo dion aplikazio bat gehitu du.
+
+<ph name="EXTENSION_NAME" />.</translation>
 <translation id="6220413761270491930">Errore bat gertatu da luzapena kargatzean</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> bazkideak Chrome-ren funtzionamenduari agian eragingo dion luzapen bat gehitu du.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Ezin izan da irakurri gako pribatua.</translation>
+<translation id="6326175484149238433">Kendu Chrome-tik</translation>
 <translation id="6391538222494443604">Sarrerako direktorioa falta da.</translation>
 <translation id="641087317769093025">Ezin izan da luzapena deskonprimatu</translation>
 <translation id="6542618148162044354">Gailu baterako edo gehiagotarako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> erabiltzaile</translation>
 <translation id="657064425229075395">Ezin izan da kargatu atzeko planoko "<ph name="BACKGROUND_SCRIPT" />" scripta.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_NAME" /> produktua (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="677806580227005219">MIME kudeatzailea: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Manifestu-fitxategiak ez du balio</translation>
 <translation id="7217838517480956708">Gailu honen administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin izango da kendu edo aldatu.</translation>
 <translation id="7287143125007575591">Sarbidea ukatuta dago.</translation>
+<translation id="760353356052806707">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen aplikazio bat gehitu du.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Gako pribatuak balio duen formatu bat eduki behar du (PKCS#8 formatua eta PEM kodetzea dituen RSA gakoa).</translation>
 <translation id="765293928828334535">Webgune honetatik ezin da gehitu aplikaziorik, luzapenik edo erabiltzaileen scriptik</translation>
+<translation id="7658239707568436148">Utzi</translation>
+<translation id="7766838926148951335">Eman baimenak</translation>
 <translation id="7876803335449432072">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia eduki-scripta lortzeko. Eduki-scripten estilo-orriak estilo-orrien fitxategi bateragarrietatik (adibidez, .css fitxategiak) karga daitezke soilik.</translation>
 <translation id="7939686037314084444">Ez da kargatu luzapena. Baliteke sare-eskaerak atzemateko gai ez izatea.</translation>
 <translation id="7952904276017482715">"<ph name="EXPECTED_ID" />"identifikatzaileaespero zen, baina "<ph name="NEW_ID" />" da identifikatzailea</translation>
 <translation id="7972881773422714442">Aukerak: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Onartu</translation>
 <translation id="8035920974645200807">Aurreko kamera</translation>
 <translation id="8047248493720652249">Luzapenak ezin izan dio izena jarri "<ph name="ATTEMPTED_FILENAME" />" deskargari, beste luzapen batek (<ph name="EXTENSION_NAME" />) "<ph name="ACTUAL_FILENAME" />" fitxategi-izena jarri diolako.</translation>
 <translation id="8049705080247101012">Google-k "<ph name="EXTENSION_NAME" />" asmo txarreko programa dela salatu du, eta hura instalatzea ekidin da</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> (<ph name="VENDOR_NAME" />)</translation>
+<translation id="8353683614194668312">Hau egin dezake:</translation>
 <translation id="8517576857589387417">Manifestu-fitxategia falta da edo ezin da irakurri</translation>
 <translation id="8565650234829130278">Aplikazioaren aurreko bertsio bat instalatzen saiatu zara.</translation>
 <translation id="8621383749470166852">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia eduki-scripta lortzeko. Eduki-scriptak JavaScript-eko fitxategi bateragarrietatik (adibidez, .js fitxategiak) karga daitezke soilik.</translation>
 <translation id="8636666366616799973">Paketeak ez du balio. Xehetasunak: "<ph name="ERROR_MESSAGE" />".</translation>
+<translation id="8746654918629346731">Eskatu duzu "<ph name="EXTENSION_NAME" />" dagoeneko</translation>
 <translation id="8761756413268424715">Gailuetako baterako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>
 <translation id="8885905466771744233">Adierazitako luzapenak gako pribatua zuen lehendik ere. Jarraitzeko, berrerabili edo ezabatu gako hori.</translation>
 <translation id="9039223174332979184">Gailu honen administratzailearen eskakizunen arabera, <ph name="EXTENSION_NAME" /> luzapenak 3. bertsioko manifestua gutxienez eduki behar du.</translation>
 <translation id="907841381057066561">Ezin izan da sortu behin behineko zip fitxategia paketatu bitartean</translation>
+<translation id="9102610709270966160">Gaitu luzapena</translation>
+<translation id="93766956588638423">Konpondu luzapena</translation>
 <translation id="941543339607623937">Gako pribatu baliogabea.</translation>
 </translationbundle>

@@ -2370,6 +2370,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" /> kullanan sitelerde <ph name="AUTHENTICATOR" /> ile doğrulama yapmayı seçtiniz. Bu sağlayıcı, ödeme yönteminizle ilgili bilgileri saklamış olabilir. Bu bilgilerin <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Bağlantınız kesildi</translation>
 <translation id="4708276642004148190">Su Temini ve Arıtma</translation>
+<translation id="4710249055485272920">Bu bilgi bulunamadı</translation>
 <translation id="4711628883879888561">Sekme grubu üzerinde ortak çalışma</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Bu siteyi ziyaret etmek için izniniz yok</translation>
@@ -3022,6 +3023,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5707154300732650394">Arama yolculuğunuzu devam ettirin</translation>
 <translation id="57094364128775171">Güçlü şifre öner…</translation>
 <translation id="570953204696852961">Kırmızı 3</translation>
+<translation id="5710907191777451677">Bunun yerine Chrome'da Gemini'a sorun</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinerler</translation>
 <translation id="5715150588940290235">Kayıtlı güvenlik kodları silinsin mi?</translation>
@@ -3924,7 +3926,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="7110116949943042888">Geçici ve Mevsimlik İşler</translation>
 <translation id="7110368079836707726">Kolejler ve Üniversiteler</translation>
 <translation id="7111507312244504964">Gayrimenkul İnceleme ve Değer Biçme</translation>
-<translation id="7117290130383718594">Metin ek açıklamaları</translation>
 <translation id="7118618213916969306">Panoda URL'yi (<ph name="SHORT_URL" />) ara</translation>
 <translation id="7118852830504022370">Bu site HTTPS'yi desteklemediği için bu uyarıyı görüyorsunuz. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7119063404975271297">TV Dizileri</translation>
@@ -5048,7 +5049,6 @@ Ek ayrıntılar:
 <translation id="8871485335898060555">Antikalar ve Koleksiyon</translation>
 <translation id="8871553383647848643">Tarayıcınızın görünümünü özelleştirin</translation>
 <translation id="887350038812854047">Bu politikaya, makine ve kullanıcı düzeylerinde aynı değer uygulanmış. Politika beklendiği şekilde çalışıyor.</translation>
-<translation id="8874790741333031443">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
 <translation id="8874824191258364635">Geçerli bir kart numarası girin</translation>
 <translation id="8877780815363510165">Balıkçılık</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />", "<ph name="DATA_CONTROLS_LEVEL" />" olarak ayarlanamaz</translation>

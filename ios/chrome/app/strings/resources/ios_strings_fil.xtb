@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} passkey}one{{count} passkey}other{{count} na passkey}}</translation>
 <translation id="1005023885865154304">Buksan ang mga setting ng Pag-autofill ng Mga Password</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Ang Live ay isang bagong feature sa Gemini sa Chrome</translation>
 <translation id="1013952917065545813">Puwede kang bumalik dito para buksan ulit ang mga tab na isinara mo kamakailan</translation>
 <translation id="1016495303386450659">Na-update ang item</translation>
 <translation id="1018804590490383958">I-scan at i-autofill</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Mga Shared Drive</translation>
 <translation id="2580306219079937316">Buksan ang mga setting ng Translate</translation>
 <translation id="2583688836549072561">Grupo ng tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> (na) tab, bagong aktibidad.</translation>
+<translation id="2584994295315085351">Magbukas ng bagong tab kapag bumalik ka sa Chrome pagkalipas ng 4 na oras</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Subaybayan ang mga pagbaba ng presyo ng mga produkto</translation>
 <translation id="2602372807870028932">Made-delete nito ang napiling impormasyong naka-save sa device na ito</translation>
@@ -1737,6 +1739,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Huwag Gawing Default</translation>
 <translation id="6770452996697898492">[NA-BOOK]</translation>
+<translation id="6775952316617222141">Mag-live gamit ang Gemini sa Chrome</translation>
 <translation id="6779455296366983087">Ide-delete ang iyong data mula sa pag-browse</translation>
 <translation id="6782531425936234573">Mag-export ng data</translation>
 <translation id="6791425686608802741">I-tap ang "Idagdag ang Tab sa Bagong Grupo"</translation>

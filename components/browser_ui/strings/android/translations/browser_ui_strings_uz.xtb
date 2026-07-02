@@ -690,7 +690,6 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="8163152278172770963">Saytlarga tasvir ustida tasvir rejimiga avtomatik kirishiga ruxsat berilmasin</translation>
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="818487310457576362">Butun ekran rejimidan chiqish uchun ekranning chap yoki oʻng chekkasini torting.</translation>
-<translation id="8186479265534291036">Sayt ishlamayaptimi? Tashqi cookie fayllar bloklandi</translation>
 <translation id="8197286292360124385">Ruxsat berildi: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8211406090763984747">Bu ulanish xavfsiz</translation>
@@ -761,7 +760,6 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="8805385115381080995">Saytlar shaxsni tasdiqlashni kamroq soʻraydi va shu sababli brauzerdagi ishdan kamroq chalgʻiysiz</translation>
 <translation id="881644524232657178">Yoqilsa, saytlar qurilmangiz harakat va yorugʻlik sensoridan foydalana oladi. Oʻchirilsa, ulardan foydalana olmaydi.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Tashqi cookie fayllarga vaqtincha ruxsat bering, bunda himoya pasayadi, lekin sayt funksiyalari kutilganidek ishlaydi.</translation>
 <translation id="8889294078294184559">Keyin ochiladigan boshqa saytlar brauzerdan bu axborotni soʻrashi mumkin.</translation>
 <translation id="8899807382908246773">Asabga teguvchi reklamalar</translation>
 <translation id="8903921497873541725">Kattalashtirish</translation>
@@ -787,7 +785,6 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
 <translation id="9138037198177304356">Bildirishnomalarga kirishga ruxsat berilgan</translation>
 <translation id="9138217887606523162">Joriy zum: <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Saytlar bu funksiyadan tasvir ustida tasvir rejimiga avtomatik kirish uchun foydalanadi. Bu boshqa vazifalar uchun ekranni boʻshatib, videoni tomosha qilishni davom ettirish imkonini beradi.</translation>
 <translation id="9156722768168878035">Chrome oxirgi varaqlarni qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqarishiga ruxsat bering. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="9162462602695099906">Bu sahifa xavfli</translation>
 <translation id="9182556968660520230">Saytlarga himoyalangan kontentni ijro qilishni taqiqlash</translation>

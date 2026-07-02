@@ -314,6 +314,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1463793142714244641">Timesharing- und Ferienobjekte</translation>
 <translation id="1465457928007067810">IBAN in deinem Google-Konto gespeichert</translation>
 <translation id="1467432559032391204">Links</translation>
+<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Mehr anzeigen</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Gib mindestens 3 Wörter ein, um Hilfe beim Schreiben zu erhalten</translation>
@@ -2367,6 +2368,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4705573018059932476">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit <ph name="AUTHENTICATOR" /> durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsweise gespeichert. Du kannst <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Die Verbindung wurde unterbrochen</translation>
 <translation id="4708276642004148190">Wasserversorgung und -aufbereitung</translation>
+<translation id="4710249055485272920">Diese Informationen wurden nicht gefunden</translation>
 <translation id="4711628883879888561">Gemeinsam an Tabgruppe arbeiten</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Du bist nicht berechtigt, auf diese Website zuzugreifen</translation>
@@ -3019,6 +3021,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5707154300732650394">Weiter stöbern</translation>
 <translation id="57094364128775171">Starkes Passwort vorschlagen…</translation>
 <translation id="570953204696852961">Rot 3</translation>
+<translation id="5710907191777451677">Stattdessen Gemini in Chrome fragen</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Tierärzte</translation>
 <translation id="5715150588940290235">Gespeicherte Sicherheitscodes löschen?</translation>
@@ -3921,7 +3924,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7110116949943042888">Aushilfsjobs und Saisonarbeit</translation>
 <translation id="7110368079836707726">Hochschulen und Universitäten</translation>
 <translation id="7111507312244504964">Immobiliengutachten und ‑schätzungen</translation>
-<translation id="7117290130383718594">Textanmerkungen</translation>
 <translation id="7118618213916969306">Nach URL aus Zwischenablage suchen, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Du siehst diese Warnung, weil diese Website kein HTTPS unterstützt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Fernsehdramen</translation>
@@ -5045,7 +5047,6 @@ Weitere Details:
 <translation id="8871485335898060555">Antiquitäten und Sammlerstücke</translation>
 <translation id="8871553383647848643">Erscheinungsbild deines Browsers anpassen</translation>
 <translation id="887350038812854047">Für diese Richtlinie ist auf Computer- und Nutzerebene derselbe Wert festgelegt. Die Richtlinie funktioniert wie vorgesehen.</translation>
-<translation id="8874790741333031443">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
 <translation id="8874824191258364635">Gib eine gültige Kartennummer ein</translation>
 <translation id="8877780815363510165">Angeln</translation>
 <translation id="888117890813270681">„<ph name="DATA_CONTROLS_RESTRICTION" />“ kann nicht auf „<ph name="DATA_CONTROLS_LEVEL" />“ festgelegt werden</translation>

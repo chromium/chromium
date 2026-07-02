@@ -2370,6 +2370,7 @@
 <translation id="4705573018059932476">Избрахте опцията за потвърждаване чрез <ph name="AUTHENTICATOR" /> в сайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Връзката ви бе прекъсната</translation>
 <translation id="4708276642004148190">Водоснабдяване и почистване на отпадни води</translation>
+<translation id="4710249055485272920">Тази информация не бе намерена</translation>
 <translation id="4711628883879888561">Съвместна работа по група раздели</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Нямате разрешение да посетите този сайт</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5707154300732650394">Възобновяване на пътешествието</translation>
 <translation id="57094364128775171">Предложение за надеждна парола…</translation>
 <translation id="570953204696852961">червено 3</translation>
+<translation id="5710907191777451677">Вместо това попитайте Gemini в Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5715150588940290235">Да се изтрият ли запазените кодове за сигурност?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">Временни и сезонни работни места</translation>
 <translation id="7110368079836707726">Колежи и университети</translation>
 <translation id="7111507312244504964">Инспекции и оценки на недвижими имоти</translation>
-<translation id="7117290130383718594">Текстови пояснения</translation>
 <translation id="7118618213916969306">Търсене на URL адреса от буферната памет, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Виждате това предупреждение, защото сайтът не поддържа HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Телевизионни драми</translation>
@@ -5047,7 +5048,6 @@
 <translation id="8871485335898060555">Антики и предмети с колекционерска стойност</translation>
 <translation id="8871553383647848643">Персонализиране на облика на браузъра ви</translation>
 <translation id="887350038812854047">За това правило е приложена една и съща стойност на ниво устройство и на ниво потребител. Правилото работи нормално.</translation>
-<translation id="8874790741333031443">Опитайте временно да разрешите „бисквитките“ на трети страни. Това ще понижи нивото на защита при сърфиране, но е по-вероятно функциите на сайта да работят по очаквания начин.</translation>
 <translation id="8874824191258364635">Въведете валиден номер на карта</translation>
 <translation id="8877780815363510165">Риболов</translation>
 <translation id="888117890813270681">За <ph name="DATA_CONTROLS_RESTRICTION" /> не може да се зададе <ph name="DATA_CONTROLS_LEVEL" /></translation>

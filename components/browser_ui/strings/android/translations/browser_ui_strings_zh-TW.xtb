@@ -690,7 +690,6 @@
 <translation id="8163152278172770963">不允許網站自動進入子母畫面</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="818487310457576362">從畫面側邊向下拖曳即可退出全螢幕模式。</translation>
-<translation id="8186479265534291036">網站無法正常運作嗎？這是因為第三方 Cookie 已遭封鎖</translation>
 <translation id="8197286292360124385">已允許「<ph name="PERMISSION_1" />」</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8211406090763984747">已建立安全連線</translation>
@@ -761,7 +760,6 @@
 <translation id="8805385115381080995">降低網站確認你是否為真人的機率，提供更快速的瀏覽體驗</translation>
 <translation id="881644524232657178">如果啟用，網站就能使用裝置的動作和光源感應器。如果停用，網站將無法使用感應器。</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie。這個操作會降低瀏覽防護程度，但會增加網站功能正常運作的機率。</translation>
 <translation id="8889294078294184559">你隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資訊，確認你應該是真人</translation>
 <translation id="8899807382908246773">侵入式廣告</translation>
 <translation id="8903921497873541725">放大</translation>
@@ -787,7 +785,6 @@
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
 <translation id="9138037198177304356">允許通知</translation>
 <translation id="9138217887606523162">目前的縮放比例為 <ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="915112772806845021">網站會使用這項功能自動進入子母畫面。你可以繼續觀看影片，同時在螢幕上處理其他工作。</translation>
 <translation id="9156722768168878035">允許 Chrome 在裝置的應用程式清單和搜尋結果顯示最近開啟的分頁。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="9162462602695099906">這是危險網頁</translation>
 <translation id="9182556968660520230">禁止網站播放受保護內容</translation>

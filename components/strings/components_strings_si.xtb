@@ -2370,6 +2370,7 @@
 <translation id="4705573018059932476">ඔබ <ph name="PROVIDER_ORIGIN" /> භාවිතා කරන අඩවිවල <ph name="AUTHENTICATOR" /> සමග සත්‍යාපනය කිරීමට තෝරා ගෙන ඇත. මෙම සපයන්නා ඔබට <ph name="LINK_TEXT" /> හැකි, ඔබ ගෙවන ආකාරය පිළිබඳ තොරතුරු ගබඩා කර තිබිය හැක.</translation>
 <translation id="4708268264240856090">ඔබේ සබැඳුමට බාධා ඇති විය</translation>
 <translation id="4708276642004148190">ජල සැපයුම සහ ප්‍රතිකාර</translation>
+<translation id="4710249055485272920">මෙම තතු සොයා ගත නොහැකි විය</translation>
 <translation id="4711628883879888561">පටිති සමූහ සමග සහයෝගයෙන් කටයුතු කරන්න</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ඔබට මෙම අඩවියට පිවිසීමට අවසර නැත</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5707154300732650394">ඔබගේ සංචාරය නැවත පටන් ගන්න</translation>
 <translation id="57094364128775171">ප්‍රබල මුරපදයක් යෝජනා කරන්න...</translation>
 <translation id="570953204696852961">රතු 3</translation>
+<translation id="5710907191777451677">ඒ වෙනුවට Chrome හි Gemini වෙතින් විමසන්න</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">පශු වෛද්‍යවරු</translation>
 <translation id="5715150588940290235">සුරැකි ආරක්‍ෂක කේත මකන්නද?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">තාවකාලික සහ කාලීන රැකියා</translation>
 <translation id="7110368079836707726">විද්‍යාල සහ විශ්ව විද්‍යාල</translation>
 <translation id="7111507312244504964">දේපළ නිරීක්ෂණය සහ තක්සේරුව</translation>
-<translation id="7117290130383718594">පෙළ අනුසටහන්</translation>
 <translation id="7118618213916969306">පසුරු පුවරු URL එක සොයන්න, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">මෙම අඩවිය HTTPS සඳහා සහය නොදක්වන බැවින් ‍ඔබ මෙම අනතුරු ඇඟවීම දකියි. <ph name="BEGIN_LEARN_MORE_LINK" />මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">රූපවාහිනී නාට්‍යය</translation>
@@ -5046,7 +5047,6 @@
 <translation id="8871485335898060555">පුරාවස්තු සහ එකතු කිරීම්</translation>
 <translation id="8871553383647848643">ඔබගේ බ්‍රව්සරයේ පෙනුම අභිරුචිකරණය කරන්න</translation>
 <translation id="887350038812854047">මෙම ප්‍රතිපත්තියට යන්ත්‍ර සහ පරිශීලක මට්ටම්වල යෙදෙන එකම අගය ඇත. ප්‍රතිපත්තිය අපේක්ෂිත පරිදි ක්‍රියා කරයි.</translation>
-<translation id="8874790741333031443">තෙවන පාර්ශ්ව කුකීස් සඳහා තාවකාලිකව ඉඩ දීමට උත්සාහ කරන්න, ඉන් අදහස් වන්නේ බ්‍රවුස් කිරීමේ ආරක්ෂාව අඩු නමුත් අඩවි විශේෂාංග අපේක්ෂිත පරිදි ක්‍රියා කිරීමට වැඩි ඉඩක් ඇති බවයි.</translation>
 <translation id="8874824191258364635">වලංගු කාඩ්පත් අංකයක් ඇතුළු කරන්න</translation>
 <translation id="8877780815363510165">මාළු බෑම</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" "<ph name="DATA_CONTROLS_LEVEL" />" ලෙස සැකසිය නොහැක</translation>

@@ -17,9 +17,6 @@
 <translation id="1131805035311359397">如要檢查密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1153368717515616349">按一下 Chromium 選單</translation>
 <translation id="1157985233335035034">最近使用過的語言</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> 所新增的擴充程式可能會變更 Chromium 的運作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">你的 Windows 版本不受支援，因此無法安裝。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1186645291482254714">在手機上透過 Chromium 接收價格追蹤通知</translation>
@@ -54,7 +51,6 @@
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="154404805518949443">登入 Chromium</translation>
 <translation id="1547469039832541117">結束所選工作。</translation>
-<translation id="1553461853655228091">Chromium 需要取得權限，才能存取相機以建立您身處環境的 3D 地圖</translation>
 <translation id="1562320819937089394">固定 Chromium</translation>
 <translation id="1574377791422810894">Chromium 的安全工具</translation>
 <translation id="1594928384848033697">Chromium 想刪除你的「密碼管理工具」資料。如果允許，請輸入 Windows 密碼。</translation>
@@ -216,9 +212,6 @@
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
 <translation id="3161522574479303604">所有語言</translation>
 <translation id="3179665906251668410">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
-<translation id="3183357154200327217">電腦中其他程式所新增的主題可能會變更 Chromium 的運作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">自訂您的新 Chromium 設定檔</translation>
 <translation id="3189205223539394158">無需切換分頁，也可繼續與「AI 模式」對話。如要開始使用，請登入 Chromium。你也可在你的所有裝置上取得密碼和其他資料。</translation>
 <translation id="3224847870593914902">如要從 Chromium 中移除 Google 帳戶，請前往「設定」頁面登出 Chromium</translation>
@@ -297,9 +290,6 @@
 <translation id="4036079820698952681">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chromium 更臻完美</translation>
 <translation id="4050175100176540509">最新版本提供重大保安改良和新功能。</translation>
 <translation id="4055805654398742145">密碼管理工具(&amp;A)</translation>
-<translation id="4061696872429826774">電腦中其他程式所新增的擴充功能可能會變更 Chromium 的運作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}}</translation>
 <translation id="4118474109249235144">Chromium 無痕模式</translation>
 <translation id="4122186850977583290">前往「關於 Chromium」頁面</translation>
@@ -412,7 +402,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium 建議暫停拖慢瀏覽器速度的分頁}other{Chromium 建議暫停拖慢瀏覽器速度的分頁}}</translation>
 <translation id="5473971139929175403">Chromium 不再支援此 Linux 發行版本，因此可能無法正常運作</translation>
 <translation id="5475924890392386523">此檔案可能會損害你的個人和社交網絡帳戶，因此 Chromium 已禁止下載</translation>
-<translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="549975168243349205">Chromium 讓你隨時隨地使用「Google 雲端硬碟」和 YouTube 等常用應用程式流暢工作。</translation>
@@ -479,7 +468,6 @@
 <translation id="6174920971222007286">此檔案可能不安全<ph name="LINE_BREAK" />如果你提供密碼，Chromium 可為你檢查此下載項目。系統會向「Google 安全瀏覽」傳送檔案的資料，但檔案內容和密碼只會儲存在裝置上。</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
 <translation id="6183079672144801177">請確認您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chromium，然後再傳送一次。</translation>
-<translation id="6204922163963157461">電腦中其他程式所新增的應用程式可能會變更 Chromium 的運作方式。<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">這部電腦已安裝較新的 Chromium 版本。如果軟件無法工作，請解除安裝 Chromium，然後再試一次。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 將立即重新啟動}=1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>
 <translation id="6239161312595354541">問「圖片搜尋」關於此影片的問題</translation>
@@ -581,7 +569,6 @@
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6985329841647292029">Chromium 作業系統條款</translation>
-<translation id="6990124437352146030">Chromium 需要取得權限，才能讓這個網站存取您的麥克風</translation>
 <translation id="7003299027384820442">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chromium 資料的密碼短語</translation>
 <translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
@@ -626,7 +613,6 @@ Chromium 無法復原您的設定。</translation>
 3.在 Windows 通知中點擊 [<ph name="BUTTON_3" />] 以將 Chromium 固定至工作列，方便快速取用</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7450541714075000668">已複製文字</translation>
-<translation id="7451052299415159299">Chromium 需要取得權限，才能讓這個網站存取您的相機</translation>
 <translation id="7458892263350425044">如要使用麥克風，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chromium 授予存取權</translation>
 <translation id="7461356015007898716">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="7467949745582939695">要重新啟動 Chromium 嗎？</translation>
@@ -751,8 +737,8 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8719993436687031146">要登入 Chromium 嗎？</translation>
 <translation id="8747073452963259673">搜尋區域嘅左下角：距左側 <ph name="LEFT" />%，距底部 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
+<translation id="8816416449795340678">與 Chromium 版 Gemini 分享此文件即可撮要文件內容並提出後續問題</translation>
 <translation id="8818550178040858407">要登入 Chromium 嗎？</translation>
 <translation id="8823401858233292222">將 Chromium 設定為預設瀏覽器並固定到工作列</translation>
 <translation id="8826492472752484139">按一下 [密碼管理工具]</translation>

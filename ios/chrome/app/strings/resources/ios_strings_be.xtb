@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} ключ доступу}one{{count} ключ доступу}few{{count} ключы доступу}many{{count} ключоў доступу}other{{count} ключа доступу}}</translation>
 <translation id="1005023885865154304">Адкрыйце налады аўтазапаўнення пароляў</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
+<translation id="1013852467930342108">Live – гэта новая функцыя Gemini ў Chrome</translation>
 <translation id="1013952917065545813">Адсюль вы можаце адкрываць нядаўна закрытыя ўкладкі</translation>
 <translation id="1016495303386450659">Элемент абноўлены</translation>
 <translation id="1018804590490383958">Сканіраваць і запоўніць аўтаматычна</translation>
@@ -1737,6 +1738,7 @@
 <translation id="6761393919622941301">Аўдыя</translation>
 <translation id="6765551480308401897">Не рабіць стандартным</translation>
 <translation id="6770452996697898492">[ЗАБРАНІРАВАНА]</translation>
+<translation id="6775952316617222141">Выкарыстоўваць рэжым Live ў Gemini ў Chrome</translation>
 <translation id="6779455296366983087">Даныя пра работу ў браўзеры будуць выдалены</translation>
 <translation id="6782531425936234573">Экспартаваць даныя</translation>
 <translation id="6791425686608802741">Націсніце "Дадаць укладку ў новую групу".</translation>

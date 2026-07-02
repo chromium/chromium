@@ -243,6 +243,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2056878612599315956">Cafodd y wefan ei seibio</translation>
 <translation id="2063047797624276601">Mae eich sefydliad wedi troi Gwell Pori'n Ddiogel ymlaen</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad wedi methu}zero{Mae # lawrlwythiad wedi methu}two{Mae # lawrlwythiad wedi methu}few{Mae # lawrlwythiad wedi methu}many{Mae # lawrlwythiad wedi methu}other{Mae # lawrlwythiad wedi methu}}</translation>
+<translation id="2066690553719545730">Dangos Dull AI Bob Amser</translation>
 <translation id="2067805253194386918">testun</translation>
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2082238445998314030">Canlyniad <ph name="RESULT_NUMBER" /> o <ph name="TOTAL_RESULTS" /></translation>
@@ -1060,7 +1061,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5436928407363358055">I barhau'n hawdd o ble'r oeddech chi, cysonwch eich hanes a'ch tabiau</translation>
 <translation id="5438292632479953702">Lawrlwytho eto</translation>
 <translation id="5439191312780166229">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>
-<translation id="5441137934526263133">Gwefan ddim yn gweithio? Mae cwcis trydydd parti yn cael eu rhwystro</translation>
 <translation id="5441466871879044658">Cyfieithu i'r iaith hon</translation>
 <translation id="5444999712122199445">Mynd yn ôl i'r wefan</translation>
 <translation id="544776284582297024">I agor tabiau ac i fynd i wahanol dudalennau ar yr un pryd, tapiwch y botwm tabiau sydd ar agor</translation>
@@ -1115,7 +1115,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="569536719314091526">Cyfieithu'r dudalen hon i unrhyw iaith o'r botwm Rhagor o ddewisiadau</translation>
 <translation id="5696597120588531049">Gall Chrome helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
 <translation id="5698878456427040674">Gwiriwch a yw'r cyfrif a ddewiswyd yn cael ei gefnogi.</translation>
-<translation id="5700415746238689851">Agor Gemini</translation>
 <translation id="5709213329446699338">Mae <ph name="SITE" /> eisiau cysylltu â phorth cyfresol</translation>
 <translation id="5715150588940290235">Dileu codau diogelwch sydd wedi'u cadw?</translation>
 <translation id="572328651809341494">Tabiau diweddar</translation>
@@ -1421,7 +1420,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6831043979455480757">Cyfieithu</translation>
 <translation id="6835182496791325827">Cael gwybod pan fydd Chrome yn dod o hyd i'r canlyniadau gorau ar gyfer eich chwiliadau tra byddwch i ffwrdd.</translation>
 <translation id="6846298663435243399">Yn llwytho…</translation>
-<translation id="6850409657436465440">Dal wrthi'n lawrlwytho</translation>
 <translation id="6850830437481525139">Mae <ph name="TAB_COUNT" /> o dabiau wedi'u cau</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Canfuwyd 1 canlyniad}zero{Canfuwyd # canlyniad}two{Canfuwyd # canlyniad}few{Canfuwyd # canlyniad}many{Canfuwyd # canlyniad}other{Canfuwyd # canlyniad}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Ffeiliau sain, 1 ffeil sain yn y rhestr}zero{Ffeiliau sain, # ffeiliau sain yn y rhestr}two{Ffeiliau sain, # ffeil sain yn y rhestr}few{Ffeiliau sain, # ffeil sain yn y rhestr}many{Ffeiliau sain, # ffeil sain yn y rhestr}other{Ffeiliau sain, # ffeil sain yn y rhestr}}</translation>

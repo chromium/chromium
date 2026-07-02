@@ -243,6 +243,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2056878612599315956">Tapak dijeda</translation>
 <translation id="2063047797624276601">Organisasi anda telah menghidupkan Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 muat turun gagal}other{# muat turun gagal}}</translation>
+<translation id="2066690553719545730">Sentiasa Paparkan AI Mode</translation>
 <translation id="2067805253194386918">teks</translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2082238445998314030">Hasil carian <ph name="RESULT_NUMBER" /> daripada <ph name="TOTAL_RESULTS" /></translation>
@@ -1059,7 +1060,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5436928407363358055">Untuk menyambung dengan mudah dari tempat anda berhenti, segerakkan sejarah dan tab anda</translation>
 <translation id="5438292632479953702">Muat turun sekali lagi</translation>
 <translation id="5439191312780166229">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chrome.</translation>
-<translation id="5441137934526263133">Laman tidak berfungsi? Kuki pihak ketiga disekat</translation>
 <translation id="5441466871879044658">Terjemah kepada bahasa ini</translation>
 <translation id="5444999712122199445">Kembali ke laman</translation>
 <translation id="544776284582297024">Untuk membuka tab dan melawat halaman yang berlainan pada masa yang sama, ketik butang buka tab</translation>
@@ -1114,7 +1114,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="569536719314091526">Terjemahkan halaman ini ke dalam sebarang bahasa lain daripada butang Lagi pilihan</translation>
 <translation id="5696597120588531049">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi</translation>
 <translation id="5698878456427040674">Semak sama ada akaun yang dipilih disokong atau tidak.</translation>
-<translation id="5700415746238689851">Buka Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> mahu menyambung kepada port siri</translation>
 <translation id="5715150588940290235">Padamkan kod keselamatan yang disimpan?</translation>
 <translation id="572328651809341494">Tab terbaharu</translation>
@@ -1420,7 +1419,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="6835182496791325827">Dapatkan pemberitahuan apabila Chrome menemukan hasil carian terbaik untuk carian anda semasa anda tiada.</translation>
 <translation id="6846298663435243399">Memuatkan…</translation>
-<translation id="6850409657436465440">Muat turun anda masih berlangsung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tab telah ditutup</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 hasil carian ditemukan}other{# hasil carian ditemukan}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Fail audio, 1 fail audio dalam senarai}other{Fail audio, # fail audio dalam senarai}}</translation>

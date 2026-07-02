@@ -17,9 +17,6 @@
 <translation id="1131805035311359397">‏یہ دیکھنے کے لئے کہ آیا آپ کے پاس ورڈز ڈیٹا کی خلاف ورزیوں اور دیگر سیکیورٹی مسائل سے محفوظ ہیں، <ph name="BEGIN_LINK" />Chromium میں سائن ان کریں<ph name="END_LINK" />۔</translation>
 <translation id="1153368717515616349">‏Chromium مینو پر کلک کریں</translation>
 <translation id="1157985233335035034">حالیہ زبانیں</translation>
-<translation id="1171831736360285680">‏‫<ph name="PARTNER_NAME" /> نے ایک ایکسٹینشن شامل کی ہے جو Chromium کے کام کرنے کے طریقے کو تبدیل کر سکتی ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">‏انسٹالیشن ناکام ہوگئی کیونکہ Windows کا آپ کا ورژن تعاون یافتہ نہیں ہے۔</translation>
 <translation id="1185134272377778587">‏Chromium کے بارے میں</translation>
 <translation id="1186645291482254714">‏اپنے فون پر Chromium کے ساتھ قیمت کی ٹریکنگ کے الرٹس حاصل کریں</translation>
@@ -54,7 +51,6 @@
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
 <translation id="154404805518949443">‏‫Chromium میں سائن ان کریں</translation>
 <translation id="1547469039832541117">نمایاں کردہ ٹاسک کو بند کرتا ہے۔</translation>
-<translation id="1553461853655228091">‏پنے اطراف کا 3D نقشہ تخلیق کرنے کی خاطر Chromium کو آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1562320819937089394">‏‫Chromium کو پن کریں</translation>
 <translation id="1574377791422810894">‏Chromium کے سیفٹی ٹولز</translation>
 <translation id="1594928384848033697">‏‫Chromium آپ کا پاس ورڈ مینیجر ڈیٹا حذف کرنا چاہتا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
@@ -216,9 +212,6 @@
 <translation id="3155163173539279776">‏Chromium کو دوبارہ شروع کریں</translation>
 <translation id="3161522574479303604">سبھی زبانیں</translation>
 <translation id="3179665906251668410">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
-<translation id="3183357154200327217">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک تھیم شامل کی جو Chromium کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">‏اپنی نئی Chromium پروفائل کو حسب ضرورت بنائیں</translation>
 <translation id="3189205223539394158">‏آپ ٹیبز کو سوئچ کیے بغیر AI وضع کے ساتھ چیٹنگ جاری رکھ سکتے ہیں۔ شروع کرنے کے لیے، Chromium میں سائن ان کریں۔ آپ کو اپنے تمام آلات پر اپنے پاس ورڈز اور مزید چیزیں بھی مل جائیں گی۔</translation>
 <translation id="3224847870593914902">‏اپنے Google اکاؤنٹ کو Chromium سے ہٹانے کے لیے، ترتیبات کے صفحے میں Chromium سے سائن آؤٹ کریں</translation>
@@ -297,9 +290,6 @@
 <translation id="4036079820698952681">‏<ph name="BEGIN_LINK" />موجودہ ترتیبات<ph name="END_LINK" /> کی اطلاع دے کر Chromium کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4050175100176540509">اہم سیکیورٹی اصلاحات اور نئی خصوصیات تازہ ترین ورژن میں دستیاب ہیں۔</translation>
 <translation id="4055805654398742145">پاس ورڈ مینیجر</translation>
-<translation id="4061696872429826774">‏آپ کے کمپیوٹر پر موجود ایک دوسرے پروگرام نے ایک ایکسٹینشن شامل کی جو Chromium کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{‏1 منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔ براؤزنگ ڈیٹا کو حذف کر دیا جاتا ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔}other{‏# منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔ براؤزنگ ڈیٹا کو حذف کر دیا جاتا ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔}}</translation>
 <translation id="4118474109249235144">‏Chromium پوشیدگی</translation>
 <translation id="4122186850977583290">‏Chromium کے بارے میں صفحہ پر جائیں</translation>
@@ -412,7 +402,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{‏‫Chromium آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو روکنے کی تجویز دیتا ہے}other{‏‫Chromium آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو روکنے کی تجویز دیتا ہے}}</translation>
 <translation id="5473971139929175403">‏ممکن ہے کہ Chromium ٹھیک طریقے سے کام نہ کرے کیونکہ یہ اس Linux ڈسٹری بیوشن پر مزید تعاون یافتہ نہیں ہے</translation>
 <translation id="5475924890392386523">‏Chromium نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ فائل آپ کے ذاتی اور سوشل نیٹ ورک اکاؤنٹس کو نقصان پہنچا سکتی ہے</translation>
-<translation id="5480860683791598150">‏Chromium کو اس سائٹ کے ساتھ آپ کے مقام کا اشتراک کرنے کیلئے آپ کے مقام تک رسائی درکار ہے</translation>
 <translation id="549669000822060376">‏براہ کرم انتظار کریں یہاں تک کہ Chromium تازہ ترین سسٹم اپ ڈیٹس انسٹال کر دے۔</translation>
 <translation id="5496810170689441661">‏Chromium پاس ورڈز میں ترمیم کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="549975168243349205">‏‫Chromium کے ساتھ چلتے پھرتے اپنی پسندیدہ ایپس جیسے Google Drive اور YouTube کے ساتھ بغیر کسی رکاوٹ کے کام کریں۔</translation>
@@ -479,9 +468,6 @@
 <translation id="6174920971222007286">‏یہ فائل خطرناک ہو سکتی ہے<ph name="LINE_BREAK" />اگر آپ پاس ورڈ فراہم کرتے ہیں تو Chromium آپ کے لیے اس ڈاؤن لوڈ کو چیک کر سکتا ہے۔ فائل کے بارے میں معلومات Google محفوظ براؤزنگ کو بھیجی جاتی ہے، لیکن فائل کا مواد اور پاس ورڈ آپ کے آلے پر رہتا ہے۔</translation>
 <translation id="6182736845697986886">اپ ڈیٹ سرور کی اندرونی خرابی کی وجہ سے انسٹالیشن ناکام ہو گئی۔</translation>
 <translation id="6183079672144801177">‏یقینی بنائیں کہ آپ اپنے <ph name="TARGET_DEVICE_NAME" /> پر Chromium میں سائن ان ہیں اور پھر دوبارہ بھیج کر دیکھیں۔</translation>
-<translation id="6204922163963157461">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک ایپ شامل کی جو Chromium کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">‏اس کمپیوٹر پر Chromium کا ایک مزید حالیہ ورژن پہلے سے ہے۔ اگر سافٹ ویئر کام نہیں کر رہا ہے تو براہ کرم Chromium کو ان انسٹال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏ابھی Chromium دوبارہ لانچ ہوگا}=1{‏1 سیکنڈ میں Chromium دوبارہ لانچ ہوگا}other{‏# سیکنڈ میں Chromium دوبارہ لانچ ہوگا}}</translation>
 <translation id="6239161312595354541">اس ویڈیو کے بارے میں تصاویر کا استعمال کر کے تلاش سے پوچھیں</translation>
@@ -583,7 +569,6 @@
 <translation id="6964305034639999644">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6985329841647292029">‏ChromiumOS کی شرائط</translation>
-<translation id="6990124437352146030">‏Chromium کو اس سائٹ کیلئے آپ کے مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
 <translation id="7003299027384820442">‏اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں Chromium ڈیٹا کا استعمال کرنے اور محفوظ کرنے کے لیے اپنا پاس فریز درج کریں</translation>
 <translation id="7011190694940573312">انسٹالیشن ناکام ہو گئی کیونکہ آپریٹنگ سسٹم کا یہ ورژن تعاون یافتہ نہیں ہے۔</translation>
 <translation id="7024536598735240744">خرابی کو ان پیک کریں: <ph name="UNPACK_ERROR" />۔</translation>
@@ -628,7 +613,6 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 3. فوری رسائی کے لیے Chromium کو اپنے ٹاسک بار میں پن کرنے کے لیے Windows اطلاع میں <ph name="BUTTON_3" /> پر کلک کریں</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">متن کاپی ہو گیا</translation>
-<translation id="7451052299415159299">‏Chromium کو اس سائٹ کیلئے آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="7458892263350425044">‏اپنا مائیکروفون استعمال کرنے کے لیے، <ph name="BEGIN_LINK" />سسٹم کی ترتیبات<ph name="END_LINK" /> میں Chromium کو رسائی فراہم کریں</translation>
 <translation id="7461356015007898716">‏مستقبل کے Chromium اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 7 استعمال کر رہا ہے۔</translation>
 <translation id="7467949745582939695">‏Chromium کو بند کر کے دوبارہ چلائیں؟</translation>
@@ -753,8 +737,8 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8719993436687031146">‏Chromium میں سائن ان کریں؟</translation>
 <translation id="8747073452963259673">تلاش کے حلقے کا نیچے والا دایاں کونا: <ph name="LEFT" /> فیصد دائیں، <ph name="BOTTOM" /> فیصد نیچے</translation>
 <translation id="878572486461146056">انسٹال سے متعلق خرابی: آپ کے نیٹ ورک کے منتظم نے ایک گروپ پالیسی کا اطلاق کیا ہے جو انسٹالیشن کو روکتی ہے: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">‏Chromium کو اس سائٹ کیلئے آپ کے کیمرے اور مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
 <translation id="8813277370772331957">مجھے بعد میں یاد دلائیں</translation>
+<translation id="8816416449795340678">‏فوری جائزہ حاصل کرنے کے لیے اس دستاویز کا اشتراک Chromium میں Gemini کے ساتھ کریں اور فالو اپ سوالات پوچھیں</translation>
 <translation id="8818550178040858407">‏Chromium میں سائن ان کریں؟</translation>
 <translation id="8823401858233292222">‏‫Chromium کو ڈیفالٹ براؤزر بنائیں اور ٹاسک بار کو پن کریں</translation>
 <translation id="8826492472752484139">"پاس ورڈ مینیجر" پر کلک کریں</translation>

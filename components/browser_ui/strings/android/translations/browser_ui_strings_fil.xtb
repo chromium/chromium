@@ -690,7 +690,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:</transla
 <translation id="8163152278172770963">Huwag payagan ang mga site na awtomatikong pumasok sa picture-in-picture</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="818487310457576362">Mag-drag mula sa gilid ng screen para lumabas sa full screen.</translation>
-<translation id="8186479265534291036">Hindi gumagana ang site? Naka-block ang third-party na cookies</translation>
 <translation id="8197286292360124385">Pinapayagan ang <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8211406090763984747">Secure ang koneksyon</translation>
@@ -761,7 +760,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:</transla
 <translation id="8805385115381080995">Mas mabilis ang pag-browse dahil mas maliit ang posibilidad na hilingin sa iyo ng site na i-verify na totoong tao ka</translation>
 <translation id="881644524232657178">Kapag naka-on, magagamit ng mga site ang mga sensor ng paggalaw at liwanag ng iyong device. Kapag naka-off, hindi makakagamit ang mga site ng mga sensor.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugang mas mahina ang proteksyon sa pag-browse pero mas malamang na gumana ang mga feature ng site gaya ng inaasahan.</translation>
 <translation id="8889294078294184559">Habang patuloy kang nagba-browse, puwedeng sumangguni ang mga site sa Chrome at i-verify sa naunang site na binisita mo kung malamang na totoong tao ka.</translation>
 <translation id="8899807382908246773">Mga nakakasagabal na ad</translation>
 <translation id="8903921497873541725">Mag-zoom in</translation>
@@ -787,7 +785,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:</transla
 <translation id="913657688200966289">I-on ang mga pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Pinapayagan ang mga notification</translation>
 <translation id="9138217887606523162"><ph name="ZOOM_LEVEL" /> %% ang kasalukuyang pag-zoom</translation>
-<translation id="915112772806845021">Ginagamit ng mga site ang feature na ito para awtomatikong pumasok sa picture-in-picture. Nagbibigay-daan ito sa iyong patuloy na makapanood ng video, habang binabakante ang screen mo para sa iba pang gawain.</translation>
 <translation id="9156722768168878035">Hayaang ipakita ng Chrome ang iyong mga kamakailang tab sa listahan ng app at mga resulta ng paghahanap ng device mo. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="9162462602695099906">Mapanganib ang page na ito</translation>
 <translation id="9182556968660520230">Huwag payagan ang mga site na mag-play ng pinoprotektahang content</translation>

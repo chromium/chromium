@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} piekļuves atslēga}zero{{count} piekļuves atslēgu}one{{count} piekļuves atslēga}other{{count} piekļuves atslēgas}}</translation>
 <translation id="1005023885865154304">Atveriet paroļu automātiskās aizpildes iestatījumus.</translation>
 <translation id="1005230401424685968">GGGG</translation>
+<translation id="1013852467930342108">Live ir jauna funkcija pakalpojumā Gemini pārlūkā Chrome.</translation>
 <translation id="1013952917065545813">Varat atgriezties šeit, lai atkārtoti atvērtu nesen aizvērtās cilnes.</translation>
 <translation id="1016495303386450659">Vienums atjaunināts</translation>
 <translation id="1018804590490383958">Skenēt un automātiski aizpildīt</translation>
@@ -1737,6 +1738,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Neiestatīt kā noklusējumu</translation>
 <translation id="6770452996697898492">[REZERVĒTS]</translation>
+<translation id="6775952316617222141">Sāciet Live sarunu ar Gemini pārlūkā Chrome</translation>
 <translation id="6779455296366983087">Jūsu pārlūkošanas dati tiks dzēsti</translation>
 <translation id="6782531425936234573">Eksportēt datus</translation>
 <translation id="6791425686608802741">Pieskarieties vienumam “Pievienot cilni jaunai grupai”.</translation>

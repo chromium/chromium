@@ -2370,6 +2370,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4705573018059932476">Ai ales să confirmi cu <ph name="AUTHENTICATOR" /> pe site-urile care folosesc <ph name="PROVIDER_ORIGIN" />. Este posibil ca acest furnizor să fi stocat informații despre modul în care plătești, pentru care poți să <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Conexiunea a fost întreruptă</translation>
 <translation id="4708276642004148190">Resurse de apă și tratarea apei</translation>
+<translation id="4710249055485272920">Nu s-au găsit aceste informații</translation>
 <translation id="4711628883879888561">Colaborează la grupul de file</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nu ai permisiunea să accesezi acest site</translation>
@@ -3022,6 +3023,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5707154300732650394">Continuă-ți parcursul</translation>
 <translation id="57094364128775171">Sugerează o parolă puternică…</translation>
 <translation id="570953204696852961">Roșu 3</translation>
+<translation id="5710907191777451677">Întreabă Gemini în Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinari</translation>
 <translation id="5715150588940290235">Ștergi codurile de securitate salvate?</translation>
@@ -3924,7 +3926,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="7110116949943042888">Job temporar/sezonier</translation>
 <translation id="7110368079836707726">Colegii și universități</translation>
 <translation id="7111507312244504964">Inspecții și evaluări ale proprietăților</translation>
-<translation id="7117290130383718594">Adnotări pentru text</translation>
 <translation id="7118618213916969306">Caută URL-ul din clipboard, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Avertismentul se afișează deoarece acest site nu acceptă HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Drame TV</translation>
@@ -5048,7 +5049,6 @@ Detalii suplimentare:
 <translation id="8871485335898060555">Antichități și obiecte de colecție</translation>
 <translation id="8871553383647848643">Personalizează aspectul browserului</translation>
 <translation id="887350038812854047">Această politică are aceeași valoare aplicată la nivel de dispozitiv și de utilizator. Politica funcționează corespunzător.</translation>
-<translation id="8874790741333031443">Încearcă să permiți temporar cookie-urile terță parte, ceea ce înseamnă mai puțină protecție pentru navigare, dar există șanse mai mari ca funcțiile site-urilor să funcționeze conform așteptărilor.</translation>
 <translation id="8874824191258364635">Introdu un număr de card valid</translation>
 <translation id="8877780815363510165">Pescuit</translation>
 <translation id="888117890813270681">Valoarea <ph name="DATA_CONTROLS_RESTRICTION" /> nu poate fi setată la <ph name="DATA_CONTROLS_LEVEL" /></translation>

@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="10146536653536065">Усталяванне пашырэння "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="1070377999570795893">Іншая праграма на камп’ютары дадала пашырэнне, якое можа змяніць працу Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Уключыць тэму</translation>
 <translation id="1135328998467923690">Пакет несапраўдны: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Задняя</translation>
+<translation id="1171831736360285680">Праграма "<ph name="PARTNER_NAME" />" дадала пашырэнне, якое можа змяніць працу Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Не ўдалося экспартаваць закрыты ключ.</translation>
 <translation id="132960226125594336">Не ўдалося загрузіць файл "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва, бо пры яго загрузцы будзе перавышаны максімальна дапушчальны памер сцэнарыя або максімальна дапушчальны агульны памер сцэнарыяў змесціва для пашырэння.</translation>
 <translation id="1445572445564823378">Гэта пашырэнне запавольвае працу <ph name="PRODUCT_NAME" />. Выключыце пашырэнне, каб аднавіць прадукцыйнасць <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL не падтрымліваецца.</translation>
 <translation id="1478607704480248626">Усталяванне не ўключана</translation>
+<translation id="1483493594462132177">Адправіць</translation>
+<translation id="1485015260175968628">Цяпер пашырэнне можа:</translation>
 <translation id="1556537182262721003">Не ўдалося перанесці каталог пашырэнняў у профіль.</translation>
+<translation id="1585717515139318619">Іншая праграма на камп’ютары дадала тэму, якая можа змяніць працу Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Не ўдалося загрузіць файл CSS "<ph name="RELATIVE_PATH" />" для сцэнарыя.</translation>
 <translation id="1616298854599875024">Не ўдалося імпартаваць пашырэнне "<ph name="IMPORT_NAME" />": гэта не абагулены модуль</translation>
+<translation id="175772926354468439">Уключыць тэму</translation>
 <translation id="1757786065507923842">Не ўдалося запытаць бацькоўскі дазвол.</translation>
 <translation id="1803557475693955505">Не ўдалося загрузіць фонавую старонку "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Гэта можна дадаць толькі з <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Не атрымалася ўсталяваць праграму "<ph name="APP_NAME" />", бо "<ph name="IMPORT_NAME" />" яе не дазваляе</translation>
+<translation id="2150661552845026580">Дадаць пашырэнне "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Не ўдалося дэкадаваць відарыс: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Твае бацькі не ўхвалілі гэта пашырэнне</translation>
+<translation id="23030561267973084">Праграма "<ph name="EXTENSION_NAME" />" запатрабавала дадатковыя дазволы.</translation>
+<translation id="2327492829706409234">Уключыць праграму</translation>
 <translation id="2350172092385603347">Лакалізацыя выкарыстоўваецца, але ў маніфесце не вызначаны стандартныя рэгіянальныя налады (default_locale).</translation>
 <translation id="2576842806987913196">Файл CRX з такой назвай ужо ёсць.</translation>
 <translation id="2662876636500006917">Вэб-крама Chrome</translation>
+<translation id="2678063897982469759">Паўторна ўключыць</translation>
 <translation id="2743583586211388067">Доступ да пашырэння заблакіраваны ў адпаведнасці з палітыкай вашай арганізацыі ў дачыненні да рызык, звязаных з пашырэннямі.</translation>
+<translation id="2766161002040448006">Папрасіць дазвол у бацькоў</translation>
 <translation id="2785530881066938471">Не ўдалося загрузіць файл "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва: яго кадаванне – не UTF-8.</translation>
+<translation id="2850541429955027218">Дадаць тэму</translation>
+<translation id="2883143988769190738">Гэта пашырэнне запытвае наступныя дазволы:</translation>
 <translation id="2903070246402204397">Пашырэнне "<ph name="EXTENSION_NAME" />" (ідэнтыфікатар пашырэння "<ph name="EXTENSION_ID" />") заблакіравана адміністратарам. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Адправіць запыт адміністратару на ўсталяванне пашырэння "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2988488679308982380">Не ўдалося ўсталяваць пакет: "<ph name="ERROR_CODE" />"</translation>
 <translation id="3115238746683532089">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не ўдалося замяніць файл "crx". Праверце, ці не выкарыстоўваецца гэты файл зараз.</translation>
 <translation id="3163201441334626963">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Ваша арганізацыя заблакіравала доступ да гэтага пашырэння.</translation>
+<translation id="3183357154200327217">Іншая праграма на камп’ютары дадала тэму, якая можа змяніць працу Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS</translation>
 <translation id="3364986687961713424">Паведамленне ад адміністратара: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ад пастаўшчыка "<ph name="VENDOR_ID" />" (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Значэнне ўводу для персанальнага ключа павінна быць дапушчальным шляхам.</translation>
+<translation id="3788401245189148511">Гэта пашырэнне або ўбудова можа:</translation>
 <translation id="3834775135533257713">Не ўдалося дадаць праграму "<ph name="TO_INSTALL_APP_NAME" />", бо яна канфліктуе з праграмай "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Не ўдалося загрузіць старонку параметраў "<ph name="OPTIONS_PAGE" />".</translation>
+<translation id="3905761538810670789">Выправіць праграму</translation>
+<translation id="3908501907586732282">Уключыць пашырэнне</translation>
+<translation id="3927932062596804919">Адмовіць</translation>
 <translation id="3984413272403535372">Памылка падчас подпісу пашырэння.</translation>
+<translation id="4014432863917027322">Выправіць "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="4061696872429826774">Іншая праграма на камп’ютары дадала пашырэнне, якое можа змяніць працу Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Ваша арганізацыя заблакіравала доступ да гэтай катэгорыі пашырэнняў.</translation>
 <translation id="4233778200880751280">Не ўдалося загрузіць старонку "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Праграмы павінны ўсталёўвацца з тых хостаў, з якімі яны працуюць</translation>
 <translation id="4306119971288449206">Праграмы павінны ўключаць наступны тып змесціва: <ph name="CONTENT_TYPE" /></translation>
+<translation id="4625078469366263107">Уключыць праграму</translation>
 <translation id="4633003931260532286">Для пашырэння патрабуецца <ph name="IMPORT_NAME" /> версіі <ph name="IMPORT_VERSION" /> і вышэй, але ўсталявана толькі версія <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4660476621274971848">Чакалася версія "<ph name="EXPECTED_VERSION" />", фактычная версія – "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Не ўдалося вывесці закрыты ключ.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Не ўдалося экспартаваць адкрыты ключ.</translation>
 <translation id="501057610015570208">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS Flex</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Дадаць пашырэнне</translation>
+<translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5098647635849512368">Не ўдалося знайсці поўны шлях да каталога, які трэба ўпакаваць.</translation>
 <translation id="5160071981665899014">Не ўдалося загрузіць файл JavaScript "<ph name="RELATIVE_PATH" />" для сцэнарыя.</translation>
+<translation id="5185386675596372454">Новая версія пашырэння "<ph name="EXTENSION_NAME" />" была выключана, бо яна патрабуе дадатковых дазволаў.</translation>
+<translation id="5242724311594467048">Уключыць пашырэнне "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Акно праграмы: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Выдаліць з Chromium</translation>
 <translation id="5456409301717116725">Гэта пашырэнне змяшчае файл ключа "<ph name="KEY_PATH" />". Магчыма, вам не варта гэтага рабіць.</translation>
+<translation id="5485102783864353244">Дадаць праграму</translation>
 <translation id="5486326529110362464">Для закрытага ключа павінна існаваць значэнне ўводу.</translation>
 <translation id="5527463195266282916">Спроба панізіць версію пашырэння.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Не ўдалося загрузіць пашырэнне з наступнай крыніцы:</translation>
 <translation id="5972529113578162692">Адміністратар гэтай прылады патрабуе, каб пашырэнне "<ph name="EXTENSION_NAME" />" было ўсталявана. Выдаліць яго нельга.</translation>
 <translation id="6027032947578871493">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Іншая праграма на камп’ютары дадала праграму, якая можа змяніць працу Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Памылка загрузкі пашырэння</translation>
+<translation id="6220551899604141979">Праграма "<ph name="PARTNER_NAME" />" дадала пашырэнне, якое можа змяніць працу Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Не ўдалося прачытаць закрыты ключ.</translation>
+<translation id="6326175484149238433">Выдаліць з Chrome</translation>
 <translation id="6391538222494443604">Павінен існаваць уваходны каталог.</translation>
 <translation id="641087317769093025">Не ўдалося распакаваць пашырэнне</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" запытвае доступ да адной або некалькіх прылад:</translation>
+<translation id="655384502888039633">Карыстальнікаў: <ph name="USER_COUNT" /></translation>
 <translation id="657064425229075395">Не ўдалося загрузіць фонавы сцэнарый "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ад <ph name="VENDOR_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Апрацоўшчык MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Файл маніфеста несапраўдны</translation>
 <translation id="7217838517480956708">Адміністратар гэтай прылады патрабуе, каб пашырэнне "<ph name="EXTENSION_NAME" />" было ўсталявана. Яго нельга выдаліць або змяніць.</translation>
 <translation id="7287143125007575591">Доступ забаронены.</translation>
+<translation id="760353356052806707">Іншая праграма на камп’ютары дадала праграму, якая можа змяніць працу Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Значэнне ўводу для закрытага ключа павінна быць у дапушчальным фармаце (ключ RSA у фармаце PKCS#8 з шыфраваннем PEM).</translation>
 <translation id="765293928828334535">Праграмы, пашырэнні і карыстальніцкія сцэнарыі з гэтага сайта дадаваць нельга</translation>
+<translation id="7658239707568436148">Скасаваць</translation>
+<translation id="7766838926148951335">Прыняць дазволы</translation>
 <translation id="7876803335449432072">Не ўдалося загрузіць файл "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва. Аркушы стыляў для сцэнарыяў змесціва можна загружаць толькі з адпаведных файлаў, у прыватнасці ў фармаце .css.</translation>
 <translation id="7939686037314084444">Не ўдалося загрузіць пашырэнне належным чынам. Магчыма, яно не зможа перахопліваць сеткавыя запыты.</translation>
 <translation id="7952904276017482715">Чакаўся ідэнтыфікатар "<ph name="EXPECTED_ID" />", фактычны ідэнтыфікатар – "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Параметры: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Ухваліць</translation>
 <translation id="8035920974645200807">Накіраваная на карыстальніка камера</translation>
 <translation id="8047248493720652249">Пашырэнне не змагло даць спампоўцы назву "<ph name="ATTEMPTED_FILENAME" />", бо іншае пашырэнне (<ph name="EXTENSION_NAME" />) вызначыла іншую назву файла: "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">У Google пашырэнне "<ph name="EXTENSION_NAME" />" абазначана як шкоднае. Яго ўсталяванне было прадухілена</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ад <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Дазволы:</translation>
 <translation id="8517576857589387417">Файл маніфеста адсутнічае або не чытаецца</translation>
 <translation id="8565650234829130278">Вы спрабуеце ўсталяваць ранейшую версію праграмы.</translation>
 <translation id="8621383749470166852">Не ўдалося загрузіць файл "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва. Сцэнарыі змесціва можна загружаць толькі з файлаў JavaScript, якія падтрымліваюцца, напрыклад з файлаў .js.</translation>
 <translation id="8636666366616799973">Пакет несапраўдны. Падрабязнасці: "<ph name="ERROR_MESSAGE" />".</translation>
+<translation id="8746654918629346731">Вы ўжо зрабілі запыт на ўсталяванне пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" запытвае доступ да адной з вашых прылад:</translation>
 <translation id="8885905466771744233">Закрыты ключ для ўказанага пашырэння ўжо існуе. Выкарыстайце гэты ключ або спачатку выдаліце яго.</translation>
 <translation id="9039223174332979184">Адміністратар гэтай прылады патрабуе, каб у пашырэння "<ph name="EXTENSION_NAME" />" быў маніфест версіі 3 або вышэйшай.</translation>
 <translation id="907841381057066561">Не ўдалося стварыць часовы файл ZIP падчас упакоўвання.</translation>
+<translation id="9102610709270966160">Уключыць пашырэнне</translation>
+<translation id="93766956588638423">Выправіць пашырэнне</translation>
 <translation id="941543339607623937">Няправільны закрыты ключ.</translation>
 </translationbundle>

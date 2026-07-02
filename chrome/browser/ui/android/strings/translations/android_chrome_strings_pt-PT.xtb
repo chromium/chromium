@@ -243,6 +243,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2056878612599315956">Site em pausa</translation>
 <translation id="2063047797624276601">A sua organização ativou a Navegação segura melhorada</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 transferência falhada}other{# transferências falhadas}}</translation>
+<translation id="2066690553719545730">Mostrar sempre o Modo IA</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -1059,7 +1060,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5436928407363358055">Para continuar facilmente a partir do ponto em que ficou, sincronize o histórico e os separadores</translation>
 <translation id="5438292632479953702">Transferir novamente</translation>
 <translation id="5439191312780166229">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chrome.</translation>
-<translation id="5441137934526263133">O site não funciona? Os cookies de terceiros estão bloqueados.</translation>
 <translation id="5441466871879044658">Traduza para este idioma</translation>
 <translation id="5444999712122199445">Voltar ao site</translation>
 <translation id="544776284582297024">Para abrir separadores e visitar várias páginas em simultâneo, toque no botão Abrir separadores.</translation>
@@ -1114,7 +1114,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="569536719314091526">Traduzir esta página para qualquer idioma a partir do botão Mais opções</translation>
 <translation id="5696597120588531049">O Chrome pode ajudar a proteger contra violações de dados, Websites não seguros e muito mais.</translation>
 <translation id="5698878456427040674">Verifique se a conta selecionada é suportada.</translation>
-<translation id="5700415746238689851">Abrir Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> quer estabelecer ligação a uma porta de série</translation>
 <translation id="5715150588940290235">Eliminar os códigos de segurança guardados?</translation>
 <translation id="572328651809341494">Separadores recentes</translation>
@@ -1420,7 +1419,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6835182496791325827">Receba notificações quando o Chrome encontrar os melhores resultados para as suas pesquisas enquanto estiver ausente.</translation>
 <translation id="6846298663435243399">A carregar...</translation>
-<translation id="6850409657436465440">A transferência ainda está em curso.</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> separadores fechados</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 resultado encontrado}other{# resultados encontrados}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Ficheiros de áudio, 1 ficheiro de áudio na lista}other{Ficheiros de áudio, # ficheiros de áudio na lista}}</translation>

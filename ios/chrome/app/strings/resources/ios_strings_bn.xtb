@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count}টি পাসকী}one{{count}টি পাসকী}other{{count}টি পাসকী}}</translation>
 <translation id="1005023885865154304">অটোফিল পাসওয়ার্ড সেটিংস খুলুন</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live হল Chrome-এ Gemini-র একটি নতুন ফিচার</translation>
 <translation id="1013952917065545813">আপনি যেসব ট্যাবগুলি সম্প্রতি বন্ধ করেছন, সেগুলি আবার খুলতে আপনি এখানে ফিরে আসতে পারেন</translation>
 <translation id="1016495303386450659">আইটেম আপডেট হয়েছে</translation>
 <translation id="1018804590490383958">স্ক্যান করে অটোফিল করুন</translation>
@@ -1738,6 +1739,7 @@
 <translation id="6761393919622941301">অডিও</translation>
 <translation id="6765551480308401897">ডিফল্ট হিসেবে সেট করবেন না</translation>
 <translation id="6770452996697898492">[বুক করা হয়েছে]</translation>
+<translation id="6775952316617222141">Chrome-এ Gemini Live উপভোগ করুন</translation>
 <translation id="6779455296366983087">আপনার ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="6782531425936234573">ডেটা এক্সপোর্ট করুন</translation>
 <translation id="6791425686608802741">"নতুন গ্রুপে ট্যাব যোগ করুন" বিকল্পে ট্যাপ করুন</translation>

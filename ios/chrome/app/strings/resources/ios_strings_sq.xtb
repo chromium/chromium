@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} çelës kalimi}other{{count} çelësa kalimi}}</translation>
 <translation id="1005023885865154304">Hap cilësimet e "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="1005230401424685968">VVVV</translation>
+<translation id="1013852467930342108">Live është një veçori e re në Gemini në Chrome</translation>
 <translation id="1013952917065545813">Mund të kthehesh përsëri këtu për të rihapur skedat që ke mbyllur së fundi</translation>
 <translation id="1016495303386450659">Elementi u përditësua</translation>
 <translation id="1018804590490383958">Skano dhe plotëso automatikisht</translation>
@@ -1737,6 +1738,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Mos e bëj të parazgjedhur</translation>
 <translation id="6770452996697898492">[REZERVUAR]</translation>
+<translation id="6775952316617222141">Përdor Gemini Live në Chrome</translation>
 <translation id="6779455296366983087">Të dhënat e tua të shfletimit do të fshihen</translation>
 <translation id="6782531425936234573">Eksporto të dhënat</translation>
 <translation id="6791425686608802741">Trokit te "Shto skedën te grupi i ri"</translation>

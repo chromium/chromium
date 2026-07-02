@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="10146536653536065">Instalează <ph name="EXTENSION_NAME" /></translation>
+<translation id="1070377999570795893">Un alt program de pe computerul tău a adăugat o extensie care poate schimba modul în care funcționează Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Activează tema</translation>
 <translation id="1135328998467923690">Pachetul nu este valid: „<ph name="ERROR_CODE" />”.</translation>
 <translation id="1140871961407805696">Camera foto din spate</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> a adăugat o extensie care poate schimba modul în care funcționează Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Cheia privată nu a putut fi exportată.</translation>
 <translation id="132960226125594336">Nu se poate încărca fișierul <ph name="RELATIVE_PATH" /> pentru scriptul de conținut, deoarece ar depăși dimensiunea maximă a scriptului sau dimensiunea maximă a scriptului de conținut pentru extensie.</translation>
 <translation id="1445572445564823378">Această extensie încetinește <ph name="PRODUCT_NAME" />. Vă recomandăm să o dezactivați pentru a restabili performanțele produsului <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nu este acceptat.</translation>
 <translation id="1478607704480248626">Instalarea nu este activată</translation>
+<translation id="1483493594462132177">Trimite</translation>
+<translation id="1485015260175968628">Aceasta poate acum să:</translation>
 <translation id="1556537182262721003">Directorul extensiei nu se poate muta în profil.</translation>
+<translation id="1585717515139318619">Un alt program de pe computer a adăugat o temă care poate schimba modul în care funcționează Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Nu am putut încărca fișierul CSS <ph name="RELATIVE_PATH" /> pentru script.</translation>
 <translation id="1616298854599875024">Nu se poate importa extensia „<ph name="IMPORT_NAME" />”, deoarece nu este un modul folosit în comun</translation>
+<translation id="175772926354468439">Activați tema</translation>
 <translation id="1757786065507923842">Solicitarea permisiunii pentru părinte nu a reușit.</translation>
 <translation id="1803557475693955505">Nu se poate încărca pagina de fundal „<ph name="BACKGROUND_PAGE" />”.</translation>
 <translation id="1875387611427697908">Aceasta poate fi adăugată numai din <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">„<ph name="APP_NAME" />” nu poate fi instalată, deoarece „<ph name="IMPORT_NAME" />” nu permite acest lucru</translation>
+<translation id="2150661552845026580">Adăugați „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2159915644201199628">Imaginea nu a putut fi decodificată: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2193567467390483943">Părintele tău nu a aprobat această extensie</translation>
+<translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” a solicitat permisiuni suplimentare.</translation>
+<translation id="2327492829706409234">Activați aplicația</translation>
 <translation id="2350172092385603347">A fost utilizată localizarea, dar nu s-a specificat default_locale în manifest.</translation>
 <translation id="2576842806987913196">Există deja un fișier CRX cu acest nume.</translation>
 <translation id="2662876636500006917">Magazinul web Chrome</translation>
+<translation id="2678063897982469759">Reactivează</translation>
 <translation id="2743583586211388067">Accesul la această extensie este blocat conform politicii organizației privind riscurile extensiilor.</translation>
+<translation id="2766161002040448006">Cere unui părinte</translation>
 <translation id="2785530881066938471">Nu se poate încărca fișierul „<ph name="RELATIVE_PATH" />” pentru scriptul de conținut. Fișierul nu are codificare UTF-8.</translation>
+<translation id="2850541429955027218">Adaugă o temă</translation>
+<translation id="2883143988769190738">Această extensie solicită următoarele permisiuni:</translation>
 <translation id="2903070246402204397">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) este blocată de administrator. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Trimiți o solicitare administratorului privind instalarea „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2988488679308982380">Nu s-a putut instala pachetul: „<ph name="ERROR_CODE" />”</translation>
 <translation id="3115238746683532089">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Înlocuirea fișierului crx a eșuat. Verificați dacă fișierul este în uz.</translation>
 <translation id="3163201441334626963">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Accesul la această extensie este blocat de organizația ta.</translation>
+<translation id="3183357154200327217">Un alt program de pe computerul tău a adăugat o temă care poate schimba modul în care funcționează Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Aplicația cu atributul „kiosk_only” din manifest trebuie să fie instalată în modul chioșc pentru sistemul de operare Chrome</translation>
 <translation id="3364986687961713424">De la administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> de la furnizorul <ph name="VENDOR_ID" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Valoarea introdusă pentru cheia privată trebuie să fie o cale validă.</translation>
+<translation id="3788401245189148511">Aceasta ar putea să:</translation>
 <translation id="3834775135533257713">Aplicația „<ph name="TO_INSTALL_APP_NAME" />” nu a putut fi adăugată, deoarece se află în conflict cu „<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="388442998277590542">Nu se poate încărca pagina cu opțiuni „<ph name="OPTIONS_PAGE" />”.</translation>
+<translation id="3905761538810670789">Repară aplicația</translation>
+<translation id="3908501907586732282">Activați extensia</translation>
+<translation id="3927932062596804919">Refuză</translation>
 <translation id="3984413272403535372">Eroare la semnarea extensiei.</translation>
+<translation id="4014432863917027322">Repari „<ph name="EXTENSION_NAME" />”?</translation>
+<translation id="4061696872429826774">Un alt program de pe computerul tău a adăugat o extensie care poate schimba modul în care funcționează Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Accesul la această categorie de extensii este blocat de organizația ta.</translation>
 <translation id="4233778200880751280">Pagina informativă „<ph name="ABOUT_PAGE" />” nu s-a putut încărca.</translation>
 <translation id="424963718355121712">Aplicațiile trebuie să fie difuzate de gazda pe care o afectează</translation>
 <translation id="4306119971288449206">Aplicațiile trebuie să fie difuzate utilizând antetul content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4625078469366263107">Activează aplicația</translation>
 <translation id="4633003931260532286">Extensia necesită „<ph name="IMPORT_NAME" />” cu versiunea minimă „<ph name="IMPORT_VERSION" />”, dar numai versiunea „<ph name="INSTALLED_VERSION" />” este instalată</translation>
 <translation id="4660476621274971848">Versiunea așteptată era „<ph name="EXPECTED_VERSION" />”, dar versiunea a fost „<ph name="NEW_ID" />”</translation>
 <translation id="471800408830181311">Cheia privată nu poate fi generată.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Exportul cheii publice nu a reușit.</translation>
 <translation id="501057610015570208">Aplicația cu atributul kiosk_only din manifest trebuie să fie instalată în modul chioșc pentru sistemul de operare Chrome Flex.</translation>
 <translation id="5026754133087629784">Afișare web: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Adaugă extensia</translation>
+<translation id="5039804452771397117">Permite</translation>
 <translation id="5098647635849512368">Nu se poate găsi calea completă către directorul de împachetat.</translation>
 <translation id="5160071981665899014">Nu se poate încărca conținutul JavaScript <ph name="RELATIVE_PATH" /> pentru script.</translation>
+<translation id="5185386675596372454">Cea mai nouă versiune a „<ph name="EXTENSION_NAME" />” a fost dezactivată, deoarece necesită permisiuni suplimentare.</translation>
+<translation id="5242724311594467048">Activați extensia „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5356315618422219272">Eticheta appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Eliminați din Chromium</translation>
 <translation id="5456409301717116725">Această extensie include fișierul cheie „<ph name="KEY_PATH" />”. Probabil că nu doriți să faceți asta.</translation>
+<translation id="5485102783864353244">Adaugă o aplicație</translation>
 <translation id="5486326529110362464">Trebuie să existe o valoarea introdusă pentru cheia privată.</translation>
 <translation id="5527463195266282916">S-a încercat downgrade-ul extensiei.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Nu s-a încărcat extensia de la:</translation>
 <translation id="5972529113578162692">Administratorul acestui computer solicită ca <ph name="EXTENSION_NAME" /> să fie instalată. Aceasta nu poate fi dezinstalată.</translation>
 <translation id="6027032947578871493">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Un alt program de pe computerul tău a adăugat o aplicație care poate schimba modul în care funcționează Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Eroare la încărcarea extensiei</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> a adăugat o extensie care poate schimba modul în care funcționează Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Cheia privată nu a fost citită.</translation>
+<translation id="6326175484149238433">Eliminați din Chrome</translation>
 <translation id="6391538222494443604">Directorul de intrare trebuie să existe.</translation>
 <translation id="641087317769093025">Extensia nu a putut fi dezarhivată</translation>
 <translation id="6542618148162044354">„<ph name="APP_NAME" />” solicită accesul la cel puțin unul dintre dispozitivele tale:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> (de) utilizatori</translation>
 <translation id="657064425229075395">Scriptul de fundal „<ph name="BACKGROUND_SCRIPT" />” nu a putut fi încărcat.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de la <ph name="VENDOR_NAME" /> (număr de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Handler MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Fișierul manifest este nevalid</translation>
 <translation id="7217838517480956708">Administratorul acestui dispozitiv solicită instalarea extensiei <ph name="EXTENSION_NAME" />. Aceasta nu poate fi eliminată sau modificată.</translation>
 <translation id="7287143125007575591">Acces refuzat.</translation>
+<translation id="760353356052806707">Un alt program de pe computerul tău a adăugat o aplicație care poate schimba modul în care funcționează Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Valoarea introdusă pentru cheia privată trebuie să aibă un format valid (cheie RSA codificată PEM în format PKCS#8).</translation>
 <translation id="765293928828334535">Nu poți adăuga aplicații, extensii și scripturi de utilizator de pe acest site</translation>
+<translation id="7658239707568436148">Anulează</translation>
+<translation id="7766838926148951335">Acceptă permisiunile</translation>
 <translation id="7876803335449432072">Nu s-a putut încărca fișierul <ph name="RELATIVE_PATH" /> pentru scriptul de conținut. Foile de stil pentru scriptul de conținut pot fi încărcate numai din fișierele de foi de stil acceptate, cum ar fi fișierele .css.</translation>
 <translation id="7939686037314084444">Extensia nu s-a încărcat corect. S-ar putea să nu intercepteze solicitările de rețea.</translation>
 <translation id="7952904276017482715">ID-ul așteptat era „<ph name="EXPECTED_ID" />”, dar ID-ul a fost „<ph name="NEW_ID" />”</translation>
 <translation id="7972881773422714442">Opțiuni: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Aprobă</translation>
 <translation id="8035920974645200807">Camera foto frontală</translation>
 <translation id="8047248493720652249">Această extensie nu a reușit să denumească fișierul descărcat „<ph name="ATTEMPTED_FILENAME" />”, deoarece altă extensie (<ph name="EXTENSION_NAME" />) a stabilit alt nume de fișier, „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8049705080247101012">Google a semnalat „<ph name="EXTENSION_NAME" />” ca extensie rău intenționată și instalarea nu a fost permisă</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de la <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Permisiuni:</translation>
 <translation id="8517576857589387417">Fișierul manifest lipsește sau nu poate fi citit</translation>
 <translation id="8565650234829130278">S-a încercat trecerea aplicației la o versiune inferioară.</translation>
 <translation id="8621383749470166852">Nu s-a putut încărca fișierul <ph name="RELATIVE_PATH" /> pentru scriptul de conținut. Scripturile de conținut pot fi încărcate numai din fișiere JavaScript acceptate, cum ar fi fișierele .js.</translation>
 <translation id="8636666366616799973">Pachetul nu este valid. Detalii: „<ph name="ERROR_MESSAGE" />”.</translation>
+<translation id="8746654918629346731">Ai solicitat deja „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />” solicită accesul la unul dintre dispozitivele tale:</translation>
 <translation id="8885905466771744233">Există deja o cheie privată pentru extensia specificată. Reutilizeaz-o sau șterge-o mai întâi.</translation>
 <translation id="9039223174332979184">Administratorul acestui computer solicită ca versiunea minimă a manifestului <ph name="EXTENSION_NAME" /> să fie 3.</translation>
 <translation id="907841381057066561">Crearea fișierului zip temporar în timpul împachetării nu a reușit.</translation>
+<translation id="9102610709270966160">Activează extensia</translation>
+<translation id="93766956588638423">Repară extensia</translation>
 <translation id="941543339607623937">Cheie privată nevalidă.</translation>
 </translationbundle>

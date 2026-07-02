@@ -243,6 +243,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2056878612599315956">A webhely szüneteltetve van</translation>
 <translation id="2063047797624276601">Szervezete bekapcsolta a Biztonságos Böngészés fokozott védelemmel funkciót</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 letöltés nem sikerült}other{# letöltés nem sikerült}}</translation>
+<translation id="2066690553719545730">Mindig látszódjon az AI-mód</translation>
 <translation id="2067805253194386918">szöveg</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2082238445998314030">Eredmény: <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2149968176347646218">A kapcsolat nem biztonságos</translation>
 <translation id="2149973817440762519">Könyvjelző szerkesztése</translation>
 <translation id="2163089732491971196">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, adja meg az összetett jelszavát</translation>
+<translation id="2164015935042801524">Kattintson ide jobb egérgombbal a lapok függőleges megjelenítéséhez</translation>
 <translation id="2166228530126694506">Verzió: <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">A képleírások ki vannak kapcsolva</translation>
 <translation id="2172905120685242547">Bezárja az ablakot?</translation>
@@ -305,6 +307,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2323763861024343754">Webhely tárhelye</translation>
 <translation id="2327445548174191329">Forrás: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Mindenki azonnal el fogja veszíteni a hozzáférését a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz, és a rendszer az összes meghívólinket ki fogja kapcsolni.</translation>
+<translation id="2329500425421091035">Bemutatjuk az AI-módot a Chrome-ban</translation>
 <translation id="2330186936255788117">További könyvjelzők</translation>
 <translation id="2332515770639153015">A Biztonságos Böngészés fokozott védelemmel funkció be van kapcsolva</translation>
 <translation id="233375395665273385">Törlés és kijelentkezés</translation>
@@ -1057,7 +1060,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5436928407363358055">Ha egyszerűen szeretné folytatni ott, ahol abbahagyta, szinkronizálja az előzményeket és a lapokat.</translation>
 <translation id="5438292632479953702">Letöltés újra</translation>
 <translation id="5439191312780166229">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chrome figyelmeztetéseinek kihagyását.</translation>
-<translation id="5441137934526263133">Nem működik a webhely? A harmadik felektől származó cookie-k le vannak tiltva</translation>
 <translation id="5441466871879044658">Fordítás erre a nyelvre</translation>
 <translation id="5444999712122199445">Vissza a webhelyre</translation>
 <translation id="544776284582297024">Ha egyidejűleg több lapot is megnyitna, és különböző oldalakat is felkeresne, koppintson a megnyitott lapok gombra</translation>
@@ -1112,7 +1114,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="569536719314091526">Bármely nyelvre lefordíthatja ezt az oldalt a További lehetőségek gomb segítségével</translation>
 <translation id="5696597120588531049">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben</translation>
 <translation id="5698878456427040674">Ellenőrizze, hogy a kiválasztott fiók támogatott-e.</translation>
-<translation id="5700415746238689851">A Gemini megnyitása</translation>
 <translation id="5709213329446699338">A(z) <ph name="SITE" /> soros porthoz szeretne csatlakozni</translation>
 <translation id="5715150588940290235">Törli a mentett biztonsági kódokat?</translation>
 <translation id="572328651809341494">Nemrég megnyitott lapok</translation>
@@ -1418,7 +1419,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6831043979455480757">Fordítás</translation>
 <translation id="6835182496791325827">Értesítést kaphat, amikor a Chrome megtalálja a legjobb találatokat a kereséseihez, amíg Ön távol van.</translation>
 <translation id="6846298663435243399">Betöltés…</translation>
-<translation id="6850409657436465440">A letöltés még mindig folyamatban van</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> lap bezárva</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 találat}other{# találat}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Hangfájlok, 1 hangfájl a listában}other{Hangfájlok, # hangfájl a listában}}</translation>
@@ -1968,12 +1968,14 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="9001604755921395912">Megnyitás Chrome inkognitó lapon</translation>
 <translation id="9010094279589497751">Gyorsan megnyithatja a Geminit, amikor szüksége van rá</translation>
 <translation id="9012585441087414258">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző elküldi az URL-eket és az oldal tartalmának egyes részeit a Google Biztonságos Böngészésnek.</translation>
+<translation id="9014097371980259227">Egyes eszközök át lettek helyezve, hogy segítsenek az AI-móddal végzett keresésben</translation>
 <translation id="9019199799064251516">Folytatja autóprofil-zárolás nélkül?</translation>
 <translation id="9022774213089566801">Gyakran látogatott webhelyek</translation>
 <translation id="9022871169049522985">A webhelyek és a hirdetők mérhetik a hirdetéseik teljesítményét.</translation>
 <translation id="9024318700713112071">A Chrome beállítása alapértelmezettként</translation>
 <translation id="9027728231343310283">Visszavonás – <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Áthelyezés\u2026</translation>
+<translation id="904146253922032365">Tartsa lenyomva a lapok függőleges megjelenítéséhez</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
 <translation id="9047347135558855162">Gyors keresés indítása a Chrome-ban</translation>
 <translation id="9050666287014529139">Összetett jelszó</translation>

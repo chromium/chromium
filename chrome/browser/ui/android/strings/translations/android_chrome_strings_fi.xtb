@@ -243,6 +243,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2056878612599315956">Sivusto keskeytetty</translation>
 <translation id="2063047797624276601">Organisaatiosi on laittanut Parannetun selaussuojan päälle</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 lataus epäonnistui}other{# latausta epäonnistui}}</translation>
+<translation id="2066690553719545730">Näytä aina tekoälytila</translation>
 <translation id="2067805253194386918">tekstiviesti</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2082238445998314030">Tulos <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2149968176347646218">Yhteys ei ole turvallinen</translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
 <translation id="2163089732491971196">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi</translation>
+<translation id="2164015935042801524">Klikkaa tästä hiiren kakkospainikkeella, niin välilehdet näkyvät pystysuunnassa</translation>
 <translation id="2166228530126694506">Versio <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Kuvaselitykset ovat poissa päältä</translation>
 <translation id="2172905120685242547">Suljetaanko ikkuna?</translation>
@@ -305,6 +307,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2323763861024343754">Sivustotietoja tallennettu</translation>
 <translation id="2327445548174191329">Lähde: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Kaikki menettävät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja kaikki kutsulinkit poistetaan käytöstä</translation>
+<translation id="2329500425421091035">Esittelyssä Chromen tekoälytila</translation>
 <translation id="2330186936255788117">Lisää kirjanmerkkejä</translation>
 <translation id="2332515770639153015">Parannettu selaussuoja on päällä</translation>
 <translation id="233375395665273385">Poista ja kirjaudu ulos</translation>
@@ -1057,7 +1060,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5436928407363358055">Jatka helposti siitä, mihin jäit, synkronoimalla historia ja välilehdet</translation>
 <translation id="5438292632479953702">Lataa uudelleen</translation>
 <translation id="5439191312780166229">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin Perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
-<translation id="5441137934526263133">Eikö sivusto toimi? Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="5441466871879044658">Käännä tälle kielelle</translation>
 <translation id="5444999712122199445">Palaa sivustolle</translation>
 <translation id="544776284582297024">Välilehtipainikkeella voit avata välilehtiä ja selata useita sivuja yhtä aikaa.</translation>
@@ -1112,7 +1114,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="569536719314091526">Käännä sivu mille tahansa kielelle Lisävalinnat-painikkeella</translation>
 <translation id="5696597120588531049">Chrome voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta</translation>
 <translation id="5698878456427040674">Tarkista, tuetaanko valittua tiliä.</translation>
-<translation id="5700415746238689851">Avaa Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> haluaa yhdistää sarjaporttiin</translation>
 <translation id="5715150588940290235">Poistetaanko tallennetut turvakoodit?</translation>
 <translation id="572328651809341494">Hiljattain suljetut välilehdet</translation>
@@ -1418,7 +1419,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="6835182496791325827">Saat ilmoituksen, kun Chrome löytää parhaat tulokset hauillesi, kun olet poissa.</translation>
 <translation id="6846298663435243399">Ladataan…</translation>
-<translation id="6850409657436465440">Latauksesi on vielä kesken.</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> välilehteä suljettiin.</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 tulos löytyi}other{# tulosta löytyi}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiotiedostot, 1 audiotiedosto listassa}other{Audiotiedostot, # audiotiedostoa listassa}}</translation>
@@ -1968,12 +1968,14 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9001604755921395912">Avaa incognito-välilehdellä</translation>
 <translation id="9010094279589497751">Avaa Gemini nopeasti aina tarvittaessa</translation>
 <translation id="9012585441087414258">Suojaa vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan. Jos sivu tekee jotakin epäilyttävää, sivun sisällön URL-osoitteet ja bitit lähetetään Googlen selaussuojalle.</translation>
+<translation id="9014097371980259227">Osa työkaluista on siirretty, jotta voit hakea tekoälytilassa</translation>
 <translation id="9019199799064251516">Jatketaanko ilman auton profiililukkoa?</translation>
 <translation id="9022774213089566801">Usein avatut</translation>
 <translation id="9022871169049522985">Sivustot ja mainostajat voivat mitata mainostensa tuloksia</translation>
 <translation id="9024318700713112071">Valitse Chrome oletusselaimeksi</translation>
 <translation id="9027728231343310283">Kumoa <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Siirrä\u2026</translation>
+<translation id="904146253922032365">Näytä välilehdet pystysuunnassa koskettamalla pitkään</translation>
 <translation id="9042893549633094279">Yksityisyys ja turvallisuus</translation>
 <translation id="9047347135558855162">Aloita haku nopeasti Chromessa</translation>
 <translation id="9050666287014529139">Tunnuslause</translation>

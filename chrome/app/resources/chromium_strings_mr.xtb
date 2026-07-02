@@ -16,9 +16,6 @@
 <translation id="1131805035311359397">तुमचे पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chromium मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium मेनूवर क्लिक करा</translation>
 <translation id="1157985233335035034">अलीकडील भाषा</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ने असे एक्स्टेंशन जोडले आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">तुमच्या Windows च्या आवृत्तीला सपोर्ट नसल्यामुळे इंस्टॉलेशन करता आले नाही.</translation>
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1186645291482254714">तुमच्या फोनवर Chromium सह किमतीचा माग ठेवण्याशी संबंधित अलर्ट मिळवा</translation>
@@ -54,7 +51,6 @@
 <translation id="1524282610922162960">Chromium टॅब शेअर करा</translation>
 <translation id="154404805518949443">Chromium मध्ये साइन इन करा</translation>
 <translation id="1547469039832541117">हायलाइट केलेली टास्क संपवते.</translation>
-<translation id="1553461853655228091">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chromium ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="1562320819937089394">Chromium पिन करा</translation>
 <translation id="1574377791422810894">Chromium ची सुरक्षितता टूल</translation>
 <translation id="1594928384848033697">Chromium ला तुमचा Password Manager डेटा हटवायचा आहे. याला अनुमती देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
@@ -216,9 +212,6 @@
 <translation id="3155163173539279776">Chromium पुन्हा लाँच करा</translation>
 <translation id="3161522574479303604">सर्व भाषा</translation>
 <translation id="3179665906251668410">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
-<translation id="3183357154200327217">तुमच्या काँप्युटरवरील दुसऱ्या प्रोग्रामने अशी थीम जोडली आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">तुमची नवीन Chromium प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="3189205223539394158">तुम्ही टॅब स्विच न करता AI मोड सोबत चॅट करणे सुरू ठेवू शकता. सुरुवात करण्यासाठी, Chromium मध्ये साइन इन करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळेल.</translation>
 <translation id="3224847870593914902">Chromium मधून तुमचे Google खाते काढून टाकण्यासाठी, सेटिंग्ज पेजमध्ये Chromium मधून साइन आउट करा</translation>
@@ -297,9 +290,6 @@
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chromium उत्कृष्ट बनव‍िण्यात मदत करा</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
-<translation id="4061696872429826774">तुमच्या काँप्युटरवरील दुसऱ्या प्रोग्रामने असे एक्स्टेंशन जोडले आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium १ मिनिटासाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते. ब्राउझिंग डेटा हटवला जातो. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो.}other{Chromium # मिनिटांसाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते. ब्राउझिंग डेटा हटवला जातो. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो.}}</translation>
 <translation id="4118474109249235144">Chromium चा गुप्त मोड</translation>
 <translation id="4122186850977583290">Chromium विषयी या पेजवर जा</translation>
@@ -412,7 +402,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium तुमच्या ब्राउझर चा वेग कमी करणारा टॅब थांबवण्याची शिफारस करते}other{Chromium तुमच्या ब्राउझर चा वेग कमी करणारे टॅब थांबवण्याची शिफारस करते}}</translation>
 <translation id="5473971139929175403">या Linux सिस्टीमवर Chromium सपोर्ट नसल्याने कदाचित ते योग्यरितीने काम करू शकत नाही</translation>
 <translation id="5475924890392386523">Chromium ने हा डाउनलोड ब्लॉक केला आहे, कारण ही फाइल तुमच्या वैयक्तिक आणि सोशल नेटवर्क खात्यांना हानी पोहोचवू शकते</translation>
-<translation id="5480860683791598150">या साइटसोबत तुमचे स्थान शेअर करण्यासाठी Chromium ला तुमच्या स्थानाचा ॲक्सेस हवा आहे</translation>
 <translation id="549669000822060376">कृपया Chromium नवीनतम सिस्टीम अपडेट इंस्टॉल करेपर्यंत प्रतीक्षा करा.</translation>
 <translation id="5496810170689441661">Chromium पासवर्ड संपादित करण्याचा प्रयत्‍न करत आहे. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="549975168243349205">Chromium वापरून फिरतीवर असताना Google Drive आणि YouTube यांसारख्या तुमच्या आवडत्या अ‍ॅप्ससह अखंडपणे काम करा.</translation>
@@ -479,9 +468,6 @@
 <translation id="6174920971222007286">ही फाइल धोकादायक असू शकते<ph name="LINE_BREAK" />तुम्ही पासवर्ड दिल्यास, Chromium हे डाउनलोड तुमच्यासाठी तपासू शकते. फाइलविषयीची माहिती Google सुरक्षित ब्राउझिंग ला पाठवली जाते, पण फाइलचा आशय आणि पासवर्ड तुमच्या डिव्हाइसवर राहतो.</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
 <translation id="6183079672144801177">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chromium मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पहा.</translation>
-<translation id="6204922163963157461">तुमच्या काँप्युटरवरील दुसऱ्या प्रोग्रामने असे ॲप जोडले आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">या कॉंप्युटरवर आधीपासून Chromium ची अगदी अलीकडील आवृत्ती आहे. सॉफ्‍टवेअर काम करत नसल्‍यास, कृपया Chromium अनइंस्टॉल करा आणि पुन्‍हा प्रयत्‍न करा.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium आता पुन्हा लाँच होईल}=1{Chromium एका सेकंदामध्ये पुन्हा लाँच होईल}other{Chromium # सेकंदांमध्ये पुन्हा लाँच होईल}}</translation>
 <translation id="6239161312595354541">इमेज शोध ला या व्हिडिओबद्दल विचारा</translation>
@@ -583,7 +569,6 @@
 <translation id="6964305034639999644">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6985329841647292029">ChromiumOS अटी</translation>
-<translation id="6990124437352146030">या साइटसाठी Chromium ला तुमचा मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="7003299027384820442">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये Chromium डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="7011190694940573312">इंस्टॉलेशन यशस्वी झाले नाही, कारण ऑपरेटिंग सिस्टीमच्या या आवृत्तीला सपोर्ट नाही.</translation>
 <translation id="7024536598735240744">उघडण्याशी संबंधित एरर: <ph name="UNPACK_ERROR" />.</translation>
@@ -628,7 +613,6 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 ३. झटपट अ‍ॅक्सेससाठी Chromium तुमच्या टास्कबारवर पिन करण्याकरिता Windows नोटिफिकेशनमध्ये <ph name="BUTTON_3" /> वर क्लिक करा</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium डेव्हलपर</translation>
 <translation id="7450541714075000668">मजकूर कॉपी केला</translation>
-<translation id="7451052299415159299">या साइटसाठी Chromium ला तुमचा कॅमेरा ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="7458892263350425044">तुमचा मायक्रोफोन वापरण्यासाठी, Chromium ला <ph name="BEGIN_LINK" />सिस्टीम सेटिंग्ज<ph name="END_LINK" /> मध्ये अ‍ॅक्सेस द्या</translation>
 <translation id="7461356015007898716">भविष्यातील Chromium अपडेट मिळवण्यासाठी, तुमच्याकडे Windows 10 किंवा त्यापुढील आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर Windows 7 वापरत आहे.</translation>
 <translation id="7467949745582939695">Chromium पुन्हा लाँच करायचे का?</translation>
@@ -753,7 +737,6 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="8719993436687031146">Chromium मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="8747073452963259673">शोध क्षेत्राच्या तळाशी डावा कोपरा: डावीकडे <ph name="LEFT" />%, तळाशी <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">इंस्टॉलसंबंधित एरर: तुमच्या नेटवर्क अ‍ॅडमिनिस्ट्रेटरने गट धोरण लागू केले आहे, जे इंस्टॉलेशन प्रतिबंधित करते: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">या साइटसाठी Chromium ला तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="8813277370772331957">मला नंतर आठवण करून द्या</translation>
 <translation id="8816416449795340678">त्वरित अवलोकन मिळवण्यासाठी आणि फॉलो-अप प्रश्न विचारण्यासाठी हा दस्तऐवज Chromium मधील Gemini सोबत शेअर करा</translation>
 <translation id="8818550178040858407">Chromium मध्ये साइन इन करायचे आहे का?</translation>

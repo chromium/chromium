@@ -690,7 +690,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="8163152278172770963">Nemoj dozvoliti web lokacijama da automatski unose sliku u slici</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="818487310457576362">Prevucite sa strane ekrana da napustite prikaz preko cijelog ekrana.</translation>
-<translation id="8186479265534291036">Web lokacija ne funkcionira? Kolačići treće strane su blokirani</translation>
 <translation id="8197286292360124385">Dozvoljeno: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8211406090763984747">Veza je sigurna</translation>
@@ -761,7 +760,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="8805385115381080995">Pregledanje je brže jer je malo vjerovatno da će web lokacija tražiti da potvrdite da ste stvarna osoba</translation>
 <translation id="881644524232657178">Kada je ovo uključeno, web lokacije mogu koristiti senzore kretanja i svjetlosti uređaja. Kada je isključeno, web lokacije ne mogu koristiti senzore.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Pokušajte privremeno dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
 <translation id="8889294078294184559">Kako nastavljate pregledati, web lokacije mogu provjeravati u Chromeu i s prethodnom web lokacijom koju ste posjetili potvrditi da ste stvarna osoba</translation>
 <translation id="8899807382908246773">Ometajući oglasi</translation>
 <translation id="8903921497873541725">Uvećaj</translation>
@@ -787,7 +785,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="913657688200966289">Uključite odobrenja za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Obavještenja su dozvoljena</translation>
 <translation id="9138217887606523162">Trenutno zumiranje je <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Web lokacije koriste ovu funkciju da automatski uđu u način rada slika u slici. Ovo vam omogućava da nastavite gledati videozapis, a istovremeno vam oslobađa ekran za druge zadatke.</translation>
 <translation id="9156722768168878035">Dozvolite Chromeu da vam prikazuje nedavne kartice na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete isključiti ovo bilo kada u postavkama Chromea.</translation>
 <translation id="9162462602695099906">Ova stranica je opasna</translation>
 <translation id="9182556968660520230">Nemoj dozvoliti web lokacijama reproduciranje zaštićenog sadržaja</translation>

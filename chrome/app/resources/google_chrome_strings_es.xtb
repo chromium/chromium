@@ -15,9 +15,6 @@
 <translation id="1065672644894730302">No se pueden leer tus preferencias.
 
 Es posible que algunas funciones no estén disponibles y que no se guarden los cambios que hagas en las preferencias.</translation>
-<translation id="1070377999570795893">Otro programa de tu ordenador ha añadido una extensión que puede cambiar el funcionamiento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Busca con Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> usaba Chrome anteriormente</translation>
 <translation id="110877069173485804">Este es tu navegador Chrome</translation>
@@ -58,9 +55,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1547295885616600893">ChromeOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1547469039832541117">Finaliza la tarea resaltada.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
-<translation id="1585717515139318619">Otro programa de tu ordenador ha añadido un tema que puede cambiar el funcionamiento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome está utilizando la cámara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> es peligroso, por lo que Chrome lo ha bloqueado.</translation>
 <translation id="1597911401261118146">Para comprobar si tus contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chrome<ph name="END_LINK" />.</translation>
@@ -99,7 +93,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1843347690926158494">Buscar en esta pestaña con Google Lens</translation>
 <translation id="1849248141818021764">Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. Google no recibirá la frase de contraseña ni tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, tendrás que <ph name="BEGIN_LINK" />eliminar los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Usa la aplicación Chrome para seguir navegando en cualquier lugar</translation>
-<translation id="1860536484129686729">Chrome necesita permiso para acceder a la cámara en este sitio web</translation>
 <translation id="1867503717113754604">Inicia sesión en Chrome con tu cuenta de Google para usar <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome no es tu navegador predeterminado</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -150,7 +143,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2307973900865360088">Mantener en el Dock</translation>
 <translation id="2309047409763057870">Esta instalación de Google Chrome es secundaria, por lo que no se puede establecer como navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome ha detectado que estas extensiones contienen malware:</translation>
-<translation id="2348335408836342058">Chrome necesita permiso para acceder a la cámara y al micrófono en este sitio web</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Error de arranque: se está ejecutando otra instancia de la configuración. Inténtalo de nuevo más tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chrome estaban accediendo a 1 dispositivo HID}=1{Una o varias extensiones de Chrome están accediendo a 1 dispositivo HID}other{Una o varias extensiones de Chrome están accediendo a # dispositivos HID}}</translation>
@@ -189,7 +181,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="2747021967398957654">{count,plural, =1{Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google. Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos (1 elemento) se eliminarán.}other{Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google. Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos ({count} elementos) se eliminarán.}}</translation>
 <translation id="2753623023919742414">Haz clic para buscar</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Protección Avanzada requiere que reinicies Chrome para aplicar una actualización}=1{Protección Avanzada requiere que reinicies Chrome para aplicar una actualización. La ventana de incógnito no se volverá a abrir.}other{Protección Avanzada requiere que reinicies Chrome para aplicar una actualización. Las # ventanas de incógnito no se volverán a abrir.}}</translation>
-<translation id="2765403129283291972">Chrome necesita permiso para acceder al micrófono en este sitio web</translation>
 <translation id="2797864378188255696">Al iniciar sesión en servicios de Google como Gmail o YouTube con <ph name="USER_EMAIL" />, puedes iniciar sesión automáticamente en Chrome con la misma cuenta</translation>
 <translation id="2799162042226656283">Tu Chrome</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
@@ -265,7 +256,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="345171907106878721">Añadirte a Chrome</translation>
 <translation id="3453763134178591239">Términos de ChromeOS</translation>
 <translation id="3475778264501649775">Lleva tus contraseñas, pestañas y más allá donde vayas con la aplicación de Chrome en tu teléfono</translation>
-<translation id="3503306920980160878">Chrome necesita acceder a tu ubicación para compartirla con este sitio web</translation>
 <translation id="3512495006767217696">Integrado en Chrome para ayudarte a crear, guardar y autocompletar contraseñas seguras. Añade el acceso directo para acceder fácilmente.</translation>
 <translation id="3539955434060988644">Abrir enlace en una ventana de incó&amp;gnito de Chrome</translation>
 <translation id="354621070532799440">Recordatorio: Las mejores funciones de seguridad de Google en tu bolsillo</translation>
@@ -359,6 +349,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="4400772909124543403">No hay actualizaciones disponibles</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y malware.</translation>
 <translation id="4434353761996769206">Error del instalador: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Comparte este documento con Gemini en Chrome para obtener un resumen rápido y hacer preguntas de seguimiento</translation>
 <translation id="4450664632294415862">Chrome, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en curso en Google Chrome. Vuelve a intentarlo más tarde.</translation>
 <translation id="4459234553906210702">La medición de anuncios permite a los sitios que visitas pedir a Chrome información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
@@ -530,9 +521,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6180522807229584611">Esta pestaña está usando recursos adicionales. Para mejorar tu rendimiento, permite que Chrome la inactive.</translation>
 <translation id="6182736845697986886">No se ha podido realizar la instalación debido a un error interno del servidor de actualizaciones.</translation>
 <translation id="6192058120268468905">Tu cuenta en Chrome</translation>
-<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha añadido una extensión que puede cambiar el funcionamiento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Regla entrante para que Google Chrome permita tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome se cerrará dentro de poco</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
@@ -674,9 +662,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Puedes usar Chrome cada vez que hagas clic en enlaces de mensajes, documentos y otras aplicaciones</translation>
 <translation id="7602868996817972616">Preguntar a Google sobre esta página</translation>
-<translation id="760353356052806707">Otro programa de tu ordenador ha añadido una aplicación que puede cambiar el funcionamiento de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Para proteger tus datos, permite que Chrome quite los permisos de los sitios que no hayas visitado recientemente.</translation>
 <translation id="7629695634924605473">Chrome te avisará si tus contraseñas están en riesgo</translation>
@@ -792,7 +777,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8590782867495422699">Volver a abrir el Modo IA de la Búsqueda de Google</translation>
 <translation id="8601359445272098721">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla seleccionando el botón Traducir pantalla.</translation>
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
-<translation id="861702415419836452">Para crear un mapa 3D de tu entorno, Chrome necesita permiso para acceder a tu cámara</translation>
 <translation id="8623450603356630491">Inicia sesión en Chrome en tu teléfono</translation>
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se reiniciará dentro de 1 minuto}other{Chrome se reiniciará dentro de # minutos}}</translation>

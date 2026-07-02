@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} geçiş anahtarı}other{{count} geçiş anahtarı}}</translation>
 <translation id="1005023885865154304">Şifreleri Otomatik Olarak Doldur ayarlarını açın</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live, Chrome'da Gemini'ın yeni bir özelliğidir</translation>
 <translation id="1013952917065545813">En son kapattığınız sekmeleri yeniden açmak için buraya geri gelebilirsiniz</translation>
 <translation id="1016495303386450659">Öğe güncellendi</translation>
 <translation id="1018804590490383958">Tara ve otomatik doldur</translation>
@@ -1737,6 +1738,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6761393919622941301">Ses</translation>
 <translation id="6765551480308401897">Varsayılan Yapma</translation>
 <translation id="6770452996697898492">[REZERVASYON YAPILDI]</translation>
+<translation id="6775952316617222141">Chrome'da Gemini ile Live'ı kullanın</translation>
 <translation id="6779455296366983087">Tarama verileriniz silinecek</translation>
 <translation id="6782531425936234573">Verileri dışa aktar</translation>
 <translation id="6791425686608802741">"Sekmeyi Yeni Gruba Ekle"ye dokunun</translation>

@@ -17,9 +17,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Meld by Chromium aan<ph name="END_LINK" /> om te kyk of jou wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
 <translation id="1153368717515616349">Klik die Chromium-kieslys</translation>
 <translation id="1157985233335035034">Onlangse tale</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> het ’n uitbreiding bygevoeg wat dalk kan verander hoe Chromium werk.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Installering het misluk omdat jou weergawe van Windows nie gesteun word nie.</translation>
 <translation id="1185134272377778587">Meer oor Chromium</translation>
 <translation id="1186645291482254714">Kry waarskuwings oor prysnasporing met Chromium op jou foon</translation>
@@ -55,7 +52,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1524282610922162960">Deel 'n Chromium-oortjie</translation>
 <translation id="154404805518949443">Meld by Chromium aan</translation>
 <translation id="1547469039832541117">Beëindig die gemerkte taak.</translation>
-<translation id="1553461853655228091">Chromium moet toestemming hê om toegang te kry tot jou kamera om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="1562320819937089394">Speld Chromium vas</translation>
 <translation id="1574377791422810894">Chromium se veiligheidnutsgoed</translation>
 <translation id="1594928384848033697">Chromium wil jou Wagwoordbestuurder-data uitvee. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
@@ -217,9 +213,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3155163173539279776">Herbegin Chromium</translation>
 <translation id="3161522574479303604">Alle tale</translation>
 <translation id="3179665906251668410">Maak skakel in 'n incognitovenster in Chromium oop</translation>
-<translation id="3183357154200327217">’n Ander program op jou rekenaar het ’n tema bygevoeg wat dalk kan verander hoe Chromium werk.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Pasmaak jou nuwe Chromium-profiel</translation>
 <translation id="3189205223539394158">Jy kan aanhou om met KI-modus te klets sonder om oortjies te wissel. Meld aan by Chromium om te begin. Jy sal ook jou wagwoorde en meer op al jou toestelle kry.</translation>
 <translation id="3224847870593914902">Meld in die Instellings-bladsy by Chromium af om jou Google-rekening uit Chromium te verwyder</translation>
@@ -298,9 +291,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4036079820698952681">Help om Chromium te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
 <translation id="4050175100176540509">Belangrike sekuriteitverbeterings en nuwe kenmerke is in die jongste weergawe beskikbaar.</translation>
 <translation id="4055805654398742145">W&amp;agwoordbestuurder</translation>
-<translation id="4061696872429826774">’n Ander program op jou rekenaar het ’n uitbreiding bygevoeg wat dalk kan verander hoe Chromium werk.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Jou organisasie maak Chromium outomaties toe nadat dit 1 minuut lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}other{Jou organisasie maak Chromium outomaties toe nadat dit # minute lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}}</translation>
 <translation id="4118474109249235144">Chromium Incognito</translation>
 <translation id="4122186850977583290">Gaan na Meer oor Chromium-bladsy</translation>
@@ -413,7 +403,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium beveel aan dat jy die oortjie wat jou blaaier stadig maak, onderbreek}other{Chromium beveel aan dat jy die oortjies wat jou blaaier stadig maak, onderbreek}}</translation>
 <translation id="5473971139929175403">Chromium sal dalk nie reg werk nie omdat dit nie meer in hierdie Linux-uitreiking gesteun word nie</translation>
 <translation id="5475924890392386523">Chromium het hierdie aflaai geblokkeer omdat die lêer jou persoonlike en sosialenetwerkrekeninge kan beskadig</translation>
-<translation id="5480860683791598150">Chromium het toegang tot jou ligging nodig om jou ligging met hierdie werf te deel</translation>
 <translation id="549669000822060376">Wag terwyl Chromium die jongste stelselopdaterings installeer.</translation>
 <translation id="5496810170689441661">Chromium probeer tans om wagwoorde te wysig. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="549975168243349205">Werk moeiteloos met jou gunstelingapps soos Google Drive en YouTube met Chromium terwyl jy aan die beweeg is.</translation>
@@ -480,9 +469,6 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="6174920971222007286">Hierdie lêer kan gevaarlik wees<ph name="LINE_BREAK" />Chromium kan hierdie aflaai vir jou nagaan as jy die wagwoord verskaf. Inligting oor die lêer word na Google Veiligblaai gestuur, maar die lêerinhoud en wagwoord bly op jou toestel.</translation>
 <translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
 <translation id="6183079672144801177">Maak seker dat jy by Chromium aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
-<translation id="6204922163963157461">’n Ander program op jou rekenaar het ’n app bygevoeg wat dalk kan verander hoe Chromium werk.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Chromium. As die sagteware nie werk nie, deïnstalleer Chromium en probeer weer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sal nou herbegin}=1{Chromium sal oor 1 sekonde herbegin}other{Chromium sal oor # sekondes herbegin}}</translation>
 <translation id="6239161312595354541">Vra Prentsoektog oor hierdie video</translation>
@@ -584,7 +570,6 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="6964305034639999644">Maak skakel in 'n incognitovenster in Chromium oop</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985329841647292029">Chromium-bedryfstel se bepalings</translation>
-<translation id="6990124437352146030">Chromium het toestemming nodig om toegang te kry tot jou mikrofoon vir hierdie werf</translation>
 <translation id="7003299027384820442">Voer jou wagfrase in om Chromium-data in jou rekening, <ph name="ACCOUNT_EMAIL" />, te gebruik en te stoor</translation>
 <translation id="7011190694940573312">Installering het misluk omdat hierdie weergawe van die bedryfstelsel nie gesteun word nie.</translation>
 <translation id="7024536598735240744">Uitpakfout: <ph name="UNPACK_ERROR" />.</translation>
@@ -629,7 +614,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 3. Klik <ph name="BUTTON_3" /> in die Windows-kennisgewing om Chromium vir kitstoegang op jou taakbalk vas te speld</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Teks gekopieer</translation>
-<translation id="7451052299415159299">Chromium het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
 <translation id="7458892263350425044">Jy moet vir Chromium toegang in <ph name="BEGIN_LINK" />stelselinstellings<ph name="END_LINK" /> gee om jou mikrofoon te gebruik</translation>
 <translation id="7461356015007898716">Jy het Windows 10 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik Windows 7.</translation>
 <translation id="7467949745582939695">Herbegin Chromium?</translation>
@@ -754,8 +738,8 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8719993436687031146">Meld by Chromium aan?</translation>
 <translation id="8747073452963259673">onderste linkerhoek van soekgebied: links <ph name="LEFT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Installeerfout: Jou netwerkadmin het ’n groepbeleid toegepas wat installasie verhinder: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>
 <translation id="8813277370772331957">Herinner my later</translation>
+<translation id="8816416449795340678">Deel hierdie dokument met Gemini in Chromium om ’n vinnige oorsig te kry en opvolgvrae te vra</translation>
 <translation id="8818550178040858407">Meld aan by Chromium?</translation>
 <translation id="8823401858233292222">Maak Chromium die verstekblaaier en speld dit aan die taakbalk vas</translation>
 <translation id="8826492472752484139">Klik “Wagwoordbestuurder”</translation>

@@ -17,9 +17,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1131805035311359397">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Click the Chromium menu</translation>
 <translation id="1157985233335035034">Recent languages</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> has added an extension that may change the way that Chromium works.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Installation failed because your version of Windows is not supported.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1186645291482254714">Get price tracking alerts with Chromium on your phone</translation>
@@ -55,7 +52,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1524282610922162960">Share a Chromium tab</translation>
 <translation id="154404805518949443">Sign in to Chromium</translation>
 <translation id="1547469039832541117">Ends the highlighted task.</translation>
-<translation id="1553461853655228091">Chromium needs permission to access your camera to create a 3D map of your surroundings</translation>
 <translation id="1562320819937089394">Pin Chromium</translation>
 <translation id="1574377791422810894">Chromium's safety tools</translation>
 <translation id="1594928384848033697">Chromium wants to delete your Password Manager data. Type in your Windows password to allow this.</translation>
@@ -217,9 +213,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3155163173539279776">Relaunch Chromium</translation>
 <translation id="3161522574479303604">All languages</translation>
 <translation id="3179665906251668410">Open Link in Chromium Inco&amp;gnito Window</translation>
-<translation id="3183357154200327217">Another program on your computer added a theme that may change the way Chromium works.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Customise your new Chromium profile</translation>
 <translation id="3189205223539394158">You can keep chatting with AI Mode without switching tabs. To get started, sign in to Chromium. You'll also get your passwords and more on all your devices.</translation>
 <translation id="3224847870593914902">To remove your Google Account from Chromium, sign out of Chromium in the Settings page</translation>
@@ -298,9 +291,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4036079820698952681">Help make Chromium better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
-<translation id="4061696872429826774">Another program on your computer added an extension that may change the way Chromium works.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Your organisation closes Chromium automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chromium automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="4118474109249235144">Chromium Incognito</translation>
 <translation id="4122186850977583290">Go to the About Chromium page</translation>
@@ -413,7 +403,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recommends pausing the tab that's slowing your browser}other{Chromium recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="5473971139929175403">Chromium may not function correctly because it is no longer supported on this Linux distribution</translation>
 <translation id="5475924890392386523">Chromium blocked this download because the file can harm your personal and social network accounts</translation>
-<translation id="5480860683791598150">Chromium needs access to your location to share your location with this site</translation>
 <translation id="549669000822060376">Please wait while Chromium installs the latest system updates.</translation>
 <translation id="5496810170689441661">Chromium is trying to edit passwords. Type your Windows password to allow this.</translation>
 <translation id="549975168243349205">Seamlessly work with your favourite apps like Google Drive and YouTube on the go with Chromium.</translation>
@@ -480,9 +469,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="6174920971222007286">This file may be dangerous<ph name="LINE_BREAK" />Chromium can check this download for you if you provide the password. Info about the file gets sent to Google Safe Browsing, but the file content and password stay on your device.</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
-<translation id="6204922163963157461">Another program on your computer added an app that may change the way Chromium works.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">This computer already has a more recent version of Chromium. If the software is not working, please uninstall Chromium and try again.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium will relaunch now}=1{Chromium will relaunch in 1 second}other{Chromium will relaunch in # seconds}}</translation>
 <translation id="6239161312595354541">Ask image search about this video</translation>
@@ -584,7 +570,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985329841647292029">Chromium OS terms</translation>
-<translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>
 <translation id="7003299027384820442">Enter your passphrase to use and save Chromium data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
 <translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
@@ -629,7 +614,6 @@ Google Chrome is unable to recover your settings.</translation>
 3. Click <ph name="BUTTON_3" /> in the Windows notification to pin Chromium to your taskbar for quick access</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text copied</translation>
-<translation id="7451052299415159299">Chromium needs permission to access your camera for this site</translation>
 <translation id="7458892263350425044">To use your microphone, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 7.</translation>
 <translation id="7467949745582939695">Relaunch Chromium?</translation>
@@ -754,8 +738,8 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8719993436687031146">Sign in to Chromium?</translation>
 <translation id="8747073452963259673">bottom-left corner of search area: left <ph name="LEFT" />%, bottom <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>
 <translation id="8813277370772331957">Remind me later</translation>
+<translation id="8816416449795340678">Share this document with Gemini in Chromium to get a quick overview and ask follow-up questions</translation>
 <translation id="8818550178040858407">Sign in to Chromium?</translation>
 <translation id="8823401858233292222">Make Chromium the default browser and pin to the taskbar</translation>
 <translation id="8826492472752484139">Click 'Password Manager'</translation>

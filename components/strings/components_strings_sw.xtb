@@ -2370,6 +2370,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4705573018059932476">Umechagua kuthibitisha ukitumia <ph name="AUTHENTICATOR" /> kwenye tovuti zinazotumia <ph name="PROVIDER_ORIGIN" />. Huenda mtoa huduma huyu amehifadhi maelezo kuhusu jinsi unavyolipa, ambayo unaweza <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Muunganisho wako umekatizwa</translation>
 <translation id="4708276642004148190">Usambazaji na Usafishaji wa Maji</translation>
+<translation id="4710249055485272920">Imeshindwa kupata maelezo haya</translation>
 <translation id="4711628883879888561">Shirikiana kwenye kikundi cha vichupo</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Huna ruhusa ya kutembelea tovuti hii</translation>
@@ -3022,6 +3023,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5707154300732650394">Endelea na ziara yako</translation>
 <translation id="57094364128775171">Pendekeza nenosiri thabiti…</translation>
 <translation id="570953204696852961">Nyekundu ya 3</translation>
+<translation id="5710907191777451677">Badala yake, uliza Gemini kwenye Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Madaktari wa Mifugo</translation>
 <translation id="5715150588940290235">Ungependa kufuta misimbo ya usalama iliyohifadhiwa?</translation>
@@ -3924,7 +3926,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7110116949943042888">Kazi za Muda Mfupi na Msimu</translation>
 <translation id="7110368079836707726">Vyuo na Vyuo Vikuu</translation>
 <translation id="7111507312244504964">Tathmini na Ukaguzi wa Mali</translation>
-<translation id="7117290130383718594">Manukuu ya maandishi</translation>
 <translation id="7118618213916969306">Tafuta URL ya ubao wa kunakili, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Unaona tahadhari hii kwa sababu tovuti hii haitumii HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi kuhusu tahadhari hii<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Maigizo kwenye TV</translation>
@@ -5044,7 +5045,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8871485335898060555">Mikusanyiko ya Zana za Mambo ya Kale</translation>
 <translation id="8871553383647848643">Weka mapendeleo ya mwonekano wa kivinjari chako</translation>
 <translation id="887350038812854047">Sera hii ina thamani sawa inayotumika katika viwango vya mashine na mtumiaji. Sera inafanya kazi kama ilivyokusudiwa.</translation>
-<translation id="8874790741333031443">Jaribu kuruhusu kwa muda vidakuzi vya washirika wengine, hatua hii inamaanisha kuwa ulinzi wa kuvinjari utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa.</translation>
 <translation id="8874824191258364635">Andika namba sahihi ya kadi</translation>
 <translation id="8877780815363510165">Uvuvi</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" haiwezi kuwekwa kuwa "<ph name="DATA_CONTROLS_LEVEL" />"</translation>

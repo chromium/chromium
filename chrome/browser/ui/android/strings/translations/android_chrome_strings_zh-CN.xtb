@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">网站已被暂停</translation>
 <translation id="2063047797624276601">您的组织已开启“增强型安全浏览”功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 项下载失败}other{# 项下载失败}}</translation>
+<translation id="2066690553719545730">始终显示 AI 模式</translation>
 <translation id="2067805253194386918">文本</translation>
 <translation id="2079545284768500474">撤销</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2163089732491971196">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令</translation>
+<translation id="2164015935042801524">右键点击此处即可垂直显示标签页</translation>
 <translation id="2166228530126694506">版本 <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">“图片说明”功能已关闭</translation>
 <translation id="2172905120685242547">关闭窗口？</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">网站存储数据</translation>
 <translation id="2327445548174191329">来自<ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
+<translation id="2329500425421091035">Chrome 迎来 AI 模式</translation>
 <translation id="2330186936255788117">更多书签</translation>
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">同步历史记录和标签页，无缝衔接浏览体验</translation>
 <translation id="5438292632479953702">再次下载</translation>
 <translation id="5439191312780166229">基于比“标准保护”更全面的网站数据进行分析，针对危险网站（甚至是 Google 之前未知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
-<translation id="5441137934526263133">网站无法正常运行？这是因为第三方 Cookie 已被屏蔽</translation>
 <translation id="5441466871879044658">翻译成所选语言</translation>
 <translation id="5444999712122199445">返回网站</translation>
 <translation id="544776284582297024">若要打开多个标签页并同时访问不同网页，请点按“打开的标签页”按钮</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">通过“更多选项”按钮将此页面翻译成任何语言</translation>
 <translation id="5696597120588531049">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响</translation>
 <translation id="5698878456427040674">检查所选账号是否受支持。</translation>
-<translation id="5700415746238689851">打开 Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> 想连接到串行端口</translation>
 <translation id="5715150588940290235">要删除已保存的安全码吗？</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6835182496791325827">您离开后，Chrome 会继续为您寻找最佳搜索结果，并及时通知您。</translation>
 <translation id="6846298663435243399">正在加载…</translation>
-<translation id="6850409657436465440">您的下载仍在进行中</translation>
 <translation id="6850830437481525139">已关闭 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{找到 1 个结果}other{找到 # 个结果}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{音频文件，列表中有 1 个音频文件}other{音频文件，列表中有 # 个音频文件}}</translation>
@@ -1966,12 +1966,14 @@
 <translation id="9001604755921395912">在 Chrome 无痕式标签页中打开</translation>
 <translation id="9010094279589497751">随时随需快速打开 Gemini</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
+<translation id="9014097371980259227">部分工具的位置有所调整，助您利用 AI 模式开启搜索新体验</translation>
 <translation id="9019199799064251516">不设置车载设备个人资料锁定就继续吗？</translation>
 <translation id="9022774213089566801">经常访问</translation>
 <translation id="9022871169049522985">网站和广告主可以衡量其广告的效果</translation>
 <translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
 <translation id="9027728231343310283">重新授权 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="904146253922032365">轻触并按住即可垂直显示标签页</translation>
 <translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9047347135558855162">在 Chrome 中快速发起搜索</translation>
 <translation id="9050666287014529139">密码</translation>

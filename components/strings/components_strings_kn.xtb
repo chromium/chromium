@@ -2367,6 +2367,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" /> ಅನ್ನು ಬಳಸುವ ಸೈಟ್‌ಗಳಲ್ಲಿ <ph name="AUTHENTICATOR" /> ಮೂಲಕ ಪರಿಶೀಲಿಸಲು ನೀವು ಆಯ್ಕೆಮಾಡಿದ್ದೀರಿ. ನೀವು ಹೇಗೆ ಪಾವತಿಸುತ್ತೀರಿ ಎಂಬುದರ ಕುರಿತು ಈ ಪೂರೈಕೆದಾರರು ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿರಬಹುದು, ಅದನ್ನು ನೀವು <ph name="LINK_TEXT" /> ಗೆ ವಿನಂತಿಸಬಹುದು.</translation>
 <translation id="4708268264240856090">ನಿಮ್ಮ ಸಂಪರ್ಕಕ್ಕೆ ಅಡ್ಡಿಯಾಗಿದೆ</translation>
 <translation id="4708276642004148190">ನೀರು ಪೂರೈಕೆ ಮತ್ತು ಚಿಕಿತ್ಸೆ</translation>
+<translation id="4710249055485272920">ಈ ಮಾಹಿತಿಯನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="4711628883879888561">ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ಕೊಲಾಬೊರೇಟ್ ಮಾಡಿ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ಈ ಸೈಟ್‌ ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿ ಹೊಂದಿಲ್ಲ</translation>
@@ -3019,6 +3020,7 @@
 <translation id="5707154300732650394">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="57094364128775171">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
 <translation id="570953204696852961">ಕೆಂಪು 3</translation>
+<translation id="5710907191777451677">ಬದಲಿಗೆ, Chrome ನಲ್ಲಿ Gemini ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">ಪಶುವೈದ್ಯರು</translation>
 <translation id="5715150588940290235">ಸೇವ್ ಮಾಡಲಾದ ಸೆಕ್ಯೂರಿಟಿ ಕೋಡ್‌ಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
@@ -3922,7 +3924,6 @@
 <translation id="7110116949943042888">ತಾತ್ಕಾಲಿಕ ಮತ್ತು ಋತುಮಾನ-ಆಧಾರಿತ ಉದ್ಯೋಗಗಳು</translation>
 <translation id="7110368079836707726">ಕಾಲೇಜುಗಳು ಮತ್ತು ವಿಶ್ವವಿದ್ಯಾನಿಲಯಗಳು</translation>
 <translation id="7111507312244504964">ಆಸ್ತಿ ತಪಾಸಣೆಗಳು ಮತ್ತು ಮೌಲ್ಯ ನಿರ್ಣಯಗಳು</translation>
-<translation id="7117290130383718594">ಪಠ್ಯ ಟಿಪ್ಪಣಿಗಳು</translation>
 <translation id="7118618213916969306">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ URL ಗಾಗಿ ಹುಡುಕಿ, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">ಈ ಸೈಟ್ HTTPS ಅನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ, ನೀವು ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ನೋಡುತ್ತಿದ್ದೀರಿ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">TV ನಾಟಕಗಳು</translation>
@@ -5045,7 +5046,6 @@
 <translation id="8871485335898060555">ಪುರಾತನ ವಸ್ತುಗಳು ಮತ್ತು ಸಂಗ್ರಹಯೋಗ್ಯ ವಸ್ತುಗಳು</translation>
 <translation id="8871553383647848643">ನಿಮ್ಮ ಬ್ರೌಸರ್ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="887350038812854047">ಈ ನೀತಿಯು ಮಷಿನ್‌ ಮತ್ತು ಬಳಕೆದಾರರ ಹಂತಗಳಲ್ಲಿ ಒಂದೇ ಮೌಲ್ಯವನ್ನು ಅನ್ವಯಿಸಿದೆ. ನೀತಿಯು ಉದ್ದೇಶಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ.</translation>
-<translation id="8874790741333031443">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ತಾತ್ಕಾಲಿಕವಾಗಿ ಅನುಮತಿಸಲು ಪ್ರಯತ್ನಿಸಿ, ಅಂದರೆ ಬ್ರೌಸಿಂಗ್ ಕಡಿಮೆ ಸಂರಕ್ಷಿತವಾಗಿದೆ, ಆದರೆ ಸೈಟ್‌ನ ಫೀಚರ್‌ಗಳು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ.</translation>
 <translation id="8874824191258364635">ಮಾನ್ಯವಾದ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="8877780815363510165">ಮೀನುಗಾರಿಕೆ</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_LEVEL" />" ಗೆ "<ph name="DATA_CONTROLS_RESTRICTION" />" ಅನ್ನು ಸೆಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>

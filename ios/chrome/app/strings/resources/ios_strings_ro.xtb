@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} cheie de acces}few{{count} chei de acces}other{{count} de chei de acces}}</translation>
 <translation id="1005023885865154304">Deschide setările pentru completarea automată a parolelor</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">Live este o funcție nouă din Gemini în Chrome</translation>
 <translation id="1013952917065545813">Poți să revii aici mai târziu ca să redeschizi file pe care le-ai închis recent.</translation>
 <translation id="1016495303386450659">Element actualizat</translation>
 <translation id="1018804590490383958">Scanează și completează automat</translation>
@@ -1737,6 +1738,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Nu seta ca prestabilit</translation>
 <translation id="6770452996697898492">[REZERVAT]</translation>
+<translation id="6775952316617222141">Folosește Live cu Gemini în Chrome</translation>
 <translation id="6779455296366983087">Datele de navigare vor fi șterse</translation>
 <translation id="6782531425936234573">Exportă date</translation>
 <translation id="6791425686608802741">Atinge Adaugă fila într-un grup nou</translation>

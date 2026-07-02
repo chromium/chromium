@@ -2367,6 +2367,7 @@
 <translation id="4705573018059932476">ଆପଣ <ph name="PROVIDER_ORIGIN" /> ବ୍ୟବହାର କରୁଥିବା ସାଇଟଗୁଡ଼ିକରେ <ph name="AUTHENTICATOR" /> ମାଧ୍ୟମରେ ଯାଞ୍ଚ କରିବାକୁ ବାଛିଛନ୍ତି। ଆପଣ କିପରି ପେମେଣ୍ଟ କରନ୍ତି ସେ ବିଷୟରେ ଏହି ପ୍ରଦାନକାରୀ ସୂଚନା ଷ୍ଟୋର କରିଥାଇପାରନ୍ତି, ଯାହାକୁ ଆପଣ <ph name="LINK_TEXT" /> କରିପାରିବେ।</translation>
 <translation id="4708268264240856090">ଆପଣଙ୍କର ସଂଯୋଗରେ ବ୍ୟାଘାତ ହୋ‍ଇଥିଲା</translation>
 <translation id="4708276642004148190">ଜଳ ଯୋଗାଣ ଏବଂ ଟ୍ରିଟମେଣ୍ଟ</translation>
+<translation id="4710249055485272920">ଏହି ସୂଚନା ମିଳିଲା ନାହିଁ</translation>
 <translation id="4711628883879888561">ଟାବ ଗ୍ରୁପରେ ସହଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ଏହି ସାଇଟ୍‌କୁ ଯିବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ ଅନୁମତି ନାହିଁ</translation>
@@ -3019,6 +3020,7 @@
 <translation id="5707154300732650394">ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="57094364128775171">ଜଟିଳ ପାସ୍‌ୱର୍ଡ ପରାମର୍ଶ କରନ୍ତୁ…</translation>
 <translation id="570953204696852961">ଲାଲ 3</translation>
+<translation id="5710907191777451677">ଏହା ପରିବର୍ତ୍ତେ Chromeରେ Geminiକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">ପଶୁ ଚିକିତ୍ସକମାନେ</translation>
 <translation id="5715150588940290235">ସେଭ କରାଯାଇଥିବା ସୁରକ୍ଷା କୋଡଗୁଡ଼ିକୁ ଡିଲିଟ କରିବେ?</translation>
@@ -3920,7 +3922,6 @@
 <translation id="7110116949943042888">ଅସ୍ଥାୟୀ ଏବଂ ସିଜନାଲ ଚାକିରି</translation>
 <translation id="7110368079836707726">କଲେଜ ଏବଂ ବିଶ୍ୱବିଦ୍ୟାଳୟଗୁଡ଼ିକ</translation>
 <translation id="7111507312244504964">ସମ୍ପତ୍ତି ଯାଞ୍ଚ ଏବଂ ମୂଲ୍ୟାଙ୍କନ</translation>
-<translation id="7117290130383718594">ଟେକ୍ସଟ ଏନୋଟେସନ</translation>
 <translation id="7118618213916969306">କ୍ଲିପ୍‌ବୋର୍ଡ URL, <ph name="SHORT_URL" />କୁ ଖୋଜନ୍ତୁ</translation>
 <translation id="7118852830504022370">ଏହି ସାଇଟ HTTPSକୁ ସପୋର୍ଟ କରୁନଥିବା ଯୋଗୁଁ ଆପଣ ଏହି ଚେତାବନୀ ଦେଖୁଛନ୍ତି। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ଟିଭି ଡ୍ରାମାଗୁଡ଼ିକ</translation>
@@ -5042,7 +5043,6 @@
 <translation id="8871485335898060555">ଆଣ୍ଟିକ ଏବଂ କଲେକ୍ଟିବଲଗୁଡ଼ିକ</translation>
 <translation id="8871553383647848643">ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="887350038812854047">ଏହି ନୀତିରେ ମେସିନ ଏବଂ ୟୁଜର ଲେଭେଲରେ ସମାନ ମୂଲ୍ୟ ଲାଗୁ କରାଯାଇଛି। ନୀତିଟି ଆଶାନୁରୂପେ କାର୍ଯ୍ୟ କରୁଛି।</translation>
-<translation id="8874790741333031443">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଅନୁମତି ଦେବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ, ଯାହାର ଅର୍ଥ ହେଉଛି କମ ବ୍ରାଉଜ କରିବା ସୁରକ୍ଷା କିନ୍ତୁ ସାଇଟ ଫିଚରଗୁଡ଼ିକ ଆଶା କରାଯାଉଥିବା ପରି କାମ କରିବାର ସମ୍ଭାବନା ଅଧିକ</translation>
 <translation id="8874824191258364635">ଏକ ବୈଧ କାର୍ଡ ନମ୍ବର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="8877780815363510165">ଫିସିଂ</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />"କୁ "<ph name="DATA_CONTROLS_LEVEL" />"ରେ ସେଟ କରାଯାଇପାରିବ ନାହିଁ</translation>

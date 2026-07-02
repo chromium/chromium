@@ -690,7 +690,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="8163152278172770963">Jangan izinkan situs masuk ke mode picture-in-picture secara otomatis</translation>
 <translation id="8168435359814927499">Konten</translation>
 <translation id="818487310457576362">Tarik dari sisi layar untuk keluar dari mode layar penuh.</translation>
-<translation id="8186479265534291036">Situs tidak berfungsi? Cookie pihak ketiga diblokir</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> diizinkan</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8211406090763984747">Koneksi aman</translation>
@@ -761,7 +760,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="8805385115381080995">Penjelajahan lebih cepat karena situs cenderung tidak meminta Anda untuk memverifikasi bahwa Anda adalah orang sungguhan</translation>
 <translation id="881644524232657178">Jika diaktifkan, situs dapat menggunakan sensor gerakan dan cahaya perangkat Anda. Jika dinonaktifkan, situs tidak dapat menggunakannya.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Coba izinkan cookie pihak ketiga untuk sementara. Jika demikian, Anda akan mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan.</translation>
 <translation id="8889294078294184559">Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Perbesar</translation>
@@ -787,7 +785,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="913657688200966289">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notifikasi diizinkan</translation>
 <translation id="9138217887606523162">Zoom saat ini sebesar <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Situs menggunakan fitur ini untuk masuk ke mode picture-in-picture secara otomatis. Hal ini memungkinkan Anda terus menonton video, sekaligus mengosongkan layar untuk melakukan tugas lainnya.</translation>
 <translation id="9156722768168878035">Izinkan Chrome menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="9182556968660520230">Jangan izinkan situs memutar konten yang dilindungi</translation>

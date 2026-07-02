@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} passkey}other{{count} passkeys}}</translation>
 <translation id="1005023885865154304">Open Autofill passwords settings</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live is a new feature on Gemini in Chrome</translation>
 <translation id="1013952917065545813">You can come back here to reopen tabs that you've recently closed</translation>
 <translation id="1016495303386450659">Item updated</translation>
 <translation id="1018804590490383958">Scan and autofill</translation>
@@ -1737,6 +1738,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Don't make default</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
+<translation id="6775952316617222141">Go Live with Gemini in Chrome</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
 <translation id="6782531425936234573">Export data</translation>
 <translation id="6791425686608802741">Tap 'Add tab to new group'</translation>

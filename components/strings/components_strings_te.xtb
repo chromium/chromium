@@ -2365,6 +2365,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే సైట్‌లలో <ph name="AUTHENTICATOR" />‌తో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీరు ఎలా పేమెంట్ చేస్తారనే దాని గురించి సమాచారాన్ని స్టోర్ చేసి ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">మీ కనెక్షన్‌కు అంతరాయం ఏర్పడింది</translation>
 <translation id="4708276642004148190">నీటి సరఫరా &amp; చికిత్స</translation>
+<translation id="4710249055485272920">ఈ సమాచారాన్ని కనుగొనడం సాధ్యపడలేదు</translation>
 <translation id="4711628883879888561">ట్యాబ్ గ్రూప్‌లో సహకరించండి</translation>
 <translation id="4712404868219726379">Windows Hell</translation>
 <translation id="471880041731876836">ఈ సైట్‌ను సందర్శించడానికి మీకు అనుమతి లేదు</translation>
@@ -3017,6 +3018,7 @@
 <translation id="5707154300732650394">మీ సెర్చ్‌ను కొనసాగించండి</translation>
 <translation id="57094364128775171">శక్తివంతమైన పాస్‌వర్డ్‌ సూచన</translation>
 <translation id="570953204696852961">ఎరుపు రంగు 3</translation>
+<translation id="5710907191777451677">బదులుగా Chromeలో Geminiని అడగండి</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">పశువైద్య నిపుణులు</translation>
 <translation id="5715150588940290235">సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లను తొలగించాలా?</translation>
@@ -3919,7 +3921,6 @@
 <translation id="7110116949943042888">తాత్కాలిక &amp; సీజనల్ ఉద్యోగాలు</translation>
 <translation id="7110368079836707726">కాలేజీలు &amp; యూనివర్సిటీలు</translation>
 <translation id="7111507312244504964">ఆస్తి తనిఖీలు &amp; అంచనాలు</translation>
-<translation id="7117290130383718594">టెక్స్ట్ అదనపు గమనికలు</translation>
 <translation id="7118618213916969306">క్లిప్‌బోర్డ్ URL, <ph name="SHORT_URL" /> కోసం వెతకండి</translation>
 <translation id="7118852830504022370">ఈ సైట్ HTTPS‌ను సపోర్ట్ చేయనందున మీకు ఈ హెచ్చరిక కనిపిస్తోంది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">TV డ్రామా షోలు</translation>
@@ -5042,7 +5043,6 @@
 <translation id="8871485335898060555">పురాతన వస్తువులు &amp; సేకరణలు</translation>
 <translation id="8871553383647848643">మీ బ్రౌజర్ రూపాన్ని అనుకూలంగా మార్చండి</translation>
 <translation id="887350038812854047">ఈ పాలసీకి మెషిన్, యూజర్ స్థాయిలలో ఒకే విలువ వర్తిస్తుంది. పాలసీ ఉద్దేశించిన విధంగా పని చేస్తోంది.</translation>
-<translation id="8874790741333031443">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే బ్రౌజింగ్ రక్షణ తక్కువగా ఉంటుంది కానీ సైట్ ఫీచర్‌లు ఆశించిన విధంగా పని చేసే అవకాశం ఉంటుంది.</translation>
 <translation id="8874824191258364635">చెల్లుబాటు అయ్యే కార్డ్ నంబర్‌ను నమోదు చేయండి</translation>
 <translation id="8877780815363510165">చేపలు పట్టడం</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />"ను "<ph name="DATA_CONTROLS_LEVEL" />"కు సెట్ చేయడానికి వీలు పడదు</translation>

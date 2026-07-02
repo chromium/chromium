@@ -243,6 +243,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2056878612599315956">Webbplatsen har pausats</translation>
 <translation id="2063047797624276601">Organisationen har aktiverat Förbättrad säker webbsökning</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 nedladdning misslyckades}other{# nedladdningar misslyckades}}</translation>
+<translation id="2066690553719545730">Visa alltid AI-läget</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2149968176347646218">Anslutningen är inte säker</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2163089732491971196">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt Google-konto</translation>
+<translation id="2164015935042801524">Högerklicka här för att visa flikar vertikalt</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Bildbeskrivningar har inaktiverats</translation>
 <translation id="2172905120685242547">Vill du stänga fönstret?</translation>
@@ -305,6 +307,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2323763861024343754">Webbplatslagring</translation>
 <translation id="2327445548174191329">Från <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
+<translation id="2329500425421091035">Vi presenterar AI-läget i Chrome</translation>
 <translation id="2330186936255788117">Fler bokmärken</translation>
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
@@ -1058,7 +1061,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5436928407363358055">Synkronisera din historik och dina flikar för att enkelt fortsätta där du slutade</translation>
 <translation id="5438292632479953702">Ladda ned igen</translation>
 <translation id="5439191312780166229">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
-<translation id="5441137934526263133">Fungerar inte webbplatsen? Cookies från tredje part har blockerats</translation>
 <translation id="5441466871879044658">Översätt till detta språk</translation>
 <translation id="5444999712122199445">Gå tillbaka till webbplatsen</translation>
 <translation id="544776284582297024">Tryck på Öppna flikar om du vill öppna flikar och besöka olika sidor samtidigt</translation>
@@ -1113,7 +1115,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="569536719314091526">Översätt den här sidan till vilket språk som helst via knappen Fler alternativ</translation>
 <translation id="5696597120588531049">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera</translation>
 <translation id="5698878456427040674">Kontrollera att det valda kontot stöds.</translation>
-<translation id="5700415746238689851">Öppna Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vill ansluta till en serieport</translation>
 <translation id="5715150588940290235">Vill du radera sparade säkerhetskoder?</translation>
 <translation id="572328651809341494">Senaste flikarna</translation>
@@ -1419,7 +1420,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6835182496791325827">Få aviseringar när Chrome hittar de bästa resultaten för dina sökningar medan du är borta.</translation>
 <translation id="6846298663435243399">Läser in …</translation>
-<translation id="6850409657436465440">Nedladdningen pågår fortfarande</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> flikar har stängts</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 resultat hittades}other{# resultat hittades}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Ljudfiler, 1 ljudfil i listan}other{Ljudfiler, # ljudfiler i listan}}</translation>
@@ -1969,12 +1969,14 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9001604755921395912">Öppna i Chrome-inkognitoflik</translation>
 <translation id="9010094279589497751">Öppna Gemini snabbt när du behöver den</translation>
 <translation id="9012585441087414258">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. Om något misstänkt händer på en sida skickas webbadresser och delar av sidinnehållet till Google Säker webbsökning.</translation>
+<translation id="9014097371980259227">Vissa verktyg har flyttats så att du kan söka med AI-läget</translation>
 <translation id="9019199799064251516">Vill du fortsätta utan ett profillås i bilen?</translation>
 <translation id="9022774213089566801">Mest besökta</translation>
 <translation id="9022871169049522985">Webbplatser och annonsörer kan mäta annonsernas resultat</translation>
 <translation id="9024318700713112071">Ställ in Chrome som standardwebbläsare</translation>
 <translation id="9027728231343310283">Ångra <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytta till\u2026</translation>
+<translation id="904146253922032365">Tryck länge för att visa flikar vertikalt</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="9047347135558855162">Starta snabbt en sökning i Chrome</translation>
 <translation id="9050666287014529139">Lösenfras</translation>

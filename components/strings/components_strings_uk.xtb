@@ -2370,6 +2370,7 @@
 <translation id="4705573018059932476">Ви вибрали підтвердження за допомогою <ph name="AUTHENTICATOR" /> на сайтах, які використовують <ph name="PROVIDER_ORIGIN" />. У цього постачальника могла зберегтись інформація про ваш спосіб оплати, але ви можете надіслати <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">З’єднання розірвано</translation>
 <translation id="4708276642004148190">Водопостачання й очищення води</translation>
+<translation id="4710249055485272920">Не вдалося знайти цю інформацію</translation>
 <translation id="4711628883879888561">Спільна робота з групою вкладок</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">У вас немає дозволу відвідувати цей сайт</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5707154300732650394">Відновити сеанс</translation>
 <translation id="57094364128775171">Запропонувати надійний пароль…</translation>
 <translation id="570953204696852961">Червоний 3</translation>
+<translation id="5710907191777451677">Запитайте Gemini у Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5715150588940290235">Видалити збережені коди безпеки?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">Тимчасові й сезонні вакансії</translation>
 <translation id="7110368079836707726">Коледжі й університети</translation>
 <translation id="7111507312244504964">Оцінка вартості й перевірка нерухомості</translation>
-<translation id="7117290130383718594">Текстові примітки</translation>
 <translation id="7118618213916969306">Пошук URL-адреси з буфера обміну, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Ви бачите це попередження, оскільки цей сайт не підтримує HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Телевізійні драми</translation>
@@ -5048,7 +5049,6 @@
 <translation id="8871485335898060555">Антикваріат і предмети колекціонування</translation>
 <translation id="8871553383647848643">Налаштуйте вигляд веб-переглядача</translation>
 <translation id="887350038812854047">Для цього правила застосовуються однакові значення на рівні пристрою і користувача. Правило працює належним чином.</translation>
-<translation id="8874790741333031443">Спробуйте тимчасово дозволити сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином.</translation>
 <translation id="8874824191258364635">Введіть дійсний номер картки</translation>
 <translation id="8877780815363510165">Рибальство</translation>
 <translation id="888117890813270681">Для правила <ph name="DATA_CONTROLS_RESTRICTION" /> не можна вказати значення <ph name="DATA_CONTROLS_LEVEL" /></translation>

@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="10146536653536065"><ph name="EXTENSION_NAME" /> installieren</translation>
+<translation id="1070377999570795893">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Design aktivieren</translation>
 <translation id="1135328998467923690">Paket ist ungültig: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Rückkamera</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chromium auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Privater Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="132960226125594336">Die Datei „<ph name="RELATIVE_PATH" />“ konnte nicht für das Content-Script geladen werden, da sie die maximale Scriptgröße oder die maximale Content-Scriptgröße der Erweiterung überschreitet.</translation>
 <translation id="1445572445564823378">Diese Erweiterung verlangsamt die Ausführung von <ph name="PRODUCT_NAME" />. Deaktiviere sie, um die Leistung von <ph name="PRODUCT_NAME" /> nicht zu beeinträchtigen.</translation>
 <translation id="1468038450257740950">WebGL wird nicht unterstützt.</translation>
 <translation id="1478607704480248626">Die Installation ist nicht aktiviert</translation>
+<translation id="1483493594462132177">Senden</translation>
+<translation id="1485015260175968628">Aktualisierte Berechtigungen:</translation>
 <translation id="1556537182262721003">Erweiterungsverzeichnis konnte nicht in Profil verschoben werden.</translation>
+<translation id="1585717515139318619">Ein anderes Programm auf deinem Computer hat ein Design hinzugefügt, das sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">CSS-Datei „<ph name="RELATIVE_PATH" />“ konnte nicht für das Script geladen werden.</translation>
 <translation id="1616298854599875024">Die Erweiterung "<ph name="IMPORT_NAME" />" konnte nicht importiert werden, da es sich nicht um ein freigegebenes Modul handelt</translation>
+<translation id="175772926354468439">Design aktivieren</translation>
 <translation id="1757786065507923842">Berechtigungsanfrage an Eltern fehlgeschlagen.</translation>
 <translation id="1803557475693955505">Hintergrundseite "<ph name="BACKGROUND_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="1875387611427697908">Dieser Artikel kann nur über den <ph name="CHROME_WEB_STORE" /> hinzugefügt werden</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" konnte nicht installiert werden, da dies vom "<ph name="IMPORT_NAME" />" nicht zugelassen wurde.</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" hinzufügen?</translation>
 <translation id="2159915644201199628">Bild konnte nicht decodiert werden: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Deine Eltern haben diese Erweiterung nicht genehmigt</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" hat zusätzliche Berechtigungen angefordert.</translation>
+<translation id="2327492829706409234">App aktivieren</translation>
 <translation id="2350172092385603347">Lokalisierung wurde verwendet, in der Manifest-Datei war jedoch kein Wert für "default_locale" angegeben.</translation>
 <translation id="2576842806987913196">Es ist bereits eine CRX-Datei mit diesem Namen vorhanden.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Wieder aktivieren</translation>
 <translation id="2743583586211388067">Der Zugriff auf diese Erweiterung wird durch die Richtlinie deiner Organisation zu Risiken bei der Nutzung von Erweiterungen blockiert.</translation>
+<translation id="2766161002040448006">Elternteil fragen</translation>
 <translation id="2785530881066938471">Datei "<ph name="RELATIVE_PATH" />" konnte nicht für das Content-Script geladen werden. Sie ist nicht UTF-8-codiert.</translation>
+<translation id="2850541429955027218">Design hinzufügen</translation>
+<translation id="2883143988769190738">Für diese Erweiterung sind folgende Berechtigungen erforderlich:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID "<ph name="EXTENSION_ID" />") wurde vom Administrator blockiert. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Anfrage zum Installieren von "<ph name="EXTENSION_NAME" />" an deinen Administrator senden?</translation>
 <translation id="2988488679308982380">Paket konnte nicht installiert werden: "<ph name="ERROR_CODE" />".</translation>
 <translation id="3115238746683532089">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX-Datei konnte nicht ersetzt werden. Überprüfe, ob die Datei verwendet wird.</translation>
 <translation id="3163201441334626963">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Der Zugriff auf diese Erweiterung wird von deiner Organisation blockiert.</translation>
+<translation id="3183357154200327217">Ein anderes Programm auf deinem Computer hat ein Design hinzugefügt, das sich möglicherweise auf die Funktionsweise von Chromium auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">App mit Manifest-Attribut „kiosk_only“ muss im Chrome OS-Kioskmodus installiert werden</translation>
 <translation id="3364986687961713424">Von deinem Administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> von Anbieter <ph name="VENDOR_ID" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Der Eingabewert für den privaten Schlüssel muss ein gültiger Pfad sein.</translation>
+<translation id="3788401245189148511">Sie könnte:</translation>
 <translation id="3834775135533257713">Die App „<ph name="TO_INSTALL_APP_NAME" />“ konnte nicht hinzugefügt werden, da sie mit „<ph name="INSTALLED_APP_NAME" />“ in Konflikt steht.</translation>
 <translation id="388442998277590542">Optionsseite "<ph name="OPTIONS_PAGE" />" konnte nicht geladen werden.</translation>
+<translation id="3905761538810670789">App reparieren</translation>
+<translation id="3908501907586732282">Erweiterung aktivieren</translation>
+<translation id="3927932062596804919">Ablehnen</translation>
 <translation id="3984413272403535372">Fehler bei der Signatur der Erweiterung</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" reparieren?</translation>
+<translation id="4061696872429826774">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chromium auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Der Zugriff auf diese Erweiterungskategorie wird von deiner Organisation blockiert.</translation>
 <translation id="4233778200880751280">Infoseite "<ph name="ABOUT_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="424963718355121712">Apps müssen über den betroffenen Host bereitgestellt werden</translation>
 <translation id="4306119971288449206">Für Apps muss der Inhaltstyp "<ph name="CONTENT_TYPE" />" bereitgestellt werden</translation>
+<translation id="4625078469366263107">App aktivieren</translation>
 <translation id="4633003931260532286">Die Erweiterung erfordert "<ph name="IMPORT_NAME" />" mit der Mindestversion "<ph name="IMPORT_VERSION" />", es ist jedoch nur Version "<ph name="INSTALLED_VERSION" />" installiert</translation>
 <translation id="4660476621274971848">Erwartete Version: "<ph name="EXPECTED_VERSION" />", tatsächliche Version "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Privater Schlüssel konnte nicht ausgegeben werden.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Öffentlicher Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="501057610015570208">App mit Manifest-Attribut „kiosk_only“ muss im Chrome OS Flex-Kioskmodus installiert werden</translation>
 <translation id="5026754133087629784">Web-Ansicht: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Erweiterung hinzufügen</translation>
+<translation id="5039804452771397117">Zulassen</translation>
 <translation id="5098647635849512368">Der absolute Pfad zum Verzeichnis wurde nicht gefunden.</translation>
 <translation id="5160071981665899014">JavaScript-Code „<ph name="RELATIVE_PATH" />“ konnte nicht für Script geladen werden.</translation>
+<translation id="5185386675596372454">Die aktuelle Version von "<ph name="EXTENSION_NAME" />" wurde deaktiviert, weil sie weitere Berechtigungen erfordert.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" aktivieren?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Aus Chromium entfernen</translation>
 <translation id="5456409301717116725">Die Erweiterung enthält die Schlüsseldatei „<ph name="KEY_PATH" />“. Möchtest du den Vorgang wirklich fortsetzen?</translation>
+<translation id="5485102783864353244">App hinzufügen</translation>
 <translation id="5486326529110362464">Es muss ein Eingabewert für den privaten Schlüssel vorhanden sein.</translation>
 <translation id="5527463195266282916">Du hast versucht, ein Downgrade der Erweiterung auszuführen.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Fehler beim Laden der Erweiterung aus:</translation>
 <translation id="5972529113578162692">Der Administrator dieses Computers hat die Installation von <ph name="EXTENSION_NAME" /> vorgegeben. Eine Deinstallation ist daher nicht möglich.</translation>
 <translation id="6027032947578871493">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> von Anbieter <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Ein anderes Programm auf deinem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chromium auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Fehler beim Laden der Erweiterung</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Privater Schlüssel konnte nicht gelesen werden.</translation>
+<translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6391538222494443604">Eingabeverzeichnis muss vorhanden sein.</translation>
 <translation id="641087317769093025">Erweiterung kann nicht entpackt werden.</translation>
 <translation id="6542618148162044354">„<ph name="APP_NAME" />“ fordert Zugriff auf eines oder mehrere deiner Geräte an:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> Nutzer</translation>
 <translation id="657064425229075395">Hintergrundskript "<ph name="BACKGROUND_SCRIPT" />" konnte nicht geladen werden.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Manifest-Datei ist ungültig</translation>
 <translation id="7217838517480956708">Der Administrator dieses Computers schreibt die Installation von <ph name="EXTENSION_NAME" /> vor. Die Erweiterung kann nicht entfernt oder geändert werden.</translation>
 <translation id="7287143125007575591">Zugriff verweigert</translation>
+<translation id="760353356052806707">Ein anderes Programm auf Ihrem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Der Eingabewert für den privaten Schlüssel muss ein gültiges Format haben (PEM-codierter RSA-Schlüssel im PKCS#8-Format).</translation>
 <translation id="765293928828334535">Von dieser Website können keine Apps, Erweiterungen und Nutzerskripte hinzugefügt werden</translation>
+<translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7766838926148951335">Berechtigungen akzeptieren</translation>
 <translation id="7876803335449432072">Die Datei „<ph name="RELATIVE_PATH" />“ konnte für das Content-Script nicht geladen werden. Content-Script-Stylesheets können nur aus unterstützten Stylesheet-Dateien wie CSS-Dateien geladen werden.</translation>
 <translation id="7939686037314084444">Die Erweiterung wurde nicht richtig geladen. Möglicherweise kann sie keine Netzwerkanfragen abfangen.</translation>
 <translation id="7952904276017482715">Erwartete ID: "<ph name="EXPECTED_ID" />", tatsächliche ID: "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Options: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Genehmigen</translation>
 <translation id="8035920974645200807">Frontkamera</translation>
 <translation id="8047248493720652249">Diese Erweiterung konnte den Download nicht "<ph name="ATTEMPTED_FILENAME" />" nennen, weil eine andere Erweiterung (<ph name="EXTENSION_NAME" />) einen anderen Dateinamen "<ph name="ACTUAL_FILENAME" />" festgelegt hat.</translation>
 <translation id="8049705080247101012">"<ph name="EXTENSION_NAME" />" wurde von Google als schädlich eingestuft und die Installation wurde blockiert</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Berechtigungen:</translation>
 <translation id="8517576857589387417">Manifest-Datei fehlt oder ist nicht lesbar</translation>
 <translation id="8565650234829130278">Du hast versucht, ein Downgrade der App auszuführen.</translation>
 <translation id="8621383749470166852">Die Datei „<ph name="RELATIVE_PATH" />“ konnte für das Content-Script nicht geladen werden. Content-Scripts können nur aus unterstützten JavaScript-Dateien wie JS-Dateien geladen werden.</translation>
 <translation id="8636666366616799973">Paket ist ungültig. Details: "<ph name="ERROR_MESSAGE" />"</translation>
+<translation id="8746654918629346731">Du hast bereits "<ph name="EXTENSION_NAME" />" angefordert</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ fordert Zugriff auf eines deiner Geräte an:</translation>
 <translation id="8885905466771744233">Es existiert bereits ein privater Schlüssel für die angegebene Erweiterung. Verwende diesen Schlüssel oder lösche ihn zuerst.</translation>
 <translation id="9039223174332979184">Der Administrator dieses Computers hat festgelegt, dass <ph name="EXTENSION_NAME" /> die Manifest-Version 3 oder höher haben muss.</translation>
 <translation id="907841381057066561">Während des Packvorgangs wurde keine temporäre ZIP-Datei erstellt.</translation>
+<translation id="9102610709270966160">Erweiterung aktivieren</translation>
+<translation id="93766956588638423">Erweiterung reparieren</translation>
 <translation id="941543339607623937">Ungültiger privater Schlüssel</translation>
 </translationbundle>

@@ -14,9 +14,6 @@
 <translation id="1059838145689930908">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chrome.</translation>
 <translation id="1065672644894730302">Impossible de lire vos préférences.
 Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
-<translation id="1070377999570795893">Une extension qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> utilisait Chrome précédemment</translation>
 <translation id="110877069173485804">Voici votre Chrome</translation>
@@ -57,9 +54,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1547295885616600893">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Arrête la tâche mise en surbrillance.</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
-<translation id="1585717515139318619">Un thème qui risque de modifier le fonctionnement de Chrome a été ajouté via un autre programme sur votre ordinateur.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Votre webcam est en cours d'utilisation dans Google Chrome.</translation>
 <translation id="1587325591171447154">Chrome a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
 <translation id="1597911401261118146">Pour vérifier si vos mots de passe sont suffisamment sécurisés afin d'empêcher toute violation de données et d'autres problèmes de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
@@ -98,7 +92,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1843347690926158494">Rechercher dans cet onglet avec Google Lens</translation>
 <translation id="1849248141818021764">Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Utilisez l'appli Chrome pour continuer à naviguer où que vous soyez</translation>
-<translation id="1860536484129686729">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
 <translation id="1867503717113754604">Connectez-vous à Chrome avec votre compte Google pour utiliser <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome n'est pas votre navigateur par défaut</translation>
 <translation id="1874309113135274312">Version bêta de Google Chrome (mDNS-In)</translation>
@@ -149,7 +142,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2307973900865360088">Garder dans le Dock</translation>
 <translation id="2309047409763057870">Ceci est une installation secondaire de Google Chrome. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
 <translation id="2345992953227471816">Chrome a détecté que ces extensions contiennent des logiciels malveillants :</translation>
-<translation id="2348335408836342058">Chrome a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2403703063067034158">Erreur de démarrage : Une autre instance de configuration est en cours d'exécution. Veuillez réessayer plus tard.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chrome ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chrome accèdent à 1 appareil HID}one{Une ou plusieurs extensions Chrome accèdent à # appareil HID}other{Une ou plusieurs extensions Chrome accèdent à # appareils HID}}</translation>
@@ -188,7 +180,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2747021967398957654">{count,plural, =1{Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données (1 élément) seront supprimées.}one{Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données ({count} élément) seront supprimées.}other{Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données ({count} éléments) seront supprimées.}}</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{La Protection Avancée nécessite que vous relanciez Chrome pour appliquer une mise à jour}=1{La Protection Avancée nécessite que vous relanciez Chrome pour appliquer une mise à jour. La fenêtre de navigation privée ne se rouvrira pas.}one{La Protection Avancée nécessite que vous relanciez Chrome pour appliquer une mise à jour. # fenêtre de navigation privée ne se rouvrira pas.}other{La Protection Avancée nécessite que vous relanciez Chrome pour appliquer une mise à jour. Les # fenêtres de navigation privée ne se rouvriront pas.}}</translation>
-<translation id="2765403129283291972">Chrome a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
 <translation id="2797864378188255696">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chrome avec ce même compte</translation>
 <translation id="2799162042226656283">Votre Chrome</translation>
 <translation id="2799223571221894425">Relancer</translation>
@@ -264,7 +255,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="345171907106878721">Ajouter un utilisateur à Chrome</translation>
 <translation id="3453763134178591239">Conditions d'utilisation de Chrome OS</translation>
 <translation id="3475778264501649775">Accédez à vos mots de passe, vos onglets et plus, même en déplacement, avec l'appli Chrome sur votre téléphone</translation>
-<translation id="3503306920980160878">Chrome a besoin d'accéder à votre position pour la partager avec ce site</translation>
 <translation id="3512495006767217696">Intégré à Chrome pour vous aider à créer, enregistrer et saisir automatiquement des mots de passe sécurisés. Ajoutez le raccourci pour y accéder facilement.</translation>
 <translation id="3539955434060988644">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="354621070532799440">Rappel : Les meilleures fonctionnalités de sécurité de Google dans votre poche</translation>
@@ -358,6 +348,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4400772909124543403">Aucune mise à jour disponible</translation>
 <translation id="4427306783828095590">La protection renforcée assure une meilleure protection contre l'hameçonnage et les logiciels malveillants</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Partagez ce document avec Gemini dans Chrome pour obtenir un aperçu rapide et poser des questions complémentaires</translation>
 <translation id="4450664632294415862">Chrome - Connexion au réseau - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Une autre opération est en cours dans Google Chrome. Veuillez réessayer ultérieurement.</translation>
 <translation id="4459234553906210702">Ad measurement permet aux sites que vous consultez de demander à Chrome des informations qui les aident à mesurer les performances de leurs annonces. Cette API limite le suivi intersites en transférant le minimum d'informations entre les sites.</translation>
@@ -529,9 +520,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6180522807229584611">Cet onglet utilise des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à le désactiver.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6192058120268468905">Votre compte dans Chrome</translation>
-<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> a ajouté une extension qui pourrait modifier le fonctionnement de Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Règle de trafic entrant pour Google Chrome autorisant le trafic mDNS</translation>
 <translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
@@ -673,9 +661,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Vous pouvez utiliser Chrome chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="7602868996817972616">Poser une question à Google concernant cette page</translation>
-<translation id="760353356052806707">Une application qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Pour protéger vos données, autorisez Chrome à supprimer les autorisations des sites que vous n'avez pas consultés récemment.</translation>
 <translation id="7629695634924605473">Chrome vous indique si vos mots de passe ont été piratés</translation>
@@ -791,7 +776,6 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="8590782867495422699">Rouvrir le Mode IA dans la recherche Google</translation>
 <translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
-<translation id="861702415419836452">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer un plan 3D de votre environnement</translation>
 <translation id="8623450603356630491">Connectez-vous à Chrome sur votre téléphone</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome va être relancé dans 1 minute}one{Chrome va être relancé dans # minute}other{Chrome va être relancé dans # minutes}}</translation>

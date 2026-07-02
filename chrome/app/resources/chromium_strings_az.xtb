@@ -17,9 +17,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1131805035311359397">Parollarınızın data pozuntuları və digər güvənlik məsələlərinə qarşı güvəndə olduğunu yoxlamaq üçün <ph name="BEGIN_LINK" />Chromium'a daxil olun<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium menyusuna klikləyin</translation>
 <translation id="1157985233335035034">Son dillər</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium-un iş prinsipini dəyişdirə biləcək artırma əlavə etdi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Windows versiyanız dəstəklənmədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="1185134272377778587">Chromium haqqında</translation>
 <translation id="1186645291482254714">Telefonda Chromium ilə qiymət izləmə xəbərdarlıqları əldə edin</translation>
@@ -55,7 +52,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1524282610922162960">Chromium tabı paylaşın</translation>
 <translation id="154404805518949443">Chromium-a daxil olun</translation>
 <translation id="1547469039832541117">Vurğulanan tapşırığı sonlandırır.</translation>
-<translation id="1553461853655228091">Chromium ətrafınızın 3D xəritəsini yaratmaq üçün kameranıza giriş icazəsi tələb edir</translation>
 <translation id="1562320819937089394">Chromium-u bərkidin</translation>
 <translation id="1574377791422810894">Chromium-un güvənlik alətləri</translation>
 <translation id="1594928384848033697">Chromium Parol Meneceri datanızı silmək istəyir. İcazə vermək üçün Windows parolunu yazın.</translation>
@@ -217,9 +213,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="3155163173539279776">Chromium'u yenidən başladın</translation>
 <translation id="3161522574479303604">Bütün dillər</translation>
 <translation id="3179665906251668410">Linki Gizli Chromium Pəncərəsində açın</translation>
-<translation id="3183357154200327217">Kompüterinizdə başqa proqram Chromium-un fəaliyyət tərzini dəyişən tema əlavə etdi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Yeni Chromium profilinizi fərdiləşdirin</translation>
 <translation id="3189205223539394158">Tabları dəyişmədən Sİ rejimi ilə söhbətə davam edə bilərsiniz. Başlamaq üçün Chromium-a daxil olun. Bütün cihazlarınızda parollarınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="3224847870593914902">Google Hesabını Chromium-dan silmək üçün Ayarlar səhifəsində Chromium-dan çıxın</translation>
@@ -296,9 +289,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Cari ayarları<ph name="END_LINK" /> bildirməklə Chormium'u təkmilləşdirməyə kömək edin</translation>
 <translation id="4050175100176540509">Mühüm təhlükəsizlik təkmilləşdirilmələri və yeni funksiyalar son versiyada əlçatandır.</translation>
 <translation id="4055805654398742145">Parol Meneceri</translation>
-<translation id="4061696872429826774">Kompüterinizdə başqa bir proqram Chromium-un fəaliyyət göstərmə formasını dəyişən artırma əlavə etdi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium 1 dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}other{Chromium # dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}}</translation>
 <translation id="4118474109249235144">Chromium Anonim</translation>
 <translation id="4122186850977583290">Chromium haqqında səhifəsinə keçin</translation>
@@ -411,7 +401,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium brauzeri yavaşladan tabı durdurmağı tövsiyə edir}other{Chromium brauzeri yavaşladan tabları durdurmağı tövsiyə edir}}</translation>
 <translation id="5473971139929175403">Chromium düzgün işləməyə bilər, çünki daha Linux sistemi üzərində dəstəklənmir</translation>
 <translation id="5475924890392386523">Chromium bu endirməni blokladı. Çünki fayl şəxsi və sosial şəbəkə hesablarını zədələyə bilər</translation>
-<translation id="5480860683791598150">Chromium məkanı bu saytla paylaşmaq üçün ona giriş tələb edir</translation>
 <translation id="549669000822060376">Chromium'um ən son sistem güncəlləşmələrini quraşdırmasını gözləyin.</translation>
 <translation id="5496810170689441661">Chromium parolları redaktə etməyə çalışır. Buna icazə vermək üçün Windows parolunuzu yazın.</translation>
 <translation id="549975168243349205">Chromium vasitəsilə istənilən vaxt, istənilən yerdə Google Disk və YouTube kimi sevimli tətbiqlərinizlə problemsiz işləyin.</translation>
@@ -478,9 +467,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="6174920971222007286">Bu fayl təhlükəli ola bilər<ph name="LINE_BREAK" />Parolu təqdim etsəniz, Chromium bu endirməni yoxlaya bilər. Fayl haqqında məlumat Google güvənli baxışa göndərilir, lakin fayl kontenti və parol cihazda qalır.</translation>
 <translation id="6182736845697986886">Yeniləmə serverində daxili xəta səbəbindən quraşdırma alınmadı.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> cihazınızda Chromium'a daxil olduğunuza əmin olun və sonra yenidən göndərin.</translation>
-<translation id="6204922163963157461">Kompüterinizdə başqa proqram Chromium-un fəaliyyət tərzini dəyişən tətbiq əlavə etdi.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Bu kompüterdə Chromium'um daha son versiyası var. Proqram təminatı işləmirsə, Chroimum'u sistemdən silin və yenidən cəhd edin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium indi yenidən başlayacaq}=1{Chromium 1 saniyəyə yenidən başlayacaq}other{Chromium # saniyəyə yenidən başlayacaq}}</translation>
 <translation id="6239161312595354541">Bu video haqqında Şəkil Axtarışından soruşun</translation>
@@ -582,7 +568,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="6964305034639999644">Linki gizli Chromium pəncərəsində açın</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985329841647292029">ChromiumOS şərtləri</translation>
-<translation id="6990124437352146030">Chromium bu sayt üçün mikrofona giriş tələb edir</translation>
 <translation id="7003299027384820442">Chromium datasını hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək və yadda saxlamaq üçün parol ifadəsini daxil edin</translation>
 <translation id="7011190694940573312">Əməliyyat sisteminin bu versiyası dəstəklənmədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="7024536598735240744">Paketin açılması xətası: <ph name="UNPACK_ERROR" />.</translation>
@@ -625,7 +610,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 3. Sürətli giriş üçün Chromium-u tapşırıqlar panelinə bərkitmək məqsədilə Windows bildirişində <ph name="BUTTON_3" /> düyməsinə klikləyin</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Mətn kopyalandı</translation>
-<translation id="7451052299415159299">Chromium bu sayt üçün kameraya giriş tələb edir</translation>
 <translation id="7458892263350425044">Mikrofondan istifadə etmək üçün Chromium-a <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> giriş imkanı verin</translation>
 <translation id="7461356015007898716">Chromium güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 7 istifadə edir.</translation>
 <translation id="7467949745582939695">Chromium yenidən başladılsın?</translation>
@@ -750,8 +734,8 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8719993436687031146">Chromium-a daxil olunsun?</translation>
 <translation id="8747073452963259673">axtarış sahəsinin aşağı sol küncü: <ph name="LEFT" />% sol, <ph name="BOTTOM" />% aşağı</translation>
 <translation id="878572486461146056">Quraşdırma xətası: Şəbəkə administratoru quraşdırmanın qarşısını alan Qrup Siyasəti tətbiq edib: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium bu sayt üçün kamera və mikrofona giriş icazəsi tələb edir</translation>
 <translation id="8813277370772331957">Sonra xatırladın</translation>
+<translation id="8816416449795340678">Sürətli icmal əldə etmək və əlavə suallar vermək üçün sənədi Chromium-da Gemini ilə paylaşın</translation>
 <translation id="8818550178040858407">Chromium-a daxil olursunuz?</translation>
 <translation id="8823401858233292222">Chromium-u defolt brauzer edin və tapşırıqlar panelinə bərkidin</translation>
 <translation id="8826492472752484139">"Parol meneceri" üzərinə klikləyin</translation>

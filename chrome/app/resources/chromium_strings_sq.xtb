@@ -17,9 +17,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1131805035311359397">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Kliko te menyja e Chromium</translation>
 <translation id="1157985233335035034">Gjuhët e fundit</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ka shtuar një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Instalimi dështoi pasi versioni yt i Windows nuk mbështetet.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
 <translation id="1186645291482254714">Merr sinjalizime për monitorimin e çmimeve me Chromium në telefonin tënd</translation>
@@ -54,7 +51,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1524282610922162960">Ndaj një skedë të Chromium</translation>
 <translation id="154404805518949443">Identifikohu në Chromium</translation>
 <translation id="1547469039832541117">Përfundon detyrën e theksuar.</translation>
-<translation id="1553461853655228091">Chromium ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="1562320819937089394">Gozhdo Chromium</translation>
 <translation id="1574377791422810894">Veglat e sigurisë të Chromium</translation>
 <translation id="1594928384848033697">Chromium dëshiron të fshijë të dhënat e tua të "Menaxherit të fjalëkalimeve". Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
@@ -216,9 +212,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3155163173539279776">Rinis Chromium</translation>
 <translation id="3161522574479303604">Të gjitha gjuhët</translation>
 <translation id="3179665906251668410">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
-<translation id="3183357154200327217">Një program tjetër në kompjuterin tënd shtoi një temë që mund të ndryshojë mënyrën se si funksionon Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalizo profilin tënd të ri të Chromium</translation>
 <translation id="3189205223539394158">Mund të vazhdosh të bisedosh me "Modalitetin e IA-së" pa ndërruar skedat. Për të filluar, identifikohu në Chromium. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua.</translation>
 <translation id="3224847870593914902">Për ta hequr "Llogarinë tënde të Google" nga Chromium, dil nga llogaria në Chromium te faqja e "Cilësimeve"</translation>
@@ -297,9 +290,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4036079820698952681">Ndihmo në përmirësimin e Chromium duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Përmirësime të rëndësishme sigurie dhe funksione të reja ofrohen në versionin e fundit.</translation>
 <translation id="4055805654398742145">Men&amp;axheri i fjalëkalimeve</translation>
-<translation id="4061696872429826774">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="4118474109249235144">Modaliteti "i fshehtë" i Chromium</translation>
 <translation id="4122186850977583290">Shko te faqja "Rreth Chromium"</translation>
@@ -412,7 +402,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chromium rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="5473971139929175403">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në këtë version të Linux</translation>
 <translation id="5475924890392386523">Chromium e bllokoi këtë shkarkim sepse skedari mund të dëmtojë llogaritë e tua personale dhe të rrjeteve sociale</translation>
-<translation id="5480860683791598150">Chromium ka nevojë për qasje te vendndodhja jote për të ndarë vendndodhjen tënde me këtë sajt</translation>
 <translation id="549669000822060376">Prit ndërsa Chromium instalon përditësimet më të fundit të sistemit.</translation>
 <translation id="5496810170689441661">Chromium po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="549975168243349205">Puno pa ndërprerje me aplikacionet e tua të preferuara si "Disku i Google" dhe YouTube kur je në lëvizje me Chromium.</translation>
@@ -479,9 +468,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6174920971222007286">Ky skedar mund të jetë i rrezikshëm<ph name="LINE_BREAK" />Chromium mund ta kontrollojë këtë shkarkim për ty nëse ti jep fjalëkalimin. Informacionet për skedarin dërgohen te "Shfletimi i sigurt i Google", por përmbajtjet dhe fjalëkalimi i skedarit qëndrojnë në pajisjen tënde.</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
 <translation id="6183079672144801177">Sigurohu që të jesh i identifikuar në Chromium në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
-<translation id="6204922163963157461">Një program tjetër në kompjuterin tënd shtoi një aplikacion që mund të ndryshojë mënyrën se si funksionon Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Ky kompjuter e ka tashmë një version më të ri të Chromium. Nëse softueri nuk punon, çinstaloje Chromium dhe provo përsëri.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium do të hapet përsëri tani}=1{Chromium do të hapet përsëri për 1 sekondë}other{Chromium do të hapet përsëri për # sekonda}}</translation>
 <translation id="6239161312595354541">Pyet "Kërkimin e imazheve" për këtë video</translation>
@@ -583,7 +569,6 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="6964305034639999644">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6985329841647292029">Kushtet e ChromiumOS</translation>
-<translation id="6990124437352146030">Chromium ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt</translation>
 <translation id="7003299027384820442">Fut frazën e kalimit për të përdorur dhe ruajtur të dhënat e Chromium në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Instalimi dështoi sepse ky version i sistemit operativ nuk mbështetet.</translation>
 <translation id="7024536598735240744">Gabim shpaketimi: <ph name="UNPACK_ERROR" />.</translation>
@@ -626,7 +611,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="744815265653811511">1. Kliko <ph name="BUTTON_LABEL" /> më poshtë Kliko <ph name="BUTTON_2" /> te cilësimet e Windows Kliko <ph name="BUTTON_3" /> në njoftimin e Windows për të gozhduar Chromium te shiriti i detyrave për qasje të shpejtë</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Teksti u kopjua</translation>
-<translation id="7451052299415159299">Chromium ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
 <translation id="7458892263350425044">Për të përdorur mikrofonin, jepi Chromium qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="7467949745582939695">Të niset sërish Chromium?</translation>
@@ -751,8 +735,8 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8719993436687031146">Do të identifikohesh në Chromium?</translation>
 <translation id="8747073452963259673">këndi poshtë majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, poshtë <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
 <translation id="8813277370772331957">Më kujto më vonë</translation>
+<translation id="8816416449795340678">Ndaje këtë dokument me Gemini në Chromium për të marrë një përmbledhje të shpejtë dhe për të bërë pyetje vijuese</translation>
 <translation id="8818550178040858407">Do të identifikohesh në Chromium?</translation>
 <translation id="8823401858233292222">Bëje Chromium shfletuesin e parazgjedhur dhe gozhdoje te shiriti i veglave</translation>
 <translation id="8826492472752484139">Kliko te “Menaxheri i fjalëkalimeve”</translation>

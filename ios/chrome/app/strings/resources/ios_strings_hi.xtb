@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} पासकी}one{{count} पासकी}other{{count} पासकी}}</translation>
 <translation id="1005023885865154304">पासवर्ड अपने-आप भरने की सुविधा की सेटिंग खोलें</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live बातचीत, Chrome में Gemini की एक नई सुविधा है</translation>
 <translation id="1013952917065545813">आप यहां से, हाल ही में बंद किए गए टैब दोबारा खोल सकते हैं</translation>
 <translation id="1016495303386450659">आइटम अपडेट किया गया</translation>
 <translation id="1018804590490383958">कार्ड को स्कैन करें और उसकी जानकारी ऑटोमैटिक तरीके से भरें</translation>
@@ -1737,6 +1738,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6761393919622941301">ऑडियो</translation>
 <translation id="6765551480308401897">डिफ़ॉल्ट के तौर पर सेट न करें</translation>
 <translation id="6770452996697898492">[बुक किया गया]</translation>
+<translation id="6775952316617222141">Chrome में Gemini से Live बातचीत करें</translation>
 <translation id="6779455296366983087">आपका ब्राउज़िंग डेटा मिटा दिया जाएगा</translation>
 <translation id="6782531425936234573">डेटा एक्सपोर्ट करें</translation>
 <translation id="6791425686608802741">"टैब को नए ग्रुप में जोड़ें" पर टैप करें</translation>

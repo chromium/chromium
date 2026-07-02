@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">‏לוחצים על תפריט Chromium</translation>
 <translation id="1157985233335035034">שפות אחרונות</translation>
-<translation id="1171831736360285680">‏התוסף התווסף על ידי <ph name="PARTNER_NAME" /> ויכול לשנות את אופן הפעולה של Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">‏ההתקנה נכשלה כי הגרסה של Windows לא נתמכת.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1186645291482254714">‏רוצה לקבל התראות על מעקב מחירים באמצעות Chromium בטלפון?</translation>
@@ -52,7 +49,6 @@
 <translation id="1524282610922162960">‏שיתוף כרטיסיית Chromium</translation>
 <translation id="154404805518949443">‏כניסה ל-Chromium</translation>
 <translation id="1547469039832541117">סיום המשימה המודגשת.</translation>
-<translation id="1553461853655228091">‏Chromium זקוק להרשאת גישה למצלמה כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="1562320819937089394">‏הצמדת Chromium</translation>
 <translation id="1574377791422810894">‏הכלים לבטיחות של Chromium</translation>
 <translation id="1594928384848033697">‏‫Chromium רוצה למחוק את הנתונים שלך במנהל הסיסמאות. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
@@ -213,9 +209,6 @@
 <translation id="3155163173539279776">‏הפעלה מחדש של Chromium</translation>
 <translation id="3161522574479303604">כל השפות</translation>
 <translation id="3179665906251668410">‏פתיחת הקישור בחלון &amp;אנונימי של Chromium</translation>
-<translation id="3183357154200327217">‏תוכנה אחרת במחשב שלך הוסיפה עיצוב שעשוי לשנות את אופן הפעולה של Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">‏התאמה אישית של פרופיל Chromium החדש</translation>
 <translation id="3189205223539394158">‏אפשר להמשיך להתכתב בצ'אט עם מצב AI בלי לעבור בין כרטיסיות. כדי להתחיל, עליך להיכנס לחשבון שלך ב-Chromium. אחרי הכניסה, הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="3224847870593914902">‏כדי להסיר את החשבון שלך ב-Google מ-Chromium, צריך לצאת מ-Chromium בדף ההגדרות</translation>
@@ -290,9 +283,6 @@
 <translation id="4036079820698952681">‏דיווח על <ph name="BEGIN_LINK" />ההגדרות הנוכחיות<ph name="END_LINK" /> יעזור לשפר את Chromium</translation>
 <translation id="4050175100176540509">הגרסה החדשה כוללת שיפורי בטיחות חשובים ותכונות חדשות.</translation>
 <translation id="4055805654398742145">מנהל הס&amp;יסמאות</translation>
-<translation id="4061696872429826774">‏תוכנה אחרת במחשב שלך הוסיפה תוסף שעלול לשנות את אופן הפעולה של Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך דקה. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}one{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}two{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}other{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. בין הנתונים שיימחקו: היסטוריה, מילוי אוטומטי והורדות.}}</translation>
 <translation id="4118474109249235144">‏מצב פרטי ב-Chromium</translation>
 <translation id="4122186850977583290">‏מעבר לדף 'מידע על Chromium'</translation>
@@ -405,7 +395,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{‏ההמלצה של Chromium היא להשהות את הכרטיסייה שמאטה את הדפדפן}one{‏ההמלצה של Chromium היא להשהות את הכרטיסיות שמאטות את הדפדפן}two{‏ההמלצה של Chromium היא להשהות את הכרטיסיות שמאטות את הדפדפן}other{‏ההמלצה של Chromium היא להשהות את הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="5473971139929175403">‏יכול להיות ש-Chromium לא יפעל כראוי כי הוא כבר לא נתמך בגרסה הזו של Linux</translation>
 <translation id="5475924890392386523">‏‫Chromium חסם את ההורדה הזו כי הקובץ יכול לפגוע בחשבונות האישיים ובחשבונות שלך ברשתות החברתיות</translation>
-<translation id="5480860683791598150">‏Chromium זקוק לגישה למיקום שלך כדי לשתף אותו עם האתר הזה</translation>
 <translation id="549669000822060376">‏יש להמתין בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="5496810170689441661">‏Chromium מנסה לערוך את הסיסמאות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="549975168243349205">‏עם Chromium אפשר להשתמש בקלות ומכל מקום באפליקציות שמעניינות אותך, כמו Google Drive ו-YouTube.</translation>
@@ -472,9 +461,6 @@
 <translation id="6174920971222007286">‏הקובץ הזה עלול להיות מסוכן<ph name="LINE_BREAK" />דפדפן Chromium יכול לבדוק את ההורדה הזו אם מזינים את הסיסמה. מידע על הקובץ נשלח אל התכונה 'גלישה בטוחה של Google', אבל הסיסמה והתוכן של הקובץ נשארים במכשיר.</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>
-<translation id="6204922163963157461">‏תוכנה אחרת במחשב שלך הוסיפה אפליקציה שעשויה לשנות את אופן הפעולה של Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}one{‏Chromium יופעל מחדש בעוד # שניות}two{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
 <translation id="6239161312595354541">רוצה לשאול משהו לגבי הסרטון הזה בחיפוש תמונות?</translation>
@@ -575,7 +561,6 @@
 <translation id="6964305034639999644">‏פתיחת הקישור בחלון &amp;אנונימי של Chromium</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6985329841647292029">‏התנאים לשימוש ב-ChromiumOS</translation>
-<translation id="6990124437352146030">‏Chromium זקוק להרשאת גישה למיקרופון בשביל האתר הזה</translation>
 <translation id="7003299027384820442">‏כדי להשתמש בנתונים של Chromium ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="7011190694940573312">ההתקנה נכשלה כי הגרסה הזו של מערכת ההפעלה לא נתמכת.</translation>
 <translation id="7024536598735240744">שגיאה בפתיחה: <ph name="UNPACK_ERROR" />.</translation>
@@ -619,7 +604,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 3. לוחצים על <ph name="BUTTON_3" /> בהתראה של Windows כדי להצמיד את Chromium לסרגל האפליקציות לגישה מהירה</translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת פיתוח</translation>
 <translation id="7450541714075000668">הטקסט הועתק</translation>
-<translation id="7451052299415159299">‏Chromium זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>
 <translation id="7458892263350425044">‏כדי להשתמש במיקרופון, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chromium גישה</translation>
 <translation id="7461356015007898716">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 7.</translation>
 <translation id="7467949745582939695">‏להפעיל את Chromium מחדש?</translation>
@@ -744,8 +728,8 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8719993436687031146">‏להיכנס אל Chromium?</translation>
 <translation id="8747073452963259673">‏הפינה השמאלית התחתונה של אזור החיפוש: ‎<ph name="LEFT" />%‎ משמאל, ‎<ph name="BOTTOM" />%‎ מלמטה</translation>
 <translation id="878572486461146056">שגיאת התקנה: מנהל הרשת החיל מדיניות קבוצתית שמונעת את ההתקנה: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>
 <translation id="8813277370772331957">אני רוצה לקבל תזכורת אחר כך</translation>
+<translation id="8816416449795340678">‏כדי לקבל סקירה כללית זריזה ולשאול שאלות המשך, אפשר לשתף את המסמך הזה עם Gemini ב-Chromium</translation>
 <translation id="8818550178040858407">‏להיכנס אל Chromium?</translation>
 <translation id="8823401858233292222">‏הגדרת Chromium כדפדפן ברירת המחדל והצמדה שלו לסרגל המשימות</translation>
 <translation id="8826492472752484139">לוחצים על 'מנהל הסיסמאות'</translation>

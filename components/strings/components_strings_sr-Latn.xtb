@@ -2370,6 +2370,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4705573018059932476">Izabrali ste da verifikujete pomoću <ph name="AUTHENTICATOR" /> na sajtovima koji koriste <ph name="PROVIDER_ORIGIN" />. Ovaj dobavljač je možda sačuvao informacije o načinu plaćanja, za koje možete da <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Veza je prekinuta</translation>
 <translation id="4708276642004148190">Snabdevanje vodom i prerada</translation>
+<translation id="4710249055485272920">Nismo pronašli te informacije</translation>
 <translation id="4711628883879888561">Sarađujte na grupi kartica</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nemate dozvolu da posetite ovaj sajt</translation>
@@ -3022,6 +3023,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5707154300732650394">Nastavite put</translation>
 <translation id="57094364128775171">Predloži jaku lozinku…</translation>
 <translation id="570953204696852961">Crvena 3</translation>
+<translation id="5710907191777451677">Umesto toga upitajte Gemini u Chrome-u</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinari</translation>
 <translation id="5715150588940290235">Želite da izbrišete sačuvane bezbednosne kodove?</translation>
@@ -3923,7 +3925,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="7110116949943042888">Privremeni i sezonski poslovi</translation>
 <translation id="7110368079836707726">Koledži i univerziteti</translation>
 <translation id="7111507312244504964">Pregled i procena vrednosti imovine</translation>
-<translation id="7117290130383718594">Tekstualne napomene</translation>
 <translation id="7118618213916969306">Potražite URL u privremenoj memoriji, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Ovo upozorenje vam se prikazuje jer ovaj sajt ne podržava HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">TV drame</translation>
@@ -5047,7 +5048,6 @@ Dodatni detalji:
 <translation id="8871485335898060555">Antikviteti i kolekcionarstvo</translation>
 <translation id="8871553383647848643">Prilagodite izgled pregledača</translation>
 <translation id="887350038812854047">Ove smernice imaju istu vrednost koja se primenjuje na nivou uređaja i korisnika. Smernice funkcionišu kako treba.</translation>
-<translation id="8874790741333031443">Probajte privremeno da dozvolite kolačiće treće strane, što znači slabiju zaštitu pregledanja, ali veću verovatnoću da će funkcije sajta raditi na očekivani način.</translation>
 <translation id="8874824191258364635">Unesite važeći broj kartice</translation>
 <translation id="8877780815363510165">Pecanje</translation>
 <translation id="888117890813270681">„<ph name="DATA_CONTROLS_RESTRICTION" />“ ne može da se podesi na „<ph name="DATA_CONTROLS_LEVEL" />“</translation>

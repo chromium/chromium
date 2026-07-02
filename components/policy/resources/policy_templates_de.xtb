@@ -1016,6 +1016,7 @@ Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt
 Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, werden keine Ereignisse erfasst.</translation>
 <translation id="1692990221685273468">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung die Einschränkungen der Trust-Anchors, die aus dem Trust-Shop geladen wurden, erzwingt.</translation>
 <translation id="169467210981344373">Globales HTTP-Authentication-Cache deaktivieren</translation>
+<translation id="169509902091359310">Spracheingabe nicht zulassen.</translation>
 <translation id="1696501581280568361">Dadurch wird die Profiltrennung vorgeschlagen</translation>
 <translation id="1698810555265314018">Steuert beim Drucken gerasteter PDFs in <ph name="PRODUCT_NAME" /> die Druckbildauflösung.
 
@@ -1205,6 +1206,19 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="1829839214911753838">Wenn diese Richtlinie aktiviert ist, läuft der Host für Remote-Unterstützung in einem Prozess mit <ph name="UIACCESS_PERMISSION_NAME" />-Berechtigungen. So kann der Remote-Nutzer mit geöffneten Fenstern auf dem Desktop des lokalen Nutzers arbeiten.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, läuft der Host für Remote-Unterstützung nur im Nutzerbereich. Remote-Nutzer können nicht mit geöffneten Fenstern auf dem Desktop arbeiten.</translation>
+<translation id="1832480890076796592">Mit dieser Richtlinie werden die Einstellungen für die Prozessisolation für <ph name="PRODUCT_NAME" /> festgelegt.
+
+Durch das Aktivieren der Prozessisolation wird die Sicherheit von <ph name="PRODUCT_NAME" /> verbessert, da autorisierte Anwendungen im System nicht mehr die Inhalte der laufenden Prozesse von <ph name="PRODUCT_NAME" /> manipulieren oder lesen können. Dadurch wird verhindert, dass andere Anwendungen im System Zugriff auf die verschlüsselten Daten von <ph name="PRODUCT_NAME" /> erhalten.
+
+Das Aktivieren der Prozessisolation kann zu Inkompatibilitäten mit Drittanbieteranwendungen führen, die darauf angewiesen sind, in die Prozesse von <ph name="PRODUCT_NAME" /> einzugreifen oder diese zu manipulieren, z. B. Antiviren-, Screenreader- oder Fenstermanageranwendungen.
+
+Wenn die Richtlinie aktiviert ist, wird die Prozessisolation in <ph name="PRODUCT_NAME" /> aktiviert.
+
+Wenn die Richtlinie deaktiviert ist, wird die Prozessisolation in <ph name="PRODUCT_NAME" /> deaktiviert.
+
+Ist die Richtlinie nicht konfiguriert, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für die Funktion „Prozessisolation“. In diesem Fall wird sie nach und nach für immer mehr Nutzer eingeführt.
+
+Hinweis: Diese Richtlinie wird angewendet, wenn <ph name="PRODUCT_NAME" /> gestartet wird. Wenn die Richtlinie geändert wird, während <ph name="PRODUCT_NAME" /> ausgeführt wird, wird die neue Einstellung beim nächsten Neustart wirksam.</translation>
 <translation id="1834796168555733063">Speichern von Passkeys im Passwortmanager deaktivieren</translation>
 <translation id="1836380138559328229">Anmeldedaten für das aktive WLAN auf Geräteebene speichern</translation>
 <translation id="1837165432382702436">Seitenhöhe in Mikrometern</translation>
@@ -1563,6 +1577,7 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
 <translation id="2039801473506609891">HTTP/0.9-Unterstützung für nicht standardmäßige Ports deaktivieren</translation>
 <translation id="2040479044912658454">Rasterdruckmodus</translation>
+<translation id="2041894060487590789">Die Prozessisolation kann abhängig vom Funktionseinführungsprozess verwendet werden.</translation>
 <translation id="2043749682619281558">Hiermit wird die Funktion "Mauscursor hervorheben" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="2043770014371753404">Deaktivierte Unternehmensdrucker</translation>
 <translation id="2054093043033461396">Der Bildschirmschoner für den Anmeldebildschirm des Geräts ist aktiviert.</translation>
@@ -2234,6 +2249,7 @@ Wenn die Richtlinie auf „<ph name="POLICY_VALUE_DISABLEDE" />“ gesetzt ist, 
 
 Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />“ die Standardauswahl.</translation>
 <translation id="2488455166114458307">Device Attributes API auf diesen Websites erlauben</translation>
+<translation id="2489454942579368665">Nutzung der Entwicklertools vollständig nicht zulassen</translation>
 <translation id="2489558694350871332">Zulassen, dass das Gerät virtuelle Maschinen ausführt</translation>
 <translation id="2492240920793040106">Berichte zu Systeminformationen und Seiteninhalten aktivieren, um Safe Browsing zu verbessern</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
@@ -2724,6 +2740,17 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
       Wird diese Einstellung deaktiviert, können Webseiten kein JavaScript verwenden und der Nutzer kann diese Einstellung nicht ändern.
 
       Ist diese Einstellung aktiviert oder nicht definiert, können Webseiten JavaScript verwenden, wobei der Nutzer diese Einstellung jedoch ändern kann.</translation>
+<translation id="2746385336260438202">Die Spracheingabe ist eine KI-basierte Funktion, mit der Nutzer Text per Spracheingabe eingeben und bearbeiten können. Sie basiert auf generativen KI-Modellen, die eine hochwertige Transkription und Formatierung ermöglichen.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI-Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="274769314493317695">Wenn <ph name="PRINTERS_WHITELIST" /> für <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.
 
       Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
@@ -2767,6 +2794,7 @@ Wenn diese Liste leer oder nicht konfiguriert ist, wird für keine im Hintergrun
 
       Wenn sie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen zuerst deaktiviert. Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="2773288106548584039">Unterstützung älterer Browser</translation>
+<translation id="2773911169897970305">Prozessisolation deaktivieren.</translation>
 <translation id="2774906947252258544">Über die Sperrliste wird festgelegt, welche Installationstypen für Erweiterungen unzulässig sind.
 
 Wenn du „command_line“ festlegst, wird das Laden von Erweiterungen über die Befehlszeile blockiert.</translation>
@@ -3991,6 +4019,7 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3591584750136265240">Verhalten der Log-in-Authentifizierung konfigurieren</translation>
 <translation id="3593905652755912452">Bei deaktivierten Formularsteuerelementen wird die alte Ereignisweiterleitung verwendet.</translation>
 <translation id="3596112486106491038">Befehlszeilenzugriff auf virtuellen Maschinen aktivieren</translation>
+<translation id="3600342552601917721">Die Nutzung der Entwicklertools für das normale Surfen im Web zulassen, aber für unternehmensweit installierte Erweiterungen und integrierte Erweiterungen verwalteter Nutzer einschränken. Ab Version M150 werden sie auch auf allen Seiten blockiert, auf denen diese Erweiterungen eingebettet sind, mit Ausnahme des integrierten PDF-Viewers.</translation>
 <translation id="3603469950773500315">Einschränkungen von <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung erlauben, wodurch Erweiterungen kompatibles Verhalten beibehalten können und <ph name="PRODUCT_NAME" /> angegebene Header ohne <ph name="CORS" />-Prüfungen senden kann.
 
       Wird diese Liste leergelassen, versucht <ph name="PRODUCT_NAME" />, Erweiterungen auf kompatible Weise auszuführen und setzt keine <ph name="API" />-Änderungen für Version 79 von <ph name="PRODUCT_NAME" /> um, wie unter <ph name="WEB_REQUEST_API_MANUAL" /> erläutert.
@@ -4234,6 +4263,7 @@ Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Ein
 <translation id="376375951585423504">Persistentes Kontingent deaktivieren.</translation>
 <translation id="3765260570442823273">Dauer der Warnmeldung zur Abmeldung bei Inaktivität</translation>
 <translation id="3766695867369523703">Drittanbieter-Speicherpartitionierung standardmäßig zulassen.</translation>
+<translation id="377001726927041812">Prozessisolation aktivieren.</translation>
 <translation id="3770044943398389276">Standardmäßig verschiebt Floating‑SSO nur persistente Cookies zwischen Geräten. Mit dieser Richtlinie kann festgelegt werden, ob auch Sitzungscookies einbezogen werden sollen. Sie wird nur angewendet, wenn die Richtlinie „<ph name="FLOATING_SSO_ENABLED_POLICY_NAME" />“ aktiviert ist.
 
 Wenn diese Richtlinie aktiviert ist, synchronisiert Floating‑SSO sowohl Sitzungs- als auch persistente Cookies.
@@ -4625,6 +4655,7 @@ Folgendes ist zu beachten:
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
 <translation id="4030152268425532846">Umgehung der automatischen Anmeldung deaktivieren</translation>
+<translation id="4042229154265896020">Spracheingabe zulassen.</translation>
 <translation id="4043796890723386527">Diese Einstellung hindert Nutzer daran, sekundäre Profile zu erstellen oder zu verwenden und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="4047633048700722778">Mit dieser Richtlinie wird die Anwendung des URL‑Filters „SafeSites“ konfiguriert. Der Filter greift auf die Google Safe Search API zurück, um URLs als pornografisch oder nicht pornografisch einzustufen.
 
@@ -6698,6 +6729,7 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
       Wenn die Richtlinie nicht konfiguriert ist, müssen Nutzer, die schnelles Entsperren verwenden, ihr Passwort einmal am Tag eingeben.</translation>
 <translation id="5306186200045823863">Der veralteten Symantec-PKI vertrauen</translation>
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
+<translation id="5308289216279695777">Nutzung der Entwicklertools in allen Kontexten zulassen, auch in Erweiterungen, die über die Unternehmensrichtlinie installiert wurden</translation>
 <translation id="5308551343115571396">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, so viele Nutzerdaten wie möglich zu speichern und gleichzeitig alle Browserdaten zu entfernen.</translation>
 <translation id="53086358353377307">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, durch die angegeben wird, welche Websites Cookies setzen dürfen.
 
@@ -7216,6 +7248,7 @@ Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, w
           Wenn du diese Einstellung deaktivierst, können sich Nutzer gespeicherte Passwörter im Passwortmanager nicht als Klartext anzeigen lassen.
 
           Ist sie aktiviert oder nicht konfiguriert, können Nutzer ihre Passwörter im Passwortmanager als Klartext sehen.</translation>
+<translation id="561873855783619782">Spracheingabe ohne Datenerhebung zulassen.</translation>
 <translation id="5620392548325769024">Einblendung der Begrüßungsseite beim ersten Start des Browsers nach einer Aktualisierung des Betriebssystems aktivieren</translation>
 <translation id="5621503441067774084">„Mauszeiger hervorheben“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5622590774455244290">Diese Liste kann auf freiwilliger Basis für Android-Apps übernommen werden. Es ist nicht möglich, die Verwendung zu erzwingen.</translation>
@@ -11936,6 +11969,7 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="8634062512783775032"><ph name="AES_KL_NAME" /> als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden, wenn diese unterstützt wird</translation>
 <translation id="8637566476051166626">Ausdrücklich erlaubte Netzwerkports</translation>
 <translation id="8643838501942693770">Drittanbieter-Cookies zulassen, aber Nutzern ermöglichen, diese Einstellung zu ändern</translation>
+<translation id="8644225074581442734">Einstellungen für die Spracheingabe</translation>
 <translation id="864611373241249369">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, alle Daten zu migrieren.</translation>
 <translation id="8648844602494595665">Mit dieser Richtlinie legst du fest, wie das Schloss-Symbol in der Omnibox gehandhabt wird.
        Ab Chrome M93 gibt es ein neues Omnibox-Symbol für verschlüsselte Verbindungen.
@@ -12321,6 +12355,25 @@ Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angege
 <translation id="8892286064305622118">Erforderlicher freier Speicherplatz für <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892771980172542172">Der Name der Update-/Release-Version der IWA. Dieser Wert kann ein beliebiger String sein; es gelten keine Einschränkungen. Wenn kein Wert angegeben wird, wird die Standardversion „default“ verwendet.</translation>
 <translation id="8892783613915541293">Verzögerungen und Aktionen, die ausgeführt werden sollen, wenn das Gerät im Netzbetrieb inaktiv ist</translation>
+<translation id="8895045875428227171">Einstellung 0 (Standard): Die Entwicklertools sind für das normale Surfen im Web verfügbar, jedoch für unternehmensweit installierte Erweiterungen sowie für integrierte Erweiterungen verwalteter Nutzer eingeschränkt. Ab Version M150 werden sie auch auf allen Seiten blockiert, auf denen diese Erweiterungen eingebettet sind, mit Ausnahme des integrierten PDF-Viewers.
+
+Einstellung 1: Die Entwicklertools und die Konsole sind vollständig entsperrt und in allen Kontexten zugänglich, auch in Erweiterungen, die über die Unternehmensrichtlinie installiert wurden.
+
+Einstellung 2: Entwicklertools und Elementprüfung sind browserweit vollständig deaktiviert.
+
+Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.
+
+Ab Version 99 von <ph name="PRODUCT_NAME" /> werden durch diese Einstellung auch Einstiegspunkte für die Funktion „Seiten-Quelltext anzeigen“ bestimmt. Wenn diese Richtlinie auf DeveloperToolsDisallowed (Wert 2) festgelegt ist, können Nutzer sich den Quelltext nicht über Tastenkombinationen oder das Kontextmenü anzeigen lassen. Soll die Anzeige des Quelltexts komplett blockiert werden, musst du der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> auch „view-source:*“ hinzufügen.
+
+Ab Version 119 von <ph name="PRODUCT_NAME" /> wird durch diese Einstellung außerdem bestimmt, ob der Entwicklermodus für isolierte Web-Apps aktiviert und verwendet werden kann.
+
+Ab Version 128 von <ph name="PRODUCT_NAME" /> wird durch diese Einstellung der Entwicklermodus auf der Seite „Erweiterungen“ nicht mehr gesteuert, wenn die Richtlinie „<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />“ konfiguriert ist.
+
+Die Verfügbarkeit von Entwicklertools wird in der folgenden Rangfolge bestimmt:
+1. Wenn eine URL mit einem Muster in der Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ übereinstimmt, sind die Entwicklertools zulässig.
+2. Wenn die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ konfiguriert ist und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ nicht, wird jede URL blockiert, die nicht auf der Zulassungsliste steht.
+3. Wenn eine URL mit einem Muster in der Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ übereinstimmt, werden die Entwicklertools blockiert.
+4. Wenn eine URL nicht von der Zulassungs- oder Sperrliste abgedeckt wird, wird diese Richtlinie (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) als Fallback verwendet.</translation>
 <translation id="8897796778265450949">Zeit beschränken, während der sich ein über GAIA ohne SAML authentifizierter Nutzer offline anmelden kann</translation>
 <translation id="889814528399907891">Nutzern erlauben, <ph name="LACROS_NAME" /> zu aktivieren und als primären Browser festzulegen</translation>
 <translation id="8900312706328930425">Häufigkeit der Cloud-Berichterstellung in Stunden</translation>
@@ -12734,6 +12787,7 @@ Diese Richtlinie ist nicht wirksam, wenn „<ph name="METRICS_REPORTING_ENABLED_
 <translation id="9180108183162961002">Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="9185963199234034321">Hohen Kontrast auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, die Funktion vorübergehend zu deaktivieren</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
+<translation id="9188142767272053574">Prozessisolation aktivieren</translation>
 <translation id="9190022798664427644">Mono-Audio aktivieren</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
 

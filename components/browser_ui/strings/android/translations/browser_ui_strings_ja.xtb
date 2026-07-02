@@ -690,7 +690,6 @@
 <translation id="8163152278172770963">サイトにピクチャー イン ピクチャーの自動開始を許可しない</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="818487310457576362">全画面表示を終了するには、画面の端からドラッグします。</translation>
-<translation id="8186479265534291036">サイトが動作していない場合 サードパーティ Cookie がブロックされています</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />を許可</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
@@ -761,7 +760,6 @@
 <translation id="8805385115381080995">サイトであなたが実在のユーザーであることを確認する頻度が減るため、ブラウジングが高速化されます</translation>
 <translation id="881644524232657178">オンにすると、サイトはデバイスのモーション センサーと光センサーを使用できます。オフにすると、サイトはセンサーを使用できません。</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
 <translation id="8889294078294184559">それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
 <translation id="8899807382908246773">煩わしい広告</translation>
 <translation id="8903921497873541725">拡大する</translation>
@@ -787,7 +785,6 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="9138037198177304356">通知が許可されています</translation>
 <translation id="9138217887606523162">現在のズームレベルは <ph name="ZOOM_LEVEL" />%% です</translation>
-<translation id="915112772806845021">サイトがピクチャー イン ピクチャーを自動的に開始する機能です。この機能を使用すると、動画の視聴を続行しながら、画面で他のタスクを行うことができます。</translation>
 <translation id="9156722768168878035">Chrome で最近使ったタブをデバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="9162462602695099906">このページは危険です</translation>
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>

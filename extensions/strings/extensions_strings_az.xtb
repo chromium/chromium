@@ -1,45 +1,75 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" quraşdırın</translation>
+<translation id="1070377999570795893">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən artırma əlavə etdi. <ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Temanı Aktiv Edin</translation>
 <translation id="1135328998467923690">Paket yanlışdır: " <ph name="ERROR_CODE" /> '.</translation>
 <translation id="1140871961407805696">Arxa kamera</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium-un iş prinsipini dəyişdirə biləcək artırma əlavə etdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Şəxsi açarı eksport etmək alınmadı.</translation>
 <translation id="132960226125594336">Məzmun skripti üçün '<ph name="RELATIVE_PATH" />' faylını yükləmək mümkün olmadı, çünki o, maksimum skript ölçüsünü və ya artırmanın maksimum ümumi məzmun skript ölçüsünü keçə bilərdi.</translation>
 <translation id="1445572445564823378">Bu artırma yavaşlaşır <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> məhsulunun performansını bərpa etmək üçün onu deaktiv etməlisiniz.</translation>
 <translation id="1468038450257740950">WebGL dəstəklənmir.</translation>
 <translation id="1478607704480248626">Quraşdırma aktiv deyil</translation>
+<translation id="1483493594462132177">Göndərin</translation>
+<translation id="1485015260175968628">İndi bunları bacarır:</translation>
 <translation id="1556537182262721003">Artırmanı birbaşa qovluğa daşıya bilmədi.</translation>
+<translation id="1585717515139318619">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən tema əlavə etdi.  <ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Skript üçün css "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" artırmasını import etmək olmur, çünki o paylaşılmış modul deyil</translation>
+<translation id="175772926354468439">Tema aktivdir</translation>
 <translation id="1757786065507923842">Valideyn icazəsi sorğusu alınmadı.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arxa fon səhifəsini yükləmək alınmadı.</translation>
 <translation id="1875387611427697908">Bu, yalnız <ph name="CHROME_WEB_STORE" /> ünvanından əlavə edilə bilər</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" tərəfindən icazə verilmədiyi üçün "<ph name="APP_NAME" />" quraşdırıla bilməz</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" əlavə edilsin?</translation>
 <translation id="2159915644201199628">Təsviri deşifrələmək olmadı: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">Valideyniniz bu artırmanı təsdiqləmədi</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" əlavə icazə istəyir.</translation>
+<translation id="2327492829706409234">Tətbiqi aktiv edin</translation>
 <translation id="2350172092385603347">Lokalizasiya işlənir, lakin defolt default_locale manifestdə göstərilməyib.</translation>
 <translation id="2576842806987913196">Bu ad ilə CRX faylı artıq mövcuddur.</translation>
 <translation id="2662876636500006917">Chrome Veb Market</translation>
+<translation id="2678063897982469759">Yenidən aktivləşdirin</translation>
 <translation id="2743583586211388067">Bu artırmaya giriş təşkilatınızın artırma riski siyasətinə əsasən bloklanıb.</translation>
+<translation id="2766161002040448006">Valideyndən soruşun</translation>
 <translation id="2785530881066938471">Məzmun skripti üçün '<ph name="RELATIVE_PATH" />' yükləmək alınmadı. UTF-8 kodlu deyil.</translation>
+<translation id="2850541429955027218">Tema əlavə edin</translation>
+<translation id="2883143988769190738">Bu artırma aşağıdakı icazələri tələb edir:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (artırma ID'si "<ph name="EXTENSION_ID" />") administrator tərəfindən blok edildi. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" quraşdırmaq üçün inzibatçınıza sorğu göndərilsin?</translation>
 <translation id="2988488679308982380">Paket quraşdırıla bilmədi: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu  (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Crx faylını əvəz etmək alınmadı. Faylın istifadədə olduğunu yoxlayın.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu</translation>
 <translation id="3174723475300476613">Bu artırmaya giriş təşkilatınız tərəfindən bloklanıb.</translation>
+<translation id="3183357154200327217">Kompüterinizdə başqa proqram Chromium-un fəaliyyət tərzini dəyişən tema əlavə etdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">"Yalnız_kiosk" funksiyası olan tətbiqlər ChromeOS kiosk rejimində quraşdırılmalıdır</translation>
 <translation id="3364986687961713424">Admininizdən: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> <ph name="PRODUCT_NAME" /> vendordan (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Şəxsi açar üçün giriş dəyəri düzgün yol olmalıdır.</translation>
+<translation id="3788401245189148511">Edə bilərdi:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" tətbiqi əlavə edilmədi, cünki "<ph name="INSTALLED_APP_NAME" />" tətbiqi ilə zddiyət təşkil edir.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' variantlar səhifəsini yükləmək olmadı.</translation>
+<translation id="3905761538810670789">Tətbiqi bərpa edin</translation>
+<translation id="3908501907586732282">Artırmanı aktiv edin</translation>
+<translation id="3927932062596804919">Rədd edin</translation>
 <translation id="3984413272403535372">Artırmaya daxil olarkən xəta baş verdi.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" təmir olunsun?</translation>
+<translation id="4061696872429826774">Kompüterinizdə başqa bir proqram Chromium-un fəaliyyət göstərmə formasını dəyişən artırma əlavə etdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Bu artırma kateqoriyasına giriş təşkilatınız tərəfindən bloklanıb.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' səhifəsi haqqında endirmək alınmadı.</translation>
 <translation id="424963718355121712">Tətbiqlər təsir etdiyi hostdan təmin edilməlidirlər</translation>
 <translation id="4306119971288449206">Tətbiqlər "<ph name="CONTENT_TYPE" />" ilə təmin edilməlidirlər</translation>
+<translation id="4625078469366263107">Tətbiqi Aktiv Edin</translation>
 <translation id="4633003931260532286">Artırma minimum "<ph name="IMPORT_VERSION" />" versiyalı <ph name="IMPORT_NAME" /> tələb edir, lakin yalnız "<ph name="INSTALLED_VERSION" />" versiyası quraşdırılıb</translation>
 <translation id="4660476621274971848">Gözlənilən versiya "<ph name="EXPECTED_VERSION" />" olsa da, versiya "<ph name="NEW_ID" />" idi.</translation>
 <translation id="471800408830181311">Gizli açar çıxışı uğursuz oldu.</translation>
@@ -47,21 +77,36 @@
 <translation id="4988792151665380515">İctimai açarı eksport etmək alınmadı.</translation>
 <translation id="501057610015570208">"Yalnız_köşk" funksiyası olan tətbiqlər ChromeOS Flex köşk rejimində quraşdırılmalıdır</translation>
 <translation id="5026754133087629784">Veb baxış: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Artırma əlavə edin</translation>
+<translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5098647635849512368">Paketə istiqamət üçün mütləq yol tapmaq olmur</translation>
 <translation id="5160071981665899014">Skript üçün JavaScript "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
+<translation id="5185386675596372454">Yeni "<ph name="EXTENSION_NAME" />" versiyası daha çox icazə tələb etdiyi üçün deaktiv edildi.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" aktiv edilsin?</translation>
 <translation id="5356315618422219272">Tətbiqə baxış: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium'dan silin</translation>
 <translation id="5456409301717116725">Bu artırma <ph name="KEY_PATH" /> açar faylını içərir.</translation>
+<translation id="5485102783864353244">Tətbiq əlavə edin</translation>
 <translation id="5486326529110362464">Şəxsi açar üçün daxiletmə dəyəri olmalıdır.</translation>
 <translation id="5527463195266282916">Artırma versiyasının aşağı salınmasına cəhd edildi.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Artırma formasını yükləmək alınmadı:</translation>
 <translation id="5972529113578162692">Bu maşın administratoru <ph name="EXTENSION_NAME" /> artırmasının quraşdırılmasını tələb edir. Sistemdən silinə bilməyəcək.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu  (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> vendorundan <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">Kompüterinizdə başqa proqram Chromium-un fəaliyyət tərzini dəyişən tətbiq əlavə etdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Artırmanı yükləmə xətası</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome-un iş prinsipini dəyişdirə biləcək artırma əlavə etdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Gizli açarı oxumaq uğursuz oldu.</translation>
+<translation id="6326175484149238433">Chrome'dan silin</translation>
 <translation id="6391538222494443604">Giriş direktoriyası olmalıdır.</translation>
 <translation id="641087317769093025">Artırmanı arxivdən çıxarmaq alınmadı</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" bir və ya daha çox cihaza giriş tələb edir:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> istifadəçi</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' arxa fon skriptini yükləmək olmadı.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> vendorundan <ph name="PRODUCT_NAME" /> məhsulu (Seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,24 +115,34 @@
 <translation id="7068383018033524534">Manifest faylı yanlışdır</translation>
 <translation id="7217838517480956708">Bu cihazın administratoru <ph name="EXTENSION_NAME" /> artırmasının quraşdırılmasını tələb edir.</translation>
 <translation id="7287143125007575591">Giriş rədd edildi.</translation>
+<translation id="760353356052806707">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən tətbiq əlavə etdi. 
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Şəxsi açar üçün giriş dəyəri düzgün format olmalıdır.
 (PKCS#8-format PEM-encoded RSA key).</translation>
 <translation id="765293928828334535">Tətbiqlər, artırmalar və istifadəçi skriptləri bu veb saytdan əlavə edilə bilməz</translation>
+<translation id="7658239707568436148">Ləğv edin</translation>
+<translation id="7766838926148951335">İcazələri qəbul edin</translation>
 <translation id="7876803335449432072">Kontent skripti üçün "<ph name="RELATIVE_PATH" />" faylını yükləmək mümkün olmadı. Kontent skripti üzrə üslub cədvəlləri yalnız .css faylları kimi dəstəklənən üslüb cədvəllərindən yüklənə bilər.</translation>
 <translation id="7939686037314084444">Bu artırma düzgün yüklənmədi. Şəbəkə sorğusuna cavab verə bilmədi.</translation>
 <translation id="7952904276017482715">Gözlənilən ID "<ph name="EXPECTED_ID" />"olsa da, artırmanın ID-si "<ph name="NEW_ID" />" idi</translation>
 <translation id="7972881773422714442">Variantlar: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Təsdiq edin</translation>
 <translation id="8035920974645200807">Ön kamera</translation>
 <translation id="8047248493720652249">Bu artırma "<ph name="ATTEMPTED_FILENAME" />" endirə bilmədi, çünki digər artırma (<ph name="EXTENSION_NAME" />) fərqli fayl adı "<ph name="ACTUAL_FILENAME" />" bəlirlədi.</translation>
 <translation id="8049705080247101012">Google <ph name="EXTENSION_NAME" /> adlı artırmanı zərərli qeyd edərək quraşdırmanı ləğv etdi</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> vendorundan <ph name="PRODUCT_NAME" /> məhsulu</translation>
+<translation id="8353683614194668312">Bunu bacarır:</translation>
 <translation id="8517576857589387417">Manifest faylı yoxdur və ya oxunmur</translation>
 <translation id="8565650234829130278">Tətbiq versiyasının aşağı salınmasına cəhd edildi.</translation>
 <translation id="8621383749470166852">Kontent skripti üçün "<ph name="RELATIVE_PATH" />" faylını yükləmək mümkün olmadı, kontent skriptlərini yalnız .js faylları kimi dəstəklənən JavaScript fayllarından yükləmək mümkündür.</translation>
 <translation id="8636666366616799973">Paket yanlışdır. Detallar: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">Artıq "<ph name="EXTENSION_NAME" />" üçün sorğu göndərmisiniz</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" cihazdan birinə giriş tələb edir:</translation>
 <translation id="8885905466771744233">Göstərilən artırma üçün şəxsi açar artıq mövcuddur. Ya o açarı yenidən işlədin, ya da ilk olaraq onu silin.</translation>
 <translation id="9039223174332979184">Bu cihazın administratoru <ph name="EXTENSION_NAME" /> artırmasından minimum manifest versiyasının 3 olmasını tələb edir.</translation>
 <translation id="907841381057066561">Paketləmə zamanı müvəqqəti arxivin yaradılması alınmadı.</translation>
+<translation id="9102610709270966160">Artırmanı Aktiv Edin</translation>
+<translation id="93766956588638423">Artırmanı bərpa edin</translation>
 <translation id="941543339607623937">Yanlış xüsusi açar.</translation>
 </translationbundle>

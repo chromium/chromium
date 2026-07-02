@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">Per controllare che le tue password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Fai clic sul menu Chromium</translation>
 <translation id="1157985233335035034">Lingue recenti</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Installazione non riuscita perché la versione di Windows non è supportata.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1186645291482254714">Ricevi avvisi per il monitoraggio dei prezzi con Chromium sullo smartphone</translation>
@@ -52,7 +49,6 @@
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
 <translation id="154404805518949443">Accedi a Chromium</translation>
 <translation id="1547469039832541117">Termina l'attività evidenziata.</translation>
-<translation id="1553461853655228091">Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="1562320819937089394">Fissa Chromium</translation>
 <translation id="1574377791422810894">Strumenti per la sicurezza di Chromium</translation>
 <translation id="1594928384848033697">Chromium vuole eliminare i tuoi dati del Gestore delle password. Digita la tua password di Windows per consentire l'operazione.</translation>
@@ -214,9 +210,6 @@
 <translation id="3155163173539279776">Riavvia Chromium</translation>
 <translation id="3161522574479303604">Tutte le lingue</translation>
 <translation id="3179665906251668410">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
-<translation id="3183357154200327217">Un altro programma sul computer ha aggiunto un tema che potrebbe modificare il funzionamento di Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalizza il tuo nuovo profilo Chromium</translation>
 <translation id="3189205223539394158">Puoi continuare a chattare con AI Mode senza cambiare schede. Per iniziare, accedi a Chromium. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi.</translation>
 <translation id="3224847870593914902">Per rimuovere il tuo Account Google da Chromium, esci da Chromium nella pagina Impostazioni</translation>
@@ -295,9 +288,6 @@
 <translation id="4036079820698952681">Contribuisci a migliorare Chromium indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
 <translation id="4055805654398742145">Gestore delle p&amp;assword</translation>
-<translation id="4061696872429826774">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="4118474109249235144">Modalità Incognito di Chromium</translation>
 <translation id="4122186850977583290">Vai alla pagina Informazioni su Chromium</translation>
@@ -410,7 +400,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium consiglia di mettere in pausa la scheda che rallenta il browser}other{Chromium consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
 <translation id="5473971139929175403">Chromium potrebbe non funzionare correttamente perché non è più supportato su questa distribuzione Linux</translation>
 <translation id="5475924890392386523">Chromium ha bloccato questo download perché il file può danneggiare i tuoi account personali e dei social network</translation>
-<translation id="5480860683791598150">Chromium deve poter accedere alla tua posizione per condividerla con questo sito</translation>
 <translation id="549669000822060376">Attendi mentre Chromium installa gli aggiornamenti di sistema più recenti.</translation>
 <translation id="5496810170689441661">Chromium sta cercando di modificare le password. Per consentire la modifica, digita la tua password Windows.</translation>
 <translation id="549975168243349205">Lavora senza interruzioni con le tue app preferite come Google Drive e YouTube ovunque ti trovi con Chromium.</translation>
@@ -477,9 +466,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6174920971222007286">Questo file potrebbe essere pericoloso<ph name="LINE_BREAK" />Chromium può controllare il download per te se fornisci la password. Le informazioni sul file vengono inviate a Google Navigazione sicura, ma i contenuti e la password del file rimangono sul dispositivo.</translation>
 <translation id="6182736845697986886">Installazione non riuscita a causa di un errore interno del server di aggiornamento.</translation>
 <translation id="6183079672144801177">Assicurati di aver effettuato l'accesso a Chromium sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
-<translation id="6204922163963157461">Un altro programma sul computer ha aggiunto un'app che potrebbe modificare il funzionamento di Chromium.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Questo computer ha già una versione più recente di Chromium. Se il software non funziona, disinstalla Chromium e riprova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium verrà riavviato ora}=1{Chromium verrà riavviato tra 1 secondo}other{Chromium verrà riavviato tra # secondi}}</translation>
 <translation id="6239161312595354541">Chiedi alla Ricerca immagini informazioni su questo video</translation>
@@ -581,7 +567,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="6964305034639999644">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6985329841647292029">Termini di Chromium OS</translation>
-<translation id="6990124437352146030">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere al microfono</translation>
 <translation id="7003299027384820442">Inserisci la tua passphrase per usare e salvare i dati di Chromium nel tuo Account Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installazione non riuscita perché questa versione del sistema operativo non è supportata.</translation>
 <translation id="7024536598735240744">Errore decompressione: <ph name="UNPACK_ERROR" />.</translation>
@@ -625,7 +610,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 3. Fai clic su <ph name="BUTTON_3" /> nella notifica di Windows per fissare Chromium alla barra delle app per un accesso rapido</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium per gli sviluppatori</translation>
 <translation id="7450541714075000668">Testo copiato</translation>
-<translation id="7451052299415159299">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
 <translation id="7458892263350425044">Per usare il microfono, consenti l'accesso a Chromium nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Per ricevere gli aggiornamenti futuri di Chromium, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 7.</translation>
 <translation id="7467949745582939695">Vuoi riavviare Chromium?</translation>
@@ -750,8 +734,8 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8719993436687031146">Accedere a Chromium?</translation>
 <translation id="8747073452963259673">angolo in basso a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in basso <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Errore di installazione: l'amministratore di rete ha applicato una policy di gruppo che impedisce l'installazione: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
 <translation id="8813277370772331957">Ricordamelo dopo</translation>
+<translation id="8816416449795340678">Condividi questo documento con Gemini in Chromium per ottenere una rapida panoramica e fare domande aggiuntive</translation>
 <translation id="8818550178040858407">Accedere a Chromium?</translation>
 <translation id="8823401858233292222">Imposta Chromium come browser predefinito e aggiungilo alla barra delle app</translation>
 <translation id="8826492472752484139">Fai clic su "Gestore delle password"</translation>

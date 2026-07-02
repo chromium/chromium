@@ -243,6 +243,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2056878612599315956">Nettstedet er satt på pause</translation>
 <translation id="2063047797624276601">Organisasjonen din har slått på Safe Browsing med økt beskyttelse</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 nedlasting mislyktes}other{# nedlastinger mislyktes}}</translation>
+<translation id="2066690553719545730">Vis alltid AI-modus</translation>
 <translation id="2067805253194386918">tekst</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2149968176347646218">Tilkoblingen er ikke sikker</translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2163089732491971196">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din</translation>
+<translation id="2164015935042801524">Høyreklikk her for å vise faner vertikalt</translation>
 <translation id="2166228530126694506">Versjon <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Bildebeskrivelser er av</translation>
 <translation id="2172905120685242547">Vil du lukke vinduet?</translation>
@@ -305,6 +307,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2323763861024343754">Nettstedslagring</translation>
 <translation id="2327445548174191329">Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alle mister tilgangen til fanegruppen «<ph name="GROUP_NAME" />» umiddelbart, og alle invitasjonslinker deaktiveres</translation>
+<translation id="2329500425421091035">Vi presenterer AI-modus i Chrome</translation>
 <translation id="2330186936255788117">Flere bokmerker</translation>
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
 <translation id="233375395665273385">Slett og logg av</translation>
@@ -1057,7 +1060,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5436928407363358055">Synkroniser loggen og fanene dine for å fortsette enkelt der du slapp</translation>
 <translation id="5438292632479953702">Last ned på nytt</translation>
 <translation id="5439191312780166229">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>
-<translation id="5441137934526263133">Virker ikke nettstedet? Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="5441466871879044658">Oversett til dette språket</translation>
 <translation id="5444999712122199445">Gå tilbake til nettstedet</translation>
 <translation id="544776284582297024">For å åpne faner og besøke ulike sider samtidig, trykk på åpne faner-knappen</translation>
@@ -1112,7 +1114,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="569536719314091526">Oversett denne siden til hvilket som helst språk via Flere alternativer-knappen</translation>
 <translation id="5696597120588531049">Chrome kan beskytte deg mot databrudd, utrygge nettsteder med mer</translation>
 <translation id="5698878456427040674">Sjekk om den valgte kontoen støttes.</translation>
-<translation id="5700415746238689851">Åpne Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vil koble til en seriell port</translation>
 <translation id="5715150588940290235">Vil du slette lagrede sikkerhetskoder?</translation>
 <translation id="572328651809341494">Nylige faner</translation>
@@ -1418,7 +1419,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6835182496791325827">Bli varslet når Chrome finner de beste resultatene for søkene dine mens du er borte.</translation>
 <translation id="6846298663435243399">Laster inn …</translation>
-<translation id="6850409657436465440">Nedlastingen din pågår fremdeles</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> faner ble lukket</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Fant 1 resultat}other{Fant # resultater}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Lydfiler, 1 lydfil på listen}other{Lydfiler, # lydfiler på listen}}</translation>
@@ -1968,12 +1968,14 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9001604755921395912">Åpne på Chrome-inkognitofane</translation>
 <translation id="9010094279589497751">Åpne Gemini raskt når du trenger det</translation>
 <translation id="9012585441087414258">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Hvis en side gjør noe mistenkelig, blir nettadresser og deler av sideinnholdet sendt til Google Safe Browsing.</translation>
+<translation id="9014097371980259227">Noen verktøy er flyttet for å hjelpe deg med å søke med AI-modus</translation>
 <translation id="9019199799064251516">Vil du fortsette uten profillås for bilen?</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
 <translation id="9022871169049522985">Nettsteder og annonsører kan måle annonseresultater sine</translation>
 <translation id="9024318700713112071">Angi Chrome som standard</translation>
 <translation id="9027728231343310283">Angre <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytt til\u2026</translation>
+<translation id="904146253922032365">Trykk og hold for å vise faner vertikalt</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9047347135558855162">Start et søk raskt i Chrome</translation>
 <translation id="9050666287014529139">Passordfrase</translation>

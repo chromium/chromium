@@ -17,9 +17,6 @@
 <translation id="1131805035311359397">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeiumમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium મેનૂ પર ક્લિક કરો</translation>
 <translation id="1157985233335035034">તાજેતરની ભાષાઓ</translation>
-<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે, જેને કારણે Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Windowsનું તમારું વર્ઝન સપોર્ટેડ ન હોવાને કારણે આ ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="1185134272377778587">Chromium વિશે</translation>
 <translation id="1186645291482254714">તમારા ફોન પર Chromium વડે કિંમત ટ્રૅક કરવા સંબંધિત અલર્ટ મેળવો</translation>
@@ -55,7 +52,6 @@
 <translation id="1524282610922162960">Chromium ટૅબ શેર કરો</translation>
 <translation id="154404805518949443">Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="1547469039832541117">હાઇલાઇટ કરેલું કાર્ય સમાપ્ત કરે છે.</translation>
-<translation id="1553461853655228091">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromiumને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>
 <translation id="1562320819937089394">Chromiumને પિન કરો</translation>
 <translation id="1574377791422810894">Chromiumના સલામતી માટેના ટૂલ</translation>
 <translation id="1594928384848033697">Chromium તમારો Password Manager ડેટા ડિલીટ કરવા માગે છે. આને મંજૂરી આપવા માટે Windowsનો પાસવર્ડ ટાઇપ કરો.</translation>
@@ -217,9 +213,6 @@
 <translation id="3155163173539279776">Chromium ને ફરીથી લોંચ કરો</translation>
 <translation id="3161522574479303604">બધી ભાષાઓ</translation>
 <translation id="3179665906251668410">Chromium છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
-<translation id="3183357154200327217">તમારા કમ્પ્યૂટર પરના અન્ય પ્રોગ્રામ દ્વારા કોઈ થીમ ઉમેરવામાં આવી છે જેનાથી Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">તમારી નવી Chromium પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="3189205223539394158">તમે ટૅબ સ્વિચ કર્યા વિના AI મોડ સાથે ચૅટ કરવાનું ચાલુ રાખી શકો છો. શરૂ કરવા માટે, Chromiumમાં સાઇન ઇન કરો. તમને તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ તેમજ બીજું પણ ઘણું મળશે.</translation>
 <translation id="3224847870593914902">Chromiumમાંથી તમારા Google એકાઉન્ટને કાઢી નાખવા માટે, સેટિંગ પેજમાં જઈને Chromiumમાંથી સાઇન આઉટ કરો</translation>
@@ -298,9 +291,6 @@
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
-<translation id="4061696872429826774">તમારા કમ્પ્યૂટર પરના અન્ય પ્રોગ્રામ દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે જેનાથી Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{જ્યારે 1 મિનિટ સુધી Chromiumનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવે છે. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.}one{જ્યારે # મિનિટ સુધી Chromiumનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવે છે. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.}other{જ્યારે # મિનિટ સુધી Chromiumનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવે છે. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.}}</translation>
 <translation id="4118474109249235144">Chromium છૂપો મોડ</translation>
 <translation id="4122186850977583290">Chromium વિશે પેજ પર જાઓ</translation>
@@ -413,7 +403,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}one{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}other{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યાં હોય એવા ટૅબને થોભાવી દો}}</translation>
 <translation id="5473971139929175403">આ Linux વિતરણ સિસ્ટમ પર Chromium હવે સપોર્ટ કરતું ન હોવાથી કદાચ તે યોગ્ય રીતે કાર્ય ન કરે</translation>
 <translation id="5475924890392386523">Chromium દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું છે, કારણ કે આ ફાઇલ તમારા વ્યક્તિગત અને સોશિયલ નેટવર્ક એકાઉન્ટને નુકસાન પહોંચાડી શકે છે</translation>
-<translation id="5480860683791598150">Chromiumને આ સાઇટ સાથે તમારું સ્થાન શેર કરવા માટે તમારા સ્થાનના ઍક્સેસની જરૂર પડે છે</translation>
 <translation id="549669000822060376">કૃપા કરીને Chromium, નવીનતમ સિસ્ટમ અપડેટ્સ ઇન્સ્ટોલ કરે ત્યાં સુધી રાહ જુઓ.</translation>
 <translation id="5496810170689441661">Chromium પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="549975168243349205">Chromium વડે મુસાફરીમાં Google Drive અને YouTube જેવી તમારી મનપસંદ ઍપ સાથે વિક્ષેપરહિત કામ કરો.</translation>
@@ -480,9 +469,6 @@
 <translation id="6174920971222007286">આ ફાઇલ જોખમી હોઈ શકે છે<ph name="LINE_BREAK" />જો તમે પાસવર્ડ પ્રદાન કરો છો, તો Chromium તમારા માટે આ ડાઉનલોડને તપાસી શકે છે. ફાઇલ વિશેની માહિતી Google Safe Browsingને મોકલવામાં આવે છે, પરંતુ ફાઇલનું કન્ટેન્ટ અને પાસવર્ડ તમારા ડિવાઇસમાં જ રહે છે.</translation>
 <translation id="6182736845697986886">કોઈ અપડેટ સર્વરની આંતરિક ભૂલને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="6183079672144801177">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromiumમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
-<translation id="6204922163963157461">તમારા કમ્પ્યૂટર પરની અન્ય ઍપ દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે જેનાથી Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">આ કમ્પ્યુટર પર પહેલાંથી જ Chromiumનું સૌથી તાજેતરનું વર્ઝન છે. જો સૉફ્ટવેર કાર્ય કરી રહ્યું નથી, તો કૃપા કરીને Chromiumને અનઇન્સ્ટૉલ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium હમણાં ફરીથી લૉન્ચ થશે}=1{Chromium 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="6239161312595354541">'છબી વડે શોધ' સુવિધા વડે આ વીડિયો વિશે પૂછો</translation>
@@ -584,7 +570,6 @@
 <translation id="6964305034639999644">Chromium છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6985329841647292029">ChromiumOSની શરતો</translation>
-<translation id="6990124437352146030">Chromiumને આ સાઇટ માટે તમારા માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="7003299027384820442">તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં Chromium ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="7011190694940573312">ઑપરેટિંગ સિસ્ટમનું આ વર્ઝન સપોર્ટેડ ન હોવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="7024536598735240744">અનપૅક કરવામાં ભૂલ: <ph name="UNPACK_ERROR" />.</translation>
@@ -629,7 +614,6 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 3. ઝડપી ઍક્સેસ માટે Chromiumને તમારા ટાસ્કબાર પર પિન કરવા માટે Windows નોટિફિકેશનમાં <ph name="BUTTON_3" /> પર ક્લિક કરો</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">ટેક્સ્ટ કૉપિ કરી</translation>
-<translation id="7451052299415159299">Chromiumને આ સાઇટ માટે તમારા કૅમેરાના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="7458892263350425044">તમારા માઇક્રોફોનનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />સિસ્ટમના સેટિંગ<ph name="END_LINK" />માં જઈને Chromiumને ઍક્સેસ આપો</translation>
 <translation id="7461356015007898716">Chromiumની ભાવિ અપડેટ મેળવવા માટે, તમારે Windows 10 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર Windows 7નો ઉપયોગ કરે છે.</translation>
 <translation id="7467949745582939695">Chromium ફરીથી લૉન્ચ કરીએ?</translation>
@@ -754,8 +738,8 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="8719993436687031146">Chromiumમાં સાઇન ઇન કરીએ?</translation>
 <translation id="8747073452963259673">શોધ વિસ્તારના સૌથી નીચે ડાબા ખૂણે: ડાબી બાજુ <ph name="LEFT" />%, સૌથી નીચે <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">ઇન્સ્ટૉલ કરવામાં ભૂલ: તમારા નેટવર્ક ઍડમિન દ્વારા કોઈ ગ્રૂપ પૉલિસી લાગુ કરવામાં આવી છે, જે ઇન્સ્ટૉલેશનની પ્રક્રિયાને અટકાવે છે: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromiumને આ સાઇટ માટે તમારા કૅમેરા અને માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
+<translation id="8816416449795340678">ઝડપી ઓવરવ્યૂ મેળવવા અને ફૉલોઅપ પ્રશ્નો પૂછવા માટે, આ દસ્તાવેજને Chromiumમાં Gemini સાથે શેર કરો</translation>
 <translation id="8818550178040858407">શું Chromiumમાં સાઇન ઇન કરીએ?</translation>
 <translation id="8823401858233292222">Chromiumને ડિફૉલ્ટ બ્રાઉઝર બનાવો અને ટાસ્કબાર પર પિન કરો</translation>
 <translation id="8826492472752484139">“Password Manager” પર ક્લિક કરો</translation>

@@ -2367,6 +2367,7 @@
 <translation id="4705573018059932476">ਤੁਸੀਂ <ph name="PROVIDER_ORIGIN" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਸਾਈਟਾਂ 'ਤੇ <ph name="AUTHENTICATOR" /> ਨਾਲ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚੁਣਿਆ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਪ੍ਰਦਾਨਕ ਨੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਭੁਗਤਾਨ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਜਾਣਕਾਰੀ ਸਟੋਰ ਕੀਤੀ ਹੋਵੇ, ਜਿਸਨੂੰ ਤੁਸੀਂ <ph name="LINK_TEXT" />।</translation>
 <translation id="4708268264240856090">ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਰੁਕਾਵਟ ਆਈ ਸੀ</translation>
 <translation id="4708276642004148190">ਜਲ ਸਪਲਾਈ ਅਤੇ ਉਪਚਾਰ</translation>
+<translation id="4710249055485272920">ਇਹ ਜਾਣਕਾਰੀ ਨਹੀਂ ਮਿਲੀ</translation>
 <translation id="4711628883879888561">ਟੈਬ ਗਰੁੱਪ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
@@ -3019,6 +3020,7 @@
 <translation id="5707154300732650394">ਆਪਣਾ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="57094364128775171">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਸੁਝਾਓ…</translation>
 <translation id="570953204696852961">ਲਾਲ 3</translation>
+<translation id="5710907191777451677">ਇਸਦੀ ਬਜਾਏ Chrome ਵਿੱਚ Gemini ਤੋਂ ਪੁੱਛੋ</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">ਪਸ਼ੂ ਚਿਕਿਤਸਕ</translation>
 <translation id="5715150588940290235">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਸੁਰੱਖਿਆ ਕੋਡਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
@@ -3920,7 +3922,6 @@
 <translation id="7110116949943042888">ਅਸਥਾਈ ਅਤੇ ਮੌਸਮ ਮੁਤਾਬਕ ਨੌਕਰੀਆਂ</translation>
 <translation id="7110368079836707726">ਕਾਲਜ ਅਤੇ ਯੂਨੀਵਰਸਿਟੀਆਂ</translation>
 <translation id="7111507312244504964">ਸੰਪਤੀ ਜਾਂਚ ਅਤੇ ਮੁਲਾਂਕਣ</translation>
-<translation id="7117290130383718594">ਲਿਖਤ ਐਨੋਟੇਸ਼ਨਾਂ</translation>
 <translation id="7118618213916969306">ਕਲਿੱਪਬੋਰਡ URL, <ph name="SHORT_URL" /> ਖੋਜੋ</translation>
 <translation id="7118852830504022370">ਤੁਹਾਨੂੰ ਇਹ ਚਿਤਾਵਨੀ ਇਸ ਲਈ ਦਿਸ ਰਹੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ HTTPS ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ਟੀਵੀ ਡਰਾਮਾ</translation>
@@ -5042,7 +5043,6 @@
 <translation id="8871485335898060555">ਪ੍ਰਾਚੀਨ ਅਤੇ ਸੰਗ੍ਰਹਿਣਯੋਗ ਚੀਜ਼ਾਂ</translation>
 <translation id="8871553383647848643">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="887350038812854047">ਇਸ ਨੀਤੀ ਵਿੱਚ ਮਸ਼ੀਨ ਅਤੇ ਵਰਤੋਂਕਾਰ ਪੱਧਰਾਂ 'ਤੇ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਇੱਕੋ ਜਿਹਾ ਮੁੱਲ ਹੈ। ਨੀਤੀ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰ ਰਹੀ ਹੈ।</translation>
-<translation id="8874790741333031443">ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦਿਓ, ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਘਟ ਜਾਵੇਗੀ ਪਰ ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰਨਗੀਆਂ।</translation>
 <translation id="8874824191258364635">ਕੋਈ ਵੈਧ ਕਾਰਡ ਨੰਬਰ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="8877780815363510165">ਮੱਛੀ ਫੜ੍ਹਨਾ</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" ਨੂੰ "<ph name="DATA_CONTROLS_LEVEL" />" 'ਤੇ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>

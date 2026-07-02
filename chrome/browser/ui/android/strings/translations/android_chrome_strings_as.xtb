@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">ছাইট পজ কৰা হৈছে</translation>
 <translation id="2063047797624276601">আপোনাৰ প্ৰতিষ্ঠানে বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং অন কৰিছে</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড কৰিব পৰা নগ’ল}one{# টা ডাউনল’ড কৰিব পৰা নগ’ল}other{# টা ডাউনল’ড কৰিব পৰা নগ’ল}}</translation>
+<translation id="2066690553719545730">সদায় AI ম’ড দেখুৱাওক</translation>
 <translation id="2067805253194386918">পাঠ</translation>
 <translation id="2079545284768500474">আনডু কৰক</translation>
 <translation id="2082238445998314030">ফলাফল <ph name="TOTAL_RESULTS" />ৰ ভিতৰত <ph name="RESULT_NUMBER" /></translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">সংযোগটো সুৰক্ষিত নহয়</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="2163089732491971196">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ আপোনাৰ পাছফ্ৰে’জ দিয়ক</translation>
+<translation id="2164015935042801524">টেবসমূহ উলম্বভাৱে দেখুৱাবলৈ ইয়াত ৰাইট ক্লিক কৰক</translation>
 <translation id="2166228530126694506">সংস্কৰণ <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">প্ৰতিচ্ছবিৰ বিৱৰণ অফ আছে</translation>
 <translation id="2172905120685242547">ৱিণ্ড’ বন্ধ কৰিবনে?</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">ছাইট ষ্ট’ৰেজ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" />ৰ পৰা</translation>
 <translation id="2328474416100889417">সকলোৱে লগে লগে <ph name="GROUP_NAME" /> টেবৰ গোটৰ এক্সেছ হেৰুৱাব আৰু আটাইবোৰ আমন্ত্ৰণৰ লিংক অফ কৰা হ’ব</translation>
+<translation id="2329500425421091035">Chromeত AI ম’ড আগবঢ়োৱা হৈছে</translation>
 <translation id="2330186936255788117">অধিক বুকমাৰ্ক</translation>
 <translation id="2332515770639153015">বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং সুবিধাটো অন আছে</translation>
 <translation id="233375395665273385">মচক আৰু ছাইন আউট কৰক</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">আপুনি য’ত এৰিছিল তাৰ পৰা সহজে আৰম্ভ কৰিবলৈ, আপোনাৰ ইতিহাস আৰু টেবসমূহ ছিংক কৰক</translation>
 <translation id="5438292632479953702">পুনৰ ডাউনল’ড কৰক</translation>
 <translation id="5439191312780166229">মানক সুৰক্ষাৰ তুলনাত ছাইটসমূহৰ পৰা অধিক ডেটা বিশ্লেষণ কৰি আনকি Googleৰ বাবেও পূৰ্বে অজ্ঞাত বিপজ্জনক ছাইটসমূহৰ বিষয়ে আপোনাক সতৰ্ক কৰি দিয়ে। আপুনি Chromeৰ সকীয়নি এৰি যোৱাটো বাছনি কৰিব পাৰে।</translation>
-<translation id="5441137934526263133">ছাইটটোৱে কাম কৰা নাই নেকি? তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="5441466871879044658">এইটো ভাষালৈ অনুবাদ কৰক</translation>
 <translation id="5444999712122199445">ছাইটলৈ উভতি যাওক</translation>
 <translation id="544776284582297024">একে সময়তে টেবসমূহ খুলিবলৈ আৰু বেলেগ বেলেগ পৃষ্ঠাসমূহলৈ যাবলৈ, টেবসমূহ খোলক বুটামটো টিপক</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">অধিক বিকল্প-ৰ বুটামটো ব্যৱহাৰ কৰি এই পৃষ্ঠাটো যিকোনো ভাষালৈ অনুবাদ কৰক</translation>
 <translation id="5696597120588531049">Chromeএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত থকাত সহায় কৰিব পাৰে</translation>
 <translation id="5698878456427040674">বাছনি কৰা একাউণ্টটো সমৰ্থিত হয়নে নহয় পৰীক্ষা কৰক।</translation>
-<translation id="5700415746238689851">Gemini খোলক</translation>
 <translation id="5709213329446699338"><ph name="SITE" />এ এটা ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ হ’ব বিচাৰে</translation>
 <translation id="5715150588940290235">ছেভ কৰি ৰখা সুৰক্ষা ক'ড মচিবনে?</translation>
 <translation id="572328651809341494">শেহতীয়াকৈ বন্ধ কৰা টেব</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6835182496791325827">আপুনি দূৰত থকাৰ সময়ত Chromeএ আপোনাৰ সন্ধানৰ বাবে সৰ্বশ্ৰেষ্ঠ ফলাফল বিচাৰি পালে জাননী লাভ কৰক।</translation>
 <translation id="6846298663435243399">ল’ড কৰি থকা হৈছে…</translation>
-<translation id="6850409657436465440">আপোনাৰ ডাউনল’ড প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টা টেব বন্ধ কৰা হ’ল</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{১ টা ফলাফল পোৱা গৈছে}one{# ফলাফল পোৱা গৈছে}other{# ফলাফল পোৱা গৈছে}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{অডিঅ’ ফাইল, সূচীত ১ টা অডিঅ’ ফাইল আছে}one{অডিঅ’ ফাইল, সূচীত # টা অডিঅ’ ফাইল আছে}other{অডিঅ’ ফাইল, সূচীত # টা অডিঅ’ ফাইল আছে}}</translation>
@@ -1968,12 +1968,14 @@
 <translation id="9001604755921395912">ইনক’গনিট’ Chrome টেবত খোলক</translation>
 <translation id="9010094279589497751">আপোনাক প্ৰয়োজন হ’লেই দ্ৰুততাৰে Gemini খোলক</translation>
 <translation id="9012585441087414258">বিপজ্জনক হিচাপে জনাজাত ছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত কৰে। যদি কোনো পৃষ্ঠাই কোনো সন্দেহজনক কাৰ্য কৰে, তেন্তে URL আৰু পৃষ্ঠাৰ কিছুমান সমল Googleৰ সুৰক্ষিত ব্ৰাউজিং লৈ পঠিওৱা হয়।</translation>
+<translation id="9014097371980259227">আপোনাক AI ম’ডৰ জৰিয়তে সন্ধান কৰাত সহায় কৰিবলৈ কিছুমান সঁজুলি স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="9019199799064251516">গাড়ীখনৰ এটা প্ৰ’ফাইল লকৰ অবিহনে অব্যাহত ৰাখিবনে?</translation>
 <translation id="9022774213089566801">সঘনাই যোৱা</translation>
 <translation id="9022871169049522985">ছাইট আৰু বিজ্ঞাপনদাতাসকলে তেওঁলোকৰ বিজ্ঞাপনৰ পাৰদৰ্শিতা জোখ-মাখ কৰিব পাৰে</translation>
 <translation id="9024318700713112071">Chromeক আপোনাৰ ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> আনডু কৰক</translation>
 <translation id="9035378196785279980">ইয়ালৈ নিয়ক\u2026</translation>
+<translation id="904146253922032365">টেবসমূহ উলম্বভাৱে দেখুৱাবলৈ স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="9042893549633094279">গোপনীয়তা আৰু সুৰক্ষা</translation>
 <translation id="9047347135558855162">Chromeত কোনো সন্ধান ক্ষিপ্ৰতাৰে আৰম্ভ কৰক</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>

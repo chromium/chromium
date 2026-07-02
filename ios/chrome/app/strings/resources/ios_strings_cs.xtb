@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} přístupový klíč}few{{count} přístupové klíče}many{{count} přístupového klíče}other{{count} přístupových klíčů}}</translation>
 <translation id="1005023885865154304">Otevřít nastavení automatického vyplňování hesel</translation>
 <translation id="1005230401424685968">RRRR</translation>
+<translation id="1013852467930342108">Live je nová funkce Gemini v Chromu</translation>
 <translation id="1013952917065545813">Tady můžete znovu otevřít karty, které jste nedávno zavřeli</translation>
 <translation id="1016495303386450659">Položka byla aktualizována</translation>
 <translation id="1018804590490383958">Naskenovat a vyplnit automaticky</translation>
@@ -1737,6 +1738,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6765551480308401897">Nenastavovat jako výchozí</translation>
 <translation id="6770452996697898492">[REZERVOVÁNO]</translation>
+<translation id="6775952316617222141">Přejít do režimu Live s Gemini v Chromu</translation>
 <translation id="6779455296366983087">Vaše údaje o prohlížení se vymažou</translation>
 <translation id="6782531425936234573">Exportovat data</translation>
 <translation id="6791425686608802741">Klepněte na Přidat kartu do nové skupiny</translation>

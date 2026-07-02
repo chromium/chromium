@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} kunci sandi}other{{count} kunci sandi}}</translation>
 <translation id="1005023885865154304">Buka setelan Isi Otomatis Sandi</translation>
 <translation id="1005230401424685968">TTTT</translation>
+<translation id="1013852467930342108">Live adalah fitur baru di Gemini di Chrome</translation>
 <translation id="1013952917065545813">Anda dapat kembali ke sini untuk membuka kembali tab yang baru saja Anda tutup</translation>
 <translation id="1016495303386450659">Item diperbarui</translation>
 <translation id="1018804590490383958">Pindai dan isi otomatis</translation>
@@ -1737,6 +1738,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Jangan Jadikan Default</translation>
 <translation id="6770452996697898492">[DIPESAN]</translation>
+<translation id="6775952316617222141">Mulai percakapan Live dengan Gemini di Chrome</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
 <translation id="6782531425936234573">Ekspor data</translation>
 <translation id="6791425686608802741">Ketuk "Tambahkan Tab ke Grup Baru"</translation>

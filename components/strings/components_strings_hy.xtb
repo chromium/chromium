@@ -3935,7 +3935,6 @@
 <translation id="7110116949943042888">Ժամանակավոր և սեզոնային աշխատանք</translation>
 <translation id="7110368079836707726">Բուհեր և համալսարաններ</translation>
 <translation id="7111507312244504964">Գույքագրում և գնահատում</translation>
-<translation id="7117290130383718594">Տեքստային ծանոթագրություններ</translation>
 <translation id="7118618213916969306">Սեղմատախտակին պահված URL-ի որոնում, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Դուք տեսնում եք այս նախազգուշացումը, քանի որ կայքը չի աջակցում HTTPS-ը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Հեռուստադրամաներ</translation>
@@ -5057,7 +5056,6 @@
 <translation id="8871485335898060555">Հնաոճ և կոլեկցիոն իրեր</translation>
 <translation id="8871553383647848643">Կարգավորել դիտարկիչի տեսքը</translation>
 <translation id="887350038812854047">Այս կանոնի դեպքում սարքի և օգտատիրոջ մակարդակներում կիրառվում են նույն արժեքները։ Կանոնը պատշաճ կերպով աշխատում է։</translation>
-<translation id="8874790741333031443">Փորձեք ժամանակավորապես թույլատրել երրորդ կողմի քուքիները։ Սա կթուլացնի ձեր դիտարկման պաշտպանությունը, սակայն կայքի գործառույթները, ամենայն հավանականությամբ, պատշաճ կերպով կաշխատեն։</translation>
 <translation id="8874824191258364635">Մուտքագրեք քարտի վավեր համար</translation>
 <translation id="8877780815363510165">Ձկնորսություն</translation>
 <translation id="888117890813270681">«<ph name="DATA_CONTROLS_RESTRICTION" />»-ը չի կարող ուղարկվել «<ph name="DATA_CONTROLS_LEVEL" />»-ին</translation>

@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{مفتاح مرور واحد ({count})}zero{‫{count} مفتاح مرور}two{مفتاحا مرور ({count})}few{‫{count} مفاتيح مرور}many{‫{count} مفتاح مرور}other{‫{count} مفتاح مرور}}</translation>
 <translation id="1005023885865154304">فتح إعدادات "الملء التلقائي لكلمات المرور"</translation>
 <translation id="1005230401424685968">السنة</translation>
+<translation id="1013852467930342108">‏‫Live هي ميزة جديدة يقدمّها "Gemini في Chrome"</translation>
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
 <translation id="1018804590490383958">المسح ضوئيًا وملء البيانات تلقائيًا</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">مساحات التخزين السحابي المشتركة</translation>
 <translation id="2580306219079937316">‏فتح إعدادات "ترجمة Google"</translation>
 <translation id="2583688836549072561">مجموعة علامات تبويب تحمل الاسم "<ph name="GROUP_TITLE" />" وتضم علامات تبويب يبلغ عددها <ph name="TABS_NUMBER" />، وبها نشاط جديد.</translation>
+<translation id="2584994295315085351">‏فتح علامة تبويب جديدة عند العودة إلى Chrome بعد 4 ساعات</translation>
 <translation id="2593272815202181319">أحادي المسافة</translation>
 <translation id="2601778637777010194">تتيح لك تتبُّع انخفاض أسعار المنتجات</translation>
 <translation id="2602372807870028932">يؤدي هذا الإجراء إلى حذف المعلومات المحدّدة المحفوظة على هذا الجهاز</translation>
@@ -1735,6 +1737,7 @@
 <translation id="6761393919622941301">الملفات الصوتية</translation>
 <translation id="6765551480308401897">عدم الضبط كخيار تلقائي</translation>
 <translation id="6770452996697898492">[محجوز]</translation>
+<translation id="6775952316617222141">‏بدء محادثة "Live مع Gemini" في Chrome</translation>
 <translation id="6779455296366983087">سيتم حذف بيانات التصفُّح</translation>
 <translation id="6782531425936234573">تصدير البيانات</translation>
 <translation id="6791425686608802741">النقر على "إضافة علامة تبويب إلى المجموعة الجديدة"</translation>

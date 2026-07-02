@@ -243,6 +243,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2056878612599315956">Sajt je pauziran</translation>
 <translation id="2063047797624276601">Organizacija je uključila poboljšano bezbedno pregledanje</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 preuzimanje nije uspelo}one{# preuzimanje nije uspelo}few{# preuzimanja nisu uspela}other{# preuzimanja nije uspelo}}</translation>
+<translation id="2066690553719545730">Uvek prikazuj AI režim</translation>
 <translation id="2067805253194386918">tekst</translation>
 <translation id="2079545284768500474">Opozovi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. od <ph name="TOTAL_RESULTS" /> rezultata</translation>
@@ -263,6 +264,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2149968176347646218">Veza nije bezbedna</translation>
 <translation id="2149973817440762519">Izmenite obeleživač</translation>
 <translation id="2163089732491971196">Da biste koristili i čuvali Chrome podatke na Google nalogu, unesite pristupnu frazu</translation>
+<translation id="2164015935042801524">Kliknite ovde desnim tasterom da biste vertikalno prikazali kartice</translation>
 <translation id="2166228530126694506">Verzija <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Opisi slika su isključeni</translation>
 <translation id="2172905120685242547">Želite da zatvorite prozor?</translation>
@@ -305,6 +307,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i svi linkovi pozivnice će biti isključeni</translation>
+<translation id="2329500425421091035">Predstavljamo AI režim u Chrome-u</translation>
 <translation id="2330186936255788117">Još obeleživača</translation>
 <translation id="2332515770639153015">Poboljšano bezbedno pregledanje je uključeno</translation>
 <translation id="233375395665273385">Izbriši i odjavi me</translation>
@@ -1057,7 +1060,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5436928407363358055">Da biste lako nastavili tamo gde ste stali, sinhronizujte istoriju i kartice</translation>
 <translation id="5438292632479953702">Preuzmi ponovo</translation>
 <translation id="5439191312780166229">Upozorava vas na opasne sajtove, čak i na one za koje Google ranije nije znao, analizirajući više podataka sa sajtova nego standardna zaštita. Možete da izaberete da preskočite upozorenja Chrome-a.</translation>
-<translation id="5441137934526263133">Da li sajt ne radi? Kolačići treće strane su blokirani</translation>
 <translation id="5441466871879044658">Prevodite na ovaj jezik</translation>
 <translation id="5444999712122199445">Nazad na sajt</translation>
 <translation id="544776284582297024">Da biste otvarali kartice i istovremeno posećivali različite stranice, dodirnite dugme Otvori kartice</translation>
@@ -1112,7 +1114,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="569536719314091526">Prevedite ovu stranicu na bilo koji jezik pomoću dugmeta Još opcija</translation>
 <translation id="5696597120588531049">Chrome može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugo</translation>
 <translation id="5698878456427040674">Proverite da li je izabrani nalog podržan.</translation>
-<translation id="5700415746238689851">Otvori Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> želi da se poveže sa serijskim portom</translation>
 <translation id="5715150588940290235">Želite da izbrišete sačuvane bezbednosne kodove?</translation>
 <translation id="572328651809341494">Nedavno korišćene kartice</translation>
@@ -1418,7 +1419,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6835182496791325827">Dobijajte obaveštenja kada Chrome pronađe najbolje rezultate za pretrage dok ste odsutni.</translation>
 <translation id="6846298663435243399">Učitava se...</translation>
-<translation id="6850409657436465440">Preuzimanje je još uvek u toku</translation>
 <translation id="6850830437481525139">Zatvorenih kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Pronađen je 1 rezultat}one{Pronađen je # rezultat}few{Pronađena su # rezultata}other{Pronađeno je # rezultata}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio fajlovi, 1 audio fajl na listi}one{Audio fajlovi, # audio fajl na listi}few{Audio fajlovi, # audio fajla na listi}other{Audio fajlovi, # audio fajlova na listi}}</translation>
@@ -1968,12 +1968,14 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9001604755921395912">Chrome kartica bez arhiviranja</translation>
 <translation id="9010094279589497751">Brzo otvorite Gemini kada vam zatreba</translation>
 <translation id="9012585441087414258">Štiti vas od sajtova, preuzimanja i dodataka za koje se zna da su štetni. Ako stranica uradi nešto sumnjivo, URL-ovi i delovi sadržaja stranice se šalju u Google bezbedno pregledanje.</translation>
+<translation id="9014097371980259227">Neke alatke smo premestili da biste lakše pretraživali pomoću AI režima</translation>
 <translation id="9019199799064251516">Želite da nastavite bez zaključavanja profila za automobil?</translation>
 <translation id="9022774213089566801">Često posećivano</translation>
 <translation id="9022871169049522985">Sajtovi i oglašavači mogu da mere učinak svojih oglasa</translation>
 <translation id="9024318700713112071">Podesite Chrome kao podrazumevani pregledač</translation>
 <translation id="9027728231343310283">Opozovi <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Premestite u\u2026</translation>
+<translation id="904146253922032365">Dodirnite i zadržite da biste vertikalno prikazali kartice</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9047347135558855162">Brzo započnite pretragu u Chrome-u</translation>
 <translation id="9050666287014529139">Pristupna fraza</translation>

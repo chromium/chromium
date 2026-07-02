@@ -13,9 +13,6 @@
 <translation id="1055295352198814912">Tampilkan Gemini di Chrome di panel menu Mac dan aktifkan pintasan keyboard</translation>
 <translation id="1059838145689930908">Untuk menggunakan ekstensi ini sebagai <ph name="USER_EMAIL_ADDRESS" />, login ke Chrome.</translation>
 <translation id="1065672644894730302">Preferensi Anda tidak dapat dibaca. Beberapa fitur mungkin tidak tersedia dan perubahan pada preferensi tidak akan disimpan.</translation>
-<translation id="1070377999570795893">Program lain di komputer Anda menambahkan ekstensi yang dapat mengubah cara kerja Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Telusuri dengan Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> sebelumnya menggunakan Chrome</translation>
 <translation id="110877069173485804">Ini Chrome Anda</translation>
@@ -56,9 +53,6 @@
 <translation id="1547295885616600893">ChromeOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="1547469039832541117">Mengakhiri tugas yang dipilih.</translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
-<translation id="1585717515139318619">Program lain di komputer Anda menambahkan tema yang dapat mengubah cara kerja Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera Anda.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> berbahaya, sehingga Chrome memblokirnya.</translation>
 <translation id="1597911401261118146">Untuk memeriksa apakah sandi Anda aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chrome<ph name="END_LINK" />.</translation>
@@ -95,7 +89,6 @@
 <translation id="1843347690926158494">Telusuri tab ini dengan Google Lens</translation>
 <translation id="1849248141818021764">Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, Anda perlu <ph name="BEGIN_LINK" />menghapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Gunakan aplikasi Chrome untuk terus menjelajah kapan saja di mana saja</translation>
-<translation id="1860536484129686729">Chrome memerlukan izin akses ke kamera untuk situs ini</translation>
 <translation id="1867503717113754604">Login ke Chrome dengan Akun Google Anda untuk menggunakan <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome bukan browser default</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -146,7 +139,6 @@
 <translation id="2307973900865360088">Simpan di Dok</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
 <translation id="2345992953227471816">Chrome menemukan bahwa ekstensi berikut berisi malware:</translation>
-<translation id="2348335408836342058">Chrome memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2403703063067034158">Error saat sistem dimulai: instance penyiapan lain sedang berjalan, coba lagi nanti.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Tidak ada perangkat HID yang diakses oleh ekstensi Chrome}=1{1 perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chrome}other{# perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chrome}}</translation>
@@ -185,7 +177,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2747021967398957654">{count,plural, =1{Beberapa data Chrome Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini (1 item) akan dihapus.}other{Beberapa data Chrome Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini ({count} item) akan dihapus.}}</translation>
 <translation id="2753623023919742414">Klik untuk menelusuri</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update}=1{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Samaran tidak akan dibuka kembali.}other{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Samaran tidak akan dibuka kembali.}}</translation>
-<translation id="2765403129283291972">Chrome memerlukan izin akses ke mikrofon untuk situs ini</translation>
 <translation id="2797864378188255696">Saat login ke layanan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, Anda dapat login otomatis ke Chrome dengan akun yang sama</translation>
 <translation id="2799162042226656283">Chrome Anda</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
@@ -261,7 +252,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="345171907106878721">Tambahkan diri Anda ke Chrome</translation>
 <translation id="3453763134178591239">Persyaratan ChromeOS</translation>
 <translation id="3475778264501649775">Bawa sandi, tab, dan info lainnya kapan saja di mana saja dengan aplikasi Chrome di ponsel Anda</translation>
-<translation id="3503306920980160878">Chrome memerlukan akses ke lokasi Anda untuk berbagi lokasi dengan situs ini</translation>
 <translation id="3512495006767217696">Diintegrasikan dalam Chrome untuk membantu Anda membuat, menyimpan, dan mengisi otomatis sandi kuat. Tambahkan pintasan untuk memudahkan akses</translation>
 <translation id="3539955434060988644">Buka link di jendela Samaran Chrome</translation>
 <translation id="354621070532799440">Pengingat: Fitur keamanan terbaik Google ada di genggaman Anda</translation>
@@ -355,6 +345,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4400772909124543403">Tidak ada update yang tersedia</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Bagikan dokumen ini ke Gemini di Chrome untuk mendapatkan ringkasan singkat dan mengajukan pertanyaan lanjutan</translation>
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Operasi lain di Google Chrome sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="4459234553906210702">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
@@ -522,9 +513,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6180522807229584611">Tab ini menggunakan resource tambahan. Untuk meningkatkan performa Anda, izinkan Chrome menonaktifkannya.</translation>
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
 <translation id="6192058120268468905">Akun Anda di Chrome</translation>
-<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> telah menambahkan ekstensi yang dapat mengubah cara kerja Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="624230925347970731">Chrome akan segera ditutup</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
@@ -666,9 +654,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7583399374488819119">Penginstal <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Anda dapat menggunakan Chrome kapan saja dengan mengklik link di pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="7602868996817972616">Tanya Google tentang halaman ini</translation>
-<translation id="760353356052806707">Program lain di komputer Anda menambahkan aplikasi yang dapat mengubah cara kerja Chrome.
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Untuk melindungi data Anda, izinkan Chrome menghapus izin dari situs yang tidak Anda kunjungi baru-baru ini.</translation>
 <translation id="7629695634924605473">Chrome akan memberi tahu jika sandi Anda disusupi</translation>
@@ -782,7 +767,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="8590782867495422699">Buka kembali Mode AI Google Penelusuran</translation>
 <translation id="8601359445272098721">Baru! Anda dapat menerjemahkan teks dan gambar di layar dengan memilih tombol "terjemahkan layar"</translation>
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>
-<translation id="861702415419836452">Chrome memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
 <translation id="8623450603356630491">Login ke Chrome di ponsel Anda</translation>
 <translation id="8624541899164515475">Setelan, terbuka di tab baru.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 menit}other{Chrome akan diluncurkan ulang dalam # menit}}</translation>

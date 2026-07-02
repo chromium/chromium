@@ -2371,6 +2371,7 @@
 <translation id="4705573018059932476">আপনি <ph name="PROVIDER_ORIGIN" /> ব্যবহার করে এমন ওয়েবসাইটে <ph name="AUTHENTICATOR" />-এর মাধ্যমে যাচাই করার বিকল্প বেছে নিয়েছেন। এই পরিষেবা প্রদানকারী আপনার পেমেন্ট পদ্ধতি সংক্রান্ত তথ্য সেভ করে রাখতে পারে, যা আপনি <ph name="LINK_TEXT" />।</translation>
 <translation id="4708268264240856090">আপনার সংযোগ বাধাপ্রাপ্ত হয়েছে</translation>
 <translation id="4708276642004148190">জল সরবরাহ ও চিকিৎসা</translation>
+<translation id="4710249055485272920">এই তথ্য খুঁজে পাওয়া যায়নি</translation>
 <translation id="4711628883879888561">ট্যাব গ্রুপে কোলাবরেট করুন</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">এই সাইট দেখার অনুমতি আপনার নেই</translation>
@@ -3023,6 +3024,7 @@
 <translation id="5707154300732650394">আপনার ব্রাউজার অ্যাক্টিভিটি আবার চালু করুন</translation>
 <translation id="57094364128775171">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন…</translation>
 <translation id="570953204696852961">লাল ৩</translation>
+<translation id="5710907191777451677">Chrome-এ Gemini-কে জিজ্ঞাসা করুন</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">পশুচিকিত্সক</translation>
 <translation id="5715150588940290235">সেভ করা নিরাপত্তা কোড মুছবেন?</translation>
@@ -3924,7 +3926,6 @@
 <translation id="7110116949943042888">অস্থায়ী ও সিজনাল চাকরি</translation>
 <translation id="7110368079836707726">কলেজ ও বিশ্ববিদ্যালয়</translation>
 <translation id="7111507312244504964">প্রপার্টি পরিদর্শন ও মূল্যায়ন</translation>
-<translation id="7117290130383718594">টেক্সট অ্যানোটেশন</translation>
 <translation id="7118618213916969306">ক্লিপবোর্ড ইউআরএল <ph name="SHORT_URL" /> সার্চ করুন</translation>
 <translation id="7118852830504022370">আপনি এই সতর্কতা দেখছেন কারণ, এই সাইটে HTTPS কাজ করে না। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">টিভিতে নাটক</translation>
@@ -5047,7 +5048,6 @@
 <translation id="8871485335898060555">প্রাচীন এবং সংগ্রহযোগ্য</translation>
 <translation id="8871553383647848643">আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
 <translation id="887350038812854047">এই নীতিতে মেশিন ও ব্যবহারকারী লেভেলে একই ভ্যালু প্রয়োগ করা হয়েছে। নীতিটি সঠিকভাবে কাজ করছে।</translation>
-<translation id="8874790741333031443">সাময়িকভাবে থার্ড-পার্টি কুকিকে অনুমতি দিন। এর মানে হল সাইটের ফিচার প্রত্যাশা অনুযায়ী কাজ করবে কিন্তু আপনার ব্রাউজিং সুরক্ষা কম হয়ে যাবে।</translation>
 <translation id="8874824191258364635">একটি সঠিক কার্ড নম্বর লিখুন</translation>
 <translation id="8877780815363510165">মাছ ধরা</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_LEVEL" />"-এ "<ph name="DATA_CONTROLS_RESTRICTION" />" সেট করা যাচ্ছে না</translation>

@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} aðgangslykill}one{{count} aðgangslykill}other{{count} aðgangslyklar}}</translation>
 <translation id="1005023885865154304">Opna stillingar sjálfvirkar útfyllingar aðgangsorða</translation>
 <translation id="1005230401424685968">ÁÁÁÁ</translation>
+<translation id="1013852467930342108">Í beinni er nýr eiginleiki í Gemini í Chrome</translation>
 <translation id="1013952917065545813">Þú getur farið aftur hingað til að opna flipa sem þú lokaðir nýlega</translation>
 <translation id="1016495303386450659">Atriði uppfært</translation>
 <translation id="1018804590490383958">Skanna og fylla sjálfkrafa út</translation>
@@ -1737,6 +1738,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6761393919622941301">Hljóð</translation>
 <translation id="6765551480308401897">Ekki gera sjálfgefið</translation>
 <translation id="6770452996697898492">[BÓKAÐ]</translation>
+<translation id="6775952316617222141">Spjallaðu við Gemini í Chrome í rauntíma</translation>
 <translation id="6779455296366983087">Vefskoðunargögnum verður eytt</translation>
 <translation id="6782531425936234573">Flytja út gögn</translation>
 <translation id="6791425686608802741">Ýttu á „Bæta flipa við nýjan hóp“</translation>

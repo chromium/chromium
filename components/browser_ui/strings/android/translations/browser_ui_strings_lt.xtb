@@ -690,7 +690,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="8163152278172770963">Neleisti svetainėms automatiškai įjungti vaizdo vaizde režimo</translation>
 <translation id="8168435359814927499">Turinys</translation>
 <translation id="818487310457576362">Vilkite nuo ekrano šono, kad išeitumėte iš viso ekrano režimo.</translation>
-<translation id="8186479265534291036">Neveikia svetainė? Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="8197286292360124385">Leidžiama: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8211406090763984747">Ryšys saugus</translation>
@@ -761,7 +760,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="8805385115381080995">Naršymo procesas greitesnis, nes mažiau tikėtina, kad bus prašoma patvirtinti, jos esate realus asmuo</translation>
 <translation id="881644524232657178">Įjungus svetainėse gali būti naudojami įrenginio judesio ir šviesos jutikliai. Išjungus svetainėse negalima naudoti jutiklių.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Pabandykite laikinai leisti trečiųjų šalių slapukus: tai reiškia, kad naršydami būsite mažiau apsaugoti, bet labiau tikėtina, kad svetainės funkcijos tinkamai veiks.</translation>
 <translation id="8889294078294184559">Jums naršant toliau, svetainės gali tikrinti sistemoje „Chrome“ ir iš ankstesnės svetainės, kurioje lankėtės, patvirtinti, kad tikriausiai esate realus asmuo</translation>
 <translation id="8899807382908246773">Nepageidaujami skelbimai</translation>
 <translation id="8903921497873541725">Artinti</translation>
@@ -787,7 +785,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Pranešimai leidžiami</translation>
 <translation id="9138217887606523162">Dabartinis mastelis yra <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Svetainėse naudojama ši funkcija, kad būtų galima įjungti vaizdo vaizde režimą automatiškai. Taip galite toliau žiūrėti vaizdo įrašą, o ekranas bus atlaisvintas kitoms užduotims.</translation>
 <translation id="9156722768168878035">Leiskite „Chrome“ rodyti naujausius skirtukus įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>

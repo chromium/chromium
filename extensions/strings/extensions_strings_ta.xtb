@@ -1,46 +1,80 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" நிறுவுங்கள்</translation>
+<translation id="1070377999570795893">உங்கள் கம்ப்யூட்டரில் உள்ள மற்றொரு நிரல் Chrome செயல்படும் முறையை மாற்றக்கூடிய ஒரு நீட்டிப்பைச் சேர்த்துள்ளது.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">தீமினை இயக்கு</translation>
 <translation id="1135328998467923690">தொகுப்பு செல்லாதது: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">பின்புறக் கேமரா</translation>
+<translation id="1171831736360285680">Chromium வேலை செய்யும் விதத்தை மாற்றக்கூடிய நீட்டிப்பை <ph name="PARTNER_NAME" /> சேர்த்துள்ளார்.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">தனிப்பட்ட விசையை ஏற்றுமதி செய்வதில் தோல்வியடைந்தது.</translation>
 <translation id="132960226125594336">அதிகபட்ச ஸ்கிரிப்ட் அளவையோ நீட்டிப்பின் அதிகபட்ச மொத்த உள்ளடக்க ஸ்கிரிப்ட் அளவையோ மீறும் என்பதால் உள்ளடக்க ஸ்கிரிப்ட்டிற்கு '<ph name="RELATIVE_PATH" />' ஃபைலை ஏற்ற முடியவில்லை.</translation>
 <translation id="1445572445564823378">இந்த நீட்டிப்பு, <ph name="PRODUCT_NAME" /> ஐ மந்தமாக்குகிறது. <ph name="PRODUCT_NAME" /> இன்
 செயல்திறனை மீட்டமைக்க, இதை நீங்கள் முடக்க வேண்டும்.</translation>
 <translation id="1468038450257740950">WebGL ஆனது ஆதரவளிக்கப்படவில்லை.</translation>
 <translation id="1478607704480248626">நிறுவுதல் இயக்கப்படவில்லை</translation>
+<translation id="1483493594462132177">அனுப்பு</translation>
+<translation id="1485015260175968628">இப்போது பயன்பாடு அணுகக்கூடியவை:</translation>
 <translation id="1556537182262721003">சுயவிவரத்தில் நீட்டிப்புக் கோப்பகத்தை நகர்த்த முடியவில்லை.</translation>
+<translation id="1585717515139318619">உங்கள் கம்ப்யூட்டரில் உள்ள மற்றொரு நிரல் Chrome செயல்படும் முறையை மாற்றக்கூடிய தீம் ஒன்றைச் சேர்த்துள்ளது.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">ஸ்கிரிப்ட்டுக்கான css '<ph name="RELATIVE_PATH" />' ஐ ஏற்ற முடியவில்லை.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" நீட்டிப்பு பகிரப்பட்ட மாட்யூலாக இல்லாததால், இறக்க முடியவில்லை</translation>
+<translation id="175772926354468439">தீம் ஐ இயக்கு</translation>
 <translation id="1757786065507923842">பெற்றோர் அனுமதிக்குக் கோரிக்கை விடுக்க முடியவில்லை.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' என்ற பின்புலப் பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> இலிருந்து மட்டுமே இதைச் சேர்க்க முடியும்</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" ஆல் அனுமதிக்கப்படாததால், "<ph name="APP_NAME" />"ஐ நிறுவ முடியவில்லை</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" சேர்க்க வேண்டுமா?</translation>
 <translation id="2159915644201199628">இந்தப் படத்தை குறிநீக்க முடியவில்லை: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">இந்த நீட்டிப்பை உங்கள் பெற்றோர் அனுமதிக்கவில்லை</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ஆனது கூடுதல் அனுமதிகளைக் கோரியுள்ளது.</translation>
+<translation id="2327492829706409234">ஆப்ஸை இயக்கு</translation>
 <translation id="2350172092385603347">மொழிபெயர்ப்பு பயன்படுத்தப்பட்டது, ஆனால் மெனிபெஃஸ்ட்டில் default_locale குறிப்பிடப்படவில்லை.</translation>
 <translation id="2576842806987913196">இந்தப் பெயருடன் ஏற்கனவே ஒரு CRX ஃபைல் உள்ளது.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">மீண்டும் இயக்கு</translation>
 <translation id="2743583586211388067">உங்கள் நிறுவனத்தின் நீட்டிப்பு அபாயக் கொள்கையின் கீழ் இந்த நீட்டிப்புக்கான அணுகல் தடுக்கப்பட்டுள்ளது.</translation>
+<translation id="2766161002040448006">பெற்றோரிடம் கேள்</translation>
 <translation id="2785530881066938471">உள்ளடக்க ஸ்கிரிப்டுக்காக ஃபைல்  '<ph name="RELATIVE_PATH" />' ஐ ஏற்ற முடியவில்லை. இது UTF-8 குறியாக்கத்தில் இல்லை.</translation>
+<translation id="2850541429955027218">தீமினைச் சேர்</translation>
+<translation id="2883143988769190738">இந்த நீட்டிப்பு பின்வரும் அனுமதிகளைக் கேட்கிறது:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (நீட்டிப்பு ஐடி "<ph name="EXTENSION_ID" />") எனும் நீட்டிப்பை நிர்வாகி தடுத்துள்ளார். <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ஐ நிறுவ உங்கள் நிர்வாகிக்கு கோரிக்கையை அனுப்ப வேண்டுமா?</translation>
 <translation id="2988488679308982380">இந்த தொகுப்பை நிறுவமுடியாது: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> விற்பனையாளர் அனுப்பிய <ph name="PRODUCT_ID" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />) தயாரிப்பை அறிய முடியவில்லை</translation>
 <translation id="3144135466825225871">crx ஃபைலை இடமாற்றுவதில் தோல்வி. ஃபைல் பயன்பாட்டில் உள்ளதா என்று பார்க்கவும்.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> அனுப்பிய <ph name="PRODUCT_ID" /> தயாரிப்பை அறிய முடியவில்லை.</translation>
 <translation id="3174723475300476613">இந்த நீட்டிப்புக்கான அணுகலை உங்கள் நிறுவனம் தடுத்துள்ளது.</translation>
+<translation id="3183357154200327217">உங்கள் கம்ப்யூட்டரில் உள்ள மற்றொரு நிரல் Chromium இயங்கும் முறையை மாற்றும் தீமினைச் சேர்த்துள்ளது.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">'kiosk_only' மெனிஃபெஸ்ட் பண்புக்கூறைக் கொண்ட ஆப்ஸை ChromeOS கியோஸ்க் பயன்முறையில் நிறுவ வேண்டும்</translation>
 <translation id="3364986687961713424">உங்கள் நிர்வாகியிடமிருந்து: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">விற்பனையாளர் <ph name="VENDOR_ID" /> அனுப்பிய <ph name="PRODUCT_NAME" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">தனிப்பட்ட விசைக்கான உள்ளீட்டு மதிப்பானது, செல்லுபடியாகும் பாதையாக இருக்க வேண்டும்.</translation>
+<translation id="3788401245189148511">இது அணுக விரும்புபவை:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ஆப்ஸ் "<ph name="INSTALLED_APP_NAME" />" உடன் முரண்படுவதால், அதைச் சேர்க்க முடியவில்லை.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' என்ற விருப்பங்கள் பக்கத்தை ஏற்ற முடியவில்லை.</translation>
+<translation id="3905761538810670789">ஆப்ஸை பழுதுநீக்கு</translation>
+<translation id="3908501907586732282">நீட்டிப்பை இயக்கு</translation>
+<translation id="3927932062596804919">மறு</translation>
 <translation id="3984413272403535372">நீட்டிப்பிற்கு உள்நுழைவதில் பிழை.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />"ஐப் புதுப்பிக்கவா?</translation>
+<translation id="4061696872429826774">உங்கள் கம்ப்யூட்டரில் உள்ள மற்றொரு நிரல் Chromium இயங்கும் முறையை மாற்றும் நீட்டிப்பைச் சேர்த்துள்ளது.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">இந்த நீட்டிப்பு வகையை அணுகுவதை உங்கள் நிறுவனம் தடுத்துள்ளது.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="424963718355121712">ஆப்ஸ் எந்த ஹோஸ்ட்டை பாதிக்கின்றனவோ, அதிலிருந்தே வழங்கப்பட வேண்டும்</translation>
 <translation id="4306119971288449206">ஆப்ஸ் "<ph name="CONTENT_TYPE" />" எனும் உள்ளடக்க வகையுடனேயே வழங்கப்பட வேண்டும்</translation>
+<translation id="4625078469366263107">ஆப்ஸை இயக்கு</translation>
 <translation id="4633003931260532286">நீட்டிப்பிற்கு குறைந்தபட்சம் "<ph name="IMPORT_VERSION" />" பதிப்புடன் கூடிய "<ph name="IMPORT_NAME" />" தேவை, ஆனால் "<ph name="INSTALLED_VERSION" />" பதிப்பு மட்டும் நிறுவப்பட்டுள்ளது</translation>
 <translation id="4660476621274971848">எதிர்பார்க்கப்பட்ட பதிப்பு "<ph name="EXPECTED_VERSION" />", ஆனால் இருப்பது "<ph name="NEW_ID" />" பதிப்பு ஆகும்</translation>
 <translation id="471800408830181311">தனிப்பட்ட விசையை வெளியனுப்புவதில் தோல்வியடைந்தது.</translation>
@@ -48,21 +82,36 @@
 <translation id="4988792151665380515">பொது விசையை ஏற்றுமதி செய்வதில் தோல்வியடைந்தது.</translation>
 <translation id="501057610015570208">'kiosk_only' மெனிஃபெஸ்ட் பண்புக்கூறைக் கொண்ட ஆப்ஸை ChromeOS Flex கியோஸ்க் பயன்முறையில் நிறுவ வேண்டும்</translation>
 <translation id="5026754133087629784">இணையப்பார்வை: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">நீட்டிப்பைச் சேர்</translation>
+<translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5098647635849512368">கோப்பகத்திலிருந்து தொகுப்பிற்கான அசல் பாதையைக் கண்டறிய முடியவில்லை.</translation>
 <translation id="5160071981665899014">ஸ்கிரிப்ட்டுக்கான JavaScript '<ph name="RELATIVE_PATH" />' ஐ ஏற்ற முடியவில்லை.</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" இன் புதிய பதிப்பு முடக்கப்பட்டது, ஏனெனில் அதற்கு கூடுதல் அனுமதி தேவை.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" ஐ இயக்கவா?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium இலிருந்து அகற்று</translation>
 <translation id="5456409301717116725">இந்த நீட்டிப்பு விசை ஃபைல் '<ph name="KEY_PATH" />' ஐக் கொண்டுள்ளது. நீங்கள் அதை செய்ய விரும்பாமல் இருக்கலாம்.</translation>
+<translation id="5485102783864353244">பயன்பாட்டைச் சேர்</translation>
 <translation id="5486326529110362464">தனிப்பட்ட விசைக்கான உள்ளீட்டு மதிப்பு அவசியம் இருக்க வேண்டும்.</translation>
 <translation id="5527463195266282916">நீட்டிப்பின் முந்தையப் பதிப்பிற்கு மாற்ற முயற்சித்தது.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">இதிலிருந்து நீட்டிப்பை ஏற்றுவதில் தோல்வி:</translation>
 <translation id="5972529113578162692">இந்தக் கணினியின் நிர்வாகிக்கு <ph name="EXTENSION_NAME" /> நிறுவப்பட வேண்டும். இதை நிறுவல் நீக்க முடியாது.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> அனுப்பிய <ph name="PRODUCT_ID" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />) தயாரிப்பை அறிய முடியவில்லை</translation>
 <translation id="6068932090455285721">விற்பனையாளர் <ph name="VENDOR_ID" /> அனுப்பிய <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">உங்கள் கம்ப்யூட்டரில் உள்ள மற்றொரு நிரல் Chromium இயங்கும் முறையை மாற்றும் ஆப்ஸைச் சேர்த்துள்ளது.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">நீட்டிப்பை ஏற்றுவதில் பிழை</translation>
+<translation id="6220551899604141979">Chrome வேலை செய்யும் விதத்தை மாற்றக்கூடிய நீட்டிப்பை <ph name="PARTNER_NAME" /> சேர்த்துள்ளார்.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">தனிப்பட்ட விசையைப் படிப்பதில் தோல்வியடைந்தது.</translation>
+<translation id="6326175484149238433">Chromeமிலிருந்து அகற்று</translation>
 <translation id="6391538222494443604">உள்ளீட்டுக் கோப்பகம் இருப்பது அவசியம்.</translation>
 <translation id="641087317769093025">நீட்டிப்பின் ஜிப்பை திறக்க முடியவில்லை</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" உங்கள் சாதனங்களில் ஒன்று அல்லது அதற்கு மேற்பட்டவற்றுக்கு அணுகலைக் கோருகிறது:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> பயனர்கள்</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' என்ற பின்புல ஸ்கிரிப்டை ஏற்ற முடியவில்லை.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> இடமிருந்து <ph name="PRODUCT_NAME" /> (வரிசை எண் <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -71,23 +120,33 @@
 <translation id="7068383018033524534">தவறான மெனிஃபெஸ்ட் ஃபைல்</translation>
 <translation id="7217838517480956708">இந்தக் கணினியின் நிர்வாகிக்கு, <ph name="EXTENSION_NAME" /> ஐ நிறுவ வேண்டும். இதை அகற்றவோ மாற்றவோ முடியாது.</translation>
 <translation id="7287143125007575591">அணுகல் மறுக்கப்பட்டது.</translation>
+<translation id="760353356052806707">உங்கள் கணினியில் உள்ள மற்றொரு நிரல், Chrome செயல்படும் முறையை மாற்றக்கூடிய பயன்பாட்டைச் சேர்த்துள்ளது  .
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">தனிப்பட்ட குறியீட்டுக்கான உள்ளீட்டு மதிப்பானது சரியான வடிவமைப்பில் (PKCS#8-வடிவமைப்பில் PEM-என்கோடிங் செய்யப்பட்ட RSA குறியீடு) இருக்க வேண்டும்.</translation>
 <translation id="765293928828334535">ஆப்ஸ், நீட்டிப்புகள் மற்றும் பயனர் ஸ்கிரிப்ட்கள் போன்றவற்றை இந்த இணையதளத்திலிருந்து சேர்க்க முடியாது</translation>
+<translation id="7658239707568436148">ரத்து செய்</translation>
+<translation id="7766838926148951335">அனுமதிகளை ஏற்றுக்கொள்</translation>
 <translation id="7876803335449432072">உள்ளடக்க ஸ்கிரிப்டிற்கான '<ph name="RELATIVE_PATH" />' ஃபைலை ஏற்ற முடியவில்லை. .css ஃபைல்கள் போன்ற ஆதரிக்கப்படும் ஸ்டைல் ஷீட் ஃபைல்களில் இருந்து மட்டுமே உள்ளடக்க ஸ்கிரிப்ட் ஸ்டைல் ஷீட்களை ஏற்ற முடியும்.</translation>
 <translation id="7939686037314084444">இந்த நீட்டிப்பை முழுமையாக ஏற்ற முடியவில்லை. இதனால் நெட்வொர்க் கோரிக்கைகள் சரிவரப் புரிந்துகொள்ளப்படாமல் போகலாம்.</translation>
 <translation id="7952904276017482715">எதிர்பார்க்கப்பட்ட ஐடி "<ph name="EXPECTED_ID" />", ஆனால் இருப்பது "<ph name="NEW_ID" />" ஐடி ஆகும்</translation>
 <translation id="7972881773422714442">விருப்பங்கள்: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">அனுமதி</translation>
 <translation id="8035920974645200807">முன்புறக் கேமரா</translation>
 <translation id="8047248493720652249">இந்த நீட்டிப்பு, பதிவிறக்கத்திற்கு "<ph name="ATTEMPTED_FILENAME" />" என்று பெயரிடுவதில் தோல்வி, ஏனெனில் மற்றொரு நீட்டிப்பு (<ph name="EXTENSION_NAME" />) வேறொரு கோப்புப்பெயரை "<ph name="ACTUAL_FILENAME" />" நிர்ணயித்து விட்டது.</translation>
 <translation id="8049705080247101012">"<ph name="EXTENSION_NAME" />"ஐத் தீங்கானது என Google கொடியிட்டுள்ளது, மேலும் நிறுவல் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> இன் <ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">பயன்பாடு அணுகக்கூடியவை:</translation>
 <translation id="8517576857589387417">மெனிஃபெஸ்ட் ஃபைலைக் காணவில்லை அல்லது படிக்க முடியவில்லை</translation>
 <translation id="8565650234829130278">ஆப்ஸை முந்தைய பதிப்பிற்கு மாற்ற முயற்சித்துள்ளீர்கள்.</translation>
 <translation id="8621383749470166852">உள்ளடக்க ஸ்கிரிப்டிற்கான '<ph name="RELATIVE_PATH" />' ஃபைலை ஏற்ற முடியவில்லை. .js ஃபைல்கள் போன்ற ஆதரிக்கப்படும் JavaScript ஃபைல்களில் இருந்து மட்டுமே உள்ளடக்க ஸ்கிரிப்ட்டுகளை ஏற்ற முடியும்.</translation>
 <translation id="8636666366616799973">தொகுப்பு செல்லாதது. விவரங்கள்: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">ஏற்கனவே "<ph name="EXTENSION_NAME" />" ஐக் கோரியுள்ளீர்கள்</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" உங்கள் சாதனங்களில் ஒன்றின் அணுகலைக் கோருகிறது:</translation>
 <translation id="8885905466771744233">குறிப்பிட்ட நீட்டிப்பிற்கான தனிப்பட்ட விசை ஏற்கனவே உள்ளது. அந்த விசையை மீண்டும் பயன்படுத்துக அல்லது அதை முதலில் நீக்குக.</translation>
 <translation id="9039223174332979184"><ph name="EXTENSION_NAME" /> நீட்டிப்பு குறைந்தபட்சம் மெனிஃபெஸ்ட் V3 பதிப்பில் இருக்க வேண்டுமென இந்தச் சாதனத்தின் நிர்வாகி கோருகிறார்.</translation>
 <translation id="907841381057066561">தொகுப்பாக்கலின்போது தற்காலிக ஜிப் ஃபைலை உருவாக்குவதில் தோல்வியடைந்தது.</translation>
+<translation id="9102610709270966160">நீட்டிப்பை இயக்கு</translation>
+<translation id="93766956588638423">நீட்டிப்பைப் பழுதுநீக்கு</translation>
 <translation id="941543339607623937">செல்லாத தனிப்பட்ட விசை.</translation>
 </translationbundle>

@@ -690,7 +690,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="8163152278172770963">Tillåt inte webbplatser att öppna bild-i-bild automatiskt</translation>
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="818487310457576362">Dra från sidan av skärmen för att avsluta helskärmsläge.</translation>
-<translation id="8186479265534291036">Fungerar inte webbplatsen? Cookies från tredje part har blockerats</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> tillåts</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8211406090763984747">Anslutningen är säker</translation>
@@ -761,7 +760,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="8805385115381080995">Du kan surfa snabbare eftersom det blir mindre sannolikt att en webbplats ber dig att verifiera att du är en riktig person</translation>
 <translation id="881644524232657178">När detta är aktiverat kan webbplatser använda enhetens rörelse- och ljussensorer. När detta är inaktiverat får webbplatser inte använda sensorer.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Testa att tillfälligt tillåta tredjepartscookies, vilket innebär mindre skydd när du surfar men större sannolikhet att webbplatsfunktionerna fungerar som förväntat.</translation>
 <translation id="8889294078294184559">När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome och verifiera med den föregående webbplatsen du besökte att du troligen är en riktig person.</translation>
 <translation id="8899807382908246773">Påträngande annonser</translation>
 <translation id="8903921497873541725">Zooma in</translation>
@@ -787,7 +785,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="913657688200966289">Aktivera behörigheter för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Aviseringar tillåts</translation>
 <translation id="9138217887606523162">Nuvarande zoom är <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Webbplatser använder den här funktionen för att öppna bild-i-bild automatiskt. På så sätt kan du fortsätta titta på en video samtidigt som du frigör skärmen för andra uppgifter.</translation>
 <translation id="9156722768168878035">Tillåt att Chrome visar dina senaste flikar i enhetens applista och sökresultat. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="9162462602695099906">Den här sidan är farlig</translation>
 <translation id="9182556968660520230">Tillåt inte att webbplatser spelar upp skyddat innehåll</translation>

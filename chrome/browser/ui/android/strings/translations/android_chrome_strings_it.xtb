@@ -243,6 +243,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2056878612599315956">Sito in pausa</translation>
 <translation id="2063047797624276601">La tua organizzazione ha attivato Navigazione sicura avanzata</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download non riuscito}other{# download non riusciti}}</translation>
+<translation id="2066690553719545730">Mostra sempre AI Mode</translation>
 <translation id="2067805253194386918">testo</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2149968176347646218">La connessione non è sicura</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2163089732491971196">Per usare e salvare i dati di Chrome nel tuo Account Google, inserisci la tua passphrase</translation>
+<translation id="2164015935042801524">Fai clic con il tasto destro del mouse qui per mostrare le schede verticalmente</translation>
 <translation id="2166228530126694506">Versione <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Le descrizioni delle immagini sono disattivate</translation>
 <translation id="2172905120685242547">Chiudere la finestra?</translation>
@@ -305,6 +307,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
 <translation id="2327445548174191329">Da <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
+<translation id="2329500425421091035">Ti presentiamo AI Mode in Chrome</translation>
 <translation id="2330186936255788117">Altri preferiti</translation>
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
 <translation id="233375395665273385">Elimina ed esci</translation>
@@ -1057,7 +1060,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5436928407363358055">Per riprendere facilmente da dove avevi interrotto, sincronizza la cronologia e le schede</translation>
 <translation id="5438292632479953702">Scarica di nuovo</translation>
 <translation id="5439191312780166229">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, analizzando più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chrome.</translation>
-<translation id="5441137934526263133">Il sito non funziona? I cookie di terze parti sono bloccati</translation>
 <translation id="5441466871879044658">Traduci in questa lingua</translation>
 <translation id="5444999712122199445">Torna al sito</translation>
 <translation id="544776284582297024">Per aprire più schede e visitare pagine diverse contemporaneamente, tocca il pulsante Schede aperte</translation>
@@ -1112,7 +1114,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="569536719314091526">Traduci questa pagina in una lingua qualsiasi usando il pulsante Altre opzioni</translation>
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
 <translation id="5698878456427040674">Verifica se l'account selezionato è supportato.</translation>
-<translation id="5700415746238689851">Apri Gemini</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vuole collegarsi a una porta seriale</translation>
 <translation id="5715150588940290235">Eliminare i codici di sicurezza salvati?</translation>
 <translation id="572328651809341494">Schede recenti</translation>
@@ -1418,7 +1419,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6835182496791325827">Ricevi una notifica quando Chrome trova i risultati migliori per le tue ricerche mentre non sei presente.</translation>
 <translation id="6846298663435243399">Caricamento in corso…</translation>
-<translation id="6850409657436465440">Il download è ancora in corso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> schede chiuse</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 risultato trovato}other{# risultati trovati}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{File audio, 1 file audio nell'elenco}other{File audio, # file audio nell'elenco}}</translation>
@@ -1968,12 +1968,14 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9001604755921395912">Apri in una scheda Incognito di Chrome</translation>
 <translation id="9010094279589497751">Apri rapidamente Gemini quando ti serve</translation>
 <translation id="9012585441087414258">Protezione da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura</translation>
+<translation id="9014097371980259227">Alcuni strumenti sono stati spostati per consentirti di effettuare ricerche con AI Mode</translation>
 <translation id="9019199799064251516">Vuoi continuare senza blocco del profilo dell'auto?</translation>
 <translation id="9022774213089566801">Più visitati</translation>
 <translation id="9022871169049522985">Siti e inserzionisti possono misurare il rendimento dei propri annunci</translation>
 <translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
 <translation id="9027728231343310283">Annulla <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Sposta in\u2026</translation>
+<translation id="904146253922032365">Tocca e tieni premuto per mostrare le schede verticalmente</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9047347135558855162">Avvia rapidamente una ricerca in Chrome</translation>
 <translation id="9050666287014529139">Passphrase</translation>

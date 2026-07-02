@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">ਸਾਈਟ ਰੋਕੀ ਗਈ</translation>
 <translation id="2063047797624276601">ਤੁਹਾਡਾ ਸੰਸਥਾ ਨੇ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ}one{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ}other{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਹੇ}}</translation>
+<translation id="2066690553719545730">ਹਮੇਸ਼ਾਂ AI ਮੋਡ ਦਿਖਾਓ</translation>
 <translation id="2067805253194386918">ਲਿਖਤ</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ਦਾ <ph name="RESULT_NUMBER" /> ਨਤੀਜਾ</translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2149973817440762519">ਬੁੱਕਮਾਰਕ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="2163089732491971196">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="2164015935042801524">ਟੈਬਾਂ ਨੂੰ ਖੜ੍ਹਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਉਣ ਲਈ ਇੱਥੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2166228530126694506">ਵਰਜਨ <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਬੰਦ ਹਨ</translation>
 <translation id="2172905120685242547">ਕੀ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ਤੋਂ</translation>
 <translation id="2328474416100889417">ਹਰ ਕੋਈ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਸੱਦੇ ਦੇ ਸਾਰੇ ਲਿੰਕਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="2329500425421091035">ਪੇਸ਼ ਹੈ Chrome ਵਿੱਚ AI ਮੋਡ</translation>
 <translation id="2330186936255788117">ਹੋਰ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="2332515770639153015">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਹੈ</translation>
 <translation id="233375395665273385">ਮਿਟਾਓ ਅਤੇ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਉੱਥੋਂ ਹੀ ਅਸਾਨੀ ਨਾਲ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="5438292632479953702">ਦੁਬਾਰਾ ਡਾਉਨਲੋਡ ਕਰੋ</translation>
 <translation id="5439191312780166229">ਇਹ ਸੁਵਿਧਾ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਨਾਲੋਂ ਜ਼ਿਆਦਾ ਡਾਟੇ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰ ਕੇ ਤੁਹਾਨੂੰ ਅਜਿਹੀਆਂ ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਬਾਰੇ ਚਿਤਾਵਨੀ ਦਿੰਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਬਾਰੇ Google ਨੂੰ ਪਹਿਲਾਂ ਨਹੀਂ ਪਤਾ ਸੀ। ਤੁਸੀਂ Chrome ਚਿਤਾਵਨੀਆਂ ਨੂੰ ਛੱਡਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ।</translation>
-<translation id="5441137934526263133">ਕੀ ਸਾਈਟ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ? ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5441466871879044658">ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5444999712122199445">ਸਾਈਟ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="544776284582297024">ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਅਤੇ ਇੱਕੋ ਵੇਲੇ ਵੱਖ-ਵੱਖ ਪੰਨਿਆਂ 'ਤੇ ਜਾਣ ਲਈ, 'ਟੈਬਾਂ ਖੋਲ੍ਹੋ' ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਇਸ ਪੰਨੇ ਦਾ ਕਿਸੇ ਵੀ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5696597120588531049">ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ, ਅਸੁਰੱਖਿਅਤ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਵਿੱਚ Chrome ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="5698878456427040674">ਜਾਂਚ ਕਰੋ ਕਿ ਚੁਣਿਆ ਗਿਆ ਖਾਤਾ ਸਮਰਥਿਤ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
-<translation id="5700415746238689851">Gemini ਖੋਲ੍ਹੋ</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ਕਿਸੇ ਸੀਰੀਅਲ ਪੋਰਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="5715150588940290235">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਸੁਰੱਖਿਆ ਕੋਡਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="572328651809341494">ਹਾਲੀਆ ਟੈਬਸ</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="6835182496791325827">ਤੁਹਾਡੇ ਘਰੋਂ ਦੂਰ ਹੋਣ ਦੌਰਾਨ, Chrome ਨੂੰ ਤੁਹਾਡੀਆਂ ਖੋਜਾਂ ਲਈ ਬਿਹਤਰੀਨ ਨਤੀਜੇ ਮਿਲਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="6846298663435243399">ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...</translation>
-<translation id="6850409657436465440">ਤੁਹਾਡਾ ਡਾਊਨਲੋਡ ਅਜੇ ਵੀ ਜਾਰੀ ਹੈ</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ਟੈਬਸ ਬੰਦ ਕੀਤੀਆਂ</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 ਨਤੀਜਾ ਮਿਲਿਆ}one{# ਨਤੀਜਾ ਮਿਲਿਆ}other{# ਨਤੀਜੇ ਮਿਲੇ}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ਆਡੀਓ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ 1 ਆਡੀਓ ਫ਼ਾਈਲ ਹੈ}one{ਆਡੀਓ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ # ਆਡੀਓ ਫ਼ਾਈਲ ਹੈ}other{ਆਡੀਓ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ # ਆਡੀਓ ਫ਼ਾਈਲਾਂ ਹਨ}}</translation>
@@ -1968,12 +1968,14 @@
 <translation id="9001604755921395912">ਇਨਕੋਗਨਿਟੋ Chrome ਟੈਬ 'ਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="9010094279589497751">ਜਦੋਂ ਵੀ ਚਾਹੋ, Gemini ਨੂੰ ਤੁਰੰਤ ਖੋਲ੍ਹੋ</translation>
 <translation id="9012585441087414258">ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਖਤਰਨਾਕ ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ। ਜੇ ਕੋਈ ਪੰਨਾ ਕੋਈ ਸ਼ੱਕੀ ਸਰਗਰਮੀ ਕਰਦਾ ਹੈ, ਤਾਂ URL ਅਤੇ ਪੰਨੇ ਦੀ ਥੋੜ੍ਹੀ ਸਮੱਗਰੀ ਨੂੰ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="9014097371980259227">AI ਮੋਡ ਨਾਲ ਖੋਜ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਕੁਝ ਟੂਲ ਹਟਾ ਦਿੱਤੇ ਗਏ ਹਨ</translation>
 <translation id="9019199799064251516">ਕੀ ਕਾਰ ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਤੋਂ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="9022774213089566801">ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ</translation>
 <translation id="9022871169049522985">ਸਾਈਟਾਂ ਅਤੇ ਵਿਗਿਆਪਨਦਾਤਾ ਆਪਣੇ ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮਾਪ ਸਕਦੇ ਹਨ</translation>
 <translation id="9024318700713112071">Chrome ਨੂੰ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="9035378196785279980">ਇੱਥੇ ਲਿਜਾਓ\u2026</translation>
+<translation id="904146253922032365">ਟੈਬਾਂ ਨੂੰ ਖੜ੍ਹਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਉਣ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
 <translation id="9047347135558855162">Chrome ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਖੋਜ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="9050666287014529139">ਪਾਸਫਰੇਜ਼</translation>

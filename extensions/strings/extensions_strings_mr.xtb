@@ -1,45 +1,78 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" इंस्टॉल करा</translation>
+<translation id="1070377999570795893">तुमच्या कॉंप्युटरवरील दुसर्‍या प्रोग्रामने एक एक्स्टेंशन जोडले जो Chrome ची काम करण्‍याची पद्धत कदाचित बदलू शकतो.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">थीम सुरू करा</translation>
 <translation id="1135328998467923690">हे पॅकेज चुकीचे आहे: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">पर्यावरण-समोरील</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ने असे एक्स्टेंशन जोडले आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">खासगी की एक्सपोर्ट करण्यात अयशस्वी.</translation>
 <translation id="132960226125594336">आशय स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करता आली नाही, कारण त्यामुळे स्क्रिप्टचा कमाल आकार किंवा एक्स्टेंशनचा एकूण आशय स्क्रिप्टचा कमाल आकार याची मर्यादा ओलांडली जाईल.</translation>
 <translation id="1445572445564823378">हे एक्स्टेंशन <ph name="PRODUCT_NAME" /> हळू चालत आहे. <ph name="PRODUCT_NAME" /> चे काम रिस्टोअर करण्‍यासाठी तुम्ही ते ‍अक्षम करणे आवश्‍यक आहे.</translation>
 <translation id="1468038450257740950">WebGL ला सपोर्ट नाही.</translation>
 <translation id="1478607704480248626">इंस्टॉल करणे सुरू केलेले नाही</translation>
+<translation id="1483493594462132177">पाठवा</translation>
+<translation id="1485015260175968628">ते आता करू शकते:</translation>
 <translation id="1556537182262721003">प्रोफाइलमध्ये एक्स्टेंशन डिरेक्टरी हलविणे शक्य नाही.</translation>
+<translation id="1585717515139318619">तुमच्या कॉंप्युटरवरील दुसर्‍या प्रोग्रामने एक थीम जोडली जी Chrome ची काम करण्‍याची पद्धत कदाचित बदलू शकते.
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">स्क्रिप्टसाठी CSS '<ph name="RELATIVE_PATH" />' लोड करता आले नाही.</translation>
 <translation id="1616298854599875024">एक्स्टेंशन "<ph name="IMPORT_NAME" />" इंपोर्ट करू शकत नाही कारण ते शेअर केलेले मॉड्युल नाही</translation>
+<translation id="175772926354468439">थीम सुरू करा</translation>
 <translation id="1757786065507923842">पालकांची परवानगी मागणारी विनंती करता आली नाही.</translation>
 <translation id="1803557475693955505">'बॅकग्राउंड पेज '<ph name="BACKGROUND_PAGE" />'  लोड करता आले नाही.</translation>
 <translation id="1875387611427697908">हे केवळ <ph name="CHROME_WEB_STORE" /> वरून जोडले जाऊ शकते</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" द्वारे "<ph name="APP_NAME" />" ला अनुमती नसल्‍याने तो स्‍थापित करण्‍यात अक्षम</translation>
+<translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोडायचे ?</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">तुमच्या पालकांनी या एक्स्टेंशनला मंजुरी दिली नाही</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" नी अतिरिक्त परवानग्यांची विनंती केली आहे.</translation>
+<translation id="2327492829706409234">अ‍ॅप सुरू करा</translation>
 <translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
 <translation id="2576842806987913196">या नावाने आधीपासूनच CRX फाइल उपस्थित आहे.</translation>
 <translation id="2662876636500006917">Chrome वेब बाजार</translation>
+<translation id="2678063897982469759">पुन्हा सुरू करा</translation>
 <translation id="2743583586211388067">तुमच्या संस्थेच्या एक्स्टेंशनसंबंधित धोक्याच्या धोरणांतर्गत या एक्स्टेंशनचा अ‍ॅक्सेस ब्लॉक केला आहे.</translation>
+<translation id="2766161002040448006">पालकाला विचारा</translation>
 <translation id="2785530881066938471">आशय स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करणे शक्य नाही. ही UTF-8 द्वारे एन्कोड केलेली नाही.</translation>
+<translation id="2850541429955027218">थीम जोडा</translation>
+<translation id="2883143988769190738">हे एक्स्टेंशन पुढील परवानग्यांची विनंती करते:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> एक्स्टेंशन आयडी "<ph name="EXTENSION_ID" />") ॲडमिनिस्ट्रेटरने ब्लॉक केलेला आहे. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">तुमच्या अ‍ॅडमिनिस्ट्रेटरला "<ph name="EXTENSION_NAME" />" इंस्टॉल करण्याची विनंती पाठवायची?</translation>
 <translation id="2988488679308982380">हे पॅकेज इंस्टॉल करणे शक्य नाही: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx फाइल पुनर्स्थित करण्यात अयशस्वी. फाइल वापरात आहे किंवा नाही हे पाहण्यासाठी तपासा.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
 <translation id="3174723475300476613">तुमच्या संस्थेने या एक्स्टेंशनचा अ‍ॅक्सेस ब्लॉक केला आहे.</translation>
+<translation id="3183357154200327217">तुमच्या काँप्युटरवरील दुसऱ्या प्रोग्रामने अशी थीम जोडली आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">'kiosk_only' मॅनिफेस्ट ॲट्रिब्यूट असलेले अ‍ॅप हे ChromeOS कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
 <translation id="3364986687961713424">तुमच्या अ‍ॅडमिनिस्ट्रेटरकडून: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">खासगी की साठी इनपुट मूल्य वैध पथ असावा.</translation>
+<translation id="3788401245189148511">ते करू शकले असते:</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" सह संघर्ष असल्याने "<ph name="TO_INSTALL_APP_NAME" />" मध्ये ॲप्स जोडणे शक्य झाले नाही.</translation>
 <translation id="388442998277590542">पर्याय पेज '<ph name="OPTIONS_PAGE" />' लोड करणे शक्य नाही.</translation>
+<translation id="3905761538810670789">अ‍ॅप दुरुस्त करा</translation>
+<translation id="3908501907586732282">एक्स्टेंशन सुरू करा</translation>
+<translation id="3927932062596804919">नकार द्या</translation>
 <translation id="3984413272403535372">एक्स्टेंशनमध्ये साइन करताना एरर.</translation>
+<translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" दुरुस्त करायचे?</translation>
+<translation id="4061696872429826774">तुमच्या काँप्युटरवरील दुसऱ्या प्रोग्रामने असे एक्स्टेंशन जोडले आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">तुमच्या संस्थेने या वर्गवारीच्या एक्स्टेंशनचा अ‍ॅक्सेस ब्लॉक केला आहे.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' पृष्ठाविषयी लोड करू शकलो नाही.</translation>
 <translation id="424963718355121712">परिणाम होतो अशा होस्टवरून ॲप्स दिली जाणे आवश्यक आहे</translation>
 <translation id="4306119971288449206">अ‍ॅप्स "<ph name="CONTENT_TYPE" />" आशय प्रकारासह दिली जाणे आवश्यक आहे</translation>
+<translation id="4625078469366263107">अ‍ॅप सुरू करा</translation>
 <translation id="4633003931260532286">एक्स्टेंशनला किमान आवृत्ती "<ph name="IMPORT_VERSION" />" सह "<ph name="IMPORT_NAME" />" ची गरज आहे, परंतु केवळ आवृत्ती "<ph name="INSTALLED_VERSION" />" इंस्टॉल केली गेली आहे</translation>
 <translation id="4660476621274971848">अपेक्षित आवृत्ती "<ph name="EXPECTED_VERSION" />", परंतु आवृत्ती "<ph name="NEW_ID" />" होती</translation>
 <translation id="471800408830181311">खासगी की आउटपुट करण्यात अयशस्वी.</translation>
@@ -47,21 +80,36 @@
 <translation id="4988792151665380515">सार्वजनिक की एक्सपोर्ट करण्यात अयशस्वी.</translation>
 <translation id="501057610015570208">'kiosk_only' मॅनिफेस्ट ॲट्रिब्यूट असलेले अ‍ॅप हे ChromeOS Flex कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">एक्स्टेंशन जोडा</translation>
+<translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5098647635849512368">पॅक करण्यासाठी डिरेक्टरीमध्ये अचूक पाथ शोधू शकत नाही</translation>
 <translation id="5160071981665899014">स्क्रिप्टसाठी JavaScript '<ph name="RELATIVE_PATH" />' लोड करता आले नाही.</translation>
+<translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ची नवीनतम आवृत्ती अक्षम केली गेली कारण यासाठी अधिक परवानग्या आवश्यक आहेत.</translation>
+<translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" सुरू करायचे?</translation>
 <translation id="5356315618422219272">ॲपदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Chromium मधून काढा</translation>
 <translation id="5456409301717116725">हे एक्स्टेंशन की फाइल '<ph name="KEY_PATH" />' चा समावेश करतात. तुम्हाला कदाचित ते करणे आवश्यक नाही.</translation>
+<translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
 <translation id="5486326529110362464">खासगी की साठी इनपुट मूल्य विद्यमान असणे आवश्यक आहे.</translation>
 <translation id="5527463195266282916">एक्स्टेंशन डाउनग्रेड करण्याचा प्रयत्न केला.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">यावरून एक्स्टेंशन लोड करण्यात अयशस्वी:</translation>
 <translation id="5972529113578162692">या मशीनच्या ॲडमिनिस्ट्रेटरलााठी <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे अनइंस्टॉल केले जाऊ शकत नाही.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /></translation>
+<translation id="6204922163963157461">तुमच्या काँप्युटरवरील दुसऱ्या प्रोग्रामने असे ॲप जोडले आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">एक्स्टेंशन लोड करताना एरर</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ने असे एक्स्टेंशन जोडले आहे, ज्यामुळे Chrome ची काम करण्याची पद्धत बदलू शकते.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">खासगी की वाचण्यात अयशस्वी.</translation>
+<translation id="6326175484149238433">Chrome मधून काढून टाका</translation>
 <translation id="6391538222494443604">इनपुट डिरेक्टरी अस्तित्वात असणे आवश्यक आहे.</translation>
 <translation id="641087317769093025">एक्स्टेंशन अनझिप करणे शक्य झाले नाही</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> तुमच्या एका किंवा अधिक डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> वापरकर्ते</translation>
 <translation id="657064425229075395">पार्श्वभूमी स्क्रिप्‍ट '<ph name="BACKGROUND_SCRIPT" />' लोड करू शकले नाही.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />) कडील <ph name="PRODUCT_NAME" /></translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +118,32 @@
 <translation id="7068383018033524534">मॅनिफेस्ट फाइल चुकीची आहे</translation>
 <translation id="7217838517480956708">या मशीनच्या ॲडमिनिस्ट्रेटरला <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे काढले किंवा सुधारित केले जाऊ शकत नाही.</translation>
 <translation id="7287143125007575591">ॲक्सेस नाकारला.</translation>
+<translation id="760353356052806707">आपल्‍या संगणकावरील दुसर्‍या प्रोग्रामने एक अ‍ॅप जोडला जो Chrome ची कार्य करण्‍याची पद्धत कदाचित बदलू शकतो.
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">प्रायव्हेट की साठीचे इनपुट मूल्य योग्य फॉरमॅटमध्ये असावे (PKCS#8-फॉरमॅट PEM-एंकोड केलेली RSA की).</translation>
 <translation id="765293928828334535">या वेबसाइटवरून अ‍ॅप्स, एक्स्टेंशन आणि वापरकर्ता स्क्रिप्ट जोडली जाऊ शकत नाहीत</translation>
+<translation id="7658239707568436148">रद्द करा</translation>
+<translation id="7766838926148951335">परवानग्या स्वीकारा</translation>
 <translation id="7876803335449432072">आशय स्क्रिप्टसाठी फाइल '<ph name="RELATIVE_PATH" />' लोड करता आली नाही, आशय स्क्रिप्ट स्टाइल शीट या फक्त .css फाइलसारख्या सपोर्ट असलेल्या स्टाइल शीटमधून लोड करता येऊ शकतात.</translation>
 <translation id="7939686037314084444">एक्सटेंशन योग्यरित्या लोड होऊ शकले नाही. हे कदाचित नेटवर्क विनंत्या व्यत्यय आणू शकत नाही.</translation>
 <translation id="7952904276017482715">अपेक्षित आयडी "<ph name="EXPECTED_ID" />", परंतु आयडी "<ph name="NEW_ID" />" होता</translation>
 <translation id="7972881773422714442">पर्याय: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">मंजूर करा</translation>
 <translation id="8035920974645200807">वापरकर्ता-समोरील</translation>
 <translation id="8047248493720652249">दुसर्‍या एक्स्टेंशनने (<ph name="EXTENSION_NAME" />) एक वेगळे फाइलनाव "<ph name="ACTUAL_FILENAME" />" निर्धारित केल्यामुळे डाउनलोड "<ph name="ATTEMPTED_FILENAME" />" ला नाव देण्यात हे एक्स्टेंशन अयशस्वी झाले.</translation>
 <translation id="8049705080247101012">Google ने "<ph name="EXTENSION_NAME" />" ला दुर्भावनापूर्ण म्हणून फ्लॅग केले आहे आणि इंस्टॉल करणे रोखले गेले आहे</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_NAME" /></translation>
+<translation id="8353683614194668312">ते करू शकते:</translation>
 <translation id="8517576857589387417">मॅनिफेस्ट फाइल गहाळ किंवा वाचता न येण्यासारखी आहे</translation>
 <translation id="8565650234829130278">अ‍ॅप डाउनग्रेड करण्याचा प्रयत्न.</translation>
 <translation id="8621383749470166852">आशय स्क्रिप्टसाठी फाइल '<ph name="RELATIVE_PATH" />' लोड करता आली नाही, आशय स्क्रिप्ट या फक्त .js फाइलसारख्या सपोर्ट असलेल्या JavaScript मधून लोड करता येऊ शकतात.</translation>
 <translation id="8636666366616799973">पॅकेज चुकीचे आहे. तपशील: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">तुम्ही आधीच "<ph name="EXTENSION_NAME" />" ची विनंती केलेली आहे</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> तुमच्या एका डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>
 <translation id="8885905466771744233">नमूद एक्स्टेंशनसाठी खासगी की यापूर्वीच विद्यमान आहे. ती की पुन्हा वापरा किंवा प्रथम ती हटवा.</translation>
 <translation id="9039223174332979184">या मशीनच्या अ‍ॅडमिनिस्ट्रेटरकडे <ph name="EXTENSION_NAME" /> ची किमान मॅनिफेस्ट आवृत्ती ३ असणे आवश्यक आहे.</translation>
 <translation id="907841381057066561">पॅकेजिंग दरम्यान तात्पुरती zip फाइल तयार करण्यात अयशस्वी.</translation>
+<translation id="9102610709270966160">एक्स्टेंशन सुरू करा</translation>
+<translation id="93766956588638423">एक्स्टेंशन दुरुस्त करा</translation>
 <translation id="941543339607623937">चुकीची खासगी की.</translation>
 </translationbundle>

@@ -690,7 +690,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="8163152278172770963">No permitir que los sitios ingresen automáticamente al modo de pantalla en pantalla</translation>
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="818487310457576362">Arrastra desde un lado de la pantalla para salir del modo de pantalla completa.</translation>
-<translation id="8186479265534291036">¿No funciona el sitio? Se bloquearon las cookies de terceros</translation>
 <translation id="8197286292360124385">Permitido: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
@@ -761,7 +760,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="8805385115381080995">La navegación es más rápida porque el sitio tiene menos probabilidades de pedirte que verifiques si eres una persona real.</translation>
 <translation id="881644524232657178">Cuando esta opción está activada, los sitios pueden usar los sensores de movimiento y de luz de tu dispositivo. Cuando está desactivada, los sitios no pueden usar los sensores.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección al navegar, pero aumenta las probabilidades de que las funciones del sitio funcionen como se espera.</translation>
 <translation id="8889294078294184559">A medida que navegas, los sitios pueden comprobar con Chrome y verificar con otro sitio que hayas visitado que eres una persona real.</translation>
 <translation id="8899807382908246773">Anuncios intrusivos</translation>
 <translation id="8903921497873541725">Acercar</translation>
@@ -787,7 +785,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="913657688200966289">Activa los permisos para <ph name="APP_NAME" /> en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Se permiten las notificaciones</translation>
 <translation id="9138217887606523162">El zoom actual es del <ph name="ZOOM_LEVEL" />%%</translation>
-<translation id="915112772806845021">Los sitios usan esta función para activar el modo de pantalla en pantalla automáticamente. De esta manera, puedes seguir mirando un video y liberar la pantalla para otras tareas.</translation>
 <translation id="9156722768168878035">Permite que Chrome muestre tus pestañas recientes en la lista de apps y los resultados de la búsqueda de tu dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta página es peligrosa</translation>
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>

@@ -2371,6 +2371,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4705573018059932476">Valitsit vahvistuksen (<ph name="AUTHENTICATOR" />) sivustoilla, joilla on käytössä <ph name="PROVIDER_ORIGIN" />. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja. Voit toimia näin: <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Yhteys keskeytyi</translation>
 <translation id="4708276642004148190">Vesivarannot ja vedenkäsittely</translation>
+<translation id="4710249055485272920">Tietoja ei löytynyt</translation>
 <translation id="4711628883879888561">Tee yhteistyötä välilehtiryhmässä</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Sinulla ei ole lupaa siirtyä tälle sivustolle.</translation>
@@ -3023,6 +3024,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5707154300732650394">Jatka toimintoa</translation>
 <translation id="57094364128775171">Ehdota vahvaa salasanaa…</translation>
 <translation id="570953204696852961">Punainen 3</translation>
+<translation id="5710907191777451677">Kysy sen sijaan Gemini in Chromelta</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Eläinlääkärit</translation>
 <translation id="5715150588940290235">Poistetaanko tallennetut turvakoodit?</translation>
@@ -3925,7 +3927,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="7110116949943042888">Tilapäis- ja kausityöpaikat</translation>
 <translation id="7110368079836707726">Yliopistot ja korkeakoulut</translation>
 <translation id="7111507312244504964">Kuntotarkastukset ja kiinteistöarviot</translation>
-<translation id="7117290130383718594">Tekstimerkinnät</translation>
 <translation id="7118618213916969306">Hae leikepöydän URL-osoitetta, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Näet tämän varoituksen, koska sivusto ei tue HTTPS:ää. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">TV-draamat</translation>
@@ -5049,7 +5050,6 @@ Lisätietoja:
 <translation id="8871485335898060555">Antiikki ja keräily</translation>
 <translation id="8871553383647848643">Muokkaa selaimen ulkoasua</translation>
 <translation id="887350038812854047">Käytännöllä on sama arvo, jota sovelletaan laite- ja käyttäjätasolla. Käytäntö toimii odotetusti.</translation>
-<translation id="8874790741333031443">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
 <translation id="8874824191258364635">Anna kelvollinen kortin numero.</translation>
 <translation id="8877780815363510165">Kalastus</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" ei voi olla "<ph name="DATA_CONTROLS_LEVEL" />"</translation>

@@ -243,6 +243,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2056878612599315956">サイト一時停止中</translation>
 <translation id="2063047797624276601">セーフ ブラウジング保護強化機能は組織によってオンにされています</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました}other{# 件のダウンロードが失敗しました}}</translation>
+<translation id="2066690553719545730">AI モードを常に表示する</translation>
 <translation id="2067805253194386918">テキスト</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
@@ -263,6 +264,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
 <translation id="2163089732491971196">Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
+<translation id="2164015935042801524">ここを右クリックするとタブを縦方向に表示できます</translation>
 <translation id="2166228530126694506">バージョン <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">画像の説明をオフにしました</translation>
 <translation id="2172905120685242547">ウィンドウを閉じますか？</translation>
@@ -305,6 +307,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2323763861024343754">サイトのストレージ</translation>
 <translation id="2327445548174191329">送信元: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、招待リンクはすべて無効になります</translation>
+<translation id="2329500425421091035">Chrome の AI モードのご紹介</translation>
 <translation id="2330186936255788117">その他のブックマーク</translation>
 <translation id="2332515770639153015">セーフ ブラウジング保護強化機能はオンになっています</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
@@ -1057,7 +1060,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5436928407363358055">履歴とタブを同期すると、中断したところから簡単に再開できます</translation>
 <translation id="5438292632479953702">再ダウンロード</translation>
 <translation id="5439191312780166229">標準保護機能より多くのサイトデータを分析して、危険なサイト（Google が認識していなかったサイトも含む）について警告します。Chrome の警告をスキップすることもできます。</translation>
-<translation id="5441137934526263133">サイトが動作していない場合 サードパーティ Cookie がブロックされています</translation>
 <translation id="5441466871879044658">この言語に翻訳する</translation>
 <translation id="5444999712122199445">サイトに戻ってください</translation>
 <translation id="544776284582297024">タブを開いて複数のページに同時にアクセスするには、タブを開くボタンをタップします</translation>
@@ -1112,7 +1114,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="569536719314091526">[その他のオプション] から、このページを任意の言語に翻訳できます</translation>
 <translation id="5696597120588531049">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します</translation>
 <translation id="5698878456427040674">選択したアカウントがサポートされているかどうかを確認してください。</translation>
-<translation id="5700415746238689851">Gemini を開く</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> がシリアルポートへの接続を要求しています</translation>
 <translation id="5715150588940290235">保存済みのセキュリティ コードを削除しますか？</translation>
 <translation id="572328651809341494">最近使ったタブ</translation>
@@ -1418,7 +1419,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6835182496791325827">使用していないときに、Chrome で最適な検索結果が検出されると、通知が届きます。</translation>
 <translation id="6846298663435243399">読み込んでいます…</translation>
-<translation id="6850409657436465440">ダウンロードが進行中です</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> 個のタブを閉じました</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 件の結果が見つかりました}other{# 件の結果が見つかりました}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{音声ファイル、リストの 1 件の音声ファイル}other{音声ファイル、リストの # 件の音声ファイル}}</translation>
@@ -1968,12 +1968,14 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="9001604755921395912">シークレット モードの Chrome タブで開く</translation>
 <translation id="9010094279589497751">必要なときに Gemini をすばやく開くことができます</translation>
 <translation id="9012585441087414258">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ページで不審な動作が検出された場合、URL と一部のページ コンテンツが Google セーフ ブラウジングに送信されます。</translation>
+<translation id="9014097371980259227">一部のツールが移動し、AI モードで検索できるようになりました</translation>
 <translation id="9019199799064251516">車のプロフィールをロックせずに続行しますか？</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
 <translation id="9022871169049522985">ウェブサイトと広告主が広告効果を測定することができます</translation>
 <translation id="9024318700713112071">Chrome を既定として設定</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> を取消</translation>
 <translation id="9035378196785279980">\u2026 に移動</translation>
+<translation id="904146253922032365">長押しするとタブを縦方向に表示できます</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
 <translation id="9047347135558855162">Chrome ですばやく検索を開始</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>

@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} pristupni ključ}one{{count} pristupni ključ}few{{count} pristupna ključa}other{{count} pristupnih ključeva}}</translation>
 <translation id="1005023885865154304">Otvorite podešavanja za automatsko popunjavanje lozinki</translation>
 <translation id="1005230401424685968">GGGG</translation>
+<translation id="1013852467930342108">Live je nova funkcija u Gemini-ju u Chrome-u</translation>
 <translation id="1013952917065545813">Možete da se vratite ovde da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
 <translation id="1018804590490383958">Skeniraj i automatski popuni</translation>
@@ -1737,6 +1738,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6765551480308401897">Ne podešavaj kao podrazumevano</translation>
 <translation id="6770452996697898492">[REZERVISANO]</translation>
+<translation id="6775952316617222141">Počnite da koristite Live sa Gemini-jem u Chrome-u</translation>
 <translation id="6779455296366983087">Podaci pregledanja će biti izbrisani</translation>
 <translation id="6782531425936234573">Izvezi podatke</translation>
 <translation id="6791425686608802741">Dodirnite Dodaj karticu u novu grupu</translation>

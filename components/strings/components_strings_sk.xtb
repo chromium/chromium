@@ -2366,6 +2366,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4705573018059932476">Na weboch využívajúcich poskytovateľa <ph name="PROVIDER_ORIGIN" /> ste vybrali overovanie pomocou funkcie <ph name="AUTHENTICATOR" />. Tento poskytovateľ mohol uložiť informácie o tom, ako platíte, ktoré môžete <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Pripojenie bolo prerušené</translation>
 <translation id="4708276642004148190">Dodávky vody a úprava vôd</translation>
+<translation id="4710249055485272920">Tieto informácie sa nepodarilo nájsť</translation>
 <translation id="4711628883879888561">Spolupracujte na skupine kariet</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Nemáte povolenie na návštevu tohto webu</translation>
@@ -3018,6 +3019,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5707154300732650394">Pokračovať v ceste</translation>
 <translation id="57094364128775171">Navrhnúť silné heslo…</translation>
 <translation id="570953204696852961">Červená č. 3</translation>
+<translation id="5710907191777451677">Opýtajte sa Gemini v Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinári</translation>
 <translation id="5715150588940290235">Chcete odstrániť uložené bezpečnostné kódy?</translation>
@@ -3919,7 +3921,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7110116949943042888">Dočasné a sezónne zamestnania</translation>
 <translation id="7110368079836707726">Vysoké školy a univerzity</translation>
 <translation id="7111507312244504964">Prehliadky a oceňovanie nehnuteľností</translation>
-<translation id="7117290130383718594">Textové poznámky</translation>
 <translation id="7118618213916969306">Vyhľadať webovú adresu v schránke <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Toto upozornenie sa vám zobrazuje, pretože tento web nepodporuje protokol HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie o tomto upozornení<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Televízne drámy</translation>
@@ -5043,7 +5044,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8871485335898060555">Starožitnosti a zberateľské predmety</translation>
 <translation id="8871553383647848643">Prispôsobiť vzhľad prehliadača</translation>
 <translation id="887350038812854047">Tieto pravidlá majú rovnakú hodnotu uplatňovanú na úrovni počítača a používateľa. Pravidlá fungujú podľa očakávaní.</translation>
-<translation id="8874790741333031443">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
 <translation id="8874824191258364635">Zadajte platné číslo karty</translation>
 <translation id="8877780815363510165">Rybolov</translation>
 <translation id="888117890813270681"><ph name="DATA_CONTROLS_RESTRICTION" /> sa nedá nastaviť na <ph name="DATA_CONTROLS_LEVEL" /></translation>

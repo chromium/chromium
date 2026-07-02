@@ -2369,6 +2369,7 @@
 <translation id="4705573018059932476">คุณเลือกยืนยันด้วย <ph name="AUTHENTICATOR" /> ในเว็บไซต์ที่ใช้ <ph name="PROVIDER_ORIGIN" /> ผู้ให้บริการรายนี้อาจจัดเก็บข้อมูลเกี่ยวกับวิธีที่คุณชำระเงินไว้แล้ว โดยคุณ<ph name="LINK_TEXT" />ได้</translation>
 <translation id="4708268264240856090">การเชื่อมต่อของคุณขัดข้อง</translation>
 <translation id="4708276642004148190">การประปาและการบำบัดน้ำเสีย</translation>
+<translation id="4710249055485272920">ไม่พบข้อมูลนี้</translation>
 <translation id="4711628883879888561">ทำงานร่วมกันในกลุ่มแท็บ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">คุณไม่มีสิทธิ์เข้าชมเว็บไซต์นี้</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5707154300732650394">สำรวจต่อ</translation>
 <translation id="57094364128775171">แนะนำรหัสผ่านที่รัดกุม…</translation>
 <translation id="570953204696852961">แดง 3</translation>
+<translation id="5710907191777451677">ขอความช่วยเหลือจาก Gemini ใน Chrome แทน</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">สัตวแพทย์</translation>
 <translation id="5715150588940290235">ลบรหัสความปลอดภัยที่บันทึกไว้ใช่ไหม</translation>
@@ -3923,7 +3925,6 @@
 <translation id="7110116949943042888">งานชั่วคราวและตามช่วงเวลา</translation>
 <translation id="7110368079836707726">วิทยาลัยและมหาวิทยาลัย</translation>
 <translation id="7111507312244504964">การประเมินมูลค่าและการตรวจสอบอสังหาริมทรัพย์</translation>
-<translation id="7117290130383718594">หมายเหตุข้อความ</translation>
 <translation id="7118618213916969306">ค้นหา URL ในคลิปบอร์ด <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">คุณเห็นคำเตือนนี้เพราะเว็บไซต์นี้ไม่รองรับ HTTPS <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ละครทีวี</translation>
@@ -5047,7 +5048,6 @@
 <translation id="8871485335898060555">วัตถุโบราณและของสะสม</translation>
 <translation id="8871553383647848643">ปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="887350038812854047">นโยบายนี้มีค่าเดียวกันที่ใช้ในระดับเครื่องและระดับผู้ใช้ นโยบายทำงานตามที่ตั้งใจไว้</translation>
-<translation id="8874790741333031443">ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว ซึ่งหมายความว่าการปกป้องขณะท่องเว็บจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทํางานตามที่คาดได้มากกว่า</translation>
 <translation id="8874824191258364635">ป้อนหมายเลขบัตรที่ถูกต้อง</translation>
 <translation id="8877780815363510165">การตกปลา</translation>
 <translation id="888117890813270681">ตั้งค่า "<ph name="DATA_CONTROLS_RESTRICTION" />" เป็น "<ph name="DATA_CONTROLS_LEVEL" />" ไม่ได้</translation>

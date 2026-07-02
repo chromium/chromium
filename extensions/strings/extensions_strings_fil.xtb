@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="10146536653536065">I-install ang "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="1070377999570795893">Isa pang program sa iyong computer ang nagdagdag extension na maaaring magpabago sa paraan ng paggana ng Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">I-enable ang Tema</translation>
 <translation id="1135328998467923690">Di-wasto ang package: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Nakaharap sa paligid</translation>
+<translation id="1171831736360285680">Nagdagdag ang <ph name="PARTNER_NAME" /> ng extension na posibleng bumago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Nabigong i-export ang pribadong key.</translation>
 <translation id="132960226125594336">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng content dahil lalampas ito sa maximum na laki ng script o maximum na laki ng script ng kabuuang content ng extension.</translation>
 <translation id="1445572445564823378">Pinapabagal ng extension na ito ang <ph name="PRODUCT_NAME" />. Dapat mo itong huwag paganahin upang ipanumbalik ang pagganap ng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Hindi sinusuportahan ang WebGL.</translation>
 <translation id="1478607704480248626">Hindi naka-enable ang pag-install</translation>
+<translation id="1483493594462132177">Ipadala</translation>
+<translation id="1485015260175968628">Maaari na itong:</translation>
 <translation id="1556537182262721003">Hindi maililipat ang direktoryo ng extension papunta sa profile.</translation>
+<translation id="1585717515139318619">Isa pang program sa iyong computer ang nagdagdag tema na maaaring magpabago sa paraan ng paggana ng Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Hindi ma-load ang css '<ph name="RELATIVE_PATH" />' para sa script.</translation>
 <translation id="1616298854599875024">Hindi ma-import ang extension na "<ph name="IMPORT_NAME" />" dahil hindi ito nakabahaging module</translation>
+<translation id="175772926354468439">Paganahin ang tema</translation>
 <translation id="1757786065507923842">Hindi naisagawa ang request sa pahintulot ng magulang.</translation>
 <translation id="1803557475693955505">Maaaring hindi mai-load ang pahina ng background '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Maaari lang itong idagdag mula sa <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Hindi ma-install ang "<ph name="APP_NAME" />" dahil hindi ito pinayagan ng "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2150661552845026580">Idagdag ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Hindi ma-decode ang larawan: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">Hindi inaprubahan ng iyong magulang ang extension na ito</translation>
+<translation id="23030561267973084">Humiling ng karagdagang mga pahintulot ang "<ph name="EXTENSION_NAME" />."</translation>
+<translation id="2327492829706409234">Paganahin ang app</translation>
 <translation id="2350172092385603347">Ginamit ang localization , subalit hindi natukoy ang default_locale sa manipesto.</translation>
 <translation id="2576842806987913196">Mayroon nang isang CRX file na may ganitong pangalan.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2678063897982469759">Muling paganahin</translation>
 <translation id="2743583586211388067">Bina-block ang access sa extension na ito sa ilalim ng patakaran sa panganib sa extension ng iyong organisasyon.</translation>
+<translation id="2766161002040448006">Hilingin sa magulang</translation>
 <translation id="2785530881066938471">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng nilalaman. Hindi ito naka-encode bilang UTF-8.</translation>
+<translation id="2850541429955027218">Magdagdag ng tema</translation>
+<translation id="2883143988769190738">Nire-request ng extension na ito ang mga sumusunod na pahintulot:</translation>
 <translation id="2903070246402204397">Na-block ng administrator ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Magpadala ng kahilingan sa iyong administrator para i-install ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2988488679308982380">Hindi ma-install ang package: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa vendor na <ph name="VENDOR_ID" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nabigong palitan ang crx na file. Tingnan upang malaman kung ginagamit ang file.</translation>
 <translation id="3163201441334626963">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa vendor na <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Bina-block ng iyong organisasyon ang access sa extension na ito.</translation>
+<translation id="3183357154200327217">Nagdagdag ang ibang program sa iyong computer ng tema na posibleng magpabago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Naka-install dapat sa kiosk mode ng ChromeOS ang app na may 'kiosk_only' na manifest attribute</translation>
 <translation id="3364986687961713424">Mula sa iyong administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> mula sa vendor na <ph name="VENDOR_ID" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Dapat na wastong path ang input na halaga para sa pribadong key.</translation>
+<translation id="3788401245189148511">Maaari itong:</translation>
 <translation id="3834775135533257713">Hindi maidagdag ang application na "<ph name="TO_INSTALL_APP_NAME" />" dahil sumasalungat ito sa "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Hindi ma-load ang pahina ng mga pagpipilian na '<ph name="OPTIONS_PAGE" />'.</translation>
+<translation id="3905761538810670789">Ayusin ang app</translation>
+<translation id="3908501907586732282">Paganahin ang extension</translation>
+<translation id="3927932062596804919">Tanggihan</translation>
 <translation id="3984413272403535372">Nagka-error habang linalagdaan ang extension.</translation>
+<translation id="4014432863917027322">Ayusin ang "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="4061696872429826774">Nagdagdag ang ibang program sa iyong computer ng extension na posibleng magpabago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Bina-block ng iyong organisasyon ang access sa kategorya ng extension na ito.</translation>
 <translation id="4233778200880751280">Hindi ma-load ang page na tungkol dito na '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Dapat maihatid ang mga app mula sa host na naaapektuhan ng mga ito</translation>
 <translation id="4306119971288449206">Dapat maihatid ang mga app gamit ang uri ng content na "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4625078469366263107">I-enable ang App</translation>
 <translation id="4633003931260532286">Kinakailangan ng extension ang "<ph name="IMPORT_NAME" />" na may minimum na bersyon na "<ph name="IMPORT_VERSION" />," ngunit ang bersyon na "<ph name="INSTALLED_VERSION" />" lang ang naka-install</translation>
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" ang inaasahang bersyon, ngunit "<ph name="NEW_ID" />" ang bersyon</translation>
 <translation id="471800408830181311">Nabigong ilabas ang pribadong key.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Nabigong i-export ang pampublikong key.</translation>
 <translation id="501057610015570208">Naka-install dapat sa kiosk mode ng ChromeOS Flex ang app na may 'kiosk_only' na manifest attribute</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Idagdag ang extension</translation>
+<translation id="5039804452771397117">Payagan</translation>
 <translation id="5098647635849512368">Hindi mahanap ang ganap na daanan sa direktoryo sa pack.</translation>
 <translation id="5160071981665899014">Hindi ma-load ang javascript '<ph name="RELATIVE_PATH" />' para sa script.</translation>
+<translation id="5185386675596372454">Hindi pinagana ang pinakabagong bersyon ng "<ph name="EXTENSION_NAME" />" dahil nangangailangan ito ng higit pang mga pahintulot.</translation>
+<translation id="5242724311594467048">I-enable ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Alisin mula sa Chromium</translation>
 <translation id="5456409301717116725">Kasama sa extension na ito ang key file na '<ph name="KEY_PATH" />'. Malamang na hindi mo iyon gustong gawin.</translation>
+<translation id="5485102783864353244">Magdagdag ng app</translation>
 <translation id="5486326529110362464">Dapat na umiiral ang halaga ng input para sa pribadong key.</translation>
 <translation id="5527463195266282916">Tinangkang i-downgrade ang extension.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Hindi na-load ang extension mula sa:</translation>
 <translation id="5972529113578162692">Kinakailangan ng administrator ng machine na ito na naka-install ang <ph name="EXTENSION_NAME" />. Hindi ito maaaring i-uninstall.</translation>
 <translation id="6027032947578871493">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa <ph name="VENDOR_NAME" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> mula sa vendor na <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Nagdagdag ang ibang program sa iyong computer ng app na posibleng magpabago sa paraan ng paggana ng Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Error sa Paglo-load ng Extension</translation>
+<translation id="6220551899604141979">Nagdagdag ang <ph name="PARTNER_NAME" /> ng extension na posibleng bumago sa paraan ng paggana ng Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Nabigong basahin ang pribadong key.</translation>
+<translation id="6326175484149238433">Alisin sa Chrome</translation>
 <translation id="6391538222494443604">Dapat na umiiral ang direktoryo ng input.</translation>
 <translation id="641087317769093025">Hindi ma-unzip ang extension</translation>
 <translation id="6542618148162044354">Humihiling ang "<ph name="APP_NAME" />" ng access sa isa o higit pa sa iyong mga device:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> )(na) user</translation>
 <translation id="657064425229075395">Hindi ma-load ang script ng background na '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> mula sa <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Invalid ang manifest file</translation>
 <translation id="7217838517480956708">Kinakailangan ng administrator ng machine na ito na ma-install ang <ph name="EXTENSION_NAME" />. Hindi ito maaaring alisin o baguhin.</translation>
 <translation id="7287143125007575591">Tinanggihan ang access.</translation>
+<translation id="760353356052806707">Isa pang program sa iyong computer ang nagdagdag app na maaaring magpabago sa paraan ng paggana ng Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Dapat valid ang format ng value ng input para sa pribadong key (PKCS#8-format PEM-encoded RSA key).</translation>
 <translation id="765293928828334535">Hindi maidadagdag mula sa website na ito ang mga app, extension, at script ng user</translation>
+<translation id="7658239707568436148">Kanselahin</translation>
+<translation id="7766838926148951335">Tanggapin ang mga pahintulot</translation>
 <translation id="7876803335449432072">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng content, malo-load lang ang style sheet ng script ng content mula sa mga sinusuportahang style sheet file tulad ng mga .css file.</translation>
 <translation id="7939686037314084444">Hindi na-load nang maayos ang extension. Maaaring hindi nito mapigilan ang mga kahilingan sa network.</translation>
 <translation id="7952904276017482715">"<ph name="EXPECTED_ID" />" ang inaasahang ID, ngunit "<ph name="NEW_ID" />" ang ID</translation>
 <translation id="7972881773422714442">Mga Opsyon: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Aprubahan</translation>
 <translation id="8035920974645200807">Nakaharap sa user</translation>
 <translation id="8047248493720652249">Nabigong pangalanan ng extension na ito ang download na "<ph name="ATTEMPTED_FILENAME" />" dahil nakatukoy ang isa pang extension (<ph name="EXTENSION_NAME" />) ng ibang filename na "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Na-flag ng Google ang "<ph name="EXTENSION_NAME" />" bilang nakakahamak at pinigilan ang pag-install</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> mula sa <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Maaari itong:</translation>
 <translation id="8517576857589387417">Nawawala o hindi mabasa ang manifest file</translation>
 <translation id="8565650234829130278">Tinangkang i-downgrade ang app.</translation>
 <translation id="8621383749470166852">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng content, malo-load lang ang mga script ng content mula sa mga sinusuportahang JavaScript file tulad ng mga .js file.</translation>
 <translation id="8636666366616799973">Di-wasto ang package. Mga Detalye: '<ph name="ERROR_MESSAGE" />'.</translation>
+<translation id="8746654918629346731">Nahiling mo na ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8761756413268424715">Humihiling ang "<ph name="APP_NAME" />" ng access sa isa sa iyong mga device:</translation>
 <translation id="8885905466771744233">Umiiral na ang pribadong key para sa tinukoy na extension. Gamiting muli ang key na iyon o tanggalin muna ito.</translation>
 <translation id="9039223174332979184">Nire-require ng administrator ng machine na ito ang <ph name="EXTENSION_NAME" /> na magkaroon ng minimum na bersyon 3 ng manifest.</translation>
 <translation id="907841381057066561">Nabigo sa paglikha ng pansamantalang zip file sa oras ng packaging.</translation>
+<translation id="9102610709270966160">I-enable ang Extension</translation>
+<translation id="93766956588638423">Ayusin ang extension</translation>
 <translation id="941543339607623937">Di-wastong pribadong key.</translation>
 </translationbundle>

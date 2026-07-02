@@ -2369,6 +2369,7 @@
 <translation id="4705573018059932476"><ph name="PROVIDER_ORIGIN" /> ഉപയോഗിക്കുന്ന സൈറ്റുകളിൽ <ph name="AUTHENTICATOR" /> ഉപയോഗിച്ച് പരിശോധിച്ചുറപ്പിക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തു. നിങ്ങൾ എങ്ങനെ പേ ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിവരങ്ങൾ ഈ ദാതാവ് സംഭരിച്ചിട്ടുണ്ടാകാം, നിങ്ങൾക്ക് ഇത് <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">നിങ്ങളുടെ കണക്ഷൻ തടസ്സപ്പെട്ടു</translation>
 <translation id="4708276642004148190">ജലവിതരണവും സംസ്‌കരണവും</translation>
+<translation id="4710249055485272920">ഈ വിവരങ്ങൾ കണ്ടെത്താനായില്ല</translation>
 <translation id="4711628883879888561">ടാബ് ഗ്രൂപ്പിൽ കൊളാബറേറ്റ് ചെയ്യുക</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് അനുമതി ആവശ്യമില്ല</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5707154300732650394">നിങ്ങളുടെ ജേർണി പുനരാരംഭിക്കുക</translation>
 <translation id="57094364128775171">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക…</translation>
 <translation id="570953204696852961">ചുവപ്പ് 3</translation>
+<translation id="5710907191777451677">പകരം Chrome-ലെ Gemini-യോട് ചോദിക്കുക</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">മൃഗഡോക്ടർമാർ</translation>
 <translation id="5715150588940290235">സംരക്ഷിച്ച സുരക്ഷാ കോഡുകൾ ഇല്ലാതാക്കണോ?</translation>
@@ -3923,7 +3925,6 @@
 <translation id="7110116949943042888">താൽക്കാലികവും സീസണലുമായ ജോലികൾ</translation>
 <translation id="7110368079836707726">കോളേജുകളും സർവകലാശാലകളും</translation>
 <translation id="7111507312244504964">പ്രോപ്പർട്ടി പരിശോധനകളും മൂല്യനിർണ്ണയങ്ങളും</translation>
-<translation id="7117290130383718594">ടെക്സ്റ്റ് കുറിപ്പുകൾ</translation>
 <translation id="7118618213916969306">ക്ലിപ്പ്ബോർഡ് URL-നുള്ള തിരയൽ, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">ഈ സൈറ്റ് HTTPS പിന്തുണയ്‌ക്കാത്തതിനാലാണ് നിങ്ങൾ ഈ മുന്നറിയിപ്പ് കാണുന്നത്. <ph name="BEGIN_LEARN_MORE_LINK" />ഈ മുന്നറിയിപ്പിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ടിവി നാടകങ്ങൾ</translation>
@@ -5044,7 +5045,6 @@
 <translation id="8871485335898060555">പുരാവസ്‌തുക്കളും ശേഖരങ്ങളും</translation>
 <translation id="8871553383647848643">നിങ്ങളുടെ ബ്രൗസറിന്റെ രൂപം ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="887350038812854047">ഈ നയത്തിന് മെഷീൻ, ഉപയോക്തൃ തലങ്ങളിൽ ഒരേ മൂല്യമാണ് ബാധകമാക്കിയിരിക്കുന്നത്. നയം ഉദ്ദേശിച്ചത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്.</translation>
-<translation id="8874790741333031443">മൂന്നാം കക്ഷി കുക്കികളെ താൽക്കാലികമായി അനുവദിക്കാൻ ശ്രമിക്കുക, അതിനർത്ഥം ബ്രൗസിംഗ് സംരക്ഷണം കുറവായിരിക്കും, എന്നാൽ സൈറ്റ് ഫീച്ചറുകൾ പ്രതീക്ഷിച്ചത് പോലെ പ്രവർത്തിക്കാൻ കൂടുതൽ സാധ്യതയുണ്ട് എന്നാണ്.</translation>
 <translation id="8874824191258364635">ശരിയായ കാർഡ് നമ്പർ നൽകുക</translation>
 <translation id="8877780815363510165">മത്സ്യബന്ധനം</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നത് "<ph name="DATA_CONTROLS_LEVEL" />" എന്നതിലേക്ക് സജ്ജീകരിക്കാനാകില്ല</translation>

@@ -15,9 +15,6 @@
 <translation id="1131805035311359397">如要檢查你的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1153368717515616349">按一下「Chromium」選單</translation>
 <translation id="1157985233335035034">最近使用過的語言</translation>
-<translation id="1171831736360285680">「<ph name="PARTNER_NAME" />」新增了一個擴充功能，可能會改變 Chromium 的運作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Windows 版本不受支援，因此無法安裝</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1186645291482254714">在手機上透過 Chromium 接收價格追蹤通知</translation>
@@ -52,7 +49,6 @@
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="154404805518949443">登入 Chromium</translation>
 <translation id="1547469039832541117">結束所選工作。</translation>
-<translation id="1553461853655228091">Chromium 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
 <translation id="1562320819937089394">釘選 Chromium</translation>
 <translation id="1574377791422810894">Chromium 安全工具</translation>
 <translation id="1594928384848033697">Chromium 要刪除密碼管理工具資料。如果允許，請輸入 Windows 密碼。</translation>
@@ -214,9 +210,6 @@
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
 <translation id="3161522574479303604">所有語言</translation>
 <translation id="3179665906251668410">在 Chromium 無痕視窗中開啟連結(&amp;G)</translation>
-<translation id="3183357154200327217">電腦中的其他程式新增了一個主題，可能會改變 Chromium 的運作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">自訂新的 Chromium 設定檔</translation>
 <translation id="3189205223539394158">你可以繼續與 AI 模式對話，不必切換分頁。登入 Chromium 即可使用，密碼和其他資料也會同步到所有裝置。</translation>
 <translation id="3224847870593914902">如要從 Chromium 中移除 Google 帳戶，請前往「設定」頁面登出 Chromium</translation>
@@ -295,9 +288,6 @@
 <translation id="4036079820698952681">只要回報<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chromium 更臻完美</translation>
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4055805654398742145">密碼管理工具(&amp;A)</translation>
-<translation id="4061696872429826774">電腦中的其他程式新增了一個擴充功能，可能會改變 Chromium 的運作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{根據貴機構規定，Chromium 閒置 1 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}other{根據貴機構規定，Chromium 閒置 # 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="4118474109249235144">Chromium 無痕模式</translation>
 <translation id="4122186850977583290">前往「關於 Chromium」頁面</translation>
@@ -410,7 +400,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium 建議暫停導致瀏覽器運作緩慢的分頁}other{Chromium 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="5473971139929175403">Chromium 已不再支援這個 Linux 發行版本，因此可能無法正常運作</translation>
 <translation id="5475924890392386523">這個檔案可能會危害個人和社群網路帳戶，因此 Chromium 已禁止下載</translation>
-<translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享你的位置資訊</translation>
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="549975168243349205">透過 Chromium，隨時隨地都能順暢使用 Google 雲端硬碟和 YouTube 等喜愛的應用程式。</translation>
@@ -475,9 +464,6 @@
 <translation id="6174920971222007286">這個檔案可能不安全<ph name="LINE_BREAK" />下載之後，你可以提供密碼，讓 Chromium 幫忙檢查。該檔案的相關資訊將傳送給 Google 安全瀏覽功能，但檔案內容和密碼只會保存在裝置上。</translation>
 <translation id="6182736845697986886">更新伺服器發生內部錯誤，因此安裝失敗。</translation>
 <translation id="6183079672144801177">請確認你已在「<ph name="TARGET_DEVICE_NAME" />」上登入 Chromium，然後再傳送一次。</translation>
-<translation id="6204922163963157461">電腦中其他程式新增了一個應用程式，可能會改變 Chromium 的運作方式。
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">這台電腦已安裝較新的 Chromium 版本。如果軟體無法順利運作，請解除安裝 Chromium，然後再試一次。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 將立即重新啟動}=1{Chromium 將在 1 秒後重新啟動}other{Chromium 將在 # 秒後重新啟動}}</translation>
 <translation id="6239161312595354541">向 Google 圖片搜尋詢問這部影片的相關問題</translation>
@@ -579,7 +565,6 @@
 <translation id="6964305034639999644">在 Chromium 無痕視窗中開啟連結(&amp;G)</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6985329841647292029">Chromium OS 條款</translation>
-<translation id="6990124437352146030">Chromium 需要相關權限，才能讓這個網站使用你的麥克風</translation>
 <translation id="7003299027384820442">請輸入通關密語，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
 <translation id="7011190694940573312">安裝失敗，因為應用程式不支援這個版本的作業系統。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
@@ -624,7 +609,6 @@ Chromium 無法復原你的設定。</translation>
 3. 在 Windows 通知中點選「<ph name="BUTTON_3" />」，即可將 Chromium 釘選到工作列以便快速存取</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7450541714075000668">已複製文字</translation>
-<translation id="7451052299415159299">Chromium 需要相關權限，才能讓這個網站使用你的攝影機</translation>
 <translation id="7458892263350425044">如要使用麥克風，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chromium 存取權</translation>
 <translation id="7461356015007898716">如要取得日後的 Chromium 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 7。</translation>
 <translation id="7467949745582939695">要重新啟動 Chromium 嗎？</translation>
@@ -749,8 +733,8 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8719993436687031146">要登入 Chromium 嗎？</translation>
 <translation id="8747073452963259673">搜尋區域的左下角：左側 <ph name="LEFT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">安裝錯誤：網路管理員採用的「群組原則」不允許安裝應用程式：<ph name="INSTALL_ERROR" /></translation>
-<translation id="8796602469536043152">Chromium 需要相關權限，才能讓這個網站使用你的攝影機和麥克風</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
+<translation id="8816416449795340678">與 Chromium 內建 Gemini 分享這份文件，就能快速取得摘要並提出後續問題</translation>
 <translation id="8818550178040858407">要登入 Chromium 嗎？</translation>
 <translation id="8823401858233292222">將 Chromium 設為預設瀏覽器，並固定到工作列</translation>
 <translation id="8826492472752484139">按一下「密碼管理工具」</translation>

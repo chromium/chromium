@@ -1,45 +1,79 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="10146536653536065">Instalo "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="1070377999570795893">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën e funksionimit të Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
+<translation id="1076698951459398590">Aktivizo temën</translation>
 <translation id="1135328998467923690">Paketa është e pavlefshme: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Drejtuar drejt mjedisit</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ka shtuar një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1196338895211115272">Eksportimi i çelësit privat dështoi.</translation>
 <translation id="132960226125594336">Skedari "<ph name="RELATIVE_PATH" />" nuk mund të ngarkohej për skriptin e përmbajtjes pasi do të kalonte madhësinë maksimale të skriptit ose madhësinë maksimale totale të kriptit të përmbajtjes për shtesën.</translation>
 <translation id="1445572445564823378">Kjo shtesë po e ngadalëson <ph name="PRODUCT_NAME" />. Duhet ta çaktivizosh për të restauruar cilësinë e funksionimit të <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nuk mbështetet.</translation>
 <translation id="1478607704480248626">Instalimi nuk është aktivizuar</translation>
+<translation id="1483493594462132177">Dërgo</translation>
+<translation id="1485015260175968628">Tani mundet:</translation>
 <translation id="1556537182262721003">Direktoria e shtesës nuk mund të zhvendoset te profili.</translation>
+<translation id="1585717515139318619">Një program tjetër në kompjuterin tënd shtoi një temë që mund të ndryshojë mënyrën e funksionimit të Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1610570795592207282">Kodi CSS "<ph name="RELATIVE_PATH" />" nuk mund të ngarkohej për skriptin.</translation>
 <translation id="1616298854599875024">Importimi i shtesës "<ph name="IMPORT_NAME" />" është i pamundur, sepse nuk është një modul i ndarë.</translation>
+<translation id="175772926354468439">Aktivizo temën</translation>
 <translation id="1757786065507923842">Kërkesa për lejen e prindit dështoi.</translation>
 <translation id="1803557475693955505">Faqja e sfondit "<ph name="BACKGROUND_PAGE" />" nuk mund të ngarkohej.</translation>
 <translation id="1875387611427697908">Kjo mund të shtohet vetëm nga <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" nuk mund të instalohet sepse nuk lejohet nga "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2150661552845026580">Të shtohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Nuk mund të dekodohet imazhi: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Prindi yt nuk e miratoi këtë shtesë</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
+<translation id="2327492829706409234">Aktivizo aplikacionin</translation>
 <translation id="2350172092385603347">U përdor lokalizimi, por gjuha default_locale nuk ishte e specifikuar në manifest.</translation>
 <translation id="2576842806987913196">Ekziston një skedar CRX me këtë emër.</translation>
 <translation id="2662876636500006917">Dyqani i uebit i Chrome</translation>
+<translation id="2678063897982469759">Aktivizoje përsëri</translation>
 <translation id="2743583586211388067">Qasja në këtë shtesë është bllokuar sipas politikës së rrezikut të shtesave të organizatës sate.</translation>
+<translation id="2766161002040448006">Pyet një prind</translation>
 <translation id="2785530881066938471">Nuk mundi të ngarkonte skedarin "<ph name="RELATIVE_PATH" />" për shkrimin e përmbajtjes. Nuk është i shifruar me UTF-8.</translation>
+<translation id="2850541429955027218">Shto një temë</translation>
+<translation id="2883143988769190738">Kjo shtesë kërkon lejet e mëposhtme:</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID-ja e shtesës "<ph name="EXTENSION_ID" />") është bllokuar nga administratori. <ph name="ADMIN_INFO" /></translation>
+<translation id="2985348301114641460">Të dërgohet një kërkesë te administratori yt për të instaluar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2988488679308982380">Nuk mund të instalonte paketën: "<ph name="ERROR_CODE" />"</translation>
 <translation id="3115238746683532089">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zëvendësimi i skedarit crx dështoi. Kontrollo për të parë nëse skedari është në përdorim.</translation>
 <translation id="3163201441334626963">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Qasja në këtë shtesë është bllokuar nga organizata jote.</translation>
+<translation id="3183357154200327217">Një program tjetër në kompjuterin tënd shtoi një temë që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3242289508736283383">Aplikacioni me atributin e manifestimit "kiosk_only" duhet të instalohet në modalitetin "kioskë" të ChromeOS.</translation>
 <translation id="3364986687961713424">Nga administratori yt: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vlera hyrëse për çelësin privat duhet të jetë një shteg i vlefshëm.</translation>
+<translation id="3788401245189148511">Mund që:</translation>
 <translation id="3834775135533257713">Aplikacioni "<ph name="TO_INSTALL_APP_NAME" />" nuk mund të shtohej sepse është në konflikt me "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Faqja e opsioneve <ph name="OPTIONS_PAGE" /> nuk mund të ngarkohej.</translation>
+<translation id="3905761538810670789">Riparo aplikacionin</translation>
+<translation id="3908501907586732282">Aktivizo shtesën</translation>
+<translation id="3927932062596804919">Refuzo</translation>
 <translation id="3984413272403535372">Gabim gjatë nënshkrimit të shtesës.</translation>
+<translation id="4014432863917027322">Të riparohet "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="4061696872429826774">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4094452115117798451">Qasja në këtë kategori shtesash është bllokuar nga organizata jote.</translation>
 <translation id="4233778200880751280">Faqja informuese <ph name="ABOUT_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="424963718355121712">Aplikacionet duhet të shërbehen nga strehuesi që prekin</translation>
 <translation id="4306119971288449206">Aplikacionet duhet të shërbehen me llojin "<ph name="CONTENT_TYPE" />" të përmbajtjes</translation>
+<translation id="4625078469366263107">Aktivizo aplikacionin</translation>
 <translation id="4633003931260532286">Shtesa kërkon "<ph name="IMPORT_NAME" />" me një version minimal "<ph name="IMPORT_VERSION" />", por është instaluar vetëm versioni "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">Versioni i pritur ishte "<ph name="EXPECTED_VERSION" />", por versioni rezultoi "<ph name="NEW_ID" />".</translation>
 <translation id="471800408830181311">Dështoi të nxjerrë çelësin privat.</translation>
@@ -47,21 +81,36 @@
 <translation id="4988792151665380515">Eksportimi i çelësit publik dështoi.</translation>
 <translation id="501057610015570208">Aplikacioni me atributin e manifestimit "kiosk_only" duhet të instalohet në modalitetin "kioskë" të Chrome OS Flex</translation>
 <translation id="5026754133087629784">Pamja e uebit: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5027562294707732951">Shto një shtesë</translation>
+<translation id="5039804452771397117">Lejo</translation>
 <translation id="5098647635849512368">Shtegu absolut për te direktoria nuk mund të gjendet për paketën.</translation>
 <translation id="5160071981665899014">Kodi JavaScript "<ph name="RELATIVE_PATH" />" nuk mund të ngarkohej për skriptin.</translation>
+<translation id="5185386675596372454">Versioni më i ri i "<ph name="EXTENSION_NAME" />" është çaktivizuar, sepse kërkon më shumë leje.</translation>
+<translation id="5242724311594467048">Të aktivizohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Pamja e aplikacionit: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5405650547142096840">Hiq nga Chromium</translation>
 <translation id="5456409301717116725">Kjo shtesë përfshin skedarin e çelësit "<ph name="KEY_PATH" />". Nuk mendoj se dëshiron ta bësh këtë.</translation>
+<translation id="5485102783864353244">Shto një aplikacion</translation>
 <translation id="5486326529110362464">Duhet të ekzistojë një vlerë hyrëse për çelësin privat.</translation>
 <translation id="5527463195266282916">U përpoq të ulte versionin e shtesës.</translation>
+<translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="5707185214361380026">Dështoi në ngarkimin e shtesës nga:</translation>
 <translation id="5972529113578162692">Administratori i kësaj makinerie kërkon instalimin e <ph name="EXTENSION_NAME" /> dhe ajo nuk mund të çinstalohet.</translation>
 <translation id="6027032947578871493">Produkt i panjohur <ph name="PRODUCT_ID" /> nga <ph name="VENDOR_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> nga shitësi <ph name="VENDOR_ID" /></translation>
+<translation id="6204922163963157461">Një program tjetër në kompjuterin tënd shtoi një aplikacion që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6220413761270491930">Gabim në ngarkimin e shtesës</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ka shtuar një shtesë që mund të ndryshojë mënyrën se si funksionon Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Dështoi në leximin e çelësit privat.</translation>
+<translation id="6326175484149238433">Hiqe nga Chrome</translation>
 <translation id="6391538222494443604">Duhet të ekzistojë një direktori e hyrjes.</translation>
 <translation id="641087317769093025">Nuk mundi të shpaketonte shtesën</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" po kërkon qasje te një ose më shumë nga pajisjet e tua:</translation>
+<translation id="655384502888039633"><ph name="USER_COUNT" /> përdorues</translation>
 <translation id="657064425229075395">Nuk mund ta ngarkojë skriptin e sfondit "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> nga <ph name="VENDOR_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Imitues: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -70,23 +119,33 @@
 <translation id="7068383018033524534">Skedari i manifestit është i pavlefshëm</translation>
 <translation id="7217838517480956708">Administratori i kësaj pajisjeje kërkon instalimin e <ph name="EXTENSION_NAME" />. Ajo nuk mund të hiqet apo modifikohet.</translation>
 <translation id="7287143125007575591">Qasja refuzohet</translation>
+<translation id="760353356052806707">Një program tjetër në kompjuterin tënd shtoi një aplikacion që mund të ndryshojë mënyrën e funksionimit të Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Vlera hyrëse për çelësin privat duhet të jetë në një format të vlefshëm (çelësi RSA me enkodim PEM me formatin PKCS#8).</translation>
 <translation id="765293928828334535">Aplikacionet, shtesat dhe skriptet e përdoruesit nuk mund të shtohen nga ky uebsajt</translation>
+<translation id="7658239707568436148">Anulo</translation>
+<translation id="7766838926148951335">Prano lejet</translation>
 <translation id="7876803335449432072">Skedari "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes nuk mund të ngarkohej. Fletët e stilizuara të skripteve të përmbajtjes mund të ngarkohen vetëm nga skedarë të mbështetur të fletëve të stilizuara, si p.sh. skedarët .css.</translation>
 <translation id="7939686037314084444">Shtesa nuk u ngarkua siç duhet. Mund të mos jetë në gjendje të interceptojë kërkesat e rrjetit.</translation>
 <translation id="7952904276017482715">ID-ja e pritshme ishte "<ph name="EXPECTED_ID" />", por rezultoi "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Opsionet: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8030852056903932865">Mirato</translation>
 <translation id="8035920974645200807">Drejtuar për nga përdoruesi</translation>
 <translation id="8047248493720652249">Kjo shtesë nuk arriti ta emërtonte shkarkimin "<ph name="ATTEMPTED_FILENAME" />" sepse një shtesë tjetër (<ph name="EXTENSION_NAME" />) përcaktoi një emër tjetër të skedarit "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Google e ka raportuar "<ph name="EXTENSION_NAME" />" si keqdashës dhe instalimi është penguar</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> nga <ph name="VENDOR_NAME" /></translation>
+<translation id="8353683614194668312">Ai mundet:</translation>
 <translation id="8517576857589387417">Skedari i manifestit mungon ose është i palexueshëm</translation>
 <translation id="8565650234829130278">U përpoq të ulte versionin e aplikacionit.</translation>
 <translation id="8621383749470166852">Skedari "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes nuk mund të ngarkohej. Skriptet e përmbajtjes mund të ngarkohen vetëm nga skedarë të mbështetur JavaScript, si p.sh. skedarët .js.</translation>
 <translation id="8636666366616799973">Paketa është e pavlefshme. Detajet: <ph name="ERROR_MESSAGE" />.</translation>
+<translation id="8746654918629346731">Ke kërkuar tashmë "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" po kërkon qasje te një nga pajisjet e tua:</translation>
 <translation id="8885905466771744233">Ekziston tashmë një çelës privat për shtesën e specifikuar. Ripërdore atë çelës ose fshije në fillim.</translation>
 <translation id="9039223174332979184">Administratori i kësaj pajisjeje kërkon që <ph name="EXTENSION_NAME" /> të ketë minimumi versionin 3 të manifestit.</translation>
 <translation id="907841381057066561">Krijimi i një skedari të përkohshëm zip gjatë paketimit dështoi.</translation>
+<translation id="9102610709270966160">Aktivizo shtesën</translation>
+<translation id="93766956588638423">Riparo shtesën</translation>
 <translation id="941543339607623937">Çelës privat i pavlefshëm.</translation>
 </translationbundle>

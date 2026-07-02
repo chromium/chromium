@@ -243,6 +243,7 @@
 <translation id="2056878612599315956">ጣቢያ ባለበት ቆሟል</translation>
 <translation id="2063047797624276601">ድርጅትዎ የተሻሻለ የደህንነት አሰሳን አብርቷል</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ማውረድ አልተሳካም}one{# ማውረዶች አልተሳኩም}other{# ማውረዶች አልተሳኩም}}</translation>
+<translation id="2066690553719545730">ሁልጊዜ የሰው ሠራሽ አስተውሎት ሁኔታን አሳይ</translation>
 <translation id="2067805253194386918">ጽሁፍ</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2082238445998314030">ውጤት <ph name="RESULT_NUMBER" /> ከ<ph name="TOTAL_RESULTS" /></translation>
@@ -263,6 +264,7 @@
 <translation id="2149968176347646218">ግንኙነትዎ ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="2149973817440762519">እልባት አርትዕ</translation>
 <translation id="2163089732491971196">በGoogle መለያዎ ውስጥ የChrome ውሂብን ለመጠቀም እና ለማስቀመጥ የእርስዎን የይለፍ ሐረግ ያስገቡ</translation>
+<translation id="2164015935042801524">ትሮችን በአቀባዊ ለማሳየት እዚህ በቀኝ ጠቅ ያድርጉ</translation>
 <translation id="2166228530126694506">ሥሪት <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">የምስል መግለጫዎች ጠፍተዋል</translation>
 <translation id="2172905120685242547">መስኮት ይዘጋ?</translation>
@@ -305,6 +307,7 @@
 <translation id="2323763861024343754">የጣቢያ ማከማቻ</translation>
 <translation id="2327445548174191329">ከ<ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">ሁሉም ሰው ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻን ያጣል እና ሁሉም የግብዣ አገናኞች ይጠፋሉ</translation>
+<translation id="2329500425421091035">የሰው ሠራሽ አስተውሎት ሁነታን በChrome ውስጥ በማስተዋወቅ ላይ</translation>
 <translation id="2330186936255788117">ተጨማሪ እልባቶች</translation>
 <translation id="2332515770639153015">የተሻሻለ የደህንነት አሰሳ በርቷል</translation>
 <translation id="233375395665273385">ሰርዝ እና ዘግተህ ውጣ</translation>
@@ -1057,7 +1060,6 @@
 <translation id="5436928407363358055">ካቆሙበት በቀላሉ ለመጀመር፣ የእርስዎን ታሪክ እና ትሮች ያሥምሩ።</translation>
 <translation id="5438292632479953702">እንደገና አውርድ</translation>
 <translation id="5439191312780166229">ከመደበኛ ጥበቃ በላይ ተጨማሪ ውሂብ ከጣቢያዎች ትንታኔ በመስጠት Google እንኳን በፊት ስላላወቃቸው አደገኛ ጣቢያዎች ያስጠነቅቅዎታል። የChrome ማስጠንቀቂያዎችን ለመዝለል መምረጥ ይችላሉ።</translation>
-<translation id="5441137934526263133">ጣቢያው እየሰራ አይደለም? የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
 <translation id="5441466871879044658">ወደዚህ ቋንቋ ተርጉም</translation>
 <translation id="5444999712122199445">ወደ ጣቢያ ይመለሱ</translation>
 <translation id="544776284582297024">በተመሳሳዩ ጊዜ ትሮችን ለመክፈትና የተለያዩ ገጾችን ለመክፈት የትሮችን ክፈት አዝራሩን መታ ያድርጉ</translation>
@@ -1112,7 +1114,6 @@
 <translation id="569536719314091526">ከተጨማሪ አማራጮች አዝራርሩ ይህን ገፅ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>
 <translation id="5696597120588531049">Chrome ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ደህንነትዎን ለመጠበቅ ሊያግዝዎት ይችላል</translation>
 <translation id="5698878456427040674">የተመረጠው መለያ የሚደገፍ እንደሆነ ይፈትሹ።</translation>
-<translation id="5700415746238689851">Geminiን ክፈት</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> ከተከታታይ ወደብ ጋር መገናኘት ይፈልጋል</translation>
 <translation id="5715150588940290235">የተቀመጡ የደህንነት ኮዶች ይሰረዙ?</translation>
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>
@@ -1418,7 +1419,6 @@
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6835182496791325827">እርስዎ ርቀው ሳሉ Chrome ለፍለጋዎችዎ ምርጥ ውጤቶችን ሲያገኝ ማሳወቂያ ያግኙ።</translation>
 <translation id="6846298663435243399">በመጫን ላይ…</translation>
-<translation id="6850409657436465440">የእርስዎ ውርድ አሁንም በሂደት ላይ ነው</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ትሮች ተዘግተዋል</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 ውጤት ተገኝቷል}one{# ውጤት ተገኝቷል}other{# ውጤቶች ተገኝተዋል}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ኦዲዮ ፋይሎች፣ በዝርዝር ውስጥ 1 ኦዲዮ ፋይል}one{ኦዲዮ ፋይሎች፣ በዝርዝር ውስጥ # ኦዲዮ ፋይል}other{ኦዲዮ ፋይሎች፣ በዝርዝር ውስጥ # ኦዲዮ ፋይሎች}}</translation>
@@ -1968,12 +1968,14 @@
 <translation id="9001604755921395912">ማንነት በማያሳውቅ የChrome ትር ክፈት</translation>
 <translation id="9010094279589497751">Geminiን በሚፈልጉት ጊዜ በፍጥነት ይክፈቱት</translation>
 <translation id="9012585441087414258">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። አንድ ገጽ አጠራጣሪ የሆነ ነገር ካደረገ የገፁ ይዘት ዩአርኤሎች እና ቢቶች ወደ የGoogle ጥንቃቄ አሰሳ ይላካሉ።</translation>
+<translation id="9014097371980259227">በሰው ሠራሽ አስተውሎት ሁነታ እንዲፈልጉ ለማገዝ አንዳንድ መሣሪያዎች ተንቀሳቅሰዋል</translation>
 <translation id="9019199799064251516">ያለ መኪና የመገለጫ መቆለፊያ ይቀጥላሉ?</translation>
 <translation id="9022774213089566801">በተደጋጋሚነት የተጎበኙ</translation>
 <translation id="9022871169049522985">ጣቢያዎች እና ማስታወቂያ ሰሪዎች የማስታወቂያዎቻቸውን አፈጻጸም መለካት ይችላሉ።</translation>
 <translation id="9024318700713112071">Chromeን እንደ ነባሪ ያቀናብሩት</translation>
 <translation id="9027728231343310283"><ph name="SITE" />ን ቀልብስ</translation>
 <translation id="9035378196785279980">አንቀሳቅስ ወደ…</translation>
+<translation id="904146253922032365">ትሮችን በአቀባዊ ለማሳየት ነካ አድርገው ይያዙ</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>
 <translation id="9047347135558855162">በፍጥነት Chrome ውስጥ ፍለጋ ይጀምሩ</translation>
 <translation id="9050666287014529139">የይለፍ ሐረግ</translation>

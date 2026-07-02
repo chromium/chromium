@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} нэвтрэх түлхүүр}other{{count} нэвтрэх түлхүүр}}</translation>
 <translation id="1005023885865154304">Автоматаар бөглөх нууц үгний тохиргоог нээх</translation>
 <translation id="1005230401424685968">ЖЖЖЖ</translation>
+<translation id="1013852467930342108">Live нь Chrome дахь Gemini-н шинэ онцлог юм</translation>
 <translation id="1013952917065545813">Та саяхан хаасан табуудаа дахин нээхийн тулд энд дараа эргэн ирэх боломжтой</translation>
 <translation id="1016495303386450659">Шинэчлэгдсэн зүйл</translation>
 <translation id="1018804590490383958">Скан хийж, автоматаар бөглөх</translation>
@@ -1737,6 +1738,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6765551480308401897">Өгөгдмөл бүү болго</translation>
 <translation id="6770452996697898492">[ЗАХИАЛСАН]</translation>
+<translation id="6775952316617222141">Chrome дахь Live with Gemini-г эхлүүлэх</translation>
 <translation id="6779455296366983087">Таны интернэтээр үзсэн өгөгдлийг устгана</translation>
 <translation id="6782531425936234573">Өгөгдөл экспортлох</translation>
 <translation id="6791425686608802741">"Шинэ бүлэгт таб нэмэх" дээр товшино уу</translation>

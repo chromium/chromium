@@ -243,6 +243,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2056878612599315956">Sayt dayandırıldı</translation>
 <translation id="2063047797624276601">Təşkilat Qabaqcıl Güvənli Baxışı yandırıb</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 endirmə alınmadı}other{# endirmə alınmadı}}</translation>
+<translation id="2066690553719545730">Sİ rejimi həmişə göstərilsin</translation>
 <translation id="2067805253194386918">mətn</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> nəticədən <ph name="RESULT_NUMBER" /></translation>
@@ -263,6 +264,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2149968176347646218">Bağlantı güvənli deyil</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
 <translation id="2163089732491971196">Google Hesabında Chrome datasını istifadə etmək və yadda saxlamaq üçün parol ifadəsi daxil edin</translation>
+<translation id="2164015935042801524">Tabların şaquli göstərilməsi üçün burada sağ düymə ilə toxunun</translation>
 <translation id="2166228530126694506">Versiya <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Şəkil təsvirləri deaktivdir</translation>
 <translation id="2172905120685242547">Pəncərə bağlansın?</translation>
@@ -305,6 +307,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2323763861024343754">Sayt yaddaşı</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> cihazından</translation>
 <translation id="2328474416100889417">Hər kəs "<ph name="GROUP_NAME" />" tab qrupuna girişini dərhal itirəcək və bütün dəvət keçidləri deaktiv ediləcək</translation>
+<translation id="2329500425421091035">Chrome-da Sİ rejimi ilə tanış olun</translation>
 <translation id="2330186936255788117">Daha çox əlfəcin</translation>
 <translation id="2332515770639153015">Qabaqcıl Güvənli Baxış aktivdir</translation>
 <translation id="233375395665273385">Silin və çıxın</translation>
@@ -1057,7 +1060,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5436928407363358055">Qaldığınız yerdən asanlıqla davam etmək üçün tarixçə və tablarınızı sinxronlaşdırın</translation>
 <translation id="5438292632479953702">Yenidən endirin</translation>
 <translation id="5439191312780166229">Standart qoruma ilə müqayisədə saytlardan daha çox data təhlil edərək təhlükəli, hətta Google-un bilmədiyi saytlar haqqında xəbərdar edir. Chrome xəbərdarlıqlarını ötürə bilərsiniz.</translation>
-<translation id="5441137934526263133">Sayt işləmir? Üçüncü tərəf kukiləri bloklanıb</translation>
 <translation id="5441466871879044658">Bu dilə tərcümə edin</translation>
 <translation id="5444999712122199445">Sayta qayıdın</translation>
 <translation id="544776284582297024">Tabları açmaq və eyni zamanda müxtəlif səhifələrə daxil olmaq üçün tabları açmaq düyməsinə toxunun</translation>
@@ -1112,7 +1114,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="569536719314091526">Əlavə seçimlər düyməsində bu səhifəni istədiyiniz dilə tərcümə edin</translation>
 <translation id="5696597120588531049">Chrome sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər</translation>
 <translation id="5698878456427040674">Seçilmiş hesabın dəstəklənib-dəstəklənmədiyini yoxlayın.</translation>
-<translation id="5700415746238689851">Gemini-ı açın</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> silsilə porta qoşulmaq istəyir</translation>
 <translation id="5715150588940290235">Yadda saxlanmış təhlükəsizlik kodları silinsin?</translation>
 <translation id="572328651809341494">Son panellər</translation>
@@ -1416,7 +1417,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6835182496791325827">Uzaqda olduğunuz zaman Chrome axtarışlarınız üçün ən yaxşı nəticələri tapdıqda bildiriş alın.</translation>
 <translation id="6846298663435243399">Yüklənir...</translation>
-<translation id="6850409657436465440">Endirmə hələ də gözlənilir</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> panel bağlanıldı</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 nəticə tapıldı}other{# nəticə tapıldı}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio fayllar, siyahıda 1 audio fayl}other{Audio fayllar, siyahıda # audio fayl}}</translation>
@@ -1966,12 +1966,14 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="9001604755921395912">Anonim Chrome tabında açın</translation>
 <translation id="9010094279589497751">İstədiyiniz zaman Gemini-ı tez açın</translation>
 <translation id="9012585441087414258">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Səhifədə şübhəli fəaliyyət olarsa, URL və səhifə kontentinin bir hissəsi Google Güvənli Axtarışa göndərilir.</translation>
+<translation id="9014097371980259227">Sİ rejimi ilə axtarış etməyiniz üçün bəzi alətlər köçürülüb</translation>
 <translation id="9019199799064251516">Avtomobil profil kilidi olmadan davam edilsin?</translation>
 <translation id="9022774213089566801">Tez-tez ziyarət edilənlər</translation>
 <translation id="9022871169049522985">Saytlar və reklamçılar öz reklamlarının performansını ölçə bilər</translation>
 <translation id="9024318700713112071">Chrome-u defolt kimi ayarlayın</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> üçün geri qaytarın</translation>
 <translation id="9035378196785279980">Bura köçürün\u2026</translation>
+<translation id="904146253922032365">Tabların şaquli göstərilməsi üçün toxunub saxlayın</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
 <translation id="9047347135558855162">Chrome-da axtarışa tez başlayın</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>

@@ -690,7 +690,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="8163152278172770963">No permetis que els llocs web entrin automàticament al mode d'imatge sobre imatge</translation>
 <translation id="8168435359814927499">Contingut</translation>
 <translation id="818487310457576362">Arrossega des del costat de la pantalla per sortir de la pantalla completa.</translation>
-<translation id="8186479265534291036">El lloc web no funciona? Les galetes de tercers estan bloquejades.</translation>
 <translation id="8197286292360124385">S'ha permès <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
@@ -761,7 +760,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="8805385115381080995">La navegació és més ràpida perquè és menys probable que un lloc web et demani que verifiquis que ets una persona real</translation>
 <translation id="881644524232657178">Quan aquesta opció està activada, els llocs web poden utilitzar els sensors de moviment i de llum del dispositiu. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els sensors.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="8889294078294184559">Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment</translation>
 <translation id="8899807382908246773">Anuncis intrusius</translation>
 <translation id="8903921497873541725">Amplia el zoom</translation>
@@ -787,7 +785,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Està permès utilitzar les notificacions</translation>
 <translation id="9138217887606523162">El zoom actual és <ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="915112772806845021">Els llocs web utilitzen aquesta funció per entrar automàticament al mode d'imatge sobre imatge. Això et permet continuar mirant un vídeo i alliberar la pantalla per a altres tasques.</translation>
 <translation id="9156722768168878035">Permet que Chrome mostri les pestanyes recents als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
 <translation id="9182556968660520230">No permetis que els llocs web reprodueixin contingut protegit</translation>
