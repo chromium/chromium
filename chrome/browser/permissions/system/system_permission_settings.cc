@@ -88,6 +88,21 @@ bool IsAllowed(ContentSettingsType type) {
 }
 
 // static
+void IsDeniedFresh(ContentSettingsType type,
+                   SystemPermissionDeniedCallback callback) {
+  if (g_mock_system_permission_denied_for_testing_) {
+    std::move(callback).Run(true);
+    return;
+  }
+  if (GlobalTestingBlockOverrides().find(type) !=
+      GlobalTestingBlockOverrides().end()) {
+    std::move(callback).Run(GlobalTestingBlockOverrides().at(type));
+    return;
+  }
+  GetPlatformHandle()->IsDeniedFresh(type, std::move(callback));
+}
+
+// static
 void OpenSystemSettings(content::WebContents* web_contents,
                         ContentSettingsType type) {
   GetPlatformHandle()->OpenSystemSettings(web_contents, type);

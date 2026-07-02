@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
@@ -51,8 +52,15 @@ class EmbeddedPermissionPromptSystemSettingsView
   std::vector<ButtonConfiguration> GetButtonsConfiguration() const override;
 
  private:
+  void OnPermissionChecksDone(const std::vector<bool>& results);
+  void NotifyDelegatePermissionNoLongerDenied();
+
+  bool prompt_resolved_ = false;
+
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       host_widget_observation_{this};
+  base::WeakPtrFactory<EmbeddedPermissionPromptSystemSettingsView>
+      weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_SYSTEM_SETTINGS_VIEW_H_

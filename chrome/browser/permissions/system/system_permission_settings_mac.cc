@@ -106,6 +106,20 @@ class PlatformHandleImpl : public PlatformHandle {
     }
   }
 
+  void IsDeniedFresh(ContentSettingsType type,
+                     SystemPermissionDeniedCallback callback) override {
+    if (type == ContentSettingsType::MEDIASTREAM_MIC ||
+        type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+        type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+      // TODO(crbug.com/524529903, andypaicu@): When the macOS implementation
+      // switches to async permission status checks, call here an async
+      // function which will be defined in system_permission_settings_mac.
+      std::move(callback).Run(IsDenied(type));
+      return;
+    }
+    std::move(callback).Run(IsDenied(type));
+  }
+
   void OpenSystemSettings(content::WebContents* web_contents,
                           ContentSettingsType type) override {
     switch (type) {

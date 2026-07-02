@@ -40,6 +40,9 @@ class PlatformHandle {
 
   virtual bool IsAllowed(ContentSettingsType type) = 0;
 
+  virtual void IsDeniedFresh(ContentSettingsType type,
+                             SystemPermissionDeniedCallback callback) = 0;
+
   // Opens the OS page where the user can change the permission settings.
   // Implementation is OS specific.
   virtual void OpenSystemSettings(content::WebContents* web_contents,

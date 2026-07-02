@@ -25,6 +25,11 @@ class PlatformHandleImpl : public PlatformHandle {
 
   bool IsAllowed(ContentSettingsType type) override { return true; }
 
+  void IsDeniedFresh(ContentSettingsType type,
+                     SystemPermissionDeniedCallback callback) override {
+    std::move(callback).Run(IsDenied(type));
+  }
+
   void OpenSystemSettings(content::WebContents*,
                           ContentSettingsType type) override {
     // no-op

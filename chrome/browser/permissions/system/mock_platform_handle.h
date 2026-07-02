@@ -22,6 +22,11 @@ class MockPlatformHandle : public PlatformHandle {
   MOCK_METHOD(bool, IsDenied, (ContentSettingsType type), (override));
   MOCK_METHOD(bool, IsAllowed, (ContentSettingsType type), (override));
   MOCK_METHOD(void,
+              IsDeniedFresh,
+              (ContentSettingsType type,
+               SystemPermissionDeniedCallback callback),
+              (override));
+  MOCK_METHOD(void,
               OpenSystemSettings,
               (content::WebContents * web_contents, ContentSettingsType type),
               (override));

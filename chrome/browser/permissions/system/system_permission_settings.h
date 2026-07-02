@@ -64,6 +64,13 @@ bool IsDenied(ContentSettingsType type);
 // same permission.
 bool IsAllowed(ContentSettingsType type);
 
+// Checks whether the system blocks access to the specified content type.
+// As opposed to the functions above, this triggers a fresh check from the OS
+// and does not rely on any internal cached value.
+using SystemPermissionDeniedCallback = base::OnceCallback<void(bool)>;
+void IsDeniedFresh(ContentSettingsType type,
+                   SystemPermissionDeniedCallback callback);
+
 // Opens the OS page where the user can change the permission settings.
 // Implementation is OS specific.
 void OpenSystemSettings(content::WebContents* web_contents,
