@@ -137,8 +137,13 @@ void TranslateLanguageSearchView::UpdateLanguageList(
 
 void TranslateLanguageSearchView::OnLanguageButtonPressed(int language_index) {
   search_field_->SetText(model_->GetTargetLanguageNameAt(language_index));
-  UpdateLanguageList(std::u16string(search_field_->GetText()));
+  ClearLanguageList();
   on_language_selected_.Run(language_index);
+}
+
+void TranslateLanguageSearchView::ClearLanguageList() {
+  list_view_->RemoveAllChildViews();
+  list_view_->InvalidateLayout();
 }
 
 BEGIN_METADATA(TranslateLanguageSearchView)

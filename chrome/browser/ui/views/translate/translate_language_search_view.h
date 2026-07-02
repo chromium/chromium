@@ -45,11 +45,10 @@ class TranslateLanguageSearchView : public views::View,
   void ResetLanguageIndex(int language_index);
   void CreateLanguageHoverButton(int language_index);
 
-  views::BoxLayoutView* get_list_view_for_testing() { return list_view_; }
-
  private:
   void UpdateLanguageList(const std::u16string& query);
   void OnLanguageButtonPressed(int language_index);
+  void ClearLanguageList();
 
   // Helper method to get the index of a language by its code.
 

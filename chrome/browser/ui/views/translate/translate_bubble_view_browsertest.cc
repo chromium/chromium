@@ -22,7 +22,9 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+#include "chrome/browser/ui/views/translate/translate_language_search_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -36,10 +38,26 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 
 namespace translate {
+
+views::BoxLayoutView* GetListView(views::View* search_view) {
+  if (search_view->children().size() < 2) {
+    return nullptr;
+  }
+  views::View* scroll_view = search_view->children()[1];
+  if (views::IsViewClass<views::ScrollView>(scroll_view)) {
+    return views::AsViewClass<views::BoxLayoutView>(
+        static_cast<views::ScrollView*>(scroll_view)->contents());
+  }
+  return nullptr;
+}
 
 class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -98,6 +116,33 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
                             TranslateBubbleModel::ViewState state) {
     bubble->SwitchView(state);
   }
+
+  TranslateLanguageSearchView* GetTranslateLanguageSearchView(
+      TranslateBubbleView* bubble) {
+    return bubble->translate_language_search_view_;
+  }
+};
+
+class TranslateBubbleViewBrowserTest_SearchUIDisabled
+    : public TranslateBubbleViewBrowserTest {
+ public:
+  TranslateBubbleViewBrowserTest_SearchUIDisabled() {
+    feature_list_.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class TranslateBubbleViewBrowserTest_SearchUIEnabled
+    : public TranslateBubbleViewBrowserTest {
+ public:
+  TranslateBubbleViewBrowserTest_SearchUIEnabled() {
+    feature_list_.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
@@ -253,17 +298,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
   EXPECT_FALSE(bubble);
 }
 
-class TranslateBubbleViewBrowserTest_SearchUIDisabled
-    : public TranslateBubbleViewBrowserTest {
- public:
-  TranslateBubbleViewBrowserTest_SearchUIDisabled() {
-    feature_list_.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIDisabled,
                        SelectTargetLanguageByDisplayName) {
   GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
@@ -284,17 +318,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIDisabled,
   EXPECT_EQ(bubble->model()->GetTargetLanguageIndex(),
             bubble->model()->GetTargetLanguageIndexForCode("es").value());
 }
-
-class TranslateBubbleViewBrowserTest_SearchUIEnabled
-    : public TranslateBubbleViewBrowserTest {
- public:
-  TranslateBubbleViewBrowserTest_SearchUIEnabled() {
-    feature_list_.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIEnabled,
                        SelectTargetLanguageByDisplayName) {
@@ -317,4 +340,38 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIEnabled,
             bubble->model()->GetTargetLanguageIndexForCode("es").value());
 }
 
+IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIEnabled,
+                       SelectLanguageClearsListView) {
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
+  NavigateAndWaitForLanguageDetection(french_url, "fr");
+
+  TranslateBubbleView* bubble =
+      TranslateBubbleController::From(browser())->GetTranslateBubble();
+  ASSERT_TRUE(bubble);
+
+  // Switch to advanced target view (the search view)
+  SwitchViewForTesting(bubble,
+                       TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+
+  TranslateLanguageSearchView* search_view =
+      GetTranslateLanguageSearchView(bubble);
+  ASSERT_TRUE(search_view);
+
+  views::BoxLayoutView* list_view = GetListView(search_view);
+  ASSERT_TRUE(list_view);
+
+  // Get the first target language in the list view.
+  ASSERT_FALSE(list_view->children().empty());
+  HoverButton* button_to_click =
+      views::AsViewClass<HoverButton>(list_view->children().front());
+  ASSERT_TRUE(button_to_click);
+
+  // Click the button.
+  views::test::ButtonTestApi(button_to_click)
+      .NotifyClick(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                                ui::DomCode::ENTER, ui::EF_NONE));
+
+  // Verify that the list view is now empty.
+  EXPECT_TRUE(list_view->children().empty());
+}
 }  // namespace translate

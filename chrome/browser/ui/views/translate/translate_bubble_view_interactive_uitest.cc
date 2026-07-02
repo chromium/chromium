@@ -29,6 +29,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
@@ -49,14 +50,29 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 
 namespace translate {
 
 namespace {
+
+views::BoxLayoutView* GetListView(views::View* search_view) {
+  if (search_view->children().size() < 2) {
+    return nullptr;
+  }
+  views::View* scroll_view = search_view->children()[1];
+  if (views::IsViewClass<views::ScrollView>(scroll_view)) {
+    return views::AsViewClass<views::BoxLayoutView>(
+        static_cast<views::ScrollView*>(scroll_view)->contents());
+  }
+  return nullptr;
+}
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTranslateSettingsElementId);
 
@@ -444,6 +460,68 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          TranslateBubbleViewUITest,
+                         ::testing::Values("Default",
+                                           "RightToLeft",
+                                           "Incognito",
+                                           "MultipleBubble",
+                                           "Theme"),
+                         [](const ::testing::TestParamInfo<std::string>& inf) {
+                           return inf.param;
+                         });
+
+class TranslateBubbleViewSearchUIUITest : public TranslateBubbleViewUITest {
+ public:
+  TranslateBubbleViewSearchUIUITest() {
+    feature_list_.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
+  }
+  ~TranslateBubbleViewSearchUIUITest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify the "Choose another language" option with TranslateLanguageSearchUI
+// enabled.
+IN_PROC_BROWSER_TEST_P(TranslateBubbleViewSearchUIUITest,
+                       ChooseAnotherLanguage) {
+  // P1. Opened/Navigate to non english page.
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
+  NavigateAndWaitForLanguageDetection(french_url, "fr");
+
+  RunTestSequence(
+      views::InteractionSequenceViews::WithInitialView(
+          GetCurrentTranslateBubble()),
+      PressButton(TranslateBubbleView::kChangeTargetLanguage),
+      // V1. Verify that this brings up the search view.
+      WaitForHide(TranslateBubbleView::kChangeTargetLanguage),
+      // P4. Select a language from the list.
+      NameViewRelative(
+          TranslateBubbleView::kTargetLanguageCombobox,
+          "TargetLanguageHoverButton",
+          base::BindRepeating([](views::View* search_view) -> views::View* {
+            return GetListView(search_view)->children().front();
+          })),
+      PressButton("TargetLanguageHoverButton"),
+      PressButton(TranslateBubbleView::kTargetLanguageDoneButton),
+      // V2. Verify that the language list will be dismissed, the target
+      // language tab shows updated target language. Source language tab is
+      // no longer highlighted and the target language tab will be
+      // highlighted once translation is completed.
+      WaitForHide(TranslateBubbleView::kTargetLanguageCombobox),
+      WaitForTranslated(true),
+      CheckViewProperty(
+          TranslateBubbleView::kTargetLanguageTab,
+          &views::TabbedPaneTab::GetTitleText,
+          GetCurrentTranslateBubble()->model()->GetTargetLanguageNameAt(0)),
+      // P5. Select revert.
+      DoDefaultAction(TranslateBubbleView::kSourceLanguageTab),
+      // V3. Verify that the page should revert to original language and source
+      // language tab is selected.
+      WaitForTranslated(false));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TranslateBubbleViewSearchUIUITest,
                          ::testing::Values("Default",
                                            "RightToLeft",
                                            "Incognito",
