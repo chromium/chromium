@@ -38,6 +38,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
@@ -230,6 +231,11 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
     const base::ListValue& result = eval_js_result.ExtractList();
     double x = result[0].GetDouble();
     double y = result[1].GetDouble();
+
+    // SimulateMouseClickAt on a freshly opened app window is dropped until the
+    // window is registered in the browser's viz hit-test data. A renderer
+    // main-frame wait is insufficient: the data lands asynchronously.
+    content::WaitForHitTestData(contents->GetPrimaryMainFrame());
 
     // Simulate the click at those coordinates.
     content::SimulateMouseClickAt(contents, modifiers, button,
@@ -457,11 +463,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
   // Middle Click the link.
   GURL destination_url = GetCapturableUrlWithQuery();
   CreateLinkInTab(existing_app_contents, destination_url, "capture-link");
-
-  // Wait for hit-test data to be updated so the simulated click doesn't miss.
-  content::MainThreadFrameObserver(
-      existing_app_contents->GetPrimaryMainFrame()->GetRenderWidgetHost())
-      .Wait();
 
   ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
   SimulateClickOnElement(existing_app_contents, "capture-link",
