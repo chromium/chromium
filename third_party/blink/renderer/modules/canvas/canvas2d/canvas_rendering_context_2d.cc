@@ -348,19 +348,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            size_t row_bytes,
                                            int x,
                                            int y) {
-  if (!canvas() || isContextLost()) {
-    return false;
-  }
-
-  if (shared_image_provider_) {
-    if (!shared_image_provider_->IsValid()) {
-      return false;
-    }
-  } else if (bitmap_provider_) {
-    if (!bitmap_provider_->IsValid()) {
-      return false;
-    }
-  } else {
+  if (!IsResourceProviderValid() || isContextLost()) {
     return false;
   }
 
@@ -383,14 +371,8 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     }
   } else {
     FlushCanvas(FlushReason::kOther);
-    if (shared_image_provider_) {
-      if (!shared_image_provider_->IsValid()) {
-        return false;
-      }
-    } else {
-      if (!bitmap_provider_->IsValid()) {
-        return false;
-      }
+    if (!IsResourceProviderValid()) {
+      return false;
     }
   }
 
