@@ -19,6 +19,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/prediction/chrome_profile_download_service_tracker.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/component_updater/installer_policies/prediction_model_component_installer.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
@@ -208,18 +209,27 @@ ModelBrokerState* OptimizationGuideGlobalState::model_broker_state() {
   return static_cast<ModelBrokerState*>(on_device_capability_.get());
 }
 #else  // !BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-#if BUILDFLAG(IS_ANDROID)
 OptimizationGuideGlobalState::OptimizationGuideGlobalState() {
+
+#if BUILDFLAG(IS_ANDROID)
   on_device_capability_ = std::make_unique<ModelBrokerAndroid>(
       *g_browser_process->local_state(), prediction_manager_.model_provider());
-}
 #else   // !BUILDFLAG(IS_ANDROID)
-OptimizationGuideGlobalState::OptimizationGuideGlobalState() {
   // Create a stub capability that can't do anything.
   on_device_capability_ = std::make_unique<OnDeviceCapability>();
-}
 #endif  // BUILDFLAG(IS_ANDROID)
+}
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+
+void RegisterPredictionModelComponent(
+    proto::OptimizationTarget target,
+    base::WeakPtr<PredictionModelComponentUpdateListener> listener) {
+  auto* cus = g_browser_process->component_updater();
+  if (!cus) {
+    return;
+  }
+  component_updater::RegisterPredictionModelComponent(cus, target, listener);
+}
 
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;
 

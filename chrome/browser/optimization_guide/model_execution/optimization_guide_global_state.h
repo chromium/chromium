@@ -8,12 +8,14 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/optimization_guide/prediction/chrome_profile_download_service_tracker.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
+#include "components/optimization_guide/core/delivery/prediction_model_component_update_listener.h"
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -32,6 +34,10 @@ class ChromeModelComponentStateManagerObserver;
 class ModelBrokerState;
 class OptimizationGuideGlobalFeature;
 class OptimizationGuideGlobalStateTest;
+
+void RegisterPredictionModelComponent(
+    proto::OptimizationTarget target,
+    base::WeakPtr<PredictionModelComponentUpdateListener> listener);
 
 // Constructs and initializes a PredictionManager with it's dependencies.
 class ChromePredictionManager {
@@ -83,6 +89,10 @@ class OptimizationGuideGlobalState final
     return prediction_manager_.model_provider();
   }
 
+  OptimizationGuideModelProvider& prediction_model_component_update_listener() {
+    return *prediction_model_component_update_listener_;
+  }
+
  private:
   friend base::RefCounted<OptimizationGuideGlobalState>;
   friend OptimizationGuideGlobalStateTest;
@@ -108,6 +118,14 @@ class OptimizationGuideGlobalState final
   std::unique_ptr<ChromeModelComponentStateManagerObserver>
       component_state_manager_observer_;
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+
+  // Registers the prediction model component for `target` with the component
+  // updater.
+  std::unique_ptr<PredictionModelComponentUpdateListener>
+      prediction_model_component_update_listener_ =
+          std::make_unique<PredictionModelComponentUpdateListener>(
+              prediction_manager_.model_provider(),
+              base::BindRepeating(&RegisterPredictionModelComponent));
 
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
 };

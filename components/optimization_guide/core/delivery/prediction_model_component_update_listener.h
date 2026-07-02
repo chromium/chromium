@@ -9,8 +9,11 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -32,7 +35,13 @@ class ModelInfo;
 class PredictionModelComponentUpdateListener
     : public OptimizationGuideModelProvider {
  public:
-  PredictionModelComponentUpdateListener();
+  using RegisterComponentCallback = base::RepeatingCallback<void(
+      proto::OptimizationTarget,
+      base::WeakPtr<PredictionModelComponentUpdateListener>)>;
+
+  PredictionModelComponentUpdateListener(
+      OptimizationGuideModelProvider& fallback_provider,
+      RegisterComponentCallback register_component_callback);
   ~PredictionModelComponentUpdateListener() override;
 
   PredictionModelComponentUpdateListener(
@@ -49,6 +58,9 @@ class PredictionModelComponentUpdateListener
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       OptimizationTargetModelObserver* observer) override;
+  void SetModelDownloadSchedulingParams(
+      proto::OptimizationTarget optimization_target,
+      const download::SchedulingParams& params) override;
 
   // Called by the component installer policy when a component is ready.
   void MaybeUpdateModel(proto::OptimizationTarget target,
@@ -97,6 +109,16 @@ class PredictionModelComponentUpdateListener
 
   // Tracks the expected version/path for each target.
   base::flat_map<proto::OptimizationTarget, ComponentInfo> component_info_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Returns true if the target is migrated to component delivery.
+  bool IsMigrated(proto::OptimizationTarget optimization_target) const;
+
+  const raw_ref<OptimizationGuideModelProvider> fallback_provider_;
+
+  RegisterComponentCallback register_component_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_set<proto::OptimizationTarget> registered_targets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PredictionModelComponentUpdateListener>

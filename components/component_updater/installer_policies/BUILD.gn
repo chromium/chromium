@@ -56,6 +56,8 @@ static_library("installer_policies_with_content_deps") {
     "on_device_head_suggest_component_installer.h",
     "optimization_hints_component_installer.cc",
     "optimization_hints_component_installer.h",
+    "prediction_model_component_installer.cc",
+    "prediction_model_component_installer.h",
   ]
 
   deps = [
@@ -76,6 +78,7 @@ source_set("unit_tests") {
     "first_party_sets_component_installer_policy_unittest.cc",
     "history_search_strings_component_installer_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
+    "prediction_model_component_installer_unittest.cc",
     "private_verification_tokens_installer_policy_unittest.cc",
     "trust_token_key_commitments_component_installer_policy_unittest.cc",
   ]

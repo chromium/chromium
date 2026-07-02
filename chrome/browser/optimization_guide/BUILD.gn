@@ -81,6 +81,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
+    "//components/component_updater/installer_policies:installer_policies_with_content_deps",
     "//components/metrics_services_manager",
     "//components/no_state_prefetch/browser",
     "//components/private_ai",

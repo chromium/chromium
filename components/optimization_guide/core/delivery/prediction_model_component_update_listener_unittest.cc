@@ -9,17 +9,25 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/types/optional_ref.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
+#include "components/optimization_guide/core/delivery/model_provider_registry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
+#include "components/optimization_guide/core/delivery/prediction_model_component_configs.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -83,12 +91,15 @@ class SelfRemovingOptimizationTargetModelObserver
 
 class PredictionModelComponentUpdateListenerTest : public testing::Test {
  public:
-  PredictionModelComponentUpdateListenerTest() = default;
+  PredictionModelComponentUpdateListenerTest()
+      : fallback_provider_(OptimizationGuideLogger::GetInstance()) {}
   ~PredictionModelComponentUpdateListenerTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(kPredictionModelComponentDelivery);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    listener_ = std::make_unique<PredictionModelComponentUpdateListener>();
+    listener_ = std::make_unique<PredictionModelComponentUpdateListener>(
+        fallback_provider_, base::DoNothing());
   }
 
  protected:
@@ -128,6 +139,8 @@ class PredictionModelComponentUpdateListenerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList feature_list_;
+  ModelProviderRegistry fallback_provider_;
   std::unique_ptr<PredictionModelComponentUpdateListener> listener_;
 };
 
@@ -158,7 +171,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAndNotify) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAfterReady) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD;
+      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
   FakeOptimizationTargetModelObserver observer;
 
   base::Version version("1.2.3.4");
@@ -184,7 +197,8 @@ TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAfterReady) {
 }
 
 TEST_F(PredictionModelComponentUpdateListenerTest, UpdateWithOlderVersion) {
-  proto::OptimizationTarget target = proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2;
+  proto::OptimizationTarget target =
+      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
   FakeOptimizationTargetModelObserver observer;
 
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
@@ -209,7 +223,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, UpdateWithOlderVersion) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, GetModelWithoutObserver) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
   base::Version version("1.2.3.4");
   base::FilePath install_dir = CreateModelDirectory(target, /*version=*/123);
 
@@ -599,6 +613,58 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
     return listener_->GetModelForTesting(target) &&
            listener_->GetModelForTesting(target)->GetVersion() == 123;
   }));
+}
+
+TEST_F(PredictionModelComponentUpdateListenerTest, RegisterCallbackCalled) {
+  proto::OptimizationTarget target =
+      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+  FakeOptimizationTargetModelObserver observer;
+
+  using MockRegisterCallback = base::MockCallback<
+      PredictionModelComponentUpdateListener::RegisterComponentCallback>;
+  testing::StrictMock<MockRegisterCallback> mock_callback;
+
+  // Re-create listener with a custom callback for this test.
+  listener_ = std::make_unique<PredictionModelComponentUpdateListener>(
+      fallback_provider_, mock_callback.Get());
+
+  // Adding observer for migrated target should trigger the callback.
+  EXPECT_CALL(mock_callback, Run(target, testing::_));
+  listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
+                                                   nullptr, &observer);
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  // Adding observer again for the same target should NOT trigger the callback.
+  FakeOptimizationTargetModelObserver observer2;
+  listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
+                                                   nullptr, &observer2);
+
+  // Adding observer for a non-migrated target should NOT trigger the callback
+  // and should get rerouted to fallback provider.
+  proto::OptimizationTarget target2 = proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2;
+  FakeOptimizationTargetModelObserver observer3;
+  listener_->AddObserverForOptimizationTargetModel(target2, std::nullopt,
+                                                   nullptr, &observer3);
+
+  // Verify it was rerouted.
+  EXPECT_TRUE(fallback_provider_.IsRegistered(target2));
+
+  listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
+  listener_->RemoveObserverForOptimizationTargetModel(target, &observer2);
+  listener_->RemoveObserverForOptimizationTargetModel(target2, &observer3);
+  listener_.reset();
+}
+
+TEST_F(PredictionModelComponentUpdateListenerTest, RerouteNonMigratedTarget) {
+  proto::OptimizationTarget target = proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2;
+  FakeOptimizationTargetModelObserver observer;
+
+  listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
+                                                   nullptr, &observer);
+  EXPECT_TRUE(fallback_provider_.IsRegistered(target));
+
+  listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
+  EXPECT_FALSE(fallback_provider_.IsRegistered(target));
 }
 
 }  // namespace optimization_guide
