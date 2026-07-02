@@ -40,8 +40,8 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_adding_screen_utils.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/browser.h"
@@ -508,8 +508,10 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTrayTest, TrayVisible) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoginManagerTest, SafeBrowsingDisabledForSigninProfile) {
-  ASSERT_FALSE(ProfileHelper::GetSigninProfile()->GetPrefs()->GetBoolean(
-      ::prefs::kSafeBrowsingEnabled));
+  Profile* signin_profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetSigninBrowserContext());
+  ASSERT_FALSE(
+      signin_profile->GetPrefs()->GetBoolean(::prefs::kSafeBrowsingEnabled));
 }
 
 class LoginOfflineWithAutoEnrollmentCheckForcedTest : public LoginOfflineTest {
