@@ -55,6 +55,9 @@ class IdentityManager;
 // Aborts the flow due to mic permission denial without resetting consent.
 - (void)didRefuseLiveMicPermission;
 
+// Disconnects the mediator, firing the completion callback with failure.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_FIRST_RUN_MEDIATOR_H_

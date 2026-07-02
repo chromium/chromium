@@ -395,6 +395,12 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   [self.geminiHandler
       startGeminiLiveFirstRunWithBaseViewController:viewController
                                          completion:^(BOOL success) {
+                                           if (!success) {
+                                             ios::provider::SwitchToMode(
+                                                 ios::provider::GeminiViewMode::
+                                                     kFloaty,
+                                                 /*animated=*/YES);
+                                           }
                                            if (completion) {
                                              completion(success);
                                            }
