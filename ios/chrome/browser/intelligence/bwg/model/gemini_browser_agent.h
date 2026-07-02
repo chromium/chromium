@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+#import "ios/web/public/web_state_id.h"
 
 class Browser;
 class FullscreenController;
@@ -135,6 +136,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Dismisses the floaty and resets the Gemini flow.
   void DismissFloaty();
+
+  // Called when the tab picker selection changes.
+  void OnTabPickerSelectionChanged(std::set<web::WebStateID> selected_tabs);
 
   // Hide Gemini floaty with `animated` flag. When in a hidden state, the floaty
   // view is dismissed but still persists in memory and needs to be properly
@@ -337,6 +341,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Called when the page content sharing preference changes.
   void OnPageContentPrefChanged();
 
+  // Clears the set of attached tabs if it doesn't include the active web
+  // state.
+  void UpdateAttachedTabsForActiveWebState(web::WebState* active_web_state);
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -394,6 +402,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether the keyboard is currently visible.
   bool is_keyboard_visible_ = false;
+
+  // The set of tabs currently attached to the floaty. Includes the active tab.
+  std::set<web::WebStateID> attached_tabs_;
 
   // Used to track the last shown view state of an invoked floaty. Used to show
   // a hidden floaty with the previous view state.

@@ -33,6 +33,9 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
       [[TabPickerParams alloc] initWithSnackbarPresenter:self];
   params.baseViewController = presentingViewController;
   params.maxTabAttachmentCount = kMaxTabAttachmentCount;
+  if (self.selectedTabsProvider) {
+    params.preselectedWebStateIDs = self.selectedTabsProvider();
+  }
 
   __weak __typeof(self) weakSelf = self;
   TabPickerCompletionBlock completionBlock =

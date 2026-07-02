@@ -18,6 +18,9 @@ typedef void (^GeminiTabPickerSelectionCallback)(
     std::set<web::WebStateID> selectedIDs,
     std::set<web::WebStateID> cachedIDs);
 
+// Callback type invoked to determine which tabs to pre-select.
+typedef std::set<web::WebStateID> (^GeminiTabPickerSelectedTabsProvider)();
+
 // The handler for Gemini Tab Picker actions. Configures and presents the Tab
 // Picker UI in response to GeminiTabPickerDelegate actions.
 @interface GeminiTabPickerHandler : NSObject <GeminiTabPickerDelegate>
@@ -25,6 +28,11 @@ typedef void (^GeminiTabPickerSelectionCallback)(
 // Callback invoked when the user changes their selected tabs via the Tab
 // Picker.
 @property(nonatomic, copy) GeminiTabPickerSelectionCallback selectionCallback;
+
+// Provider invoked when the tab picker is opened to determine the pre-selected
+// tabs.
+@property(nonatomic, copy)
+    GeminiTabPickerSelectedTabsProvider selectedTabsProvider;
 
 // The handler used to present the Tab Picker UI.
 @property(nonatomic, weak) id<TabPickerCommands> tabPickerHandler;

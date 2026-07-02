@@ -245,6 +245,11 @@ class GeminiBrowserAgentTest : public PlatformTest {
     return gemini_browser_agent_->processing_status_;
   }
 
+  // Getter for raw `attached_tabs_` member.
+  std::set<web::WebStateID> GetRawAttachedTabs() {
+    return gemini_browser_agent_->attached_tabs_;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
@@ -1035,4 +1040,72 @@ TEST_F(GeminiBrowserAgentTest, TestPrepareFloatyToBeShownDisablesFullscreen) {
   gemini_browser_agent_->OnViewStateChanged(
       ios::provider::GeminiViewState::kCollapsed);
   EXPECT_TRUE(controller->IsEnabled());
+}
+
+// Tests that when the floaty is un-minimized (expanded), we check if the
+// selected tabs should be persisted based on whether the active tab is in the
+// selection.
+TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
+  ios::provider::ResetGemini();
+  SetIsFloatyInvoked(true);
+
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+
+  std::unique_ptr<web::FakeWebState> other_web_state =
+      std::make_unique<web::FakeWebState>();
+  other_web_state->SetBrowserState(profile_);
+  GeminiTabHelper::CreateForWebState(other_web_state.get());
+  WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
+  web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(other_web_state),
+      WebStateList::InsertionParams::Automatic().Activate(false));
+
+  std::unique_ptr<web::FakeWebState> non_selected_web_state =
+      std::make_unique<web::FakeWebState>();
+  non_selected_web_state->SetBrowserState(profile_);
+  GeminiTabHelper::CreateForWebState(non_selected_web_state.get());
+  WebViewProxyTabHelper::CreateForWebState(non_selected_web_state.get());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(non_selected_web_state),
+      WebStateList::InsertionParams::Automatic().Activate(false));
+
+  // Set the initial selection: active tab and another tab.
+  EXPECT_TRUE(active_id.valid());
+  EXPECT_TRUE(other_id.valid());
+  EXPECT_NE(active_id, other_id);
+
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  EXPECT_EQ(GetRawAttachedTabs().size(), 2u);
+  // GetSelectedWebStateIDs() may return size 1 in downstream unit tests if
+  // GCRGemini provider is uninitialized/nil, so we assert on raw selected IDs.
+
+  // Verify that WebViewProxyTabHelper is attached to the non-selected web
+  // state.
+  web::WebState* raw_non_selected_web_state =
+      browser_->GetWebStateList()->GetWebStateAt(2);
+  ASSERT_NE(raw_non_selected_web_state, nullptr);
+  EXPECT_NE(WebViewProxyTabHelper::FromWebState(raw_non_selected_web_state),
+            nullptr);
+
+  // Simulate minimizing the floaty.
+  gemini_browser_agent_->OnViewStateChanged(
+      ios::provider::GeminiViewState::kCollapsed);
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kCollapsed);
+
+  // Switch the active tab to the non-selected tab (index 2).
+  browser_->GetWebStateList()->ActivateWebStateAt(2);
+
+  // Verify that the selection is cleared immediately upon active tab change.
+  EXPECT_TRUE(GetRawAttachedTabs().empty());
+
+  // Simulate un-minimizing the floaty.
+  gemini_browser_agent_->OnViewStateChanged(
+      ios::provider::GeminiViewState::kExpanded);
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kExpanded);
+
+  // Verify that the selection remains cleared.
+  EXPECT_TRUE(GetRawAttachedTabs().empty());
 }
