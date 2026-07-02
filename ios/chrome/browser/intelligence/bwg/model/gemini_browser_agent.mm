@@ -607,8 +607,7 @@ void GeminiBrowserAgent::OnSceneActivationLevelChanged(
     SceneActivationLevel level) {
   if (level == SceneActivationLevelBackground) {
     if (is_floaty_invoked_ && IsInGeminiLiveMode()) {
-      ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
-                                  /*animated=*/false);
+      SwitchToChatModeOrDismiss(/*animated=*/false);
     }
   }
   UpdateGeminiLiveIconVisibility(/*animated=*/false);
@@ -639,8 +638,6 @@ void GeminiBrowserAgent::ShowSignInRequiredSnackbar(
 }
 
 void GeminiBrowserAgent::ShowLiveSessionDormantSnackbar(int message_id) {
-  PrepareFloatyToBeShown();
-
   id<SnackbarCommands> snackbar_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
 
@@ -659,6 +656,10 @@ void GeminiBrowserAgent::ShowLiveSessionDormantSnackbar(int message_id) {
                                    ? kDormantSnackbarOffsetFromFloatyNext
                                    : kDormantSnackbarOffsetFromFloatyLegacy;
   CGFloat snackbar_offset = floaty_offset + offset_from_floaty;
+
+  if (is_floaty_invoked_) {
+    PrepareFloatyToBeShown();
+  }
 
   [snackbar_handler showSnackbarMessage:message bottomOffset:snackbar_offset];
 }
@@ -1058,8 +1059,7 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
 
 void GeminiBrowserAgent::HandleDormantStatus(
     ios::provider::GeminiDormantReason dormant_reason) {
-  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
-                              /*animated=*/true);
+  SwitchToChatModeOrDismiss(/*animated=*/true);
 
   if (IsGeminiLiveDormantReasonsEnabled()) {
     switch (dormant_reason) {
@@ -1265,6 +1265,18 @@ void GeminiBrowserAgent::OnTabPickerSelectionChanged(
   }
 
   // TODO(crbug.com/503002699): Generate and pass shared tab page context.
+}
+
+void GeminiBrowserAgent::SwitchToChatModeOrDismiss(bool animated) {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (tab_helper && !tab_helper->IsGeminiChatAvailableForWebState()) {
+    DismissFloaty();
+  } else {
+    ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
+                                animated);
+  }
 }
 
 bool GeminiBrowserAgent::ShouldIgnoreUpdateForDormantSnackbar(
