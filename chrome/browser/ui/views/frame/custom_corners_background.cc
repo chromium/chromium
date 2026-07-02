@@ -202,7 +202,8 @@ std::vector<SkPath> CustomCornersBackground::GetCornerPaths(
 }
 
 void CustomCornersBackground::SetCutoutFrom(const Cutouts& cutouts) {
-  cutout_paths_.clear();
+  std::vector<SkPath> new_cutout_paths;
+
   for (const auto& cutout : cutouts) {
     if (const views::View* const* view_ptr =
             std::get_if<const views::View*>(&cutout)) {
@@ -223,17 +224,24 @@ void CustomCornersBackground::SetCutoutFrom(const Cutouts& cutouts) {
       } else {
         cutout_path = SkPath::Rect(gfx::RectToSkRect(bounds));
       }
-      cutout_paths_.push_back(cutout_path);
+      new_cutout_paths.push_back(cutout_path);
     } else {
       const auto* const background =
           std::get<InverseOf>(cutout).background.get();
       const gfx::Rect bounds = views::View::ConvertRectFromScreen(
           &*view_, background->view_->GetBoundsInScreen());
       for (SkPath& path : background->GetCornerPaths(bounds)) {
-        cutout_paths_.push_back(path);
+        new_cutout_paths.push_back(path);
       }
     }
   }
+
+  if (cutout_paths_ == new_cutout_paths) {
+    return;
+  }
+
+  cutout_paths_ = std::move(new_cutout_paths);
+  view_->SchedulePaint();
 }
 
 void CustomCornersBackground::Paint(gfx::Canvas* canvas,
