@@ -73,42 +73,6 @@
 
 namespace blink {
 
-class FlushForImageListener {
-  // With deferred rendering it's possible for a drawImage operation on a canvas
-  // to trigger a copy-on-write if another canvas has a read reference to it.
-  // This can cause serious regressions due to extra allocations:
-  // crbug.com/1030108. FlushForImageListener keeps a list of all active 2d
-  // contexts on a thread and notifies them when one is attempting copy-on
-  // write. If the notified context has a read reference to the canvas
-  // attempting a copy-on-write it then flushes so as to make the copy-on-write
-  // unnecessary.
- public:
-  static FlushForImageListener* GetFlushForImageListener();
-  void AddObserver(FlushForImageObserver* observer) {
-    observers_.AddObserver(observer);
-  }
-
-  void RemoveObserver(FlushForImageObserver* observer) {
-    observers_.RemoveObserver(observer);
-  }
-
-  void NotifyFlushForImage(cc::PaintImage::ContentId content_id) {
-    for (FlushForImageObserver& obs : observers_) {
-      obs.OnFlushForImage(content_id);
-    }
-  }
-
- private:
-  friend class ThreadSpecific<FlushForImageListener>;
-  base::ReentrantObserverList<FlushForImageObserver> observers_;
-};
-
-static FlushForImageListener* GetFlushForImageListener() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<FlushForImageListener>,
-                                  flush_for_image_listener, ());
-  return flush_for_image_listener;
-}
-
 BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The following parameters attempt to reach a compromise between not flushing
@@ -321,7 +285,7 @@ bool Canvas2DResourceProvider::ShouldReplaceTargetBuffer(
   if (is_accelerated_) {
     // Another context may have a read reference to this resource. Flush the
     // deferred queue in that context so that we don't need to copy.
-    GetFlushForImageListener()->NotifyFlushForImage(content_id);
+    FlushForImageListener::Get()->NotifyFlushForImage(content_id);
   }
 
   return !resource_->HasOneRef();
@@ -412,7 +376,7 @@ bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
   if (!is_software_) {
     // Another context may have a read reference to this resource. Flush the
     // deferred queue in that context so that we don't need to copy.
-    GetFlushForImageListener()->NotifyFlushForImage(content_id);
+    FlushForImageListener::Get()->NotifyFlushForImage(content_id);
   }
 
   return !resource_->HasOneRef();
@@ -1636,12 +1600,6 @@ CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
       shared_image_interface_provider);
 }
 
-void NotifyImageBitmapWillTransfer(cc::PaintImage::ContentId content_id) {
-  // This is called when an ImageBitmap is about to be transferred. All
-  // references to such a bitmap on the current thread must be released, which
-  // means that DisplayItemLists that reference it must be flushed.
-  GetFlushForImageListener()->NotifyFlushForImage(content_id);
-}
 
 CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
   if (!canvas_image_provider_) {
@@ -1866,7 +1824,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   }
 
   resource_ = NewOrRecycledResource();
-  GetFlushForImageListener()->AddObserver(this);
+  FlushForImageListener::Get()->AddObserver(this);
 
   if (resource_) {
     EnsureWriteAccess();
@@ -1965,7 +1923,7 @@ Canvas2DResourceProvider::~Canvas2DResourceProvider() {
   }
 
   if (!is_software_) {
-    GetFlushForImageListener()->RemoveObserver(this);
+    FlushForImageListener::Get()->RemoveObserver(this);
   }
 
   // Last chance for outstanding GPU timers to record metrics.
@@ -2170,7 +2128,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
   }
 
   resource_ = NewOrRecycledResource();
-  GetFlushForImageListener()->AddObserver(this);
+  FlushForImageListener::Get()->AddObserver(this);
 
   if (resource_) {
     EnsureWriteAccess();
@@ -2228,7 +2186,7 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
   }
 
   if (!is_software_) {
-    GetFlushForImageListener()->RemoveObserver(this);
+    FlushForImageListener::Get()->RemoveObserver(this);
   }
 
   // Last chance for outstanding GPU timers to record metrics.

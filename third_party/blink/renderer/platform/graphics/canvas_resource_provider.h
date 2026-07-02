@@ -134,9 +134,6 @@ class PLATFORM_EXPORT CanvasResourceProviderDelegate {
   virtual void DidFlush() {}
 };
 
-PLATFORM_EXPORT void NotifyImageBitmapWillTransfer(
-    cc::PaintImage::ContentId content_id);
-
 
 
 

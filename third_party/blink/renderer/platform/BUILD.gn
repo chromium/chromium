@@ -1033,6 +1033,8 @@ component("platform") {
     "graphics/filters/source_graphic.h",
     "graphics/filters/spot_light_source.cc",
     "graphics/filters/spot_light_source.h",
+    "graphics/flush_for_image_listener.cc",
+    "graphics/flush_for_image_listener.h",
     "graphics/flush_reason.h",
     "graphics/generated_image.cc",
     "graphics/generated_image.h",
