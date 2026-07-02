@@ -189,6 +189,10 @@ cr-input.font-size-input::part(input)::-webkit-outer-spin-button {
   visibility: hidden;
 }
 
+#fontSizeInputError.visible {
+  visibility: visible;
+}
+
 #fontSizeInputError > span {
   color: #dc6322;
   font-size: 11px;

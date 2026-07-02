@@ -50,6 +50,7 @@ export class WatermarkAppElement extends CrLitElement {
       outlineOpacity_: {type: Number},
       opacityTicks_: {type: Array},
       watermarkText_: {type: String},
+      isFontSizeInvalid_: {type: Boolean},
     };
   }
 
@@ -58,6 +59,7 @@ export class WatermarkAppElement extends CrLitElement {
   protected accessor outlineOpacity_: number = 6;
   protected accessor opacityTicks_: SliderTick[] = [];
   protected accessor watermarkText_: string = 'Watermark Test Page';
+  protected accessor isFontSizeInvalid_: boolean = false;
   private pageHandler_: PageHandlerRemote;
 
   constructor() {
@@ -91,7 +93,6 @@ export class WatermarkAppElement extends CrLitElement {
   }
 
   override firstUpdated() {
-    this.$.fontSizeInput.value = this.fontSize_.toString();
     this.sendWatermarkToBackend_();
   }
 
@@ -127,37 +128,33 @@ export class WatermarkAppElement extends CrLitElement {
       return;
     }
     this.fontSize_ = newValue;
-    this.$.fontSizeInput.value = newValue.toString();
     this.sendWatermarkToBackend_();
   }
 
   protected onIncrementFontSizeClick_(_event: Event) {
     this.$.fontSizeInput.focus();
 
-    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
-    const newValue = Math.max(FONT_SIZE_MIN, parsedValue + 1);
-    this.updateFontSizeValue_(parsedValue, newValue);
+    const newValue = Math.min(FONT_SIZE_MAX, this.fontSize_ + 1);
+    this.updateFontSizeValue_(this.fontSize_, newValue);
   }
 
   protected onDecrementFontSizeClick_(_event: Event) {
     this.$.fontSizeInput.focus();
 
-    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
-    const newValue = Math.min(FONT_SIZE_MAX, parsedValue - 1);
-    this.updateFontSizeValue_(parsedValue, newValue);
+    const newValue = Math.max(FONT_SIZE_MIN, this.fontSize_ - 1);
+    this.updateFontSizeValue_(this.fontSize_, newValue);
   }
 
-  protected onFontSizeValueChanged_() {
-    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
+  protected onFontSizeValueChanged_(e: CustomEvent<{value: string}>) {
+    const parsedValue = parseInt(e.detail.value, 10);
 
-    if (isNaN(parsedValue)) {
-      this.$.fontSizeInputError.style.visibility = 'visible';
+    if (isNaN(parsedValue) || parsedValue < FONT_SIZE_MIN ||
+        parsedValue > FONT_SIZE_MAX) {
+      this.isFontSizeInvalid_ = true;
       return;
-    } else if (parsedValue < FONT_SIZE_MIN || parsedValue > FONT_SIZE_MAX) {
-      this.$.fontSizeInputError.style.visibility = 'visible';
-    } else {
-      this.$.fontSizeInputError.style.visibility = 'hidden';
     }
+
+    this.isFontSizeInvalid_ = false;
 
     // Mapping value to range (FONT_SIZE_MIN, FONT_SIZE_MAX)
     const valueWithinRange =
@@ -170,8 +167,8 @@ export class WatermarkAppElement extends CrLitElement {
     }
   }
 
-  protected onWatermarkTextValueChanged_() {
-    this.watermarkText_ = this.$.watermarkTextInput.value;
+  protected onWatermarkTextValueChanged_(e: CustomEvent<{value: string}>) {
+    this.watermarkText_ = e.detail.value;
     this.sendWatermarkToBackend_();
   }
 
@@ -189,19 +186,21 @@ export class WatermarkAppElement extends CrLitElement {
         event.metaKey) {
       return;
     }
-    if (!allowedNumericKeys.includes(event.key) ||
-      this.$.fontSizeInput.value.length === 3) {
+    const input = event.target as CrInputElement;
+    if (!allowedNumericKeys.includes(event.key) || input.value.length === 3) {
       event.preventDefault();
     }
   }
 
-  protected onFillOpacityCrSliderValueChanged_() {
-    this.fillOpacity_ = Math.round(this.$.fillOpacitySlider.value);
+  protected onFillOpacityCrSliderValueChanged_(e: Event) {
+    const slider = e.target as CrSliderElement;
+    this.fillOpacity_ = Math.round(slider.value);
     this.sendWatermarkToBackend_();
   }
 
-  protected onOutlineOpacityCrSliderValueChanged_() {
-    this.outlineOpacity_ = Math.round(this.$.outlineOpacitySlider.value);
+  protected onOutlineOpacityCrSliderValueChanged_(e: Event) {
+    const slider = e.target as CrSliderElement;
+    this.outlineOpacity_ = Math.round(slider.value);
     this.sendWatermarkToBackend_();
   }
 }

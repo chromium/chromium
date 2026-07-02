@@ -39,6 +39,8 @@ export function getHtml(this: WatermarkAppElement) {
               type="number"
               min="${FONT_SIZE_MIN}"
               max="${FONT_SIZE_MAX}"
+              .value="${this.fontSize_.toString()}"
+              ?invalid="${this.isFontSizeInvalid_}"
               @keydown="${this.onFontSizeInputKeydown_}"
               @value-changed="${this.onFontSizeValueChanged_}">
           </cr-input>
@@ -59,7 +61,9 @@ export function getHtml(this: WatermarkAppElement) {
         </div>
       </div>
 
-      <div id="fontSizeInputError">
+      <div
+        id="fontSizeInputError"
+        class="${this.isFontSizeInvalid_ ? 'visible' : ''}">
         <span>
           Font size should be between ${FONT_SIZE_MIN} and ${FONT_SIZE_MAX}
         </span>
