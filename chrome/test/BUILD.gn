@@ -5046,7 +5046,10 @@ if (!is_android) {
       deps += [ "//components/enterprise/connectors/core:test_support" ]
     }
     if (enterprise_data_controls && !is_android) {
-      sources += [ "//chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_browsertest.cc" ]
+      sources += [
+        "//chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_browsertest.cc",
+        "//chrome/browser/enterprise/data_protection/clipboard_toast_tracker_browsertest.cc",
+      ]
       deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
     }
 

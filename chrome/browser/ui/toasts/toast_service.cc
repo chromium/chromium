@@ -649,4 +649,17 @@ void ToastService::RegisterToasts(
             .AddGlobalScoped()
             .Build());
   }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  toast_registry_->RegisterToast(
+      ToastId::kEnterpriseCopyAudit,
+      ToastSpecification::Builder(vector_icons::kDomainIcon,
+                                  IDS_ENTERPRISE_COPY_MONITORED_TOAST_BODY)
+          .Build());
+  toast_registry_->RegisterToast(
+      ToastId::kEnterpriseCopyKeptInManagedChrome,
+      ToastSpecification::Builder(vector_icons::kDomainIcon,
+                                  IDS_ENTERPRISE_COPY_MONITORED_TOAST_BODY)
+          .Build());
+#endif
 }  // RegisterToasts() end.

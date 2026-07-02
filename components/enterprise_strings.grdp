@@ -16,6 +16,10 @@
     Pasting this content here is blocked by your administrator.
   </message>
 
+  <message name="IDS_ENTERPRISE_COPY_MONITORED_TOAST_BODY" desc="Text displayed on a toast notification when a user copies content that is monitored or kept within managed Chrome by organization policy.">
+    Your organisation monitors copying
+  </message>
+
   <!-- Data Controls dialog strings -->
   <message name="IDS_DATA_CONTROLS_CLIPBOARD_PASTE_BLOCK_TITLE" desc="Text displayed at the top of a dialog telling the user their clipboard paste (ctrl-v) has been blocked by their admin.">
     Pasting this content to this site is not allowed

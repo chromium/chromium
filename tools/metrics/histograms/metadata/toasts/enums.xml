@@ -104,6 +104,8 @@ chromium-metrics-reviews@google.com.
   <int value="43" label="Tab strip switch to horizontal delayed toast"/>
   <int value="44" label="Tab strip switch to vertical delayed toast"/>
   <int value="45" label="Showed Autofill AI prefetch error message"/>
+  <int value="46" label="Enterprise copy audit monitored toast"/>
+  <int value="47" label="Enterprise copy kept in managed chrome toast"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

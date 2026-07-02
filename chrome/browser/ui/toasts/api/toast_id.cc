@@ -99,6 +99,10 @@ std::string_view GetToastName(ToastId toast_id) {
       return "TabStripSwitchDelayedVertical";
     case ToastId::kAutofillAiPreFetchErrorMessage:
       return "AutofillAiPreFetchErrorMessage";
+    case ToastId::kEnterpriseCopyAudit:
+      return "EnterpriseCopyAudit";
+    case ToastId::kEnterpriseCopyKeptInManagedChrome:
+      return "EnterpriseCopyKeptInManagedChrome";
   }
 
   NOTREACHED();

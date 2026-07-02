@@ -226,7 +226,10 @@ source_set("enterprise") {
     # TODO(b/352728209): Update the logic for which file compiles on Android
     # when the proper methods have been migrated to components/.
     if (!is_android) {
-      public += [ "data_protection/paste_allowed_request.h" ]
+      public += [
+        "data_protection/clipboard_toast_tracker.h",
+        "data_protection/paste_allowed_request.h",
+      ]
     }
   }
 
@@ -682,7 +685,14 @@ source_set("impl") {
     ]
     deps += [ "//chrome/browser/enterprise/data_controls" ]
     if (!is_android) {
-      sources += [ "data_protection/paste_allowed_request.cc" ]
+      sources += [
+        "data_protection/clipboard_toast_tracker.cc",
+        "data_protection/paste_allowed_request.cc",
+      ]
+      deps += [
+        "//chrome/browser/ui/toasts",
+        "//chrome/browser/ui/toasts/api:toasts",
+      ]
     }
   }
 

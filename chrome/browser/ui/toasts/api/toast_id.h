@@ -66,7 +66,9 @@ enum class ToastId {
   kTabStripSwitchDelayedHorizontal = 43,
   kTabStripSwitchDelayedVertical = 44,
   kAutofillAiPreFetchErrorMessage = 45,
-  kMaxValue = kAutofillAiPreFetchErrorMessage,
+  kEnterpriseCopyAudit = 46,
+  kEnterpriseCopyKeptInManagedChrome = 47,
+  kMaxValue = kEnterpriseCopyKeptInManagedChrome,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 
