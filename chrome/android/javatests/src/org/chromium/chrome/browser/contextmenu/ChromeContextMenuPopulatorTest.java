@@ -922,6 +922,54 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    public void testDataSrcUrlDisablesImagePreviewTab() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        new GURL(PAGE_URL),
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        new GURL(DATA_URL),
+                        IMAGE_TITLE_TEXT,
+                        null,
+                        true,
+                        0,
+                        0,
+                        MenuSourceType.TOUCH,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
+                        /* additionalNavigationParams= */ null);
+
+        setAllMandatoryFlowsComplete();
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        int[] expected1 = {
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_copy_image,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_share_image
+        };
+        checkMenuOptions(expected1);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
+        int[] expected2 = {
+            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_open_image,
+            R.id.contextmenu_copy_image,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_share_image
+        };
+        checkMenuOptions(expected2);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     @UseMethodParameter(ContextMenuPopulatorTestParams.class)
     public void testMailLink(boolean isForcedSigninShowing) {
         setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);

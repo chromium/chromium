@@ -737,7 +737,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 imageGroup.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
             }
             if (mItemDelegate.supportsOpenInEphemeralTab()
-                    && EphemeralTabCoordinator.isSupported()) {
+                    && EphemeralTabCoordinator.isSupported()
+                    && !mParams.getSrcUrl().getScheme().equals(UrlConstants.DATA_SCHEME)) {
                 if (mShowEphemeralTabNewLabel == null) {
                     mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
                 }
