@@ -26,4 +26,12 @@
   return ContentSuggestionsModuleType::kShortcuts;
 }
 
+- (BOOL)hasDifferentContentsFromConfig:(MagicStackModule*)config {
+  if ([super hasDifferentContentsFromConfig:config]) {
+    return YES;
+  }
+  ShortcutsConfig* shortcutsConfig = static_cast<ShortcutsConfig*>(config);
+  return ![self.shortcutItems isEqualToArray:shortcutsConfig.shortcutItems];
+}
+
 @end

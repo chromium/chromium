@@ -32,4 +32,24 @@
   return [super accessibilityLabel];
 }
 
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(id)object {
+  if (self == object) {
+    return YES;
+  }
+  if (![object isKindOfClass:[ShortcutsActionItem class]]) {
+    return NO;
+  }
+  ShortcutsActionItem* other = static_cast<ShortcutsActionItem*>(object);
+  return self.collectionShortcutType == other.collectionShortcutType &&
+         self.count == other.count && self.disabled == other.disabled &&
+         [self.title isEqualToString:other.title];
+}
+
+- (NSUInteger)hash {
+  return static_cast<NSUInteger>(_collectionShortcutType) ^ self.count ^
+         self.title.hash;
+}
+
 @end
