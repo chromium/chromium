@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "net/base/load_timing_info.h"
 
 namespace page_load_metrics {
@@ -16,8 +16,8 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     const net::IPEndPoint& remote_endpoint,
     content::FrameTreeNodeId frame_tree_node_id,
     bool was_cached,
-    base::ByteCount raw_body_bytes,
-    base::ByteCount original_network_content_length,
+    base::ByteSize raw_body_bytes,
+    base::ByteSize original_network_content_length,
     network::mojom::RequestDestination request_destination,
     int net_error,
     std::unique_ptr<net::LoadTimingInfo> load_timing_info)

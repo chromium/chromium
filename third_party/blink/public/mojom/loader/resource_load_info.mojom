@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/byte_count.mojom";
+import "mojo/public/mojom/base/byte_size.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -118,12 +118,12 @@ struct ResourceLoadInfo {
   // The size of the response body before removing any content encodings.
   // Does not include redirects or sub-requests issued at lower levels (range
   // requests or auth). Does include bytes from the cache.
-  mojo_base.mojom.ByteCount raw_body_bytes;
+  mojo_base.mojom.ByteSize raw_body_bytes;
 
   // The total amount of data received from network after SSL decoding and proxy
   // handling. Pertains only to the last request, i.e. reset on redirects, but
   // not reset when multiple roundtrips are used for range requests or auth.
-  mojo_base.mojom.ByteCount total_received_bytes;
+  mojo_base.mojom.ByteSize total_received_bytes;
 
   // The list of redirects that led to this resource load. Empty if there were
   // no redirects.

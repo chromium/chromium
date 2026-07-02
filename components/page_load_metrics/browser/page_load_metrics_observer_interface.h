@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -58,8 +58,8 @@ struct ExtraRequestCompleteInfo {
       const net::IPEndPoint& remote_endpoint,
       content::FrameTreeNodeId frame_tree_node_id,
       bool was_cached,
-      base::ByteCount raw_body_bytes,
-      base::ByteCount original_network_content_length,
+      base::ByteSize raw_body_bytes,
+      base::ByteSize original_network_content_length,
       network::mojom::RequestDestination request_destination,
       int net_error,
       std::unique_ptr<net::LoadTimingInfo> load_timing_info);
@@ -85,11 +85,11 @@ struct ExtraRequestCompleteInfo {
   const bool was_cached;
 
   // The number of body (not header) prefilter bytes.
-  const base::ByteCount raw_body_bytes;
+  const base::ByteSize raw_body_bytes;
 
   // The number of body (not header) bytes that the data reduction proxy saw
   // before it compressed the requests.
-  const base::ByteCount original_network_content_length;
+  const base::ByteSize original_network_content_length;
 
   // The type of the request as gleaned from the mime type.  This may
   // be more accurate than the type in the ExtraRequestStartInfo since we can

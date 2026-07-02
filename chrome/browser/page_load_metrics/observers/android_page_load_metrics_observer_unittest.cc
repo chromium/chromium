@@ -4,7 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/android_page_load_metrics_observer.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -202,8 +202,8 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadTimingInfo) {
   page_load_metrics::ExtraRequestCompleteInfo info(
       url::SchemeHostPort(GURL("https://ignored.com")), net::IPEndPoint(),
       frame_tree_node_id, /*was_cached=*/false,
-      /*raw_body_bytes=*/base::KiB(10),
-      /*original_network_content_length=*/base::ByteCount(0),
+      /*raw_body_bytes=*/base::KiBU(10),
+      /*original_network_content_length=*/base::ByteSize(0),
       network::mojom::RequestDestination::kDocument, /*net_error=*/0,
       std::move(load_timing_info));
   tester()->SimulateLoadedResource(info,
