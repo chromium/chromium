@@ -24,18 +24,7 @@ function testPaymentMethods(methods) {
 }
 
 /**
- * Launches the PaymentRequest UI with basic-card as payment methods.
- * Saves the newly created PaymentRequest and its show promise in global
- * variables. Tests can optionally call abort() to cancel this request.
- */
-function testBasicCard() {
-  testPaymentMethods([
-    {supportedMethods: 'basic-card'},
-  ]);
-}
-
-/**
- * Aborts the PaymentRequest initiated by testBasicCard().
+ * Aborts the active PaymentRequest.
  */
 async function abort() {
   await request.abort();
