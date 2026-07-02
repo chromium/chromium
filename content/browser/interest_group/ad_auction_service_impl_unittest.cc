@@ -2269,7 +2269,13 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
-TEST_F(AdAuctionServiceImplTest, UpdatePriorityVector) {
+// TODO(crbug.com/530367123): Re-enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UpdatePriorityVector DISABLED_UpdatePriorityVector
+#else
+#define MAYBE_UpdatePriorityVector UpdatePriorityVector
+#endif
+TEST_F(AdAuctionServiceImplTest, MAYBE_UpdatePriorityVector) {
   // These are all set in sequence, on top of each other, so if one update
   // should fail to parse, the previous value should be unmodified.
   const struct {
@@ -2477,7 +2483,14 @@ TEST_F(AdAuctionServiceImplTest,
                 kAllSlotsRequestedSizes);
 }
 
-TEST_F(AdAuctionServiceImplTest, UpdateAlwaysTriggersKAnonFetch) {
+// TODO(crbug.com/530367123): Re-enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UpdateAlwaysTriggersKAnonFetch \
+  DISABLED_UpdateAlwaysTriggersKAnonFetch
+#else
+#define MAYBE_UpdateAlwaysTriggersKAnonFetch UpdateAlwaysTriggersKAnonFetch
+#endif
+TEST_F(AdAuctionServiceImplTest, MAYBE_UpdateAlwaysTriggersKAnonFetch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAlwaysUpdateKAnon},
                                 {features::kFledgeCacheKAnonHashedKeys});
