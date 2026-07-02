@@ -253,6 +253,212 @@ TEST_F(AtMemoryQueryServiceTest, Query_FetchesAutofillFetchPlanTypes) {
   EXPECT_EQ(result.entries[1].value, u"John Doe");
 }
 
+// Tests that the query service rationalizes AutofillFetchPlan types by removing
+// sub-types when their parent full type is present.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_RationalizesAutofillFetchPlanTypes_FullTypeRemovesSubtypes) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+  plan->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_STREET_ADDRESS);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_CITY);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"Alice's address", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(fake_data_provider->last_types(),
+              testing::ElementsAre(MemoryDataType::kAddressFull));
+}
+
+// Tests that rationalization removes sub-types even when the sub-type comes
+// before the parent full type in the AutofillFetchPlan.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_RationalizesAutofillFetchPlanTypes_SubtypeFirstThenFullType) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_CITY);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"Alice's address", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(fake_data_provider->last_types(),
+              testing::ElementsAre(MemoryDataType::kAddressFull));
+}
+
+// Tests that the query service retains sub-types when the parent full type is
+// not present.
+TEST_F(
+    AtMemoryQueryServiceTest,
+    Query_RationalizesAutofillFetchPlanTypes_SubtypesPreservedWithoutFullType) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_STREET_ADDRESS);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_CITY);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"Alice's city", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(fake_data_provider->last_types(),
+              testing::ElementsAre(MemoryDataType::kAddressStreetAddress,
+                                   MemoryDataType::kAddressCity));
+}
+
+// Tests that rationalization handles multiple groups and deduplicates types
+// while preserving order.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_RationalizesAutofillFetchPlanTypes_MultipleGroupsAndDuplicates) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MAKE);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_FULL);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NAME);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"my info", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(fake_data_provider->last_types(),
+              testing::ElementsAre(MemoryDataType::kVehicle,
+                                   MemoryDataType::kPassportFull,
+                                   MemoryDataType::kPhone));
+}
+
+// Tests that `MemoryDataType::kUnknown` is filtered out of AutofillFetchPlan
+// types.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_RationalizesAutofillFetchPlanTypes_FiltersUnknownType) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_UNSPECIFIED);
+  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"phone number", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(fake_data_provider->last_types(),
+              testing::ElementsAre(MemoryDataType::kPhone));
+}
+
+// Tests that credit card sub-types are removed when kCreditCardNumber is
+// present, but preserved when kCreditCardNumber is absent.
+TEST_F(
+    AtMemoryQueryServiceTest,
+    Query_RationalizesAutofillFetchPlanTypes_CreditCardSubtypesRemovedWhenParentPresent) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NUMBER);
+  plan->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_EXPIRATION_DATE);
+  plan->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NAME_ON_CARD);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"my card", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(fake_data_provider->last_types(),
+              testing::ElementsAre(MemoryDataType::kCreditCardNumber));
+}
+
+// Tests that credit card sub-types are preserved when kCreditCardNumber is not
+// present.
+TEST_F(
+    AtMemoryQueryServiceTest,
+    Query_RationalizesAutofillFetchPlanTypes_CreditCardSubtypePreservedWithoutParent) {
+  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AutofillFetchPlan* plan =
+      response.mutable_autofill_fetch_plan();
+  plan->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NAME_ON_CARD);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"card name", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(fake_data_provider->last_types(),
+              testing::ElementsAre(MemoryDataType::kCreditCardNameOnCard));
+}
+
 // Tests that the query service filters local data using `filter_keywords` in
 // the `AutofillFetchPlan`.
 TEST_F(AtMemoryQueryServiceTest, Query_FiltersLocalDataUsingFetchPlanKeywords) {
