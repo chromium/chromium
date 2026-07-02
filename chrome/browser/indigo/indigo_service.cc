@@ -182,15 +182,17 @@ void IndigoService::AnchoredMessageShown() {
 }
 
 LocalEligibility IndigoService::ComputeLocalEligibility() const {
-  if (!GetScriptPath().has_value()) {
-    return LocalEligibility::kMissingScript;
-  }
-
   if (pref_service_) {
     int policy_val = pref_service_->GetInteger(prefs::kIndigoPolicy);
+    // TODO(b:512247450): Also check kAllowedWithoutModelImprovement when the
+    // alternative disclaimer string is ready.
     if (policy_val != prefs::Policy::kAllowed) {
       return LocalEligibility::kDisabledByPolicy;
     }
+  }
+
+  if (!GetScriptPath().has_value()) {
+    return LocalEligibility::kMissingScript;
   }
 
   CoreAccountId account_id = identity_manager_

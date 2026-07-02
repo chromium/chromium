@@ -162,6 +162,7 @@ source_set("browser_tests") {
   sources = [
     "indigo_browsertest.cc",
     "indigo_image_replacement_manager_browsertest.cc",
+    "indigo_policy_browsertest.cc",
   ]
 
   deps = [
@@ -171,6 +172,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/indigo/onboarding",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/signin:test_support",

@@ -1071,6 +1071,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/device_identity",
+      "//chrome/browser/indigo",
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/web_applications",
       "//components/headless/policy",

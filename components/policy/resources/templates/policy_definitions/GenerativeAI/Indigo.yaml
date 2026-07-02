@@ -1,0 +1,40 @@
+caption: Settings for Indigo.
+default: 0
+desc: |-
+  Controls if Indigo is allowed to transform images on the web.
+
+  0 = Enable Indigo with model improvement.
+
+  1 = Enable Indigo without model improvement.
+
+  2 = Disable Indigo.
+
+  If this policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Indigo with model improvement.
+  name: Allowed
+  value: 0
+- caption: Enable Indigo without model improvement.
+  name: AllowedWithoutDataCollection
+  value: 1
+- caption: Disable Indigo.
+  name: Disabled
+  value: 2
+owners:
+- liuwilliam@chromium.org
+- file://chrome/browser/indigo/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+future_on:
+- chrome.*
+- chrome_os
+tags: []
+type: int-enum

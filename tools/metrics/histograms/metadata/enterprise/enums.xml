@@ -2500,6 +2500,7 @@ chromium-metrics-reviews@google.com.
   <int value="1466" label="ProxyProvisioningDomains"/>
   <int value="1467" label="ThirdPartyAiChatSettings"/>
   <int value="1468" label="ProcessIsolationEnabled"/>
+  <int value="1469" label="Indigo"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

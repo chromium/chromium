@@ -1467,6 +1467,7 @@ policies:
   1466: ProxyProvisioningDomains
   1467: ThirdPartyAiChatSettings
   1468: ProcessIsolationEnabled
+  1469: Indigo
 
 atomic_groups:
   1: Homepage
