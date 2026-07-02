@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -74,6 +75,10 @@ public class ToolbarTabletTest {
 
     @Before
     public void setUp() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    HomepageManager.getInstance().setPrefHomepageEnabled(true);
+                });
         mPage = mActivityTestRule.startOnBlankPage();
         mToolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
     }

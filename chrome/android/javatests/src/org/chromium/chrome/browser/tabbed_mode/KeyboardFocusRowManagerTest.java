@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
@@ -88,6 +89,10 @@ public class KeyboardFocusRowManagerTest {
                 (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
         mKeyboardFocusRowManager = mTabbedRootUiCoordinator.getKeyboardFocusRowManagerForTesting();
         mOverrideContextRule.setIsDesktop(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    HomepageManager.getInstance().setPrefHomepageEnabled(true);
+                });
     }
 
     @After
