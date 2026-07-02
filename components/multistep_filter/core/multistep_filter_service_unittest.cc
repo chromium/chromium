@@ -19,6 +19,7 @@
 #include "base/uuid.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
+#include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/features.h"
@@ -49,12 +50,13 @@ class MockFilterExtractor : public FilterExtractor {
       : FilterExtractor(annotation_index_client,
                         filter_store,
                         /*log_router=*/nullptr) {}
-  MOCK_METHOD(void,
-              ExtractAnnotationFromUrl,
-              (const GURL& url,
-               base::OnceCallback<void(std::optional<base::Uuid>)> callback,
-               int64_t navigation_id),
-              (override));
+  MOCK_METHOD(
+      void,
+      ExtractAnnotationFromUrl,
+      (const GURL& url,
+       base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
+       int64_t navigation_id),
+      (override));
 };
 
 class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
@@ -198,14 +200,15 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation) {
   CreateService();
   const GURL kUrl("http://example.com");
   base::Uuid mock_uuid = base::Uuid::GenerateRandomV4();
-
+  FilterAnnotation mock_annotation(mock_uuid, "task1", "example.com",
+                                   base::Time::Now(), {});
   EXPECT_CALL(*mock_client_, GetSupportedTasks(kUrl, _, kTestNavigationId))
       .WillOnce(
           base::test::RunOnceCallback<1>(std::vector<std::string>{"task1"}));
 
-  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(
-                                    kUrl, _, kTestNavigationId))
-      .WillOnce(base::test::RunOnceCallback<1>(mock_uuid));
+  EXPECT_CALL(*mock_extractor_,
+              ExtractAnnotationFromUrl(kUrl, _, kTestNavigationId))
+      .WillOnce(base::test::RunOnceCallback<1>(mock_annotation));
 
   EXPECT_CALL(*mock_observer_,
               OnExtractionFinished(testing::Optional(mock_uuid)));

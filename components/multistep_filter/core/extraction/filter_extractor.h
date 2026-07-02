@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
+#include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
@@ -20,7 +21,6 @@ namespace multistep_filter {
 class AnnotationIndexClient;
 class FilterStore;
 class MultistepFilterLogRouter;
-struct FilterAnnotation;
 
 // Responsible for extracting `FilterAnnotation`s from URLs and storing them.
 // This is owned by the `MultistepFilterService`.
@@ -37,8 +37,8 @@ class FilterExtractor {
   virtual ~FilterExtractor();
 
   // Parses `url` to extract and locally store a `FilterAnnotation`. Virtual
-  // for testing. Invokes `callback` with the `base::Uuid` of the successfully
-  // stored annotation, or `std::nullopt` on failure.
+  // for testing. Invokes `callback` with the successfully stored annotation,
+  // or `std::nullopt` on failure.
   //
   // The extraction process follows these steps:
   // 1) Query the server via the `AnnotationIndexClient` to extract an
@@ -47,23 +47,22 @@ class FilterExtractor {
   //    store the annotation locally via the `FilterStore`, otherwise invoke the
   //    `callback` with `std::nullopt`.
   // 3) On the store response (`OnAnnotationStored()`), invoke the `callback`
-  //    with the annotation ID if successfully stored, or `std::nullopt`
-  //    otherwise.
+  //    with the annotation if successfully stored, or `std::nullopt` otherwise.
   virtual void ExtractAnnotationFromUrl(
       const GURL& url,
-      base::OnceCallback<void(std::optional<base::Uuid>)> callback,
+      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
       int64_t navigation_id);
 
  private:
   // See documentation of `ExtractAnnotationFromUrl()` for more details.
   void OnAnnotationExtracted(
-      base::OnceCallback<void(std::optional<base::Uuid>)> callback,
+      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
       int64_t navigation_id,
       std::string_view host,
       std::optional<FilterAnnotation> annotation);
   void OnAnnotationStored(
-      base::OnceCallback<void(std::optional<base::Uuid>)> callback,
-      base::Uuid annotation_id,
+      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
+      std::optional<FilterAnnotation> annotation,
       int64_t navigation_id,
       std::string_view host,
       bool success);

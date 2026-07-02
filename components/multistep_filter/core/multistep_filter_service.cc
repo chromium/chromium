@@ -252,9 +252,11 @@ void MultistepFilterService::OnUrlAllowedForSuggestion(
 }
 
 void MultistepFilterService::OnExtractionFinished(
-    std::optional<base::Uuid> annotation_id) {
+    std::optional<FilterAnnotation> annotation) {
   if (observer_for_test_) {
-    observer_for_test_->OnExtractionFinished(annotation_id);
+    observer_for_test_->OnExtractionFinished(
+        annotation.has_value() ? std::make_optional(annotation.value().id)
+                               : std::nullopt);
   }
 }
 

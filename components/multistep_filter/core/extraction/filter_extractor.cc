@@ -63,7 +63,7 @@ FilterExtractor::~FilterExtractor() = default;
 
 void FilterExtractor::ExtractAnnotationFromUrl(
     const GURL& url,
-    base::OnceCallback<void(std::optional<base::Uuid>)> callback,
+    base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
     int64_t navigation_id) {
   annotation_index_client_->ExtractFilterAnnotation(
       url,
@@ -74,19 +74,17 @@ void FilterExtractor::ExtractAnnotationFromUrl(
 }
 
 void FilterExtractor::OnAnnotationExtracted(
-    base::OnceCallback<void(std::optional<base::Uuid>)> callback,
+    base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
     int64_t navigation_id,
     std::string_view host,
     std::optional<FilterAnnotation> annotation) {
   if (annotation) {
     LogAnnotationFetched(log_router_, navigation_id, host, *annotation);
-    base::Uuid annotation_id = annotation->id;
     filter_store_->StoreAnnotation(
         *annotation,
         base::BindOnce(&FilterExtractor::OnAnnotationStored,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(annotation_id), navigation_id,
-                       std::string(host)));
+                       annotation, navigation_id, std::string(host)));
   } else {
     LogExtractionFailed(log_router_, navigation_id, host, "extracted");
     std::move(callback).Run(std::nullopt);
@@ -94,8 +92,8 @@ void FilterExtractor::OnAnnotationExtracted(
 }
 
 void FilterExtractor::OnAnnotationStored(
-    base::OnceCallback<void(std::optional<base::Uuid>)> callback,
-    base::Uuid annotation_id,
+    base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
+    std::optional<FilterAnnotation> annotation,
     int64_t navigation_id,
     std::string_view host,
     bool success) {
@@ -104,7 +102,7 @@ void FilterExtractor::OnAnnotationStored(
     std::move(callback).Run(std::nullopt);
   } else {
     LogAnnotationStored(log_router_, navigation_id, host);
-    std::move(callback).Run(std::move(annotation_id));
+    std::move(callback).Run(std::move(annotation));
   }
 }
 

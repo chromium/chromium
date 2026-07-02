@@ -18,6 +18,7 @@
 #include "base/uuid.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/sync/service/sync_service.h"
@@ -115,7 +116,7 @@ class MultistepFilterService : public KeyedService,
   friend class MultistepFilterServiceTestApi;
 
   // Callback for when an annotation is extracted.
-  void OnExtractionFinished(std::optional<base::Uuid> annotation_id);
+  void OnExtractionFinished(std::optional<FilterAnnotation> annotation);
 
   // Callback for when a suggestion is generated.
   void OnSuggestionGenerated(

@@ -71,13 +71,13 @@ TEST_F(FilterExtractorTest, ExtractAnnotationFromUrl_Success) {
   EXPECT_CALL(filter_store(), StoreAnnotation(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(true));
 
-  base::test::TestFuture<std::optional<base::Uuid>> extract_future;
+  base::test::TestFuture<std::optional<FilterAnnotation>> extract_future;
   extractor().ExtractAnnotationFromUrl(test_url, extract_future.GetCallback(),
                                        kTestNavigationId);
 
-  std::optional<base::Uuid> annotation_id = extract_future.Get();
-  ASSERT_TRUE(annotation_id.has_value());
-  EXPECT_EQ(annotation_id.value(), id);
+  std::optional<FilterAnnotation> result = extract_future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->id, id);
 }
 
 // Test that the extractor return nullopt if FilterStore::StoreAnnotation fails.
@@ -96,12 +96,12 @@ TEST_F(FilterExtractorTest, ExtractAnnotationFromUrl_StoreFailed) {
   EXPECT_CALL(filter_store(), StoreAnnotation(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(false));
 
-  base::test::TestFuture<std::optional<base::Uuid>> extract_future;
+  base::test::TestFuture<std::optional<FilterAnnotation>> extract_future;
   extractor().ExtractAnnotationFromUrl(test_url, extract_future.GetCallback(),
                                        kTestNavigationId);
 
-  std::optional<base::Uuid> annotation_id = extract_future.Get();
-  EXPECT_FALSE(annotation_id.has_value());
+  std::optional<FilterAnnotation> result = extract_future.Get();
+  EXPECT_FALSE(result.has_value());
 }
 
 // Test that the extractor does not store anything if the annotation index
@@ -114,12 +114,12 @@ TEST_F(FilterExtractorTest, ExtractAnnotationFromUrl_EmptyResult) {
 
       .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
 
-  base::test::TestFuture<std::optional<base::Uuid>> extract_future;
+  base::test::TestFuture<std::optional<FilterAnnotation>> extract_future;
   extractor().ExtractAnnotationFromUrl(test_url, extract_future.GetCallback(),
                                        kTestNavigationId);
 
-  std::optional<base::Uuid> annotation_id = extract_future.Get();
-  EXPECT_FALSE(annotation_id.has_value());
+  std::optional<FilterAnnotation> result = extract_future.Get();
+  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace
