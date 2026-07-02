@@ -843,6 +843,57 @@ id<GREYMatcher> CloseButton() {
                                                      OmniboxText(""), nil)];
 }
 
+// Tests that the cobrowse input plate is hidden when the plus menu bottom sheet
+// is opened, and reshown after it is dismissed.
+- (void)testInputPlateHiddenOnPlusMenu {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  OpenCoBrowse(_defaultURL);
+
+  // Wait for the assistant to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  // Verify that the cobrowse input plate is visible.
+  id<GREYMatcher> inputPlate =
+      grey_accessibilityID(kComposeboxAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:inputPlate]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Focus the cobrowse input plate by tapping it.
+  [[EarlGrey selectElementWithMatcher:inputPlate] performAction:grey_tap()];
+
+  // Wait for the plus button to appear.
+  id<GREYMatcher> plusButton =
+      grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusButton];
+
+  // Tap on the plus button to open the menu.
+  [[EarlGrey selectElementWithMatcher:plusButton] performAction:grey_tap()];
+
+  // Wait for the plus menu to appear.
+  id<GREYMatcher> menuOption =
+      grey_accessibilityID(kComposeboxSelectTabsActionAccessibilityIdentifier);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:menuOption];
+
+  // Verify that the cobrowse input plate is hidden.
+  [[EarlGrey selectElementWithMatcher:inputPlate]
+      assertWithMatcher:grey_notVisible()];
+
+  // Dismiss the bottom sheet menu by swiping it down.
+  [[EarlGrey selectElementWithMatcher:menuOption]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Wait for the menu to disappear.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:menuOption];
+
+  // Verify that the cobrowse input plate is visible again.
+  [[EarlGrey selectElementWithMatcher:inputPlate]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that focusing the Cobrowse input plate automatically attaches the
 // active tab.
 - (void)testCobrowseAutoAttachesActiveTabWhenTyping {

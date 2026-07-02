@@ -483,6 +483,11 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     _menuCoorinator.inputPlateDelegate = self;
     _menuCoorinator.delegate = self;
     [_menuCoorinator start];
+
+    // Hide the input plate when the bottom sheet modal is open.
+    if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+      _viewController.view.hidden = YES;
+    }
   }
 }
 
@@ -906,6 +911,11 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)composeboxMenuCoordinatorDidDismissMenu:
     (ComposeboxMenuCoordinator*)composeboxMenuCoordinator {
   [self hideComposeboxMenu];
+
+  // Show the input plate again after the bottom sheet modal is dismissed.
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    _viewController.view.hidden = NO;
+  }
 }
 
 @end
