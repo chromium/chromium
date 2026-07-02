@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "media/base/agtm.h"
 #include "media/base/media_switches.h"
 #include "media/parsers/h264_level_limits.h"
 #include "media/parsers/h26x_parser.h"
@@ -1850,9 +1851,10 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
                         hdr_metadata_bitstream_.SetMDCV(info.ToSkHdr());
                         return true;
                       },
-                      [](const H26xSEIUserDataRegisteredT35& info) {
-                        // TODO(http://crbug.com/395659818): Add method to
-                        // set HDR metadata from T35.
+                      [this](const H26xSEIUserDataRegisteredT35& info) {
+                        SetAgtmFromT35WithCountryCode(hdr_metadata_bitstream_,
+                                                      info.country_code,
+                                                      info.payload);
                         return true;
                       },
                       [](const std::monostate) { return true; }},

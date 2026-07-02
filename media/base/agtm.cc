@@ -19,6 +19,8 @@ bool MatchesAgtmT35(base::span<const uint8_t> t35_prefix) {
   return t35_prefix == base::span(kAgtmPrefix);
 }
 
+namespace {
+
 std::optional<base::span<const uint8_t>> GetAgtmFromT35WithCountryCode(
     uint8_t t35_country_code,
     base::span<const uint8_t> t35_payload_without_country_code) {
@@ -47,6 +49,25 @@ std::optional<base::span<const uint8_t>> GetAgtmFromT35(
     return std::nullopt;
   }
   return t35_payload.subspan(prefix.size());
+}
+
+}  // namespace
+
+void SetAgtmFromT35WithCountryCode(
+    gfx::HDRMetadata& hdr_metadata,
+    uint8_t t35_country_code,
+    base::span<const uint8_t> t35_payload_without_country_code) {
+  if (auto agtm = GetAgtmFromT35WithCountryCode(
+          t35_country_code, t35_payload_without_country_code)) {
+    hdr_metadata.SetSerializedAgtm(*agtm);
+  }
+}
+
+void SetAgtmFromT35(gfx::HDRMetadata& hdr_metadata,
+                    base::span<const uint8_t> t35_payload) {
+  if (auto agtm = GetAgtmFromT35(t35_payload)) {
+    hdr_metadata.SetSerializedAgtm(*agtm);
+  }
 }
 
 }  // namespace media

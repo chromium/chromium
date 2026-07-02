@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "media/base/agtm.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
@@ -512,9 +513,10 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
                          [this](const H26xSEIMasteringDisplayInfo& info) {
                            hdr_metadata_bitstream_.SetMDCV(info.ToSkHdr());
                          },
-                         [](const H26xSEIUserDataRegisteredT35& info) {
-                           // TODO(http://crbug.com/395659818): Add method to
-                           // set HDR metadata from T35.
+                         [this](const H26xSEIUserDataRegisteredT35& info) {
+                           SetAgtmFromT35WithCountryCode(
+                               hdr_metadata_bitstream_, info.country_code,
+                               info.payload);
                          },
                          [](std::monostate) {},
                      },

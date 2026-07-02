@@ -500,9 +500,8 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
       buffer->WritableSideData().alpha_data =
           base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
     } else if (side_data_id == 4) {
-      if (auto agtm = GetAgtmFromT35(side_data.subspan(8u))) {
-        buffer->WritableSideData().hdr_metadata.SetSerializedAgtm(*agtm);
-      }
+      SetAgtmFromT35(buffer->WritableSideData().hdr_metadata,
+                     side_data.subspan(8u));
     }
   }
 

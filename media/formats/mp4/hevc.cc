@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "media/base/agtm.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
@@ -288,9 +289,9 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
                          [&](const H26xSEIMasteringDisplayInfo& info) {
                            hdr_metadata.SetMDCV(info.ToSkHdr());
                          },
-                         [](const H26xSEIUserDataRegisteredT35& info) {
-                           // TODO(http://crbug.com/395659818): Add method to
-                           // set HDR metadata from T35.
+                         [&](const H26xSEIUserDataRegisteredT35& info) {
+                           SetAgtmFromT35WithCountryCode(
+                               hdr_metadata, info.country_code, info.payload);
                          },
                          [](std::monostate) {},
                      },
