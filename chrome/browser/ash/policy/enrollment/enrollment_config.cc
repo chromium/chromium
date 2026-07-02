@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -101,17 +100,17 @@ std::string_view ToStringView(EnrollmentConfig::Mode mode) {
 }
 
 std::optional<EnrollmentConfig> GetPrescribedRecoveryConfig(
-    PrefService* local_state,
+    PrefService& local_state,
     const ash::InstallAttributes& install_attributes,
     ash::system::StatisticsProvider* statistics_provider) {
-  if (!local_state->GetBoolean(ash::prefs::kEnrollmentRecoveryRequired)) {
+  if (!local_state.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired)) {
     return std::nullopt;
   }
 
   if (ash::DeviceSettingsService::IsInitialized() &&
       ash::DeviceSettingsService::Get()->HasDmToken()) {
     LOG(WARNING) << "False recovery flag.";
-    local_state->ClearPref(ash::prefs::kEnrollmentRecoveryRequired);
+    local_state.ClearPref(ash::prefs::kEnrollmentRecoveryRequired);
     return std::nullopt;
   }
 
@@ -186,7 +185,7 @@ struct EnrollmentConfig::PrescribedConfig {
   OOBEConfigSource oobe_config_source = OOBEConfigSource::kNone;
 
   static PrescribedConfig GetPrescribedConfig(
-      PrefService* local_state,
+      PrefService& local_state,
       ash::system::StatisticsProvider* statistics_provider,
       const base::DictValue& device_state,
       const ash::OobeConfiguration* oobe_configuration);
@@ -195,7 +194,7 @@ struct EnrollmentConfig::PrescribedConfig {
 // static
 EnrollmentConfig::PrescribedConfig
 EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
-    PrefService* local_state,
+    PrefService& local_state,
     ash::system::StatisticsProvider* statistics_provider,
     const base::DictValue& device_state,
     const ash::OobeConfiguration* oobe_configuration) {
@@ -258,14 +257,14 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
   }
 
   const bool pref_enrollment_auto_start_present =
-      local_state->HasPrefPath(ash::prefs::kDeviceEnrollmentAutoStart);
+      local_state.HasPrefPath(ash::prefs::kDeviceEnrollmentAutoStart);
   const bool pref_enrollment_auto_start =
-      local_state->GetBoolean(ash::prefs::kDeviceEnrollmentAutoStart);
+      local_state.GetBoolean(ash::prefs::kDeviceEnrollmentAutoStart);
 
   const bool pref_enrollment_can_exit_present =
-      local_state->HasPrefPath(ash::prefs::kDeviceEnrollmentCanExit);
+      local_state.HasPrefPath(ash::prefs::kDeviceEnrollmentCanExit);
   const bool pref_enrollment_can_exit =
-      local_state->GetBoolean(ash::prefs::kDeviceEnrollmentCanExit);
+      local_state.GetBoolean(ash::prefs::kDeviceEnrollmentCanExit);
 
   if (pref_enrollment_auto_start_present && pref_enrollment_auto_start &&
       pref_enrollment_can_exit_present && !pref_enrollment_can_exit) {
@@ -286,7 +285,7 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
     return {.mode = EnrollmentConfig::MODE_LOCAL_FORCED};
   }
 
-  if (local_state->GetBoolean(ash::prefs::kOobeComplete)) {
+  if (local_state.GetBoolean(ash::prefs::kOobeComplete)) {
     // If OOBE is complete, don't return advertised modes as there's currently
     // no way to make sure advertised enrollment only gets shown once.
     return {.mode = EnrollmentConfig::MODE_NONE};
@@ -369,20 +368,20 @@ EnrollmentConfig::EnrollmentConfig(PrescribedConfig prescribed_config,
       oobe_config_source(prescribed_config.oobe_config_source) {}
 
 // static
-EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig() {
+EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
+    PrefService& local_state) {
   return GetPrescribedEnrollmentConfig(
-      g_browser_process->local_state(), *ash::InstallAttributes::Get(),
+      local_state, *ash::InstallAttributes::Get(),
       ash::system::StatisticsProvider::GetInstance(),
       ash::OobeConfiguration::Get());
 }
 
 // static
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
-    PrefService* local_state,
+    PrefService& local_state,
     const ash::InstallAttributes& install_attributes,
     ash::system::StatisticsProvider* statistics_provider,
     const ash::OobeConfiguration* oobe_configuration) {
-  DCHECK(local_state);
   DCHECK(statistics_provider);
   DCHECK(oobe_configuration);
 
@@ -394,13 +393,13 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   }
 
   // If OOBE is done and the device is enrolled, no need to enroll.
-  if (local_state->GetBoolean(ash::prefs::kOobeComplete) &&
+  if (local_state.GetBoolean(ash::prefs::kOobeComplete) &&
       install_attributes.IsCloudManaged()) {
     return EnrollmentConfig{};
   }
 
   const base::DictValue& device_state =
-      local_state->GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state.GetDict(ash::prefs::kServerBackedDeviceState);
 
   return EnrollmentConfig(
       PrescribedConfig::GetPrescribedConfig(local_state, statistics_provider,

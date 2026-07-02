@@ -9,10 +9,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -43,7 +46,9 @@ class PackagedLicenseScreen
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  PackagedLicenseScreen(base::WeakPtr<PackagedLicenseView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  PackagedLicenseScreen(PrefService* local_state,
+                        base::WeakPtr<PackagedLicenseView> view,
                         const ScreenExitCallback& exit_callback);
   PackagedLicenseScreen(const PackagedLicenseScreen&) = delete;
   PackagedLicenseScreen& operator=(const PackagedLicenseScreen&) = delete;
@@ -73,6 +78,8 @@ class PackagedLicenseScreen
   void OnEnrollClicked() override;
 
  private:
+  const raw_ref<PrefService> local_state_;
+
   base::WeakPtr<PackagedLicenseView> view_;
 
   ScreenExitCallback exit_callback_;

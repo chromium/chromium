@@ -140,9 +140,10 @@ struct EnrollmentConfig {
   // |statistics_provider| would also be const if it had const access methods.
   // May alter the enrollment recovery flag in local state if it discovers
   // inconsistency there.
-  static EnrollmentConfig GetPrescribedEnrollmentConfig();
   static EnrollmentConfig GetPrescribedEnrollmentConfig(
-      PrefService* local_state,
+      PrefService& local_state);
+  static EnrollmentConfig GetPrescribedEnrollmentConfig(
+      PrefService& local_state,
       const ash::InstallAttributes& install_attributes,
       ash::system::StatisticsProvider* statistics_provider,
       const ash::OobeConfiguration* oobe_configuration);

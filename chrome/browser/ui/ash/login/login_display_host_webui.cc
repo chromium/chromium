@@ -1278,7 +1278,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   // TODO(b/338302062): Determine whether we should wait on OOBE config
   // retrieval before calling GetPrescribedEnrollmentConfig here.
   const policy::EnrollmentConfig enrollment_config =
-      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig(local_state);
   if (enrollment_config.should_enroll() &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().

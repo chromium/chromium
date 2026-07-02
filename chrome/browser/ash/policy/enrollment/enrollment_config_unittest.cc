@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
@@ -44,7 +45,6 @@ class EnrollmentConfigTest : public testing::Test {
   EnrollmentConfigTest() = default;
 
   void SetUp() override {
-    RegisterLocalState(local_state_.registry());
     statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                              "fake-serial");
     statistics_provider_.SetMachineStatistic(ash::system::kHardwareClassKey,
@@ -56,13 +56,16 @@ class EnrollmentConfigTest : public testing::Test {
 
   EnrollmentConfig GetPrescribedConfig() {
     return EnrollmentConfig::GetPrescribedEnrollmentConfig(
-        &local_state_, install_attributes_, &statistics_provider_,
+        local_state(), install_attributes_, &statistics_provider_,
         enrollment_test_helper_.oobe_configuration());
+  }
+
+  PrefService& local_state() {
+    return CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   content::BrowserTaskEnvironment task_environment_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
-  TestingPrefServiceSimple local_state_;
   ash::StubInstallAttributes install_attributes_;
   base::test::ScopedCommandLine command_line_;
   test::EnrollmentTestHelper enrollment_test_helper_{&command_line_,
@@ -77,8 +80,8 @@ TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenYieldsModeNone) {
   enrollment_test_helper_.SetUpFlexDevice();
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
-                       state_dict.Clone());
+  local_state().SetDict(ash::prefs::kServerBackedDeviceState,
+                        state_dict.Clone());
 
   const auto config = GetPrescribedConfig();
 
@@ -94,8 +97,8 @@ TEST_F(
   enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
-                       state_dict.Clone());
+  local_state().SetDict(ash::prefs::kServerBackedDeviceState,
+                        state_dict.Clone());
 
   const EnrollmentConfig config = GetPrescribedConfig();
 
@@ -123,8 +126,8 @@ TEST_F(
       kRemoteDeploymentFlexOobeConfig);
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
-                       state_dict.Clone());
+  local_state().SetDict(ash::prefs::kServerBackedDeviceState,
+                        state_dict.Clone());
 
   const EnrollmentConfig config = GetPrescribedConfig();
 
@@ -173,8 +176,8 @@ TEST_P(EnrollmentConfigOOBEConfigSourceTest,
   enrollment_test_helper_.SetUpEnrollmentTokenConfig(oobe_config.c_str());
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
-                       state_dict.Clone());
+  local_state().SetDict(ash::prefs::kServerBackedDeviceState,
+                        state_dict.Clone());
 
   const EnrollmentConfig config = GetPrescribedConfig();
 
@@ -218,7 +221,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // verify the pref configuration results in the expect behavior on its own.
   statistics_provider_.ClearMachineFlag(
       ash::system::kOemIsEnterpriseManagedKey);
-  local_state_.SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
+  local_state().SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
@@ -233,8 +236,8 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentRequested)
           .Set(kDeviceStateManagementDomain, kTestDomain);
-  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
-                       state_dict.Clone());
+  local_state().SetDict(ash::prefs::kServerBackedDeviceState,
+                        state_dict.Clone());
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_SERVER_ADVERTISED, config.mode);
@@ -263,7 +266,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // pref configuration results in the expect behavior on its own.
   statistics_provider_.ClearMachineFlag(
       ash::system::kOemIsEnterpriseManagedKey);
-  local_state_.SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
+  local_state().SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
@@ -274,7 +277,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   }
 
   // Server-backed state: forced initial attestation-based enrollment.
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateInitialModeEnrollmentZeroTouch)
@@ -296,7 +299,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   }
 
   // Server-backed state: forced attestation-based re-enrollment.
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentZeroTouch)
@@ -317,7 +320,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   }
 
   // Server-backed state: forced initial enrollment.
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateInitialModeEnrollmentEnforced)
@@ -332,7 +335,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   }
 
   // Server-backed state: forced re-enrollment.
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
@@ -369,7 +372,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   // If OOBE is complete, we may re-enroll to the domain configured in install
   // attributes. This is only enforced after detecting enrollment loss.
-  local_state_.SetBoolean(ash::prefs::kOobeComplete, true);
+  local_state().SetBoolean(ash::prefs::kOobeComplete, true);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
@@ -378,7 +381,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   }
 
   // Advertised enrollment gets ignored.
-  local_state_.SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
+  local_state().SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
   statistics_provider_.SetMachineFlag(ash::system::kOemIsEnterpriseManagedKey,
                                       true);
   {
@@ -400,7 +403,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   }
 
   // If enrollment recovery is on, this is signaled in |config.mode|.
-  local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
+  local_state().SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);
@@ -448,7 +451,7 @@ TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
     EXPECT_FALSE(manual_config.GetManualFallbackConfig().has_value());
   }
 
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateManagementDomain, kTestDomain)
@@ -472,10 +475,10 @@ TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
 TEST_F(EnrollmentConfigTest, FalseRecoveryFlagDetectedWhenDmTokenExists) {
   // Without loaded DMToken, the recovery flag is respected.
   {
-    local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
+    local_state().SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
     const auto config = GetPrescribedConfig();
     EXPECT_TRUE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);
   }
 
@@ -491,40 +494,40 @@ TEST_F(EnrollmentConfigTest, FalseRecoveryFlagDetectedWhenDmTokenExists) {
       *device_policy_.GetSigningKey());
 
   ash::DeviceSettingsService::Get()->StartProcessing(
-      &local_state_, &fake_session_manager_client_, owner_key_util);
+      &local_state(), &fake_session_manager_client_, owner_key_util);
   ash::DeviceSettingsService::Get()->LoadImmediately();
 
   // With DMToken loaded, the recovery flag will be cleared and recovery will
   // not be considered.
   {
-    local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
+    local_state().SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
     const auto config = GetPrescribedConfig();
     EXPECT_FALSE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   }
 
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));
   {
-    local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
+    local_state().SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
     const auto config = GetPrescribedConfig();
     EXPECT_FALSE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_SERVER_FORCED, config.mode);
   }
 }
 
 TEST_F(EnrollmentConfigTest, FalseRecoveryFlagIgnoredWithoutSerialNumber) {
-  local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
+  local_state().SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
   // With non-empty serial number, the recovery flag is respected.
   {
     const auto config = GetPrescribedConfig();
     EXPECT_TRUE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);
   }
 
@@ -534,11 +537,11 @@ TEST_F(EnrollmentConfigTest, FalseRecoveryFlagIgnoredWithoutSerialNumber) {
   {
     const auto config = GetPrescribedConfig();
     EXPECT_TRUE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   }
 
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
@@ -546,13 +549,13 @@ TEST_F(EnrollmentConfigTest, FalseRecoveryFlagIgnoredWithoutSerialNumber) {
   {
     const auto config = GetPrescribedConfig();
     EXPECT_TRUE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_SERVER_FORCED, config.mode);
   }
 }
 
 TEST_F(EnrollmentConfigTest, EnrolledDevicesDoNotEnrollAgain) {
-  local_state_.SetBoolean(ash::prefs::kOobeComplete, true);
+  local_state().SetBoolean(ash::prefs::kOobeComplete, true);
   install_attributes_.SetCloudManaged(kTestDomain, "fake-id");
 
   // When OOBE is completed and the device is cloud managed, no additional
@@ -564,7 +567,7 @@ TEST_F(EnrollmentConfigTest, EnrolledDevicesDoNotEnrollAgain) {
   }
 
   // Server backed state is irrelevant if the device is already managed.
-  local_state_.SetDict(
+  local_state().SetDict(
       ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
@@ -575,21 +578,21 @@ TEST_F(EnrollmentConfigTest, EnrolledDevicesDoNotEnrollAgain) {
   }
 
   // Recovery could be required for managed devices.
-  local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
+  local_state().SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_TRUE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);
   }
 
   // But recovery would be skipped in case of a missing serial number.
   statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey, "");
-  local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
+  local_state().SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_TRUE(
-        local_state_.GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
+        local_state().GetBoolean(ash::prefs::kEnrollmentRecoveryRequired));
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   }
 }
