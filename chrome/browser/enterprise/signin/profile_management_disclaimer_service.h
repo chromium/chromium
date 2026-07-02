@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/signin/managed_profile_creation_controller.h"
 #include "chrome/browser/enterprise/signin/managed_profile_creator.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -82,8 +81,7 @@ class ProfileManagementDisclaimerService
   }
 
   base::ScopedClosureRunner DisableManagementDisclaimerUntilReset();
-  [[nodiscard]] base::ScopedClosureRunner
-  AutoAcceptManagementDisclaimerUntilReset();
+  [[nodiscard]] base::ScopedClosureRunner AutoAcceptManagementDisclaimerUntilReset();
 
  private:
   struct ResetableState {
@@ -149,18 +147,6 @@ class ProfileManagementDisclaimerService
   void OnRegisteredForPolicy(bool is_from_cached_registration_result,
                              bool is_managed_account);
 
-  // Opens the device signals disclaimer dialog if the following conditions
-  // apply for the current profile:
-  // - The user has accepted profile management notice.
-  // - The user has NOT granted permanent device signals collection permission
-  //    (device_signals::prefs::kDeviceSignalsPermanentConsentReceived)
-  // BrowserWindowInterface weak pointers for all open dialogs are kept in
-  // `opened_device_signals_disclaimers_`.
-  void MaybeShowDeviceSignalsDisclaimerDialog(BrowserWindowInterface* browser);
-
-  void HandleDeviceSignalsDisclaimerChoice(
-      signin::DeviceSignalsDisclaimerResult result);
-
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
@@ -181,9 +167,6 @@ class ProfileManagementDisclaimerService
   bool auto_accept_management_ = false;
   bool enable_management_disclaimer_ = true;
   SigninPrefs signin_prefs_;
-
-  std::vector<base::WeakPtr<BrowserWindowInterface>>
-      opened_device_signals_disclaimers_;
 
   std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>
       policy_fetch_tracker_by_account_id_;
