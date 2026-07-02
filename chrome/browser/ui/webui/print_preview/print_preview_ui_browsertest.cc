@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -163,7 +167,23 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PreviewStartedMetric) {
   content::TestNavigationObserver nav_observer(nullptr);
   nav_observer.WatchExistingWebContents();
   nav_observer.Wait();
-  EXPECT_EQ(GURL("chrome-untrusted://print/1/0/print.pdf"),
+
+  // Get the print preview UI ID to construct the expected URL.
+  content::WebContents* initiator =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(initiator);
+  content::WebContents* preview_dialog =
+      printing::PrintPreviewDialogController::GetInstance()
+          ->GetPrintPreviewForContents(initiator);
+  ASSERT_TRUE(preview_dialog);
+  content::WebUI* web_ui = preview_dialog->GetWebUI();
+  ASSERT_TRUE(web_ui);
+  auto* print_preview_ui =
+      web_ui->GetController()->GetAs<printing::PrintPreviewUI>();
+  ASSERT_TRUE(print_preview_ui);
+  std::string ui_id = print_preview_ui->GetIDForPrintPreviewUI().ToString();
+
+  EXPECT_EQ(GURL("chrome-untrusted://print/" + ui_id + "/0/print.pdf"),
             nav_observer.last_navigation_url());
   histogram_tester.ExpectBucketCount(
       "PrintPreview.UserAction", printing::UserActionBuckets::kPreviewStarted,

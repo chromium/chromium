@@ -8,12 +8,14 @@
 #include <optional>
 #include <string>
 
+#include "base/unguessable_token.h"
+
 namespace printing {
 
 // Result of `ParseDataPath()`.
 struct PrintPreviewIdAndPageIndex {
   // Print Preview UI ID.
-  int ui_id;
+  base::UnguessableToken ui_id;
 
   // Zero-based page index, or `COMPLETE_PREVIEW_DOCUMENT_INDEX` for a
   // print-ready PDF.
@@ -27,7 +29,7 @@ struct PrintPreviewIdAndPageIndex {
 //   chrome-untrusted://print/<ui_id>/<page_index>/print.pdf
 //
 // Example:
-//   chrome-untrusted://print/123/10/print.pdf
+//   chrome-untrusted://print/0123456789abcdef0123456789abcdef/10/print.pdf
 std::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
     const std::string& path);
 

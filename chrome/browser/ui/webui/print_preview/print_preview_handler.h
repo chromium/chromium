@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -72,7 +73,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   void OnInvalidPrinterSettings(int request_id);
 
   // Called when print preview is ready.
-  void OnPrintPreviewReady(int preview_uid, int request_id);
+  void OnPrintPreviewReady(const base::UnguessableToken& preview_uid,
+                           int request_id);
 
   // Called when a print request is cancelled due to its initiator closing.
   void OnPrintRequestCancelled();
@@ -96,7 +98,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Notify the WebUI that the page preview is ready.
   void SendPagePreviewReady(int page_index,
-                            int preview_uid,
+                            const base::UnguessableToken& preview_uid,
                             int preview_request_id);
 
   // Notifies PDF Printer Handler that |path| was selected. Used for tests.

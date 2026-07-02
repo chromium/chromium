@@ -29,6 +29,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
@@ -1290,9 +1291,11 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   ASSERT_TRUE(request_value.has_value());
   int preview_request_id = request_value.value();
 
-  std::optional<int> ui_value = preview_params.FindInt(kPreviewUIID);
-  ASSERT_TRUE(ui_value.has_value());
-  int preview_ui_id = ui_value.value();
+  const std::string* ui_value = preview_params.FindString(kPreviewUIID);
+  ASSERT_TRUE(ui_value);
+  std::optional<base::UnguessableToken> preview_ui_id =
+      base::UnguessableToken::DeserializeFromString(*ui_value);
+  ASSERT_TRUE(preview_ui_id.has_value());
 
   // Simulate renderer responses: PageLayoutReady, PageCountReady,
   // PagePreviewReady, and OnPrintPreviewReady will be called in that order.
@@ -1320,11 +1323,11 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   AssertWebUIEventFired(*web_ui()->call_data().back(), "page-count-ready");
 
   // Page at index 0 is ready.
-  handler()->SendPagePreviewReady(0, preview_ui_id, preview_request_id);
+  handler()->SendPagePreviewReady(0, preview_ui_id.value(), preview_request_id);
   AssertWebUIEventFired(*web_ui()->call_data().back(), "page-preview-ready");
 
   // Print preview is ready.
-  handler()->OnPrintPreviewReady(preview_ui_id, preview_request_id);
+  handler()->OnPrintPreviewReady(preview_ui_id.value(), preview_request_id);
   CheckWebUIResponse(*web_ui()->call_data().back(), callback_id_in, true);
 
   // Renderer responses have been as expected.
@@ -1340,7 +1343,7 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   EXPECT_EQ(message_count, web_ui()->call_data().size());
   handler()->SendPageCountReady(1, -1, 0);
   EXPECT_EQ(message_count, web_ui()->call_data().size());
-  handler()->OnPrintPreviewReady(0, 0);
+  handler()->OnPrintPreviewReady(base::UnguessableToken(), 0);
   EXPECT_EQ(message_count, web_ui()->call_data().size());
 
   // Handler should have tried to kill the renderer for each of these.

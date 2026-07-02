@@ -354,7 +354,7 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
       mojom::RequestPrintPreviewParamsPtr params) override {
     NOTREACHED();
   }
-  void CheckForCancel(int32_t preview_ui_id,
+  void CheckForCancel(const base::UnguessableToken& preview_ui_id,
                       int32_t request_id,
                       CheckForCancelCallback callback) override {
     NOTREACHED();

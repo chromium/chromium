@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/id_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -23,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -140,17 +140,12 @@ WebContents* GetInitiator(content::WebUI* web_ui) {
 }
 
 // Mapping from PrintPreviewUI ID to print preview request ID.
-using PrintPreviewRequestIdMap = base::flat_map<int, int>;
+using PrintPreviewRequestIdMap = base::flat_map<base::UnguessableToken, int>;
 
 PrintPreviewRequestIdMap& GetPrintPreviewRequestIdMap() {
   static base::NoDestructor<PrintPreviewRequestIdMap> map;
   return *map;
 }
-
-// PrintPreviewUI IDMap used to avoid exposing raw pointer addresses to WebUI.
-// Only accessed on the UI thread.
-base::LazyInstance<base::IDMap<PrintPreviewUI*>>::DestructorAtExit
-    g_print_preview_ui_id_map = LAZY_INSTANCE_INITIALIZER;
 
 void AddPrintPreviewStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -491,31 +486,30 @@ bool PrintPreviewUI::IsBound() const {
 void PrintPreviewUI::ClearPreviewUIId() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!id_) {
+  if (id_.is_empty()) {
     return;
   }
 
   receiver_.reset();
-  PrintPreviewDataService::GetInstance()->RemoveEntry(*id_);
-  GetPrintPreviewRequestIdMap().erase(*id_);
-  g_print_preview_ui_id_map.Get().Remove(*id_);
-  id_.reset();
+  PrintPreviewDataService::GetInstance()->RemoveEntry(id_);
+  GetPrintPreviewRequestIdMap().erase(id_);
+  id_ = base::UnguessableToken();
 }
 
 scoped_refptr<base::RefCountedMemory>
 PrintPreviewUI::GetPrintPreviewDataForIndex(int index) const {
-  return PrintPreviewDataService::GetInstance()->GetDataEntry(*id_, index);
+  return PrintPreviewDataService::GetInstance()->GetDataEntry(id_, index);
 }
 
 void PrintPreviewUI::SetPrintPreviewDataForIndex(
     int index,
     scoped_refptr<base::RefCountedMemory> data) {
-  PrintPreviewDataService::GetInstance()->SetDataEntry(*id_, index,
+  PrintPreviewDataService::GetInstance()->SetDataEntry(id_, index,
                                                        std::move(data));
 }
 
 void PrintPreviewUI::ClearAllPreviewData() {
-  PrintPreviewDataService::GetInstance()->RemoveEntry(*id_);
+  PrintPreviewDataService::GetInstance()->RemoveEntry(id_);
 }
 
 void PrintPreviewUI::NotifyUIPreviewPageReady(
@@ -538,7 +532,7 @@ void PrintPreviewUI::NotifyUIPreviewPageReady(
   if (g_test_delegate) {
     g_test_delegate->DidRenderPreviewPage(web_ui()->GetWebContents());
   }
-  handler_->SendPagePreviewReady(base::checked_cast<int>(page_index), *id_,
+  handler_->SendPagePreviewReady(base::checked_cast<int>(page_index), id_,
                                  request_id);
 }
 
@@ -580,7 +574,7 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
 
   SetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX,
                               std::move(data_bytes));
-  handler_->OnPrintPreviewReady(*id_, request_id);
+  handler_->OnPrintPreviewReady(id_, request_id);
 }
 
 bool PrintPreviewUI::ShouldUseCompositor() const {
@@ -785,20 +779,20 @@ void PrintPreviewUI::AddPdfPageForNupConversion(
 
 // static
 bool PrintPreviewUI::ShouldCancelRequest(
-    const std::optional<int32_t>& preview_ui_id,
+    const base::UnguessableToken& preview_ui_id,
     int request_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!preview_ui_id) {
+  if (preview_ui_id.is_empty()) {
     return true;
   }
 
   auto& map = GetPrintPreviewRequestIdMap();
-  auto it = map.find(*preview_ui_id);
+  auto it = map.find(preview_ui_id);
   return it == map.end() || request_id != it->second;
 }
 
-std::optional<int32_t> PrintPreviewUI::GetIDForPrintPreviewUI() const {
+base::UnguessableToken PrintPreviewUI::GetIDForPrintPreviewUI() const {
   return id_;
 }
 
@@ -837,7 +831,7 @@ void PrintPreviewUI::OnPrintPreviewRequest(int request_id) {
         "PrintPreview.InitializationTime",
         base::TimeTicks::Now() - initial_preview_start_time_);
   }
-  GetPrintPreviewRequestIdMap()[*id_] = request_id;
+  GetPrintPreviewRequestIdMap()[id_] = request_id;
 }
 
 void PrintPreviewUI::DidStartPreview(mojom::DidStartPreviewParamsPtr params,
@@ -929,8 +923,8 @@ bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_index) {
 void PrintPreviewUI::OnCancelPendingPreviewRequest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (id_) {
-    GetPrintPreviewRequestIdMap()[*id_] = -1;
+  if (!id_.is_empty()) {
+    GetPrintPreviewRequestIdMap()[id_] = -1;
   }
 }
 
@@ -1182,10 +1176,10 @@ void PrintPreviewUI::ClearAllPreviewDataForTest() {
 
 void PrintPreviewUI::SetPreviewUIId() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!id_);
+  DCHECK(id_.is_empty());
 
-  id_ = g_print_preview_ui_id_map.Get().Add(this);
-  GetPrintPreviewRequestIdMap()[*id_] = -1;
+  id_ = base::UnguessableToken::Create();
+  GetPrintPreviewRequestIdMap()[id_] = -1;
 }
 
 }  // namespace printing

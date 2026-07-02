@@ -601,7 +601,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue& args) {
   // Add an additional key in order to identify |print_preview_ui| later on
   // when calling PrintPreviewUI::ShouldCancelRequest() on the IO thread.
   settings.Set(kPreviewUIID,
-               print_preview_ui()->GetIDForPrintPreviewUI().value());
+               print_preview_ui()->GetIDForPrintPreviewUI().ToString());
 
   WebContents* initiator = GetInitiator();
   auto* manager =
@@ -960,13 +960,16 @@ PrintPreviewHandler::GetRequestParams() {
   return dialog_controller->GetRequestParams(preview_web_contents());
 }
 
-void PrintPreviewHandler::OnPrintPreviewReady(int preview_uid, int request_id) {
+void PrintPreviewHandler::OnPrintPreviewReady(
+    const base::UnguessableToken& preview_uid,
+    int request_id) {
   std::string callback_id = GetCallbackId(request_id);
   if (callback_id.empty()) {
     return;
   }
 
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(preview_uid));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(preview_uid.ToString()));
 }
 
 void PrintPreviewHandler::OnPrintPreviewFailed(int request_id) {
@@ -1039,9 +1042,10 @@ void PrintPreviewHandler::SendPageLayoutReady(
                     base::Value(all_pages_have_custom_orientation));
 }
 
-void PrintPreviewHandler::SendPagePreviewReady(int page_index,
-                                               int preview_uid,
-                                               int preview_request_id) {
+void PrintPreviewHandler::SendPagePreviewReady(
+    int page_index,
+    const base::UnguessableToken& preview_uid,
+    int preview_request_id) {
   // With print compositing, by the time compositing finishes and this method
   // gets called, the print preview may have failed. Since the failure message
   // may have arrived first, check for this case and bail out instead of
@@ -1055,7 +1059,8 @@ void PrintPreviewHandler::SendPagePreviewReady(int page_index,
   }
 
   FireWebUIListener("page-preview-ready", base::Value(page_index),
-                    base::Value(preview_uid), base::Value(preview_request_id));
+                    base::Value(preview_uid.ToString()),
+                    base::Value(preview_request_id));
 }
 
 void PrintPreviewHandler::OnPrintPreviewCancelled(int request_id) {

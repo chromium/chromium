@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -94,8 +95,9 @@ IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestDinoPage) {
 
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestChromeUntrustedPage) {
-  RunTest(u"", GURL(base::StrCat(
-                   {chrome::kChromeUIUntrustedPrintURL, "1/1/print.pdf"})));
+  RunTest(u"", GURL(base::StrCat({chrome::kChromeUIUntrustedPrintURL,
+                                  base::UnguessableToken::Create().ToString(),
+                                  "/1/print.pdf"})));
 }
 #endif
 

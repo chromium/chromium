@@ -647,9 +647,10 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
   PrintPreviewAllowedForTesting();
 }
 
-void PrintViewManager::CheckForCancel(int32_t preview_ui_id,
-                                      int32_t request_id,
-                                      CheckForCancelCallback callback) {
+void PrintViewManager::CheckForCancel(
+    const base::UnguessableToken& preview_ui_id,
+    int32_t request_id,
+    CheckForCancelCallback callback) {
   std::move(callback).Run(
       PrintPreviewUI::ShouldCancelRequest(preview_ui_id, request_id));
 }

@@ -412,7 +412,9 @@ interface PrintManagerHost {
   // gets true if the preview corresponding to `preview_ui_id` and `request_id`
   // has been cancelled.
   [EnableIf=enable_print_preview, Sync]
-  CheckForCancel(int32 preview_ui_id, int32 request_id) => (bool cancel);
+  CheckForCancel(
+      mojo_base.mojom.UnguessableToken preview_ui_id, int32 request_id)
+      => (bool cancel);
 
   // Sends the accessibility tree corresponding to a document being
   // printed, needed for a tagged (accessible) PDF.

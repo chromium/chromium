@@ -6,43 +6,49 @@
 
 #include <optional>
 
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
 
 TEST(ParseDataPathTest, ParseDataPath) {
+  base::UnguessableToken token = base::UnguessableToken::Create();
   std::optional<PrintPreviewIdAndPageIndex> parsed =
-      ParseDataPath("3/4/print.pdf");
+      ParseDataPath(token.ToString() + "/4/print.pdf");
   ASSERT_TRUE(parsed);
 
-  EXPECT_EQ(parsed->ui_id, 3);
+  EXPECT_EQ(parsed->ui_id, token);
   EXPECT_EQ(parsed->page_index, 4);
 }
 
 TEST(ParseDataPathTest, ParseDataPathTest) {
   std::optional<PrintPreviewIdAndPageIndex> parsed =
-      ParseDataPath("1/1/test.pdf");
+      ParseDataPath("123456789abcdef00fedcba987654321/0/test.pdf");
   ASSERT_TRUE(parsed);
 
-  EXPECT_EQ(parsed->ui_id, -1);
+  EXPECT_EQ(parsed->ui_id, base::UnguessableToken::Deserialize(
+                               0x123456789abcdef0, 0x0fedcba987654321)
+                               .value());
   EXPECT_EQ(parsed->page_index, 0);
 }
 
 TEST(ParseDataPathTest, ParseDataPathValid) {
-  EXPECT_TRUE(ParseDataPath("1/2/print.pdf"));
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  EXPECT_TRUE(ParseDataPath(token.ToString() + "/2/print.pdf"));
 }
 
 TEST(ParseDataPathTest, ParseDataPathInvalid) {
   // Doesn't end in print.pdf
   EXPECT_FALSE(ParseDataPath("pdf/browser_api.js"));
   // Doesn't have both page index and UI ID.
-  EXPECT_FALSE(ParseDataPath("1/print.pdf"));
-  // Non-integer UI ID
-  EXPECT_FALSE(ParseDataPath("foo/0/print.pdf"));
-  // UI ID < 0
-  EXPECT_FALSE(ParseDataPath("-1/0/print.pdf"));
+  EXPECT_FALSE(ParseDataPath("1234567890abcdef1234567890abcdef/print.pdf"));
+  // Invalid UI ID (not hex)
+  EXPECT_FALSE(ParseDataPath("z234567890abcdef1234567890abcdef/0/print.pdf"));
+  // Invalid UI ID (too short)
+  EXPECT_FALSE(ParseDataPath("1234567890abcdef1234567890abcde/0/print.pdf"));
   // Non-integer page index
-  EXPECT_FALSE(ParseDataPath("1/foo/print.pdf"));
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  EXPECT_FALSE(ParseDataPath(token.ToString() + "/foo/print.pdf"));
 }
 
 }  // namespace printing

@@ -87,9 +87,10 @@ void HeadlessPrintManager::RequestPrintPreview(
   mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 
-void HeadlessPrintManager::CheckForCancel(int32_t preview_ui_id,
-                                          int32_t request_id,
-                                          CheckForCancelCallback callback) {
+void HeadlessPrintManager::CheckForCancel(
+    const base::UnguessableToken& preview_ui_id,
+    int32_t request_id,
+    CheckForCancelCallback callback) {
   mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 

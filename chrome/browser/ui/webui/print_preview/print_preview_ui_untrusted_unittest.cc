@@ -14,11 +14,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
 #include "chrome/browser/printing/print_preview_test.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/print_preview/parse_data_path.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/web_contents.h"
@@ -54,18 +56,22 @@ class PrintPreviewUIUntrustedUnitTest : public PrintPreviewTest {
 TEST_F(PrintPreviewUIUntrustedUnitTest, PrintPreviewData) {
   PrintPreviewDataService* data_service =
       PrintPreviewDataService::GetInstance();
-  scoped_refptr<base::RefCountedMemory> dummy_data = CreateTestData();
-  data_service->SetDataEntry(0, 0, dummy_data.get());
+  scoped_refptr<base::RefCountedMemory> test_data = CreateTestData();
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  data_service->SetDataEntry(token1, 0, test_data.get());
 
   // Valid request for data in the data service.
   scoped_refptr<base::RefCountedMemory> data =
-      PrintPreviewUIUntrusted::GetPrintPreviewDataForTest("0/0/print.pdf");
+      PrintPreviewUIUntrusted::GetPrintPreviewDataForTest(token1.ToString() +
+                                                          "/0/print.pdf");
   ASSERT_TRUE(data);
-  EXPECT_EQ(dummy_data->size(), data->size());
-  EXPECT_EQ(dummy_data.get(), data.get());
+  EXPECT_EQ(test_data->size(), data->size());
+  EXPECT_EQ(test_data.get(), data.get());
 
   // Invalid request
-  data = PrintPreviewUIUntrusted::GetPrintPreviewDataForTest("1/0/print.pdf");
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  data = PrintPreviewUIUntrusted::GetPrintPreviewDataForTest(token2.ToString() +
+                                                             "/0/print.pdf");
   ASSERT_TRUE(data);
   EXPECT_EQ(0u, data->size());
 
@@ -77,11 +83,12 @@ TEST_F(PrintPreviewUIUntrustedUnitTest, PrintPreviewData) {
   base::FilePath pdf_path =
       test_data_path.AppendASCII("pdf/test.pdf").NormalizePathSeparators();
   ASSERT_TRUE(base::ReadFileToString(pdf_path, &test_pdf_content));
-  auto test_data =
+  auto test_pdf_data =
       base::MakeRefCounted<base::RefCountedString>(std::move(test_pdf_content));
-  data = PrintPreviewUIUntrusted::GetPrintPreviewDataForTest("0/0/test.pdf");
+  data = PrintPreviewUIUntrusted::GetPrintPreviewDataForTest(
+      "123456789abcdef00fedcba987654321/0/test.pdf");
   ASSERT_TRUE(data);
-  EXPECT_EQ(test_data->size(), data->size());
-  EXPECT_TRUE(data->Equals(test_data));
+  EXPECT_EQ(test_pdf_data->size(), data->size());
+  EXPECT_TRUE(data->Equals(test_pdf_data));
 }
 }  // namespace printing

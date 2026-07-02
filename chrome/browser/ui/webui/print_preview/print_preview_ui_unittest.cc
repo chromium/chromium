@@ -226,7 +226,7 @@ TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
 
   // Test the initial state.
   EXPECT_TRUE(PrintPreviewUI::ShouldCancelRequest(
-      *preview_ui->GetIDForPrintPreviewUI(), 0));
+      preview_ui->GetIDForPrintPreviewUI(), 0));
 
   const int kFirstRequestId = 1000;
   const int kSecondRequestId = 1001;
@@ -234,16 +234,16 @@ TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
   // Test with kFirstRequestId.
   preview_ui->OnPrintPreviewRequest(kFirstRequestId);
   EXPECT_FALSE(PrintPreviewUI::ShouldCancelRequest(
-      *preview_ui->GetIDForPrintPreviewUI(), kFirstRequestId));
+      preview_ui->GetIDForPrintPreviewUI(), kFirstRequestId));
   EXPECT_TRUE(PrintPreviewUI::ShouldCancelRequest(
-      *preview_ui->GetIDForPrintPreviewUI(), kSecondRequestId));
+      preview_ui->GetIDForPrintPreviewUI(), kSecondRequestId));
 
   // Test with kSecondRequestId.
   preview_ui->OnPrintPreviewRequest(kSecondRequestId);
   EXPECT_TRUE(PrintPreviewUI::ShouldCancelRequest(
-      *preview_ui->GetIDForPrintPreviewUI(), kFirstRequestId));
+      preview_ui->GetIDForPrintPreviewUI(), kFirstRequestId));
   EXPECT_FALSE(PrintPreviewUI::ShouldCancelRequest(
-      *preview_ui->GetIDForPrintPreviewUI(), kSecondRequestId));
+      preview_ui->GetIDForPrintPreviewUI(), kSecondRequestId));
 }
 
 // Ensures that a failure cancels all pending actions.

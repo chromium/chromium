@@ -245,7 +245,8 @@ bool IsPrintPreviewUrl(std::string_view url) {
 }
 
 int ExtractPrintPreviewPageIndex(std::string_view src_url) {
-  // Sample `src_url` format: chrome-untrusted://print/id/page_index/print.pdf
+  // Sample `src_url` format:
+  // chrome-untrusted://print/token/page_index/print.pdf
   // The page_index is zero-based, but can be negative with special meanings.
   std::vector<std::string_view> url_substr =
       base::SplitStringPiece(src_url.substr(kChromeUntrustedPrintHost.size()),

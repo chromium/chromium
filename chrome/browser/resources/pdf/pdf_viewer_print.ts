@@ -79,7 +79,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
               assert(paths.length === 4);
               assert(paths[3] === 'print.pdf');
               // Valid Print Preview UI ID
-              assert(!Number.isNaN(parseInt(paths[1]!)));
+              assert(/^[0-9a-fA-F]{32}$/.test(paths[1]!));
               // Valid page index (can be negative for PDFs).
               assert(!Number.isNaN(parseInt(paths[2]!)));
               return url.toString();

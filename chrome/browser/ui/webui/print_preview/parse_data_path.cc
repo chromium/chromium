@@ -11,19 +11,20 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/unguessable_token.h"
 
 namespace printing {
 
 std::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
     const std::string& path) {
-  PrintPreviewIdAndPageIndex parsed = {
-      .ui_id = -1,
-      .page_index = 0,
-  };
-
   std::string file_path = path.substr(0, path.find_first_of('?'));
   if (base::EndsWith(file_path, "/test.pdf", base::CompareCase::SENSITIVE)) {
-    return parsed;
+    return PrintPreviewIdAndPageIndex{
+        .ui_id = base::UnguessableToken::Deserialize(0x123456789abcdef0,
+                                                     0x0fedcba987654321)
+                     .value(),
+        .page_index = 0,
+    };
   }
 
   if (!base::EndsWith(file_path, "/print.pdf", base::CompareCase::SENSITIVE)) {
@@ -36,15 +37,21 @@ std::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
     return std::nullopt;
   }
 
-  if (!base::StringToInt(url_substr[0], &parsed.ui_id) || parsed.ui_id < 0) {
+  std::optional<base::UnguessableToken> ui_id =
+      base::UnguessableToken::DeserializeFromString(url_substr[0]);
+  if (!ui_id.has_value()) {
     return std::nullopt;
   }
 
-  if (!base::StringToInt(url_substr[1], &parsed.page_index)) {
+  int page_index;
+  if (!base::StringToInt(url_substr[1], &page_index)) {
     return std::nullopt;
   }
 
-  return parsed;
+  return PrintPreviewIdAndPageIndex{
+      .ui_id = ui_id.value(),
+      .page_index = page_index,
+  };
 }
 
 }  // namespace printing

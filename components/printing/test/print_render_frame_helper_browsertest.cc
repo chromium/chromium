@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
@@ -371,7 +372,7 @@ class TestPrintManagerHost
         !job_settings.FindString(kSettingDeviceName) ||
         !job_settings.FindInt(kSettingDuplexMode) ||
         !job_settings.FindInt(kSettingCopies) ||
-        !job_settings.FindInt(kPreviewUIID) ||
+        !job_settings.FindString(kPreviewUIID) ||
         !job_settings.FindInt(kPreviewRequestID)) {
       std::move(callback).Run(nullptr);
       return;
@@ -404,7 +405,7 @@ class TestPrintManagerHost
   void ShowScriptedPrintPreview() override {}
   void RequestPrintPreview(
       mojom::RequestPrintPreviewParamsPtr params) override {}
-  void CheckForCancel(int32_t preview_ui_id,
+  void CheckForCancel(const base::UnguessableToken& preview_ui_id,
                       int32_t request_id,
                       CheckForCancelCallback callback) override {
     // Waits until other mojo messages are handled before checking if
@@ -1898,7 +1899,7 @@ class PrintRenderFrameHelperPreviewTest
             .Set(kSettingDeviceName, "dummy")
             .Set(kSettingDpiHorizontal, 72)
             .Set(kSettingDpiVertical, 72)
-            .Set(kPreviewUIID, 4)
+            .Set(kPreviewUIID, base::UnguessableToken::Create().ToString())
             .Set(kSettingRasterizePdf, false)
             .Set(kPreviewRequestID, 12345)
             .Set(kSettingScaleFactor, 100)

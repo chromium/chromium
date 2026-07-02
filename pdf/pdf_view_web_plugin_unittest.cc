@@ -213,13 +213,13 @@ base::DictValue GenerateShowSearchifyInProgressMessage(bool show) {
 }
 #endif
 
-base::DictValue GenerateResetPrintPreviewModeMessage(int id,
+base::DictValue GenerateResetPrintPreviewModeMessage(const char* id,
                                                      int page_number,
                                                      bool grayscale,
                                                      int page_count) {
   return base::DictValue()
       .Set("type", "resetPrintPreviewMode")
-      .Set("url", base::StringPrintf("chrome-untrusted://print/%d/%d/print.pdf",
+      .Set("url", base::StringPrintf("chrome-untrusted://print/%s/%d/print.pdf",
                                      id, page_number))
       .Set("grayscale", grayscale)
       .Set("pageCount", page_count);
@@ -2817,6 +2817,9 @@ class PdfViewWebPluginPrintPreviewTest : public PdfViewWebPluginTest {
     EXPECT_CALL(*client_ptr_, GetEmbedderOriginString)
         .WillRepeatedly(Return("chrome://print/"));
   }
+
+  // For use with `base::StringPrintf()`.
+  static constexpr char kTestId[] = "1234567890abcdef1234567890abcdef";
 };
 
 TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
@@ -2834,7 +2837,8 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
       });
 
   OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
-      /*id=*/0, /*page_number=*/0, /*grayscale=*/false, /*page_count=*/1));
+      /*id=*/kTestId, /*page_number=*/0, /*grayscale=*/false,
+      /*page_count=*/1));
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,
@@ -2847,10 +2851,11 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
         return std::make_unique<NiceMock<TestPDFiumEngine>>(client);
       });
 
-  // The UI ID of 1 in the URL is arbitrary.
+  // The UI ID token in the URL is arbitrary.
   // The page index value of -1, AKA `kCompletePDFIndex`, is required for PDFs.
   OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
-      /*id=*/1, /*page_number=*/-1, /*grayscale=*/false, /*page_count=*/0));
+      /*id=*/kTestId, /*page_number=*/-1, /*grayscale=*/false,
+      /*page_count=*/0));
 
   EXPECT_CALL(*client_ptr_, PostMessage).Times(AnyNumber());
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
@@ -2871,12 +2876,14 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
       });
 
   OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
-      /*id=*/0, /*page_number=*/0, /*grayscale=*/true, /*page_count=*/1));
+      /*id=*/kTestId, /*page_number=*/0, /*grayscale=*/true,
+      /*page_count=*/1));
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
   OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
-      /*id=*/0, /*page_number=*/0, /*grayscale=*/false, /*page_count=*/1));
+      /*id=*/kTestId, /*page_number=*/0, /*grayscale=*/false,
+      /*page_count=*/1));
 
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadSuccess"));
   EXPECT_CALL(*client_ptr_, PostMessage);
@@ -2904,7 +2911,8 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
   plugin_->DocumentLoadProgress(2, 100);
 
   OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
-      /*id=*/123, /*page_number=*/0, /*grayscale=*/false, /*page_count=*/2));
+      /*id=*/kTestId, /*page_number=*/0, /*grayscale=*/false,
+      /*page_count=*/2));
 
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "loadProgress",
@@ -2916,15 +2924,17 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 TEST_F(PdfViewWebPluginPrintPreviewTest,
        DocumentLoadProgressNotResetByLoadPreviewPageMessage) {
   OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
-      /*id=*/123, /*page_number=*/0, /*grayscale=*/false, /*page_count=*/2));
+      /*id=*/kTestId, /*page_number=*/0, /*grayscale=*/false,
+      /*page_count=*/2));
 
   plugin_->DocumentLoadProgress(2, 100);
 
-  plugin_->OnMessage(ParseMessage(R"({
+  plugin_->OnMessage(ParseMessage(base::StringPrintf(R"({
     "type": "loadPreviewPage",
-    "url": "chrome-untrusted://print/123/1/print.pdf",
+    "url": "chrome-untrusted://print/%s/1/print.pdf",
     "index": 1,
-  })"));
+  })",
+                                                     kTestId)));
 
   EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
   plugin_->DocumentLoadProgress(3, 100);
@@ -3906,7 +3916,8 @@ TEST_F(PdfViewWebPluginPrintPreviewInkMetricTest,
   base::HistogramTester histograms;
 
   OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
-      /*id=*/0, /*page_number=*/0, /*grayscale=*/false, /*page_count=*/1));
+      /*id=*/kTestId, /*page_number=*/0, /*grayscale=*/false,
+      /*page_count=*/1));
 
   EXPECT_CALL(*engine_ptr_, ContainsV2InkPath(_)).Times(0);
   plugin_->DocumentLoadComplete();
