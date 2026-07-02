@@ -11,14 +11,12 @@
 #include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 
 namespace chromeos::converters::diagnostics {
 
 namespace {
 
 namespace cx_diag = ::chromeos::api::os_diagnostics;
-namespace crosapi = ::crosapi::mojom;
 
 // All fields of `cx_diag::CreateRoutineArgumentsUnion`. The enums are defined
 // manually because there are no tools to generate them automatically.
@@ -39,7 +37,7 @@ enum class RoutineInquiryReplyField {
   kCheckKeyboardBacklightState,
 };
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CreateMemoryRoutineArguments& cx_args) {
   if (cx_args.max_testing_mem_kib.has_value() &&
@@ -47,13 +45,12 @@ ConvertExtensionUnionToMojoUnion(
     return std::nullopt;
   }
 
-  auto args = crosapi::TelemetryDiagnosticMemoryRoutineArgument::New();
+  auto args = ash::cros_healthd::mojom::MemoryRoutineArgument::New();
   args->max_testing_mem_kib = cx_args.max_testing_mem_kib;
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewMemory(
-      std::move(args));
+  return ash::cros_healthd::mojom::RoutineArgument::NewMemory(std::move(args));
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CreateVolumeButtonRoutineArguments& cx_args) {
   if (cx_args.timeout_seconds <= 0 ||
@@ -61,67 +58,66 @@ ConvertExtensionUnionToMojoUnion(
     return std::nullopt;
   }
 
-  auto args = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
-  args->type = ConvertVolumeButtonRoutineButtonTypeCrosapi(cx_args.button_type);
+  auto args = ash::cros_healthd::mojom::VolumeButtonRoutineArgument::New();
+  args->type = ConvertVolumeButtonRoutineButtonType(cx_args.button_type);
   args->timeout = base::Seconds(cx_args.timeout_seconds);
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
+  return ash::cros_healthd::mojom::RoutineArgument::NewVolumeButton(
       std::move(args));
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CreateFanRoutineArguments& cx_args) {
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewFan(
-      crosapi::TelemetryDiagnosticFanRoutineArgument::New());
+  return ash::cros_healthd::mojom::RoutineArgument::NewFan(
+      ash::cros_healthd::mojom::FanRoutineArgument::New());
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CreateNetworkBandwidthRoutineArguments& cx_args) {
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewNetworkBandwidth(
-      crosapi::TelemetryDiagnosticNetworkBandwidthRoutineArgument::New());
+  return ash::cros_healthd::mojom::RoutineArgument::NewNetworkBandwidth(
+      ash::cros_healthd::mojom::NetworkBandwidthRoutineArgument::New());
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CreateLedLitUpRoutineArguments& cx_args) {
-  auto args = crosapi::TelemetryDiagnosticLedLitUpRoutineArgument::New();
+  auto args = ash::cros_healthd::mojom::LedLitUpRoutineArgument::New();
   args->name = ConvertLedName(cx_args.name);
   args->color = ConvertLedColor(cx_args.color);
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewLedLitUp(
+  return ash::cros_healthd::mojom::RoutineArgument::NewLedLitUp(
       std::move(args));
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CreateCameraFrameAnalysisRoutineArguments& cx_args) {
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewCameraFrameAnalysis(
-      crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineArgument::New());
+  return ash::cros_healthd::mojom::RoutineArgument::NewCameraFrameAnalysis(
+      ash::cros_healthd::mojom::CameraFrameAnalysisRoutineArgument::New());
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CreateKeyboardBacklightRoutineArguments& cx_args) {
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewKeyboardBacklight(
-      crosapi::TelemetryDiagnosticKeyboardBacklightRoutineArgument::New());
+  return ash::cros_healthd::mojom::RoutineArgument::NewKeyboardBacklight(
+      ash::cros_healthd::mojom::KeyboardBacklightRoutineArgument::New());
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
+std::optional<ash::cros_healthd::mojom::RoutineInquiryReplyPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CheckLedLitUpStateReply& cx_args) {
-  auto args = crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::New();
+  auto args = ash::cros_healthd::mojom::CheckLedLitUpStateReply::New();
   args->state = ConvertLedLitUpState(cx_args.state);
-  return crosapi::TelemetryDiagnosticRoutineInquiryReply::NewCheckLedLitUpState(
+  return ash::cros_healthd::mojom::RoutineInquiryReply::NewCheckLedLitUpState(
       std::move(args));
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
+std::optional<ash::cros_healthd::mojom::RoutineInquiryReplyPtr>
 ConvertExtensionUnionToMojoUnion(
     const cx_diag::CheckKeyboardBacklightStateReply& cx_args) {
-  auto args =
-      crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::New();
+  auto args = ash::cros_healthd::mojom::CheckKeyboardBacklightStateReply::New();
   args->state = ConvertKeyboardBacklightState(cx_args.state);
-  return crosapi::TelemetryDiagnosticRoutineInquiryReply::
+  return ash::cros_healthd::mojom::RoutineInquiryReply::
       NewCheckKeyboardBacklightState(std::move(args));
 }
 
@@ -405,96 +401,79 @@ ConvertVolumeButtonRoutineButtonType(
   NOTREACHED();
 }
 
-crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType
-ConvertVolumeButtonRoutineButtonTypeCrosapi(
-    cx_diag::VolumeButtonType volume_button_type) {
-  switch (volume_button_type) {
-    case cx_diag::VolumeButtonType::kNone:
-      return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
-          ButtonType::kUnmappedEnumField;
-    case cx_diag::VolumeButtonType::kVolumeUp:
-      return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
-          ButtonType::kVolumeUp;
-    case cx_diag::VolumeButtonType::kVolumeDown:
-      return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
-          ButtonType::kVolumeDown;
-  }
-  NOTREACHED();
-}
-
-crosapi::TelemetryDiagnosticLedName ConvertLedName(cx_diag::LedName led_name) {
+ash::cros_healthd::mojom::LedName ConvertLedName(cx_diag::LedName led_name) {
   switch (led_name) {
     case cx_diag::LedName::kNone:
-      return crosapi::TelemetryDiagnosticLedName::kUnmappedEnumField;
+      return ash::cros_healthd::mojom::LedName::kUnmappedEnumField;
     case cx_diag::LedName::kBattery:
-      return crosapi::TelemetryDiagnosticLedName::kBattery;
+      return ash::cros_healthd::mojom::LedName::kBattery;
     case cx_diag::LedName::kPower:
-      return crosapi::TelemetryDiagnosticLedName::kPower;
+      return ash::cros_healthd::mojom::LedName::kPower;
     case cx_diag::LedName::kAdapter:
-      return crosapi::TelemetryDiagnosticLedName::kAdapter;
+      return ash::cros_healthd::mojom::LedName::kAdapter;
     case cx_diag::LedName::kLeft:
-      return crosapi::TelemetryDiagnosticLedName::kLeft;
+      return ash::cros_healthd::mojom::LedName::kLeft;
     case cx_diag::LedName::kRight:
-      return crosapi::TelemetryDiagnosticLedName::kRight;
+      return ash::cros_healthd::mojom::LedName::kRight;
   }
   NOTREACHED();
 }
 
-crosapi::TelemetryDiagnosticLedColor ConvertLedColor(
+ash::cros_healthd::mojom::LedColor ConvertLedColor(
     cx_diag::LedColor led_color) {
   switch (led_color) {
     case cx_diag::LedColor::kNone:
-      return crosapi::TelemetryDiagnosticLedColor::kUnmappedEnumField;
+      return ash::cros_healthd::mojom::LedColor::kUnmappedEnumField;
     case cx_diag::LedColor::kRed:
-      return crosapi::TelemetryDiagnosticLedColor::kRed;
+      return ash::cros_healthd::mojom::LedColor::kRed;
     case cx_diag::LedColor::kGreen:
-      return crosapi::TelemetryDiagnosticLedColor::kGreen;
+      return ash::cros_healthd::mojom::LedColor::kGreen;
     case cx_diag::LedColor::kBlue:
-      return crosapi::TelemetryDiagnosticLedColor::kBlue;
+      return ash::cros_healthd::mojom::LedColor::kBlue;
     case cx_diag::LedColor::kYellow:
-      return crosapi::TelemetryDiagnosticLedColor::kYellow;
+      return ash::cros_healthd::mojom::LedColor::kYellow;
     case cx_diag::LedColor::kWhite:
-      return crosapi::TelemetryDiagnosticLedColor::kWhite;
+      return ash::cros_healthd::mojom::LedColor::kWhite;
     case cx_diag::LedColor::kAmber:
-      return crosapi::TelemetryDiagnosticLedColor::kAmber;
+      return ash::cros_healthd::mojom::LedColor::kAmber;
   }
   NOTREACHED();
 }
 
-crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State ConvertLedLitUpState(
+ash::cros_healthd::mojom::CheckLedLitUpStateReply::State ConvertLedLitUpState(
     cx_diag::LedLitUpState led_lit_up_state) {
   switch (led_lit_up_state) {
     case cx_diag::LedLitUpState::kNone:
-      return crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+      return ash::cros_healthd::mojom::CheckLedLitUpStateReply::State::
           kUnmappedEnumField;
     case cx_diag::LedLitUpState::kCorrectColor:
-      return crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+      return ash::cros_healthd::mojom::CheckLedLitUpStateReply::State::
           kCorrectColor;
     case cx_diag::LedLitUpState::kNotLitUp:
-      return crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+      return ash::cros_healthd::mojom::CheckLedLitUpStateReply::State::
           kNotLitUp;
   }
   NOTREACHED();
 }
 
-crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State
+ash::cros_healthd::mojom::CheckKeyboardBacklightStateReply::State
 ConvertKeyboardBacklightState(
     cx_diag::KeyboardBacklightState keyboard_backlight_state) {
   switch (keyboard_backlight_state) {
     case cx_diag::KeyboardBacklightState::kNone:
-      return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
-          State::kUnmappedEnumField;
+      return ash::cros_healthd::mojom::CheckKeyboardBacklightStateReply::State::
+          kUnmappedEnumField;
     case cx_diag::KeyboardBacklightState::kOk:
-      return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
-          State::kOk;
+      return ash::cros_healthd::mojom::CheckKeyboardBacklightStateReply::State::
+          kOk;
     case cx_diag::KeyboardBacklightState::kAnyNotLitUp:
-      return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
-          State::kAnyNotLitUp;
+      return ash::cros_healthd::mojom::CheckKeyboardBacklightStateReply::State::
+          kAnyNotLitUp;
   }
   NOTREACHED();
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+std::optional<ash::cros_healthd::mojom::RoutineArgumentPtr>
 ConvertRoutineArgumentsUnion(
     cx_diag::CreateRoutineArgumentsUnion extension_union) {
   std::vector<CreateRoutineArgumentsField> non_null_fields =
@@ -504,7 +483,7 @@ ConvertRoutineArgumentsUnion(
     // When extension is newer than the browser, extension might pass in a
     // routine argument that cannot be recognized by the browser. For better
     // developer experience, don't treat it as an invalid union.
-    return crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+    return ash::cros_healthd::mojom::RoutineArgument::NewUnrecognizedArgument(
         false);
   }
 
@@ -538,7 +517,7 @@ ConvertRoutineArgumentsUnion(
   NOTREACHED();
 }
 
-std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
+std::optional<ash::cros_healthd::mojom::RoutineInquiryReplyPtr>
 ConvertRoutineInquiryReplyUnion(
     cx_diag::RoutineInquiryReplyUnion extension_union) {
   std::vector<RoutineInquiryReplyField> non_null_fields =
@@ -548,8 +527,8 @@ ConvertRoutineInquiryReplyUnion(
     // When extension is newer than the browser, extension might pass in a reply
     // that cannot be recognized by the browser. For better developer
     // experience, don't treat it as an invalid union.
-    return crosapi::TelemetryDiagnosticRoutineInquiryReply::
-        NewUnrecognizedReply(false);
+    return ash::cros_healthd::mojom::RoutineInquiryReply::NewUnrecognizedReply(
+        false);
   }
 
   // A dictionary-based union is invalid when more than one fields are set.

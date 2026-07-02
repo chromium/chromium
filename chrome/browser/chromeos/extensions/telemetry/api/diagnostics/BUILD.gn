@@ -27,7 +27,6 @@ source_set("diagnostics") {
     "//chromeos/ash/components/telemetry_extension/routines",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
     "//extensions/browser",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
@@ -75,7 +74,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]
 }

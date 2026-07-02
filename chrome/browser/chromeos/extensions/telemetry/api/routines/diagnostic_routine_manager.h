@@ -16,7 +16,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -61,7 +61,7 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
 
   base::expected<base::Uuid, Error> CreateRoutine(
       extensions::ExtensionId extension_id,
-      crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument);
+      ash::cros_healthd::mojom::RoutineArgumentPtr routine_argument);
   // Tries to start the routine with `routine_id`, returns true if successful,
   // otherwise false.
   bool StartRoutineForExtension(extensions::ExtensionId extension_id,
@@ -74,7 +74,7 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
   bool ReplyToRoutineInquiryForExtension(
       const extensions::ExtensionId& extension_id,
       const base::Uuid& routine_id,
-      crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr reply);
+      ash::cros_healthd::mojom::RoutineInquiryReplyPtr reply);
 
   // `ExtensionRegistryObserver`:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

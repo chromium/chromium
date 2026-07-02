@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -13,7 +13,7 @@ namespace chromeos {
 namespace {
 
 using HistogramValue = DiagnosticRoutineCategoryHistogramValue;
-using RoutineTag = crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag;
+using RoutineTag = ash::cros_healthd::mojom::RoutineArgument::Tag;
 
 constexpr std::pair<RoutineTag, HistogramValue> kAllRoutineCategories[] = {
     {RoutineTag::kUnrecognizedArgument, HistogramValue::kUnknown},

@@ -5,48 +5,60 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "base/notreached.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 
 namespace chromeos {
 
 namespace {
 
 DiagnosticRoutineCategoryHistogramValue ConvertToHistogramValue(
-    crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag tag) {
+    ash::cros_healthd::mojom::RoutineArgument::Tag tag) {
   switch (tag) {
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
-        kUnrecognizedArgument:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kUnrecognizedArgument:
       return DiagnosticRoutineCategoryHistogramValue::kUnknown;
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::kMemory:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kMemory:
       return DiagnosticRoutineCategoryHistogramValue::kMemory;
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kVolumeButton:
       return DiagnosticRoutineCategoryHistogramValue::kVolumeButton;
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::kFan:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kFan:
       return DiagnosticRoutineCategoryHistogramValue::kFan;
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::kLedLitUp:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kLedLitUp:
       return DiagnosticRoutineCategoryHistogramValue::kLedLitUp;
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
-        kNetworkBandwidth:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kNetworkBandwidth:
       return DiagnosticRoutineCategoryHistogramValue::kNetworkBandwidth;
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
-        kCameraFrameAnalysis:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kCameraFrameAnalysis:
       return DiagnosticRoutineCategoryHistogramValue::kCameraFrameAnalysis;
-    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
-        kKeyboardBacklight:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kKeyboardBacklight:
       return DiagnosticRoutineCategoryHistogramValue::kKeyboardBacklight;
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kAudioDriver:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kBatteryDischarge:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kBluetoothDiscovery:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kBluetoothPairing:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kBluetoothPower:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kBluetoothScanning:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kCameraAvailability:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kCpuCache:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kCpuStress:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kDiskRead:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kFloatingPoint:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kPrimeSearch:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kSensitiveSensor:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kUfsLifetime:
+    case ash::cros_healthd::mojom::RoutineArgument::Tag::kUrandom:
+      NOTREACHED();
   }
 }
 
 }  // namespace
 
-void RecordRoutineCreation(
-    crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag tag) {
+void RecordRoutineCreation(ash::cros_healthd::mojom::RoutineArgument::Tag tag) {
   base::UmaHistogramEnumeration("ChromeOS.TelemetryExtension.RoutineCreation",
                                 ConvertToHistogramValue(tag));
 }
 
 void RecordRoutineSupportedStatusQuery(
-    crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag tag) {
+    ash::cros_healthd::mojom::RoutineArgument::Tag tag) {
   base::UmaHistogramEnumeration(
       "ChromeOS.TelemetryExtension.RoutineSupportedStatusQuery",
       ConvertToHistogramValue(tag));

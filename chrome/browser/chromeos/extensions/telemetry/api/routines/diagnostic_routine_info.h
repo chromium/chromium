@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_DIAGNOSTIC_ROUTINE_INFO_H_
 
 #include "base/uuid.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension_id.h"
 
@@ -21,7 +21,7 @@ struct DiagnosticRoutineInfo {
   // detail.
   // TODO(b/320394027): Remove the workaround after the legacy finished events
   // are removed.
-  ::crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag
+  ash::cros_healthd::mojom::RoutineArgument::Tag
       argument_tag_for_legacy_finished_events;
 };
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_DIAGNOSTICS_API_METRICS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_DIAGNOSTICS_API_METRICS_H_
 
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 
 namespace chromeos {
 
@@ -27,12 +27,11 @@ enum class DiagnosticRoutineCategoryHistogramValue {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/chromeos/enums.xml)
 
 // Logs routine creation for each routine category `tag`.
-void RecordRoutineCreation(
-    crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag tag);
+void RecordRoutineCreation(ash::cros_healthd::mojom::RoutineArgument::Tag tag);
 
 // Logs routine supported status query for each routine category `tag`.
 void RecordRoutineSupportedStatusQuery(
-    crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag tag);
+    ash::cros_healthd::mojom::RoutineArgument::Tag tag);
 
 }  // namespace chromeos
 

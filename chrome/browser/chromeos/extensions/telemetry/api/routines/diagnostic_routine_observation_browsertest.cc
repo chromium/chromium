@@ -79,14 +79,14 @@ class TelemetryExtensionDiagnosticRoutineObserverBrowserTest
     // Use an arbitrary value for `argument_tag_for_legacy_finished_events`.
     DiagnosticRoutineInfo info(
         extension_id(), uuid_, profile(),
-        crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
+        ash::cros_healthd::mojom::RoutineArgument::Tag::kMemory);
     observation_ = std::make_unique<DiagnosticRoutineObservation>(
         info, on_finished_future_.GetCallback(),
         remote_.BindNewPipeAndPassReceiver());
   }
 
   void SetLegacyFinishedEventRoutineObservation(
-      crosapi::TelemetryDiagnosticRoutineArgument::Tag
+      ash::cros_healthd::mojom::RoutineArgument::Tag
           argument_tag_for_legacy_finished_events) {
     DiagnosticRoutineInfo info(extension_id(), uuid_, profile(),
                                argument_tag_for_legacy_finished_events);
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveLegacyOnMemoryRoutineFinished) {
   SetLegacyFinishedEventRoutineObservation(
-      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
+      ash::cros_healthd::mojom::RoutineArgument::Tag::kMemory);
   RegisterEventObserver(
       api::os_diagnostics::OnMemoryRoutineFinished::kEventName,
       base::BindLambdaForTesting([this] {
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
     CanObserveLegacyOnVolumeButtonRoutineFinishedWithoutRoutineDetail) {
   SetLegacyFinishedEventRoutineObservation(
-      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton);
+      ash::cros_healthd::mojom::RoutineArgument::Tag::kVolumeButton);
   RegisterEventObserver(
       api::os_diagnostics::OnVolumeButtonRoutineFinished::kEventName,
       base::BindLambdaForTesting([this] {
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveLegacyOnFanRoutineFinished) {
   SetLegacyFinishedEventRoutineObservation(
-      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan);
+      ash::cros_healthd::mojom::RoutineArgument::Tag::kFan);
   RegisterEventObserver(
       api::os_diagnostics::OnFanRoutineFinished::kEventName,
       base::BindLambdaForTesting([this] {

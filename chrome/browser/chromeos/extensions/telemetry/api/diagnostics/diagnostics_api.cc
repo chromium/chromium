@@ -25,8 +25,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace chromeos {
@@ -506,9 +504,8 @@ void OsDiagnosticsCreateRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
-      mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
-          std::move(params->args));
+  auto mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
+      std::move(params->args));
   if (!mojo_arg.has_value()) {
     RespondWithError("Routine arguments are invalid.");
     return;
@@ -563,17 +560,15 @@ void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  auto memory_arg =
-      crosapi::mojom::TelemetryDiagnosticMemoryRoutineArgument::New();
+  auto memory_arg = ash::cros_healthd::mojom::MemoryRoutineArgument::New();
   if (params.value().args.max_testing_mem_kib.has_value()) {
     memory_arg->max_testing_mem_kib = params.value().args.max_testing_mem_kib;
   }
 
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
   auto result = routines_manager->CreateRoutine(
-      extension_id(),
-      crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewMemory(
-          std::move(memory_arg)));
+      extension_id(), ash::cros_healthd::mojom::RoutineArgument::NewMemory(
+                          std::move(memory_arg)));
 
   if (!result.has_value()) {
     switch (result.error()) {
@@ -608,9 +603,9 @@ void OsDiagnosticsCreateVolumeButtonRoutineFunction::RunIfAllowed() {
   }
 
   auto volume_button_arg =
-      crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
+      ash::cros_healthd::mojom::VolumeButtonRoutineArgument::New();
   volume_button_arg->type =
-      converters::diagnostics::ConvertVolumeButtonRoutineButtonTypeCrosapi(
+      converters::diagnostics::ConvertVolumeButtonRoutineButtonType(
           params.value().args.button_type);
   volume_button_arg->timeout =
       base::Seconds(params.value().args.timeout_seconds);
@@ -618,7 +613,7 @@ void OsDiagnosticsCreateVolumeButtonRoutineFunction::RunIfAllowed() {
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
   auto result = routines_manager->CreateRoutine(
       extension_id(),
-      crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
+      ash::cros_healthd::mojom::RoutineArgument::NewVolumeButton(
           std::move(volume_button_arg)));
 
   if (!result.has_value()) {
@@ -651,13 +646,12 @@ void OsDiagnosticsCreateFanRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  auto fan_arg = crosapi::mojom::TelemetryDiagnosticFanRoutineArgument::New();
+  auto fan_arg = ash::cros_healthd::mojom::FanRoutineArgument::New();
 
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
   auto result = routines_manager->CreateRoutine(
       extension_id(),
-      crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewFan(
-          std::move(fan_arg)));
+      ash::cros_healthd::mojom::RoutineArgument::NewFan(std::move(fan_arg)));
 
   if (!result.has_value()) {
     switch (result.error()) {
@@ -720,9 +714,8 @@ void OsDiagnosticsReplyToRoutineInquiryFunction::RunIfAllowed() {
     return;
   }
 
-  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr>
-      mojo_reply = converters::diagnostics::ConvertRoutineInquiryReplyUnion(
-          std::move(params->request.reply));
+  auto mojo_reply = converters::diagnostics::ConvertRoutineInquiryReplyUnion(
+      std::move(params->request.reply));
   if (!mojo_reply.has_value()) {
     RespondWithError("Inquiry reply is invalid.");
     return;
@@ -749,10 +742,8 @@ void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
     return;
   }
 
-  // TODO(crbug.com/510951937): Do not use crosapi struct.
-  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
-      mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
-          std::move(params->args));
+  auto mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
+      std::move(params->args));
   if (!mojo_arg.has_value()) {
     RespondWithError("Routine arguments are invalid.");
     return;
@@ -776,7 +767,7 @@ void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
   ash::cros_healthd::ServiceConnection::GetInstance()
       ->GetRoutinesService()
       ->IsRoutineArgumentSupported(
-          ash::converters::ConvertRoutinePtr(std::move(mojo_arg.value())),
+          std::move(mojo_arg.value()),
           base::BindOnce(
               &OsDiagnosticsIsRoutineArgumentSupportedFunction::OnResult,
               this));

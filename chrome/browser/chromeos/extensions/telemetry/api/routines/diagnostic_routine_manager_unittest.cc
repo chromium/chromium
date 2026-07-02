@@ -25,7 +25,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "extensions/browser/extension_registry.h"
@@ -44,8 +43,6 @@
 namespace chromeos {
 
 namespace {
-
-namespace crosapi = ::crosapi::mojom;
 
 constexpr char kExtensionId1[] = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
 constexpr char kPwaPattern1[] =
@@ -119,10 +116,10 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
     return CHECK_DEREF(DiagnosticRoutineManager::Get(profile()));
   }
 
-  crosapi::TelemetryDiagnosticRoutineArgumentPtr GetMemoryArgument() {
-    auto memory_arg = crosapi::TelemetryDiagnosticMemoryRoutineArgument::New();
+  ash::cros_healthd::mojom::RoutineArgumentPtr GetMemoryArgument() {
+    auto memory_arg = ash::cros_healthd::mojom::MemoryRoutineArgument::New();
     memory_arg->max_testing_mem_kib = 42;
-    return crosapi::TelemetryDiagnosticRoutineArgument::NewMemory(
+    return ash::cros_healthd::mojom::RoutineArgument::NewMemory(
         std::move(memory_arg));
   }
 
@@ -375,7 +372,7 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
        ReplyToRoutineInquiryNoExtension) {
   EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
       kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid),
-      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+      ash::cros_healthd::mojom::RoutineInquiryReply::NewUnrecognizedReply(
           true)));
 }
 
@@ -385,7 +382,7 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
 
   EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
       kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid),
-      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+      ash::cros_healthd::mojom::RoutineInquiryReply::NewUnrecognizedReply(
           true)));
 }
 
@@ -401,7 +398,7 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
 
   EXPECT_TRUE(routine_manager().ReplyToRoutineInquiryForExtension(
       kExtensionId1, create_result.value(),
-      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+      ash::cros_healthd::mojom::RoutineInquiryReply::NewUnrecognizedReply(
           true)));
 }
 

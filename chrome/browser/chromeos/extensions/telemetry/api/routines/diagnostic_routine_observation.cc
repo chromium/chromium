@@ -44,11 +44,11 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
     crosapi::TelemetryDiagnosticRoutineStateFinishedPtr finished,
     base::Uuid uuid,
     content::BrowserContext* browser_context,
-    crosapi::TelemetryDiagnosticRoutineArgument::Tag
+    ash::cros_healthd::mojom::RoutineArgument::Tag
         argument_tag_for_legacy_finished_events) {
   // The volume button routine has no detail.
   if (argument_tag_for_legacy_finished_events ==
-      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton) {
+      ash::cros_healthd::mojom::RoutineArgument::Tag::kVolumeButton) {
     return CreateEventForLegacyFinishedVolumeButtonRoutine(
         finished->has_passed, uuid, browser_context);
   }
