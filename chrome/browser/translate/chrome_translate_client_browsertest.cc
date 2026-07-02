@@ -53,7 +53,7 @@ class FakePdfListener : public pdf::mojom::PdfListener {
     std::move(callback).Run(has_meaningful_text_);
   }
   void HasJavaScript(HasJavaScriptCallback callback) override {
-    std::move(callback).Run(false);
+    std::move(callback).Run(has_javascript_);
   }
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   void GetSaveDataBufferHandlerForDrive(
@@ -66,9 +66,13 @@ class FakePdfListener : public pdf::mojom::PdfListener {
   void set_has_meaningful_text(bool has_meaningful_text) {
     has_meaningful_text_ = has_meaningful_text;
   }
+  void set_has_javascript(bool has_javascript) {
+    has_javascript_ = has_javascript;
+  }
 
  private:
   bool has_meaningful_text_ = false;
+  bool has_javascript_ = false;
 };
 
 class DummyPDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {
@@ -154,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-// If the PDF has meaningful text, it returns true.
+// If the PDF has meaningful text and no JavaScript, it returns true.
 IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
                        TrueWhenHasMeaningfulText) {
   auto client = std::make_unique<DummyPDFDocumentHelperClient>();
@@ -169,6 +173,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
   // Bind the fake listener.
   FakePdfListener listener;
   listener.set_has_meaningful_text(true);
+  listener.set_has_javascript(false);
   mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
   pdf_helper->SetListener(receiver.BindNewPipeAndPassRemote());
 
@@ -198,6 +203,33 @@ IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
 
   FakePdfListener listener;
   listener.set_has_meaningful_text(false);
+  listener.set_has_javascript(false);
+  mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
+  pdf_helper->SetListener(receiver.BindNewPipeAndPassRemote());
+
+  base::test::TestFuture<bool> future;
+  chrome_translate_client()->CheckIfPdfIsTranslatable(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  pdf_helper->OnDocumentLoadComplete();
+  EXPECT_FALSE(future.Get());
+}
+
+// If the PDF has JavaScript, it returns false.
+IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
+                       FalseWhenHasJavaScript) {
+  auto client = std::make_unique<DummyPDFDocumentHelperClient>();
+  pdf::PDFDocumentHelper::CreateForCurrentDocument(
+      web_contents()->GetPrimaryMainFrame(), std::move(client));
+
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::GetForCurrentDocument(
+          web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pdf_helper, nullptr);
+
+  FakePdfListener listener;
+  listener.set_has_meaningful_text(true);
+  listener.set_has_javascript(true);
   mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
   pdf_helper->SetListener(receiver.BindNewPipeAndPassRemote());
 

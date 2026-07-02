@@ -56,6 +56,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "base/barrier_callback.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #endif
@@ -116,19 +117,58 @@ bool IsAutomaticTranslationType(translate::TranslationType type) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PDF)
-void OnPdfDocumentLoadComplete(base::WeakPtr<ChromeTranslateClient> client,
-                               base::OnceCallback<void(bool)> callback) {
+void OnPdfDocumentLoadComplete(
+    base::WeakPtr<ChromeTranslateClient> client,
+    base::OnceCallback<void(bool)> completion_callback) {
   if (!client) {
-    std::move(callback).Run(false);
+    std::move(completion_callback).Run(false);
     return;
   }
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(client->web_contents());
   if (!pdf_helper) {
-    std::move(callback).Run(false);
+    std::move(completion_callback).Run(false);
     return;
   }
-  pdf_helper->HasMeaningfulText(std::move(callback));
+
+  enum class PdfCheckType { kMeaningfulText, kJavaScript };
+  using PdfCheckResult = std::pair<PdfCheckType, bool>;
+
+  // The first parameter (2) is the number of times `pdf_checks_barrier` must
+  // be called (once for `HasMeaningfulText` and once for `HasJavaScript`)
+  // before executing `completion_callback`.
+  auto pdf_checks_barrier = base::BarrierCallback<PdfCheckResult>(
+      2, base::BindOnce(
+             [](base::OnceCallback<void(bool)> completion_callback,
+                std::vector<PdfCheckResult> results) {
+               bool has_meaningful_text = false;
+               bool has_javascript = true;
+               for (const auto& [type, value] : results) {
+                 switch (type) {
+                   case PdfCheckType::kMeaningfulText:
+                     has_meaningful_text = value;
+                     break;
+                   case PdfCheckType::kJavaScript:
+                     has_javascript = value;
+                     break;
+                 }
+               }
+               std::move(completion_callback)
+                   .Run(has_meaningful_text && !has_javascript);
+             },
+             std::move(completion_callback)));
+
+  pdf_helper->HasMeaningfulText(base::BindOnce(
+      [](base::RepeatingCallback<void(PdfCheckResult)> barrier, bool result) {
+        barrier.Run({PdfCheckType::kMeaningfulText, result});
+      },
+      pdf_checks_barrier));
+
+  pdf_helper->HasJavaScript(base::BindOnce(
+      [](base::RepeatingCallback<void(PdfCheckResult)> barrier, bool result) {
+        barrier.Run({PdfCheckType::kJavaScript, result});
+      },
+      pdf_checks_barrier));
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
