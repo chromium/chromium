@@ -12082,6 +12082,7 @@ from previous Chrome versions.
   <int value="-787430013" label="GroupSuggestionService:disabled"/>
   <int value="-787426248" label="ChromeHomeSurvey:disabled"/>
   <int value="-787418584" label="EnableDozeModePowerScheduler:disabled"/>
+  <int value="-787309087" label="OmniboxListMenuContextMenu:disabled"/>
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
   <int value="-787176861" label="CaptureModeEducationBypassLimits:enabled"/>
   <int value="-785528415" label="FedCm:disabled"/>
@@ -15440,6 +15441,7 @@ from previous Chrome versions.
   <int value="292936174" label="ShowForceRespectUiGainsToggle:enabled"/>
   <int value="293025775" label="UseDnsHttpsSvcb:enabled"/>
   <int value="293134455" label="AutofillSendBillingCustomerNumber:disabled"/>
+  <int value="293548931" label="OmniboxListMenuContextMenu:enabled"/>
   <int value="293878745" label="BluetoothBtsnoopInternals:disabled"/>
   <int value="293996306" label="ArrayPrototypeValues:disabled"/>
   <int value="294150128" label="RelatedSearchesSimplifiedUx:enabled"/>
