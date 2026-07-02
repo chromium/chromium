@@ -22669,7 +22669,7 @@
             ]
         }
     ],
-    "ShutdownPreNativeThreadPoolAfterStartup": [
+    "ShutdownPreNativeThreadPoolAfterStartupInBackground": [
         {
             "platforms": [
                 "android",
