@@ -384,6 +384,16 @@ void GnomeDesktopResizer::DoSetVideoLayout(
         static_cast<int>(track.height() * physical_resolution_multiplier)};
     ScreenResolution screen_resolution{physical_resolution,
                                        {track.x_dpi(), track.y_dpi()}};
+    screen_resolution =
+        GetSupportedResolutions(
+            screen_resolution, track.has_screen_id() ? track.screen_id()
+                                                     : webrtc::kInvalidScreenId)
+            .front();
+    scale = static_cast<double>(screen_resolution.dpi().x()) / kDefaultDpi;
+    if (scale == 0.0) {
+      scale = 1.0;
+    }
+    physical_resolution = screen_resolution.dimensions();
     // If a physical layout is passed, the position will be invalid but the
     // Relayout() call in DoApplyPreferredMonitorsConfig() will fix it.
     webrtc::DesktopVector position{track.position_x(), track.position_y()};

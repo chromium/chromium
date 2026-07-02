@@ -285,33 +285,33 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_UpdatesExistingMonitors) {
   meta_0->set_screen_id(kMeta0ScreenId);
   meta_0->set_position_x(0);
   meta_0->set_position_y(0);
-  meta_0->set_width(300);
-  meta_0->set_height(300);
+  meta_0->set_width(900);
+  meta_0->set_height(900);
   meta_0->set_x_dpi(GetDpiNumberForScale(1.5));
   meta_0->set_y_dpi(GetDpiNumberForScale(1.5));
   protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
   meta_1->set_screen_id(kMeta1ScreenId);
-  meta_1->set_position_x(100);
-  meta_1->set_position_y(300);
-  meta_1->set_width(200);
-  meta_1->set_height(200);
+  meta_1->set_position_x(300);
+  meta_1->set_position_y(900);
+  meta_1->set_width(600);
+  meta_1->set_height(600);
   meta_1->set_x_dpi(GetDpiNumberForScale(2.0));
   meta_1->set_y_dpi(GetDpiNumberForScale(2.0));
   resizer_.SetVideoLayout(layout);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(450, 450));
+            TestDesktopSize(1350, 1350));
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(400, 400));
+            TestDesktopSize(1200, 1200));
 
   // Simulate resolution changed while scales reverted to 1.
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 450, 450, 1.0)},
-      {kMeta1, CreateMonitorInfo(450, 0, 400, 400, 1.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1350, 1350, 1.0)},
+      {kMeta1, CreateMonitorInfo(1350, 0, 1200, 1200, 1.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 450, 450, 1.5)},
-      {kMeta1, CreateMonitorInfo(100, 300, 400, 400, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1350, 1350, 1.5)},
+      {kMeta1, CreateMonitorInfo(300, 900, 1200, 1200, 2.0)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
@@ -324,34 +324,34 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_SupportsPhysicalLayout) {
   meta_0->set_screen_id(kMeta0ScreenId);
   meta_0->set_position_x(0);
   meta_0->set_position_y(0);
-  meta_0->set_width(450);
-  meta_0->set_height(450);
+  meta_0->set_width(1350);
+  meta_0->set_height(1350);
   meta_0->set_x_dpi(GetDpiNumberForScale(1.5));
   meta_0->set_y_dpi(GetDpiNumberForScale(1.5));
   protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
   meta_1->set_screen_id(kMeta1ScreenId);
-  meta_1->set_position_x(50);
-  meta_1->set_position_y(450);
-  meta_1->set_width(400);
-  meta_1->set_height(400);
+  meta_1->set_position_x(150);
+  meta_1->set_position_y(1350);
+  meta_1->set_width(1200);
+  meta_1->set_height(1200);
   meta_1->set_x_dpi(GetDpiNumberForScale(2.0));
   meta_1->set_y_dpi(GetDpiNumberForScale(2.0));
   resizer_.SetVideoLayout(layout);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(450, 450));
+            TestDesktopSize(1350, 1350));
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(400, 400));
+            TestDesktopSize(1200, 1200));
 
   // Simulate resolution changed while scales reverted to 1.
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 450, 450, 1.0)},
-      {kMeta1, CreateMonitorInfo(450, 0, 400, 400, 1.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1350, 1350, 1.0)},
+      {kMeta1, CreateMonitorInfo(1350, 0, 1200, 1200, 1.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   // The resizer will relayout in logical layout mode.
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 450, 450, 1.5)},
-      {kMeta1, CreateMonitorInfo(100, 300, 400, 400, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1350, 1350, 1.5)},
+      {kMeta1, CreateMonitorInfo(300, 900, 1200, 1200, 2.0)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
   ASSERT_EQ(display_config_.layout_mode,
             GnomeDisplayConfig::LayoutMode::kLogical);
@@ -366,8 +366,8 @@ TEST_F(GnomeDesktopResizerTest,
 
   // Vertical end-aligned.
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(25, 0, 100, 100, 2.0)},
-      {kMeta1, CreateMonitorInfo(0, 50, 150, 150, 2.0)}};
+      {kMeta0, CreateMonitorInfo(300, 0, 1200, 1200, 2.0)},
+      {kMeta1, CreateMonitorInfo(0, 600, 1800, 1800, 2.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   // Note: unlike GnomeDisplayConfig, width and height in VideoTrackLayout are
@@ -378,50 +378,50 @@ TEST_F(GnomeDesktopResizerTest,
   // Meta-0 and Meta-1 are unchanged.
   protocol::VideoTrackLayout* meta_0 = layout.add_video_track();
   meta_0->set_screen_id(kMeta0ScreenId);
-  meta_0->set_position_x(25);
+  meta_0->set_position_x(300);
   meta_0->set_position_y(0);
-  meta_0->set_width(50);
-  meta_0->set_height(50);
+  meta_0->set_width(600);
+  meta_0->set_height(600);
   meta_0->set_x_dpi(GetDpiNumberForScale(2.0));
   meta_0->set_y_dpi(GetDpiNumberForScale(2.0));
   protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
   meta_1->set_screen_id(kMeta1ScreenId);
   meta_1->set_position_x(0);
-  meta_1->set_position_y(50);
-  meta_1->set_width(75);
-  meta_1->set_height(75);
+  meta_1->set_position_y(600);
+  meta_1->set_width(900);
+  meta_1->set_height(900);
   meta_1->set_x_dpi(GetDpiNumberForScale(2.0));
   meta_1->set_y_dpi(GetDpiNumberForScale(2.0));
   resizer_.SetVideoLayout(layout);
   // New monitor.
   protocol::VideoTrackLayout* meta_2 = layout.add_video_track();
-  meta_2->set_position_x(25);
-  meta_2->set_position_y(125);
-  meta_2->set_width(50);
-  meta_2->set_height(50);
+  meta_2->set_position_x(300);
+  meta_2->set_position_y(1500);
+  meta_2->set_width(600);
+  meta_2->set_height(600);
   meta_2->set_x_dpi(GetDpiNumberForScale(2.0));
   meta_2->set_y_dpi(GetDpiNumberForScale(2.0));
   resizer_.SetVideoLayout(layout);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(100, 100));
+            TestDesktopSize(1200, 1200));
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(150, 150));
+            TestDesktopSize(1800, 1800));
   ASSERT_EQ(GetTestResolutionForStream(kMeta2ScreenId),
-            TestDesktopSize(100, 100));
+            TestDesktopSize(1200, 1200));
 
   // Simulate that the new monitor is created with 1x scale, and layout reverted
   // to horizontal start-aligned.
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 100, 100, 2.0)},
-      {kMeta1, CreateMonitorInfo(50, 0, 150, 150, 2.0)},
-      {kMeta2, CreateMonitorInfo(125, 0, 100, 100, 1.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1200, 1200, 2.0)},
+      {kMeta1, CreateMonitorInfo(600, 0, 1800, 1800, 2.0)},
+      {kMeta2, CreateMonitorInfo(1500, 0, 1200, 1200, 1.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   // Verify that the correct position and layout are applied.
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(25, 0, 100, 100, 2.0)},
-      {kMeta1, CreateMonitorInfo(0, 50, 150, 150, 2.0)},
-      {kMeta2, CreateMonitorInfo(25, 125, 100, 100, 2.0)},
+      {kMeta0, CreateMonitorInfo(300, 0, 1200, 1200, 2.0)},
+      {kMeta1, CreateMonitorInfo(0, 600, 1800, 1800, 2.0)},
+      {kMeta2, CreateMonitorInfo(300, 1500, 1200, 1200, 2.0)},
   };
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
@@ -433,13 +433,13 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_RemovesStreamThenResizes) {
   layout.set_pixel_type(
       protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL);
   // Meta-0 is absent from the new layout.
-  // Meta-1 is resized to 200x200(DIPs)@1.5x
+  // Meta-1 is resized to 600x600(DIPs)@1.5x
   protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
   meta_1->set_screen_id(kMeta1ScreenId);
   meta_1->set_position_x(0);
   meta_1->set_position_y(0);
-  meta_1->set_width(200);
-  meta_1->set_height(200);
+  meta_1->set_width(600);
+  meta_1->set_height(600);
   meta_1->set_x_dpi(GetDpiNumberForScale(1.5));
   meta_1->set_y_dpi(GetDpiNumberForScale(1.5));
   resizer_.SetVideoLayout(layout);
@@ -456,14 +456,14 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_RemovesStreamThenResizes) {
 
   // Now Meta-0 is being resized.
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(300, 300));
+            TestDesktopSize(900, 900));
 
   // Meta-0's scale being reverted to 1.
-  display_config_.monitors = {{kMeta1, CreateMonitorInfo(0, 0, 300, 300, 1.0)}};
+  display_config_.monitors = {{kMeta1, CreateMonitorInfo(0, 0, 900, 900, 1.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   MonitorMap expected_monitors = {
-      {kMeta1, CreateMonitorInfo(0, 0, 300, 300, 1.5)}};
+      {kMeta1, CreateMonitorInfo(0, 0, 900, 900, 1.5)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
@@ -477,33 +477,33 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_ReusesRemovedMonitors) {
   meta_0->set_screen_id(kMeta0ScreenId);
   meta_0->set_position_x(0);
   meta_0->set_position_y(0);
-  meta_0->set_width(300);
-  meta_0->set_height(300);
+  meta_0->set_width(900);
+  meta_0->set_height(900);
   meta_0->set_x_dpi(GetDpiNumberForScale(1.5));
   meta_0->set_y_dpi(GetDpiNumberForScale(1.5));
   protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
   // No screen ID is set for Meta-1.
-  meta_1->set_position_x(100);
-  meta_1->set_position_y(300);
-  meta_1->set_width(200);
-  meta_1->set_height(200);
+  meta_1->set_position_x(300);
+  meta_1->set_position_y(900);
+  meta_1->set_width(600);
+  meta_1->set_height(600);
   meta_1->set_x_dpi(GetDpiNumberForScale(2.0));
   meta_1->set_y_dpi(GetDpiNumberForScale(2.0));
   resizer_.SetVideoLayout(layout);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(450, 450));
+            TestDesktopSize(1350, 1350));
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(400, 400));
+            TestDesktopSize(1200, 1200));
 
   // Simulate resolution changed while scales reverted to 1.
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 450, 450, 1.0)},
-      {kMeta1, CreateMonitorInfo(450, 0, 400, 400, 1.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1350, 1350, 1.0)},
+      {kMeta1, CreateMonitorInfo(1350, 0, 1200, 1200, 1.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 450, 450, 1.5)},
-      {kMeta1, CreateMonitorInfo(100, 300, 400, 400, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1350, 1350, 1.5)},
+      {kMeta1, CreateMonitorInfo(300, 900, 1200, 1200, 2.0)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
@@ -564,6 +564,38 @@ TEST_F(GnomeDesktopResizerTest, BlockAndQueueDisplayChanges_SetVideoLayout) {
             TestDesktopSize(400, 400));
 
   // Monitor DPI changes are covered by tests above.
+}
+
+TEST_F(GnomeDesktopResizerTest, SetVideoLayout_TweaksResolutions) {
+  protocol::VideoLayout layout;
+  layout.set_pixel_type(
+      protocol::VideoLayout::PixelType::VideoLayout_PixelType_PHYSICAL);
+  protocol::VideoTrackLayout* meta_0 = layout.add_video_track();
+  meta_0->set_screen_id(kMeta0ScreenId);
+  meta_0->set_position_x(0);
+  meta_0->set_position_y(0);
+  // Requested dimensions 902x901 at scale 1.5 (numerator N=3).
+  meta_0->set_width(902);
+  meta_0->set_height(901);
+  meta_0->set_x_dpi(GetDpiNumberForScale(1.5));
+  meta_0->set_y_dpi(GetDpiNumberForScale(1.5));
+  protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
+  meta_1->set_screen_id(kMeta1ScreenId);
+  meta_1->set_position_x(900);
+  meta_1->set_position_y(0);
+  meta_1->set_width(1200);
+  meta_1->set_height(1200);
+  meta_1->set_x_dpi(GetDpiNumberForScale(2.0));
+  meta_1->set_y_dpi(GetDpiNumberForScale(2.0));
+  resizer_.SetVideoLayout(layout);
+
+  // SetVideoLayout should pass requested resolutions through
+  // GetSupportedResolutions(), rounding dimensions down to multiples of 3
+  // (900x900).
+  ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
+            TestDesktopSize(900, 900));
+  ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
+            TestDesktopSize(1200, 1200));
 }
 
 }  // namespace remoting
