@@ -1,4 +1,0 @@
-
- tests, tests * { display: block; color: red; }
- testA[*|attribute="pass"] { color: green; }
- testB[*|attribute="pass"] { color: green; }

@@ -1,7 +1,0 @@
-<?xml-stylesheet href="css3-modsel-174b.css" type="text/css"?>
-<test>
-  <tests xmlns="http://css.example.net/" xmlns:test="http://css.example.net/">
-   <testA attribute="pass" test:attribute="fail">This should be green.</testA>
-   <testB attribute="fail" test:attribute="pass">This should be green.</testB>
-  </tests>
-</test>
