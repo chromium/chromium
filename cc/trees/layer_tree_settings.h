@@ -126,7 +126,7 @@ class CC_EXPORT LayerTreeSettings {
       ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
           /*for_renderer=*/false);
   int max_preraster_distance_in_screen_pixels = 1000;
-  bool use_rgba_4444 = false;
+  bool prefer_rgba_4444 = false;
 
   // If set to true, the compositor may selectively defer image decodes to the
   // Image Decode Service and raster tiles without images until the decode is

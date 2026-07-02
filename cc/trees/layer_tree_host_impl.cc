@@ -3520,6 +3520,12 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
       settings_.use_gpu_memory_buffer_resources &&
       shared_image_caps.supports_scanout_shared_images;
 
+  // Graphite-Dawn does not support RGBA_4444 formats.
+  const bool is_graphite_enabled =
+      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+      gpu::kGpuFeatureStatusEnabled;
+  const bool use_rgba_4444 = settings_.prefer_rgba_4444 && !is_graphite_enabled;
+
   if (settings_.gpu_rasterization_disabled ||
       gpu_feature_info
               .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] !=
@@ -3527,7 +3533,7 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
     // This is the GPU compositing but software rasterization path. Pick the
     // best format for GPU textures to be uploaded to.
     raster_caps_.tile_format =
-        settings_.use_rgba_4444
+        use_rgba_4444
             ? viz::SinglePlaneFormat::kRGBA_4444
             : viz::PlatformColor::BestSupportedTextureFormat(context_caps);
     return;
@@ -3540,7 +3546,7 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
       !context_caps.msaa_is_slow && !context_caps.avoid_stencil_buffers;
 
   raster_caps_.tile_format =
-      settings_.use_rgba_4444
+      use_rgba_4444
           ? viz::SinglePlaneFormat::kRGBA_4444
           : viz::PlatformColor::BestSupportedRenderbufferFormat(context_caps);
 }

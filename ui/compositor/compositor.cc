@@ -183,7 +183,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.use_partial_raster =
       !(settings.use_zero_copy || features::IsUsingRawDraw());
 
-  settings.use_rgba_4444 =
+  settings.prefer_rgba_4444 =
       command_line->HasSwitch(switches::kUIEnableRGBA4444Textures);
 
 #if BUILDFLAG(IS_APPLE)
