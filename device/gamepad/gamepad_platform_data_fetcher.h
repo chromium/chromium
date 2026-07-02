@@ -19,6 +19,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "device/gamepad/gamepad_platform_data_fetcher_android.h"
 #elif BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "device/gamepad/gameinput_data_fetcher.h"
 #include "device/gamepad/nintendo_data_fetcher.h"
 #include "device/gamepad/raw_input_data_fetcher_win.h"
@@ -44,7 +45,8 @@ void AddGamepadPlatformDataFetchers(GamepadDataFetcherManager* manager) {
 
 #elif BUILDFLAG(IS_WIN)
 
-  if (base::FeatureList::IsEnabled(
+  if (base::win::GetVersion() >= base::win::Version::WIN11 &&
+      base::FeatureList::IsEnabled(
           features::kEnableWindowsGameInputDataFetcher)) {
     manager->AddFactory(new GameInputDataFetcher::Factory());
   } else {
