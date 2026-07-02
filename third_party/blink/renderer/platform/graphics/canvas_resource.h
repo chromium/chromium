@@ -139,7 +139,7 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
-  friend class CanvasResourceProviderTest;
+  friend class Canvas2DResourceProviderTest;
   friend class WebGPUMailboxTexture;
   friend class ExportedCanvasResource;
 

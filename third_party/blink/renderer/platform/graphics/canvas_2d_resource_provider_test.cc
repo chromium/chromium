@@ -97,7 +97,7 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
   bool disallow_cache_use_ = false;
 };
 
-class CanvasResourceProviderTest : public Test {
+class Canvas2DResourceProviderTest : public Test {
  public:
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
@@ -143,7 +143,7 @@ class CanvasResourceProviderTest : public Test {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
 };
 
-TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
+TEST_F(Canvas2DResourceProviderTest, UnacceleratedOverlay) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -194,8 +194,7 @@ scoped_refptr<CanvasResource> UpdateResource(
   return provider->ProduceCanvasResource(FlushReason::kOther);
 }
 
-TEST_F(CanvasResourceProviderTest,
-       CanvasResourceProviderSharedImageResourceRecycling) {
+TEST_F(Canvas2DResourceProviderTest, SharedImageResourceRecycling) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -214,7 +213,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_FALSE(provider->IsSingleBuffered());
-  // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
+  // As it is an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
@@ -245,7 +244,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
 }
 
-TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
+TEST_F(Canvas2DResourceProviderTest, UnusedResources) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
 
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
@@ -273,8 +272,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
 
-TEST_F(CanvasResourceProviderTest,
-       CanvasResourceProviderDontReclaimUnusedResourcesWhenFeatureIsDisabled) {
+TEST_F(Canvas2DResourceProviderTest,
+       DontReclaimUnusedResourcesWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kCanvas2DReclaimUnusedResources);
 
@@ -294,8 +293,7 @@ TEST_F(CanvasResourceProviderTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
 
-TEST_F(CanvasResourceProviderTest,
-       CanvasResourceProviderUnusedResourcesAreNotCollectedWhenYoung) {
+TEST_F(Canvas2DResourceProviderTest, UnusedResourcesAreNotCollectedWhenYoung) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
 
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
@@ -344,8 +342,7 @@ TEST_F(CanvasResourceProviderTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
 
-TEST_F(CanvasResourceProviderTest,
-       CanvasResourceProviderSharedImageStaticBitmapImage) {
+TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
@@ -382,7 +379,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
-TEST_F(CanvasResourceProviderTest, FlushForImage) {
+TEST_F(Canvas2DResourceProviderTest, FlushForImage) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    gfx::HDRMetadata(),
                                    CanvasPixelFormat::kUint8,
@@ -428,7 +425,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   EXPECT_FALSE(new_dst_canvas.IsCachingImage(src_content_id));
 }
 
-TEST_F(CanvasResourceProviderTest, ImageCacheOnContextLost) {
+TEST_F(Canvas2DResourceProviderTest, ImageCacheOnContextLost) {
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   Vector<cc::DrawImage> images = {
@@ -451,7 +448,7 @@ TEST_F(CanvasResourceProviderTest, ImageCacheOnContextLost) {
                                             SkSamplingOptions(), nullptr);
 }
 
-TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
+TEST_F(Canvas2DResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
@@ -467,7 +464,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
 }
 
-TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
+TEST_F(Canvas2DResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
