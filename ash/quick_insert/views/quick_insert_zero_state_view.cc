@@ -32,6 +32,7 @@
 #include "ash/quick_insert/views/quick_insert_zero_state_view_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
