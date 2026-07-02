@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -82,11 +83,6 @@ class CORE_EXPORT BasicShape : public GarbageCollected<BasicShape> {
   virtual bool IsEqualAssumingSameType(const BasicShape&) const = 0;
 };
 
-// Resolve a pair of <x, y> "center coordinates" into a point.
-gfx::PointF PointForCenterCoordinate(const Length& center_x,
-                                     const Length& center_y,
-                                     gfx::SizeF box_size);
-
 class BasicShapeRadius {
   DISALLOW_NEW();
 
@@ -122,18 +118,15 @@ class BasicShapeWithCenterAndRadii : public BasicShape {
   }
   bool HasExplicitCenter() const { return is_center_explicitly_set_; }
 
-  void SetCenterX(Length&& center_x) { center_x_ = center_x; }
-  void SetCenterY(Length&& center_y) { center_y_ = center_y; }
-  const Length& CenterX() const { return center_x_; }
-  const Length& CenterY() const { return center_y_; }
+  void SetCenter(LengthPoint&& center) { center_ = center; }
+  const LengthPoint& Center() const { return center_; }
 
   virtual Path GetPathFromCenter(const gfx::PointF&,
                                  const gfx::RectF&,
                                  float path_scale) const = 0;
 
  protected:
-  Length center_x_;
-  Length center_y_;
+  LengthPoint center_;
 
  private:
   bool is_center_explicitly_set_ = true;

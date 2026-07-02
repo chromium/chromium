@@ -1668,8 +1668,8 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
         // if `at position` is omitted, it will be computed as 50% 50%.
         gfx::PointF starting_point;
         if (ray.HasExplicitCenter() || position.X().IsNone()) {
-          starting_point = PointForCenterCoordinate(
-              ray.CenterX(), ray.CenterY(), reference_box_size);
+          starting_point =
+              PointForLengthPoint(ray.Center(), reference_box_size);
         } else {
           starting_point = GetStartingPointOfThePath(
               offset_from_reference_box, position, reference_box_size);

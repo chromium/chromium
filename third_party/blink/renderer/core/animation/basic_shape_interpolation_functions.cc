@@ -374,9 +374,9 @@ InterpolationValue ConvertBasicShape(const BasicShapeCircle& circle,
   auto* list =
       MakeGarbageCollected<InterpolableList>(kCircleComponentIndexCount);
   list->Set(kCircleCenterXIndex,
-            ConvertCoordinate(circle.CenterX(), property, zoom));
+            ConvertCoordinate(circle.Center().X(), property, zoom));
   list->Set(kCircleCenterYIndex,
-            ConvertCoordinate(circle.CenterY(), property, zoom));
+            ConvertCoordinate(circle.Center().Y(), property, zoom));
   list->Set(
       kCircleHasExplicitCenterIndex,
       MakeGarbageCollected<InterpolableNumber>(circle.HasExplicitCenter()));
@@ -407,10 +407,9 @@ BasicShape* CreateBasicShape(const InterpolableValue& interpolable_value,
                              const CSSToLengthConversionData& conversion_data) {
   BasicShapeCircle* circle = MakeGarbageCollected<BasicShapeCircle>();
   const auto& list = To<InterpolableList>(interpolable_value);
-  circle->SetCenterX(
-      CreateCoordinate(*list.Get(kCircleCenterXIndex), conversion_data));
-  circle->SetCenterY(
-      CreateCoordinate(*list.Get(kCircleCenterYIndex), conversion_data));
+  circle->SetCenter(LengthPoint(
+      CreateCoordinate(*list.Get(kCircleCenterXIndex), conversion_data),
+      CreateCoordinate(*list.Get(kCircleCenterYIndex), conversion_data)));
   circle->SetRadius(
       CreateRadius(*list.Get(kCircleRadiusIndex), conversion_data));
   circle->SetHasExplicitCenter(
@@ -465,9 +464,9 @@ InterpolationValue ConvertBasicShape(const BasicShapeEllipse& ellipse,
   auto* list =
       MakeGarbageCollected<InterpolableList>(kEllipseComponentIndexCount);
   list->Set(kEllipseCenterXIndex,
-            ConvertCoordinate(ellipse.CenterX(), property, zoom));
+            ConvertCoordinate(ellipse.Center().X(), property, zoom));
   list->Set(kEllipseCenterYIndex,
-            ConvertCoordinate(ellipse.CenterY(), property, zoom));
+            ConvertCoordinate(ellipse.Center().Y(), property, zoom));
   list->Set(kEllipseHasExplicitCenter, MakeGarbageCollected<InterpolableNumber>(
                                            ellipse.HasExplicitCenter()));
 
@@ -502,10 +501,9 @@ BasicShape* CreateBasicShape(const InterpolableValue& interpolable_value,
                              const CSSToLengthConversionData& conversion_data) {
   BasicShapeEllipse* ellipse = MakeGarbageCollected<BasicShapeEllipse>();
   const auto& list = To<InterpolableList>(interpolable_value);
-  ellipse->SetCenterX(
-      CreateCoordinate(*list.Get(kEllipseCenterXIndex), conversion_data));
-  ellipse->SetCenterY(
-      CreateCoordinate(*list.Get(kEllipseCenterYIndex), conversion_data));
+  ellipse->SetCenter(LengthPoint(
+      CreateCoordinate(*list.Get(kEllipseCenterXIndex), conversion_data),
+      CreateCoordinate(*list.Get(kEllipseCenterYIndex), conversion_data)));
   ellipse->SetRadiusX(
       CreateRadius(*list.Get(kEllipseRadiusXIndex), conversion_data));
   ellipse->SetRadiusY(

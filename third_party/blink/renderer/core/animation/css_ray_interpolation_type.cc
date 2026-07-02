@@ -170,8 +170,10 @@ InterpolationValue CreateValue(const StyleRay& ray,
   list->Set(kRayAngleIndex,
             MakeGarbageCollected<InterpolableNumber>(
                 ray.Angle(), CSSPrimitiveValue::UnitType::kDegrees));
-  list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), property, zoom));
-  list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), property, zoom));
+  list->Set(kRayCenterXIndex,
+            ConvertCoordinate(ray.Center().X(), property, zoom));
+  list->Set(kRayCenterYIndex,
+            ConvertCoordinate(ray.Center().Y(), property, zoom));
   list->Set(kRayHasExplicitCenterIndex,
             MakeGarbageCollected<InterpolableNumber>(ray.HasExplicitCenter()));
   return InterpolationValue(list,
@@ -207,8 +209,10 @@ InterpolationValue CreateValue(const CSSValue& angle,
     list->Set(kRayAngleIndex, MakeGarbageCollected<InterpolableNumber>(
                                   *function_value.ExpressionNode()));
   }
-  list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), property, zoom));
-  list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), property, zoom));
+  list->Set(kRayCenterXIndex,
+            ConvertCoordinate(ray.Center().X(), property, zoom));
+  list->Set(kRayCenterYIndex,
+            ConvertCoordinate(ray.Center().Y(), property, zoom));
   list->Set(kRayHasExplicitCenterIndex,
             MakeGarbageCollected<InterpolableNumber>(ray.HasExplicitCenter()));
   return InterpolationValue(list,
@@ -230,10 +234,10 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
           ->Value(state.CssToLengthConversionData()),
       ray_non_interpolable_value.Mode().Size(),
       ray_non_interpolable_value.Mode().Contain(),
-      CreateCoordinate(*list.Get(kRayCenterXIndex),
-                       state.CssToLengthConversionData()),
-      CreateCoordinate(*list.Get(kRayCenterYIndex),
-                       state.CssToLengthConversionData()),
+      LengthPoint(CreateCoordinate(*list.Get(kRayCenterXIndex),
+                                   state.CssToLengthConversionData()),
+                  CreateCoordinate(*list.Get(kRayCenterYIndex),
+                                   state.CssToLengthConversionData())),
       To<InterpolableNumber>(list.Get(kRayHasExplicitCenterIndex))
           ->Value(state.CssToLengthConversionData()));
   state.StyleBuilder().SetOffsetPath(

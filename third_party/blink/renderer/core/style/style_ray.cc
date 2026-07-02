@@ -15,21 +15,18 @@ namespace blink {
 StyleRay::StyleRay(float angle,
                    RaySize size,
                    bool contain,
-                   const Length& center_x,
-                   const Length& center_y,
+                   const LengthPoint& center,
                    bool has_explicit_center)
     : angle_(angle),
       size_(size),
       contain_(contain),
-      center_x_(center_x),
-      center_y_(center_y),
+      center_(center),
       has_explicit_center_(has_explicit_center) {}
 
 bool StyleRay::IsEqualAssumingSameType(const BasicShape& o) const {
   const StyleRay& other = To<StyleRay>(o);
   return angle_ == other.angle_ && size_ == other.size_ &&
-         contain_ == other.contain_ && center_x_ == other.center_x_ &&
-         center_y_ == other.center_y_ &&
+         contain_ == other.contain_ && center_ == other.center_ &&
          has_explicit_center_ == other.has_explicit_center_;
 }
 

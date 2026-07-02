@@ -1829,14 +1829,14 @@ TEST_F(ClipPathPaintDefinitionTest, BoundingRectCorrectForSimpleKeyframeUnion) {
 
   // Keyframe 0: circle(20% at 20% 20%)
   BasicShapeCircle* circle1 = MakeGarbageCollected<BasicShapeCircle>();
-  circle1->SetCenterX(Length::Percent(20.0f));
-  circle1->SetCenterY(Length::Percent(20.0f));
+  circle1->SetCenter(
+      LengthPoint(Length::Percent(20.0f), Length::Percent(20.0f)));
   circle1->SetRadius(BasicShapeRadius(Length::Percent(20.0f)));
 
   // Keyframe 100: circle(20% at 70% 70%)
   BasicShapeCircle* circle2 = MakeGarbageCollected<BasicShapeCircle>();
-  circle2->SetCenterX(Length::Percent(70.0f));
-  circle2->SetCenterY(Length::Percent(70.0f));
+  circle2->SetCenter(
+      LengthPoint(Length::Percent(70.0f), Length::Percent(70.0f)));
   circle2->SetRadius(BasicShapeRadius(Length::Percent(20.0f)));
 
   // Get bounding rects from the generated paths
