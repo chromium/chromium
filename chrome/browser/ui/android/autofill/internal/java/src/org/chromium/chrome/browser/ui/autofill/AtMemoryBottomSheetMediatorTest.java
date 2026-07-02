@@ -277,7 +277,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Test
     public void testNoticeShownAndDismissedAfterClick() {
-        when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(true);
+        when(mFirstRunServiceJniMock.shouldShowAtMemoryNotice(mProfile)).thenReturn(true);
 
         HistogramWatcher shownWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -308,7 +308,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
         assertFalse(homeModel.get(HomeProperties.IS_NOTICE_VISIBLE));
         acknowledgedWatcher.assertExpected();
-        verify(mFirstRunServiceJniMock).noticeAcknowledged(mProfile);
+        verify(mFirstRunServiceJniMock).atMemoryNoticeAcknowledged(mProfile);
     }
 
     @Test
@@ -335,7 +335,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Test
     public void testNoticeNotShown() {
-        when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(false);
+        when(mFirstRunServiceJniMock.shouldShowAtMemoryNotice(mProfile)).thenReturn(false);
 
         AtMemoryBottomSheetMediator mediator =
                 new AtMemoryBottomSheetMediator(
@@ -349,7 +349,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Test
     public void testNoticeShownRecordedOnlyOnce() {
-        when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(true);
+        when(mFirstRunServiceJniMock.shouldShowAtMemoryNotice(mProfile)).thenReturn(true);
 
         HistogramWatcher shownWatcher =
                 HistogramWatcher.newBuilder()

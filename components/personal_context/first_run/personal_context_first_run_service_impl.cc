@@ -110,7 +110,7 @@ void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
 }
 
 void PersonalContextFirstRunServiceImpl::
-    MarkPersonalContextInAutofillNoticeAsAcknowledged() {
+    MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() {
   if (pref_service_) {
     pref_service_->SetBoolean(
         prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
@@ -118,7 +118,7 @@ void PersonalContextFirstRunServiceImpl::
 }
 
 bool PersonalContextFirstRunServiceImpl::
-    ShouldShowPersonalContextAutofillNotice() const {
+    ShouldShowPersonalContextAmbientAutofillNotice() const {
   if (!AreServicesAvailableAndAccountEligibleForPersonalIntelligence(
           enablement_service_, pref_service_)) {
     return false;

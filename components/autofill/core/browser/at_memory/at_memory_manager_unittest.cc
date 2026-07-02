@@ -804,7 +804,7 @@ TEST_F(AtMemoryManagerTest, PersonalContextEnabled_AppendsNoticeSuggestion) {
   feature_list.InitAndEnableFeature(
       personal_context::features::kPersonalContextFirstRunNoticePhase2);
 
-  autofill_client().set_should_show_personal_context_autofill_notice(true);
+  autofill_client().set_should_show_personal_context_at_memory_notice(true);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback_.Get());
@@ -834,7 +834,7 @@ TEST_F(AtMemoryManagerTest,
   feature_list.InitAndEnableFeature(
       personal_context::features::kPersonalContextFirstRunNoticePhase2);
 
-  autofill_client().set_should_show_personal_context_autofill_notice(false);
+  autofill_client().set_should_show_personal_context_at_memory_notice(false);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback_.Get());

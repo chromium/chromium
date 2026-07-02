@@ -706,7 +706,7 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
 #else
   if (personal_context::features::
           IsPersonalContextFirstRunNoticePhase2Enabled()) {
-    if (!owner_->client().ShouldShowPersonalContextAutofillNotice()) {
+    if (!owner_->client().ShouldShowPersonalContextAtMemoryNotice()) {
       return;
     }
     if (!suggestions.empty() &&

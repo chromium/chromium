@@ -29,20 +29,37 @@ GetPersonalContextFirstRunService(
 
 }  // namespace
 
-static bool JNI_PersonalContextFirstRunService_ShouldShowNotice(
+static bool JNI_PersonalContextFirstRunService_ShouldShowAmbientAutofillNotice(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_profile) {
   auto* service = GetPersonalContextFirstRunService(j_profile);
   CHECK(service);
-  return service->ShouldShowPersonalContextAutofillNotice();
+  return service->ShouldShowPersonalContextAmbientAutofillNotice();
 }
 
-static void JNI_PersonalContextFirstRunService_NoticeAcknowledged(
+static void
+JNI_PersonalContextFirstRunService_AmbientAutofillNoticeAcknowledged(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_profile) {
   auto* service = GetPersonalContextFirstRunService(j_profile);
   CHECK(service);
-  service->MarkPersonalContextInAutofillNoticeAsAcknowledged();
+  service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+}
+
+static bool JNI_PersonalContextFirstRunService_ShouldShowAtMemoryNotice(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_profile) {
+  auto* service = GetPersonalContextFirstRunService(j_profile);
+  CHECK(service);
+  return service->ShouldShowPersonalContextAtMemoryNotice();
+}
+
+static void JNI_PersonalContextFirstRunService_AtMemoryNoticeAcknowledged(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_profile) {
+  auto* service = GetPersonalContextFirstRunService(j_profile);
+  CHECK(service);
+  service->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
 }
 
 DEFINE_JNI(PersonalContextFirstRunService)

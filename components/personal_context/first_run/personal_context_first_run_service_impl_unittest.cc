@@ -206,18 +206,18 @@ TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenShouldShowNotice) {
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
-       MarkPersonalContextInAutofillNoticeAsAcknowledgedSetsPrefs) {
+       MarkPersonalContextAmbientAutofillNoticeAsAcknowledgedSetsPrefs) {
   pref_service()->SetBoolean(
       prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, true);
 
-  service()->MarkPersonalContextInAutofillNoticeAsAcknowledged();
+  service()->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
 
   EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown));
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
-       ShouldShowPersonalContextAutofillNotice_FeatureDisabled) {
+       ShouldShowPersonalContextAmbientAutofillNotice_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kPersonalContextFirstRunNoticePhase2);
@@ -225,27 +225,27 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
   EXPECT_CALL(*enablement_service(), GetEnablementState())
       .WillRepeatedly(Return(PersonalContextEnablementState::kEnabled));
 
-  EXPECT_FALSE(service()->ShouldShowPersonalContextAutofillNotice());
+  EXPECT_FALSE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
-       ShouldShowPersonalContextAutofillNotice_FeatureEnabled) {
+       ShouldShowPersonalContextAmbientAutofillNotice_FeatureEnabled) {
   // Test kEnabled (and prefs true by default)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
       .WillOnce(Return(PersonalContextEnablementState::kEnabled));
-  EXPECT_TRUE(service()->ShouldShowPersonalContextAutofillNotice());
+  EXPECT_TRUE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
 
   // Test kEnabled (with pref false)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
       .WillOnce(Return(PersonalContextEnablementState::kEnabled));
   pref_service()->SetBoolean(
       prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
-  EXPECT_FALSE(service()->ShouldShowPersonalContextAutofillNotice());
+  EXPECT_FALSE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
 
   // Test kDisabledNotEligible (should be false)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
       .WillOnce(Return(PersonalContextEnablementState::kDisabledNotEligible));
-  EXPECT_FALSE(service()->ShouldShowPersonalContextAutofillNotice());
+  EXPECT_FALSE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,

@@ -151,8 +151,10 @@ class ChromeAutofillClient : public ContentAutofillClient {
   EntityDataManager* GetEntityDataManager() final;
   WalletPassAccessManager* GetWalletPassAccessManager() final;
   SingleFieldFillRouter& GetSingleFieldFillRouter() final;
-  bool ShouldShowPersonalContextAutofillNotice() const override;
-  void MarkPersonalContextInAutofillNoticeAsAcknowledged() override;
+  bool ShouldShowPersonalContextAmbientAutofillNotice() const override;
+  void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override;
+  bool ShouldShowPersonalContextAtMemoryNotice() const override;
+  void MarkPersonalContextAtMemoryNoticeAsAcknowledged() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
   AutofillComposeDelegate* GetComposeDelegate() final;
   accessibility_annotator::AtMemoryQueryService* GetAtMemoryQueryService()

@@ -13,18 +13,30 @@ import org.chromium.chrome.browser.profiles.Profile;
 @NullMarked
 public class PersonalContextFirstRunService {
 
-    public static boolean shouldShowNotice(Profile profile) {
-        return PersonalContextFirstRunServiceJni.get().shouldShowNotice(profile);
+    public static boolean shouldShowAmbientAutofillNotice(Profile profile) {
+        return PersonalContextFirstRunServiceJni.get().shouldShowAmbientAutofillNotice(profile);
     }
 
-    public static void noticeAcknowledged(Profile profile) {
-        PersonalContextFirstRunServiceJni.get().noticeAcknowledged(profile);
+    public static void ambientAutofillNoticeAcknowledged(Profile profile) {
+        PersonalContextFirstRunServiceJni.get().ambientAutofillNoticeAcknowledged(profile);
+    }
+
+    public static boolean shouldShowAtMemoryNotice(Profile profile) {
+        return PersonalContextFirstRunServiceJni.get().shouldShowAtMemoryNotice(profile);
+    }
+
+    public static void atMemoryNoticeAcknowledged(Profile profile) {
+        PersonalContextFirstRunServiceJni.get().atMemoryNoticeAcknowledged(profile);
     }
 
     @NativeMethods
     public interface Natives {
-        boolean shouldShowNotice(Profile profile);
+        boolean shouldShowAmbientAutofillNotice(Profile profile);
 
-        void noticeAcknowledged(Profile profile);
+        void ambientAutofillNoticeAcknowledged(Profile profile);
+
+        boolean shouldShowAtMemoryNotice(Profile profile);
+
+        void atMemoryNoticeAcknowledged(Profile profile);
     }
 }

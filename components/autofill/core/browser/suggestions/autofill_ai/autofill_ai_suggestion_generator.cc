@@ -745,7 +745,7 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     }
 
     if (contains_personal_context_entity &&
-        client.ShouldShowPersonalContextAutofillNotice()) {
+        client.ShouldShowPersonalContextAmbientAutofillNotice()) {
       Suggestion& suggestion =
           suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
       suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;

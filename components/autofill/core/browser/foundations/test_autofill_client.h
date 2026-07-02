@@ -542,17 +542,31 @@ class TestAutofillClientTemplate : public T {
     return test_addresses_;
   }
 
-  bool ShouldShowPersonalContextAutofillNotice() const override {
-    return should_show_personal_context_autofill_notice_;
+  bool ShouldShowPersonalContextAmbientAutofillNotice() const override {
+    return should_show_personal_context_ambient_autofill_notice_;
   }
-  void set_should_show_personal_context_autofill_notice(bool should_show) {
-    should_show_personal_context_autofill_notice_ = should_show;
+  void set_should_show_personal_context_ambient_autofill_notice(
+      bool should_show) {
+    should_show_personal_context_ambient_autofill_notice_ = should_show;
   }
-  void MarkPersonalContextInAutofillNoticeAsAcknowledged() override {
-    is_personal_context_notice_acknowledged_ = true;
+  void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override {
+    is_personal_context_ambient_autofill_notice_acknowledged_ = true;
   }
-  bool is_personal_context_notice_acknowledged() const {
-    return is_personal_context_notice_acknowledged_;
+  bool is_personal_context_ambient_autofill_notice_acknowledged() const {
+    return is_personal_context_ambient_autofill_notice_acknowledged_;
+  }
+
+  bool ShouldShowPersonalContextAtMemoryNotice() const override {
+    return should_show_personal_context_at_memory_notice_;
+  }
+  void set_should_show_personal_context_at_memory_notice(bool should_show) {
+    should_show_personal_context_at_memory_notice_ = should_show;
+  }
+  void MarkPersonalContextAtMemoryNoticeAsAcknowledged() override {
+    is_personal_context_at_memory_notice_acknowledged_ = true;
+  }
+  bool is_personal_context_at_memory_notice_acknowledged() const {
+    return is_personal_context_at_memory_notice_acknowledged_;
   }
 
   personal_context::PersonalContextEnablementService*
@@ -890,8 +904,10 @@ class TestAutofillClientTemplate : public T {
 
   bool is_tab_in_actor_mode_ = false;
 
-  bool should_show_personal_context_autofill_notice_ = false;
-  bool is_personal_context_notice_acknowledged_ = false;
+  bool should_show_personal_context_ambient_autofill_notice_ = false;
+  bool is_personal_context_ambient_autofill_notice_acknowledged_ = false;
+  bool should_show_personal_context_at_memory_notice_ = false;
+  bool is_personal_context_at_memory_notice_acknowledged_ = false;
 
   bool is_glic_enabled_ = false;
 

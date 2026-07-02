@@ -122,11 +122,17 @@ AutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
   return nullptr;
 }
 
-bool AutofillClient::ShouldShowPersonalContextAutofillNotice() const {
+bool AutofillClient::ShouldShowPersonalContextAmbientAutofillNotice() const {
   return false;
 }
 
-void AutofillClient::MarkPersonalContextInAutofillNoticeAsAcknowledged() {}
+void AutofillClient::MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() {}
+
+bool AutofillClient::ShouldShowPersonalContextAtMemoryNotice() const {
+  return false;
+}
+
+void AutofillClient::MarkPersonalContextAtMemoryNoticeAsAcknowledged() {}
 
 AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
   return nullptr;

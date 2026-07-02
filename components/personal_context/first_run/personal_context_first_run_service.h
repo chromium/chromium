@@ -40,11 +40,11 @@ class PersonalContextFirstRunService : public KeyedService {
   // Called when the user has acknowledged the Personal Context notice in
   // Autofill.
   // TODO(b:517579158): Wire the notice UIs into this function.
-  virtual void MarkPersonalContextInAutofillNoticeAsAcknowledged() = 0;
+  virtual void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() = 0;
 
   // Returns true if the Personal Context notice should be shown in Autofill.
   // TODO(b:517579158): Wire the notice UIs into this function.
-  virtual bool ShouldShowPersonalContextAutofillNotice() const = 0;
+  virtual bool ShouldShowPersonalContextAmbientAutofillNotice() const = 0;
 
   // Called when the user has acknowledged the Personal Context notice in
   // At Memory.

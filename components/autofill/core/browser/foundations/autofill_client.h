@@ -439,10 +439,16 @@ class AutofillClient {
 
   // Returns true if Autofill suggestions should include the Personal Context
   // notice.
-  virtual bool ShouldShowPersonalContextAutofillNotice() const;
+  virtual bool ShouldShowPersonalContextAmbientAutofillNotice() const;
 
   // Marks the Personal Context notice as acknowledged.
-  virtual void MarkPersonalContextInAutofillNoticeAsAcknowledged();
+  virtual void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+
+  // Returns true if AtMemory UI should include the Personal Context notice.
+  virtual bool ShouldShowPersonalContextAtMemoryNotice() const;
+
+  // Marks the AtMemory Personal Context notice as acknowledged.
+  virtual void MarkPersonalContextAtMemoryNoticeAsAcknowledged();
 
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;

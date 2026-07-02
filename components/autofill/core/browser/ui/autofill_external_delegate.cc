@@ -1102,7 +1102,8 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     // This suggestion type represents a notice about the usage of personal
     // context in autofill. The user can acknowledge it to dismiss it.
     case SuggestionType::kPersonalContextNotice: {
-      manager_->client().MarkPersonalContextInAutofillNoticeAsAcknowledged();
+      manager_->client()
+          .MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
       return true;
     }
     case SuggestionType::kAccountStoragePasswordEntry:

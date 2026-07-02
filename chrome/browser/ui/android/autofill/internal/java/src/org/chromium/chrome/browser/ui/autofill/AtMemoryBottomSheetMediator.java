@@ -112,7 +112,7 @@ class AtMemoryBottomSheetMediator {
                 NOTICE_INTERACTIONS_HISTOGRAM,
                 NoticeInteraction.ACKNOWLEDGED,
                 NoticeInteraction.COUNT);
-        PersonalContextFirstRunService.noticeAcknowledged(mProfile);
+        PersonalContextFirstRunService.atMemoryNoticeAcknowledged(mProfile);
     }
 
     private void onNoticeSettingsClicked() {
@@ -274,7 +274,8 @@ class AtMemoryBottomSheetMediator {
     }
 
     private PropertyModel createHomeModel() {
-        boolean shouldShowNotice = PersonalContextFirstRunService.shouldShowNotice(mProfile);
+        boolean shouldShowNotice =
+                PersonalContextFirstRunService.shouldShowAtMemoryNotice(mProfile);
         return new PropertyModel.Builder(HomeProperties.ALL_KEYS)
                 .with(HomeProperties.IS_LOADING, false)
                 .with(HomeProperties.SHOW_SUGGESTIONS_BACKGROUND, false)

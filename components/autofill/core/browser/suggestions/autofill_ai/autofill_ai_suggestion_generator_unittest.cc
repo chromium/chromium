@@ -814,7 +814,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       {.record_type = EntityInstance::RecordType::kPersonalContext})});
   SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
 
-  client().set_should_show_personal_context_autofill_notice(true);
+  client().set_should_show_personal_context_ambient_autofill_notice(true);
 
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Contains(HasType(SuggestionType::kPersonalContextNotice)));
@@ -829,7 +829,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       {.record_type = EntityInstance::RecordType::kLocal})});
   SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
 
-  client().set_should_show_personal_context_autofill_notice(true);
+  client().set_should_show_personal_context_ambient_autofill_notice(true);
 
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));
@@ -844,7 +844,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       {.record_type = EntityInstance::RecordType::kPersonalContext})});
   SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
 
-  client().set_should_show_personal_context_autofill_notice(false);
+  client().set_should_show_personal_context_ambient_autofill_notice(false);
 
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));

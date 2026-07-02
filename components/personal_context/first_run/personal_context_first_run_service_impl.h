@@ -44,8 +44,8 @@ class PersonalContextFirstRunServiceImpl
       content::WebContents* web_contents,
       FirstRunInvocationSource invocation_source,
       base::OnceCallback<void(FirstRunTriggerResult)> callback) override;
-  void MarkPersonalContextInAutofillNoticeAsAcknowledged() override;
-  bool ShouldShowPersonalContextAutofillNotice() const override;
+  void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override;
+  bool ShouldShowPersonalContextAmbientAutofillNotice() const override;
   void MarkPersonalContextInAtMemoryNoticeAsAcknowledged() override;
   bool ShouldShowPersonalContextAtMemoryNotice() const override;
 
