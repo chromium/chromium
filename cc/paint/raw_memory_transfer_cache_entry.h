@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
+#include "base/containers/span.h"
 #include "cc/paint/transfer_cache_entry.h"
 
 namespace cc {

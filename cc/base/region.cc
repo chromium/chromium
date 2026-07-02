@@ -5,8 +5,10 @@
 #include "cc/base/region.h"
 
 #include <stddef.h>
+
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/simple_enclosed_region.h"

@@ -5,6 +5,7 @@
 #include "cc/paint/paint_cache.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

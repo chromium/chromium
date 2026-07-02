@@ -7,6 +7,7 @@
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/test/transfer_cache_test_helper.h"

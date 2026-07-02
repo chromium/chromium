@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op.h"

@@ -4,6 +4,7 @@
 
 #include "cc/paint/skottie_wrapper.h"
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 
 namespace cc {

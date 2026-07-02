@@ -5,6 +5,7 @@
 #include "cc/debug/debug_colors.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 
 namespace cc {

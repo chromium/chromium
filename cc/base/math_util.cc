@@ -12,6 +12,7 @@
 #include <xmmintrin.h>
 #endif
 
+#include "base/containers/span.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"

@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/test/test_options_provider.h"
