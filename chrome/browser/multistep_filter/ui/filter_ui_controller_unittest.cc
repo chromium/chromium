@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
@@ -37,10 +36,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
@@ -163,7 +160,6 @@ class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
         testing::NiceMock<page_actions::MockPageActionController>>();
     test_api(*controller_)
         .set_page_action_controller(mock_page_action_controller_.get());
-    test_api(*controller_).set_favicon_service(&mock_favicon_service_);
 
     mock_service_ =
         std::make_unique<testing::NiceMock<MockMultistepFilterService>>(
@@ -199,7 +195,6 @@ class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<testing::NiceMock<MockFilterUiController>> controller_;
   std::unique_ptr<testing::NiceMock<page_actions::MockPageActionController>>
       mock_page_action_controller_;
-  testing::NiceMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<MockMultistepFilterService> mock_service_;
 };
 
@@ -229,11 +224,6 @@ TEST_F(FilterUiControllerTest, OnSuggestionGeneratedShowsCue) {
   suggestion.suggestion_message = u"Test Message";
 
   controller_->OnSuggestionGenerated(suggestion);
-
-  favicon_base::FaviconImageResult result;
-  // Manually invoke the callback to simulate successful async favicon returns
-  // in a synthetic test environment.
-  test_api(*controller_).OnFaviconAvailable(suggestion, result);
 
   const std::optional<FilterUiController::SuggestionState>& state =
       test_api(*controller_).suggestion_state();
@@ -270,16 +260,6 @@ TEST_F(FilterUiControllerTest,
   EXPECT_FALSE(test_api(*controller_).suggestion_state().has_value());
 }
 
-TEST_F(FilterUiControllerTest, OnSuggestionGeneratedWithNullFaviconService) {
-  test_api(*controller_).set_favicon_service(nullptr);
-
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-  suggestion.suggestion_message = u"Test Message";
-
-  controller_->OnSuggestionGenerated(suggestion);
-  EXPECT_FALSE(test_api(*controller_).suggestion_state().has_value());
-}
 
 TEST_F(FilterUiControllerTest, OnSuggestionGeneratedWithNullPrefService) {
   test_api(*controller_).set_pref_service(nullptr);
@@ -352,9 +332,6 @@ TEST_F(FilterUiControllerTest, ClearSuggestionResetsCachedSuggestion) {
 }
 
 TEST_F(FilterUiControllerTest, ClearSuggestionHidesPageAction) {
-  EXPECT_CALL(mock_favicon_service_, GetFaviconImageForPageURL(_, _, _))
-      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
-
   UrlFilterSuggestion suggestion =
       CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
   suggestion.suggestion_message = u"Test Message";
@@ -363,11 +340,6 @@ TEST_F(FilterUiControllerTest, ClearSuggestionHidesPageAction) {
   EXPECT_CALL(*mock_page_action_controller_, Show(kActionMultistepFilter))
       .Times(1);
   controller_->OnSuggestionGenerated(suggestion);
-
-  favicon_base::FaviconImageResult result;
-  // Manually invoke the callback to simulate successful async favicon returns
-  // in a synthetic test environment.
-  test_api(*controller_).OnFaviconAvailable(suggestion, result);
 
   // Now clear suggestion and verify it hides the cue.
   EXPECT_CALL(*mock_page_action_controller_, Hide(kActionMultistepFilter))
