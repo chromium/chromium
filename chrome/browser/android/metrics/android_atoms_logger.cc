@@ -6,6 +6,7 @@
 
 #include "base/android/device_info.h"
 #include "base/android/jni_android.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/logging.h"

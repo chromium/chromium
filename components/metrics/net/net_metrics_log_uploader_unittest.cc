@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

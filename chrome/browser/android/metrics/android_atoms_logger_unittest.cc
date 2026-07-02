@@ -5,6 +5,7 @@
 #include "chrome/browser/android/metrics/android_atoms_logger.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"

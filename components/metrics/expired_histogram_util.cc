@@ -4,6 +4,7 @@
 
 #include "components/metrics/expired_histogram_util.h"
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/statistics_recorder.h"

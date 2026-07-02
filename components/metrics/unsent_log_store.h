@@ -13,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
