@@ -88,9 +88,6 @@ constexpr web::ContentWorld kContentWorlds[] = {
     web::ContentWorld::kIsolatedWorld,
 };
 
-// Session name used by the fake SceneState.
-const char kSceneSessionID[] = "Identifier";
-
 // WebStateListObserver checking whether a batch operation has been
 // performed (i.e. started and then completed).
 class ScopedTestWebStateListObserver final : public WebStateListObserver {
@@ -162,7 +159,6 @@ class TabsCloserTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
 
     scene_state_ = OCMClassMock([SceneState class]);
-    OCMStub([scene_state_ sceneSessionID]).andReturn(@(kSceneSessionID));
     browser_ = Browser::Create(profile_.get(), scene_state_);
   }
 
