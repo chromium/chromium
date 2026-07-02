@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_hglobal.h"
 #include "base/win/shlwapi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -270,6 +271,64 @@ class MockMalformedVirtualFilesDataObject
   const unsigned int claimed_items_;
 };
 
+// Serves CF_UNICODETEXT from an HGLOBAL holding the supplied wide text with
+// NO trailing NUL, mimicking an untrusted external source.
+class MockUnterminatedTextDataObject
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IDataObject> {
+ public:
+  explicit MockUnterminatedTextDataObject(std::wstring text)
+      : text_(std::move(text)) {}
+
+  IFACEMETHODIMP GetData(FORMATETC* format_etc, STGMEDIUM* medium) override {
+    if (!format_etc || !medium) {
+      return E_INVALIDARG;
+    }
+    if (format_etc->cfFormat == CF_UNICODETEXT) {
+      HGLOBAL hGlobal = ::GlobalAlloc(GHND, text_.size() * sizeof(wchar_t));
+      auto* dst = static_cast<wchar_t*>(::GlobalLock(hGlobal));
+      // SAFETY: `hGlobal` holds exactly `text_.size()` wchar_t elements.
+      UNSAFE_BUFFERS(base::span(dst, text_.size()))
+          .copy_from(base::span(text_));
+      ::GlobalUnlock(hGlobal);
+      medium->tymed = TYMED_HGLOBAL;
+      medium->hGlobal = hGlobal;
+      medium->pUnkForRelease = nullptr;
+      return S_OK;
+    }
+    return DV_E_FORMATETC;
+  }
+
+  IFACEMETHODIMP QueryGetData(FORMATETC* format_etc) override {
+    if (!format_etc) {
+      return E_INVALIDARG;
+    }
+    return format_etc->cfFormat == CF_UNICODETEXT ? S_OK : DV_E_FORMATETC;
+  }
+
+  IFACEMETHODIMP GetDataHere(FORMATETC*, STGMEDIUM*) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP GetCanonicalFormatEtc(FORMATETC*, FORMATETC*) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP SetData(FORMATETC*, STGMEDIUM*, BOOL) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP EnumFormatEtc(DWORD, IEnumFORMATETC**) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP DAdvise(FORMATETC*, DWORD, IAdviseSink*, DWORD*) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP DUnadvise(DWORD) override { return E_NOTIMPL; }
+  IFACEMETHODIMP EnumDAdvise(IEnumSTATDATA**) override { return E_NOTIMPL; }
+
+ private:
+  std::wstring text_;
+};
+
 using ClipboardUtilWinTest = PlatformTest;
 
 TEST_F(ClipboardUtilWinTest, EmptyHtmlToCFHtml) {
@@ -397,6 +456,16 @@ TEST_F(ClipboardUtilWinTest, GetVirtualFilenamesRejectsOversizedItemCount) {
       clipboard_util::GetVirtualFilenames(data_object.Get());
 
   EXPECT_FALSE(filenames.has_value());
+}
+
+TEST_F(ClipboardUtilWinTest, GetPlainTextBoundsToHGlobalSize) {
+  const std::wstring text(64, L'a');
+  Microsoft::WRL::ComPtr<IDataObject> data_object =
+      Microsoft::WRL::Make<MockUnterminatedTextDataObject>(text);
+
+  std::u16string out;
+  ASSERT_TRUE(clipboard_util::GetPlainText(data_object.Get(), &out));
+  EXPECT_EQ(out, base::WideToUTF16(text));
 }
 
 }  // namespace

@@ -50,6 +50,37 @@ namespace {
 constexpr STGMEDIUM kNullStorageMedium = {.tymed = TYMED_NULL,
                                           .pUnkForRelease = nullptr};
 
+// Returns the locked HGLOBAL contents as UTF-16, bounded by size() and
+// truncated at the first embedded NUL. Untrusted external sources may omit a
+// NUL terminator, so size() is authoritative; reading via data() alone would
+// scan past the allocation.
+std::u16string HGlobalAsWideString(base::win::ScopedHGlobal<wchar_t*>& data) {
+  if (!data.data()) {
+    return std::u16string();
+  }
+  std::u16string out = base::WideToUTF16(
+      std::wstring_view(data.data(), data.size() / sizeof(wchar_t)));
+  if (size_t pos = out.find(u'\0'); pos != std::u16string::npos) {
+    out.resize(pos);
+  }
+  return out;
+}
+
+// Returns the locked HGLOBAL contents as UTF-16, decoding the bytes as UTF-8
+// and bounded by size(), truncated at the first embedded NUL. Untrusted
+// external sources may omit a NUL terminator, so size() is authoritative;
+// reading via data() alone would scan past the allocation.
+std::u16string HGlobalAsString(base::win::ScopedHGlobal<char*>& data) {
+  if (!data.data()) {
+    return std::u16string();
+  }
+  std::string out(data.data(), data.size());
+  if (size_t pos = out.find('\0'); pos != std::string::npos) {
+    out.resize(pos);
+  }
+  return base::UTF8ToUTF16(out);
+}
+
 // Result type for virtual file extraction: pairs of (temp_file_path,
 // display_name).
 using VirtualFileResults =
@@ -732,7 +763,7 @@ bool GetUrlInfos(IDataObject* data_object,
   if (GetData(data_object, ClipboardFormatType::BookmarkListType(), &store)) {
     {
       base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-      ParseBookmarkListData(base::WideToUTF16(data.data()), url_infos);
+      ParseBookmarkListData(HGlobalAsWideString(data), url_infos);
     }
     ReleaseStgMedium(&store);
     return !url_infos.empty();
@@ -745,7 +776,7 @@ bool GetUrlInfos(IDataObject* data_object,
       GetData(data_object, ClipboardFormatType::UrlType(), &store)) {
     {
       base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-      SplitUrlAndTitle(base::WideToUTF16(data.data()), &url, &title);
+      SplitUrlAndTitle(HGlobalAsWideString(data), &url, &title);
       url_infos.emplace_back(url, title);
     }
     ReleaseStgMedium(&store);
@@ -756,7 +787,7 @@ bool GetUrlInfos(IDataObject* data_object,
   if (GetData(data_object, ClipboardFormatType::UrlAType(), &store)) {
     {
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      SplitUrlAndTitle(base::UTF8ToUTF16(data.data()), &url, &title);
+      SplitUrlAndTitle(HGlobalAsString(data), &url, &title);
       url_infos.emplace_back(url, title);
     }
     ReleaseStgMedium(&store);
@@ -822,7 +853,9 @@ bool GetFilenames(IDataObject* data_object,
       // filename using Unicode
       base::win::ScopedHGlobal<wchar_t*> data(medium.hGlobal);
       if (data.data() && data.data()[0]) {
-        filenames->push_back(data.data());
+        std::wstring filename(data.data(), data.size() / sizeof(wchar_t));
+        filename.resize(std::min(filename.size(), filename.find(L'\0')));
+        filenames->push_back(std::move(filename));
       }
     }
     ReleaseStgMedium(&medium);
@@ -834,7 +867,9 @@ bool GetFilenames(IDataObject* data_object,
       // filename using ASCII
       base::win::ScopedHGlobal<char*> data(medium.hGlobal);
       if (data.data() && data.data()[0]) {
-        filenames->push_back(base::SysNativeMBToWide(data.data()));
+        std::string mb(data.data(), data.size());
+        mb.resize(std::min(mb.size(), mb.find('\0')));
+        filenames->push_back(base::SysNativeMBToWide(mb));
       }
     }
     ReleaseStgMedium(&medium);
@@ -1041,7 +1076,7 @@ bool GetPlainText(IDataObject* data_object, std::u16string* plain_text) {
     {
       // Unicode text
       base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-      plain_text->assign(base::as_u16cstr(data.data()));
+      plain_text->assign(HGlobalAsWideString(data));
     }
     ReleaseStgMedium(&store);
     return true;
@@ -1051,7 +1086,7 @@ bool GetPlainText(IDataObject* data_object, std::u16string* plain_text) {
     {
       // ASCII text
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      plain_text->assign(base::UTF8ToUTF16(data.data()));
+      plain_text->assign(HGlobalAsString(data));
     }
     ReleaseStgMedium(&store);
     return true;
@@ -1097,7 +1132,7 @@ bool GetHtml(IDataObject* data_object,
   {
     // text/html
     base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-    html->assign(base::as_u16cstr(data.data()));
+    html->assign(HGlobalAsWideString(data));
   }
   ReleaseStgMedium(&store);
   return true;
