@@ -72,6 +72,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 - (void)tearDownHelper {
   [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
                                    error:nil];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:@"ForceExperienceForDeviceSwitcher"];
   [super tearDownHelper];
 }
 
