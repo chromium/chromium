@@ -707,11 +707,6 @@ class CORE_EXPORT CSSMathExpressionOperation final
                              CSSMathOperator op,
                              CSSMathType type);
 
-  // Note: `CSSMathType type` is default for all non-arithemtic operations.
-  CSSMathExpressionOperation(CalculationResultCategory category,
-                             CSSMathOperator op,
-                             CSSMathType type);
-
   CSSMathExpressionNode* Copy() const final {
     Operands operands(operands_);
     return MakeGarbageCollected<CSSMathExpressionOperation>(
