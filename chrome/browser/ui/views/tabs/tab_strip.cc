@@ -78,6 +78,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -635,6 +636,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       CHECK_NE(dragged_view->parent(), this);
       AddChildViewRaw(dragged_view);
       dragged_view->set_dragging(true);
+      // The dragged tabs must be painted to a layer to ensure they appear
+      // on top of other tabs' loading throbbers.
+      if (base::FeatureList::IsEnabled(features::kCompositorLoadingThrobber)) {
+        dragged_view->SetPaintToLayer();
+        dragged_view->layer()->SetFillsBoundsOpaquely(false);
+      }
       if (TabGroupHeader* header =
               views::AsViewClass<TabGroupHeader>(dragged_view)) {
         tab_strip_->tab_container_->GetGroupViews(header->group().value())
@@ -801,7 +808,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   void PaintChildren(const views::PaintInfo& paint_info) override {
     std::vector<ZOrderableTabContainerElement> orderable_children;
     for (views::View* child : children()) {
-      orderable_children.emplace_back(child);
+      // The compositor handles painting children with layers separately.
+      if (!child->layer()) {
+        orderable_children.emplace_back(child);
+      }
     }
 
     // Sort in ascending order by z-value. Stable sort breaks ties by child
@@ -858,6 +868,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       AnimationProgressed(animation);
       slot_view_->set_animating(false);
       slot_view_->set_dragging(false);
+      slot_view_->DestroyLayer();
       tab_container_->ReturnTabSlotView(base::to_address(slot_view_));
     }
 

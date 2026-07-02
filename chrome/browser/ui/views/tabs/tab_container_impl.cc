@@ -846,7 +846,10 @@ void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
 
   UpdateZOrderCacheIfDirty();
   for (const auto& child : z_ordered_children_cache_) {
-    child.view()->Paint(paint_info);
+    // The compositor handles painting children with layers separately.
+    if (!child.view()->layer()) {
+      child.view()->Paint(paint_info);
+    }
   }
 }
 
