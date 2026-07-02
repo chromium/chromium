@@ -98,24 +98,19 @@ float GetEdgeWeight(const LanguageTag& source, const LanguageTag& target) {
       kNonDefaultEdges([]() {
         base::flat_map<std::pair<LanguageTag, LanguageTag>, float>
             non_default_edges{
-                {{language_tags::SPANISH_LATIN_AMERICAN(),
-                  language_tags::SPANISH_MEXICO()},
+                {{GetKnownLanguageTag("es-419"), GetKnownLanguageTag("es-MX")},
                  0.8},
-                {{language_tags::ENGLISH_GLOBAL(),
-                  language_tags::BRITISH_ENGLISH()},
+                {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-GB")},
                  0.8},
-                {{language_tags::ENGLISH_GLOBAL(), language_tags::ENGLISH_US()},
+                {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-US")},
                  0.9},
-                {{language_tags::SPANISH(),
-                  language_tags::SPANISH_LATIN_AMERICAN()},
+                {{GetKnownLanguageTag("es"), GetKnownLanguageTag("es-419")},
                  0.8},
-                {{language_tags::PORTUGUESE(),
-                  language_tags::BRAZILIAN_PORTUGUESE()},
+                {{GetKnownLanguageTag("pt"), GetKnownLanguageTag("pt-BR")},
                  0.8},
-                {{language_tags::CHINESE(), language_tags::CHINA_CHINESE()},
+                {{GetKnownLanguageTag("zh"), GetKnownLanguageTag("zh-CN")},
                  0.8},
-                {{language_tags::CHINESE_TRADITIONAL(),
-                  language_tags::TAIWAN_CHINESE()},
+                {{GetKnownLanguageTag("zh-Hant"), GetKnownLanguageTag("zh-TW")},
                  0.8}};
         return non_default_edges;
       }());
@@ -156,8 +151,8 @@ class LanguageTagPreferenceGraph {
 
     // Special edges for Liberian and Philippino English to favor en-US, the
     // rest should default to en-GB.
-    AddEdge(language_tags::ENGLISH_PHILIPPINES(), language_tags::ENGLISH_US());
-    AddEdge(language_tags::ENGLISH_LIBERIA(), language_tags::ENGLISH_US());
+    AddEdge(GetKnownLanguageTag("en-PH"), GetKnownLanguageTag("en-US"));
+    AddEdge(GetKnownLanguageTag("en-LR"), GetKnownLanguageTag("en-US"));
   }
 
   // Computes the closest supported locale for all reachable nodes in the graph.

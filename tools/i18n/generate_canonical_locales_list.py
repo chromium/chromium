@@ -125,7 +125,6 @@ _ALL_LOCALES = [
     ("gd", "SCOTS_GAELIC"),
     ("gl", "GALICIAN"),
     ("gn", "GUARANI"),
-    ("gom", "GOAN_KONKANI"),
     ("gu", "GUJARATI"),
     ("ha", "HAUSA"),
     ("haw", "HAWAIIAN"),
@@ -227,9 +226,9 @@ _ALL_LOCALES = [
     ("tr", "TURKISH"),
     ("ts", "TSONGA"),
     ("tt", "TATAR"),
-    ("tw", "TWI"),  # The 'tw' code is deprecated.
     ("ug", "UYGHUR"),
     ("uk", "UKRAINIAN"),
+    ("und", "UNDEFINED"),
     ("ur", "URDU"),
     ("uz", "UZBEK"),
     ("vi", "VIETNAMESE"),

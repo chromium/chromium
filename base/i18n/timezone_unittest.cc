@@ -62,9 +62,9 @@ TEST(TimeZoneTest, GetDisplayName) {
   // Standard time display name.
   EXPECT_EQ(tz.GetDisplayName(TimeZone::kLong), u"Pacific Standard Time");
   EXPECT_EQ(tz.GetDisplayName(TimeZone::kShort), u"PST");
-
+  constexpr auto fr = GetKnownLanguageTag("fr");
   // Locale specific.
-  EXPECT_EQ(tz.GetDisplayName(language_tags::FRENCH(), TimeZone::kLong),
+  EXPECT_EQ(tz.GetDisplayName(fr, TimeZone::kLong),
             u"heure normale du Pacifique nord-am\u00e9ricain");
 }
 

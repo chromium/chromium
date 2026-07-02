@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/internal/legacy_icu_converter.h"
 #include "base/i18n/language_tag.h"

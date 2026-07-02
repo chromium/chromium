@@ -57,9 +57,29 @@ class BASE_I18N_EXPORT LanguageTagConverter {
   // Internal usage.
   LanguageTag FromIcu4xLocale(const internal::Icu4xLocale& icu_locale) const;
 
+  class KnownLanguageTagPassKey;
+  static consteval LanguageTag GetKnownLanguageTagConstEval(
+      base::PassKey<KnownLanguageTagPassKey>,
+      std::string_view tag) {
+    // TODO(crbug.com/529445512): create a consteval parser for known language
+    // tags for (lang-script-region-variants).
+    return LanguageTag(base::span<const std::string_view>({tag}));
+  }
+
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
+};
+
+// This class serves only to give access through friendship to the consteval
+// GetKnownLanguageTag class.
+class LanguageTagConverter::KnownLanguageTagPassKey {
+ private:
+  friend consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
+
+  constexpr static base::PassKey<KnownLanguageTagPassKey> GetPassKey() {
+    return base::PassKey<KnownLanguageTagPassKey>();
+  }
 };
 
 }  // namespace base::i18n

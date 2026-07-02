@@ -601,7 +601,8 @@ TEST_P(PDFiumEngineTest, GetLanguageTagFromDocumentMetadata) {
   ASSERT_TRUE(engine);
 
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
-  EXPECT_EQ(base::i18n::language_tags::ENGLISH_US(), doc_metadata.language_tag);
+  EXPECT_EQ(base::i18n::GetKnownLanguageTag("en-US"),
+            doc_metadata.language_tag);
 }
 
 TEST_P(PDFiumEngineTest, HasMeaningfulText) {

@@ -4763,6 +4763,7 @@ if (enable_nocompile_tests) {
       "functional/bind_nocompile.nc",
       "functional/callback_nocompile.nc",
       "functional/function_ref_nocompile.nc",
+      "i18n/language_tag_nocompile.nc",
       "logging_nocompile.nc",
       "memory/protected_memory_nocompile.nc",
       "memory/ref_counted_nocompile.nc",
