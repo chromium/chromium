@@ -344,10 +344,8 @@ void ImageBitmapRenderingContext::ResourceReleasedGpu(
     bool lost_resource) {
   if (image && image->IsValid()) {
     DCHECK(image->IsTextureBacked());
-    if (token.HasData() && image->ContextProvider() &&
-        image->ContextProvider()->InterfaceBase()) {
-      image->ContextProvider()->InterfaceBase()->WaitSyncTokenCHROMIUM(
-          token.GetConstData());
+    if (token.HasData()) {
+      image->UpdateSyncToken(token);
     }
   }
 }
