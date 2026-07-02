@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "components/metrics/private_metrics/private_insights/fcp_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -31,6 +32,19 @@ class SequencedTaskRunner;
 }
 
 namespace private_insights {
+
+inline constexpr char kFcpHttpClientBatchSizeHistogram[] =
+    "PrivateMetrics.PrivateInsights.FcpHttpClient.BatchSize";
+inline constexpr char kFcpHttpClientBytesReceivedHistogram[] =
+    "PrivateMetrics.PrivateInsights.FcpHttpClient.BytesReceived";
+inline constexpr char kFcpHttpClientBytesSentHistogram[] =
+    "PrivateMetrics.PrivateInsights.FcpHttpClient.BytesSent";
+inline constexpr char kFcpHttpClientHttpResponseCodeHistogram[] =
+    "PrivateMetrics.PrivateInsights.FcpHttpClient.HttpResponseCode";
+inline constexpr char kFcpHttpClientNetErrorHistogram[] =
+    "PrivateMetrics.PrivateInsights.FcpHttpClient.NetError";
+inline constexpr char kFcpHttpClientRequestDurationHistogram[] =
+    "PrivateMetrics.PrivateInsights.FcpHttpClient.RequestDuration";
 
 class FcpHttpRequestHandle;
 class FcpHttpRequestManager;
@@ -87,6 +101,7 @@ class FcpHttpRequestRunner : public network::SimpleURLLoaderStreamConsumer {
       GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<fcp::client::http::HttpResponse> response_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  base::TimeTicks start_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

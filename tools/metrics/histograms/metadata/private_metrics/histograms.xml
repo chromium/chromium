@@ -138,6 +138,66 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrivateMetrics.PrivateInsights.FcpHttpClient.BatchSize"
+    units="requests" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of HTTP requests passed in a single batch to the FCP HTTP client
+    PerformRequests call. Logged when PerformRequests is called.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PrivateInsights.FcpHttpClient.BytesReceived"
+    units="bytes" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of bytes received for an FCP HTTP client request. Logged when a
+    request completes.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PrivateInsights.FcpHttpClient.BytesSent"
+    units="bytes" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of bytes sent for an FCP HTTP client request upload. Logged when
+    a request completes.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PrivateInsights.FcpHttpClient.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The HTTP status code received by the FCP HTTP client for requests. Logged
+    when response headers are received.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PrivateInsights.FcpHttpClient.NetError"
+    enum="NetErrorCodes" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The net error code for FCP HTTP client requests. Logged when a request
+    completes.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PrivateInsights.FcpHttpClient.RequestDuration"
+    units="ms" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The duration of an FCP HTTP client request from creation to completion.
+    Logged when a request completes.
+  </summary>
+</histogram>
+
 <histogram name="PrivateMetrics.PrivateInsights.FederatedComputationOutcome"
     enum="PrivateInsightsFederatedComputationOutcome"
     expires_after="2027-06-01">

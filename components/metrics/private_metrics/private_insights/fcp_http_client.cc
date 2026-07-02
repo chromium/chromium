@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
@@ -119,7 +120,8 @@ FcpHttpRequestRunner::FcpHttpRequestRunner(
       request_(handle->request()),
       callback_(callback),
       sent_bytes_ptr_(handle->sent_bytes()),
-      received_bytes_ptr_(handle->received_bytes()) {
+      received_bytes_ptr_(handle->received_bytes()),
+      start_time_(base::TimeTicks::Now()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -213,6 +215,18 @@ void FcpHttpRequestRunner::OnComplete(bool success) {
   int net_error = loader_->NetError();
   loader_.reset();
 
+  base::UmaHistogramSparse(kFcpHttpClientNetErrorHistogram, -net_error);
+  base::UmaHistogramMediumTimes(kFcpHttpClientRequestDurationHistogram,
+                                base::TimeTicks::Now() - start_time_);
+  if (sent_bytes_ptr_) {
+    base::UmaHistogramCounts10M(kFcpHttpClientBytesSentHistogram,
+                                sent_bytes_ptr_->load());
+  }
+  if (received_bytes_ptr_) {
+    base::UmaHistogramCounts10M(kFcpHttpClientBytesReceivedHistogram,
+                                received_bytes_ptr_->load());
+  }
+
   if (success) {
     if (response_) {
       callback_->OnResponseCompleted(*request_, *response_);
@@ -288,6 +302,7 @@ void FcpHttpRequestRunner::OnResponseStarted(
     headers = ConvertResponseHeadersToFcp(response_head.headers.get(),
                                           has_explicit_accept_encoding_);
   }
+  base::UmaHistogramSparse(kFcpHttpClientHttpResponseCodeHistogram, code);
   auto response = std::make_unique<FcpHttpResponse>(code, std::move(headers));
   response_ = response.get();
   if (handle_) {
@@ -440,6 +455,9 @@ FcpHttpClient::EnqueueRequest(
 absl::Status FcpHttpClient::PerformRequests(
     std::vector<std::pair<fcp::client::http::HttpRequestHandle*,
                           fcp::client::http::HttpRequestCallback*>> requests) {
+  base::UmaHistogramCounts100(kFcpHttpClientBatchSizeHistogram,
+                              requests.size());
+
   if (requests.empty()) {
     return absl::OkStatus();
   }

@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -226,6 +227,8 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulSingle) {
   test_url_loader_factory_.AddResponse("https://example.com/test",
                                        "response payload");
 
+  base::HistogramTester histogram_tester;
+
   absl::Status status =
       PerformRequestsAndWait(&client, {{handle.get(), &callback}});
 
@@ -235,6 +238,14 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulSingle) {
   EXPECT_TRUE(callback.response_body_called_);
   EXPECT_EQ(callback.body_received_, "response payload");
   EXPECT_TRUE(callback.response_completed_called_);
+  histogram_tester.ExpectUniqueSample(kFcpHttpClientHttpResponseCodeHistogram,
+                                      200, 1);
+  histogram_tester.ExpectUniqueSample(kFcpHttpClientNetErrorHistogram, -net::OK,
+                                      1);
+  histogram_tester.ExpectTotalCount(kFcpHttpClientRequestDurationHistogram, 1);
+  histogram_tester.ExpectUniqueSample(kFcpHttpClientBatchSizeHistogram, 1, 1);
+  histogram_tester.ExpectTotalCount(kFcpHttpClientBytesReceivedHistogram, 1);
+  histogram_tester.ExpectTotalCount(kFcpHttpClientBytesSentHistogram, 1);
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
@@ -261,6 +272,8 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
   test_url_loader_factory_.AddResponse("https://example.com/req1", "resp1");
   test_url_loader_factory_.AddResponse("https://example.com/req2", "resp2");
 
+  base::HistogramTester histogram_tester;
+
   absl::Status status = PerformRequestsAndWait(
       &client, {{handle1.get(), &callback1}, {handle2.get(), &callback2}});
 
@@ -269,6 +282,34 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
   EXPECT_EQ(callback1.body_received_, "resp1");
   EXPECT_TRUE(callback2.response_completed_called_);
   EXPECT_EQ(callback2.body_received_, "resp2");
+  histogram_tester.ExpectUniqueSample(kFcpHttpClientBatchSizeHistogram, 2, 1);
+}
+
+TEST_F(FcpHttpClientTest, PerformRequestsNetError) {
+  FcpHttpClient client(&request_manager_);
+  auto request = fcp::client::http::InMemoryHttpRequest::Create(
+                     "https://example.com/failed",
+                     fcp::client::http::HttpRequest::Method::kGet,
+                     /*extra_headers=*/{}, /*body=*/"",
+                     /*use_compression=*/false)
+                     .value();
+  auto handle = client.EnqueueRequest(std::move(request));
+  TestHttpRequestCallback callback;
+
+  network::URLLoaderCompletionStatus status(net::ERR_FAILED);
+  test_url_loader_factory_.AddResponse(GURL("https://example.com/failed"),
+                                       network::mojom::URLResponseHead::New(),
+                                       "", status);
+
+  base::HistogramTester histogram_tester;
+
+  absl::Status req_status =
+      PerformRequestsAndWait(&client, {{handle.get(), &callback}});
+
+  EXPECT_TRUE(req_status.ok());
+  EXPECT_TRUE(callback.response_error_called_);
+  histogram_tester.ExpectUniqueSample(kFcpHttpClientNetErrorHistogram,
+                                      -net::ERR_FAILED, 1);
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsReadBodyError) {
