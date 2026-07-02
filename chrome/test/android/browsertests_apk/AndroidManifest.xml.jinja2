@@ -204,7 +204,6 @@
             android:exported="false"
             tools:node="remove" />
 
-        {% if javaless_renderers is defined %}
         <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
         {% for i in range(2) %}
         <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
@@ -219,7 +218,6 @@
                 android:value="NativeChildProcessService_onCreate" />
         </service>
         {% endfor %}
-        {% endif %}
 
         <service android:name="org.chromium.build.gtest_apk.ProcessKeepaliveService"
             android:process=":test_process"

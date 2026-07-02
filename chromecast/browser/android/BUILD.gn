@@ -15,10 +15,7 @@ cast_shell_android_manifest =
 jinja_template("cast_shell_manifest") {
   input = "apk/AndroidManifest.xml.jinja2"
   output = cast_shell_android_manifest
-  variables = [
-    "javaless_renderers=$enable_javaless_renderers",
-    "library_name=cast_browser_android",
-  ]
+  variables = [ "library_name=cast_browser_android" ]
 }
 
 java_group("cast_shell_android_resources") {
