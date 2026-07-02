@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -19,14 +21,59 @@ namespace {
 // The MediaStreamUI interface specifies returning 0 if no window ID is
 // applicable.
 constexpr gfx::NativeViewId kNoWindowId = 0;
+
+class TabSharingIndicatorAndroidHelper
+    : public content::WebContentsUserData<TabSharingIndicatorAndroidHelper> {
+ public:
+  ~TabSharingIndicatorAndroidHelper() override = default;
+
+  void set_indicator(TabSharingIndicatorAndroid* indicator) {
+    indicator_ = indicator;
+  }
+  TabSharingIndicatorAndroid* get_indicator() const { return indicator_; }
+
+ private:
+  friend class content::WebContentsUserData<TabSharingIndicatorAndroidHelper>;
+  explicit TabSharingIndicatorAndroidHelper(content::WebContents* contents)
+      : content::WebContentsUserData<TabSharingIndicatorAndroidHelper>(
+            *contents) {}
+
+  raw_ptr<TabSharingIndicatorAndroid> indicator_ = nullptr;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabSharingIndicatorAndroidHelper);
+
 }  // namespace
 
 TabSharingIndicatorAndroid::TabSharingIndicatorAndroid(
+    content::WebContents* capturer_web_contents,
     const content::DesktopMediaID& media_id)
-    : media_id_(media_id) {}
+    : capturer_web_contents_(capturer_web_contents->GetWeakPtr()),
+      media_id_(media_id) {
+  TabSharingIndicatorAndroidHelper::CreateForWebContents(capturer_web_contents);
+  TabSharingIndicatorAndroidHelper::FromWebContents(capturer_web_contents)
+      ->set_indicator(this);
+}
 
 TabSharingIndicatorAndroid::~TabSharingIndicatorAndroid() {
   StopSharing();
+  if (capturer_web_contents_) {
+    auto* helper = TabSharingIndicatorAndroidHelper::FromWebContents(
+        capturer_web_contents_.get());
+    if (helper && helper->get_indicator() == this) {
+      helper->set_indicator(nullptr);
+    }
+  }
+}
+
+void TabSharingIndicatorAndroid::StopSharing(
+    content::WebContents* capturer_web_contents) {
+  auto* helper =
+      TabSharingIndicatorAndroidHelper::FromWebContents(capturer_web_contents);
+  if (helper && helper->get_indicator()) {
+    helper->get_indicator()->StopSharing();
+  }
 }
 
 void TabSharingIndicatorAndroid::StopSharing() {

@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/media/android/tab_sharing_indicator_android.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "content/public/browser/web_contents.h"
 
@@ -128,6 +129,15 @@ static void JNI_MediaCaptureDevicesDispatcherAndroid_NotifyDisplayMediaStopped(
                               ->GetMediaStreamCaptureIndicator();
   indicator->StopMediaCapturing(
       web_contents, MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
+}
+
+static void JNI_MediaCaptureDevicesDispatcherAndroid_NotifyTabCapturingStopped(
+    JNIEnv* env,
+    const JavaRef<jobject>& java_web_contents) {
+  EnsureObserverCreated();
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(java_web_contents);
+  TabSharingIndicatorAndroid::StopSharing(web_contents);
 }
 
 DEFINE_JNI(MediaCaptureDevicesDispatcherAndroid)

@@ -88,6 +88,11 @@ public class MediaCaptureDevicesDispatcherAndroid {
         MediaCaptureDevicesDispatcherAndroidJni.get().notifyDisplayMediaStopped(webContents);
     }
 
+    public static void notifyTabCapturingStopped(@Nullable WebContents webContents) {
+        if (webContents == null) return;
+        MediaCaptureDevicesDispatcherAndroidJni.get().notifyTabCapturingStopped(webContents);
+    }
+
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
@@ -104,5 +109,7 @@ public class MediaCaptureDevicesDispatcherAndroid {
         void notifyStopped(WebContents webContents);
 
         void notifyDisplayMediaStopped(WebContents webContents);
+
+        void notifyTabCapturingStopped(WebContents webContents);
     }
 }

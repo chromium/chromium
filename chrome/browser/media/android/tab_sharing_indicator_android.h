@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
@@ -18,7 +19,9 @@
 // (capturee).
 class TabSharingIndicatorAndroid : public MediaStreamUI {
  public:
-  explicit TabSharingIndicatorAndroid(const content::DesktopMediaID& media_id);
+  explicit TabSharingIndicatorAndroid(
+      content::WebContents* capturer_web_contents,
+      const content::DesktopMediaID& media_id);
   ~TabSharingIndicatorAndroid() override;
 
   // chrome::MediaStreamUI override.
@@ -27,9 +30,12 @@ class TabSharingIndicatorAndroid : public MediaStreamUI {
       content::MediaStreamUI::SourceCallback source_callback,
       const std::vector<content::DesktopMediaID>& media_ids) override;
 
+  static void StopSharing(content::WebContents* web_contents);
+
  private:
   void StopSharing();
 
+  base::WeakPtr<content::WebContents> capturer_web_contents_;
   base::OnceClosure stop_callback_;
   const content::DesktopMediaID media_id_;
   std::unique_ptr<content::MediaStreamUI> tab_sharing_indicator_ui_;
