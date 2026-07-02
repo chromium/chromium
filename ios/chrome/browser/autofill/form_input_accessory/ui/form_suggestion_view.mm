@@ -212,6 +212,11 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   [self.formSuggestionViewDelegate openEditForSuggestion:suggestion];
 }
 
+- (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  return
+      [self.formSuggestionViewDelegate isPersonalContextSuggestion:suggestion];
+}
+
 #pragma mark - Helper methods
 
 // Creates and adds subviews.

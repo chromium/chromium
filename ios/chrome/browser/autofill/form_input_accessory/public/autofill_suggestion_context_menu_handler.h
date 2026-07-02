@@ -18,6 +18,9 @@
 // Invoked when the user selects to edit the suggestion.
 - (void)openEditForSuggestion:(FormSuggestion*)suggestion;
 
+// Returns whether the suggestion is from Autofill AI personal context.
+- (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_PUBLIC_AUTOFILL_SUGGESTION_CONTEXT_MENU_HANDLER_H_

@@ -723,4 +723,8 @@ UIImage* GetManualFillSymbol() {
                         shouldShowRPId:rpId];
 }
 
+- (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  return [self.contextMenuHandler isPersonalContextSuggestion:suggestion];
+}
+
 @end

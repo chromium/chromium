@@ -839,7 +839,14 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
     [children addObject:[self editAction]];
   }
   [children addObject:[self openSettingsAction]];
-  return [UIMenu menuWithTitle:@"" children:children];
+
+  NSString* title = @"";
+  if (self.suggestion.type == autofill::SuggestionType::kFillAutofillAi &&
+      [_delegate isPersonalContextSuggestion:self.suggestion]) {
+    title = l10n_util::GetNSString(
+        IDS_IOS_AUTOFILL_AI_CONTEXT_MENU_PERSONAL_CONTEXT_DESCRIPTION);
+  }
+  return [UIMenu menuWithTitle:title children:children];
 }
 
 @end
