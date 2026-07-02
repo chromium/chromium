@@ -498,7 +498,8 @@ ContentRendererClient* ShellMainDelegate::CreateContentRendererClient() {
     return renderer_client_.get();
   }
 #endif
-  renderer_client_ = std::make_unique<ShellContentRendererClient>();
+  renderer_client_ =
+      std::make_unique<ShellContentRendererClient>(is_content_browsertests_);
   return renderer_client_.get();
 }
 

@@ -3044,4 +3044,20 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForTopChromeWebUIAppliedToHosts) {
 
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, RendererCheckIsTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  RenderProcessHost* rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  mojo::Remote<mojom::TestService> service;
+  rph->BindReceiver(service.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<bool> future;
+  service->VerifyCheckIsTest(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
 }  // namespace content

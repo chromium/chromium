@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -21,8 +22,8 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
-#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"
 #include "content/common/pseudonymization_salt.h"
@@ -153,6 +154,11 @@ class TestUtilityServiceImpl : public mojom::TestService {
   void PassWriteableFile(base::File file,
                          PassWriteableFileCallback callback) override {
     std::move(callback).Run();
+  }
+
+  void VerifyCheckIsTest(VerifyCheckIsTestCallback callback) override {
+    CHECK_IS_TEST();
+    std::move(callback).Run(true);
   }
 
   void WriteToPreloadedPipe() override {

@@ -26,7 +26,7 @@ namespace content {
 
 class ShellContentRendererClient : public ContentRendererClient {
  public:
-  ShellContentRendererClient();
+  explicit ShellContentRendererClient(bool is_browsertest);
   ~ShellContentRendererClient() override;
 
   // ContentRendererClient implementation.

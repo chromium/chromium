@@ -49,8 +49,9 @@ namespace {
 
 class TestShellContentRendererClient : public ShellContentRendererClient {
  public:
-  TestShellContentRendererClient()
-      : latest_error_valid_(false),
+  explicit TestShellContentRendererClient(bool is_browsertest)
+      : ShellContentRendererClient(is_browsertest),
+        latest_error_valid_(false),
         latest_error_reason_(0),
         latest_error_stale_copy_in_cache_(false) {}
 
@@ -95,7 +96,8 @@ class RenderViewBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     // Override setting of renderer client.
-    renderer_client_ = new TestShellContentRendererClient();
+    renderer_client_ =
+        new TestShellContentRendererClient(/*is_browsertest=*/true);
     // Explicitly leaks ownership; this object will remain alive
     // until process death.  We don't deleted the returned value,
     // since some contexts set the pointer to a non-heap address.

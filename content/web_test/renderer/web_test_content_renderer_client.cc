@@ -77,7 +77,8 @@ blink::WebFrameWidget* CreateWebTestWebFrameWidget(
 
 }  // namespace
 
-WebTestContentRendererClient::WebTestContentRendererClient() {
+WebTestContentRendererClient::WebTestContentRendererClient()
+    : ShellContentRendererClient(/*is_browsertest=*/false) {
   blink::SetWebTestMode(true);
   g_client = this;
 

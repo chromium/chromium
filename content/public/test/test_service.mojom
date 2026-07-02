@@ -48,7 +48,8 @@ interface TestService {
   // Accepts a shared memory region and copies its contents into a new shared
   // memory region which is sent back to the caller. This exercises platform
   // handle transmission in both directions.
-  CloneSharedMemoryContents(mojo_base.mojom.ReadOnlySharedMemoryRegion region)
+  CloneSharedMemoryContents(
+      mojo_base.mojom.ReadOnlySharedMemoryRegion region)
       => (mojo_base.mojom.UnsafeSharedMemoryRegion new_region);
 
   // Returns the result of sandbox::policy::Sandbox::IsProcessSandboxed().
@@ -66,6 +67,9 @@ interface TestService {
   // Pass a writeable file handle. This is used to test that the file cannot be
   // passed if it can be opened with EXECUTE. See https://crbug.com/1335974.
   PassWriteableFile(mojo_base.mojom.File file) => ();
+
+  // Verifies that CHECK_IS_TEST() passes in the process.
+  VerifyCheckIsTest() => (bool succeeded);
 
   // Writes to the pipe that should be stored in base::FileDescriptorStore with
   // the key kTestPipeKey.
