@@ -37,9 +37,6 @@
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -2738,16 +2735,17 @@ TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelDragDropLoop) {
 
 // Tests that mouse movements made after a drag ends will be handled as
 // moves instead of drags.
-TEST_F(DesktopWidgetDragTestInteractive,
-       RunDragDropLoopUpdatesMouseButtonState) {
-#if BUILDFLAG(IS_OZONE)
-  if (::ui::OzonePlatform::RunningOnX11ForTest()) {
-    // TODO(crbug.com/375959961): On X11, the native widget's mouse button state is
-    // not updated when the mouse button is released to end a drag.
-    GTEST_SKIP() << "On X11, the native widget's mouse button state is not "
-                    "updated when the mouse button is released to end a drag.";
-  }
+// TODO(crbug.com/375959961): On X11, the native widget's mouse button state is
+// not updated when the mouse button is released to end a drag.
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
+#define MAYBE_RunDragDropLoopUpdatesMouseButtonState \
+  DISABLED_RunDragDropLoopUpdatesMouseButtonState
+#else
+#define MAYBE_RunDragDropLoopUpdatesMouseButtonState \
+  RunDragDropLoopUpdatesMouseButtonState
 #endif
+TEST_F(DesktopWidgetDragTestInteractive,
+       MAYBE_RunDragDropLoopUpdatesMouseButtonState) {
 #if BUILDFLAG(IS_WIN)
   // The test base (views::ViewsTestBase) removes input state lookup.
   // Windows depends on it for getting the correct mouse button state during
