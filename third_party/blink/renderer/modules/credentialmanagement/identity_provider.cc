@@ -169,9 +169,16 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
 }
 
 void IdentityProvider::close(ScriptState* script_state) {
-  auto* request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  request->CloseModalDialogView();
+  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
+          ExecutionContext::From(script_state))) {
+    auto* service =
+        CredentialManagerProxy::From(script_state)->FederatedRequestService();
+    service->CloseModalDialogView();
+  } else {
+    auto* auth_request =
+        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+    auth_request->CloseModalDialogView();
+  }
 }
 
 void OnRegisterIdP(ScriptPromiseResolver<IDLBoolean>* resolver,

@@ -115,7 +115,7 @@ class CONTENT_EXPORT RequestService
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
   std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager();
-  void CloseModalDialogView();
+  void CloseModalDialogView() override;
   IdentityRequestDialogController* GetOrCreateDialogController();
   IdentityRequestDialogController* GetDialogController() const;
   void SetDialogControllerForTests(

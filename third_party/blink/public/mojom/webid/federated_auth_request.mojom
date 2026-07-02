@@ -338,6 +338,9 @@ interface FederatedRequestService {
   // Unregisters the url as an IdP's configURL of the user's preference.
   UnregisterIdP(url.mojom.Url url) => (bool success);
 
+  // Closes the modal dialog view.
+  CloseModalDialogView();
+
   // Require user mediation with navigator.credentials.preventSilentAccess() as
   // defined in
   // https://w3c.github.io/webappsec-credential-management/#user-mediation
