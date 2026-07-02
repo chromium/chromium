@@ -166,6 +166,7 @@ export class ContextualEntrypointButtonElement extends
           'ContextualSearch.AddTabsButton.Hovered.' + this.metricsSource_);
       this.hasRecordedHover_ = true;
     }
+    this.fire('context-menu-entrypoint-hover');
   }
 
   protected onIconAnimationend_(e: AnimationEvent) {

@@ -18,6 +18,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
           .restoredTabs="${this.aimThreadRestoredTabs}"
           .smartTabSharingActive="${this.smartTabSharingActive}"
           @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+          @context-menu-entrypoint-hover="${this.onContextMenuEntrypointHover_}"
           ?upload-button-disabled="${this.uploadButtonDisabled}"
           ?show-context-menu-description="${this.showContextMenuDescription}"
           .glifAnimationState="${this.glifAnimationState}"

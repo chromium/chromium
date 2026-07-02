@@ -27,6 +27,7 @@ suite('ContextualEntrypointAndMenu', () => {
     Object.assign(entrypointAndMenu, {
       inputState,
       usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
+      tabSuggestionsHasLoaded: true,
     });
     document.body.appendChild(entrypointAndMenu);
     await microtasksFinished();
@@ -76,10 +77,12 @@ suite('ContextualEntrypointAndMenu', () => {
   });
 
   test('context menu shown on entrypoint click event', async () => {
+    const openedPromise =
+        eventToPromise('context-menu-opened', entrypointAndMenu);
     // Act.
     $$(entrypointAndMenu, '#entrypointButton')!.dispatchEvent(
         new Event('context-menu-entrypoint-click'));
-    await microtasksFinished();
+    await openedPromise;
 
     // Assert.
     assertTrue(entrypointAndMenu.$.menu.open);
@@ -273,5 +276,101 @@ suite('ContextualEntrypointAndMenu', () => {
           assertTrue(!!menu);
           assertEquals(restoredTabs, menu.aimThreadRestoredTabs);
         });
+  });
+
+  suite('SuggestionsLoadingDelay', () => {
+    test(
+        'click when not loaded and not loading requests load and delays opening',
+        async () => {
+          entrypointAndMenu.tabSuggestionsHasLoaded = false;
+          entrypointAndMenu.tabSuggestionsLoading = false;
+          entrypointAndMenu.menuOpenDelayMs = 1000;
+          await microtasksFinished();
+
+          let requestedLoad = false;
+          entrypointAndMenu.addEventListener(
+              'request-tab-suggestions-load', () => {
+                requestedLoad = true;
+              });
+
+          const button = $$(entrypointAndMenu, '#entrypointButton')!;
+          button.dispatchEvent(new Event('context-menu-entrypoint-click'));
+          await microtasksFinished();
+
+          assertTrue(requestedLoad);
+          assertTrue(entrypointAndMenu.tabSuggestionsLoading);
+          assertFalse(entrypointAndMenu.$.menu.open);
+
+          const openedPromise =
+              eventToPromise('context-menu-opened', entrypointAndMenu);
+          entrypointAndMenu.tabSuggestionsHasLoaded = true;
+          entrypointAndMenu.tabSuggestionsLoading = false;
+          await openedPromise;
+
+          assertTrue(entrypointAndMenu.$.menu.open);
+        });
+
+    test('menu opening is delayed when suggestions are loading', async () => {
+      entrypointAndMenu.tabSuggestionsLoading = true;
+      entrypointAndMenu.menuOpenDelayMs = 1000;
+      await microtasksFinished();
+
+      const button = $$(entrypointAndMenu, '#entrypointButton')!;
+      button.dispatchEvent(new Event('context-menu-entrypoint-click'));
+      await microtasksFinished();
+
+      assertFalse(entrypointAndMenu.$.menu.open);
+
+      const openedPromise =
+          eventToPromise('context-menu-opened', entrypointAndMenu);
+      entrypointAndMenu.tabSuggestionsLoading = false;
+      await openedPromise;
+
+      assertTrue(entrypointAndMenu.$.menu.open);
+    });
+
+    test(
+        'menu opening fallback opens after timeout if loading takes too long',
+        async () => {
+          const openedPromise =
+              eventToPromise('context-menu-opened', entrypointAndMenu);
+          entrypointAndMenu.tabSuggestionsLoading = true;
+          entrypointAndMenu.menuOpenDelayMs = 10;
+          await microtasksFinished();
+
+          const button = $$(entrypointAndMenu, '#entrypointButton')!;
+          button.dispatchEvent(new Event('context-menu-entrypoint-click'));
+          await microtasksFinished();
+
+          assertFalse(entrypointAndMenu.$.menu.open);
+
+          await openedPromise;
+
+          assertTrue(entrypointAndMenu.$.menu.open);
+        });
+
+    test('menu opens immediately if not loading', async () => {
+      const openedPromise =
+          eventToPromise('context-menu-opened', entrypointAndMenu);
+      const button = $$(entrypointAndMenu, '#entrypointButton')!;
+      button.dispatchEvent(new Event('context-menu-entrypoint-click'));
+      await openedPromise;
+
+      assertTrue(entrypointAndMenu.$.menu.open);
+    });
+
+    test('hover event is fired', async () => {
+      const hoverEventPromise =
+          eventToPromise('context-menu-entrypoint-hover', entrypointAndMenu);
+
+      const entrypointButton = $$(entrypointAndMenu, '#entrypointButton');
+      assertTrue(!!entrypointButton);
+
+      const hoverTarget = entrypointButton.shadowRoot!.querySelector('div')!;
+      assertTrue(!!hoverTarget);
+      hoverTarget.dispatchEvent(new Event('pointerenter'));
+
+      assertTrue(!!(await hoverEventPromise));
+    });
   });
 });

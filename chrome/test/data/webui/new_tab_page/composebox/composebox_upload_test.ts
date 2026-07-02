@@ -499,7 +499,7 @@ import * as testSupport from './test_support.js';
               await testProxy.element.updateComplete;
 
               // Verify that the tab is initially selected.
-              assertEquals(testProxy.element.files.size, 1);
+              assertEquals(1, testProxy.element.files.size);
               assertTrue(testProxy.element.files.has(uuid));
 
               // Mock getRecentTabs to return empty list (simulates tab
@@ -508,13 +508,14 @@ import * as testSupport from './test_support.js';
                   'getRecentTabs', Promise.resolve({tabs: []}));
 
               // Trigger suggestion refresh to run the automatic tab cleanup.
-              await testProxy.element.refreshTabSuggestions();
+              await testProxy.element.refreshTabSuggestions(
+                  /*forceRefresh=*/ true);
               await testProxy.element.updateComplete;
               await microtasksFinished();
 
               // Verify the closed tab context has been removed.
-              assertEquals(testProxy.element.files.size, 0);
-              assertEquals(testProxy.element.addedTabsIds.size, 0);
+              assertEquals(0, testProxy.element.files.size);
+              assertEquals(0, testProxy.element.addedTabsIds.size);
               assertFalse(testProxy.element.files.has(uuid));
             });
 
