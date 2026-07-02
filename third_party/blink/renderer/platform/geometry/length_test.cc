@@ -93,6 +93,12 @@ class LengthTest : public ::testing::Test {
         std::move(operands), CalculationOperator::kClamp);
   }
 
+  const CalculationExpressionNode* RoundUp(
+      HeapVector<Member<const CalculationExpressionNode>>&& operands) {
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
+        std::move(operands), CalculationOperator::kRoundUp);
+  }
+
   Length CreateLength(const CalculationExpressionNode* expression) {
     return Length(CalculationValue::CreateSimplified(expression,
                                                      Length::ValueRange::kAll));
@@ -567,6 +573,18 @@ TEST_F(LengthTest, BlendWithInfiniteProgressShouldNotCrash) {
   Length result = to.Blend(from, std::numeric_limits<double>::infinity(),
                            Length::ValueRange::kAll);
   EXPECT_TRUE(std::isfinite(result.Pixels()));
+}
+
+TEST_F(LengthTest, NanCensoring) {
+  // round(up,1px,100%) resolved against a reference length of 0 will yield a
+  // NaN. CalculationValue::Evaluate() will censor that NaN to zero since it's
+  // the "top-level calculation".
+  Length round_expr = CreateLength(
+      RoundUp({PixelsAndPercent(Length::Fixed(1).GetPixelsAndPercent()),
+               PixelsAndPercent(Length::Percent(100).GetPixelsAndPercent())}));
+  float expr_result = round_expr.GetCalculationValue().Evaluate(0);
+  EXPECT_TRUE(std::isfinite(expr_result));
+  EXPECT_EQ(0.f, expr_result);
 }
 
 }  // namespace blink

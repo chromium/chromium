@@ -248,10 +248,7 @@ wtf_size_t Length::GetCalcHandleMapSizeForTest() {
 float Length::NonNanCalculatedValue(float max_value,
                                     const EvaluationInput& input) const {
   DCHECK(IsCalculated());
-  float result = GetCalculationValue().Evaluate(max_value, input);
-  if (std::isnan(result))
-    return 0;
-  return result;
+  return GetCalculationValue().Evaluate(max_value, input);
 }
 
 bool Length::HasOnlyFixedAndPercent() const {

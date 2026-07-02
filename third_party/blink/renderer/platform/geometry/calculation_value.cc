@@ -40,10 +40,16 @@ void CalculationValue::Trace(Visitor* visitor) const {
 
 float CalculationValue::Evaluate(float max_value,
                                  const EvaluationInput& input) const {
-  float value =
-      ClampTo<float>(expression_ ? expression_->Evaluate(max_value, input)
-                                 : Pixels() + Percent() / 100 * max_value);
-  return (IsNonNegative() && value < 0) ? 0 : value;
+  float value = expression_ ? expression_->Evaluate(max_value, input)
+                            : Pixels() + Percent() / 100 * max_value;
+  // Censor NaN.
+  if (std::isnan(value)) {
+    value = 0;
+  }
+  if (IsNonNegative() && value < 0) {
+    value = 0;
+  }
+  return ClampTo<float>(value);
 }
 
 bool CalculationValue::operator==(const CalculationValue& other) const {
