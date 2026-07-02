@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
