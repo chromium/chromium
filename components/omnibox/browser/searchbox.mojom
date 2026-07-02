@@ -345,7 +345,8 @@ interface PageHandler {
                         bool alt_key,
                         bool ctrl_key,
                         bool meta_key,
-                        bool shift_key);
+                        bool shift_key,
+                        bool via_keyboard);
 
   // Sets the Smart Compose stats to be passed during the next navigation.
   SetSmartComposeStats(SmartComposeStats smart_compose_stats);

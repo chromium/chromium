@@ -453,6 +453,7 @@ suite('SearchboxMixinTest', () => {
     assertEquals(0, args.line);
     assertEquals(matches[0]!.destinationUrl, args.url);
     assertTrue(args.areMatchesShowing);
+    assertTrue(args.viaKeyboard);
   });
 
   test('pressing Escape closes dropdown or resets input', async () => {
@@ -592,6 +593,7 @@ suite('SearchboxMixinTest', () => {
             await testProxy.handler.whenCalled('openAutocompleteMatch');
         assertEquals(0, args.line);
         assertEquals(matches[0]!.destinationUrl, args.url);
+        assertTrue(args.viaKeyboard);
       });
 
   test('clicking suggestion triggers openAutocompleteMatch', async () => {
@@ -613,6 +615,7 @@ suite('SearchboxMixinTest', () => {
     assertEquals(0, args.line);
     assertEquals(matches[0]!.destinationUrl, args.url);
     assertEquals(0, args.mouseButton);
+    assertFalse(args.viaKeyboard);
   });
 
   test('auxclick on suggestion triggers openAutocompleteMatch', async () => {
@@ -641,6 +644,7 @@ suite('SearchboxMixinTest', () => {
     assertEquals(0, args.line);
     assertEquals(matches[0]!.destinationUrl, args.url);
     assertEquals(1, args.mouseButton);
+    assertFalse(args.viaKeyboard);
   });
 
   test('clicking quick action pedal triggers executeAction', async () => {
@@ -1400,6 +1404,7 @@ suite('SearchboxMixinTest', () => {
     assertEquals(matches[0]!.destinationUrl, args.url);
     assertTrue(args.areMatchesShowing);
     assertTrue(args.shiftKey);
+    assertTrue(args.viaKeyboard);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 

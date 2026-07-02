@@ -339,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
 
   EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
-  handler_->OpenAutocompleteMatch(2, url, true, 1, false, false, false, false);
+  handler_->OpenAutocompleteMatch(2, url, true, 1, false, false, false, false,
+                                  /*via_keyboard=*/false);
 
   // Assert that the input gets correctly updated for the realbox.
   EXPECT_TRUE(omnibox_edit_model_->GetInputForTesting().IsZeroSuggest());

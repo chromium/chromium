@@ -1414,7 +1414,8 @@ void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
                                                        bool alt_key,
                                                        bool ctrl_key,
                                                        bool meta_key,
-                                                       bool shift_key) {
+                                                       bool shift_key,
+                                                       bool via_keyboard) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
 
   // Record match navigations for composebox matches.
@@ -1440,7 +1441,7 @@ void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
 
   SearchboxHandler::OpenAutocompleteMatch(line, url, are_matches_showing,
                                           mouse_button, alt_key, ctrl_key,
-                                          meta_key, shift_key);
+                                          meta_key, shift_key, via_keyboard);
 }
 
 void ContextualSearchboxHandler::SetSmartComposeStats(

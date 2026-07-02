@@ -160,7 +160,8 @@ class ContextualSearchboxHandler
                              bool alt_key,
                              bool ctrl_key,
                              bool meta_key,
-                             bool shift_key) override;
+                             bool shift_key,
+                             bool via_keyboard) override;
   void SetSmartComposeStats(
       searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) override;
   void GetDriveDisclaimerStatus(

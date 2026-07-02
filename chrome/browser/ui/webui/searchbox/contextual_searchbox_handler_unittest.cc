@@ -1963,7 +1963,8 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
 
     handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
                                     /*are_matches_showing=*/true, 0, false,
-                                    false, false, false);
+                                    false, false, false,
+                                    /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
         "ContextualSearch.ZeroSuggestClickV2.IsContextual.NewTabPage", false,
@@ -1997,7 +1998,8 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
 
     handler().OpenAutocompleteMatch(0, GURL("https://www.contextual.com"),
                                     /*are_matches_showing=*/true, 0, false,
-                                    false, false, false);
+                                    false, false, false,
+                                    /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
         "ContextualSearch.ZeroSuggestClickV2.IsContextual.NewTabPage", true, 1);
@@ -2044,7 +2046,8 @@ TEST_F(ContextualSearchboxHandlerTest,
 
     handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
                                     /*are_matches_showing=*/true, 0, false,
-                                    false, false, false);
+                                    false, false, false,
+                                    /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
         "ContextualSearch.TypedSuggestNavigation.IsVerbatim.NewTabPage", true,
@@ -2082,7 +2085,8 @@ TEST_F(ContextualSearchboxHandlerTest,
 
     handler().OpenAutocompleteMatch(
         1, GURL("https://www.google.com/search?q=suggestion"),
-        /*are_matches_showing=*/true, 0, false, false, false, false);
+        /*are_matches_showing=*/true, 0, false, false, false, false,
+        /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
         "ContextualSearch.TypedSuggestNavigation.IsVerbatim.NewTabPage", false,
