@@ -1600,13 +1600,11 @@ void GeminiBrowserAgent::PropagatePageContextToProvider(
 
     // Persists manual detachment across navigations. If the user explicitly
     // detached the context via the paperclip UI, respect that choice over the
-    // default attached state. Skip for Gemini Live where the paperclip UI
-    // is absent and context streams continuously.
+    // default attached state.
     if (gemini_page_context.geminiPageContextAttachmentState ==
             ios::provider::GeminiPageContextAttachmentState::kAttached &&
         ios::provider::GetCurrentPageContextAttachmentState() ==
-            ios::provider::GeminiPageContextAttachmentState::kDetached &&
-        !IsInGeminiLiveMode()) {
+            ios::provider::GeminiPageContextAttachmentState::kDetached) {
       gemini_page_context.geminiPageContextAttachmentState =
           ios::provider::GeminiPageContextAttachmentState::kDetached;
     }
