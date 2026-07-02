@@ -50,8 +50,6 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
     kImage
   };
 
-  explicit ShapeValue(ShapeValueType type)
-      : type_(type), box_(ShapeBox::kMissing) {}
   explicit ShapeValue(StyleImage* image)
       : type_(kImage), image_(image), box_(ShapeBox::kContentBox) {}
   explicit ShapeValue(ShapeBox shape_box) : type_(kBox), box_(shape_box) {}

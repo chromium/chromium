@@ -282,7 +282,7 @@ ShapeNonInterpolableValue* MakeShapeNonInterpolableValue(
     case CSSPropertyID::kShapeOutside:
       CHECK(!geometry_box && !coord_box);
       return MakeGarbageCollected<CssBoxTypeShapeNonInterpolableValue>(
-          wind_rule, std::move(params), css_box.value_or(ShapeBox::kMissing));
+          wind_rule, std::move(params), css_box.value_or(ShapeBox::kMarginBox));
     default:
       NOTREACHED();
   }
@@ -644,8 +644,7 @@ bool BoxesMatches(const CSSPropertyID& property_id,
     case CSSPropertyID::kOffsetPath:
       return value1.GetCoordBox() == value2.GetCoordBox();
     case CSSPropertyID::kShapeOutside:
-      return ShapeOutsideBoxesMatch(value1.GetCssBoxType(),
-                                    value2.GetCssBoxType());
+      return value1.GetCssBoxType() == value2.GetCssBoxType();
     default:
       NOTREACHED();
   }
@@ -786,7 +785,7 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
     }
     case CSSPropertyID::kShapeOutside: {
       ShapeBox css_box =
-          shape_non_interpolable.GetCssBoxType().value_or(ShapeBox::kMissing);
+          shape_non_interpolable.GetCssBoxType().value_or(ShapeBox::kMarginBox);
       state.StyleBuilder().SetShapeOutside(
           MakeGarbageCollected<ShapeValue>(*shape, css_box));
       break;

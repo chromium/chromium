@@ -53,7 +53,7 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
   bool IsCompatibleWith(const BasicShapeNonInterpolableValue& other) const {
     if (GetGeometryBox() != other.GetGeometryBox() ||
         GetCoordBox() != other.GetCoordBox() ||
-        !ShapeOutsideBoxesMatch(GetShapeBox(), other.GetShapeBox()) ||
+        GetShapeBox() != other.GetShapeBox() ||
         GetShapeType() != other.GetShapeType()) {
       return false;
     }
@@ -927,7 +927,7 @@ CoordBox basic_shape_interpolation_functions::GetCoordBox(
 ShapeBox basic_shape_interpolation_functions::GetShapeBox(
     const NonInterpolableValue& value) {
   return To<BasicShapeNonInterpolableValue>(value).GetShapeBox().value_or(
-      ShapeBox::kMissing);
+      ShapeBox::kMarginBox);
 }
 
 }  // namespace blink

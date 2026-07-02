@@ -565,7 +565,6 @@ enum class TimelineScroller { kNearest, kRoot, kSelf };
 // <visual-box> = border-box | padding-box | content-box
 // https://drafts.csswg.org/css-shapes-1/#typedef-shape-box
 enum class ShapeBox : unsigned {
-  kMissing,
   kMarginBox,
   kBorderBox,
   kPaddingBox,

@@ -54,17 +54,6 @@ class CORE_EXPORT PathInterpolationFunctions {
       InterpolationValue&& end);
 };
 
-// shape-outside's spec default <shape-box> is margin-box, so an absent
-// <shape-box> (ShapeBox::kMissing) compares equal to an explicit margin-box.
-inline bool ShapeOutsideBoxesMatch(std::optional<ShapeBox> a,
-                                   std::optional<ShapeBox> b) {
-  auto canon = [](std::optional<ShapeBox> x) {
-    auto v = x.value_or(ShapeBox::kMissing);
-    return v == ShapeBox::kMissing ? ShapeBox::kMarginBox : v;
-  };
-  return canon(a) == canon(b);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_PATH_INTERPOLATION_FUNCTIONS_H_

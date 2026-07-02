@@ -90,7 +90,7 @@ void SetPath(const CSSProperty& property,
       return;
     case CSSPropertyID::kShapeOutside:
       builder.SetShapeOutside(MakeGarbageCollected<ShapeValue>(
-          *path, shape_outside_css_box.value_or(ShapeBox::kMissing)));
+          *path, shape_outside_css_box.value_or(ShapeBox::kMarginBox)));
       return;
     default:
       NOTREACHED();
@@ -181,7 +181,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
   const cssvalue::CSSPathValue* path_value = nullptr;
   std::optional<ShapeBox> css_box;
   if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside) {
-    css_box = ShapeBox::kMissing;
+    css_box = ShapeBox::kMarginBox;
   }
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     path_value = DynamicTo<cssvalue::CSSPathValue>(list->First());

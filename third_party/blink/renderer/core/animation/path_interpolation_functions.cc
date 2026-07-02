@@ -142,7 +142,7 @@ class UnderlyingPathSegTypesChecker final
                const InterpolationValue& underlying) const final {
     return path_seg_types_ == GetPathSegTypes(underlying) &&
            wind_rule_ == GetWindRule(underlying) &&
-           ShapeOutsideBoxesMatch(css_box_, GetCssBox(underlying));
+           css_box_ == GetCssBox(underlying);
   }
 
   Vector<SVGPathSegType> path_seg_types_;
@@ -197,7 +197,7 @@ bool PathInterpolationFunctions::PathsAreCompatible(
   if (start_types.size() == 0 || !PathSegTypesMatch(start_types, end_types))
     return false;
 
-  if (!ShapeOutsideBoxesMatch(start_path.CssBox(), end_path.CssBox())) {
+  if (start_path.CssBox() != end_path.CssBox()) {
     return false;
   }
 

@@ -58,13 +58,6 @@ gfx::Rect ToPixelSnappedLogicalRect(const LogicalRect& rect) {
 
 }  // namespace
 
-ShapeBox ReferenceBox(const ShapeValue& shape_value) {
-  if (shape_value.CssBox() == ShapeBox::kMissing) {
-    return ShapeBox::kMarginBox;
-  }
-  return shape_value.CssBox();
-}
-
 void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
     LogicalSize new_reference_box_logical_size,
     LogicalSize margin_size) {
@@ -77,7 +70,7 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
                                     margin_size.block_size);
 
   const ShapeValue& shape_value = *layout_box_->StyleRef().ShapeOutside();
-  switch (ReferenceBox(shape_value)) {
+  switch (shape_value.CssBox()) {
     case ShapeBox::kMarginBox:
       UseCounter::Count(document, WebFeature::kShapeOutsideMarginBox);
       new_reference_box_logical_size.Expand(margin_size.inline_size,
@@ -115,8 +108,6 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
       }
       break;
     }
-    case ShapeBox::kMissing:
-      NOTREACHED();
   }
 
   new_reference_box_logical_size.ClampNegativeToZero();
@@ -249,7 +240,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
 
 LogicalOffset ShapeOutsideInfo::LogicalStartOffset() const {
   const PhysicalBoxStrut outsets = ([&] {
-    switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
+    switch (layout_box_->StyleRef().ShapeOutside()->CssBox()) {
       case ShapeBox::kMarginBox:
         return -layout_box_->MarginOutsets();
       case ShapeBox::kBorderBox:
@@ -258,8 +249,6 @@ LogicalOffset ShapeOutsideInfo::LogicalStartOffset() const {
         return layout_box_->BorderOutsets();
       case ShapeBox::kContentBox:
         return layout_box_->BorderOutsets() + layout_box_->PaddingOutsets();
-      case ShapeBox::kMissing:
-        NOTREACHED();
     }
   })();
   const ComputedStyle& container_style =

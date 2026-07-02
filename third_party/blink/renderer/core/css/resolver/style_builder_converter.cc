@@ -2763,23 +2763,24 @@ ShapeValue* StyleBuilderConverter::ConvertShapeValue(StyleResolverState& state,
   }
 
   const BasicShape* shape = nullptr;
-  ShapeBox css_box = ShapeBox::kMissing;
+  std::optional<ShapeBox> shape_box;
   const auto& value_list = To<CSSValueList>(value);
   for (unsigned i = 0; i < value_list.length(); ++i) {
     const CSSValue& item_value = value_list.Item(i);
     if (item_value.IsBasicShapeValue()) {
       shape = BasicShapeForValue(state, item_value);
     } else {
-      css_box = To<CSSIdentifierValue>(item_value).ConvertTo<ShapeBox>();
+      shape_box = To<CSSIdentifierValue>(item_value).ConvertTo<ShapeBox>();
     }
   }
 
   if (shape) {
-    return MakeGarbageCollected<ShapeValue>(*shape, css_box);
+    return MakeGarbageCollected<ShapeValue>(
+        *shape, shape_box.value_or(ShapeBox::kMarginBox));
   }
 
-  DCHECK_NE(css_box, ShapeBox::kMissing);
-  return MakeGarbageCollected<ShapeValue>(css_box);
+  CHECK(shape_box.has_value());
+  return MakeGarbageCollected<ShapeValue>(*shape_box);
 }
 
 Length StyleBuilderConverter::ConvertSpacing(StyleResolverState& state,

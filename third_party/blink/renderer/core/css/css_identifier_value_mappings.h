@@ -1246,9 +1246,6 @@ inline CSSIdentifierValue::CSSIdentifierValue(ShapeBox css_box)
     case ShapeBox::kContentBox:
       value_id_ = CSSValueID::kContentBox;
       break;
-    case ShapeBox::kMissing:
-      // The missing box should convert to a null value.
-      NOTREACHED();
   }
 }
 

@@ -119,7 +119,6 @@ ExclusionShapeData* CreateExclusionShapeData(
 
   const ComputedStyle& style = unpositioned_float.node.Style();
   switch (style.ShapeOutside()->CssBox()) {
-    case ShapeBox::kMissing:
     case ShapeBox::kMarginBox:
       shape_insets -= new_margins;
       break;

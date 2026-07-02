@@ -35,7 +35,7 @@ struct BasicShapeInfo {
   const BasicShape* shape = nullptr;
   GeometryBox geometry_box = GeometryBox::kBorderBox;
   CoordBox coord_box = CoordBox::kBorderBox;
-  ShapeBox shape_box = ShapeBox::kMissing;
+  ShapeBox shape_box = ShapeBox::kMarginBox;
 };
 
 BasicShapeInfo GetBasicShapeInfo(const CSSProperty& property,
@@ -190,7 +190,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
   if (!value.IsBaseValueList()) {
     return basic_shape_interpolation_functions::MaybeConvertCSSValue(
         value, CssProperty(), GeometryBox::kBorderBox, CoordBox::kBorderBox,
-        ShapeBox::kMissing);
+        ShapeBox::kMarginBox);
   }
 
   const auto& list = To<CSSValueList>(value);
@@ -202,7 +202,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
   }
   GeometryBox geometry_box = GeometryBox::kBorderBox;
   CoordBox coord_box = CoordBox::kBorderBox;
-  ShapeBox shape_box = ShapeBox::kMissing;
+  ShapeBox shape_box = ShapeBox::kMarginBox;
   if (list.length() == 2) {
     const CSSValue& tail = list.Item(1);
     if (const auto* ident = DynamicTo<CSSIdentifierValue>(tail)) {
