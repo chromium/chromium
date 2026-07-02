@@ -134,6 +134,12 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   // Clears the cue UI.
   void ClearCue();
 
+  // Attempts to show the First Run Experience Toast promo bubble.
+  void MaybeShowPromo();
+
+  // Closes or aborts any active educational Toast promo bubble.
+  void ClosePromo(SuggestionUserDecision decision);
+
   // page_actions::PageActionObserver:
   void OnPageActionAnchoredMessageShown(
       const page_actions::PageActionState& page_action) override;

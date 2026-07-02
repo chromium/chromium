@@ -19,9 +19,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/logging/filter_acceptance_metrics_logger.h"
@@ -182,13 +184,13 @@ FilterUiController::~FilterUiController() {
       suggestion_state_->view_state == SuggestionViewState::kInactive) {
     return;
   }
+  constexpr SuggestionUserDecision kDecision = SuggestionUserDecision::kIgnored;
   if (service_) {
-    service_->RecordUserInteractionWithSuggestion(
-        SuggestionUserDecision::kIgnored);
+    service_->RecordUserInteractionWithSuggestion(kDecision);
   }
-  LogSuggestionUiDecision(log_router_, *suggestion_state_,
-                          SuggestionUserDecision::kIgnored);
-  RecordMetricsDecision(suggestion_state_, SuggestionUserDecision::kIgnored);
+  LogSuggestionUiDecision(log_router_, *suggestion_state_, kDecision);
+  RecordMetricsDecision(suggestion_state_, kDecision);
+  ClosePromo(kDecision);
 }
 
 void FilterUiController::OnSuggestionGenerated(
@@ -226,6 +228,7 @@ void FilterUiController::ClearSuggestion(SuggestionUserDecision decision) {
     }
     LogSuggestionUiDecision(log_router_, *suggestion_state_, decision);
     RecordMetricsDecision(suggestion_state_, decision);
+    ClosePromo(decision);
   }
   dismissal_weak_factory_.InvalidateWeakPtrs();
   suggestion_state_.reset();
@@ -366,6 +369,7 @@ void FilterUiController::OnPageActionAnchoredMessageShown(
   }
   switch (suggestion_state_->view_state) {
     case SuggestionViewState::kInactive:
+      MaybeShowPromo();
       if (page_action_controller_) {
         page_action_controller_->OverrideText(
             kActionMultistepFilter,
@@ -413,11 +417,12 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
     return;
   }
 
+  constexpr SuggestionUserDecision kDecision = SuggestionUserDecision::kIgnored;
   switch (suggestion_state_->view_state) {
     case SuggestionViewState::kShowingInitialCue:
-      LogSuggestionUiDecision(log_router_, *suggestion_state_,
-                              SuggestionUserDecision::kIgnored);
+      LogSuggestionUiDecision(log_router_, *suggestion_state_, kDecision);
       suggestion_state_->view_state = SuggestionViewState::kCollapsedInOmnibox;
+      ClosePromo(kDecision);
       if (page_action_controller_) {
         page_action_controller_->OverrideText(
             kActionMultistepFilter,
@@ -425,8 +430,7 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
       }
       break;
     case SuggestionViewState::kReopenedFromOmnibox:
-      LogSuggestionUiDecision(log_router_, *suggestion_state_,
-                              SuggestionUserDecision::kIgnored);
+      LogSuggestionUiDecision(log_router_, *suggestion_state_, kDecision);
       suggestion_state_->view_state =
           SuggestionViewState::kCollapsedInOmniboxAfterReopen;
       if (page_action_controller_) {
@@ -486,6 +490,36 @@ void FilterUiController::OnFaviconAvailable(
   page_action_controller_->ShowAnchoredMessage(
       kActionMultistepFilter,
       {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
+}
+
+void FilterUiController::MaybeShowPromo() {
+  BrowserUserEducationInterface* user_education =
+      BrowserUserEducationInterface::From(tab().GetBrowserWindowInterface());
+  if (user_education) {
+    user_education->MaybeShowFeaturePromo(
+        feature_engagement::kIPHMultistepFilterPromoFeature);
+  }
+}
+
+void FilterUiController::ClosePromo(SuggestionUserDecision decision) {
+  BrowserUserEducationInterface* user_education =
+      BrowserUserEducationInterface::From(tab().GetBrowserWindowInterface());
+  if (!user_education) {
+    return;
+  }
+  switch (decision) {
+    case SuggestionUserDecision::kAccepted:
+    case SuggestionUserDecision::kDismissed:
+    case SuggestionUserDecision::kSettingsOpened:
+      user_education->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHMultistepFilterPromoFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      break;
+    case SuggestionUserDecision::kIgnored:
+      user_education->AbortFeaturePromo(
+          feature_engagement::kIPHMultistepFilterPromoFeature);
+      break;
+  }
 }
 
 }  // namespace multistep_filter
