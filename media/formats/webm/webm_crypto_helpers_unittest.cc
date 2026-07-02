@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,19 +32,17 @@ namespace media {
 TEST(WebMCryptoHelpersTest, EmptyData) {
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_FALSE(WebMCreateDecryptConfig(
-      nullptr, 0, kKeyId.data(), base::SpanificationSizeofForStdArray(kKeyId),
-      &decrypt_config, &data_offset));
+  ASSERT_FALSE(WebMCreateDecryptConfig(base::span<const uint8_t>(),
+                                       base::span(kKeyId), &decrypt_config,
+                                       &data_offset));
 }
 
 TEST(WebMCryptoHelpersTest, ClearData) {
   const uint8_t kData[] = {0x00, 0x0d, 0x0a, 0x0d, 0x0a};
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_TRUE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_TRUE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                      &decrypt_config, &data_offset));
   EXPECT_EQ(1u, data_offset);
   EXPECT_FALSE(decrypt_config);
 }
@@ -53,10 +51,8 @@ TEST(WebMCryptoHelpersTest, EncryptedButNotEnoughBytes) {
   const uint8_t kData[] = {0x01, 0x0d, 0x0a, 0x0d, 0x0a};
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_FALSE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_FALSE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                       &decrypt_config, &data_offset));
 }
 
 TEST(WebMCryptoHelpersTest, EncryptedNotPartitioned) {
@@ -89,22 +85,12 @@ TEST(WebMCryptoHelpersTest, EncryptedNotPartitioned) {
   });
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_TRUE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_TRUE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                      &decrypt_config, &data_offset));
   EXPECT_TRUE(decrypt_config);
-  EXPECT_EQ(
-      std::string(kKeyId.data(),
-                  base::span(kKeyId)
-                      .subspan(base::SpanificationSizeofForStdArray(kKeyId))
-                      .data()),
-      decrypt_config->key_id());
-  EXPECT_EQ(std::string(
-                kExpectedIv.data(),
-                base::span(kExpectedIv)
-                    .subspan(base::SpanificationSizeofForStdArray(kExpectedIv))
-                    .data()),
+  EXPECT_EQ(std::string(kKeyId.begin(), kKeyId.end()),
+            decrypt_config->key_id());
+  EXPECT_EQ(std::string(kExpectedIv.begin(), kExpectedIv.end()),
             decrypt_config->iv());
   EXPECT_TRUE(decrypt_config->subsamples().empty());
 }
@@ -118,10 +104,8 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedMissingNumPartitionField) {
   };
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_FALSE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_FALSE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                       &decrypt_config, &data_offset));
 }
 
 TEST(WebMCryptoHelpersTest, EncryptedPartitionedNotEnoughBytesForOffsets) {
@@ -137,10 +121,8 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedNotEnoughBytesForOffsets) {
   };
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_FALSE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_FALSE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                       &decrypt_config, &data_offset));
 }
 
 TEST(WebMCryptoHelpersTest, EncryptedPartitionedNotEnoughBytesForData) {
@@ -158,10 +140,8 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedNotEnoughBytesForData) {
   };
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_FALSE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_FALSE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                       &decrypt_config, &data_offset));
 }
 
 TEST(WebMCryptoHelpersTest, EncryptedPartitionedNotEnoughBytesForData2) {
@@ -179,10 +159,8 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedNotEnoughBytesForData2) {
   };
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_FALSE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_FALSE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                       &decrypt_config, &data_offset));
 }
 
 TEST(WebMCryptoHelpersTest, EncryptedPartitionedDecreasingOffsets) {
@@ -200,10 +178,8 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedDecreasingOffsets) {
   };
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_FALSE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_FALSE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                       &decrypt_config, &data_offset));
 }
 
 TEST(WebMCryptoHelpersTest, EncryptedPartitionedEvenNumberOfPartitions) {
@@ -240,22 +216,12 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedEvenNumberOfPartitions) {
   });
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_TRUE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_TRUE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                      &decrypt_config, &data_offset));
   EXPECT_TRUE(decrypt_config);
-  EXPECT_EQ(
-      std::string(kKeyId.data(),
-                  base::span(kKeyId)
-                      .subspan(base::SpanificationSizeofForStdArray(kKeyId))
-                      .data()),
-      decrypt_config->key_id());
-  EXPECT_EQ(std::string(
-                kExpectedIv.data(),
-                base::span(kExpectedIv)
-                    .subspan(base::SpanificationSizeofForStdArray(kExpectedIv))
-                    .data()),
+  EXPECT_EQ(std::string(kKeyId.begin(), kKeyId.end()),
+            decrypt_config->key_id());
+  EXPECT_EQ(std::string(kExpectedIv.begin(), kExpectedIv.end()),
             decrypt_config->iv());
   EXPECT_THAT(decrypt_config->subsamples(),
               ElementsAre(SubsampleEntry(3, 2), SubsampleEntry(1, 0)));
@@ -296,22 +262,12 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedOddNumberOfPartitions) {
   });
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_TRUE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_TRUE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                      &decrypt_config, &data_offset));
   EXPECT_TRUE(decrypt_config);
-  EXPECT_EQ(
-      std::string(kKeyId.data(),
-                  base::span(kKeyId)
-                      .subspan(base::SpanificationSizeofForStdArray(kKeyId))
-                      .data()),
-      decrypt_config->key_id());
-  EXPECT_EQ(std::string(
-                kExpectedIv.data(),
-                base::span(kExpectedIv)
-                    .subspan(base::SpanificationSizeofForStdArray(kExpectedIv))
-                    .data()),
+  EXPECT_EQ(std::string(kKeyId.begin(), kKeyId.end()),
+            decrypt_config->key_id());
+  EXPECT_EQ(std::string(kExpectedIv.begin(), kExpectedIv.end()),
             decrypt_config->iv());
   EXPECT_THAT(decrypt_config->subsamples(), ElementsAre(SubsampleEntry(3, 3)));
   EXPECT_EQ(14u, data_offset);
@@ -349,22 +305,12 @@ TEST(WebMCryptoHelpersTest, EncryptedPartitionedZeroNumberOfPartitions) {
   });
   std::unique_ptr<DecryptConfig> decrypt_config;
   size_t data_offset;
-  ASSERT_TRUE(
-      WebMCreateDecryptConfig(kData, sizeof(kData), kKeyId.data(),
-                              base::SpanificationSizeofForStdArray(kKeyId),
-                              &decrypt_config, &data_offset));
+  ASSERT_TRUE(WebMCreateDecryptConfig(base::span(kData), base::span(kKeyId),
+                                      &decrypt_config, &data_offset));
   EXPECT_TRUE(decrypt_config);
-  EXPECT_EQ(
-      std::string(kKeyId.data(),
-                  base::span(kKeyId)
-                      .subspan(base::SpanificationSizeofForStdArray(kKeyId))
-                      .data()),
-      decrypt_config->key_id());
-  EXPECT_EQ(std::string(
-                kExpectedIv.data(),
-                base::span(kExpectedIv)
-                    .subspan(base::SpanificationSizeofForStdArray(kExpectedIv))
-                    .data()),
+  EXPECT_EQ(std::string(kKeyId.begin(), kKeyId.end()),
+            decrypt_config->key_id());
+  EXPECT_EQ(std::string(kExpectedIv.begin(), kExpectedIv.end()),
             decrypt_config->iv());
   EXPECT_THAT(decrypt_config->subsamples(), ElementsAre(SubsampleEntry(6, 0)));
   EXPECT_EQ(10u, data_offset);

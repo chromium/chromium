@@ -442,10 +442,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   size_t data_offset = 0;
   if ((type() == DemuxerStream::AUDIO && audio_config_->is_encrypted()) ||
       (type() == DemuxerStream::VIDEO && video_config_->is_encrypted())) {
-    if (!WebMCreateDecryptConfig(
-            packet->data, packet->size,
-            reinterpret_cast<const uint8_t*>(encryption_key_id_.data()),
-            encryption_key_id_.size(), &decrypt_config, &data_offset)) {
+    if (!WebMCreateDecryptConfig(AVPacketData(*packet),
+                                 base::as_byte_span(encryption_key_id_),
+                                 &decrypt_config, &data_offset)) {
       MEDIA_LOG(ERROR, media_log_) << "Creation of DecryptConfig failed.";
     }
   }

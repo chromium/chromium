@@ -11,7 +11,6 @@
 #include "base/containers/span_reader.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
 #include "media/formats/webm/webm_constants.h"
 
@@ -93,20 +92,10 @@ bool ExtractSubsamples(base::span<const uint8_t> buf,
 
 }  // namespace anonymous
 
-bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
-                             int data_size,
-                             const uint8_t* key_id_ptr,
-                             int key_id_size,
+bool WebMCreateDecryptConfig(base::span<const uint8_t> data,
+                             base::span<const uint8_t> key_id,
                              std::unique_ptr<DecryptConfig>* decrypt_config,
                              size_t* data_offset) {
-  // TODO(crbug.com/40284755):: The function should receive a span, not a
-  // pointer/length pair.
-  auto data =
-      UNSAFE_TODO(base::span(data_ptr, base::checked_cast<size_t>(data_size)));
-  // TODO(crbug.com/40284755):: The function should receive a span, not a
-  // pointer/length pair.
-  auto key_id = UNSAFE_TODO(
-      base::span(key_id_ptr, base::checked_cast<size_t>(key_id_size)));
   auto reader = base::SpanReader(data);
 
   uint8_t signal_byte;
