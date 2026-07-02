@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -589,8 +590,8 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     return;
   }
 
-  // The focused frame may be a different frame than the one the delegate is
-  // associated with. This happens in two scenarios:
+  // The focused frame may be different from the one one the controller is
+  // anchored to. This happens in two scenarios:
   // - With frame-transcending forms: the focused frame is subframe, whose
   //   form has been flattened into an ancestor form.
   // - With race conditions: while Autofill parsed the form, the focused may
@@ -599,8 +600,9 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   // `delegate_`'s frame. We observe the focused frame's RenderFrameDeleted()
   // event.
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
-  if (!rfh || !delegate_ ||
-      !IsAncestorOf(GetRenderFrameHost(*delegate_), rfh)) {
+  content::RenderFrameHost* anchor_rfh = FindRenderFrameHostByToken(
+      *web_contents_, controller_common_.frame_token);
+  if (!rfh || !delegate_ || !IsAncestorOf(anchor_rfh, rfh)) {
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }

@@ -34,6 +34,7 @@
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/at_memory_query_service.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
@@ -295,8 +296,8 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
-  // The focused frame may be a different frame than the one the delegate is
-  // associated with. This happens in two scenarios:
+  // The focused frame may be different from the one one the controller is
+  // anchored to. This happens in two scenarios:
   // - With frame-transcending forms: the focused frame is a subframe whose
   //   form has been flattened into an ancestor form.
   // - With race conditions: while Autofill parsed the form, the focus may
@@ -305,8 +306,11 @@ void AutofillPopupControllerImpl::Show(
   // `delegate_`'s frame. We observe the focused frame's RenderFrameDeleted()
   // event.
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  content::RenderFrameHost* anchor_rfh = FindRenderFrameHostByToken(
+      *web_contents_, controller_common_.frame_token);
+
   const bool focus_is_in_descendant =
-      rfh && delegate_ && IsAncestorOf(GetRenderFrameHost(*delegate_), rfh);
+      rfh && delegate_ && IsAncestorOf(anchor_rfh, rfh);
 
   // If the focused frame is null or not a descendant of the delegate's frame,
   // we either hide the popup, or fall back to the delegate's frame if focus
