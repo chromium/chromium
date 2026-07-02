@@ -1,0 +1,73 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/webui_features.gni")
+
+assert(!is_android)
+
+source_set("wallpaper_search") {
+  sources = [
+    "wallpaper_search_handler.cc",
+    "wallpaper_search_string_map.cc",
+  ]
+  public = [
+    "wallpaper_search_handler.h",
+    "wallpaper_search_string_map.h",
+  ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [
+    "//chrome/browser:browser_features",
+    "//chrome/browser/feedback",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search/background",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+    "//components/image_fetcher/core",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/search",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "wallpaper_search_handler_unittest.cc" ]
+  deps = [
+    ":wallpaper_search",
+    "//base/test:test_support",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/ui/hats:test_support",
+    "//chrome/test:test_support",
+    "//components/image_fetcher/core:test_support",
+    "//components/optimization_guide/core:model_execution_test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "wallpaper_search_interactive_uitest.cc" ]
+  deps = [
+    ":wallpaper_search",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

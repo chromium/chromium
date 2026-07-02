@@ -1,0 +1,53 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/webui_features.gni")
+
+assert(!is_android)
+
+source_set("customize_toolbar") {
+  sources = [ "customize_toolbar_handler.cc" ]
+  public = [ "customize_toolbar_handler.h" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [
+    "//chrome/app/vector_icons",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/util",
+    "//components/contextual_tasks/public:feature_list",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "customize_toolbar_handler_unittest.cc" ]
+  deps = [
+    ":customize_toolbar",
+    "//base/test:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

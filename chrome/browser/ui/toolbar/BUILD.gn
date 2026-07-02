@@ -164,6 +164,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/upgrade_detector",
       "//chrome/browser/web_applications",

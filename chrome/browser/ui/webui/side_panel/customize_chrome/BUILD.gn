@@ -50,3 +50,129 @@ source_set("mojom_traits") {
     "//base",
   ]
 }
+
+if (!is_android) {
+  source_set("customize_chrome_ui") {
+    public = [
+      "customize_chrome_page_handler.h",
+      "customize_chrome_ui.h",
+    ]
+    public_deps = [
+      ":customize_chrome",
+      ":mojo_bindings",
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/image_fetcher",
+      "//chrome/browser/new_tab_page",
+      "//chrome/browser/search/background",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/views/new_tab_footer",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//components/themes",
+      "//components/user_education/webui",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
+
+  source_set("impl") {
+    sources = [
+      "customize_chrome_page_handler.cc",
+      "customize_chrome_ui.cc",
+    ]
+    public_deps = [ ":customize_chrome_ui" ]
+    deps = [
+      ":mojom_traits",
+      "//chrome/app:command_ids",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:bad_message",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/extensions",
+      "//chrome/browser/image_fetcher",
+      "//chrome/browser/new_tab_page",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/side_panel/customize_chrome:resources",
+      "//chrome/browser/resources/side_panel/shared:resources_grit",
+      "//chrome/browser/search/background",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/signin",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/select_file_policy",
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui:theme_handler",
+      "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/cr_components/customize_color_scheme_mode",
+      "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+      "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
+      "//chrome/browser/ui/webui/new_tab_footer",
+      "//chrome/browser/ui/webui/new_tab_page",
+      "//chrome/browser/ui/webui/new_tab_page:impl",
+      "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//chrome/browser/ui/webui/new_tab_page_third_party",
+      "//chrome/browser/ui/webui/new_tab_page_third_party:impl",
+      "//chrome/browser/ui/webui/ntp",
+      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search",
+      "//chrome/browser/ui/webui_browser:headers",
+      "//chrome/common",
+      "//components/ntp_tiles:pref_names",
+      "//components/prefs",
+      "//components/strings:components_strings",
+      "//ui/strings:ui_strings",
+      "//ui/webui",
+      "//ui/webui/tracked_element",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "customize_chrome_page_handler_unittest.cc" ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    deps = [
+      ":impl",
+      "//base/test:test_support",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/select_file_policy",
+      "//chrome/test:test_support",
+      "//components/ntp_tiles:pref_names",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "customize_chrome_browsertest.cc" ]
+    deps = [
+      ":impl",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "customize_chrome_interactive_uitest.cc" ]
+    deps = [
+      ":impl",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/views/new_tab_footer",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
