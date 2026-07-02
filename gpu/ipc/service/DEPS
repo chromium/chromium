@@ -33,4 +33,8 @@ specific_include_rules = {
   "image_decode_accelerator_stub_unittest\\.cc": [
     "+skia/ext/skia_memory_dump_provider.h",
   ],
+  "shared_image_stub_mojolpm_fuzzer\\.cc": [
+    "+mojo/core/embedder/embedder.h",
+    "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  ],
 }

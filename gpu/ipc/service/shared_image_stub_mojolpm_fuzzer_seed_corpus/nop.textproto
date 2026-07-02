@@ -1,0 +1,32 @@
+# Minimal valid seed: a sequence of nop requests. nop is the gpu.mojom.
+# DeferredSharedImageRequest union's uint8 member, so this is guaranteed to parse
+# against the generated mojolpm proto with no nested struct dependencies. It gives
+# libprotobuf-mutator a structurally-valid starting point to grow from.
+actions {
+  execute_deferred_request {
+    request {
+      new {
+        id: 1
+        m_nop: 0
+      }
+    }
+  }
+}
+actions {
+  execute_deferred_request {
+    request {
+      new {
+        id: 2
+        m_nop: 0
+      }
+    }
+  }
+}
+
+# Dispatch both nop actions. Without a sequence referenced by sequence_indexes,
+# mojolpm executes no actions at all (see mojolpm.h IsFinished).
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+}
+sequence_indexes: 0

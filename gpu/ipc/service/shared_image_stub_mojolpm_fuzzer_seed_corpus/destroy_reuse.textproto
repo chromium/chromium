@@ -1,0 +1,100 @@
+# Bias seed for the IOSurface-backing UAF family: repeatedly reference and
+# destroy the SAME mailbox id (the harness clamps all mailboxes into a tiny id
+# space, so these alias one backing). The pattern is:
+#   add_reference(mailbox 0) -> destroy(mailbox 0) -> destroy(mailbox 0) ->
+#   add_reference(mailbox 0)
+# i.e. operate on / re-reference a backing across its destruction boundary.
+#
+# Mailbox.name is array<int8,16>; in the mojolpm proto it is a repeated "values"
+# message. Only the first byte matters after harness clamping, so we set values
+# explicitly; trailing bytes default to 0.
+
+# action 0: add_reference_to_shared_image(mailbox id 0)
+actions {
+  execute_deferred_request {
+    request {
+      new {
+        id: 1
+        m_add_reference_to_shared_image {
+          new {
+            id: 2
+            m_mailbox {
+              new {
+                id: 3
+                m_name { values { value: 0 } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# action 1: destroy_shared_image(mailbox id 0)
+actions {
+  execute_deferred_request {
+    request {
+      new {
+        id: 4
+        m_destroy_shared_image {
+          new {
+            id: 5
+            m_name { values { value: 0 } }
+          }
+        }
+      }
+    }
+  }
+}
+
+# action 2: destroy_shared_image(mailbox id 0) again -- double-free probe
+actions {
+  execute_deferred_request {
+    request {
+      new {
+        id: 6
+        m_destroy_shared_image {
+          new {
+            id: 7
+            m_name { values { value: 0 } }
+          }
+        }
+      }
+    }
+  }
+}
+
+# action 3: add_reference_to_shared_image(mailbox id 0) after destruction -- UAF
+# probe
+actions {
+  execute_deferred_request {
+    request {
+      new {
+        id: 8
+        m_add_reference_to_shared_image {
+          new {
+            id: 9
+            m_mailbox {
+              new {
+                id: 10
+                m_name { values { value: 0 } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Dispatch the four actions in order. mojolpm only runs an action when it is
+# referenced by a sequence that is itself referenced by sequence_indexes; a
+# testcase carrying only `actions` executes NOTHING (see mojolpm.h IsFinished).
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+  action_indexes: 2
+  action_indexes: 3
+}
+sequence_indexes: 0

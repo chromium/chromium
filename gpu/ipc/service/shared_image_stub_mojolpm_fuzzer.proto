@@ -1,0 +1,56 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// MojoLPM grammar for the SharedImageStub deferred-request handler in the GPU
+// process. The top-level fuzzed type is the
+// gpu.mojom.DeferredSharedImageRequest union; the harness deserializes each
+// proto Action into a mojom::DeferredSharedImageRequestPtr and feeds it
+// directly into SharedImageStub::ExecuteDeferredRequest (bypassing the Mojo
+// pipe so invalid data does not just disconnect the endpoint).
+//
+// The corpus is biased toward create / destroy / reuse-mailbox-id sequences to
+// exercise the IOSurface-backing UAF family (a request that destroys a backing
+// while a representation or secondary reference still aliases the same
+// mailbox).
+
+syntax = "proto2";
+
+package gpu.fuzzing.shared_image_stub.proto;
+
+// The mojolpm-generated proto for gpu/ipc/common/gpu_channel.mojom. This is
+// produced by the ":gpu_channel_mojom_mojolpm_proto" GN target. The package of
+// the generated messages is "mojolpm.gpu.mojom".
+import "gpu/ipc/common/gpu_channel.mojom.mojolpm.proto";
+
+// A single deferred shared-image request to execute against the stub. This
+// wraps the real mojom union so the fuzzer drives every Tag the production
+// switch handles: nop / create_shared_image / create_shared_image_with_data /
+// create_shared_image_with_buffer / register_upload_buffer /
+// update_shared_image / copy_to_gpu_memory_buffer / destroy_shared_image /
+// add_reference_to_shared_image / create_shared_image_pool /
+// destroy_shared_image_pool (the is_win-gated dxgi tags are compiled out off
+// Windows by the generated proto).
+message ExecuteDeferredRequestAction {
+  required mojolpm.gpu.mojom.DeferredSharedImageRequest request = 1;
+}
+
+message Action {
+  oneof action {
+    ExecuteDeferredRequestAction execute_deferred_request = 1;
+  }
+}
+
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions (mirrors the MojoLPM reference
+// grammar).
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+}

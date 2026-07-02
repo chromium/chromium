@@ -5,6 +5,7 @@
 import("//build/config/cronet/config.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -924,5 +925,60 @@ if (is_linux || is_chromeos) {
     }
 
     libfuzzer_options = [ "max_len=16384" ]
+  }
+}
+
+# MojoLPM fuzzer for gpu::SharedImageStub::ExecuteDeferredRequest (GPU process).
+# Drives the batched DeferredSharedImageRequest union directly against a live
+# SharedImageStub created on an in-process GpuChannel, biased toward
+# create/destroy/reuse-mailbox sequences (IOSurface-backing UAF family). No
+# pre-existing fuzzer covers this surface.
+mojolpm_fuzzer_test("shared_image_stub_mojolpm_fuzzer") {
+  sources = [
+    "ipc/service/gpu_channel_test_common.cc",
+    "ipc/service/gpu_channel_test_common.h",
+    "ipc/service/shared_image_stub_mojolpm_fuzzer.cc",
+  ]
+
+  proto_source = "ipc/service/shared_image_stub_mojolpm_fuzzer.proto"
+
+  seed_corpus_sources = [
+    "ipc/service/shared_image_stub_mojolpm_fuzzer_seed_corpus/destroy_reuse.textproto",
+    "ipc/service/shared_image_stub_mojolpm_fuzzer_seed_corpus/nop.textproto",
+  ]
+
+  testcase_proto_kind = "gpu.fuzzing.shared_image_stub.proto.Testcase"
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/viz/common/resources:shared_image_format",
+    "//components/viz/test:test_support",
+    "//gpu/command_buffer/common",
+    "//gpu/command_buffer/service",
+    "//gpu/config",
+    "//gpu/ipc/common",
+    "//gpu/ipc/common:test_support",
+    "//gpu/ipc/host",
+    "//gpu/ipc/service",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//ui/gl",
+    "//ui/gl:test_support",
+  ]
+
+  # MojoLPM C++ bindings + proto for gpu/ipc/common/gpu_channel.mojom. The
+  # mojolpm_fuzzer_test template appends "_proto" to each proto_deps entry, so
+  # this names the C++ mojolpm target (NOT the *_mojolpm_proto target) -- the
+  # same convention the viz reference fuzzer uses with ":mojom_mojolpm".
+  deps += [ "//gpu/ipc/common:gpu_channel_mojom_mojolpm" ]
+  proto_deps = [ "//gpu/ipc/common:gpu_channel_mojom_mojolpm" ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
