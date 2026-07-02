@@ -38,6 +38,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -163,6 +164,12 @@ content::WebContents* GetNewTab(Browser* browser) {
 class PasswordManagerSyncTest : public SyncTest {
  public:
   PasswordManagerSyncTest() : SyncTest(SINGLE_CLIENT) {
+    // Avoid waiting for server predictions in browser tests, to keep filling
+    // behavior deterministic. Server-prediction-specific behavior is covered
+    // in PasswordFormManager unit tests.
+    password_manager::PasswordFormManager::
+        set_wait_for_server_predictions_for_filling(false);
+
     // Note: Enabling kFillOnAccountSelect effectively *disables* autofilling on
     // page load. This is important because if a password is autofilled, then
     // all Javascript changes to it are discarded, and thus any tests that cover
