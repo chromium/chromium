@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/features.h"
 #include "base/numerics/checked_math.h"
 #include "base/simdutf_shim.h"

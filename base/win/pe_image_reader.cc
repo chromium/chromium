@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 

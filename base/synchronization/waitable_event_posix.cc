@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"

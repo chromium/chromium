@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind_internal.h"
 #include "base/types/is_instantiation.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"

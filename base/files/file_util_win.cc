@@ -25,6 +25,7 @@
 
 #include "base/check.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/files/file_enumerator.h"

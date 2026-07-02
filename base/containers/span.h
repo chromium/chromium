@@ -29,6 +29,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/span.h"
 #include "base/containers/span_forward_internal.h"
 #include "base/dcheck_is_on.h"
 #include "base/numerics/integral_constant_like.h"

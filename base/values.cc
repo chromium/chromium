@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

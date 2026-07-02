@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <sys/mman.h>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"

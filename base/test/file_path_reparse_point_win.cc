@@ -10,6 +10,8 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
+
 namespace base::test {
 
 namespace {

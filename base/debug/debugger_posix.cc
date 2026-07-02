@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "base/debug/debugger.h"
 
 #include <errno.h>
@@ -20,6 +19,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"

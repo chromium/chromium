@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 
 namespace base::subtle {

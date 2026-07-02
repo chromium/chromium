@@ -31,6 +31,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"

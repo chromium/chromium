@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/types/to_address.h"
 #include "third_party/abseil-cpp/absl/hash/hash.h"
 

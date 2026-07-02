@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <wintrust.h>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"

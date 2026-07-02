@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/apple/mach_logging.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"

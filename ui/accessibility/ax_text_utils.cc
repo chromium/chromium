@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/i18n/break_iterator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"

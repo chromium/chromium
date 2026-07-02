@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
+#include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"

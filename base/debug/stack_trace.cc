@@ -13,6 +13,7 @@
 
 #include "base/byte_size.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/features.h"
 #include "base/numerics/clamped_math.h"

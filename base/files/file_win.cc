@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_tracing.h"
 #include "base/files/file_util.h"
 #include "base/immediate_crash.h"

@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"

@@ -4,6 +4,7 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_FUZZER_UTIL_H_
 #define UI_ACCESSIBILITY_AX_TREE_FUZZER_UTIL_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
