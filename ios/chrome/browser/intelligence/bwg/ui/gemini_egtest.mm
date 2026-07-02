@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -111,41 +112,85 @@ id<GREYMatcher> GeminiButton() {
   return config;
 }
 
-// Tests that the First Run is displayed correctly from the Page Action Menu.
-- (void)testFirstRunFromPageActionMenu {
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    // With ChromeNext, the entry point is directly the Gemini button in the
-    // AppBar.
-    [[EarlGrey selectElementWithMatcher:GeminiButton()]
-        performAction:grey_tap()];
-  } else {
-    id<GREYMatcher> entrypointMatcher = grey_allOf(
-        grey_accessibilityID(kAIHubEntrypointAccessibilityIdentifier),
-        grey_sufficientlyVisible(), nil);
-
-    [[EarlGrey selectElementWithMatcher:entrypointMatcher]
-        performAction:grey_tap()];
-
-    // Tap the Gemini button.
-    [[EarlGrey selectElementWithMatcher:GeminiButton()]
-        performAction:grey_tap()];
-  }
+// Tests that when the promo is declined, the Gemini floaty is not presented.
+- (void)testDeclinePromo {
+  [self invokeGeminiEntryPoint];
 
   // Check that the promo buttons are visible.
   [[EarlGrey selectElementWithMatcher:PromoPrimaryButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the secondary button to decline the promo.
   [[EarlGrey selectElementWithMatcher:PromoSecondaryButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  // Verify the FRE is dismissed.
+  [ChromeEarlGrey
+      waitForNotSufficientlyVisibleElementWithMatcher:PromoPrimaryButton()];
+
+  // Verify consent was not granted.
+  GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kIOSBwgConsent],
+                  @"Consent should be false.");
+}
+
+// Tests that when the promo is accepted but consent is declined, the Gemini
+// floaty is not presented.
+- (void)testAcceptPromoDeclineConsent {
+  [self invokeGeminiEntryPoint];
 
   // Tap the primary button to advance to the consent screen.
   [[EarlGrey selectElementWithMatcher:PromoPrimaryButton()]
       performAction:grey_tap()];
 
+  // Wait for the consent screen to appear.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kGeminiFootNoteTextViewAccessibilityIdentifier)];
+
   // Check that the consent buttons are visible.
   [[EarlGrey selectElementWithMatcher:ConsentPrimaryButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the secondary button to decline the consent.
   [[EarlGrey selectElementWithMatcher:ConsentSecondaryButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  // Verify the FRE is dismissed.
+  [ChromeEarlGrey
+      waitForNotSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kGeminiFootNoteTextViewAccessibilityIdentifier)];
+
+  // Verify consent was not granted.
+  GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kIOSBwgConsent],
+                  @"Consent should be false.");
+}
+
+// Tests that when the promo and consent are both accepted, the Gemini floaty is
+// presented.
+- (void)testAcceptPromoAndConsent {
+  [self invokeGeminiEntryPoint];
+
+  // Tap the primary button to advance to the consent screen.
+  [[EarlGrey selectElementWithMatcher:PromoPrimaryButton()]
+      performAction:grey_tap()];
+
+  // Wait for the consent screen to appear.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kGeminiFootNoteTextViewAccessibilityIdentifier)];
+
+  // Tap the primary button to accept the consent.
+  [[EarlGrey selectElementWithMatcher:ConsentPrimaryButton()]
+      performAction:grey_tap()];
+
+  // Verify the FRE is dismissed and the flow continues.
+  [ChromeEarlGrey
+      waitForNotSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kGeminiFootNoteTextViewAccessibilityIdentifier)];
+
+  // Verify consent was granted (which triggers the floaty).
+  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kIOSBwgConsent],
+                 @"Consent should be true.");
 }
 
 // Tests that the AI Hub entry point conveys the "New" context to accessibility.
@@ -165,6 +210,28 @@ id<GREYMatcher> GeminiButton() {
 
   [[EarlGrey selectElementWithMatcher:entrypointMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+#pragma mark - Helpers
+
+- (void)invokeGeminiEntryPoint {
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    // With ChromeNext, the entry point is directly the Gemini button in the
+    // AppBar.
+    [[EarlGrey selectElementWithMatcher:GeminiButton()]
+        performAction:grey_tap()];
+  } else {
+    id<GREYMatcher> entrypointMatcher = grey_allOf(
+        grey_accessibilityID(kAIHubEntrypointAccessibilityIdentifier),
+        grey_sufficientlyVisible(), nil);
+
+    [[EarlGrey selectElementWithMatcher:entrypointMatcher]
+        performAction:grey_tap()];
+
+    // Tap the Gemini button.
+    [[EarlGrey selectElementWithMatcher:GeminiButton()]
+        performAction:grey_tap()];
+  }
 }
 
 @end
