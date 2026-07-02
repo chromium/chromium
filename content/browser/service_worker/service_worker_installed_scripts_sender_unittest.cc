@@ -8,9 +8,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -713,6 +715,73 @@ TEST_F(ServiceWorkerInstalledScriptsSenderTest, StorageDisabled) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(sender->last_finished_reason(), FinishedReason::kConnectionError);
+}
+
+TEST_F(ServiceWorkerInstalledScriptsSenderTest, StartBeforeBindDropsScripts) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterConsolidateMainScriptResponse);
+
+  const GURL kMainScriptURL = version()->script_url();
+  const GURL kImportedScriptURL = GURL("https://example.com/imported1");
+  std::map<GURL, ExpectedScriptInfo> kExpectedScriptInfoMap = {
+      {kMainScriptURL,
+       {1,
+        kMainScriptURL,
+        {{"Content-Length", "35"},
+         {"Content-Type", "text/javascript; charset=utf-8"}},
+        "utf-8",
+        "I'm script body for the main script",
+        "I'm meta data for the main script"}},
+      {kImportedScriptURL,
+       {2,
+        kImportedScriptURL,
+        {{"Content-Length", "22"},
+         {"Content-Type", "text/javascript; charset=euc-jp"}},
+        "euc-jp",
+        "I'm imported script 1!",
+        "I'm the meta data for imported script 1!"}},
+  };
+
+  {
+    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
+    for (const auto& info : kExpectedScriptInfoMap) {
+      records.push_back(
+          info.second.WriteToDiskCache(context()->GetStorageControl()));
+    }
+    version()->script_cache_map()->SetResources(records);
+  }
+
+  auto sender =
+      std::make_unique<ServiceWorkerInstalledScriptsSender>(version());
+
+  // 1. Start before binding.
+  base::RunLoop start_loop;
+  sender->SetFinishCallback(start_loop.QuitClosure());
+  sender->Start();
+  start_loop.Run();
+
+  // 2. Now bind the renderer.
+  blink::mojom::ServiceWorkerInstalledScriptsInfoPtr scripts_info =
+      sender->CreateInfoAndBind();
+  auto renderer_manager =
+      std::make_unique<MockServiceWorkerInstalledScriptsManager>(
+          std::move(scripts_info->manager_receiver));
+
+  // 3. Expect that the renderer manager receives the scripts.
+  {
+    auto script_info = renderer_manager->WaitUntilTransferInstalledScript();
+    EXPECT_EQ(kMainScriptURL, script_info->script_url);
+    kExpectedScriptInfoMap.at(kMainScriptURL).CheckIfIdentical(script_info);
+  }
+
+  {
+    auto script_info = renderer_manager->WaitUntilTransferInstalledScript();
+    EXPECT_EQ(kImportedScriptURL, script_info->script_url);
+    kExpectedScriptInfoMap.at(kImportedScriptURL).CheckIfIdentical(script_info);
+  }
+
+  EXPECT_EQ(FinishedReason::kSuccess, sender->last_finished_reason());
 }
 
 }  // namespace content

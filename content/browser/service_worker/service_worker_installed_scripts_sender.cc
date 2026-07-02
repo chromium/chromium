@@ -61,6 +61,25 @@ ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
   info->manager_receiver = manager_.BindNewPipeAndPassReceiver();
   info->installed_urls = std::move(installed_urls);
   receiver_.Bind(info->manager_host_remote.InitWithNewPipeAndPassReceiver());
+
+  for (auto& script_info : queued_script_infos_) {
+    manager_->TransferInstalledScript(std::move(script_info));
+  }
+  queued_script_infos_.clear();
+
+  // If Start() was called before CreateInfoAndBind(), the sender might
+  // have already finished sending the main script and become idle.
+  // If there are newly found pending scripts (e.g., imported scripts
+  // populated in CreateInfoAndBind()), we must start sending them now.
+  // Otherwise, they will never be sent and the renderer will hang
+  // waiting for them.
+  if (state_ == State::kIdle && !pending_scripts_.empty()) {
+    int64_t next_id = pending_scripts_.front().first;
+    GURL next_url = pending_scripts_.front().second;
+    pending_scripts_.pop();
+    StartSendingScript(next_id, next_url);
+  }
+
   return info;
 }
 
@@ -150,18 +169,23 @@ void ServiceWorkerInstalledScriptsSender::OnStarted(
     }
   }
 
-  // If `CreateInfoAndBind()` is not called, manager_ won't be set up.
+  auto script_info = blink::mojom::ServiceWorkerScriptInfo::New();
+  script_info->script_url = current_sending_url_;
+  script_info->headers = std::move(header_strings);
+  headers->GetCharset(&script_info->encoding);
+  script_info->body = std::move(body_handle);
+  script_info->body_size = response_head->content_length;
+  script_info->meta_data = std::move(meta_data_handle);
+  script_info->meta_data_size = meta_data_size;
+  // If `CreateInfoAndBind()` is not yet called, `manager_` is not bound.
+  // In that case, queue the script info to transfer it later when the
+  // connection is established.
   if (manager_.is_bound()) {
-    auto script_info = blink::mojom::ServiceWorkerScriptInfo::New();
-    script_info->script_url = current_sending_url_;
-    script_info->headers = std::move(header_strings);
-    headers->GetCharset(&script_info->encoding);
-    script_info->body = std::move(body_handle);
-    script_info->body_size = response_head->content_length;
-    script_info->meta_data = std::move(meta_data_handle);
-    script_info->meta_data_size = meta_data_size;
     manager_->TransferInstalledScript(std::move(script_info));
+  } else {
+    queued_script_infos_.push_back(std::move(script_info));
   }
+
   if (IsSendingMainScript()) {
     owner_->SetMainScriptResponse(
         std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
@@ -224,6 +248,9 @@ void ServiceWorkerInstalledScriptsSender::Abort(
   // is not applicable for base::queue since it doesn't have reserve().
   base::queue<std::pair<int64_t, GURL>> empty;
   pending_scripts_.swap(empty);
+
+  // Discard the queued script infos as the installation failed.
+  queued_script_infos_.clear();
 
   UpdateFinishedReasonAndBecomeIdle(reason);
 

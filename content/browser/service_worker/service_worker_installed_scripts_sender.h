@@ -115,6 +115,11 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
 
   GURL current_sending_url_;
   base::queue<std::pair<int64_t /* resource_id */, GURL>> pending_scripts_;
+  // Queues script infos that are read from the disk cache before the connection
+  // to the renderer-side manager is established (i.e., before
+  // `CreateInfoAndBind()` is called). They will be transferred to the renderer
+  // immediately after the connection is established.
+  std::vector<blink::mojom::ServiceWorkerScriptInfoPtr> queued_script_infos_;
 };
 
 }  // namespace content
