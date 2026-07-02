@@ -25,7 +25,6 @@ namespace blink {
 namespace {
 
 using mojom::blink::CredentialMediationRequirement;
-using mojom::blink::FederatedAuthRequest;
 using mojom::blink::FederatedRequest;
 using mojom::blink::FederatedRequestService;
 using mojom::blink::IdentityCredentialDisconnectOptionsPtr;
@@ -34,90 +33,59 @@ using mojom::blink::IdentityProviderGetParametersPtr;
 using mojom::blink::LoginStatusOptionsPtr;
 using mojom::blink::ResolveTokenParamsPtr;
 
-class MockFederatedAuthRequest : public FederatedAuthRequest,
-                                 public FederatedRequestService {
+class MockFederatedRequestService : public FederatedRequestService {
  public:
-  MockFederatedAuthRequest() = default;
-  ~MockFederatedAuthRequest() override = default;
-
-  void Bind(mojo::PendingReceiver<FederatedAuthRequest> receiver) {
-    auth_request_receiver_.Bind(std::move(receiver));
-  }
+  MockFederatedRequestService() = default;
+  ~MockFederatedRequestService() override = default;
 
   void BindRequestService(
       mojo::PendingReceiver<FederatedRequestService> receiver) {
     request_service_receiver_.Bind(std::move(receiver));
   }
 
-  bool IsAuthRequestInterfaceBound() const {
-    return auth_request_receiver_.is_bound();
-  }
   bool IsRequestServiceInterfaceBound() const {
     return request_service_receiver_.is_bound();
   }
 
-  // mojom::blink::FederatedAuthRequest:
-  MOCK_METHOD(void, CloseModalDialogView, (), (override));
-  void RequestToken(Vector<IdentityProviderGetParametersPtr> idp_get_params,
-                    CredentialMediationRequirement mediation,
-                    RequestTokenCallback callback) override {}
-  void CancelTokenRequest() override {}
-  void RequestUserInfo(
-      IdentityProviderConfigPtr provider,
-      FederatedAuthRequest::RequestUserInfoCallback callback) override {}
-  void ResolveTokenRequest(
-      const String& account_id,
-      ResolveTokenParamsPtr params,
-      FederatedAuthRequest::ResolveTokenRequestCallback callback) override {}
-  void SetIdpSigninStatus(
-      const ::scoped_refptr<const ::blink::SecurityOrigin>& origin,
-      mojom::IdpSigninStatus status,
-      LoginStatusOptionsPtr options,
-      FederatedAuthRequest::SetIdpSigninStatusCallback callback) override {}
-  void RegisterIdP(
-      const ::blink::KURL& url,
-      FederatedAuthRequest::RegisterIdPCallback callback) override {}
-  void UnregisterIdP(
-      const ::blink::KURL& url,
-      FederatedAuthRequest::UnregisterIdPCallback callback) override {}
-  void PreventSilentAccess(
-      FederatedAuthRequest::PreventSilentAccessCallback callback) override {}
-  void Disconnect(IdentityCredentialDisconnectOptionsPtr options,
-                  FederatedAuthRequest::DisconnectCallback callback) override {}
-
   // mojom::blink::FederatedRequestService:
+  MOCK_METHOD(void, CloseModalDialogView, (), (override));
   void StartTokenRequest(
       Vector<IdentityProviderGetParametersPtr> idp_get_params,
       CredentialMediationRequirement mediation,
       mojo::PendingReceiver<FederatedRequest> request_receiver,
       StartTokenRequestCallback callback) override {}
-  void RequestUserInfo(
-      IdentityProviderConfigPtr provider,
-      FederatedRequestService::RequestUserInfoCallback callback) override {}
+  void RequestUserInfo(IdentityProviderConfigPtr provider,
+                       RequestUserInfoCallback callback) override {}
+  void ResolveTokenRequest(const String& account_id,
+                           ResolveTokenParamsPtr params,
+                           ResolveTokenRequestCallback callback) override {}
+  void SetIdpSigninStatus(
+      const ::scoped_refptr<const ::blink::SecurityOrigin>& origin,
+      mojom::IdpSigninStatus status,
+      LoginStatusOptionsPtr options,
+      SetIdpSigninStatusCallback callback) override {}
+  void RegisterIdP(const ::blink::KURL& url,
+                   RegisterIdPCallback callback) override {}
+
+  void UnregisterIdP(const ::blink::KURL& url,
+                     UnregisterIdPCallback callback) override {}
+
+  void PreventSilentAccess(PreventSilentAccessCallback callback) override {}
+  void Disconnect(IdentityCredentialDisconnectOptionsPtr options,
+                  DisconnectCallback callback) override {}
 
  private:
-  mojo::Receiver<FederatedAuthRequest> auth_request_receiver_{this};
   mojo::Receiver<FederatedRequestService> request_service_receiver_{this};
 };
 
 class IdentityProviderTestContext {
  public:
   IdentityProviderTestContext(LocalDOMWindow& window,
-                              MockFederatedAuthRequest* mock) {
-    window.GetBrowserInterfaceBroker().SetBinderForTesting(
-        FederatedAuthRequest::Name_,
-        BindRepeating(
-            [](MockFederatedAuthRequest* mock,
-               mojo::ScopedMessagePipeHandle handle) {
-              mock->Bind(mojo::PendingReceiver<FederatedAuthRequest>(
-                  std::move(handle)));
-            },
-            Unretained(mock)));
-
+                              MockFederatedRequestService* mock) {
     window.GetBrowserInterfaceBroker().SetBinderForTesting(
         FederatedRequestService::Name_,
         BindRepeating(
-            [](MockFederatedAuthRequest* mock,
+            [](MockFederatedRequestService* mock,
                mojo::ScopedMessagePipeHandle handle) {
               mock->BindRequestService(
                   mojo::PendingReceiver<FederatedRequestService>(
@@ -128,56 +96,29 @@ class IdentityProviderTestContext {
 
   void Reset(LocalDOMWindow& window) {
     window.GetBrowserInterfaceBroker().SetBinderForTesting(
-        FederatedAuthRequest::Name_, {});
-    window.GetBrowserInterfaceBroker().SetBinderForTesting(
         FederatedRequestService::Name_, {});
   }
 };
 
 }  // namespace
 
-TEST(IdentityProviderTest, CloseGatedByFlag) {
+TEST(IdentityProviderTest, Close) {
   test::TaskEnvironment task_environment;
 
-  // Test with flag enabled
-  {
-    ScopedFedCmMultipleRequestsForTest fedcm_multiple_requests(true);
-    V8TestingScope scope;
-    MockFederatedAuthRequest mock;
-    IdentityProviderTestContext context(scope.GetWindow(), &mock);
+  V8TestingScope scope;
+  MockFederatedRequestService mock;
+  IdentityProviderTestContext context(scope.GetWindow(), &mock);
 
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock, CloseModalDialogView()).WillOnce([&run_loop]() {
-      run_loop.Quit();
-    });
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock, CloseModalDialogView()).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
 
-    IdentityProvider::close(scope.GetScriptState());
-    run_loop.Run();
+  IdentityProvider::close(scope.GetScriptState());
+  run_loop.Run();
 
-    EXPECT_TRUE(mock.IsRequestServiceInterfaceBound());
-    EXPECT_FALSE(mock.IsAuthRequestInterfaceBound());
-    context.Reset(scope.GetWindow());
-  }
-
-  // Test with flag disabled
-  {
-    ScopedFedCmMultipleRequestsForTest fedcm_multiple_requests(false);
-    V8TestingScope scope;
-    MockFederatedAuthRequest mock;
-    IdentityProviderTestContext context(scope.GetWindow(), &mock);
-
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock, CloseModalDialogView()).WillOnce([&run_loop]() {
-      run_loop.Quit();
-    });
-
-    IdentityProvider::close(scope.GetScriptState());
-    run_loop.Run();
-
-    EXPECT_FALSE(mock.IsRequestServiceInterfaceBound());
-    EXPECT_TRUE(mock.IsAuthRequestInterfaceBound());
-    context.Reset(scope.GetWindow());
-  }
+  EXPECT_TRUE(mock.IsRequestServiceInterfaceBound());
+  context.Reset(scope.GetWindow());
 }
 
 }  // namespace blink

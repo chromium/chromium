@@ -63,15 +63,9 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
       status = mojom::blink::IdpSigninStatus::kSignedOut;
       break;
   }
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(context)) {
-    proxy->FederatedRequestService()->SetIdpSigninStatus(
-        context->GetSecurityOrigin(), status, nullptr,
-        BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
-  } else {
-    proxy->FederatedAuthRequest()->SetIdpSigninStatus(
-        context->GetSecurityOrigin(), status, nullptr,
-        BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
-  }
+  proxy->FederatedRequestService()->SetIdpSigninStatus(
+      context->GetSecurityOrigin(), status, nullptr,
+      BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -119,17 +113,10 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
     }
   }
 
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(context)) {
-    proxy->FederatedRequestService()->SetIdpSigninStatus(
-        context->GetSecurityOrigin(), status,
-        mojo::ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*options),
-        BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
-  } else {
-    proxy->FederatedAuthRequest()->SetIdpSigninStatus(
-        context->GetSecurityOrigin(), status,
-        mojo::ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*options),
-        BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
-  }
+  proxy->FederatedRequestService()->SetIdpSigninStatus(
+      context->GetSecurityOrigin(), status,
+      mojo::ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*options),
+      BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
   return promise;
 }
 

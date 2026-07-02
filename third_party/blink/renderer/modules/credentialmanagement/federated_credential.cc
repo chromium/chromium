@@ -93,19 +93,10 @@ void SetIdpSigninStatus(const blink::LocalFrameToken& local_frame_token,
     return;
   }
 
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          local_frame->DomWindow())) {
-    auto* service = CredentialManagerProxy::From(local_frame->DomWindow())
-                        ->FederatedRequestService();
-    service->SetIdpSigninStatus(SecurityOrigin::CreateFromUrlOrigin(origin),
-                                status, /*options=*/nullptr, base::DoNothing());
-  } else {
-    auto* auth_request = CredentialManagerProxy::From(local_frame->DomWindow())
-                             ->FederatedAuthRequest();
-    auth_request->SetIdpSigninStatus(
-        SecurityOrigin::CreateFromUrlOrigin(origin), status,
-        /*options=*/nullptr, base::DoNothing());
-  }
+  auto* service = CredentialManagerProxy::From(local_frame->DomWindow())
+                      ->FederatedRequestService();
+  service->SetIdpSigninStatus(SecurityOrigin::CreateFromUrlOrigin(origin),
+                              status, /*options=*/nullptr, base::DoNothing());
 }
 
 }  // namespace blink

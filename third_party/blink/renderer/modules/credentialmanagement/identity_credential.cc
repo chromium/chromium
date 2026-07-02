@@ -147,18 +147,10 @@ ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
   mojom::blink::IdentityCredentialDisconnectOptionsPtr disconnect_options =
       blink::mojom::blink::IdentityCredentialDisconnectOptions::From(*options);
 
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          ExecutionContext::From(script_state))) {
-    auto* service =
-        CredentialManagerProxy::From(script_state)->FederatedRequestService();
-    service->Disconnect(std::move(disconnect_options),
-                        BindOnce(&OnDisconnect, WrapPersistent(resolver)));
-  } else {
-    auto* auth_request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    auth_request->Disconnect(std::move(disconnect_options),
-                             BindOnce(&OnDisconnect, WrapPersistent(resolver)));
-  }
+  auto* service =
+      CredentialManagerProxy::From(script_state)->FederatedRequestService();
+  service->Disconnect(std::move(disconnect_options),
+                      BindOnce(&OnDisconnect, WrapPersistent(resolver)));
   return promise;
 }
 

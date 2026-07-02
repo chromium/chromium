@@ -328,29 +328,23 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
   mojom::blink::GetCredentialOptionsPtr last_get_options_;
 };
 
-class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest,
-                                 public mojom::blink::FederatedRequestService {
+class MockFederatedRequestService
+    : public mojom::blink::FederatedRequestService {
  public:
-  MockFederatedAuthRequest() = default;
+  MockFederatedRequestService() = default;
 
-  MockFederatedAuthRequest(const MockFederatedAuthRequest&) = delete;
-  MockFederatedAuthRequest& operator=(const MockFederatedAuthRequest&) = delete;
+  MockFederatedRequestService(const MockFederatedRequestService&) = delete;
+  MockFederatedRequestService& operator=(const MockFederatedRequestService&) =
+      delete;
 
-  ~MockFederatedAuthRequest() override = default;
-
-  void Bind(mojo::PendingReceiver<::blink::mojom::blink::FederatedAuthRequest>
-                receiver) {
-    auth_request_receiver_.Bind(std::move(receiver));
-    auth_request_receiver_.set_disconnect_handler(
-        BindOnce(&MockFederatedAuthRequest::Disconnected, Unretained(this)));
-  }
+  ~MockFederatedRequestService() override = default;
 
   void BindRequestService(
       mojo::PendingReceiver<::blink::mojom::blink::FederatedRequestService>
           receiver) {
     request_service_receiver_.Bind(std::move(receiver));
     request_service_receiver_.set_disconnect_handler(
-        BindOnce(&MockFederatedAuthRequest::Disconnected, Unretained(this)));
+        BindOnce(&MockFederatedRequestService::Disconnected, Unretained(this)));
   }
 
   void Disconnected() { disconnected_ = true; }
@@ -358,11 +352,10 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest,
   bool IsDisconnected() const { return disconnected_; }
 
   size_t GetTotalPendingCallbacks() const {
-    return request_token_callbacks_.size() +
-           start_token_request_callbacks_.size();
+    return start_token_request_callbacks_.size();
   }
 
-  void WaitForCallToRequestToken(size_t count = 1) {
+  void WaitForCallToStartToken(size_t count = 1) {
     if (GetTotalPendingCallbacks() >= count) {
       return;
     }
@@ -372,70 +365,38 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest,
     run_loop.Run();
   }
 
-  void InvokeRequestTokenCallback(wtf_size_t index = 0) {
-    if (!start_token_request_callbacks_.empty()) {
-      EXPECT_TRUE(request_service_receiver_.is_bound());
-      EXPECT_LT(index, start_token_request_callbacks_.size());
-      auto [callback, receiver] =
-          std::move(start_token_request_callbacks_[index]);
-      start_token_request_callbacks_.EraseAt(index);
+  void InvokeStartTokenRequestCallback(wtf_size_t index = 0) {
+    EXPECT_TRUE(request_service_receiver_.is_bound());
+    EXPECT_LT(index, start_token_request_callbacks_.size());
+    auto [callback, receiver] =
+        std::move(start_token_request_callbacks_[index]);
+    start_token_request_callbacks_.EraseAt(index);
 
-      auto success = mojom::blink::TokenRequestSuccess::New();
-      success->selected_idp_config_url = KURL("https://idp.example");
-      success->token = base::Value("token");
-      success->is_auto_selected = false;
+    auto success = mojom::blink::TokenRequestSuccess::New();
+    success->selected_idp_config_url = KURL("https://idp.example");
+    success->token = base::Value("token");
+    success->is_auto_selected = false;
 
-      std::move(callback).Run(std::move(success));
-    } else {
-      EXPECT_TRUE(auth_request_receiver_.is_bound());
-      EXPECT_LT(index, request_token_callbacks_.size());
-      auto callback = std::move(request_token_callbacks_[index]);
-      request_token_callbacks_.EraseAt(index);
-      std::move(callback).Run(mojom::RequestTokenStatus::kSuccess,
-                              KURL("https://idp.example"), base::Value("token"),
-                              /*error=*/nullptr,
-                              /*is_auto_selected=*/false);
-    }
+    std::move(callback).Run(std::move(success));
   }
 
-  void InvokeRequestTokenCallbackWithError(mojom::RequestTokenStatus status,
-                                           wtf_size_t index = 0) {
-    if (!start_token_request_callbacks_.empty()) {
-      EXPECT_TRUE(request_service_receiver_.is_bound());
-      EXPECT_LT(index, start_token_request_callbacks_.size());
-      auto [callback, receiver] =
-          std::move(start_token_request_callbacks_[index]);
-      start_token_request_callbacks_.EraseAt(index);
+  void InvokeStartTokenRequestCallbackWithError(
+      mojom::RequestTokenStatus status,
+      wtf_size_t index = 0) {
+    EXPECT_TRUE(request_service_receiver_.is_bound());
+    EXPECT_LT(index, start_token_request_callbacks_.size());
+    auto [callback, receiver] =
+        std::move(start_token_request_callbacks_[index]);
+    start_token_request_callbacks_.EraseAt(index);
 
-      auto failure = mojom::blink::TokenRequestFailure::New();
-      failure->status = status;
-      failure->error = nullptr;
+    auto failure = mojom::blink::TokenRequestFailure::New();
+    failure->status = status;
+    failure->error = nullptr;
 
-      std::move(callback).Run(base::unexpected(std::move(failure)));
-    } else {
-      EXPECT_TRUE(auth_request_receiver_.is_bound());
-      EXPECT_LT(index, request_token_callbacks_.size());
-      auto callback = std::move(request_token_callbacks_[index]);
-      request_token_callbacks_.EraseAt(index);
-      std::move(callback).Run(status, std::nullopt, std::nullopt,
-                              /*error=*/nullptr,
-                              /*is_auto_selected=*/false);
-    }
+    std::move(callback).Run(base::unexpected(std::move(failure)));
   }
 
  protected:
-  void RequestToken(
-      Vector<blink::mojom::blink::IdentityProviderGetParametersPtr>
-          idp_get_params_ptrs,
-      mojom::CredentialMediationRequirement requirement,
-      RequestTokenCallback callback) override {
-    request_token_callbacks_.push_back(std::move(callback));
-
-    if (GetTotalPendingCallbacks() >= expected_callbacks_ && quit_closure_) {
-      std::move(quit_closure_).Run();
-    }
-  }
-
   void StartTokenRequest(
       Vector<blink::mojom::blink::IdentityProviderGetParametersPtr>
           idp_get_params_ptrs,
@@ -450,51 +411,41 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest,
     }
   }
 
-  // Override for FederatedAuthRequest (legacy)
-  void RequestUserInfo(
-      mojom::blink::IdentityProviderConfigPtr provider,
-      mojom::blink::FederatedAuthRequest::RequestUserInfoCallback callback)
-      override {}
-
-  // Override for FederatedRequestService (new)
   void RequestUserInfo(
       mojom::blink::IdentityProviderConfigPtr provider,
       mojom::blink::FederatedRequestService::RequestUserInfoCallback callback)
       override {}
 
-  void CancelTokenRequest() override {}
   void ResolveTokenRequest(
       const String& account_id,
       mojom::blink::ResolveTokenParamsPtr params,
-      mojom::blink::FederatedAuthRequest::ResolveTokenRequestCallback callback)
-      override {}
+      mojom::blink::FederatedRequestService::ResolveTokenRequestCallback
+          callback) override {}
   void SetIdpSigninStatus(
       const ::scoped_refptr<const ::blink::SecurityOrigin>& origin,
       mojom::IdpSigninStatus status,
       mojom::blink::LoginStatusOptionsPtr options,
-      mojom::blink::FederatedAuthRequest::SetIdpSigninStatusCallback callback)
-      override {}
+      mojom::blink::FederatedRequestService::SetIdpSigninStatusCallback
+          callback) override {}
   void RegisterIdP(const ::blink::KURL& url,
-                   mojom::blink::FederatedAuthRequest::RegisterIdPCallback
+                   mojom::blink::FederatedRequestService::RegisterIdPCallback
                        callback) override {}
-  void UnregisterIdP(const ::blink::KURL& url,
-                     mojom::blink::FederatedAuthRequest::UnregisterIdPCallback
-                         callback) override {}
+  void UnregisterIdP(
+      const ::blink::KURL& url,
+      mojom::blink::FederatedRequestService::UnregisterIdPCallback callback)
+      override {}
   void CloseModalDialogView() override {}
   void PreventSilentAccess(
-      mojom::blink::FederatedAuthRequest::PreventSilentAccessCallback callback)
-      override {}
+      mojom::blink::FederatedRequestService::PreventSilentAccessCallback
+          callback) override {}
   void Disconnect(mojom::blink::IdentityCredentialDisconnectOptionsPtr options,
-                  mojom::blink::FederatedAuthRequest::DisconnectCallback
+                  mojom::blink::FederatedRequestService::DisconnectCallback
                       callback) override {}
 
  private:
-  mojo::Receiver<::blink::mojom::blink::FederatedAuthRequest>
-      auth_request_receiver_{this};
   mojo::Receiver<::blink::mojom::blink::FederatedRequestService>
       request_service_receiver_{this};
 
-  Vector<RequestTokenCallback> request_token_callbacks_;
   Vector<std::pair<StartTokenRequestCallback,
                    mojo::PendingReceiver<mojom::blink::FederatedRequest>>>
       start_token_request_callbacks_;
@@ -510,7 +461,7 @@ class CredentialManagerTestingContext {
   explicit CredentialManagerTestingContext(
       MockCredentialManager* mock_credential_manager,
       MockAuthenticatorInterface* mock_authenticator = nullptr,
-      MockFederatedAuthRequest* mock_federated_auth_request = nullptr)
+      MockFederatedRequestService* mock_federated_request_service = nullptr)
       : dummy_context_(KURL("https://example.test")) {
     if (mock_credential_manager) {
       DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
@@ -537,30 +488,18 @@ class CredentialManagerTestingContext {
               },
               Unretained(mock_authenticator)));
     }
-    if (mock_federated_auth_request) {
-      DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
-          ::blink::mojom::blink::FederatedAuthRequest::Name_,
-          BindRepeating(
-              [](MockFederatedAuthRequest* mock_federated_auth_request,
-                 mojo::ScopedMessagePipeHandle handle) {
-                mock_federated_auth_request->Bind(
-                    mojo::PendingReceiver<
-                        ::blink::mojom::blink::FederatedAuthRequest>(
-                        std::move(handle)));
-              },
-              Unretained(mock_federated_auth_request)));
-
+    if (mock_federated_request_service) {
       DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
           ::blink::mojom::blink::FederatedRequestService::Name_,
           BindRepeating(
-              [](MockFederatedAuthRequest* mock_federated_auth_request,
+              [](MockFederatedRequestService* mock_federated_request_service,
                  mojo::ScopedMessagePipeHandle handle) {
-                mock_federated_auth_request->BindRequestService(
+                mock_federated_request_service->BindRequestService(
                     mojo::PendingReceiver<
                         ::blink::mojom::blink::FederatedRequestService>(
                         std::move(handle)));
               },
-              Unretained(mock_federated_auth_request)));
+              Unretained(mock_federated_request_service)));
     }
   }
 
@@ -569,8 +508,6 @@ class CredentialManagerTestingContext {
         ::blink::mojom::blink::CredentialManager::Name_, {});
     DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
         ::blink::mojom::blink::Authenticator::Name_, {});
-    DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
-        ::blink::mojom::blink::FederatedAuthRequest::Name_, {});
     DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
         ::blink::mojom::blink::FederatedRequestService::Name_, {});
   }
@@ -588,10 +525,10 @@ TEST(AuthenticationCredentialsContainerTest, FedCmDisabledRejectsPromise) {
   test::TaskEnvironment task_environment;
   ScopedFedCmForTest fedcm_disabled(false);
 
-  MockFederatedAuthRequest mock_federated_auth_request;
+  MockFederatedRequestService mock_federated_request_service;
   CredentialManagerTestingContext context(
       /*mock_credential_manager=*/nullptr, /*mock_authenticator=*/nullptr,
-      /*mock_federated_auth_request=*/&mock_federated_auth_request);
+      /*mock_federated_request_service=*/&mock_federated_request_service);
 
   CredentialRequestOptions* options = CredentialRequestOptions::Create();
   IdentityCredentialRequestOptions* identity =
@@ -878,10 +815,10 @@ class AuthenticationCredentialsContainerActiveModeMultiIdpTest
 TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
        RejectActiveModeWithMultipleIdps) {
   test::TaskEnvironment task_environment;
-  MockFederatedAuthRequest mock_federated_auth_request;
+  MockFederatedRequestService mock_federated_request_service;
   CredentialManagerTestingContext context(
       /*mock_credential_manager=*/nullptr, /*mock_authenticator=*/nullptr,
-      /*mock_federated_auth_request=*/&mock_federated_auth_request);
+      /*mock_federated_request_service=*/&mock_federated_request_service);
 
   CredentialRequestOptions* options = CredentialRequestOptions::Create();
   IdentityCredentialRequestOptions* identity =
@@ -1502,10 +1439,10 @@ TEST(AuthenticationCredentialsContainerTest,
      GetRequest_ActiveThenPassiveCollision) {
   test::TaskEnvironment task_environment;
 
-  MockFederatedAuthRequest mock_federated_auth_request;
+  MockFederatedRequestService mock_federated_request_service;
   CredentialManagerTestingContext context(
       /*mock_credential_manager=*/nullptr, /*mock_authenticator=*/nullptr,
-      /*mock_federated_auth_request=*/&mock_federated_auth_request);
+      /*mock_federated_request_service=*/&mock_federated_request_service);
 
   // First request: Active mode
   CredentialRequestOptions* active_options = CredentialRequestOptions::Create();
@@ -1544,10 +1481,10 @@ TEST(AuthenticationCredentialsContainerTest,
                              ->get(context.GetScriptState(), passive_options,
                                    IGNORE_EXCEPTION_FOR_TESTING);
 
-  mock_federated_auth_request.WaitForCallToRequestToken(2);
+  mock_federated_request_service.WaitForCallToStartToken(2);
 
   // Invoke second (passive) callback with kErrorTooManyRequests
-  mock_federated_auth_request.InvokeRequestTokenCallbackWithError(
+  mock_federated_request_service.InvokeStartTokenRequestCallbackWithError(
       mojom::blink::RequestTokenStatus::kErrorTooManyRequests, 1);
 
   ScriptPromiseTester passive_tester(context.GetScriptState(), passive_promise);
@@ -1562,7 +1499,7 @@ TEST(AuthenticationCredentialsContainerTest,
   EXPECT_EQ(passive_exception->name(), "NotAllowedError");
 
   // First (active) request is still pending. Now resolve it with error.
-  mock_federated_auth_request.InvokeRequestTokenCallbackWithError(
+  mock_federated_request_service.InvokeStartTokenRequestCallbackWithError(
       mojom::blink::RequestTokenStatus::kError, 0);
 
   ScriptPromiseTester active_tester(context.GetScriptState(), active_promise);
@@ -1581,10 +1518,10 @@ TEST(AuthenticationCredentialsContainerTest,
      GetRequest_PassiveThenActiveCollision) {
   test::TaskEnvironment task_environment;
 
-  MockFederatedAuthRequest mock_federated_auth_request;
+  MockFederatedRequestService mock_federated_request_service;
   CredentialManagerTestingContext context(
       /*mock_credential_manager=*/nullptr, /*mock_authenticator=*/nullptr,
-      /*mock_federated_auth_request=*/&mock_federated_auth_request);
+      /*mock_federated_request_service=*/&mock_federated_request_service);
 
   // First request: Passive mode
   CredentialRequestOptions* passive_options =
@@ -1623,10 +1560,10 @@ TEST(AuthenticationCredentialsContainerTest,
                             ->get(context.GetScriptState(), active_options,
                                   IGNORE_EXCEPTION_FOR_TESTING);
 
-  mock_federated_auth_request.WaitForCallToRequestToken(2);
+  mock_federated_request_service.WaitForCallToStartToken(2);
 
   // First (passive) request is cancelled with kError
-  mock_federated_auth_request.InvokeRequestTokenCallbackWithError(
+  mock_federated_request_service.InvokeStartTokenRequestCallbackWithError(
       mojom::blink::RequestTokenStatus::kError, 0);
 
   ScriptPromiseTester passive_tester(context.GetScriptState(), passive_promise);
@@ -1641,7 +1578,7 @@ TEST(AuthenticationCredentialsContainerTest,
   EXPECT_EQ(passive_exception->name(), "NetworkError");
 
   // Second (active) request is still pending. Now resolve it with error.
-  mock_federated_auth_request.InvokeRequestTokenCallbackWithError(
+  mock_federated_request_service.InvokeStartTokenRequestCallbackWithError(
       mojom::blink::RequestTokenStatus::kError, 0);
 
   ScriptPromiseTester active_tester(context.GetScriptState(), active_promise);

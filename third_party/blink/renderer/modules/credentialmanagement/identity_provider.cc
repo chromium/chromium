@@ -60,41 +60,6 @@ void OnRequestUserInfo(
   resolver->Resolve(all_user_info);
 }
 
-// TODO(https://crbug.com/519217823): Remove this legacy callback once the
-// legacy FederatedAuthRequest::RequestUserInfo is removed and the
-// FederatedRequestService one is fully rolled out.
-void OnLegacyRequestUserInfo(
-    ScriptPromiseResolver<IDLSequence<IdentityUserInfo>>* resolver,
-    RequestUserInfoStatus status,
-    std::optional<Vector<mojom::blink::IdentityUserInfoPtr>>
-        all_user_info_ptr) {
-  switch (status) {
-    case RequestUserInfoStatus::kError: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError, "Error retrieving user info."));
-      return;
-    }
-    case RequestUserInfoStatus::kSuccess: {
-      HeapVector<Member<IdentityUserInfo>> all_user_info;
-      for (const auto& user_info_ptr : all_user_info_ptr.value()) {
-        IdentityUserInfo* user_info = IdentityUserInfo::Create();
-        user_info->setEmail(user_info_ptr->email);
-        user_info->setGivenName(user_info_ptr->given_name);
-        user_info->setName(user_info_ptr->name);
-        user_info->setPicture(user_info_ptr->picture);
-        all_user_info.push_back(user_info);
-      }
-
-      DCHECK_GT(all_user_info.size(), 0u);
-      resolver->Resolve(all_user_info);
-      return;
-    }
-    default: {
-      NOTREACHED();
-    }
-  }
-}
-
 }  // namespace
 
 ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
@@ -150,35 +115,19 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
   mojom::blink::IdentityProviderConfigPtr identity_provider =
       blink::mojom::blink::IdentityProviderConfig::From(*provider);
 
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          ExecutionContext::From(script_state))) {
-    auto* service =
-        CredentialManagerProxy::From(script_state)->FederatedRequestService();
-    service->RequestUserInfo(
-        std::move(identity_provider),
-        BindOnce(&OnRequestUserInfo, WrapPersistent(resolver)));
-  } else {
-    auto* user_info_request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    user_info_request->RequestUserInfo(
-        std::move(identity_provider),
-        BindOnce(&OnLegacyRequestUserInfo, WrapPersistent(resolver)));
-  }
+  auto* service =
+      CredentialManagerProxy::From(script_state)->FederatedRequestService();
+  service->RequestUserInfo(
+      std::move(identity_provider),
+      BindOnce(&OnRequestUserInfo, WrapPersistent(resolver)));
 
   return promise;
 }
 
 void IdentityProvider::close(ScriptState* script_state) {
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          ExecutionContext::From(script_state))) {
-    auto* service =
-        CredentialManagerProxy::From(script_state)->FederatedRequestService();
-    service->CloseModalDialogView();
-  } else {
-    auto* auth_request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    auth_request->CloseModalDialogView();
-  }
+  auto* service =
+      CredentialManagerProxy::From(script_state)->FederatedRequestService();
+  service->CloseModalDialogView();
 }
 
 void OnRegisterIdP(ScriptPromiseResolver<IDLBoolean>* resolver,
@@ -229,18 +178,10 @@ ScriptPromise<IDLBoolean> IdentityProvider::registerIdentityProvider(
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
 
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          ExecutionContext::From(script_state))) {
-    auto* service =
-        CredentialManagerProxy::From(script_state)->FederatedRequestService();
-    service->RegisterIdP(KURL(configURL),
-                         BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
-  } else {
-    auto* request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    request->RegisterIdP(KURL(configURL),
-                         BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
-  }
+  auto* service =
+      CredentialManagerProxy::From(script_state)->FederatedRequestService();
+  service->RegisterIdP(KURL(configURL),
+                       BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -263,18 +204,10 @@ ScriptPromise<IDLUndefined> IdentityProvider::unregisterIdentityProvider(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          ExecutionContext::From(script_state))) {
-    auto* service =
-        CredentialManagerProxy::From(script_state)->FederatedRequestService();
-    service->UnregisterIdP(
-        KURL(configURL), BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
-  } else {
-    auto* request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    request->UnregisterIdP(
-        KURL(configURL), BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
-  }
+  auto* service =
+      CredentialManagerProxy::From(script_state)->FederatedRequestService();
+  service->UnregisterIdP(KURL(configURL),
+                         BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -388,20 +321,11 @@ ScriptPromise<IDLUndefined> IdentityProvider::resolve(
 
   // There must not be JavaScript execution between getting the request pointer
   // and using it.
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          ExecutionContext::From(script_state))) {
-    auto* service =
-        CredentialManagerProxy::From(script_state)->FederatedRequestService();
-    service->ResolveTokenRequest(
-        account_id, std::move(params),
-        BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
-  } else {
-    auto* request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    request->ResolveTokenRequest(
-        account_id, std::move(params),
-        BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
-  }
+  auto* service =
+      CredentialManagerProxy::From(script_state)->FederatedRequestService();
+  service->ResolveTokenRequest(
+      account_id, std::move(params),
+      BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
 
   return promise;
 }

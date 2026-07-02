@@ -483,17 +483,6 @@ DOMException* CredentialManagerErrorToDOMException(
   return nullptr;
 }
 
-// Abort an ongoing IdentityCredential request. This will only be called before
-// the request finishes due to `scoped_abort_state`.
-void AbortIdentityCredentialRequest(ScriptState* script_state) {
-  if (!script_state->ContextIsValid()) {
-    return;
-  }
-
-  auto* auth_request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  auth_request->CancelTokenRequest();
-}
 
 void OnRequestToken(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
                     std::unique_ptr<ScopedAbortState> scoped_abort_state,
@@ -1193,6 +1182,8 @@ void OnStartTokenRequestComplete(
     mojo::Remote<mojom::blink::FederatedRequest> federated_request,
     base::expected<mojom::blink::TokenRequestSuccessPtr,
                    mojom::blink::TokenRequestFailurePtr> result) {
+  // |federated_request| is passed by value to keep the Mojo connection alive
+  // until this callback runs (if there is no abort signal).
   if (!result.has_value()) {
     mojom::blink::TokenErrorPtr error;
     RequestTokenStatus status = RequestTokenStatus::kError;
@@ -2061,22 +2052,12 @@ AuthenticationCredentialsContainer::preventSilentAccess(
 
   // TODO(https://crbug.com/1441075): Unify the implementation for
   // different CredentialTypes and avoid the duplication eventually.
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(
-          ExecutionContext::From(script_state))) {
-    auto* service =
-        CredentialManagerProxy::From(script_state)->FederatedRequestService();
-    service->PreventSilentAccess(
-        BindOnce(&OnPreventSilentAccessComplete,
-                 std::make_unique<ScopedPromiseResolver>(
-                     resolver, ScopedPromiseResolver::ConnectionType::kFedCm)));
-  } else {
-    auto* auth_request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    auth_request->PreventSilentAccess(
-        BindOnce(&OnPreventSilentAccessComplete,
-                 std::make_unique<ScopedPromiseResolver>(
-                     resolver, ScopedPromiseResolver::ConnectionType::kFedCm)));
-  }
+  auto* service =
+      CredentialManagerProxy::From(script_state)->FederatedRequestService();
+  service->PreventSilentAccess(
+      BindOnce(&OnPreventSilentAccessComplete,
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver, ScopedPromiseResolver::ConnectionType::kFedCm)));
 
   return promise;
 }
@@ -2476,50 +2457,31 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   idp_get_params.push_back(std::move(get_params));
 
   auto* proxy = CredentialManagerProxy::From(script_state);
-  if (RuntimeEnabledFeatures::FedCmMultipleRequestsEnabled(context)) {
-    auto* service = proxy->FederatedRequestService();
-    mojo::PendingRemote<mojom::blink::FederatedRequest> pending_remote;
-    auto receiver = pending_remote.InitWithNewPipeAndPassReceiver();
+  auto* service = proxy->FederatedRequestService();
+  mojo::PendingRemote<mojom::blink::FederatedRequest> pending_remote;
+  auto receiver = pending_remote.InitWithNewPipeAndPassReceiver();
 
-    std::unique_ptr<ScopedAbortState> scoped_abort_state;
-    mojo::Remote<mojom::blink::FederatedRequest> callback_remote;
+  std::unique_ptr<ScopedAbortState> scoped_abort_state;
+  mojo::Remote<mojom::blink::FederatedRequest> callback_remote;
 
-    if (auto* signal = options.getSignalOr(nullptr)) {
-      auto* abort_algorithm = MakeGarbageCollected<FedCmRequestAbortAlgorithm>(
-          context, std::move(pending_remote));
-      auto* handle = signal->AddAlgorithm(abort_algorithm);
-      scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
-    } else {
-      callback_remote.Bind(std::move(pending_remote),
-                           context->GetTaskRunner(TaskType::kInternalDefault));
-    }
-
-    service->StartTokenRequest(
-        std::move(idp_get_params), mediation_requirement, std::move(receiver),
-        blink::BindOnce(
-            &OnStartTokenRequestComplete,
-            std::make_unique<ScopedPromiseResolver>(
-                resolver, ScopedPromiseResolver::ConnectionType::kFedCm),
-            std::move(scoped_abort_state), WrapPersistent(&options),
-            std::move(callback_remote)));
+  if (auto* signal = options.getSignalOr(nullptr)) {
+    auto* abort_algorithm = MakeGarbageCollected<FedCmRequestAbortAlgorithm>(
+        context, std::move(pending_remote));
+    auto* handle = signal->AddAlgorithm(abort_algorithm);
+    scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   } else {
-    std::unique_ptr<ScopedAbortState> scoped_abort_state;
-    if (auto* signal = options.getSignalOr(nullptr)) {
-      auto callback = BindOnce(&AbortIdentityCredentialRequest,
-                               WrapPersistent(script_state));
-      auto* handle = signal->AddAlgorithm(std::move(callback));
-      scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
-    }
-
-    auto* auth_request = proxy->FederatedAuthRequest();
-    auth_request->RequestToken(
-        std::move(idp_get_params), mediation_requirement,
-        blink::BindOnce(
-            &OnRequestToken,
-            std::make_unique<ScopedPromiseResolver>(
-                resolver, ScopedPromiseResolver::ConnectionType::kFedCm),
-            std::move(scoped_abort_state), WrapPersistent(&options)));
+    callback_remote.Bind(std::move(pending_remote),
+                         context->GetTaskRunner(TaskType::kInternalDefault));
   }
+
+  service->StartTokenRequest(
+      std::move(idp_get_params), mediation_requirement, std::move(receiver),
+      blink::BindOnce(
+          &OnStartTokenRequestComplete,
+          std::make_unique<ScopedPromiseResolver>(
+              resolver, ScopedPromiseResolver::ConnectionType::kFedCm),
+          std::move(scoped_abort_state), WrapPersistent(&options),
+          std::move(callback_remote)));
 }
 
 }  // namespace blink
