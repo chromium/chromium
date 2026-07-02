@@ -2746,7 +2746,8 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    // @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     @Config(qualifiers = "sw600dp")
     public void testListMenuItems_verticalTabsFiltersDirectionalActions_singleTab() {
         prepareCoordinatorWithTabs();
@@ -2765,6 +2766,7 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     @Config(qualifiers = "sw600dp")
     public void testListMenuItems_verticalTabsFiltersDirectionalActions_multipleTabs() {
