@@ -68,7 +68,7 @@ version = "1"
 artifact = "bin"
 
 [dependencies.harfrust]
-version = "0.10.0"
+version = "0.11.0"
 features = ["experimental_font_api"]
 
 [dependencies.icu_casemap]

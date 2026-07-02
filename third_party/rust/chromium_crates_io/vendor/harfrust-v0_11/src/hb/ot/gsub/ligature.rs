@@ -38,7 +38,7 @@ impl Apply for Ligature<'_> {
             Some(())
         } else {
             let f = |info: &mut GlyphInfo, index| {
-                let value = components.get(index as usize).unwrap().get().to_u16();
+                let value = components.get(index as usize).unwrap().get().to_u32();
                 match_glyph(info, value)
             };
 

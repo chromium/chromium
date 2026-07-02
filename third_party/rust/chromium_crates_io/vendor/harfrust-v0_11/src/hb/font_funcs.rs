@@ -312,17 +312,12 @@ impl<'a, 'u> FontFuncsDispatch<'a, 'u> {
 
     #[inline(always)]
     pub(crate) fn nominal_glyph(&mut self, c: u32) -> Option<GlyphId> {
-        let cache = self.builtin.face.cmap_cache;
-        if let Some(gid) = cache.get(c) {
+        if let Some(funcs) = &mut self.funcs {
+            funcs.nominal_glyph(&self.builtin, c)
+        } else if let Some(gid) = self.builtin.face.cmap_cache.get(c) {
             Some(gid.into())
-        } else if let Some(funcs) = &mut self.funcs {
-            if let Some(gid) = funcs.nominal_glyph(&self.builtin, c) {
-                cache.set(c, gid.to_u32());
-                Some(gid)
-            } else {
-                None
-            }
         } else if let Some(gid) = self.builtin.nominal_glyph(c) {
+            let cache = self.builtin.face.cmap_cache;
             cache.set(c, gid.to_u32());
             Some(gid)
         } else {

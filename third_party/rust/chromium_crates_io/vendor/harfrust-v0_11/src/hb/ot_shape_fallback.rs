@@ -155,30 +155,38 @@ fn position_mark(
         combining_class::DoubleBelow | combining_class::DoubleAbove
             if direction.is_horizontal() =>
         {
-            pos.x_offset += base_extents.x_bearing
-                + if direction.is_forward() {
+            pos.x_offset = pos
+                .x_offset
+                .saturating_add(base_extents.x_bearing)
+                .saturating_add(if direction.is_forward() {
                     base_extents.width
                 } else {
                     0
-                }
-                - mark_extents.width / 2
-                - mark_extents.x_bearing;
+                })
+                .saturating_sub(mark_extents.width / 2)
+                .saturating_sub(mark_extents.x_bearing);
         }
 
         combining_class::AttachedBelowLeft
         | combining_class::BelowLeft
         | combining_class::AboveLeft => {
             // Left align.
-            pos.x_offset += base_extents.x_bearing - mark_extents.x_bearing;
+            pos.x_offset = pos
+                .x_offset
+                .saturating_add(base_extents.x_bearing)
+                .saturating_sub(mark_extents.x_bearing);
         }
 
         combining_class::AttachedAboveRight
         | combining_class::BelowRight
         | combining_class::AboveRight => {
             // Right align.
-            pos.x_offset += base_extents.x_bearing + base_extents.width
-                - mark_extents.width
-                - mark_extents.x_bearing;
+            pos.x_offset = pos
+                .x_offset
+                .saturating_add(base_extents.x_bearing)
+                .saturating_add(base_extents.width)
+                .saturating_sub(mark_extents.width)
+                .saturating_sub(mark_extents.x_bearing);
         }
 
         combining_class::AttachedBelow
@@ -187,8 +195,11 @@ fn position_mark(
         | combining_class::Above
         | _ => {
             // Center align.
-            pos.x_offset += base_extents.x_bearing + (base_extents.width - mark_extents.width) / 2
-                - mark_extents.x_bearing;
+            pos.x_offset = pos
+                .x_offset
+                .saturating_add(base_extents.x_bearing)
+                .saturating_add((base_extents.width.saturating_sub(mark_extents.width)) / 2)
+                .saturating_sub(mark_extents.x_bearing);
         }
     }
 
@@ -210,18 +221,21 @@ fn position_mark(
         | combining_class::AttachedBelow => {
             if !is_attached {
                 // Add gap.
-                base_extents.height -= y_gap;
+                base_extents.height = base_extents.height.saturating_sub(y_gap);
             }
 
-            pos.y_offset = base_extents.y_bearing + base_extents.height - mark_extents.y_bearing;
+            pos.y_offset = base_extents
+                .y_bearing
+                .saturating_add(base_extents.height)
+                .saturating_sub(mark_extents.y_bearing);
 
             // Never shift up "below" marks.
             if (y_gap > 0) == (pos.y_offset > 0) {
-                base_extents.height -= pos.y_offset;
+                base_extents.height = base_extents.height.saturating_sub(pos.y_offset);
                 pos.y_offset = 0;
             }
 
-            base_extents.height += mark_extents.height;
+            base_extents.height = base_extents.height.saturating_add(mark_extents.height);
         }
 
         combining_class::DoubleAbove
@@ -232,22 +246,24 @@ fn position_mark(
         | combining_class::AttachedAboveRight => {
             if !is_attached {
                 // Add gap.
-                base_extents.y_bearing += y_gap;
-                base_extents.height -= y_gap;
+                base_extents.y_bearing = base_extents.y_bearing.saturating_add(y_gap);
+                base_extents.height = base_extents.height.saturating_sub(y_gap);
             }
 
-            pos.y_offset = base_extents.y_bearing - (mark_extents.y_bearing + mark_extents.height);
+            pos.y_offset = base_extents
+                .y_bearing
+                .saturating_sub(mark_extents.y_bearing.saturating_add(mark_extents.height));
 
             // Don't shift down "above" marks too much.
             if (y_gap > 0) != (pos.y_offset > 0) {
                 let correction = -pos.y_offset / 2;
-                base_extents.y_bearing += correction;
-                base_extents.height -= correction;
-                pos.y_offset += correction;
+                base_extents.y_bearing = base_extents.y_bearing.saturating_add(correction);
+                base_extents.height = base_extents.height.saturating_sub(correction);
+                pos.y_offset = pos.y_offset.saturating_add(correction);
             }
 
-            base_extents.y_bearing -= mark_extents.height;
-            base_extents.height += mark_extents.height;
+            base_extents.y_bearing = base_extents.y_bearing.saturating_sub(mark_extents.height);
+            base_extents.height = base_extents.height.saturating_add(mark_extents.height);
         }
 
         _ => {}

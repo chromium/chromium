@@ -19,18 +19,18 @@ use read_fonts::types::GlyphId;
 pub(crate) type MatchPositions = smallvec::SmallVec<[u32; 8]>;
 
 /// Value represents glyph id.
-pub fn match_glyph(info: &mut GlyphInfo, value: u16) -> bool {
-    info.glyph_id == value as u32
+pub fn match_glyph(info: &mut GlyphInfo, value: u32) -> bool {
+    info.glyph_id == value
 }
 
-pub fn match_always(_info: &mut GlyphInfo, _value: u16) -> bool {
+pub fn match_always(_info: &mut GlyphInfo, _value: u32) -> bool {
     true
 }
 
 pub fn match_input(
     ctx: &mut hb_ot_apply_context_t,
     input_len: u16,
-    match_func: impl Fn(&mut GlyphInfo, u16) -> bool,
+    match_func: impl Fn(&mut GlyphInfo, u32) -> bool,
     end_position: &mut usize,
     p_total_component_count: Option<&mut u8>,
 ) -> bool {
@@ -161,7 +161,7 @@ pub fn match_input(
 pub fn match_backtrack(
     ctx: &mut hb_ot_apply_context_t,
     backtrack_len: u16,
-    match_func: impl Fn(&mut GlyphInfo, u16) -> bool,
+    match_func: impl Fn(&mut GlyphInfo, u32) -> bool,
     match_start: &mut usize,
 ) -> bool {
     if backtrack_len == 0 {
@@ -188,7 +188,7 @@ pub fn match_backtrack(
 pub fn match_lookahead(
     ctx: &mut hb_ot_apply_context_t,
     lookahead_len: u16,
-    match_func: impl Fn(&mut GlyphInfo, u16) -> bool,
+    match_func: impl Fn(&mut GlyphInfo, u32) -> bool,
     start_index: usize,
     end_index: &mut usize,
 ) -> bool {
@@ -270,8 +270,8 @@ impl matcher_t {
     fn may_match(
         &self,
         info: &mut GlyphInfo,
-        glyph_data: u16,
-        match_func: Option<&impl Fn(&mut GlyphInfo, u16) -> bool>,
+        glyph_data: u32,
+        match_func: Option<&impl Fn(&mut GlyphInfo, u32) -> bool>,
         syllable: u8,
     ) -> may_match_t {
         if (info.mask & self.mask) == 0
@@ -321,14 +321,14 @@ pub struct skipping_iterator_t<'f, 'c, F> {
     matcher: &'c matcher_t,
     match_positions: &'c mut MatchPositions,
     buf_len: usize,
-    glyph_data: u16,
+    glyph_data: u32,
     pub(crate) buf_idx: usize,
     match_func: Option<F>,
     lookup_props: u32,
     syllable: u8,
 }
 
-impl<'f, 'c> skipping_iterator_t<'f, 'c, fn(&mut GlyphInfo, u16) -> bool> {
+impl<'f, 'c> skipping_iterator_t<'f, 'c, fn(&mut GlyphInfo, u32) -> bool> {
     pub fn new(ctx: &'c mut hb_ot_apply_context_t<'f>, context_match: bool) -> Self {
         Self::with_match_fn(ctx, context_match, None)
     }
@@ -341,7 +341,7 @@ pub(crate) enum MatchSource {
 
 impl<'f, 'c, F> skipping_iterator_t<'f, 'c, F>
 where
-    F: Fn(&mut GlyphInfo, u16) -> bool,
+    F: Fn(&mut GlyphInfo, u32) -> bool,
 {
     pub fn with_match_fn(
         ctx: &'c mut hb_ot_apply_context_t<'f>,
@@ -377,7 +377,7 @@ where
         self.match_positions[idx] = position as u32;
     }
 
-    pub fn set_glyph_data(&mut self, glyph_data: u16) {
+    pub fn set_glyph_data(&mut self, glyph_data: u32) {
         self.glyph_data = glyph_data;
     }
 

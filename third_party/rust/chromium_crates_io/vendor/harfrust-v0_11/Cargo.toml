@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.85"
 name = "harfrust"
-version = "0.10.0"
+version = "0.11.0"
 build = false
 exclude = [
     "benches/",
