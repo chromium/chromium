@@ -72,7 +72,8 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
 
 AppShimHost::~AppShimHost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  metrics::HistogramController::GetInstance()->NotifyChildDied(this);
+  metrics::HistogramController::GetInstance()->NotifyChildDied(
+      GetProcessIdForHistogram());
   // If this instance gets destructed while a test is still waiting for it to be
   // connected, we should unblock the test. The shim would have never connected,
   // but unblocking the test at least can cause the test to fail gracefully
@@ -347,4 +348,8 @@ void AppShimHost::MaybeRecordLaunchResult(LaunchResult result) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Apps.AppShim.LaunchResult.", mode_str}), result);
   pending_chrome_initiated_launch_mode_.reset();
+}
+
+uint64_t AppShimHost::GetProcessIdForHistogram() const {
+  return child_process_host_id_;
 }

@@ -417,6 +417,10 @@ bool BrowserChildProcessHostImpl::IsWebiumRenderer() const {
   return false;
 }
 
+uint64_t BrowserChildProcessHostImpl::GetProcessIdForHistogram() const {
+  return data_.GetChildProcessId().value();
+}
+
 void BrowserChildProcessHostImpl::TerminateOnBadMessageReceived(
     const std::string& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

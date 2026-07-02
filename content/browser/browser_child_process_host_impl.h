@@ -103,6 +103,7 @@ class BrowserChildProcessHostImpl
       mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
           factory) override;
   bool IsWebiumRenderer() const override;
+  uint64_t GetProcessIdForHistogram() const override;
 
   // Terminates the process and logs a stack trace after a bad message was
   // received from the child process.

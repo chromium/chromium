@@ -178,6 +178,7 @@ class AppShimHost : public chrome::mojom::AppShimHost,
       mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
           factory) override;
   bool IsWebiumRenderer() const override;
+  uint64_t GetProcessIdForHistogram() const override;
 
   // Weak, owns |this|.
   const raw_ptr<Client> client_;

@@ -27,6 +27,11 @@ class HistogramChildProcess {
   // Note: For the shared memory pipeline, SubprocessMetricsProvider tracks this
   // flag itself per process.
   virtual bool IsWebiumRenderer() const = 0;
+
+  // Returns the integer representation of `content::ChildProcessId`. Using
+  // `uint64_t` here not to depend on `content/` types.
+  // TODO(crbug.com/379869738): Consider ways to avoid integer representations.
+  virtual uint64_t GetProcessIdForHistogram() const = 0;
 };
 
 }  // namespace metrics

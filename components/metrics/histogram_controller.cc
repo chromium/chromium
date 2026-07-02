@@ -4,6 +4,7 @@
 
 #include "components/metrics/histogram_controller.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/singleton.h"
@@ -66,10 +67,9 @@ void HistogramController::Unregister(const HistogramSubscriber* subscriber) {
   subscriber_ = nullptr;
 }
 
-void HistogramController::NotifyChildDied(HistogramChildProcess* host) {
+void HistogramController::NotifyChildDied(uint64_t process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveChildHistogramFetcherInterface(
-      MayBeDangling<HistogramChildProcess>(host));
+  RemoveChildHistogramFetcherInterface(process_id);
 }
 
 void HistogramController::SetHistogramMemory(
@@ -78,6 +78,7 @@ void HistogramController::SetHistogramMemory(
     ChildProcessMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_webium_renderer = host->IsWebiumRenderer();
+  uint64_t process_id = host->GetProcessIdForHistogram();
   mojo::Remote<mojom::ChildHistogramFetcherFactory> factory;
   host->BindChildHistogramFetcherFactory(factory.BindNewPipeAndPassReceiver());
 
@@ -86,27 +87,25 @@ void HistogramController::SetHistogramMemory(
                          fetcher.BindNewPipeAndPassReceiver());
   PingChildProcess(fetcher.get(),
                    mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP);
-  InsertChildHistogramFetcherInterface(host, std::move(fetcher), mode,
+  InsertChildHistogramFetcherInterface(process_id, std::move(fetcher), mode,
                                        is_webium_renderer);
 }
 
 void HistogramController::InsertChildHistogramFetcherInterface(
-    HistogramChildProcess* host,
+    uint64_t process_id,
     mojo::Remote<mojom::ChildHistogramFetcher> child_histogram_fetcher,
     ChildProcessMode mode,
     bool is_webium_renderer) {
   // Broken pipe means remove this from the map. The map size is a proxy for
-  // the number of known processes
-  //
-  // `RemoveChildHistogramFetcherInterface` will only use `host` for address
-  // comparison without being dereferenced , therefore it's not going to create
-  // a UAF.
+  // the number of known processes.
+  // TODO(crbug.com/529948676): examine if this is actually necessary.
   child_histogram_fetcher.set_disconnect_handler(
       base::BindOnce(&HistogramController::RemoveChildHistogramFetcherInterface,
-                     base::Unretained(this), base::UnsafeDangling(host)));
-  child_histogram_fetchers_.emplace(
-      host, ChildHistogramFetcher{std::move(child_histogram_fetcher), mode,
-                                  is_webium_renderer});
+                     base::Unretained(this), process_id));
+  auto [it, is_inserted] = child_histogram_fetchers_.emplace(
+      process_id, ChildHistogramFetcher{std::move(child_histogram_fetcher),
+                                        mode, is_webium_renderer});
+  CHECK(is_inserted) << "detected duplicated `process_id`";
 }
 
 void HistogramController::PingChildProcesses() {
@@ -145,8 +144,8 @@ void HistogramController::Pong(mojom::UmaPingCallSource call_source) {
 }
 
 void HistogramController::RemoveChildHistogramFetcherInterface(
-    MayBeDangling<HistogramChildProcess> host) {
-  child_histogram_fetchers_.erase(host);
+    uint64_t process_id) {
+  child_histogram_fetchers_.erase(process_id);
 }
 
 void HistogramController::GetHistogramData(int sequence_number) {
