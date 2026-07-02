@@ -972,6 +972,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         mTabsList = null;
     }
 
+    private void updateCacheOnAddTab(Tab tab, int finalIndex) {
+        assertOnUiThread();
+        if (mTabsList != null) {
+            List<Tab> updatedList = new ArrayList<>(mTabsList);
+            int safeIndex = MathUtils.clamp(finalIndex, 0, updatedList.size());
+            updatedList.add(safeIndex, tab);
+            mTabsList = Collections.unmodifiableList(updatedList);
+        }
+    }
+
     @Override
     protected boolean containsTabGroup(Token tabGroupId) {
         assertOnUiThread();
@@ -1654,7 +1664,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                                 tabGroupId,
                                 createNewGroup,
                                 tab.getIsPinned());
-        invalidateCache();
+        updateCacheOnAddTab(tab, finalIndex);
 
         // When adding the first background tab make sure to select it.
         if (shouldSelectBackgroundTab) {
