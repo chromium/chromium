@@ -46,8 +46,7 @@ import java.io.InputStream;
  */
 @NullMarked
 class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
-
-    private static final String TAG = "FaDetailsFetcher";
+    private static final String TAG = "FbAttachFetcher";
 
     private static final int THUMBNAIL_BITMAP_EDGE_SIZE = 256;
     private static final int MAX_IMAGE_EDGE_SIZE = 1600;
@@ -215,14 +214,19 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         @Nullable CompressFormat outputFormat = getCompressionFormat(mimeType);
 
         if (outputFormat != null && OmniboxFeatures.sOmniboxAimImageDownscaling.isEnabled()) {
-            data = loadDownscaledImage(outputFormat);
+            try {
+                data = loadDownscaledImage(outputFormat);
+            } catch (OutOfMemoryError e) {
+                Log.w(TAG, "Failed to read attachment data", e);
+            }
         }
 
         if (data == null) {
             try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
                 if (inputStream == null) return null;
                 data = FileUtils.readStream(inputStream);
-            } catch (IOException e) {
+            } catch (IOException | OutOfMemoryError e) {
+                Log.w(TAG, "Failed to read attachment data", e);
                 return null;
             }
         }
@@ -351,7 +355,12 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private static @Nullable Bitmap getBitmapFromBytes(byte[] data, int inSampleSize) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = inSampleSize;
-        return BitmapFactory.decodeByteArray(
-                data, /* offset= */ 0, /* length= */ data.length, options);
+        try {
+            return BitmapFactory.decodeByteArray(
+                    data, /* offset= */ 0, /* length= */ data.length, options);
+        } catch (OutOfMemoryError e) {
+            Log.w(TAG, "Failed to generate attachment thumbnail", e);
+            return null;
+        }
     }
 }
