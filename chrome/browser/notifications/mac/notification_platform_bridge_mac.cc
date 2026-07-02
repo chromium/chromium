@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/mac/notification_dispatcher_mojo.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
@@ -76,12 +77,24 @@ void NotificationPlatformBridgeMac::Display(
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
   NotificationDispatcherMac* dispatcher = nullptr;
 
-  if (web_app::UseNotificationAttributionForWebAppShims() &&
-      notification.notifier_id().web_app_id.has_value() &&
-      AppShimRegistry::Get()->IsAppInstalledInProfile(
-          *notification.notifier_id().web_app_id, profile->GetPath())) {
-    dispatcher =
-        GetOrCreateDispatcherForWebApp(*notification.notifier_id().web_app_id);
+  if (notification.notifier_id().web_app_id.has_value()) {
+    bool attribution_enabled =
+        web_app::UseNotificationAttributionForWebAppShims();
+    bool is_installed = AppShimRegistry::Get()->IsAppInstalledInProfile(
+        *notification.notifier_id().web_app_id, profile->GetPath());
+
+    MacNotificationAttributionOutcome outcome;
+    if (!attribution_enabled) {
+      outcome = MacNotificationAttributionOutcome::kFallbackFeatureDisabled;
+    } else if (!is_installed) {
+      outcome = MacNotificationAttributionOutcome::kFallbackNoAppShim;
+    } else {
+      outcome = MacNotificationAttributionOutcome::kAttributed;
+      dispatcher = GetOrCreateDispatcherForWebApp(
+          *notification.notifier_id().web_app_id);
+    }
+    base::UmaHistogramEnumeration("Notifications.macOS.AttributionOutcome",
+                                  outcome);
   }
 
   if (!dispatcher) {

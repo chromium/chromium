@@ -17,6 +17,15 @@
 
 class Profile;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MacNotificationAttributionOutcome {
+  kAttributed = 0,
+  kFallbackFeatureDisabled = 1,
+  kFallbackNoAppShim = 2,
+  kMaxValue = kFallbackNoAppShim,
+};
+
 namespace message_center {
 class Notification;
 }  // namespace message_center

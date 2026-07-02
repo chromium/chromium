@@ -241,6 +241,7 @@ void MacNotificationServiceUN::DoDisplayNotification(
   }
 
   auto completion_handler = ^(NSError* _Nullable error) {
+    mac_notifications::LogUNNotificationAddRequestResult(error);
   };
 
   // If the renotify is not set try to replace the notification silently.

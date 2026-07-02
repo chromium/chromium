@@ -11,8 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/metrics/persistent_histogram_allocator.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
@@ -102,6 +104,7 @@ void AppShimHost::LaunchShimInternal(
   DCHECK(launch_shim_has_been_called_);
   DCHECK(!bootstrap_);
   launch_weak_factory_.InvalidateWeakPtrs();
+  pending_chrome_initiated_launch_mode_ = launch_mode;
   client_->OnShimLaunchRequested(
       this, update_behavior, launch_mode,
       base::BindOnce(&AppShimHost::OnShimProcessLaunched,
@@ -128,6 +131,9 @@ void AppShimHost::OnShimProcessLaunched(
 
   // Shim launch failing is treated the same as the shim launching but
   // terminating before connecting.
+  if (web_app::RecreateShimsRequested(update_behavior)) {
+    MaybeRecordLaunchResult(LaunchResult::kFailedProcessCreation);
+  }
   OnShimProcessTerminated(update_behavior, launch_mode);
 }
 
@@ -148,6 +154,7 @@ void AppShimHost::OnShimProcessTerminated(
   // date. Try again, recreating the shims this time.
   if (!web_app::RecreateShimsRequested(update_behavior)) {
     DLOG(ERROR) << "Failed to launch shim, attempting to recreate.";
+    shim_recreated_ = true;
     LaunchShimInternal(
         web_app::LaunchShimUpdateBehavior::kRecreateUnconditionally,
         launch_mode);
@@ -160,6 +167,8 @@ void AppShimHost::OnShimProcessTerminated(
   // TODO(crbug.com/40605763): Consider adding some UI to tell the
   // user that the process launch failed.
   DLOG(ERROR) << "Failed to launch recreated shim, giving up.";
+
+  MaybeRecordLaunchResult(LaunchResult::kFailedTerminatedBeforeConnection);
 
   // OnShimProcessDisconnected will delete |this|.
   client_->OnShimProcessDisconnected(this);
@@ -192,6 +201,8 @@ void AppShimHost::OnBootstrapConnected(
   // Prevent any callbacks from any pending launches (e.g, if an internal and
   // external launch happen to race).
   launch_weak_factory_.InvalidateWeakPtrs();
+
+  MaybeRecordLaunchResult(LaunchResult::kSuccess);
 
   DCHECK(!bootstrap_);
   bootstrap_ = std::move(bootstrap);
@@ -320,4 +331,20 @@ void AppShimHost::BindChildHistogramFetcherFactory(
 
 bool AppShimHost::IsWebiumRenderer() const {
   return false;
+}
+
+void AppShimHost::MaybeRecordLaunchResult(LaunchResult result) {
+  if (!pending_chrome_initiated_launch_mode_) {
+    return;
+  }
+  if (result == LaunchResult::kSuccess && shim_recreated_) {
+    result = LaunchResult::kSuccessAfterRecreate;
+  }
+  std::string mode_str = (*pending_chrome_initiated_launch_mode_ ==
+                          web_app::ShimLaunchMode::kBackground)
+                             ? "Background"
+                             : "Normal";
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Apps.AppShim.LaunchResult.", mode_str}), result);
+  pending_chrome_initiated_launch_mode_.reset();
 }
