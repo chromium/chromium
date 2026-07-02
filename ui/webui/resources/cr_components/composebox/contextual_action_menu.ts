@@ -36,8 +36,6 @@ const SHARE_TABS_FLYOUT_CLOSE_DELAY_MS = 300;
 export const SHARE_TABS_FLYOUT_GAP_PX = 0;
 export const DEFAULT_FLYOUT_WIDTH_PX = 320;
 
-const ALIGNMENT_THRESHOLD_PX = 160;
-const ANCHOR_RIGHT_THRESHOLD_PX = 362;
 export const VIEWPORT_BUFFER_PX = 16;
 export const MIN_MENU_HEIGHT_PX = 100;
 export const SHARE_TABS_FLYOUT_MAX_HEIGHT_PX = 344;
@@ -56,6 +54,10 @@ interface ShowAtConfig {
   height?: number;
   anchorAlignmentX?: AnchorAlignment;
   anchorAlignmentY?: AnchorAlignment;
+  minX?: number;
+  minY?: number;
+  maxX?: number;
+  maxY?: number;
   noOffset?: boolean;
 }
 
@@ -169,6 +171,7 @@ export class ContextualActionMenuElement extends
   private pointerOverTrigger_: boolean = false;
   private pointerOverFlyout_: boolean = false;
   private firstTabBeingAdded_: boolean = false;
+  private anchor_: HTMLElement|null = null;
 
   protected get supportedTools_(): Map<ToolMode, {
     icon: string,
@@ -256,6 +259,10 @@ export class ContextualActionMenuElement extends
     if (changedProperties.has('tabSuggestions') ||
         changedProperties.has('inputState')) {
       this.updateScrollable_();
+
+      if (this.open && this.anchor_) {
+        this.showAt(this.anchor_);
+      }
       if (this.shareTabsFlyoutOpen) {
         this.updateFlyoutPosition_();
       }
@@ -270,6 +277,40 @@ export class ContextualActionMenuElement extends
   }
 
   private onWindowBlur_ = this.close.bind(this);
+  private boundReposition_?: () => void;
+  private layoutResizeObserver_?: ResizeObserver|null = null;
+  private lastConfig_?: unknown;
+
+  private reposition_() {
+    if (!this.anchor_ || !this.open || !this.lastConfig_) {
+      return;
+    }
+    const rect = this.anchor_.getBoundingClientRect();
+    const height = rect.height;
+
+    const doc = document.scrollingElement || document.documentElement;
+    const scrollLeft = doc.scrollLeft;
+    const scrollTop = doc.scrollTop;
+
+    const config =
+        Object.assign({}, this.lastConfig_ as Record<string, unknown>, {
+          minX: scrollLeft + VIEWPORT_BUFFER_PX,
+          minY: scrollTop + VIEWPORT_BUFFER_PX,
+          maxX: scrollLeft + doc.clientWidth - VIEWPORT_BUFFER_PX,
+          maxY: scrollTop + doc.clientHeight - VIEWPORT_BUFFER_PX,
+          top: rect.top + scrollTop,
+          left: rect.left + scrollLeft,
+          height: height,
+          width: rect.width,
+        });
+
+    ((this.$.menu as unknown) as {
+      positionDialog_: (c: unknown) => void,
+    }).positionDialog_(config);
+    if (this.shareTabsFlyoutOpen) {
+      this.updateFlyoutPosition_();
+    }
+  }
 
   getDialog(): HTMLDialogElement {
     return this.$.menu.getDialog();
@@ -314,7 +355,11 @@ export class ContextualActionMenuElement extends
   }
 
   showAt(anchor: HTMLElement) {
+    this.anchor_ = anchor;
     const menuWidth = this.computeMenuWidth_();
+    // Clear any previous max height limit before measuring natural full height.
+    this.$.menu.style.removeProperty('--contextual-menu-max-height');
+
     // Show the menu initially to render it and measure its natural height.
     this.$.menu.showAt(anchor, {
       width: menuWidth,
@@ -330,56 +375,98 @@ export class ContextualActionMenuElement extends
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
 
-    // Decide whether to anchor to the right of the plus button.
-    let shouldAnchorRight = spaceBelow < ANCHOR_RIGHT_THRESHOLD_PX &&
-        spaceAbove < ANCHOR_RIGHT_THRESHOLD_PX;
+    const fullMenuHeight = this.$.menu.getDialog().scrollHeight;
+    const requiredHeight = fullMenuHeight + VIEWPORT_BUFFER_PX;
 
-    if (shouldAnchorRight) {
-      const limitX = this.computeHorizontalLimit_(iconRect);
-      const menuRight = iconRect.right + menuWidth;
-      if (menuRight > limitX - VIEWPORT_BUFFER_PX) {
-        shouldAnchorRight = false;
-      }
-    }
+    const doc = document.scrollingElement || document.documentElement;
+    const scrollLeft = doc.scrollLeft;
+    const scrollTop = doc.scrollTop;
+    const clientWidth = doc.clientWidth;
+    const clientHeight = doc.clientHeight;
 
     let config: ShowAtConfig = {
       width: menuWidth,
       noOffset: true,
+      minX: scrollLeft + VIEWPORT_BUFFER_PX,
+      minY: scrollTop + VIEWPORT_BUFFER_PX,
+      maxX: scrollLeft + clientWidth - VIEWPORT_BUFFER_PX,
+      maxY: scrollTop + clientHeight - VIEWPORT_BUFFER_PX,
     };
 
-    if (shouldAnchorRight) {
-      this.constrainMenuHeight_(window.innerHeight - VIEWPORT_BUFFER_PX * 2);
-
-      // Override the anchor dimensions to match the icon's dimensions.
-      config = {
-        ...config,
-        top: iconRect.top,
-        left: iconRect.left,
-        width: iconRect.width,
-        height: iconRect.height,
-        anchorAlignmentX: AnchorAlignment.AFTER_END,
-        anchorAlignmentY: AnchorAlignment.AFTER_START,
-      };
-    } else {
-      const anchorAlignmentY = spaceBelow >= ALIGNMENT_THRESHOLD_PX ?
-          AnchorAlignment.AFTER_END :
-          AnchorAlignment.BEFORE_START;
-
-      const availableSpace = anchorAlignmentY === AnchorAlignment.AFTER_END ?
-          spaceBelow :
-          spaceAbove;
-      this.constrainMenuHeight_(availableSpace - VIEWPORT_BUFFER_PX);
-
+    if (spaceBelow >= requiredHeight) {
+      this.constrainMenuHeight_(spaceBelow - VIEWPORT_BUFFER_PX);
       config = {
         ...config,
         anchorAlignmentX: AnchorAlignment.AFTER_START,
-        anchorAlignmentY,
+        anchorAlignmentY: AnchorAlignment.AFTER_END,
       };
+    } else if (spaceAbove >= requiredHeight) {
+      this.constrainMenuHeight_(spaceAbove - VIEWPORT_BUFFER_PX);
+      config = {
+        ...config,
+        anchorAlignmentX: AnchorAlignment.AFTER_START,
+        anchorAlignmentY: AnchorAlignment.BEFORE_START,
+      };
+    } else {
+      // Neither below nor above has enough space for the full menu.
+      let shouldAnchorRight = Math.max(spaceBelow, spaceAbove) < requiredHeight;
+      const horizontalLimit = this.computeHorizontalLimit_(iconRect);
+      // iconRect.right is the left edge of the right-anchored menu.
+      const menuRight = iconRect.right + menuWidth;
+      if (menuRight > horizontalLimit - VIEWPORT_BUFFER_PX) {
+        shouldAnchorRight = false;
+      }
+
+      if (shouldAnchorRight) {
+        const availableSpace = window.innerHeight - VIEWPORT_BUFFER_PX * 2;
+        if (fullMenuHeight > availableSpace) {
+          this.constrainMenuHeight_(availableSpace);
+        }
+
+        config = {
+          ...config,
+          top: iconRect.top,
+          left: iconRect.left,
+          width: iconRect.width,
+          height: iconRect.height,
+          anchorAlignmentX: AnchorAlignment.AFTER_END,
+          anchorAlignmentY: AnchorAlignment.AFTER_START,
+        };
+      } else {
+        const anchorAlignmentY = spaceBelow >= spaceAbove ?
+            AnchorAlignment.AFTER_END :
+            AnchorAlignment.BEFORE_START;
+        const availableSpace = anchorAlignmentY === AnchorAlignment.AFTER_END ?
+            spaceBelow :
+            spaceAbove;
+        this.constrainMenuHeight_(availableSpace - VIEWPORT_BUFFER_PX);
+
+        config = {
+          ...config,
+          anchorAlignmentX: AnchorAlignment.AFTER_START,
+          anchorAlignmentY,
+        };
+      }
     }
 
     // Position the menu using the finalized alignment.
+    this.lastConfig_ = config;
     this.$.menu.showAt(anchor, config);
+    this.reposition_();
     window.addEventListener('blur', this.onWindowBlur_);
+
+    this.boundReposition_ =
+        this.boundReposition_ || this.reposition_.bind(this);
+    window.addEventListener(
+        'scroll', this.boundReposition_, {capture: true, passive: true});
+
+    if (this.layoutResizeObserver_) {
+      this.layoutResizeObserver_.disconnect();
+    }
+    this.layoutResizeObserver_ = new ResizeObserver(() => {
+      this.reposition_();
+    });
+    this.layoutResizeObserver_.observe(document.body);
 
     if (this.contextManagementInComposeboxEnabled_) {
       this.updateSharingTabsText_();
@@ -895,8 +982,10 @@ export class ContextualActionMenuElement extends
   private updateScrollable_() {
     this.updateComplete.then(() => {
       const dialog = this.$.menu.getDialog();
-      const isScrollable = dialog.scrollHeight > dialog.offsetHeight;
-      this.$.menu.toggleAttribute('scrollable', isScrollable);
+      if (this.open && dialog) {
+        const isScrollable = dialog.scrollHeight > dialog.offsetHeight;
+        this.$.menu.toggleAttribute('scrollable', isScrollable);
+      }
     });
   }
 
@@ -954,6 +1043,15 @@ export class ContextualActionMenuElement extends
 
   protected onMenuClose_() {
     window.removeEventListener('blur', this.onWindowBlur_);
+    if (this.boundReposition_) {
+      window.removeEventListener(
+          'scroll', this.boundReposition_, {capture: true});
+    }
+    if (this.layoutResizeObserver_) {
+      this.layoutResizeObserver_.disconnect();
+      this.layoutResizeObserver_ = null;
+    }
+    this.lastConfig_ = undefined;
     this.resetShareTabsFlyout_();
     this.$.menu.style.removeProperty('--contextual-menu-max-height');
     this.fire('close');
