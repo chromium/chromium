@@ -78,6 +78,7 @@ grit("components_resources") {
     "enable_pdf=$enable_pdf",
     "enable_printing=$enable_printing",
     "enable_print_preview=$enable_print_preview",
+    "enable_private_insights=true",
     "enable_supervised_users=$enable_supervised_users",
     "safe_browsing_mode=$safe_browsing_mode",
     "safe_browsing_use_internal_notifications_global_cache_origins=$safe_browsing_use_internal_notifications_global_cache_origins",
@@ -90,6 +91,7 @@ grit("components_resources") {
   deps = [
     ":about_credits",
     "//components/dom_distiller/core:dom_distiller_viewer_js",
+    "//components/metrics/private_metrics/private_insights/endorsement_options:contextual_cues_endorsement_options_binpb",
     "//components/neterror/resources:bundle_js",
     "//components/security_interstitials/content/resources:build_ts",
     "//components/security_interstitials/core/browser/resources:bundle_js",

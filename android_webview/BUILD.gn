@@ -1078,6 +1078,7 @@ if (_is_default_toolchain) {
     defines = [
       "enable_pdf=$enable_pdf",
       "enable_printing=$enable_printing",
+      "enable_private_insights=false",
       "safe_browsing_mode=$safe_browsing_mode",
       "enable_supervised_users=$enable_supervised_users",
       "optimize_webui=$optimize_webui",

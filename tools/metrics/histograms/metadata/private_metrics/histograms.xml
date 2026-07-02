@@ -128,6 +128,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivateMetrics.PrivateInsights.EndorsementOptions.ParsingOutcome"
+    enum="BooleanSuccess" expires_after="2027-06-01">
+  <owner>lukaszgniecki@google.com</owner>
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    Logs the outcome of parsing the binary AccessPolicyEndorsementOptions from
+    the resource bundle. Logged when FcpSimpleTaskEnvironment creates the
+    attestation verifier.
+  </summary>
+</histogram>
+
 <histogram name="PrivateMetrics.PrivateInsights.FcpEvent"
     enum="PrivateInsightsFcpEvent" expires_after="2027-06-01">
   <owner>kjarosz@google.com</owner>
