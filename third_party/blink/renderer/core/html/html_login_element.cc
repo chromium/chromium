@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_login_element.h"
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -52,7 +54,7 @@ bool IsLoginClick(Event& event) {
 
 HTMLLoginElement::HTMLLoginElement(Document& document)
     : HTMLElement(html_names::kLoginTag, document),
-      federated_auth_request_(document.GetExecutionContext()) {}
+      federated_request_service_(document.GetExecutionContext()) {}
 
 ScriptValue HTMLLoginElement::credential(ScriptState* script_state) const {
   if (!credential_) {
@@ -179,35 +181,44 @@ void HTMLLoginElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  if (!federated_auth_request_.is_bound()) {
+  if (!federated_request_service_.is_bound()) {
     GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-        federated_auth_request_.BindNewPipeAndPassReceiver(
+        federated_request_service_.BindNewPipeAndPassReceiver(
             GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)));
   }
 
-  federated_auth_request_->RequestToken(
+  mojo::PendingRemote<mojom::blink::FederatedRequest> pending_remote;
+  auto receiver = pending_remote.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<mojom::blink::FederatedRequest> callback_remote;
+  callback_remote.Bind(
+      std::move(pending_remote),
+      GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault));
+
+  federated_request_service_->StartTokenRequest(
       std::move(idp_get_params),
       mojom::blink::CredentialMediationRequirement::kRequired,
+      std::move(receiver),
       blink::BindOnce(&HTMLLoginElement::OnRequestTokenResponse,
-                      WrapWeakPersistent(this)));
+                      WrapWeakPersistent(this), std::move(callback_remote)));
   event.SetDefaultHandled();
 
   HTMLElement::DefaultEventHandler(event);
 }
 
 void HTMLLoginElement::OnRequestTokenResponse(
-    mojom::blink::RequestTokenStatus status,
-    const std::optional<KURL>& selected_identity_provider_config_url,
-    std::optional<base::Value> token,
-    mojom::blink::TokenErrorPtr error,
-    bool is_auto_selected) {
-  if (status == mojom::blink::RequestTokenStatus::kSuccess && token) {
-    NotifyCredentialReceived(std::move(*token));
+    mojo::Remote<mojom::blink::FederatedRequest> federated_request,
+    base::expected<mojom::blink::TokenRequestSuccessPtr,
+                   mojom::blink::TokenRequestFailurePtr> result) {
+  // `federated_request` is kept in scope to keep the Mojo pipe alive for the
+  // duration of the request. It is implicitly destroyed and the pipe is closed
+  // here.
+  if (result.has_value() && result.value()->token) {
+    NotifyCredentialReceived(std::move(*result.value()->token));
   }
 }
 
 void HTMLLoginElement::Trace(Visitor* visitor) const {
-  visitor->Trace(federated_auth_request_);
+  visitor->Trace(federated_request_service_);
   HTMLElement::Trace(visitor);
 }
 

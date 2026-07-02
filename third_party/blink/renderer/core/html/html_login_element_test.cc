@@ -55,22 +55,23 @@ class QuitListener : public NativeEventListener {
   base::OnceClosure quit_closure_;
 };
 
-class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
+class MockFederatedRequestService
+    : public mojom::blink::FederatedRequestService {
  public:
-  MockFederatedAuthRequest() = default;
+  MockFederatedRequestService() = default;
 
   MOCK_METHOD(void,
-              RequestToken,
+              StartTokenRequest,
               (Vector<mojom::blink::IdentityProviderGetParametersPtr>,
                mojom::blink::CredentialMediationRequirement,
-               RequestTokenCallback),
+               mojo::PendingReceiver<mojom::blink::FederatedRequest>,
+               StartTokenRequestCallback),
               (override));
   MOCK_METHOD(void,
               RequestUserInfo,
               (mojom::blink::IdentityProviderConfigPtr,
                RequestUserInfoCallback),
               (override));
-  MOCK_METHOD(void, CancelTokenRequest, (), (override));
   MOCK_METHOD(void,
               ResolveTokenRequest,
               (const String&,
@@ -110,12 +111,12 @@ class HTMLLoginElementClickTest : public PageTestBase {
     EnablePlatform();
     PageTestBase::SetUp();
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
-        mojom::blink::FederatedAuthRequest::Name_,
+        mojom::blink::FederatedRequestService::Name_,
         BindRepeating(
-            [](mojo::Receiver<mojom::blink::FederatedAuthRequest>* receiver,
+            [](mojo::Receiver<mojom::blink::FederatedRequestService>* receiver,
                mojo::ScopedMessagePipeHandle handle) {
               receiver->Bind(
-                  mojo::PendingReceiver<mojom::blink::FederatedAuthRequest>(
+                  mojo::PendingReceiver<mojom::blink::FederatedRequestService>(
                       std::move(handle)));
             },
             Unretained(&receiver_)));
@@ -123,14 +124,15 @@ class HTMLLoginElementClickTest : public PageTestBase {
 
   void TearDown() override {
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
-        mojom::blink::FederatedAuthRequest::Name_, {});
+        mojom::blink::FederatedRequestService::Name_, {});
     PageTestBase::TearDown();
   }
 
  protected:
-  testing::NiceMock<MockFederatedAuthRequest> mock_federated_auth_request_;
-  mojo::Receiver<mojom::blink::FederatedAuthRequest> receiver_{
-      &mock_federated_auth_request_};
+  testing::NiceMock<MockFederatedRequestService>
+      mock_federated_request_service_;
+  mojo::Receiver<mojom::blink::FederatedRequestService> receiver_{
+      &mock_federated_request_service_};
 };
 
 TEST_F(HTMLLoginElementClickTest, TagName) {
@@ -154,21 +156,31 @@ TEST_F(HTMLLoginElementClickTest, ClickInitiatesFedCm) {
                            AtomicString("client123"));
   login->AppendChild(credential);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken)
-      .WillOnce([](Vector<mojom::blink::IdentityProviderGetParametersPtr>
-                       idp_get_params,
-                   mojom::blink::CredentialMediationRequirement mediation,
-                   MockFederatedAuthRequest::RequestTokenCallback callback) {
-        ASSERT_EQ(idp_get_params.size(), 1u);
-        ASSERT_EQ(idp_get_params[0]->providers.size(), 1u);
-        EXPECT_EQ(idp_get_params[0]->providers[0]->config->config_url,
-                  "https://example.com/fedcm.json");
-        EXPECT_EQ(idp_get_params[0]->providers[0]->config->client_id,
-                  "client123");
-        std::move(callback).Run(mojom::blink::RequestTokenStatus::kSuccess,
-                                std::nullopt, base::Value("dummy-token"),
-                                nullptr, false);
-      });
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest)
+      .WillOnce(
+          [](Vector<mojom::blink::IdentityProviderGetParametersPtr>
+                 idp_get_params,
+             mojom::blink::CredentialMediationRequirement mediation,
+             mojo::PendingReceiver<mojom::blink::FederatedRequest>
+                 request_receiver,
+             MockFederatedRequestService::StartTokenRequestCallback callback) {
+            EXPECT_EQ(idp_get_params.size(), 1u);
+            if (idp_get_params.size() >= 1u) {
+              EXPECT_EQ(idp_get_params[0]->providers.size(), 1u);
+              if (idp_get_params[0]->providers.size() >= 1u) {
+                EXPECT_EQ(idp_get_params[0]->providers[0]->config->config_url,
+                          "https://example.com/fedcm.json");
+                EXPECT_EQ(idp_get_params[0]->providers[0]->config->client_id,
+                          "client123");
+              }
+            }
+            auto success = mojom::blink::TokenRequestSuccess::New();
+            success->selected_idp_config_url =
+                KURL("https://example.com/fedcm.json");
+            success->token = base::Value("dummy-token");
+            success->is_auto_selected = false;
+            std::move(callback).Run(std::move(success));
+          });
 
   // Simulate click on the login element.
   base::RunLoop run_loop;
@@ -204,14 +216,21 @@ TEST_F(HTMLLoginElementClickTest, ClickInitiatesFedCmWithSimpleToken) {
                            AtomicString("client123"));
   login->AppendChild(credential);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken)
-      .WillOnce([](Vector<mojom::blink::IdentityProviderGetParametersPtr>
-                       idp_get_params,
-                   mojom::blink::CredentialMediationRequirement mediation,
-                   MockFederatedAuthRequest::RequestTokenCallback callback) {
-        std::move(callback).Run(mojom::blink::RequestTokenStatus::kSuccess,
-                                std::nullopt, base::Value(123), nullptr, false);
-      });
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest)
+      .WillOnce(
+          [](Vector<mojom::blink::IdentityProviderGetParametersPtr>
+                 idp_get_params,
+             mojom::blink::CredentialMediationRequirement mediation,
+             mojo::PendingReceiver<mojom::blink::FederatedRequest>
+                 request_receiver,
+             MockFederatedRequestService::StartTokenRequestCallback callback) {
+            auto success = mojom::blink::TokenRequestSuccess::New();
+            success->selected_idp_config_url =
+                KURL("https://example.com/fedcm.json");
+            success->token = base::Value(123);
+            success->is_auto_selected = false;
+            std::move(callback).Run(std::move(success));
+          });
 
   // Simulate click on the login element.
   base::RunLoop run_loop;
@@ -245,7 +264,7 @@ TEST_F(HTMLLoginElementClickTest, NonLeftClickDoesNotInitiateFedCm) {
                            AtomicString("client123"));
   login->AppendChild(credential);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken).Times(0);
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest).Times(0);
 
   // Simulate a right-click.
   ScriptState* script_state =
@@ -277,15 +296,21 @@ TEST_F(HTMLLoginElementClickTest, EnterKeyInitiatesFedCm) {
                            AtomicString("client123"));
   login->AppendChild(credential);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken)
-      .WillOnce([](Vector<mojom::blink::IdentityProviderGetParametersPtr>
-                       idp_get_params,
-                   mojom::blink::CredentialMediationRequirement mediation,
-                   MockFederatedAuthRequest::RequestTokenCallback callback) {
-        std::move(callback).Run(mojom::blink::RequestTokenStatus::kSuccess,
-                                std::nullopt, base::Value("dummy-token"),
-                                nullptr, false);
-      });
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest)
+      .WillOnce(
+          [](Vector<mojom::blink::IdentityProviderGetParametersPtr>
+                 idp_get_params,
+             mojom::blink::CredentialMediationRequirement mediation,
+             mojo::PendingReceiver<mojom::blink::FederatedRequest>
+                 request_receiver,
+             MockFederatedRequestService::StartTokenRequestCallback callback) {
+            auto success = mojom::blink::TokenRequestSuccess::New();
+            success->selected_idp_config_url =
+                KURL("https://example.com/fedcm.json");
+            success->token = base::Value("dummy-token");
+            success->is_auto_selected = false;
+            std::move(callback).Run(std::move(success));
+          });
 
   // Simulate Enter keydown.
   ScriptState* script_state =
@@ -327,7 +352,7 @@ TEST_F(HTMLLoginElementClickTest, InsecureContextDoesNotInitiateFedCm) {
                            AtomicString("client123"));
   login->AppendChild(credential);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken).Times(0);
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest).Times(0);
 
   // Simulate click.
   login->click();
@@ -363,7 +388,7 @@ TEST_F(HTMLLoginElementClickTest,
                            AtomicString("client123"));
   login->AppendChild(credential);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken).Times(0);
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest).Times(0);
 
   // Simulate click.
   login->click();
@@ -409,19 +434,30 @@ TEST_F(HTMLLoginElementClickTest, CSPConnectSrcBlocksIDP) {
   credential2->setAttribute(html_names::kClientidAttr, AtomicString("456"));
   login->AppendChild(credential2);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken)
-      .WillOnce([](Vector<mojom::blink::IdentityProviderGetParametersPtr>
-                       idp_get_params,
-                   mojom::blink::CredentialMediationRequirement mediation,
-                   MockFederatedAuthRequest::RequestTokenCallback callback) {
-        // Verify that only the allowed IDP was included in the request.
-        ASSERT_EQ(idp_get_params.size(), 1u);
-        EXPECT_EQ(idp_get_params[0]->providers[0]->config->config_url,
-                  "https://allowed.com/fedcm.json");
-        std::move(callback).Run(mojom::blink::RequestTokenStatus::kSuccess,
-                                std::nullopt, base::Value("dummy-token"),
-                                nullptr, false);
-      });
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest)
+      .WillOnce(
+          [](Vector<mojom::blink::IdentityProviderGetParametersPtr>
+                 idp_get_params,
+             mojom::blink::CredentialMediationRequirement mediation,
+             mojo::PendingReceiver<mojom::blink::FederatedRequest>
+                 request_receiver,
+             MockFederatedRequestService::StartTokenRequestCallback callback) {
+            // Verify that only the allowed IDP was included in the request.
+            EXPECT_EQ(idp_get_params.size(), 1u);
+            if (idp_get_params.size() >= 1u) {
+              EXPECT_EQ(idp_get_params[0]->providers.size(), 1u);
+              if (idp_get_params[0]->providers.size() >= 1u) {
+                EXPECT_EQ(idp_get_params[0]->providers[0]->config->config_url,
+                          "https://allowed.com/fedcm.json");
+              }
+            }
+            auto success = mojom::blink::TokenRequestSuccess::New();
+            success->selected_idp_config_url =
+                KURL("https://allowed.com/fedcm.json");
+            success->token = base::Value("dummy-token");
+            success->is_auto_selected = false;
+            std::move(callback).Run(std::move(success));
+          });
 
   // Simulate click.
   base::RunLoop run_loop;
@@ -469,7 +505,7 @@ TEST_F(HTMLLoginElementClickTest, ClickWithInvalidParamsDoesNotInitiateFedCm) {
                            AtomicString("{invalid: json}"));
   login->AppendChild(credential);
 
-  EXPECT_CALL(mock_federated_auth_request_, RequestToken).Times(0);
+  EXPECT_CALL(mock_federated_request_service_, StartTokenRequest).Times(0);
 
   // Simulate click.
   login->click();

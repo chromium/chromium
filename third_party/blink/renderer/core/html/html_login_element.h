@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_LOGIN_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_LOGIN_ELEMENT_H_
 
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -51,15 +53,14 @@ class CORE_EXPORT HTMLLoginElement : public HTMLElement {
   void NotifyCredentialReceived(base::Value token);
 
   void OnRequestTokenResponse(
-      mojom::blink::RequestTokenStatus status,
-      const std::optional<KURL>& selected_identity_provider_config_url,
-      std::optional<base::Value> token,
-      mojom::blink::TokenErrorPtr error,
-      bool is_auto_selected);
+      mojo::Remote<mojom::blink::FederatedRequest> federated_request,
+      base::expected<mojom::blink::TokenRequestSuccessPtr,
+                     mojom::blink::TokenRequestFailurePtr> result);
 
   std::optional<base::Value> credential_;
 
-  HeapMojoRemote<mojom::blink::FederatedAuthRequest> federated_auth_request_;
+  HeapMojoRemote<mojom::blink::FederatedRequestService>
+      federated_request_service_;
 };
 
 }  // namespace blink
