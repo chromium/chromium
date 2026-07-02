@@ -1489,13 +1489,13 @@
     </message>
 
     <message name="IDS_AUTOFILL_AI_SUGGESTION_LONG_PRESS_DIALOG_DESCRIPTION" desc="The description text shown in the dialog after the user long presses a suggestion in the keyboard accessory." formatter_data="android_java">
-      Found by Personal Intelligence. You can manage your info in settings.
+      Suggested by Gemini. Manage enhanced autofill in settings.
     </message>
     <message name="IDS_AUTOFILL_AI_SUGGESTION_LONG_PRESS_DIALOG_POSITIVE_BUTTON" desc="The positive button shown in the dialog after the user long presses a suggestion in the keyboard accessory." formatter_data="android_java">
       Settings
     </message>
     <message name="IDS_AUTOFILL_AI_SUGGESTION_LONG_PRESS_DIALOG_NEGATIVE_BUTTON" desc="The negative button shown in the dialog after the user long presses a suggestion in the keyboard accessory." formatter_data="android_java">
-      Cancel
+      Back
     </message>
   </if>
 
