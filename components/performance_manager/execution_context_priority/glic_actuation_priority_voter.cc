@@ -50,7 +50,8 @@ void GlicActuationPriorityVoter::OnGlicActuationStateChanged(
       PageLiveStateDecorator::Data::FromPageNode(page_node)
           ->GetGlicActuationState();
 
-  if (auto* main_frame_node = page_node->GetMainFrameNode()) {
+  auto* main_frame_node = page_node->GetMainFrameNode();
+  if (main_frame_node && main_frame_node->IsCurrent()) {
     UpdateFrameNodeVote(main_frame_node, previous_state, state);
   }
 }
@@ -75,7 +76,8 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeAdded(
   const GlicActuationState state =
       PageLiveStateDecorator::Data::FromPageNode(pending_page_node)
           ->GetGlicActuationState();
-  if (state != GlicActuationState::kNone) {
+  if (state != GlicActuationState::kNone && frame_node->IsMainFrame() &&
+      frame_node->IsCurrent()) {
     UpdateFrameNodeVote(frame_node, GlicActuationState::kNone, state);
   }
 }
@@ -85,7 +87,10 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeRemoved(
   const GlicActuationState state =
       PageLiveStateDecorator::Data::FromPageNode(frame_node->GetPageNode())
           ->GetGlicActuationState();
-  if (frame_node->IsMainFrame() && state != GlicActuationState::kNone) {
+  // Only main frames participate in actuation. If this frame is no longer
+  // current, the vote would have been invalidated in OnCurrentFrameChanged.
+  if (frame_node->IsMainFrame() && frame_node->IsCurrent() &&
+      state != GlicActuationState::kNone) {
     voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
   }
 }
@@ -93,11 +98,26 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeRemoved(
 void GlicActuationPriorityVoter::OnCurrentFrameChanged(
     const FrameNode* previous_frame_node,
     const FrameNode* current_frame_node) {
-  // An actuating glic instance should never have its current frame changed.
-  CHECK_EQ(PageLiveStateDecorator::Data::FromPageNode(
-               current_frame_node->GetPageNode())
-               ->GetGlicActuationState(),
-           GlicActuationState::kNone);
+  const FrameNode* frame_node =
+      current_frame_node ? current_frame_node : previous_frame_node;
+  CHECK(frame_node);
+  if (!frame_node->IsMainFrame()) {
+    return;
+  }
+  GlicActuationState state =
+      PageLiveStateDecorator::Data::FromPageNode(frame_node->GetPageNode())
+          ->GetGlicActuationState();
+  if (state == GlicActuationState::kNone) {
+    return;
+  }
+
+  // The current frame can change when an actor task navigates the actuated tab.
+  if (current_frame_node) {
+    UpdateFrameNodeVote(current_frame_node, GlicActuationState::kNone, state);
+  }
+  if (previous_frame_node) {
+    voting_channel_.InvalidateVote(GetExecutionContext(previous_frame_node));
+  }
 }
 
 void GlicActuationPriorityVoter::UpdateFrameNodeVote(

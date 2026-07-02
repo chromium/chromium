@@ -24,6 +24,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/glic/public/glic_actuation_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -32,6 +33,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -879,6 +881,12 @@ void ActorTask::DidContentsEnterActorControl(
                                        /*stay_hidden=*/false,
                                        /*stay_awake=*/true,
                                        /*is_activity=*/true);
+  // Notify the tracker that the tab is getting actuated on to influence the
+  // prioritization of the renderer process. This will prevent the priority of
+  // the tab from dropping to BestEffort when it's not visible. When it is
+  // visible, the tab's priority is already boosted.
+  glic::GlicActuationTracker::GetInstance()->NotifyActuatingChanged(
+      contents, glic::GlicActuationState::kActuatingOnBackgroundTab);
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   if (base::FeatureList::IsEnabled(features::kGlicActorInternalPopups)) {
     state->reenable_external_popups = contents->ForbidExternalPopupMenus();
@@ -911,6 +919,8 @@ void ActorTask::DidTabExitActorControl(tabs::TabHandle handle) {
 void ActorTask::DidContentsExitActorControl(
     ActorTask::ActorControlledTabState* state,
     content::WebContents* contents) {
+  glic::GlicActuationTracker::GetInstance()->NotifyActuatingChanged(
+      contents, glic::GlicActuationState::kNone);
   SetFocusState(contents, std::nullopt);
   state->SetContents(nullptr);
   // Triggers the ScopedClosureRunner's destructor (via std::optional's
