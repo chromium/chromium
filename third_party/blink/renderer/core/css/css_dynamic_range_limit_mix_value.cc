@@ -17,7 +17,7 @@ bool CSSDynamicRangeLimitMixValue::Equals(
     return false;
   }
   CHECK(limits_.size() == other.percentages_.size());
-  for (size_t i = 0; i < limits_.size(); ++i) {
+  for (wtf_size_t i = 0; i < limits_.size(); ++i) {
     if (!base::ValuesEquivalent(limits_[i], other.limits_[i]) ||
         !base::ValuesEquivalent(percentages_[i], other.percentages_[i])) {
       return false;
@@ -29,7 +29,7 @@ bool CSSDynamicRangeLimitMixValue::Equals(
 String CSSDynamicRangeLimitMixValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("dynamic-range-limit-mix(");
-  for (size_t i = 0; i < limits_.size(); ++i) {
+  for (wtf_size_t i = 0; i < limits_.size(); ++i) {
     result.Append(limits_[i]->CssText());
     result.Append(" ");
     result.Append(percentages_[i]->CssText());

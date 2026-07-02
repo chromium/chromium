@@ -406,7 +406,9 @@ bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
 
 unsigned CSSNumericLiteralValue::CustomHash() const {
   uint64_t val = base::bit_cast<uint64_t>(num_);
-  return HashInts(static_cast<unsigned>(GetType()), HashInts(val >> 32, val));
+  return HashInts(
+      static_cast<unsigned>(GetType()),
+      HashInts(static_cast<unsigned>(val >> 32), static_cast<unsigned>(val)));
 }
 
 CSSPrimitiveValue::UnitType CSSNumericLiteralValue::CanonicalUnit() const {

@@ -244,7 +244,7 @@ DynamicRangeLimit StyleBuilderConverter::ConvertDynamicRangeLimit(
     float standard_mix_sum = 0.f;
     float constrained_high_mix_sum = 0.f;
     float fraction_sum = 0.f;
-    for (size_t i = 0; i < mix_value->Limits().size(); ++i) {
+    for (wtf_size_t i = 0; i < mix_value->Limits().size(); ++i) {
       const DynamicRangeLimit limit =
           ConvertDynamicRangeLimit(state, *mix_value->Limits()[i]);
       const float fraction =

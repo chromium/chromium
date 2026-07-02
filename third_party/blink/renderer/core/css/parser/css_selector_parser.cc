@@ -1331,7 +1331,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     return {};  // Failure.
   }
 
-  std::vector<size_t> has_pseudo_index_in_compound;
+  Vector<wtf_size_t> has_pseudo_index_in_compound;
   // Consume all the simple selectors that are not tag names.
   while (ConsumeSimpleSelector(stream, result_flags)) {
     const CSSSelector& simple_selector = output_.back();
@@ -1344,7 +1344,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     output_.back().SetRelation(CSSSelector::kSubSelector);
   }
   if (found_host_in_compound_) {
-    for (size_t has_pseudo_index : has_pseudo_index_in_compound) {
+    for (wtf_size_t has_pseudo_index : has_pseudo_index_in_compound) {
       DCHECK_LT(has_pseudo_index, output_.size());
       CSSSelector* has_pseudo = &output_[has_pseudo_index];
       DCHECK_EQ(has_pseudo->GetPseudoType(), CSSSelector::kPseudoHas);

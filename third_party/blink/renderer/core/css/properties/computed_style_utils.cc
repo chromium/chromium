@@ -4289,7 +4289,7 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
       shorthand.properties()[2]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase));
 
-  const size_t count = width_values->length();
+  const wtf_size_t count = width_values->length();
 
   // If the longhands differ in length, return nullptr.
   if (count != style_values->length() || count != color_values->length()) {
@@ -4298,7 +4298,7 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
 
   CSSValueList* result = CSSValueList::CreateCommaSeparated();
 
-  for (size_t i = 0; i < count; ++i) {
+  for (wtf_size_t i = 0; i < count; ++i) {
     const auto* style_repeat_value =
         DynamicTo<cssvalue::CSSRepeatValue>(style_values->Item(i));
     const auto* color_repeat_value =
@@ -4343,7 +4343,7 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
         return nullptr;
       }
 
-      for (size_t j = 0; j < rules_count; ++j) {
+      for (wtf_size_t j = 0; j < rules_count; ++j) {
         CSSValueList* gap_rule =
             GetValueListForGapRule(width_repeat_value->Values().Item(j),
                                    style_repeat_value->Values().Item(j),

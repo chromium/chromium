@@ -726,7 +726,7 @@ SelectorQuery::SelectorQuery(CSSSelectorList* selector_list)
     if (selector->MatchesPseudoElement()) {
       continue;
     }
-    selector_start_offsets_.push_back(selector - base);
+    selector_start_offsets_.push_back(CheckedDistance(base, selector));
   }
 
   if (selector_start_offsets_.size() == 1) {

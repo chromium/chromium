@@ -173,7 +173,7 @@ double FilterOperationResolver::ResolveNumericArgumentForFunction(
 // the old style if the URL and resource match.
 static Filter* GetFilterFromOldStyle(const ComputedStyle* old_style,
                                      const ReferenceFilterOperation& new_ref,
-                                     size_t index) {
+                                     wtf_size_t index) {
   if (!old_style || !old_style->HasFilter()) {
     return nullptr;
   }

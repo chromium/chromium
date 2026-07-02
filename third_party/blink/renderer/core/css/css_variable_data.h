@@ -89,8 +89,9 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
     }
   }
 
-  uint64_t Hash() const {
-    return StringHasher::HashMemory(OriginalText().RawByteSpan());
+  uint32_t Hash() const {
+    return static_cast<uint32_t>(
+        StringHasher::HashMemory(OriginalText().RawByteSpan()));
   }
 
   String Serialize() const;

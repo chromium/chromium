@@ -22,6 +22,7 @@
  */
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -41,8 +42,7 @@
 namespace blink {
 
 static AdditionalBytes
-AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
-    unsigned count) {
+AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(size_t count) {
   return AdditionalBytes(sizeof(CSSPropertyValue) * count);
 }
 
@@ -111,7 +111,7 @@ ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     CSSParserMode css_parser_mode,
     bool contains_query_hand)
     : CSSPropertyValueSet(css_parser_mode,
-                          properties.size(),
+                          base::checked_cast<unsigned>(properties.size()),
                           contains_query_hand) {
   const unsigned array_size = bits_.get<ArraySizeField>();
   if (array_size > 0) {
@@ -680,7 +680,8 @@ MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::AddParsedProperties(
     base::span<CSSPropertyValue> properties) {
   SetResult changed = kUnchanged;
-  property_vector_.reserve(property_vector_.size() + properties.size());
+  property_vector_.reserve(base::checked_cast<wtf_size_t>(
+      property_vector_.size() + properties.size()));
   for (const CSSPropertyValue& property : properties) {
     changed = std::max(changed, SetLonghandProperty(property));
   }
