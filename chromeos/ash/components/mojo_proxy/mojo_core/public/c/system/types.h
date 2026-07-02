@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/macros.h"
 
 namespace mojo_legacy {
@@ -195,7 +196,9 @@ struct MOJO_LEGACY_ALIGNAS(8) MojoInitializeOptions {
   // NOTE: These fields are only observed during the first successful call to
   // |MojoInitialize()| within a process.
   int32_t argc;
-  MOJO_LEGACY_POINTER_FIELD(const char* const*, argv);
+  // RAW_PTR_EXCLUSION: this struct is part of the (frozen) Mojo C system
+  // API, whose layout must remain C-compatible and stable.
+  RAW_PTR_EXCLUSION MOJO_LEGACY_POINTER_FIELD(const char* const*, argv);
 };
 MOJO_LEGACY_STATIC_ASSERT(sizeof(struct MojoInitializeOptions) == 32,
                           "MojoInitializeOptions has wrong size");

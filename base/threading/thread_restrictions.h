@@ -376,6 +376,9 @@ class MojoTrap;
 }
 }  // namespace core
 }  // namespace mojo
+namespace mojo_legacy::core {
+class ScopedIPCSupport;
+}  // namespace mojo_legacy
 namespace net {
 class GSSAPISharedLibrary;
 class MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
@@ -801,6 +804,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class media::CodecWorkerImpl;
   friend class media::MojoVideoEncodeAccelerator;
   friend class mojo::core::ScopedIPCSupport;
+  friend class mojo_legacy::core::ScopedIPCSupport;
   friend class net::MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
   friend class rlz_lib::FinancialPing;
   friend class shell_integration_linux::

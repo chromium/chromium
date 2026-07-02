@@ -22,12 +22,12 @@
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/trap.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/types.h"
 
+namespace mojo_legacy {
+
 struct MojoDuplicateBufferHandleOptions;
 struct MojoReadDataOptions;
 struct MojoSharedBufferInfo;
 struct MojoWriteDataOptions;
-
-namespace mojo_legacy {
 
 class PlatformHandle;
 
