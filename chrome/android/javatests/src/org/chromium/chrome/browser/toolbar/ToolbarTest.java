@@ -653,10 +653,6 @@ public class ToolbarTest {
     @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
     @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHomeButton_loadsNtpOnSameTab() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    HomepageManager.getInstance().setPrefHomepageEnabled(true);
-                });
         WebPageStation webPage = mPage;
         webPage.homeButtonElement.checkPresent();
 

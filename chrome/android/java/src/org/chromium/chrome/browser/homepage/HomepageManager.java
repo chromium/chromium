@@ -14,7 +14,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -117,8 +116,7 @@ public class HomepageManager
 
     /** Returns whether the home button removal everywhere is enabled. */
     private static boolean isHomeButtonRemovalEverywhereEnabled() {
-        return !isDesktopExceptionEnabled()
-                && ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue()
+        return ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue()
                 && PartnerBrowserCustomizations.isCountryImpacted(
                         ChromeFeatureList.sHomeButtonRemovalApplyToAllCountries.getValue())
                 && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
@@ -145,13 +143,6 @@ public class HomepageManager
                 && PartnerBrowserCustomizations.isCountryImpacted(
                         ChromeFeatureList.sHomeButtonRemovalApplyToAllCountries.getValue())
                 && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
-    }
-
-    /** Returns whether desktop should be in exception. */
-    private static boolean isDesktopExceptionEnabled() {
-        return DeviceInfo.isDesktop()
-                && ChromeFeatureList.sHomeButtonRemovalSetDefaultToFalseOnHomepageOnDesktop
-                        .getValue();
     }
 
     /**
@@ -345,11 +336,8 @@ public class HomepageManager
      *
      * @see #isHomepageEnabled
      */
-    @VisibleForTesting
-    boolean getPrefHomepageEnabled() {
-        boolean defaultEnabled = !isDesktopExceptionEnabled();
-        return mSharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.HOMEPAGE_ENABLED, defaultEnabled);
+    private boolean getPrefHomepageEnabled() {
+        return mSharedPreferencesManager.readBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
     }
 
     /** Sets the user preference for whether the homepage is enabled. */
