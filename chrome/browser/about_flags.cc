@@ -4329,9 +4329,28 @@ const FeatureEntry::FeatureVariation kCrossDeviceSigninFromDesktopVariations[] =
          "(https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1)",
          kCrossDeviceSigninFromDesktopDefaultUrl, nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kDeviceSignalsBackfillDisclaimer_ClearPermissionOnStartup[] = {
+        {"clear_device_signals_permission_on_startup", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kDeviceSignalsBackfillDisclaimerVariations[] = {
+        {"with clearing permission on startup",
+         kDeviceSignalsBackfillDisclaimer_ClearPermissionOnStartup, nullptr},
+};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kAndroidDeviceSignalsDisclaimer_ClearPermissionOnStartup[] = {
+        {"clear_device_signals_permission_on_startup", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kAndroidDeviceSignalsDisclaimerVariations[] = {
+        {"with clearing permission on startup",
+         kAndroidDeviceSignalsDisclaimer_ClearPermissionOnStartup, nullptr}};
+
 const FeatureEntry::FeatureParam kDefaultBrowserPromoEntryPointSettingsOnly[] =
     {{"show_app_menu_item", "false"}};
 const FeatureEntry::FeatureVariation
@@ -6360,7 +6379,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-device-signals-disclaimer",
      flag_descriptions::kAndroidDeviceSignalsDisclaimerName,
      flag_descriptions::kAndroidDeviceSignalsDisclaimerDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidDeviceSignalsDisclaimer)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidDeviceSignalsDisclaimer,
+         kAndroidDeviceSignalsDisclaimerVariations,
+         "AndroidDeviceSignalsDisclaimer")},
 
     {"android-media-picker", flag_descriptions::kAndroidMediaPickerName,
      flag_descriptions::kAndroidMediaPickerDescription, kOsAndroid,
@@ -13024,7 +13046,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(safe_browsing::kBundledSecuritySettingsAskBeforeHttp)},
 
-
     {"autofill-enable-travel-category-and-merchant-benefits-from-curinos",
      flag_descriptions::
          kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosName,
@@ -13296,7 +13317,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeviceSignalsBackfillDisclaimerName,
      flag_descriptions::kDeviceSignalsBackfillDisclaimerDescription,
      kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(policy::features::kDeviceSignalsBackfillDisclaimer)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         policy::features::kDeviceSignalsBackfillDisclaimer,
+         kDeviceSignalsBackfillDisclaimerVariations,
+         "DeviceSignalsBackfillDisclaimer")},
 #endif
 #if BUILDFLAG(IS_ANDROID)
     {"enable-android-enterprise-screenshot-protection",
