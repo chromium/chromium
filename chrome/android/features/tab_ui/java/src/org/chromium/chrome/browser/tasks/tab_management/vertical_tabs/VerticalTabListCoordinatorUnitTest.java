@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -245,6 +246,27 @@ public class VerticalTabListCoordinatorUnitTest {
                 /* metaState= */ 0);
     }
 
+    private TabListRecyclerView setupMockRecyclerViewWithTab(int tabId) {
+        // Mock the backend model.
+        Tab mockTab = prepareMockTab(tabId);
+        when(mTabModel.getTabById(tabId)).thenReturn(mockTab);
+        when(mTabModel.getRelatedTabList(tabId)).thenReturn(Collections.singletonList(mockTab));
+
+        createCoordinator();
+        ViewGroup container = (ViewGroup) mCoordinator.getView();
+        TabListRecyclerView realRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+
+        // Populate the real UI list dataset with a dummy tab item data properties bundle.
+        SimpleRecyclerViewAdapter adapter =
+                (SimpleRecyclerViewAdapter) realRecyclerView.getAdapter();
+        PropertyModel tabPropertyModel = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
+        tabPropertyModel.set(TabProperties.TAB_ID, tabId);
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, tabPropertyModel));
+
+        // Wrap the real inflated Recycler View in a spy.
+        return spy(realRecyclerView);
+    }
+
     @Test
     @SmallTest
     public void testConstructor() {
@@ -386,7 +408,45 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testTabGroupHeaderInteraction_LaunchesGroupHeaderContextMenu() {
+    public void testTabItemInteraction_WithTouchPointLaunchesMenuAtPreciseLocation() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(456);
+
+        View mockChildView = mock(View.class);
+        doReturn(mockChildView).when(recyclerViewSpy).findChildViewUnder(150f, 250f);
+        doReturn(0).when(recyclerViewSpy).getChildAdapterPosition(mockChildView);
+
+        // Inject our mock coordinator so we can intercept the rect capture bounds.
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+
+        // Simulate setting the last touch coordinates to a non-zero point.
+        mCoordinator.getLastTouchPointForTesting().set(150, 250);
+
+        // Trigger the context menu interaction.
+        mCoordinator.handleContextMenuInteractionForTesting(
+                mActivity, recyclerViewSpy, /* localX= */ 150f, /* localY= */ 250f);
+
+        // Verify the RectProvider bounds match our 1x1 tight pixel calculation.
+        ArgumentCaptor<RectProvider> rectCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        ArgumentCaptor<AnchorInfo> anchorInfoCaptor = ArgumentCaptor.forClass(AnchorInfo.class);
+
+        verify(mTabContextMenuCoordinator)
+                .showMenu(rectCaptor.capture(), anchorInfoCaptor.capture());
+
+        Rect descriptiveBoundRect = rectCaptor.getValue().getRect();
+        assertEquals("Width must be exactly 1 pixel.", 1, descriptiveBoundRect.width());
+        assertEquals("Height must be exactly 1 pixel.", 1, descriptiveBoundRect.height());
+        assertNotNull(
+                "Anchor info parameters must be provided to showMenu.",
+                anchorInfoCaptor.getValue());
+
+        if (mCoordinator.getTabContextMenuCoordinatorForTesting() != null) {
+            mCoordinator.getTabContextMenuCoordinatorForTesting().dismiss();
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testTabGroupHeaderInteraction_LaunchesGroupHeaderContextMenu_Fallback() {
         // Mock the backend model.
         Tab mockTab = prepareMockTab(123);
         Token tabGroupId = new Token(1L, 2L);
@@ -471,27 +531,9 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testTabItemInteraction_LaunchesTabContextMenu() {
-        // Mock the backend model.
-        Tab mockTab = prepareMockTab(456);
-        when(mTabModel.getTabById(456)).thenReturn(mockTab);
-        when(mTabModel.getRelatedTabList(456)).thenReturn(Collections.singletonList(mockTab));
-
-        createCoordinator();
-        ViewGroup container = (ViewGroup) mCoordinator.getView();
-        TabListRecyclerView realRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
-        assertNotNull(realRecyclerView);
-
-        // Wrap the real inflated Recycler View in a spy.
-        TabListRecyclerView recyclerViewSpy = spy(realRecyclerView);
+    public void testTabItemInteraction_LaunchesTabContextMenu_Fallback() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(456);
         assertNull(mCoordinator.getTabContextMenuCoordinatorForTesting());
-
-        // Populate the real UI list dataset with a dummy tab item data properties bundle.
-        SimpleRecyclerViewAdapter adapter =
-                (SimpleRecyclerViewAdapter) realRecyclerView.getAdapter();
-        PropertyModel tabPropertyModel = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
-        tabPropertyModel.set(TabProperties.TAB_ID, 456);
-        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, tabPropertyModel));
 
         // Create a mock View layout box (child of the recycler view) that renders the tab card on
         // the screen.
