@@ -136,6 +136,7 @@ public class AppModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/530649771
     public void testDismiss_BackPressed() throws Exception {
         PropertyModel dialog1 = createDialog(sActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(sActivity, mManager, "2", null);
