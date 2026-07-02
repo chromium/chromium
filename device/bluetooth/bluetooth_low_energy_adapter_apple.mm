@@ -347,7 +347,7 @@ CBPeripheralManager* BluetoothLowEnergyAdapterApple::GetPeripheralManager() {
 }
 
 void BluetoothLowEnergyAdapterApple::SetLowEnergyDeviceWatcherForTesting(
-    scoped_refptr<BluetoothLowEnergyDeviceWatcherMac>
+    std::unique_ptr<BluetoothLowEnergyDeviceWatcherMac>
         bluetooth_low_energy_device_watcher) {
   bluetooth_low_energy_device_watcher_ =
       std::move(bluetooth_low_energy_device_watcher);

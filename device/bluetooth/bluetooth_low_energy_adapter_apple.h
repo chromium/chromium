@@ -178,7 +178,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdapterApple
 
   // Allow the mocking out of BluetoothLowEnergyDeviceWatcher for testing.
   void SetLowEnergyDeviceWatcherForTesting(
-      scoped_refptr<BluetoothLowEnergyDeviceWatcherMac> watcher);
+      std::unique_ptr<BluetoothLowEnergyDeviceWatcherMac> watcher);
 
   // Returns the list of devices that are connected by other applications than
   // Chromium, based on a service UUID. If no uuid is given, generic access
@@ -216,7 +216,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdapterApple
 
   // Watches system file /Library/Preferences/com.apple.Bluetooth.plist to
   // obtain information about system paired bluetooth devices.
-  scoped_refptr<BluetoothLowEnergyDeviceWatcherMac>
+  std::unique_ptr<BluetoothLowEnergyDeviceWatcherMac>
       bluetooth_low_energy_device_watcher_;
 
   // Map of UUID formatted device identifiers of paired Bluetooth devices and

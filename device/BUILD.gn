@@ -66,6 +66,7 @@ test("device_unittests") {
     sources += [
       "bluetooth/bluetooth_low_energy_adapter_apple_unittest.mm",
       "bluetooth/bluetooth_low_energy_advertisement_manager_mac_unittest.mm",
+      "bluetooth/bluetooth_low_energy_device_watcher_mac_unittest.mm",
       "bluetooth/test/bluetooth_test_mac.h",
       "bluetooth/test/bluetooth_test_mac.mm",
       "bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h",

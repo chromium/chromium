@@ -4,10 +4,13 @@
 
 #include "device/bluetooth/bluetooth_low_energy_device_watcher_mac.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -20,15 +23,20 @@ namespace {
 constexpr char kBluetoothPlistFilePath[] =
     "/Library/Preferences/com.apple.Bluetooth.plist";
 
+const base::FilePath& BluetoothPlistFilePath() {
+  static const base::FilePath file_path(kBluetoothPlistFilePath);
+  return file_path;
+}
+
 }  // namespace
 
 // static
-scoped_refptr<BluetoothLowEnergyDeviceWatcherMac>
+std::unique_ptr<BluetoothLowEnergyDeviceWatcherMac>
 BluetoothLowEnergyDeviceWatcherMac::CreateAndStartWatching(
     scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
     LowEnergyDeviceListUpdatedCallback
         low_energy_device_list_updated_callback) {
-  auto watcher = base::MakeRefCounted<BluetoothLowEnergyDeviceWatcherMac>(
+  auto watcher = std::make_unique<BluetoothLowEnergyDeviceWatcherMac>(
       std::move(ui_thread_task_runner),
       std::move(low_energy_device_list_updated_callback));
   watcher->Init();
@@ -40,23 +48,22 @@ BluetoothLowEnergyDeviceWatcherMac::BluetoothLowEnergyDeviceWatcherMac(
     LowEnergyDeviceListUpdatedCallback low_energy_device_list_updated_callback)
     : ui_thread_task_runner_(std::move(ui_thread_task_runner)),
       low_energy_device_list_updated_callback_(
-          std::move(low_energy_device_list_updated_callback)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+          std::move(low_energy_device_list_updated_callback)) {}
 
 BluetoothLowEnergyDeviceWatcherMac::~BluetoothLowEnergyDeviceWatcherMac() {
-  file_thread_task_runner_->DeleteSoon(FROM_HERE,
-                                       property_list_watcher_.release());
+  if (destroy_callback_for_testing_) {
+    std::move(destroy_callback_for_testing_).Run();
+  }
 }
 
-void BluetoothLowEnergyDeviceWatcherMac::OnPropertyListFileChangedOnFileThread(
+// static
+std::optional<std::map<std::string, std::string>>
+BluetoothLowEnergyDeviceWatcherMac::OnPropertyListFileChangedOnFileThread(
     const base::FilePath& path,
     bool error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (error) {
     LOG(WARNING) << "Failed to read com.apple.Bluetooth.plist.";
-    return;
+    return std::nullopt;
   }
 
   // Bluetooth property list file is expected to have the following format:
@@ -83,47 +90,74 @@ void BluetoothLowEnergyDeviceWatcherMac::OnPropertyListFileChangedOnFileThread(
 
   // |bluetooth_info_dictionary| is nil if there was an error reading the file
   // or if the content of the read file cannot be represented by a dictionary.
-  if (!bluetooth_info_dictionary)
-    return;
+  if (!bluetooth_info_dictionary) {
+    return std::nullopt;
+  }
 
-  auto parsed_data =
-      ParseBluetoothDevicePropertyListData(bluetooth_info_dictionary);
-  ui_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(low_energy_device_list_updated_callback_,
-                                std::move(parsed_data)));
+  return ParseBluetoothDevicePropertyListData(bluetooth_info_dictionary);
+}
+
+// static
+void BluetoothLowEnergyDeviceWatcherMac::
+    OnPropertyListFileChangedAndRunCallback(
+        base::WeakPtr<BluetoothLowEnergyDeviceWatcherMac> weak_watcher,
+        scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
+        const base::FilePath& path,
+        bool error) {
+  auto parsed_data = OnPropertyListFileChangedOnFileThread(path, error);
+  ui_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&BluetoothLowEnergyDeviceWatcherMac::
+                                    RunLowEnergyDeviceListUpdatedCallback,
+                                weak_watcher, parsed_data));
 }
 
 void BluetoothLowEnergyDeviceWatcherMac::Init() {
-  file_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BluetoothLowEnergyDeviceWatcherMac::
-                                    AddBluetoothPropertyListFileWatcher,
-                                this));
+  // Call |base::FilePathWatcher::Watch()| on |file_thread_task_runner_| to
+  // watch for changes to the bluetooth property list file.
+  property_list_watcher_
+      .AsyncCall(base::IgnoreResult(&base::FilePathWatcher::Watch))
+      .WithArgs(BluetoothPlistFilePath(),
+                base::FilePathWatcher::Type::kNonRecursive,
+                base::BindRepeating(&BluetoothLowEnergyDeviceWatcherMac::
+                                        OnPropertyListFileChangedAndRunCallback,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    ui_thread_task_runner_));
 }
 
 void BluetoothLowEnergyDeviceWatcherMac::ReadBluetoothPropertyListFile() {
-  file_thread_task_runner_->PostTask(
+  // OnPropertyListFileChangedOnFileThread() should be called on
+  // |file_thread_task_runner_|, and the result should be posted back to current
+  // task runner to invoke |low_energy_device_list_updated_callback_|.
+  file_thread_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&BluetoothLowEnergyDeviceWatcherMac::
                          OnPropertyListFileChangedOnFileThread,
-                     this, BluetoothPlistFilePath(), false /* error */));
+                     BluetoothPlistFilePath(), false /* error */),
+      base::BindOnce(&BluetoothLowEnergyDeviceWatcherMac::
+                         RunLowEnergyDeviceListUpdatedCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
+// static
 std::map<std::string, std::string>
 BluetoothLowEnergyDeviceWatcherMac::ParseBluetoothDevicePropertyListData(
     NSDictionary* data) {
   std::map<std::string, std::string> updated_low_energy_devices_info;
   NSDictionary* low_energy_devices_info = data[@"CoreBluetoothCache"];
-  if (!low_energy_devices_info)
+  if (!low_energy_devices_info) {
     return updated_low_energy_devices_info;
+  }
 
   for (NSString* identifier in low_energy_devices_info) {
     NSDictionary* device_info = low_energy_devices_info[identifier];
-    if (!device_info)
+    if (!device_info) {
       continue;
+    }
 
     NSString* raw_device_address = device_info[@"DeviceAddress"];
-    if (!raw_device_address)
+    if (!raw_device_address) {
       continue;
+    }
 
     NSString* formatted_device_address =
         [raw_device_address stringByReplacingOccurrencesOfString:@"-"
@@ -135,20 +169,17 @@ BluetoothLowEnergyDeviceWatcherMac::ParseBluetoothDevicePropertyListData(
   return updated_low_energy_devices_info;
 }
 
-// static
-const base::FilePath&
-BluetoothLowEnergyDeviceWatcherMac::BluetoothPlistFilePath() {
-  static const base::FilePath file_path(kBluetoothPlistFilePath);
-  return file_path;
-}
-
-void BluetoothLowEnergyDeviceWatcherMac::AddBluetoothPropertyListFileWatcher() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  property_list_watcher_->Watch(
-      BluetoothPlistFilePath(), base::FilePathWatcher::Type::kNonRecursive,
-      base::BindRepeating(&BluetoothLowEnergyDeviceWatcherMac::
-                              OnPropertyListFileChangedOnFileThread,
-                          this));
+void BluetoothLowEnergyDeviceWatcherMac::RunLowEnergyDeviceListUpdatedCallback(
+    const std::optional<std::map<std::string, std::string>>&
+        low_energy_devices_info) {
+  CHECK(ui_thread_task_runner_->RunsTasksInCurrentSequence());
+  // If |low_energy_devices_info| is null, it indicates that the property list
+  // file has not been read successfully.
+  // |low_energy_device_list_updated_callback_| will not be called.
+  if (low_energy_devices_info.has_value() &&
+      low_energy_device_list_updated_callback_) {
+    low_energy_device_list_updated_callback_.Run(*low_energy_devices_info);
+  }
 }
 
 }  // namespace device

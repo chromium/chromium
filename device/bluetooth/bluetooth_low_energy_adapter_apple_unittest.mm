@@ -82,16 +82,18 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
         : BluetoothLowEnergyDeviceWatcherMac(ui_thread_task_runner, callback),
           weak_ptr_factory_(this) {}
 
+    ~FakeBluetoothLowEnergyDeviceWatcherMac() override = default;
+
     void SimulatePropertyListFileChanged(
         const base::FilePath& path,
         const std::string& changed_file_content) {
       ASSERT_TRUE(base::WriteFile(path, changed_file_content));
-      OnPropertyListFileChangedOnFileThread(path, false /* error */);
+      OnPropertyListFileChangedAndRunCallback(weak_ptr_factory_.GetWeakPtr(),
+                                              ui_thread_task_runner(), path,
+                                              false /* error */);
     }
 
    private:
-    ~FakeBluetoothLowEnergyDeviceWatcherMac() override = default;
-
     void Init() override { ReadBluetoothPropertyListFile(); }
 
     void ReadBluetoothPropertyListFile() override {
@@ -113,7 +115,7 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
         error_callback_count_(0) {
     adapter_low_energy_->InitForTest(ui_task_runner_);
     fake_low_energy_device_watcher_ =
-        base::MakeRefCounted<FakeBluetoothLowEnergyDeviceWatcherMac>(
+        std::make_unique<FakeBluetoothLowEnergyDeviceWatcherMac>(
             ui_task_runner_,
             base::BindRepeating(
                 &BluetoothLowEnergyAdapterApple::UpdateKnownLowEnergyDevices,
@@ -198,9 +200,13 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
     return adapter_low_energy_->NumDiscoverySessions();
   }
 
-  void SetFakeLowEnergyDeviceWatcher() {
+  [[nodiscard]]
+  FakeBluetoothLowEnergyDeviceWatcherMac* SetFakeLowEnergyDeviceWatcher() {
+    FakeBluetoothLowEnergyDeviceWatcherMac* fake_low_energy_device_watcher =
+        fake_low_energy_device_watcher_.get();
     adapter_low_energy_->SetLowEnergyDeviceWatcherForTesting(
-        fake_low_energy_device_watcher_);
+        std::move(fake_low_energy_device_watcher_));
+    return fake_low_energy_device_watcher;
   }
 
   // Generic callbacks.
@@ -215,7 +221,7 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> ui_task_runner_;
   scoped_refptr<BluetoothAdapter> adapter_;
   raw_ptr<BluetoothLowEnergyAdapterApple> adapter_low_energy_;
-  scoped_refptr<FakeBluetoothLowEnergyDeviceWatcherMac>
+  std::unique_ptr<FakeBluetoothLowEnergyDeviceWatcherMac>
       fake_low_energy_device_watcher_;
   TestBluetoothAdapterObserver observer_;
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> active_sessions_;
@@ -376,7 +382,10 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest, LowEnergyDeviceUpdatedNewDevice) {
 }
 
 TEST_F(BluetoothLowEnergyAdapterAppleTest, GetSystemPairedLowEnergyDevice) {
-  SetFakeLowEnergyDeviceWatcher();
+  FakeBluetoothLowEnergyDeviceWatcherMac* fake_low_energy_device_watcher =
+      SetFakeLowEnergyDeviceWatcher();
+  ASSERT_TRUE(fake_low_energy_device_watcher);
+
   ui_task_runner_->RunUntilIdle();
   EXPECT_TRUE(
       adapter_low_energy_->IsBluetoothLowEnergyDeviceSystemPaired(kTestNSUUID));
@@ -442,12 +451,14 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest, GetNewlyPairedLowEnergyDevice) {
   // BluetoothLowEnergyDeviceWatcherMac if the device has been already known to
   // the system(i.e. the changed device is in BluetoothAdapter::devices_). As
   // so, add mock devices prior to setting BluetoothLowEnergyDeviceWatcherMac.
-  SetFakeLowEnergyDeviceWatcher();
+  FakeBluetoothLowEnergyDeviceWatcherMac* fake_low_energy_device_watcher =
+      SetFakeLowEnergyDeviceWatcher();
+  ASSERT_TRUE(fake_low_energy_device_watcher);
 
   EXPECT_EQ(1, observer_.device_changed_count());
   observer_.Reset();
 
-  fake_low_energy_device_watcher_->SimulatePropertyListFileChanged(
+  fake_low_energy_device_watcher->SimulatePropertyListFileChanged(
       test_property_list_file_path_, kPropertyListFileContentWithAddedDevice);
   ui_task_runner_->RunUntilIdle();
   EXPECT_EQ(1, observer_.device_changed_count());
@@ -480,11 +491,14 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest, NotifyObserverWhenDeviceIsUnpaired) {
   LowEnergyDeviceUpdated(mock_peripheral, AdvertisementData(), kTestRssi);
   observer_.Reset();
 
-  SetFakeLowEnergyDeviceWatcher();
+  FakeBluetoothLowEnergyDeviceWatcherMac* fake_low_energy_device_watcher =
+      SetFakeLowEnergyDeviceWatcher();
+  ASSERT_TRUE(fake_low_energy_device_watcher);
+
   EXPECT_EQ(1, observer_.device_changed_count());
   observer_.Reset();
 
-  fake_low_energy_device_watcher_->SimulatePropertyListFileChanged(
+  fake_low_energy_device_watcher->SimulatePropertyListFileChanged(
       test_property_list_file_path_, kPropertyListFileContentWithRemovedDevice);
   ui_task_runner_->RunUntilIdle();
   EXPECT_EQ(1, observer_.device_changed_count());
