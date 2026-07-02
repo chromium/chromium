@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -124,7 +125,7 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
       MakeNoticeWithFeature(kNotice1, kTestFeature1);
   std::unique_ptr<Notice> notice_2_ =
       MakeNoticeWithFeature(kNotice2, kTestFeature2);
-  std::vector<Notice*> notices_{notice_1_.get(), notice_2_.get()};
+  std::vector<raw_ptr<Notice>> notices_{notice_1_.get(), notice_2_.get()};
 };
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {

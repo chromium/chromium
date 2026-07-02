@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 
@@ -53,8 +54,12 @@ class Notice {
   bool was_fulfilled() const { return was_fulfilled_; }
 
   // Accessors.
-  base::span<NoticeApi*> target_apis() { return target_apis_; }
-  base::span<NoticeApi*> pre_req_apis() { return pre_req_apis_; }
+  base::span<raw_ptr<NoticeApi, DanglingUntriaged>> target_apis() {
+    return target_apis_;
+  }
+  base::span<raw_ptr<NoticeApi, DanglingUntriaged>> pre_req_apis() {
+    return pre_req_apis_;
+  }
   NoticeId notice_id() const { return notice_id_; }
   const base::Feature* feature() const { return feature_; }
 
@@ -104,8 +109,8 @@ class Notice {
 
   NoticeId notice_id_;
   bool was_fulfilled_ = false;
-  std::vector<NoticeApi*> target_apis_;
-  std::vector<NoticeApi*> pre_req_apis_;
+  std::vector<raw_ptr<NoticeApi, DanglingUntriaged>> target_apis_;
+  std::vector<raw_ptr<NoticeApi, DanglingUntriaged>> pre_req_apis_;
   raw_ptr<const base::Feature> feature_;
   std::pair<NoticeViewGroup, int> view_group_;
 };
@@ -134,7 +139,9 @@ class NoticeApi {
   virtual ~NoticeApi();
 
   // Accessors.
-  base::span<Notice*> linked_notices() { return linked_notices_; }
+  base::span<raw_ptr<Notice, DanglingUntriaged>> linked_notices() {
+    return linked_notices_;
+  }
   const base::Feature* feature() { return feature_; }
 
   // Computes the eligibility level
@@ -167,7 +174,7 @@ class NoticeApi {
   // same API are introduced.
 
  private:
-  std::vector<Notice*> linked_notices_;
+  std::vector<raw_ptr<Notice, DanglingUntriaged>> linked_notices_;
   base::RepeatingCallback<EligibilityLevel()> eligibility_callback_;
   base::OnceCallback<void(bool)> result_callback_;
   raw_ptr<const base::Feature> feature_;
