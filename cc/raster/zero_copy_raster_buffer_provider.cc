@@ -47,7 +47,7 @@ ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
       in_use_resource.InstallSoftwareBacking(
           sii, "ZeroCopyRasterBufferProviderSoftware");
       in_use_resource.backing()->mailbox_sync_token =
-          sii->GenUnverifiedSyncToken();
+          in_use_resource.backing()->shared_image()->creation_sync_token();
     } else {
       auto backing = std::make_unique<ResourcePool::Backing>(
           in_use_resource.size(), in_use_resource.format(),

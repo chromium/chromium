@@ -308,7 +308,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     backing_->CreateSharedImage(sii, flags, "GpuRasterTile");
     mailbox_needs_clear = true;
     ri_access = backing_->shared_image()->BeginRasterAccess(
-        ri, sii->GenUnverifiedSyncToken(),
+        ri, backing_->shared_image()->creation_sync_token(),
         /*readonly=*/false);
   } else {
     ri_access = backing_->shared_image()->BeginRasterAccess(

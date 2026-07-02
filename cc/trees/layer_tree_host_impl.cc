@@ -5730,8 +5730,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // Mailbox+SyncToken as well. The OnUIResourceReleased() method will be called
   // once the resource is deleted and the display compositor is no longer using
   // it, to free the memory allocated in this method above.
-  gpu::SyncToken sync_token = layer_tree_frame_sink_->shared_image_interface()
-                                  ->GenUnverifiedSyncToken();
+  gpu::SyncToken sync_token = client_shared_image->creation_sync_token();
 
   viz::TransferableResource transferable = viz::TransferableResource::Make(
       client_shared_image, viz::TransferableResource::ResourceSource::kUI,
