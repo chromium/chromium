@@ -1,0 +1,360 @@
+diff --git a/chrome/browser/ui/browser_window/test/fake_browser_window_eval.cc b/chrome/browser/ui/browser_window/test/fake_browser_window_eval.cc
+new file mode 100644
+index 0000000000000..afa110ec34bb1
+--- /dev/null
++++ b/chrome/browser/ui/browser_window/test/fake_browser_window_eval.cc
+@@ -0,0 +1,22 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/ui/browser_window/test/fake_browser_window_eval.h"
++
++#include <utility>
++
++namespace fake_bwf_eval {
++
++FakeBrowserWindow::FakeBrowserWindow() = default;
++FakeBrowserWindow::~FakeBrowserWindow() = default;
++
++void FakeBrowserWindow::ShowQRCodeBubble() {
++  last_message_ = "QR bubble shown by BrowserWindow";
++}
++
++void FakeBrowserWindow::SetLastMessageForTesting(std::string message) {
++  last_message_ = std::move(message);
++}
++
++}  // namespace fake_bwf_eval
+diff --git a/chrome/browser/ui/browser_window/test/fake_browser_window_eval.h b/chrome/browser/ui/browser_window/test/fake_browser_window_eval.h
+new file mode 100644
+index 0000000000000..92266b25f671f
+--- /dev/null
++++ b/chrome/browser/ui/browser_window/test/fake_browser_window_eval.h
+@@ -0,0 +1,28 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_FAKE_BROWSER_WINDOW_EVAL_H_
++#define CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_FAKE_BROWSER_WINDOW_EVAL_H_
++
++#include <string>
++
++namespace fake_bwf_eval {
++
++class FakeBrowserWindow {
++ public:
++  FakeBrowserWindow();
++  ~FakeBrowserWindow();
++
++  void ShowQRCodeBubble();
++
++  void SetLastMessageForTesting(std::string message);
++  const std::string& last_message_for_testing() const { return last_message_; }
++
++ private:
++  std::string last_message_;
++};
++
++}  // namespace fake_bwf_eval
++
++#endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_FAKE_BROWSER_WINDOW_EVAL_H_
+diff --git a/chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.cc b/chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.cc
+new file mode 100644
+index 0000000000000..7227666ad2567
+--- /dev/null
++++ b/chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.cc
+@@ -0,0 +1,121 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.h"
++
++#include "base/no_destructor.h"
++
++namespace fake_bwf_eval {
++
++FakeBrowserWindowInterface::FakeBrowserWindowInterface(Type type)
++    : type_(type) {}
++FakeBrowserWindowInterface::~FakeBrowserWindowInterface() = default;
++
++bool FakeBrowserWindowInterface::is_type_normal() const {
++  return type_ == Type::kNormal;
++}
++
++DEFINE_USER_DATA(FakeBookmarkController);
++FakeBookmarkController::FakeBookmarkController(
++    FakeBrowserWindowInterface* browser)
++    : scoped_user_data_(browser->GetUnownedUserDataHost(), *this) {}
++FakeBookmarkController::~FakeBookmarkController() = default;
++// static
++FakeBookmarkController* FakeBookmarkController::From(
++    FakeBrowserWindowInterface* browser) {
++  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
++}
++
++DEFINE_USER_DATA(FakeEmbedderFeatures);
++FakeEmbedderFeatures::FakeEmbedderFeatures(FakeBrowserWindowInterface* browser)
++    : scoped_user_data_(browser->GetUnownedUserDataHost(), *this) {}
++FakeEmbedderFeatures::~FakeEmbedderFeatures() = default;
++// static
++FakeEmbedderFeatures* FakeEmbedderFeatures::From(
++    FakeBrowserWindowInterface* browser) {
++  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
++}
++
++DEFINE_USER_DATA(FakeProfileMenuController);
++FakeProfileMenuController::FakeProfileMenuController(
++    FakeBrowserWindowInterface* browser)
++    : scoped_user_data_(browser->GetUnownedUserDataHost(), *this) {}
++FakeProfileMenuController::~FakeProfileMenuController() = default;
++// static
++FakeProfileMenuController* FakeProfileMenuController::From(
++    FakeBrowserWindowInterface* browser) {
++  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
++}
++
++DEFINE_USER_DATA(FakeSendTabController);
++FakeSendTabController::FakeSendTabController(
++    FakeBrowserWindowInterface* browser)
++    : scoped_user_data_(browser->GetUnownedUserDataHost(), *this) {}
++FakeSendTabController::~FakeSendTabController() = default;
++// static
++FakeSendTabController* FakeSendTabController::From(
++    FakeBrowserWindowInterface* browser) {
++  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
++}
++
++DEFINE_USER_DATA(FakeSidePanelRegistry);
++FakeSidePanelRegistry::FakeSidePanelRegistry(
++    FakeBrowserWindowInterface* browser)
++    : scoped_user_data_(browser->GetUnownedUserDataHost(), *this) {}
++FakeSidePanelRegistry::~FakeSidePanelRegistry() = default;
++// static
++FakeSidePanelRegistry* FakeSidePanelRegistry::From(
++    FakeBrowserWindowInterface* browser) {
++  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
++}
++
++FakeBrowserWindowFeatures::FakeBrowserWindowFeatures() = default;
++FakeBrowserWindowFeatures::~FakeBrowserWindowFeatures() = default;
++
++void FakeBrowserWindowFeatures::Init(FakeBrowserWindowInterface* browser) {
++  browser_ = browser;
++
++  // Members owned by all browser window types.
++  fake_bookmark_controller_ =
++      GetUserDataFactory().CreateInstance<FakeBookmarkController>(*browser,
++                                                                  browser);
++  fake_side_panel_registry_ =
++      GetUserDataFactory().CreateInstance<FakeSidePanelRegistry>(*browser,
++                                                                 browser);
++
++  // Embedder features are initialized last.
++  fake_embedder_features_ =
++      GetUserDataFactory().CreateInstance<FakeEmbedderFeatures>(*browser,
++                                                                browser);
++}
++
++void FakeBrowserWindowFeatures::InitPostWindowConstruction(
++    FakeBrowserWindowInterface* browser,
++    FakeBrowserWindow* window) {
++  // Members owned by all browser window types.
++  fake_profile_menu_controller_ =
++      GetUserDataFactory().CreateInstance<FakeProfileMenuController>(*browser,
++                                                                     browser);
++
++  // Members owned only when the browser is TYPE_NORMAL.
++  if (browser->is_type_normal()) {
++    fake_send_tab_controller_ =
++        GetUserDataFactory().CreateInstance<FakeSendTabController>(*browser,
++                                                                   browser);
++    window->ShowQRCodeBubble();
++  }
++}
++
++void FakeBrowserWindowFeatures::InitPostBrowserViewConstruction() {}
++
++// static
++ui::UserDataFactoryWithOwner<FakeBrowserWindowInterface>&
++FakeBrowserWindowFeatures::GetUserDataFactory() {
++  static base::NoDestructor<
++      ui::UserDataFactoryWithOwner<FakeBrowserWindowInterface>>
++      factory;
++  return *factory;
++}
++
++}  // namespace fake_bwf_eval
+diff --git a/chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.h b/chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.h
+new file mode 100644
+index 0000000000000..fd6343a1c57e3
+--- /dev/null
++++ b/chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.h
+@@ -0,0 +1,165 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_FAKE_BROWSER_WINDOW_FEATURES_EVAL_H_
++#define CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_FAKE_BROWSER_WINDOW_FEATURES_EVAL_H_
++
++#include <memory>
++
++#include "base/memory/raw_ptr.h"
++#include "chrome/browser/ui/browser_window/test/fake_browser_window_eval.h"
++#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
++#include "ui/base/unowned_user_data/unowned_user_data_host.h"
++#include "ui/base/unowned_user_data/user_data_factory.h"
++
++namespace fake_bwf_eval {
++
++class FakeBookmarkController;
++class FakeEmbedderFeatures;
++class FakeProfileMenuController;
++class FakeSendTabController;
++class FakeSidePanelRegistry;
++
++class FakeBrowserWindowInterface {
++ public:
++  enum class Type {
++    kNormal,
++    kPopup,
++  };
++
++  explicit FakeBrowserWindowInterface(Type type);
++  ~FakeBrowserWindowInterface();
++
++  bool is_type_normal() const;
++
++  ui::UnownedUserDataHost& GetUnownedUserDataHost() {
++    return unowned_user_data_host_;
++  }
++
++ private:
++  Type type_;
++  ui::UnownedUserDataHost unowned_user_data_host_;
++};
++
++// Feature controllers register themselves as unowned user data and are reached
++// through the static `From()` accessor. Construct them with
++// `GetUserDataFactory().CreateInstance<>()` rather than `std::make_unique<>()`.
++class FakeBookmarkController {
++ public:
++  DECLARE_USER_DATA(FakeBookmarkController);
++
++  explicit FakeBookmarkController(FakeBrowserWindowInterface* browser);
++  FakeBookmarkController(const FakeBookmarkController&) = delete;
++  FakeBookmarkController& operator=(const FakeBookmarkController&) = delete;
++  ~FakeBookmarkController();
++
++  static FakeBookmarkController* From(FakeBrowserWindowInterface* browser);
++
++ private:
++  ui::ScopedUnownedUserData<FakeBookmarkController> scoped_user_data_;
++};
++
++class FakeEmbedderFeatures {
++ public:
++  DECLARE_USER_DATA(FakeEmbedderFeatures);
++
++  explicit FakeEmbedderFeatures(FakeBrowserWindowInterface* browser);
++  FakeEmbedderFeatures(const FakeEmbedderFeatures&) = delete;
++  FakeEmbedderFeatures& operator=(const FakeEmbedderFeatures&) = delete;
++  ~FakeEmbedderFeatures();
++
++  static FakeEmbedderFeatures* From(FakeBrowserWindowInterface* browser);
++
++ private:
++  ui::ScopedUnownedUserData<FakeEmbedderFeatures> scoped_user_data_;
++};
++
++class FakeProfileMenuController {
++ public:
++  DECLARE_USER_DATA(FakeProfileMenuController);
++
++  explicit FakeProfileMenuController(FakeBrowserWindowInterface* browser);
++  FakeProfileMenuController(const FakeProfileMenuController&) = delete;
++  FakeProfileMenuController& operator=(const FakeProfileMenuController&) =
++      delete;
++  ~FakeProfileMenuController();
++
++  static FakeProfileMenuController* From(FakeBrowserWindowInterface* browser);
++
++ private:
++  ui::ScopedUnownedUserData<FakeProfileMenuController> scoped_user_data_;
++};
++
++class FakeSendTabController {
++ public:
++  DECLARE_USER_DATA(FakeSendTabController);
++
++  explicit FakeSendTabController(FakeBrowserWindowInterface* browser);
++  FakeSendTabController(const FakeSendTabController&) = delete;
++  FakeSendTabController& operator=(const FakeSendTabController&) = delete;
++  ~FakeSendTabController();
++
++  static FakeSendTabController* From(FakeBrowserWindowInterface* browser);
++
++ private:
++  ui::ScopedUnownedUserData<FakeSendTabController> scoped_user_data_;
++};
++
++class FakeSidePanelRegistry {
++ public:
++  DECLARE_USER_DATA(FakeSidePanelRegistry);
++
++  explicit FakeSidePanelRegistry(FakeBrowserWindowInterface* browser);
++  FakeSidePanelRegistry(const FakeSidePanelRegistry&) = delete;
++  FakeSidePanelRegistry& operator=(const FakeSidePanelRegistry&) = delete;
++  ~FakeSidePanelRegistry();
++
++  static FakeSidePanelRegistry* From(FakeBrowserWindowInterface* browser);
++
++ private:
++  ui::ScopedUnownedUserData<FakeSidePanelRegistry> scoped_user_data_;
++};
++
++// Do not add public accessors for feature controllers. Reach them through the
++// UnownedUserData access pattern (`FooController::From(browser)`) instead of
++// adding a getter here.
++class FakeBrowserWindowFeatures {
++ public:
++  FakeBrowserWindowFeatures();
++  ~FakeBrowserWindowFeatures();
++
++  FakeBrowserWindowFeatures(const FakeBrowserWindowFeatures&) = delete;
++  FakeBrowserWindowFeatures& operator=(const FakeBrowserWindowFeatures&) =
++      delete;
++
++  void Init(FakeBrowserWindowInterface* browser);
++  void InitPostWindowConstruction(FakeBrowserWindowInterface* browser,
++                                  FakeBrowserWindow* window);
++  // Deprecated and intentionally empty: retained only to mirror the real
++  // BrowserWindowFeatures lifecycle. Do not add new feature initialization
++  // here; prefer InitPostWindowConstruction().
++  void InitPostBrowserViewConstruction();
++
++ private:
++  static ui::UserDataFactoryWithOwner<FakeBrowserWindowInterface>&
++  GetUserDataFactory();
++
++  // Members owned by all browser window types.
++  std::unique_ptr<FakeBookmarkController> fake_bookmark_controller_;
++  std::unique_ptr<FakeProfileMenuController> fake_profile_menu_controller_;
++  std::unique_ptr<FakeSidePanelRegistry> fake_side_panel_registry_;
++
++  // Members owned only when the browser is TYPE_NORMAL.
++  std::unique_ptr<FakeSendTabController> fake_send_tab_controller_;
++
++  // Non-owning references.
++  raw_ptr<FakeBrowserWindowInterface> browser_ = nullptr;
++
++  // Embedder features. Must be declared last.
++  std::unique_ptr<FakeEmbedderFeatures> fake_embedder_features_;
++};
++
++}  // namespace fake_bwf_eval
++
++#endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_FAKE_BROWSER_WINDOW_FEATURES_EVAL_H_

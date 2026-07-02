@@ -1,0 +1,73 @@
+description: Verify BrowserWindowFeatures refactor skill code changes.
+owner: qikaizhong@microsoft.com
+prompts:
+  - 'file://prompt.md'
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 1200
+      skills:
+        - browser-window-feature-refactor
+      changes:
+        - apply: agents/prompts/eval/browser_window_feature_refactor/fake_qr_window_method.patch
+tests:
+  - assert:
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_files_added
+      config:
+        files:
+          - chrome/browser/ui/browser_window/test/fake_qrcode_window_controller_eval.cc
+          - chrome/browser/ui/browser_window/test/fake_qrcode_window_controller_eval.h
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_file_content
+      config:
+        files:
+          - path: chrome/browser/ui/browser_window/test/fake_browser_window_eval.h
+            absent:
+              - 'ShowQRCodeBubble'
+          - path: chrome/browser/ui/browser_window/test/fake_browser_window_eval.cc
+            absent:
+              - 'FakeBrowserWindow::ShowQRCodeBubble'
+              - 'QR bubble shown by BrowserWindow'
+          - path: chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.h
+            present:
+              - 'class FakeQRCodeWindowController;'
+              - 'std::unique_ptr<FakeQRCodeWindowController>'
+            absent:
+              - 'fake_qrcode_window_controller()'
+              - |-
+                raw_ptr<FakeBrowserWindowInterface> browser_ = nullptr;
+                  std::unique_ptr<FakeQRCodeWindowController>
+              - |-
+                std::unique_ptr<FakeEmbedderFeatures> fake_embedder_features_;
+                  std::unique_ptr<FakeQRCodeWindowController>
+          - path: chrome/browser/ui/browser_window/test/fake_browser_window_features_eval.cc
+            present:
+              - 'fake_qrcode_window_controller_ ='
+              # The controller is created through the UnownedUserData factory
+              # (`GetUserDataFactory().CreateInstance<>()`), not
+              # `std::make_unique<>()`, matching current BrowserWindowFeatures
+              # guidance. The returned member stays a `std::unique_ptr<>`.
+              - 'GetUserDataFactory().CreateInstance<FakeQRCodeWindowController>'
+              # Name/signature-agnostic: the controller is invoked from the
+              # call site. The exact method name and API shape are not what this
+              # skill eval tests (a real Bedrock refactor may rename the moved
+              # method, e.g. drop a now-redundant prefix).
+              - 'fake_qrcode_window_controller_->'
+            absent:
+              - 'GetBrowserForMigrationOnly'
+              - |-
+                InitPostBrowserViewConstruction() {
+                  fake_qrcode_window_controller_ =
+          - path: chrome/browser/ui/browser_window/test/fake_qrcode_window_controller_eval.h
+            present:
+              - 'class FakeQRCodeWindowController'
+          - path: chrome/browser/ui/browser_window/test/fake_qrcode_window_controller_eval.cc
+            present:
+              # Name-agnostic: a method is implemented on the controller and the
+              # bubble message now lives here. We do not pin the method name.
+              - 'FakeQRCodeWindowController::'
+              - 'QR bubble shown by feature controller'
+    metadata:
+      tags:
+        - stable
