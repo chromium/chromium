@@ -1,7 +1,7 @@
-Name: CardView
+Name: Android Support CardView v7
 Short Name: cardview
-URL: https://androidx.dev/snapshots/builds/15689363/artifacts/repository/androidx/cardview/cardview/1.1.0-SNAPSHOT/cardview-1.1.0-20260621.031145-1.aar
-Version: 1.1.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/cardview/cardview/1.0.0/cardview-1.0.0.aar
+Version: 1.0.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -11,9 +11,9 @@ Shipped: yes
 License Android Compatible: yes
 
 Description:
-Android Support CardView
+Android Support CardView v7
 
-See also: https://developer.android.com/jetpack/androidx/releases/cardview#1.1.0-SNAPSHOT
+See also: http://developer.android.com/tools/extras/support-library.html
 
 
 Local Modifications:

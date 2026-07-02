@@ -339,12 +339,7 @@ if (!limit_android_deps) {
     aar_path = "../androidx/cipd/libs/androidx_cardview_cardview/cardview.aar"
     info_path = "../androidx/committed/libs/androidx_cardview_cardview/androidx_cardview_cardview.info"
     enable_bytecode_checks = false
-    deps = [
-      ":androidx_annotation_annotation_java",
-      ":androidx_core_core_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
+    deps = [ ":androidx_annotation_annotation_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -802,6 +797,7 @@ if (!limit_android_deps) {
       ":androidx_compose_ui_ui_java",
       ":androidx_core_core_ktx_java",
       ":androidx_fragment_fragment_ktx_java",
+      ":androidx_lifecycle_lifecycle_runtime_compose_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -909,10 +905,7 @@ if (!limit_android_deps) {
     aar_path = "../androidx/cipd/libs/androidx_interpolator_interpolator/interpolator.aar"
     info_path = "../androidx/committed/libs/androidx_interpolator_interpolator/androidx_interpolator_interpolator.info"
     enable_bytecode_checks = false
-    deps = [
-      ":androidx_annotation_annotation_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
+    deps = [ ":androidx_annotation_annotation_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1258,6 +1251,20 @@ if (!limit_android_deps) {
       ":androidx_paging_paging_common_ktx_java",
       ":androidx_recyclerview_recyclerview_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_pdf_pdf_core_java") {
+    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_core/pdf-core.aar"
+    info_path = "../androidx/committed/libs/androidx_pdf_pdf_core/androidx_pdf_pdf_core.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_core_core_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -2688,11 +2695,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    deps = [
-      ":androidx_annotation_annotation_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
+    deps = [ ":androidx_annotation_annotation_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3746,21 +3749,6 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_pdf_pdf_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_core/pdf-core.aar"
-    info_path = "../androidx/committed/libs/androidx_pdf_pdf_core/androidx_pdf_pdf_core.info"
-    enable_bytecode_checks = false
-
-    deps = [
-      ":androidx_annotation_annotation_java",
-      ":androidx_core_core_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
