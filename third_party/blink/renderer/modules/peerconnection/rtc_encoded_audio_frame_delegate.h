@@ -38,7 +38,7 @@ class RTCEncodedAudioFrameDelegate
       base::span<const unsigned int> contributing_sources,
       std::optional<uint16_t> sequence_number);
 
-  uint32_t RtpTimestamp() const;
+  std::optional<uint32_t> RtpTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
   void SetData(const DOMArrayBuffer* data);
 
@@ -83,7 +83,7 @@ class RTCEncodedAudioFrameDelegate
     std::optional<CaptureTimeInfo> capture_time_info;
     std::optional<base::TimeDelta> sender_capture_time_offset;
     std::optional<double> audio_level;
-    uint32_t rtp_timestamp = 0;
+    std::optional<webrtc::RtpTimestampInfo> rtp_timestamp_info;
   };
   // This field is set after the frame is neutered (e.g., written to a stream or
   // transferred).

@@ -5167,6 +5167,10 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "RTCEncodedAudioFrameConstructor",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedFrameAudioLevel",
       status: "stable",
     },

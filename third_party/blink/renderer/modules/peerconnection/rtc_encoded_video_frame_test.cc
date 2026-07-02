@@ -152,7 +152,9 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
 
   EXPECT_CALL(*frame, Metadata()).WillOnce(Return(webrtc_metadata));
   EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(13));
-  EXPECT_CALL(*frame, GetTimestamp()).WillRepeatedly(Return(17));
+  EXPECT_CALL(*frame, GetRtpTimestampInfo())
+      .WillRepeatedly(Return(
+          webrtc::RtpTimestampInfo(webrtc::RtpTimestampWithOffset(17u))));
 
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
@@ -442,7 +444,9 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataModifiesRtpTimestamp) {
 
   const uint32_t new_timestamp = 7;
 
-  EXPECT_CALL(*frame, GetTimestamp()).WillRepeatedly(Return(1));
+  EXPECT_CALL(*frame, GetRtpTimestampInfo())
+      .WillRepeatedly(
+          Return(webrtc::RtpTimestampInfo(webrtc::RtpTimestampWithOffset(1u))));
 
   EXPECT_CALL(*frame, SetMetadata(_));
   EXPECT_CALL(*frame, SetRTPTimestamp(new_timestamp));
@@ -714,7 +718,11 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorCopiesMetadata) {
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
   MockVP8Metadata(frame.get());
-  EXPECT_CALL(*frame, GetTimestamp()).WillRepeatedly(Return(1));
+  EXPECT_CALL(*frame, GetRtpTimestampInfo())
+      .WillRepeatedly(
+          Return(webrtc::RtpTimestampInfo(webrtc::RtpTimestampWithOffset(1u))));
+  // TODO(https://crbug.com/524901718): remove this after deprecation
+  ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(1u));
 
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));

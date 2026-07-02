@@ -10,6 +10,8 @@
 ] interface RTCEncodedAudioFrame {
     [Measure, CallWith=ExecutionContext, RaisesException]
     constructor (RTCEncodedAudioFrame originalFrame, optional RTCEncodedAudioFrameOptions options = {});
+    [RuntimeEnabled=RTCEncodedAudioFrameConstructor, Measure, CallWith=ExecutionContext, RaisesException]
+    constructor (RTCEncodedAudioFrameInit init);
     [Measure] readonly attribute unsigned long timestamp;  // RTP timestamp.
     [CallWith=ExecutionContext] attribute ArrayBuffer data;
     [CallWith=ExecutionContext] RTCEncodedAudioFrameMetadata getMetadata();

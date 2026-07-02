@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(https://crbug.com/524901718): Add spec link when available.
+
+enum RTCAudioContentType {
+    "speech",
+    "other"
+};
+
+dictionary RTCEncodedAudioFrameInit {
+    RTCAudioContentType contentType = "speech";
+    required octet payloadType;
+    required unsigned long rtpTimestampWithoutOffset;
+    required ArrayBuffer data;
+    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp captureTime;
+    sequence<unsigned long> contributingSources = [];
+    DOMString mimeType;
+    [RuntimeEnabled=RTCEncodedFrameAudioLevel] double audioLevel;
+};

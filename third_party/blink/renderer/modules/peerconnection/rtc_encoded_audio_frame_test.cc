@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -33,6 +34,7 @@
 #include "third_party/webrtc/api/units/timestamp.h"
 
 using testing::_;
+using testing::ElementsAre;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
@@ -72,6 +74,10 @@ void MockMetadata(MockTransformableAudioFrame* frame) {
   ON_CALL(*frame, GetContributingSources()).WillByDefault(Return(kCsrcs));
   ON_CALL(*frame, GetPayloadType()).WillByDefault(Return(kPayloadType));
   ON_CALL(*frame, SequenceNumber()).WillByDefault(Return(kSequenceNumber));
+  ON_CALL(*frame, GetRtpTimestampInfo())
+      .WillByDefault(Return(webrtc::RtpTimestampInfo(
+          webrtc::RtpTimestampWithOffset(kRtpTimestamp))));
+  // TODO(https://crbug.com/524901718): remove this after deprecation
   ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(kRtpTimestamp));
   ON_CALL(*frame, GetMimeType()).WillByDefault(Return("image"));
   ON_CALL(*frame, CaptureTime())
@@ -93,7 +99,9 @@ void MockReceiverMetadata(MockTransformableAudioFrame* frame,
   ON_CALL(*frame, GetContributingSources()).WillByDefault(Return(kCsrcs));
   ON_CALL(*frame, GetPayloadType()).WillByDefault(Return(kPayloadType));
   ON_CALL(*frame, SequenceNumber()).WillByDefault(Return(kSequenceNumber));
-  ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(kRtpTimestamp));
+  ON_CALL(*frame, GetRtpTimestampInfo())
+      .WillByDefault(Return(webrtc::RtpTimestampInfo(
+          webrtc::RtpTimestampWithOffset(kRtpTimestamp))));
   ON_CALL(*frame, GetMimeType()).WillByDefault(Return("image"));
   ON_CALL(*frame, CaptureTime())
       .WillByDefault(Return(webrtc::Timestamp::Millis(kCaptureTimeMillis)));
@@ -304,13 +312,56 @@ TEST_F(RTCEncodedAudioFrameTest, SetMetadataModifiesMetadata) {
 TEST_F(RTCEncodedAudioFrameTest, ConstructorFromNull) {
   V8TestingScope v8_scope;
   DummyExceptionStateForTesting exception_state;
+  RTCEncodedAudioFrame* original_frame = nullptr;
   RTCEncodedAudioFrame* new_frame = RTCEncodedAudioFrame::Create(
-      v8_scope.GetExecutionContext(), nullptr, exception_state);
+      v8_scope.GetExecutionContext(), original_frame, exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new AudioFrame: input Audioframe is empty.");
   EXPECT_EQ(new_frame, nullptr);
+}
+
+TEST_F(RTCEncodedAudioFrameTest, ConstructorFromInitDictionary) {
+  V8TestingScope v8_scope;
+  DummyExceptionStateForTesting exception_state;
+
+  DOMArrayBuffer* buffer =
+      DOMArrayBuffer::Create(/*num_elements=*/10, /*element_byte_size=*/1);
+
+  auto* init = RTCEncodedAudioFrameInit::Create();
+  init->setData(buffer);
+  init->setPayloadType(111);
+  init->setRtpTimestampWithoutOffset(98765);
+  init->setCaptureTime(122);
+  init->setContributingSources({1, 2, 3});
+  init->setMimeType("audio/opus");
+  init->setAudioLevel(1.0);
+
+  RTCEncodedAudioFrame* new_frame = RTCEncodedAudioFrame::Create(
+      v8_scope.GetExecutionContext(), init, exception_state);
+
+  EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
+  ASSERT_TRUE(new_frame);
+  // Frames without offset return a timestamp of 0.
+  EXPECT_EQ(new_frame->timestamp(), 0u);
+
+  RTCEncodedAudioFrameMetadata* metadata =
+      new_frame->getMetadata(v8_scope.GetExecutionContext());
+  ASSERT_TRUE(metadata);
+  EXPECT_TRUE(metadata->hasSynchronizationSource());
+  EXPECT_EQ(metadata->synchronizationSource(), 0u);
+  EXPECT_EQ(metadata->payloadType(), 111);
+  EXPECT_FALSE(metadata->hasRtpTimestamp());
+  EXPECT_TRUE(metadata->hasCaptureTime());
+  EXPECT_NEAR(metadata->captureTime(), 122, 1.0);
+  ASSERT_TRUE(metadata->hasContributingSources());
+  EXPECT_EQ(metadata->contributingSources().size(), 3u);
+  EXPECT_THAT(metadata->contributingSources(), ElementsAre(1u, 2u, 3u));
+  EXPECT_TRUE(metadata->hasMimeType());
+  EXPECT_EQ(metadata->mimeType(), "audio/opus");
+  EXPECT_TRUE(metadata->hasAudioLevel());
+  EXPECT_EQ(metadata->audioLevel(), 1.0);
 }
 
 TEST_F(RTCEncodedAudioFrameTest, ConstructorOnEmptyFrameHasEmptyMetadata) {
@@ -344,7 +395,7 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorOnEmptyFrameHasEmptyMetadata) {
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasPayloadType());
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasMimeType());
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasSequenceNumber());
-  EXPECT_EQ(new_frame->getMetadata(execution_context)->rtpTimestamp(), 0u);
+  EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasRtpTimestamp());
   EXPECT_FALSE(new_frame->getMetadata(execution_context)->hasReceiveTime());
 }
 

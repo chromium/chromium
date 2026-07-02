@@ -4,11 +4,17 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 
+#include <inttypes.h>
+
+#include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_audio_content_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -22,6 +28,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/webrtc/api/frame_transformer_factory.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
@@ -114,6 +121,54 @@ RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
   return new_frame;
 }
 
+RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
+    ExecutionContext* execution_context,
+    const RTCEncodedAudioFrameInit* init,
+    ExceptionState& exception_state) {
+  DOMArrayBuffer* payload_data_buffer = init->data();
+  base::span<uint8_t> buffer_span = payload_data_buffer->ByteSpan();
+
+  auto frame_type =
+      webrtc::TransformableAudioFrameInterface::FrameType::kEmptyFrame;
+  if (buffer_span.size() > 0) {
+    frame_type =
+        (init->contentType().AsEnum() == V8RTCAudioContentType::Enum::kSpeech)
+            ? webrtc::TransformableAudioFrameInterface::FrameType::
+                  kAudioFrameSpeech
+            : webrtc::TransformableAudioFrameInterface::FrameType::
+                  kAudioFrameCN;
+  }
+
+  uint8_t payload_type = init->payloadType();
+  uint32_t rtp_timestamp_without_offset = init->rtpTimestampWithoutOffset();
+
+  std::optional<uint64_t> absolute_capture_timestamp_ms;
+  if (init->hasCaptureTime()) {
+    base::TimeDelta capture_time = RTCEncodedFrameTimestampToCaptureTime(
+        execution_context, init->captureTime(),
+        CaptureTimeInfo::ClockType::kTimeTicks);
+    absolute_capture_timestamp_ms = capture_time.InMilliseconds();
+  }
+
+  std::vector<uint32_t> csrcs(init->contributingSources().begin(),
+                              init->contributingSources().end());
+  std::string mime_type = init->hasMimeType() ? init->mimeType().Utf8() : "";
+
+  std::optional<uint8_t> audio_level_dbov;
+  if (init->hasAudioLevel()) {
+    audio_level_dbov = FromLinearAudioLevel(init->audioLevel());
+  }
+
+  std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame =
+      webrtc::CreateOutgoingAudioFrame(
+          frame_type, payload_type, rtp_timestamp_without_offset,
+          buffer_span.data(), buffer_span.size(), absolute_capture_timestamp_ms,
+          /*ssrc*/ 0, csrcs, mime_type,
+          /*sequence_number=*/std::nullopt, audio_level_dbov);
+
+  return MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(webrtc_frame));
+}
+
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>
         webrtc_audio_frame)
@@ -140,7 +195,7 @@ RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     : RTCEncodedAudioFrame(delegate->CloneWebRtcFrame()) {}
 
 uint32_t RTCEncodedAudioFrame::timestamp() const {
-  return delegate_->RtpTimestamp();
+  return delegate_->RtpTimestamp().value_or(0);
 }
 
 DOMArrayBuffer* RTCEncodedAudioFrame::data(ExecutionContext* context) const {
@@ -164,7 +219,9 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata(
   if (delegate_->SequenceNumber()) {
     metadata->setSequenceNumber(*delegate_->SequenceNumber());
   }
-  metadata->setRtpTimestamp(delegate_->RtpTimestamp());
+  if (delegate_->RtpTimestamp()) {
+    metadata->setRtpTimestamp(*delegate_->RtpTimestamp());
+  }
   if (delegate_->MimeType()) {
     metadata->setMimeType(String::FromUtf8(*delegate_->MimeType()));
   }
@@ -223,9 +280,13 @@ void RTCEncodedAudioFrame::setData(ExecutionContext*, DOMArrayBuffer* data) {
 
 String RTCEncodedAudioFrame::toString(ExecutionContext* context) const {
   StringBuilder sb;
-  sb.Append("RTCEncodedAudioFrame{rtpTimestamp: ");
-  sb.AppendNumber(delegate_->RtpTimestamp());
-  sb.Append(", size: ");
+  sb.Append("RTCEncodedAudioFrame{");
+  if (std::optional<uint32_t> rtp_timestamp = delegate_->RtpTimestamp()) {
+    sb.Append("rtpTimestamp: ");
+    sb.AppendNumber(*rtp_timestamp);
+    sb.Append(", ");
+  }
+  sb.Append("size: ");
   sb.AppendNumber(data(context) ? data(context)->ByteLength() : 0);
   sb.Append("}");
   return sb.ToString();
