@@ -13186,11 +13186,25 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HappyEyeballsV2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HappyEyeballsV2WebView": [
+        {
+            "platforms": [
+                "android_webview"
             ],
             "experiments": [
                 {
