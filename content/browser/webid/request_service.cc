@@ -344,24 +344,17 @@ void RequestService::RequestUserInfo(
     blink::mojom::IdentityProviderConfigPtr provider,
     RequestUserInfoCallback callback) {
   // Enforce identity-credentials-get Permissions Policy browser-side.
+  // The renderer checks this, but a compromised renderer can bypass it.
   if (!render_frame_host().IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
-    // TODO(crbug.com/519217823): Use receivers_.ReportBadMessage() and try to
-    // remove the callback run() below.
-    mojo::ReportBadMessage(
+    receivers_.ReportBadMessage(
         "identity-credentials-get permissions policy not enabled");
-    std::move(callback).Run(blink::mojom::RequestUserInfoResult::NewStatus(
-        blink::mojom::RequestUserInfoStatus::kError));
     return;
   }
 
   if (!render_frame_host().GetPage().IsPrimary()) {
-    // TODO(crbug.com/519217823): Use receivers_.ReportBadMessage() and try to
-    // remove the callback run() below.
-    mojo::ReportBadMessage(
+    receivers_.ReportBadMessage(
         "FedCM should not be allowed in nested frame trees.");
-    std::move(callback).Run(blink::mojom::RequestUserInfoResult::NewStatus(
-        blink::mojom::RequestUserInfoStatus::kError));
     return;
   }
   // FedCmMetrics class is currently not used for UserInfo API. If we log UKM
@@ -408,11 +401,8 @@ void RequestService::Disconnect(
   // The renderer checks this, but a compromised renderer can bypass it.
   if (!render_frame_host().IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
-    // TODO(crbug.com/519217823): Use receivers_.ReportBadMessage() and try to
-    // remove the callback run() below.
-    mojo::ReportBadMessage(
+    receivers_.ReportBadMessage(
         "identity-credentials-get permissions policy not enabled");
-    std::move(callback).Run(blink::mojom::DisconnectStatus::kError);
     return;
   }
 
@@ -481,18 +471,12 @@ void RequestService::ResolveTokenRequest(
                                    ? redirect_to->get_get()->url
                                    : redirect_to->get_post()->url;
     if (!redirect_url.is_valid()) {
-      // TODO(crbug.com/519217823): Use receivers_.ReportBadMessage() and try to
-      // remove the callback run() below.
-      mojo::ReportBadMessage("Invalid redirect URL");
-      std::move(callback).Run(false);
+      receivers_.ReportBadMessage("Invalid redirect URL");
       return;
     }
     if (redirect_to->is_post() &&
         redirect_to->get_post()->request_body.empty()) {
-      // TODO(crbug.com/519217823): Use receivers_.ReportBadMessage() and try to
-      // remove the callback run() below.
-      mojo::ReportBadMessage("POST redirects must have a body");
-      std::move(callback).Run(false);
+      receivers_.ReportBadMessage("POST redirects must have a body");
       return;
     }
   }
