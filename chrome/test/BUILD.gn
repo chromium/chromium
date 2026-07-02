@@ -5698,6 +5698,7 @@ test("unit_tests") {
     "//chrome/browser/enterprise/connectors:unit_tests",
     "//chrome/browser/enterprise/connectors/analysis:unit_tests",
     "//chrome/browser/enterprise/connectors/device_trust:unit_tests",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/browser:unit_tests",
     "//chrome/browser/enterprise/connectors/device_trust/signals:unit_tests",
     "//chrome/browser/enterprise/core:unit_tests",
     "//chrome/browser/enterprise/data_protection:unit_tests",
@@ -7534,10 +7535,6 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/connectors/analysis/file_transfer_analysis_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/source_destination_matcher_ash_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/attestation/ash/flex_attester_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service_chromeos_unittest.cc",
       "../browser/media/platform_verification_chromeos_unittest.cc",
       "../browser/media/webrtc/chrome_screen_enumerator_ash_unittest.cc",
       "../browser/media/webrtc/desktop_media_list_ash_unittest.cc",
@@ -7673,6 +7670,7 @@ test("unit_tests") {
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/enterprise/connectors/device_trust/ash:unit_tests",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/ash:unit_tests",
       "//chrome/browser/media_galleries",
       "//chrome/browser/media_galleries:test_support",
       "//chrome/browser/media_galleries:unit_tests",
@@ -8308,12 +8306,7 @@ test("unit_tests") {
   }
 
   if (is_linux || is_mac || is_win) {
-    sources += [
-      "../browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/attestation/browser/device_attester_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/attestation/browser/profile_attester_unittest.cc",
-      "../browser/signin/accounts_policy_manager_unittest.cc",
-    ]
+    sources += [ "../browser/signin/accounts_policy_manager_unittest.cc" ]
 
     deps += [
       "../browser/enterprise/connectors/device_trust/key_management/browser",
