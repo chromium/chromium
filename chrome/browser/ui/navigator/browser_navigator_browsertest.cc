@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
@@ -2022,7 +2024,35 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(base::UTF8ToUTF16(expected_url), omnibox_view->GetText());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+// Dual-mode fixture for the Document Picture-in-Picture creation tests. The
+// bool parameter toggles `kDocumentPipStandaloneWindow`, so each test runs
+// against both the legacy Browser-backed path (param == false) and the
+// standalone `DocumentPipHost` path (param == true). See
+// chrome/browser/ui/views/picture_in_picture for the standalone host.
+class BrowserNavigatorPictureInPictureTest
+    : public BrowserNavigatorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserNavigatorPictureInPictureTest() {
+    pip_feature_list_.InitWithFeatureState(
+        features::kDocumentPipStandaloneWindow, standalone_enabled());
+  }
+
+ protected:
+  bool standalone_enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList pip_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserNavigatorPictureInPictureTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
                        Disposition_PictureInPicture_Open) {
   // Create the params for the PiP request.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
@@ -2047,6 +2077,20 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   params.contents_to_insert = WebContents::Create(web_contents_params);
   Navigate(&params);
 
+  if (standalone_enabled()) {
+    // Standalone path: no Browser is created. The window is hosted by a
+    // DocumentPipHost and driven through the PictureInPictureWindowManager, so
+    // Navigate() returns without a Browser. Assert via the manager's public
+    // API to avoid depending on the views/picture_in_picture target.
+    EXPECT_EQ(nullptr, params.browser);
+    auto* manager = PictureInPictureWindowManager::GetInstance();
+    ASSERT_NE(nullptr, manager->GetChildWebContents());
+    EXPECT_NE(tab, manager->GetChildWebContents());
+    EXPECT_TRUE(PictureInPictureWindowManager::IsChildWebContents(
+        manager->GetChildWebContents()));
+    return;
+  }
+
   // Should not reuse the browser.
   EXPECT_NE(browser(), params.browser);
   EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
@@ -2062,7 +2106,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_DOUBLE_EQ(1.0, aspect_ratio);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
                        Disposition_PictureInPicture_OpenWithWidthAndHeight) {
   // Set width/height with equivalent aspect ratio of 1.0.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
@@ -2089,10 +2133,21 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // The bounds may have small adjustments for window decorations, since the
   // requested size is the inner size.  We can't get the inner size easily here,
   // so just verify that the aspect ratio is closer to 1.0 than 0.5.
-  const gfx::Rect override_bounds =
-      params.browser->GetBrowserForMigrationOnly()->override_bounds();
-  float expected_aspect_ratio =
-      static_cast<float>(override_bounds.width()) / override_bounds.height();
+  gfx::Rect bounds;
+  if (standalone_enabled()) {
+    // Standalone path: the aspect-ratio logic lives on the DocumentPipHost, so
+    // validate the PiP window's outer bounds via the manager. These include
+    // platform decorations, hence the same loose tolerance as the Browser path.
+    std::optional<gfx::Rect> pip_bounds =
+        PictureInPictureWindowManager::GetInstance()
+            ->GetPictureInPictureWindowBoundsInScreen();
+    ASSERT_TRUE(pip_bounds.has_value());
+    bounds = *pip_bounds;
+  } else {
+    bounds = params.browser->GetBrowserForMigrationOnly()->override_bounds();
+  }
+  const float expected_aspect_ratio =
+      static_cast<float>(bounds.width()) / bounds.height();
   EXPECT_NEAR(expected_aspect_ratio, 1.0f, 0.2);
 }
 

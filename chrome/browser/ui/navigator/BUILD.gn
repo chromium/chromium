@@ -130,6 +130,7 @@ if (!is_android) {
       "//base",
       "//chrome/app:command_ids",
       "//chrome/browser/file_system_access",
+      "//chrome/browser/picture_in_picture",
       "//chrome/browser/prefs",
       "//chrome/browser/renderer_host",
       "//chrome/browser/ui/page_info",
