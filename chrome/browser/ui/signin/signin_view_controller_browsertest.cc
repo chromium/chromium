@@ -19,8 +19,10 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
+#include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -46,12 +48,17 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "extensions/browser/extension_registry.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -63,7 +70,6 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -971,6 +977,65 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBannerNoBluetooth,
       infobars::ContentInfoBarManager::FromWebContents(active_contents);
   ASSERT_TRUE(infobar_manager);
   EXPECT_EQ(0u, infobar_manager->infobars().size());
+}
+
+class SigninViewControllerCrossDeviceSigninBrowserTest
+    : public SigninViewControllerBrowserTestBase {
+ public:
+  SigninViewControllerCrossDeviceSigninBrowserTest() {
+    feature_list_.InitAndEnableFeature(switches::kCrossDeviceSigninFromDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ShowCrossDeviceSigninQrBubble) {
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  views::Widget* bubble_widget = nullptr;
+  base::RunLoop run_loop;
+  observer.set_shown_callback(base::BindRepeating(
+      [](views::Widget** out_widget, base::RepeatingClosure quit_closure,
+         views::Widget* widget) {
+        *out_widget = widget;
+        quit_closure.Run();
+      },
+      &bubble_widget, run_loop.QuitClosure()));
+
+  base::MockCallback<base::OnceClosure> closing_callback;
+  EXPECT_CALL(closing_callback, Run()).Times(1);
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+
+  run_loop.Run();
+  ASSERT_TRUE(bubble_widget);
+
+  // Verify that the WebUI URL loaded successfully.
+  views::WidgetDelegate* delegate = bubble_widget->widget_delegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_TRUE(delegate->ShouldShowCloseButton());
+  if (auto* bubble_delegate = delegate->AsBubbleDialogDelegate()) {
+    EXPECT_FALSE(bubble_delegate->ShouldCloseOnDeactivate());
+  }
+
+  views::WebView* web_view = views::AsViewClass<views::WebView>(
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kCrossDeviceSigninQrBubbleWebViewElementId,
+          views::ElementTrackerViews::GetContextForWidget(bubble_widget)));
+  ASSERT_TRUE(web_view);
+
+  content::WebContents* web_contents = web_view->GetWebContents();
+  ASSERT_TRUE(web_contents);
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(web_contents->GetVisibleURL(),
+            GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
+
+  views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+  browser()->GetFeatures().signin_view_controller()->CloseBubbleSignin();
+  waiter.Wait();
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

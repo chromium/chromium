@@ -22,6 +22,9 @@ class SigninUiDelegateImplDice : public SigninUiDelegate {
                     bool enable_sync,
                     signin_metrics::AccessPoint access_point,
                     signin_metrics::PromoAction promo_action) override;
+  void ShowCrossDeviceSigninQrBubble(
+      BrowserWindowInterface* browser,
+      base::OnceClosure closing_callback) override;
 };
 
 }  // namespace signin_ui_util

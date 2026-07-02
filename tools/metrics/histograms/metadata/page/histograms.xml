@@ -426,6 +426,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".crashes"/>
   <variant name=".credits"/>
   <variant name=".crosh"/>
+  <variant name=".cross-device-signin-qr-bubble"/>
   <variant name=".crostini-credits"/>
   <variant name=".crostini-installer"/>
   <variant name=".cryptohome"/>

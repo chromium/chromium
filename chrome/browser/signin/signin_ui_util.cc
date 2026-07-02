@@ -30,8 +30,8 @@
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -146,6 +146,14 @@ SigninUiDelegate* GetSigninUiDelegate() {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void ShowCrossDeviceSigninQrBubble(BrowserWindowInterface* browser,
+                                   base::OnceClosure closing_callback) {
+  GetSigninUiDelegate()->ShowCrossDeviceSigninQrBubble(
+      browser, std::move(closing_callback));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 std::u16string GetAuthenticatedUsername(Profile* profile) {
   DCHECK(profile);

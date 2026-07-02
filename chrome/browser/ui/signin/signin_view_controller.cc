@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
+#include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog_impl.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
@@ -51,6 +53,9 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "base/strings/utf_string_conversions.h"
@@ -480,6 +485,26 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void SigninViewController::ShowCrossDeviceSigninQrBubble(
+    base::OnceClosure closing_callback) {
+  CloseBubbleSignin();
+  auto delegate = ::CreateCrossDeviceSigninQrBubble(
+      &*browser_, std::move(closing_callback));
+  bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
+      delegate.release(),
+      base::BindOnce(&SigninViewController::OnBubbleClosed, AsWeakPtr()));
+  bubble_widget_->Show();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+void SigninViewController::OnBubbleClosed(views::Widget::ClosedReason reason) {
+  if (bubble_widget_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(bubble_widget_));
+  }
+}
+
 void SigninViewController::ShowModalSyncConfirmationDialog(
     bool is_signin_intercept,
     bool is_sync_promo) {
@@ -542,6 +567,16 @@ void SigninViewController::CloseModalSignin() {
   }
 
   DCHECK(!dialog_);
+}
+
+void SigninViewController::CloseBubbleSignin() {
+  if (bubble_widget_) {
+    // Extract the pointer so bubble_widget_ is nullified immediately.
+    auto widget = std::move(bubble_widget_);
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(widget));
+  }
 }
 
 void SigninViewController::SetModalSigninHeight(int height) {

@@ -710,6 +710,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1941995226" label="chrome://attribution-internals/"/>
   <int value="-1911971715" label="chrome://history/"/>
   <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
+  <int value="-1891730544" label="chrome://cross-device-signin-qr-bubble/"/>
   <int value="-1887206190" label="chrome://nfc-debug/"/>
   <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
   <int value="-1837941403" label="chrome://launcher-internals/"/>
