@@ -1450,6 +1450,26 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void onTextContextMenuItem_delete() {
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+
+        assertTrue(mUrlBar.onTextContextMenuItem(R.id.url_bar_delete));
+
+        assertEquals(" text", mUrlBar.getText().toString());
+    }
+
+    @Test
+    public void onTextContextMenuItem_delete_reverseSelection() {
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(8, 0);
+
+        assertTrue(mUrlBar.onTextContextMenuItem(R.id.url_bar_delete));
+
+        assertEquals(" text", mUrlBar.getText().toString());
+    }
+
+    @Test
     public void testClearTextSelection() {
         mUrlBar.setText("test selection");
         mUrlBar.onFocusChanged(true, 0, null);

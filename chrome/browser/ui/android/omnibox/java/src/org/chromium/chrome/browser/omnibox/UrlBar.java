@@ -834,6 +834,15 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onTextContextMenuItem(int id) {
+        if (id == R.id.url_bar_delete) {
+            int selStart = Math.min(getSelectionStart(), getSelectionEnd());
+            int selEnd = Math.max(getSelectionStart(), getSelectionEnd());
+            if (selStart != selEnd && selStart >= 0) {
+                getText().delete(selStart, selEnd);
+            }
+            return true;
+        }
+
         if (mTextContextMenuDelegate == null) return super.onTextContextMenuItem(id);
 
         boolean isCutOption = false;
@@ -917,6 +926,24 @@ public class UrlBar extends AutocompleteEditText {
                             if (mShowAiModeCallback != null) {
                                 mShowAiModeCallback.onResult(newCheckedState);
                             }
+                            return true;
+                        });
+            }
+        }
+
+        if (getSelectionStart() != getSelectionEnd()
+                && menu.findItem(R.id.url_bar_delete) == null) {
+            MenuItem copyItem = menu.findItem(android.R.id.copy);
+            if (copyItem != null) {
+                MenuItem item =
+                        menu.add(
+                                copyItem.getGroupId(),
+                                R.id.url_bar_delete,
+                                copyItem.getOrder(),
+                                R.string.omnibox_context_menu_delete);
+                item.setOnMenuItemClickListener(
+                        clickedItem -> {
+                            onTextContextMenuItem(R.id.url_bar_delete);
                             return true;
                         });
             }
