@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -25,6 +24,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
+#include "components/multistep_filter/core/logging/filter_acceptance_metrics_logger.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
@@ -48,47 +48,64 @@ namespace multistep_filter {
 
 namespace {
 
+using SuggestionViewState = FilterUiController::SuggestionViewState;
+
+constexpr std::string_view ViewStateToString(SuggestionViewState state) {
+  switch (state) {
+    case SuggestionViewState::kInactive:
+      return "inactive";
+    case SuggestionViewState::kShowingInitialCue:
+      return "showing_initial_cue";
+    case SuggestionViewState::kCollapsedInOmnibox:
+      return "collapsed_in_omnibox";
+    case SuggestionViewState::kReopenedFromOmnibox:
+      return "reopened_from_omnibox";
+    case SuggestionViewState::kCollapsedInOmniboxAfterReopen:
+      return "collapsed_in_omnibox_after_reopen";
+  }
+}
+
+constexpr std::string_view DecisionToString(SuggestionUserDecision decision) {
+  switch (decision) {
+    case SuggestionUserDecision::kAccepted:
+      return "accepted";
+    case SuggestionUserDecision::kIgnored:
+      return "ignored";
+    case SuggestionUserDecision::kDismissed:
+      return "dismissed";
+    case SuggestionUserDecision::kSettingsOpened:
+      return "settings_opened";
+  }
+}
+
+constexpr LogEventType DecisionToLogEventType(SuggestionUserDecision decision) {
+  switch (decision) {
+    case SuggestionUserDecision::kAccepted:
+      return LogEventType::kSuggestionAccepted;
+    case SuggestionUserDecision::kDismissed:
+      return LogEventType::kSuggestionDismissed;
+    case SuggestionUserDecision::kIgnored:
+    case SuggestionUserDecision::kSettingsOpened:
+      return LogEventType::kSuggestionIgnored;
+  }
+}
+
 void LogSuggestionUiDecision(MultistepFilterLogRouter* log_router,
                              const FilterUiController::SuggestionState& state,
                              SuggestionUserDecision decision) {
-  LogEventType event_type;
-  switch (decision) {
-    case SuggestionUserDecision::kAccepted:
-      event_type = LogEventType::kSuggestionAccepted;
-      break;
-    case SuggestionUserDecision::kDismissed:
-      event_type = LogEventType::kSuggestionDismissed;
-      break;
-    case SuggestionUserDecision::kIgnored:
-    case SuggestionUserDecision::kSettingsOpened:
-      event_type = LogEventType::kSuggestionIgnored;
-      break;
-  }
-
-  std::string trigger_source;
-  switch (state.view_state) {
-    case FilterUiController::SuggestionViewState::kShowingInitialCue:
-    case FilterUiController::SuggestionViewState::kReopenedFromOmnibox:
-      trigger_source = "Cue";
-      break;
-    case FilterUiController::SuggestionViewState::kCollapsedInOmnibox:
-    case FilterUiController::SuggestionViewState::
-        kCollapsedInOmniboxAfterReopen:
-      trigger_source = "Omnibox";
-      break;
-    case FilterUiController::SuggestionViewState::kInactive:
-      NOTREACHED();
-  }
+  LogEventType event_type = DecisionToLogEventType(decision);
 
   if (decision == SuggestionUserDecision::kAccepted) {
     MULTISTEP_FILTER_LOG(log_router, state.suggestion.triggering_navigation_id,
                          event_type, state.suggestion.triggering_host)
         << LogDetail{"navigation_attempted", true}
-        << LogDetail{"trigger_source", trigger_source};
+        << LogDetail{"view_state", ViewStateToString(state.view_state)}
+        << LogDetail{"decision", DecisionToString(decision)};
   } else {
     MULTISTEP_FILTER_LOG(log_router, state.suggestion.triggering_navigation_id,
                          event_type, state.suggestion.triggering_host)
-        << LogDetail{"trigger_source", trigger_source};
+        << LogDetail{"view_state", ViewStateToString(state.view_state)}
+        << LogDetail{"decision", DecisionToString(decision)};
   }
 }
 
@@ -108,6 +125,28 @@ void LogSuggestionUiShown(MultistepFilterLogRouter* log_router,
         << LogDetail{"ui_shown", ui_shown}
         << LogDetail{"reason", std::move(reason)};
   }
+}
+
+void RecordMetricsDecision(
+    std::optional<FilterUiController::SuggestionState>& state,
+    SuggestionUserDecision decision) {
+  if (!state || !state->metrics_logger) {
+    return;
+  }
+  switch (state->view_state) {
+    case SuggestionViewState::kShowingInitialCue:
+      state->metrics_logger->RecordInitialCueAndOverallDecision(decision);
+      break;
+    case SuggestionViewState::kReopenedFromOmnibox:
+      state->metrics_logger->RecordReopenedCueAndOverallDecision(decision);
+      break;
+    case SuggestionViewState::kCollapsedInOmnibox:
+    case SuggestionViewState::kCollapsedInOmniboxAfterReopen:
+      break;
+    case SuggestionViewState::kInactive:
+      NOTREACHED();
+  }
+  state->metrics_logger.reset();
 }
 
 }  // namespace
@@ -149,6 +188,7 @@ FilterUiController::~FilterUiController() {
   }
   LogSuggestionUiDecision(log_router_, *suggestion_state_,
                           SuggestionUserDecision::kIgnored);
+  RecordMetricsDecision(suggestion_state_, SuggestionUserDecision::kIgnored);
 }
 
 void FilterUiController::OnSuggestionGenerated(
@@ -185,6 +225,7 @@ void FilterUiController::ClearSuggestion(SuggestionUserDecision decision) {
       service_->RecordUserInteractionWithSuggestion(decision);
     }
     LogSuggestionUiDecision(log_router_, *suggestion_state_, decision);
+    RecordMetricsDecision(suggestion_state_, decision);
   }
   dismissal_weak_factory_.InvalidateWeakPtrs();
   suggestion_state_.reset();
@@ -331,6 +372,10 @@ void FilterUiController::OnPageActionAnchoredMessageShown(
             l10n_util::GetStringUTF16(IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT));
       }
       suggestion_state_->view_state = SuggestionViewState::kShowingInitialCue;
+      suggestion_state_->metrics_logger =
+          std::make_unique<FilterAcceptanceMetricsLogger>(
+              suggestion_state_->suggestion.task_type);
+      suggestion_state_->metrics_logger->RecordInitialCueShown();
       LogSuggestionUiShown(log_router_, suggestion_state_->suggestion,
                            /*ui_shown=*/true, /*reason=*/"");
       if (service_) {
@@ -351,6 +396,9 @@ void FilterUiController::OnPageActionAnchoredMessageShown(
             l10n_util::GetStringUTF16(IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT));
       }
       suggestion_state_->view_state = SuggestionViewState::kReopenedFromOmnibox;
+      if (suggestion_state_->metrics_logger) {
+        suggestion_state_->metrics_logger->RecordReopenedCueShown();
+      }
       break;
     case SuggestionViewState::kShowingInitialCue:
     case SuggestionViewState::kReopenedFromOmnibox:

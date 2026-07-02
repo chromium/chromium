@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller_test_api.h"
@@ -20,6 +21,7 @@
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
@@ -580,6 +582,8 @@ TEST_F(
   EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
 }
 
+// === Group 8: Impression Logging ===
+
 TEST_F(FilterUiControllerTest, RecordImpressionOnMessageShown) {
   UrlFilterSuggestion suggestion =
       CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
@@ -622,6 +626,74 @@ TEST_F(FilterUiControllerTest, RecordAcceptanceOnApplySuggestion) {
       .Times(1);
 
   controller_->OnActionInvoked();
+}
+
+// === Group 9: End-to-End Metrics & Lifecycle Logging ===
+
+TEST_F(FilterUiControllerTest, HistogramLoggingInitialCueAccepted) {
+  base::HistogramTester histogram_tester;
+
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion);
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+
+  controller_->ClearSuggestion(SuggestionUserDecision::kAccepted);
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterAcceptanceInitialCueHistogram,
+      SuggestionUserDecision::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
+                                      SuggestionUserDecision::kAccepted, 1);
+  histogram_tester.ExpectTotalCount(
+      kMultistepFilterAcceptanceReopenedCueHistogram, 0);
+}
+
+TEST_F(FilterUiControllerTest,
+       HistogramLoggingReopenedCueIgnoredMultipleTimes) {
+  base::HistogramTester histogram_tester;
+
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion);
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+
+  // 1. Initial cue ignored -> collapses into omnibox.
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+  histogram_tester.ExpectTotalCount(
+      kMultistepFilterAcceptanceInitialCueHistogram, 0);
+  histogram_tester.ExpectTotalCount(kMultistepFilterAcceptanceHistogram, 0);
+
+  // 2. User reopens from omnibox and ignores (closes) it.
+  controller_->OnActionInvoked();
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+
+  histogram_tester.ExpectTotalCount(
+      kMultistepFilterAcceptanceReopenedCueHistogram, 0);
+  histogram_tester.ExpectTotalCount(kMultistepFilterAcceptanceHistogram, 0);
+
+  // 3. User reopens a 2nd time and ignores it again.
+  controller_->OnActionInvoked();
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+
+  histogram_tester.ExpectTotalCount(
+      kMultistepFilterAcceptanceReopenedCueHistogram, 0);
+  histogram_tester.ExpectTotalCount(kMultistepFilterAcceptanceHistogram, 0);
+
+  // 4. Tab closes -> records single overall outcome and deduplicated surface
+  // metrics.
+  controller_->ClearSuggestion(SuggestionUserDecision::kIgnored);
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterAcceptanceInitialCueHistogram,
+      SuggestionUserDecision::kIgnored, 1);
+  histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
+                                      SuggestionUserDecision::kIgnored, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterAcceptanceReopenedCueHistogram,
+      SuggestionUserDecision::kIgnored, 1);
 }
 
 }  // namespace

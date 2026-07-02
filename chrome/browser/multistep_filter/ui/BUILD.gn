@@ -84,6 +84,7 @@ source_set("unit_tests") {
       "//components/multistep_filter/core:features",
       "//components/multistep_filter/core:util",
       "//components/multistep_filter/core/annotation_index:test_support",
+      "//components/multistep_filter/core/logging",
       "//components/tabs:test_support",
       "//components/unified_consent",
       "//content/test:test_support",

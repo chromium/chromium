@@ -1,0 +1,96 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="MultistepFilterTaskType">
+  <variant name="SEARCH_ACCOMMODATIONS" summary="SEARCH_ACCOMMODATIONS"/>
+  <variant name="SEARCH_FLIGHTS" summary="SEARCH_FLIGHTS"/>
+</variants>
+
+<histogram name="MultistepFilter.Acceptance" enum="SuggestionUserDecision"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the overall user acceptance outcome (from Cue or Omnibox) for
+    Multistep Filter suggestion. Recorded when the user accepts, dismisses, or
+    opens settings for a Multistep Filter suggestion, or when the user ignores
+    the suggestion upon navigating away or closing the tab.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.Acceptance.ByTask.{TaskType}"
+    enum="SuggestionUserDecision" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the overall user acceptance outcome (from Cue or Omnibox) for
+    Multistep Filter suggestion for task type {TaskType}. Recorded when the user
+    accepts, dismisses, or opens settings for a Multistep Filter suggestion, or
+    when the user ignores the suggestion upon navigating away or closing the
+    tab.
+  </summary>
+  <token key="TaskType" variants="MultistepFilterTaskType"/>
+</histogram>
+
+<histogram name="MultistepFilter.Acceptance.InitialCue"
+    enum="SuggestionUserDecision" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the user acceptance outcome on the initial cue for Multistep Filter
+    suggestion. Recorded when the user interacts with the initial cue bubble
+    (accepts, dismisses, or opens settings) or when the cue bubble times out and
+    collapses into the Omnibox.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.Acceptance.InitialCue.ByTask.{TaskType}"
+    enum="SuggestionUserDecision" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the user acceptance outcome on the initial cue for Multistep Filter
+    suggestion for task type {TaskType}. Recorded when the user interacts with
+    the initial cue bubble (accepts, dismisses, or opens settings) or when the
+    cue bubble times out and collapses into the Omnibox.
+  </summary>
+  <token key="TaskType" variants="MultistepFilterTaskType"/>
+</histogram>
+
+<histogram name="MultistepFilter.Acceptance.ReopenedCue"
+    enum="SuggestionUserDecision" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records user acceptance outcome with the Multistep Filter suggestion cue
+    (after it is reopened from the Omnibox). Recorded when the user interacts
+    with a reopened Omnibox suggestion (accepts, dismisses, or opens settings)
+    or when the user ignores the Omnibox suggestion upon navigating away or
+    closing the tab.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.Acceptance.ReopenedCue.ByTask.{TaskType}"
+    enum="SuggestionUserDecision" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records user acceptance outcome with the Multistep Filter suggestion cue
+    (after it is reopened from the Omnibox) for task type {TaskType}. Recorded
+    when the user interacts with a reopened Omnibox suggestion (accepts,
+    dismisses, or opens settings) or when the user ignores the Omnibox
+    suggestion upon navigating away or closing the tab.
+  </summary>
+  <token key="TaskType" variants="MultistepFilterTaskType"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

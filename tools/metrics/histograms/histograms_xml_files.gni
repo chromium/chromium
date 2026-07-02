@@ -164,6 +164,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/memory/histograms.xml",
   "//tools/metrics/histograms/metadata/mobile/enums.xml",
   "//tools/metrics/histograms/metadata/mobile/histograms.xml",
+  "//tools/metrics/histograms/metadata/multistep_filter/enums.xml",
+  "//tools/metrics/histograms/metadata/multistep_filter/histograms.xml",
   "//tools/metrics/histograms/metadata/navigation/enums.xml",
   "//tools/metrics/histograms/metadata/navigation/histograms.xml",
   "//tools/metrics/histograms/metadata/nearby/enums.xml",

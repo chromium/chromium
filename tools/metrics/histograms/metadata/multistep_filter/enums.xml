@@ -1,0 +1,30 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(SuggestionUserDecision) -->
+
+<enum name="SuggestionUserDecision">
+  <int value="0" label="Accepted">Multistep Filter suggestion was accepted</int>
+  <int value="1" label="Ignored">
+    Multistep Filter suggestion was ignored (e.g. collapsed or not clicked)
+  </int>
+  <int value="2" label="Dismissed">
+    Multistep Filter suggestion was dismissed
+  </int>
+  <int value="3" label="SettingsOpened">Multistep Filter settings opened</int>
+</enum>
+
+<!-- LINT.ThenChange(//components/multistep_filter/core/data_models/suggestion_user_decision.h:SuggestionUserDecision) -->
+
+</enums>
+
+</histogram-configuration>

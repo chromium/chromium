@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MULTISTEP_FILTER_UI_FILTER_UI_CONTROLLER_H_
 #define CHROME_BROWSER_MULTISTEP_FILTER_UI_FILTER_UI_CONTROLLER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -42,6 +43,7 @@ inline constexpr int kDismissCommand = 1;
 inline constexpr int kSettingsCommand = 2;
 }  // namespace internal
 
+class FilterAcceptanceMetricsLogger;
 class FilterUiControllerTestApi;
 class MultistepFilterLogRouter;
 class MultistepFilterService;
@@ -83,6 +85,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
     // The current tracking state of the suggestion's presentation lifecycle.
     SuggestionViewState view_state;
+
+    // Tracks metrics across view states and flushes upon destruction.
+    std::unique_ptr<FilterAcceptanceMetricsLogger> metrics_logger;
   };
 
   static FilterUiController* From(tabs::TabInterface* tab);
