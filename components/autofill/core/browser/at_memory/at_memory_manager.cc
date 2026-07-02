@@ -25,7 +25,7 @@
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/at_memory_query_service.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
-#include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
+#include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_utils.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -560,18 +560,18 @@ void AtMemoryManager::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
     bool is_context_secure,
     UpdateSuggestionsCallback update_callback) {
-  if (at_memory_funnel_metrics_ || !IsAtMemoryTriggerSource(trigger_source)) {
+  if (at_memory_metrics_recorder_ || !IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
 
   trigger_source_ = trigger_source;
   is_context_secure_ = is_context_secure;
   update_callback_ = std::move(update_callback);
-  at_memory_funnel_metrics_ = std::make_unique<AtMemoryFunnelMetrics>(
+  at_memory_metrics_recorder_ = std::make_unique<AtMemoryMetricsRecorder>(
       owner_->client().GetMqlsUploadService(),
       owner_->client().GetLastCommittedPrimaryMainFrameURL(),
       owner_->client().GetPageTitle());
-  at_memory_funnel_metrics_->OnPopupShown(trigger_source);
+  at_memory_metrics_recorder_->OnPopupShown(trigger_source);
 }
 
 bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
@@ -593,8 +593,8 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
   if (!IsAtMemoryTriggerSource(trigger_source_)) {
     return false;
   }
-  if (at_memory_funnel_metrics_) {
-    at_memory_funnel_metrics_->OnQuerySubmitted(filter);
+  if (at_memory_metrics_recorder_) {
+    at_memory_metrics_recorder_->OnQuerySubmitted(filter);
   }
   ExecuteQuery(filter);
   return true;
@@ -603,8 +603,8 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
 void AtMemoryManager::OnPopupHidden() {
   trigger_source_ = AutofillSuggestionTriggerSource::kUnspecified;
   update_callback_.Reset();
-  if (at_memory_funnel_metrics_) {
-    at_memory_funnel_metrics_.reset();
+  if (at_memory_metrics_recorder_) {
+    at_memory_metrics_recorder_.reset();
   }
   CancelPendingQueries();
   is_context_secure_ = false;
@@ -638,14 +638,14 @@ void AtMemoryManager::FillSearchResult(const FormGlobalId& form_id,
   const Suggestion::AtMemoryPayload& payload =
       suggestion.GetPayload<Suggestion::AtMemoryPayload>();
 
-  if (at_memory_funnel_metrics_) {
-    at_memory_funnel_metrics_->OnSuggestionAccepted();
+  if (at_memory_metrics_recorder_) {
+    at_memory_metrics_recorder_->OnSuggestionAccepted();
   }
   // Transfer ownership of the metrics session to the filling path.
   // Ensures that the metrics will be properly recorded once the suggestion
   // is filled or one of the async steps in between fails.
-  std::unique_ptr<AtMemoryFunnelMetrics> metrics =
-      std::move(at_memory_funnel_metrics_);
+  std::unique_ptr<AtMemoryMetricsRecorder> metrics =
+      std::move(at_memory_metrics_recorder_);
   switch (payload.memory_data_type) {
     case MemoryDataType::kIban: {
       std::visit(
@@ -940,7 +940,7 @@ void AtMemoryManager::FillIban(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const Suggestion& suggestion,
-    std::unique_ptr<AtMemoryFunnelMetrics> metrics) {
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics) {
   Suggestion::Payload iban_payload;
   if (const Iban::Guid* guid = std::get_if<Iban::Guid>(&identifier)) {
     iban_payload = Suggestion::Guid(guid->value());
@@ -965,7 +965,7 @@ void AtMemoryManager::FillIban(
           [](base::WeakPtr<AtMemoryManager> manager,
              const FormGlobalId& form_id, const FieldGlobalId& field_id,
              const Suggestion& suggestion,
-             std::unique_ptr<AtMemoryFunnelMetrics> metrics,
+             std::unique_ptr<AtMemoryMetricsRecorder> metrics,
              const std::u16string& unmasked_value) {
             if (!manager) {
               return;
@@ -989,7 +989,7 @@ void AtMemoryManager::FillCreditCard(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const Suggestion& suggestion,
-    std::unique_ptr<AtMemoryFunnelMetrics> metrics) {
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics) {
   CreditCardAccessManager* credit_card_access_manager =
       owner_->GetCreditCardAccessManager();
   if (!credit_card_access_manager) {
@@ -1014,7 +1014,7 @@ void AtMemoryManager::FillCreditCard(
           [](base::WeakPtr<AtMemoryManager> manager,
              const FormGlobalId& form_id, const FieldGlobalId& field_id,
              const Suggestion& suggestion,
-             std::unique_ptr<AtMemoryFunnelMetrics> metrics,
+             std::unique_ptr<AtMemoryMetricsRecorder> metrics,
              const CreditCard& fetched_card) {
             if (!manager) {
               return;
@@ -1053,7 +1053,7 @@ void AtMemoryManager::FillSensitiveAutofillAiData(
     const FieldGlobalId& field_id,
     const Suggestion& suggestion,
     const AtMemoryDataType& data_type,
-    std::unique_ptr<AtMemoryFunnelMetrics> metrics) {
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics) {
   EntityDataManager* entity_data_manager =
       owner_->client().GetEntityDataManager();
   CHECK(entity_data_manager);
@@ -1080,7 +1080,7 @@ void AtMemoryManager::OnAutofillAiFetched(
     const FieldGlobalId& field_id,
     const Suggestion& suggestion,
     const AtMemoryDataType& data_type,
-    std::unique_ptr<AtMemoryFunnelMetrics> metrics,
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics,
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
         result,
     bool reauth_attempted) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_FUNNEL_METRICS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_FUNNEL_METRICS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_METRICS_RECORDER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_METRICS_RECORDER_H_
 
 #include <optional>
 #include <string>
@@ -24,15 +24,15 @@ namespace autofill {
 // Encapsulates the state and logging logic for the @memory search funnel.
 // This class tracks the progression of a user's interaction with the @memory
 // suggestions, from the initial display to the submission of a query.
-class AtMemoryFunnelMetrics {
+class AtMemoryMetricsRecorder {
  public:
-  AtMemoryFunnelMetrics(
+  AtMemoryMetricsRecorder(
       optimization_guide::ModelQualityLogsUploaderService* uploader_service,
       GURL url,
       std::u16string_view title);
-  AtMemoryFunnelMetrics(const AtMemoryFunnelMetrics&) = delete;
-  AtMemoryFunnelMetrics& operator=(const AtMemoryFunnelMetrics&) = delete;
-  ~AtMemoryFunnelMetrics();
+  AtMemoryMetricsRecorder(const AtMemoryMetricsRecorder&) = delete;
+  AtMemoryMetricsRecorder& operator=(const AtMemoryMetricsRecorder&) = delete;
+  ~AtMemoryMetricsRecorder();
 
   // Records that the popup UI was successfully displayed to the user.
   // This emits the "PopupDisplayed" metric. This method is idempotent; only
@@ -84,4 +84,4 @@ class AtMemoryFunnelMetrics {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_FUNNEL_METRICS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_METRICS_RECORDER_H_

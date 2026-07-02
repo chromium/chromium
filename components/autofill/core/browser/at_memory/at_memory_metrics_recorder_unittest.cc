@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
+#include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -16,9 +16,9 @@
 
 namespace autofill {
 
-class AtMemoryFunnelMetricsTest : public testing::Test {
+class AtMemoryMetricsRecorderTest : public testing::Test {
  public:
-  AtMemoryFunnelMetricsTest() = default;
+  AtMemoryMetricsRecorderTest() = default;
 
  protected:
   base::HistogramTester histogram_tester_;
@@ -26,8 +26,8 @@ class AtMemoryFunnelMetricsTest : public testing::Test {
 
 // Tests that `OnPopupShown` correctly logs the "PopupDisplayed" metric when
 // triggered by typing the invocation sequence.
-TEST_F(AtMemoryFunnelMetricsTest, OnPopupShown_TypedTrigger) {
-  AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_TypedTrigger) {
+  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
 
   histogram_tester_.ExpectUniqueSample(
@@ -37,8 +37,8 @@ TEST_F(AtMemoryFunnelMetricsTest, OnPopupShown_TypedTrigger) {
 
 // Tests that `OnPopupShown` correctly logs the "PopupDisplayed" metric when
 // triggered via the context menu.
-TEST_F(AtMemoryFunnelMetricsTest, OnPopupShown_ContextMenu) {
-  AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_ContextMenu) {
+  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 
   histogram_tester_.ExpectUniqueSample(
@@ -48,8 +48,8 @@ TEST_F(AtMemoryFunnelMetricsTest, OnPopupShown_ContextMenu) {
 
 // Tests that `OnPopupShown` is idempotent and only logs a metric for the
 // first call in a session.
-TEST_F(AtMemoryFunnelMetricsTest, OnPopupShown_Idempotent) {
-  AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
+  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
   // Second call should be ignored.
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
@@ -60,9 +60,9 @@ TEST_F(AtMemoryFunnelMetricsTest, OnPopupShown_Idempotent) {
 }
 
 // Tests that the destructor correctly logs that a query was submitted.
-TEST_F(AtMemoryFunnelMetricsTest, Destructor_QuerySubmitted_True) {
+TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_True) {
   {
-    AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"some query");
   }
@@ -73,9 +73,9 @@ TEST_F(AtMemoryFunnelMetricsTest, Destructor_QuerySubmitted_True) {
 
 // Tests that the destructor correctly logs that no query was submitted
 // during a shown session.
-TEST_F(AtMemoryFunnelMetricsTest, Destructor_QuerySubmitted_False) {
+TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_False) {
   {
-    AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     // No query submitted.
   }
@@ -85,9 +85,9 @@ TEST_F(AtMemoryFunnelMetricsTest, Destructor_QuerySubmitted_False) {
 }
 
 // Tests that the destructor correctly logs that a suggestion was accepted.
-TEST_F(AtMemoryFunnelMetricsTest, Destructor_SuggestionAccepted_True) {
+TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
   {
-    AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
   }
@@ -98,9 +98,9 @@ TEST_F(AtMemoryFunnelMetricsTest, Destructor_SuggestionAccepted_True) {
 
 // Tests that the destructor correctly logs that no suggestion was accepted
 // during a shown session.
-TEST_F(AtMemoryFunnelMetricsTest, Destructor_SuggestionAccepted_False) {
+TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_False) {
   {
-    AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     // No suggestion accepted.
   }
@@ -110,9 +110,9 @@ TEST_F(AtMemoryFunnelMetricsTest, Destructor_SuggestionAccepted_False) {
 }
 
 // Tests that `MarkFilled` correctly logs whether a suggestion was filled.
-TEST_F(AtMemoryFunnelMetricsTest, MarkFilled_Filled) {
+TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
   {
-    AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
     metrics.MarkFilled();
@@ -122,7 +122,7 @@ TEST_F(AtMemoryFunnelMetricsTest, MarkFilled_Filled) {
       "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
 
   {
-    AtMemoryFunnelMetrics metrics2(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics2(nullptr, GURL(), std::u16string());
     metrics2.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics2.OnSuggestionAccepted();
   }
@@ -132,11 +132,11 @@ TEST_F(AtMemoryFunnelMetricsTest, MarkFilled_Filled) {
 }
 
 // Tests that the unmasking duration metric is recorded correctly.
-TEST_F(AtMemoryFunnelMetricsTest, TimeToFetchUnmasked) {
+TEST_F(AtMemoryMetricsRecorderTest, TimeToFetchUnmasked) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   {
-    AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
     metrics.OnFetchPiiStarted();
@@ -151,7 +151,7 @@ TEST_F(AtMemoryFunnelMetricsTest, TimeToFetchUnmasked) {
 
 // Tests that the ModelQualityLogEntry is correctly filled and uploaded when the
 // uploader service is available and is flushed on destruction.
-TEST_F(AtMemoryFunnelMetricsTest, LogEntryUploaded) {
+TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
   TestingPrefServiceSimple local_state;
   optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
       local_state.registry());
@@ -161,7 +161,7 @@ TEST_F(AtMemoryFunnelMetricsTest, LogEntryUploaded) {
       &local_state);
 
   {
-    AtMemoryFunnelMetrics metrics(&uploader_service,
+    AtMemoryMetricsRecorder metrics(&uploader_service,
                                   GURL("https://example.com"), u"Example Page");
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"test query");
@@ -178,7 +178,7 @@ TEST_F(AtMemoryFunnelMetricsTest, LogEntryUploaded) {
 
 // Tests that the ModelQualityLogEntry is correctly filled and uploaded when the
 // uploader service is available and is flushed on next query.
-TEST_F(AtMemoryFunnelMetricsTest, LogEntryUploaded_MultipleQueries) {
+TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
   TestingPrefServiceSimple local_state;
   optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
       local_state.registry());
@@ -188,7 +188,7 @@ TEST_F(AtMemoryFunnelMetricsTest, LogEntryUploaded_MultipleQueries) {
       &local_state);
 
   {
-    AtMemoryFunnelMetrics metrics(&uploader_service,
+    AtMemoryMetricsRecorder metrics(&uploader_service,
                                   GURL("https://example.com"), u"Example Page");
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"test query");

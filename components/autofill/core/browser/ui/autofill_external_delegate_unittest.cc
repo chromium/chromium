@@ -820,7 +820,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_ContextMenu) {
       AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
 }
 
-TEST_F(AutofillExternalDelegateTest, AtMemoryFunnelMetrics_QuerySubmitted) {
+TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_QuerySubmitted) {
   base::HistogramTester histogram_tester;
   StartAtMemorySession();
 
@@ -831,7 +831,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFunnelMetrics_QuerySubmitted) {
                                       true, 1);
 }
 
-TEST_F(AutofillExternalDelegateTest, AtMemoryFunnelMetrics_NoQuerySubmitted) {
+TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_NoQuerySubmitted) {
   base::HistogramTester histogram_tester;
   StartAtMemorySession();
 

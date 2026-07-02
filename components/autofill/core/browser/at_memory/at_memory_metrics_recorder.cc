@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
+#include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -14,7 +14,7 @@
 
 namespace autofill {
 
-AtMemoryFunnelMetrics::AtMemoryFunnelMetrics(
+AtMemoryMetricsRecorder::AtMemoryMetricsRecorder(
     optimization_guide::ModelQualityLogsUploaderService* uploader_service,
     GURL url,
     std::u16string_view title)
@@ -22,7 +22,7 @@ AtMemoryFunnelMetrics::AtMemoryFunnelMetrics(
       title_(title),
       uploader_service_(uploader_service) {}
 
-AtMemoryFunnelMetrics::~AtMemoryFunnelMetrics() {
+AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   // Only log summary metrics if the popup was successfully shown.
   // This avoids polluting the "No Query Submitted" data with cases where the
   // popup was hidden immediately after initialization (e.g., due to focus
@@ -43,7 +43,7 @@ AtMemoryFunnelMetrics::~AtMemoryFunnelMetrics() {
   }
 }
 
-void AtMemoryFunnelMetrics::OnPopupShown(
+void AtMemoryMetricsRecorder::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source) {
   if (source_.has_value()) {
     return;
@@ -83,7 +83,7 @@ void AtMemoryFunnelMetrics::OnPopupShown(
                                 *source_);
 }
 
-void AtMemoryFunnelMetrics::OnQuerySubmitted(std::u16string query) {
+void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string query) {
   if (uploader_service_) {
     pending_log_entry_ =
         std::make_unique<optimization_guide::ModelQualityLogEntry>(
@@ -102,21 +102,21 @@ void AtMemoryFunnelMetrics::OnQuerySubmitted(std::u16string query) {
   query_submitted_ = true;
 }
 
-void AtMemoryFunnelMetrics::OnSuggestionAccepted() {
+void AtMemoryMetricsRecorder::OnSuggestionAccepted() {
   suggestion_accepted_ = true;
 }
 
-void AtMemoryFunnelMetrics::OnFetchPiiStarted() {
+void AtMemoryMetricsRecorder::OnFetchPiiStarted() {
   fetch_pii_start_time_ = base::TimeTicks::Now();
   fetch_pii_duration_.reset();
 }
 
-void AtMemoryFunnelMetrics::OnFetchPiiCompleted() {
+void AtMemoryMetricsRecorder::OnFetchPiiCompleted() {
   CHECK(fetch_pii_start_time_);
   fetch_pii_duration_.emplace(base::TimeTicks::Now() - *fetch_pii_start_time_);
 }
 
-void AtMemoryFunnelMetrics::MarkFilled() {
+void AtMemoryMetricsRecorder::MarkFilled() {
   was_filled_ = true;
 }
 
