@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu.h"
+#include "chrome/browser/ui/views/toolbar/action_app_menu.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
