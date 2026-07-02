@@ -1144,10 +1144,6 @@ static_library("ui") {
     # that can't be split out yet.
     "//chrome/browser/optimization_guide:impl",
 
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/ui/autofill/payments",
-
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
     # c/b/ui/browser.h, browser_window.h, chrome_pages.h
@@ -1161,14 +1157,6 @@ static_library("ui") {
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
 
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/favicon",
-
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/feedback",
-
     # glic's :impl includes headers from //chrome/browser/ui (e.g. browser.h,
     # browser_window.h, side_panel/side_panel_ui.h) that can't be split out
     # yet.
@@ -1181,10 +1169,6 @@ static_library("ui") {
     # c/b/ui/views/frame/browser_view.h
     # c/b/ui/views/safe_browsing/tailored_security_unconsented_modal.h
     "//chrome/browser/safe_browsing",
-
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/profiling_host",
 
     # TODO(crbug.com/364667551): Remove this circular dependency when
     # c/b/ui/webui/feedback/feedback_dialog.h gets componentized.
@@ -1210,10 +1194,6 @@ static_library("ui") {
     # c/b/ui/browser.h
     "//chrome/browser/permissions",
 
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/search",
-
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
     # c/b/ui/browser.h, browser_commands.h, browser_window.h
@@ -1222,10 +1202,6 @@ static_library("ui") {
     # c/b/ui/views/omnibox/rounded_omnibox_results_frame.h
     # c/b/ui/views/search_engines/dse_reset_dialog.h
     "//chrome/browser/ui/omnibox:impl",
-
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/ui/webui/bluetooth_internals",
 
     # TODO(crbug.com/353332589): version_ui.cc includes theme_source.h from
     # //chrome/browser/ui.
@@ -1237,26 +1213,14 @@ static_library("ui") {
     # TODO(crbug.com/353284909): Remove this circular dependency.
     "//chrome/browser/media/webrtc",
 
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/memory",
-
     # metrics:impl includes headers from //chrome/browser/ui that can't be
     # split out yet.
     "//chrome/browser/metrics:impl",
-
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/net",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
     # c/b/ui/chrome_pages.h, crypto_module_delegate_nss.h
     "//chrome/browser/net:impl",
-
-    # TODO(crbug.com/353332589): This entry produces no gn check failure on
-    # the various platform configs. It may be stale.
-    "//chrome/browser/performance_manager:impl",
 
     # TODO(crbug.com/360599255): popunder_preventer.cc includes browser.h
     "//chrome/browser/ui/blocked_content:impl",
