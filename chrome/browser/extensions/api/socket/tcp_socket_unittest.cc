@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/test/bind.h"

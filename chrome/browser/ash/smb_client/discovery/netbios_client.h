@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/smb_client/discovery/netbios_client_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"

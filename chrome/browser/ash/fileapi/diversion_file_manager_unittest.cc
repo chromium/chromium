@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/fileapi/diversion_file_manager.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/smb_client/discovery/netbios_client.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "net/base/ip_endpoint.h"
