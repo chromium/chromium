@@ -7128,6 +7128,19 @@ void NavigationRequest::CommitNavigation() {
       service_worker_container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
 
+  // The decision to create `service_worker_handle_` was made before the
+  // request was sent, based only on the sandbox flags inherited from the frame
+  // owner element. If the response delivered a `Content-Security-Policy:
+  // sandbox` header without `allow-same-origin`, the document will commit with
+  // an opaque origin and is not eligible to use service workers, so drop the
+  // handle now instead of creating a container host for the committed document.
+  if (service_worker_handle_ &&
+      (policy_container_builder_->FinalPolicies().sandbox_flags &
+       network::mojom::WebSandboxFlags::kOrigin) ==
+          network::mojom::WebSandboxFlags::kOrigin) {
+    service_worker_handle_.reset();
+  }
+
   // Notify the service worker navigation handle that navigation commit is
   // about to go.
   if (service_worker_handle_ &&
