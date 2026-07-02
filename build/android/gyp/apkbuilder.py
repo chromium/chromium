@@ -27,6 +27,20 @@ _NO_COMPRESS_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.wav', '.mp2',
                            '.mp4', '.m4a', '.m4v', '.3gp', '.3gpp', '.3g2',
                            '.3gpp2', '.amr', '.awb', '.wma', '.wmv', '.webm')
 
+# Taken from https://developer.android.com/tools/zipalign.
+_DEFAULT_ZIP_ALIGNMENT = 4
+_64_BIT_PAGE_ALIGNMENT = 0x4000
+
+
+def _Requires64BitAlignment(android_abi: str | None) -> bool:
+  """Returns whether the given Android ABI needs 64-bit page aligned libs."""
+  return android_abi and '64' in android_abi
+
+
+def _ContainsWrapSh(native_libs: list[str]) -> bool:
+  """Returns whether the given list of native libs contains the wrap.sh script."""
+  return any(lib.endswith('wrap.sh') for lib in native_libs)
+
 
 def _ParseArgs(args):
   parser = argparse.ArgumentParser()
@@ -144,7 +158,9 @@ def _AlignAndSign(apksigner_path,
                   key_passwd,
                   key_name,
                   min_sdk_version,
-                  warnings_as_errors=False):
+                  warnings_as_errors=False,
+                  should_preserve_alignment = False):
+
   sign_cmd = build_utils.JavaCmd() + [
       '-jar',
       apksigner_path,
@@ -177,8 +193,13 @@ def _AlignAndSign(apksigner_path,
   # v4 signatures (.idsig files) require a v2 or v3 signature at the same time.
   # These are enabled by default.
 
-  if android_abi and '64' in android_abi:
-    sign_cmd += ['--lib-page-alignment', str(0x4000)]
+  if _Requires64BitAlignment(android_abi):
+    sign_cmd += ['--lib-page-alignment', str(_64_BIT_PAGE_ALIGNMENT)]
+
+  if should_preserve_alignment:
+    # Required so that the 'wrap.sh' script is not relocated in memory, which
+    # would cause the APK to fail to run.
+    sign_cmd += ['--alignment-preserved', 'true']
 
   build_utils.CheckOutput(sign_cmd,
                           print_stdout=True,
@@ -227,7 +248,7 @@ def _GetAssetsToAdd(path_tuples,
     path_tuples: List of src_path, dest_path tuples to add.
     disable_compression: Whether to disable compression.
 
-  Returns: A list of (src_path, apk_path, compress) tuple
+  Returns: A list of (src_path, apk_path, compress, alignment) tuple
   representing what and how assets are added.
   """
   assets_to_add = []
@@ -245,12 +266,15 @@ def _GetAssetsToAdd(path_tuples,
           apk_path = posixpath.join(apk_root_dir, dest_path[3:])
         else:
           apk_path = 'assets/' + dest_path
-        assets_to_add.append((apk_path, src_path, compress))
+        # Assets are default-aligned in the APK, so `alignment` here is
+        # always None. Setting it this way allows us to feed
+        # this function's return value directly to `_AddFiles()`.
+        assets_to_add.append((apk_path, src_path, compress, None))
   return assets_to_add
 
 
 def _AddFiles(apk, details, compress_level):
-  for apk_path, src_path, compress in details:
+  for apk_path, src_path, compress, alignment in details:
     # This check is only relevant for assets, but it should not matter if it is
     # checked for the whole list of files.
     try:
@@ -263,17 +287,21 @@ def _AddFiles(apk, details, compress_level):
                                       apk_path,
                                       src_path=src_path,
                                       compress=compress,
-                                      compress_level=compress_level)
+                                      compress_level=compress_level,
+                                      alignment=alignment)
 
 
 def _GetNativeLibrariesToAdd(native_libs, android_abi, lib_always_compress):
   """Returns the list of file_detail tuples for native libraries in the apk.
 
-  Returns: A list of (src_path, apk_path, compress) tuple representing what and
+  Returns: A list of (src_path, apk_path, compress, alignment) tuple representing what and
       how native libraries are added.
   """
   libraries_to_add = []
 
+  alignment = _DEFAULT_ZIP_ALIGNMENT
+  if _Requires64BitAlignment(android_abi):
+    alignment = _64_BIT_PAGE_ALIGNMENT
 
   for path in native_libs:
     basename = os.path.basename(path)
@@ -283,7 +311,7 @@ def _GetNativeLibrariesToAdd(native_libs, android_abi, lib_always_compress):
       lib_android_abi = 'arm64-v8a-hwasan'
 
     apk_path = 'lib/%s/%s' % (lib_android_abi, basename)
-    libraries_to_add.append((apk_path, path, compress))
+    libraries_to_add.append((apk_path, path, compress, alignment))
 
   return libraries_to_add
 
@@ -294,7 +322,7 @@ def _CreateExpectationsData(native_libs, assets):
   assets = sorted(assets)
 
   ret = []
-  for apk_path, _, compress in native_libs + assets:
+  for apk_path, _, compress, _ in native_libs + assets:
     ret.append(f'apk_path={apk_path}, compress={compress}\n')
   return ''.join(ret)
 
@@ -402,11 +430,13 @@ def main(args):
          zipfile.ZipFile(f, 'w') as out_apk:
 
       def add_to_zip(zip_path, data, compress=True):
+        alignment = None if compress else _DEFAULT_ZIP_ALIGNMENT
         zip_helpers.add_to_zip_hermetic(out_apk,
                                         zip_path,
                                         data=data,
                                         compress=compress,
-                                        compress_level=compress_level)
+                                        compress_level=compress_level,
+                                        alignment=alignment)
 
       def copy_resource(zipinfo, out_dir=''):
         add_to_zip(
@@ -517,6 +547,7 @@ def main(args):
                        java_resource_jar.read(apk_path))
 
     if options.format == 'apk' and options.key_path:
+      should_preserve_alignment = _ContainsWrapSh(native_libs)
       _AlignAndSign(options.apksigner_jar,
                     options.android_abi,
                     f.name,
@@ -524,7 +555,8 @@ def main(args):
                     options.key_passwd,
                     options.key_name,
                     options.min_sdk_version,
-                    warnings_as_errors=options.warnings_as_errors)
+                    warnings_as_errors=options.warnings_as_errors,
+                    should_preserve_alignment=should_preserve_alignment)
       shutil.move(f'{f.name}.idsig', f'{options.output_apk}.idsig')
     logging.debug('Moving file into place')
 
