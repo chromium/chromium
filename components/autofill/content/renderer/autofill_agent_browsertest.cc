@@ -1904,12 +1904,16 @@ TEST_F(AutofillAgentTest, RequestRefillTimesOut) {
 
 class AutofillAgentTest_AtMemory : public AutofillAgentTest {
  public:
-  void SimulateTyping(std::string_view text) {
+  // Simulates the user typing slow enough to let AutofillAgent trigger
+  // AskForValuesToFill() after each character.
+  //
+  // For faster typing, AutofillAgent's event throttling may swallow
+  // AskForValuesToFill().
+  void SimulateSlowTyping(std::string_view text) {
     for (char c : text) {
       SimulateUserTypingAsciiCharacter(c, /*flush_message_loop=*/true);
       task_environment_.FastForwardBy(base::Milliseconds(100));
     }
-    task_environment_.RunUntilIdle();
   }
 
  private:
@@ -1962,13 +1966,13 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemorySearchTrigger) {
       .Times(testing::AnyNumber());
 
   // Typing sequence: "a", "a@", "a@@", "a@@b"
-  SimulateTyping("a");
+  SimulateSlowTyping("a");
   check_point.Call(1);
-  SimulateTyping("@");
+  SimulateSlowTyping("@");
   check_point.Call(2);
-  SimulateTyping("@");
+  SimulateSlowTyping("@");
   check_point.Call(3);
-  SimulateTyping("b");
+  SimulateSlowTyping("b");
   check_point.Call(4);
 }
 
@@ -1989,7 +1993,7 @@ TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerTypedIntoEmptyField) {
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
-  SimulateUserInputChangeForElementById("f", "@@");
+  SimulateSlowTyping("@@");
 }
 
 // Tests that typing "@@" in the middle of a string also triggers @memory.
@@ -2009,7 +2013,7 @@ TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerInMiddle) {
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
-  SimulateUserInputChangeForElementById("f", "a@@");
+  SimulateSlowTyping("a@@");
 }
 
 // Tests that typing "@@" in the password field doesn't trigger @memory.
@@ -2030,7 +2034,7 @@ TEST_F(AutofillAgentTest_AtMemory, MemorySearchNotTriggeredOnPasswordField) {
   LoadHTML(R"(<input id="f" type="password">)");
   WaitForFormsSeen();
   Focus("f");
-  SimulateUserInputChangeForElementById("f", "a@@");
+  SimulateSlowTyping("a@@");
 }
 
 // Tests that ApplyFieldAction correctly handles targeted replacement of "@@"
@@ -2118,26 +2122,7 @@ class AutofillAgentTest_AtMemoryContentEditable
     LoadHTML(R"(<div id="ce" contenteditable="true"
                      style="width:100px; height:100px;"></div>)");
     WaitForFormsSeen();
-    ExecuteJavaScriptForTests("document.getElementById('ce').focus();");
-  }
-
-  // Sets text via innerText and moves the caret to the end. Manually notifies
-  // the agent because programmatic changes bypass Blink's editing events.
-  void SimulateComplexTyping(const std::string& text) {
-    ExecuteJavaScriptForTests(base::StringPrintf(R"(
-      const el = document.getElementById('ce');
-      el.focus();
-      el.innerText = '%s';
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    )",
-                                                 text.c_str()));
-    test_api(autofill_agent())
-        .ContentEditableDidChange(GetWebElementById("ce"));
+    Focus("ce");
   }
 };
 
@@ -2148,7 +2133,7 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, TriggerViaTyping) {
                                  AutofillSuggestionTriggerSource::kAtMemory, _))
       .Times(1);
 
-  SimulateTyping("@@");
+  SimulateSlowTyping("@@");
 }
 
 // Tests that @memory popup triggers if we type the "@@" one symbol at a
@@ -2187,11 +2172,11 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, TriggerSequence) {
           _, _, _, testing::Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
       .Times(testing::AnyNumber());
 
-  SimulateTyping("@");
+  SimulateSlowTyping("@");
   check_point.Call(1);
-  SimulateTyping("@");
+  SimulateSlowTyping("@");
   check_point.Call(2);
-  SimulateTyping("b");
+  SimulateSlowTyping("b");
   check_point.Call(3);
 }
 
@@ -2202,9 +2187,7 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
               AskForValuesToFill(
                   _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
       .Times(1);
-  // SimulateUserTypingASCIICharacter doesn't support characters like '#', '(',
-  // ')', ':', so we test them separately with SimulateComplexTyping.
-  SimulateComplexTyping("Memory log #123 (Feb 2026): @@");
+  SimulateSlowTyping("Memory log #123 (Feb 2026): @@");
 }
 
 // Tests that @memory popup doesn't trigger on a single "@".
@@ -2213,7 +2196,7 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, NoTriggerOnSingleAt) {
               AskForValuesToFill(
                   _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
       .Times(0);
-  SimulateTyping("@");
+  SimulateSlowTyping("@");
 }
 
 // Tests that @memory popup doesn't trigger on selection.
@@ -2244,8 +2227,8 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, MultipleTriggers) {
                   _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
       .Times(2);
 
-  SimulateTyping("@@");
-  SimulateTyping("abc@@");
+  SimulateSlowTyping("@@");
+  SimulateSlowTyping("abc@@");
 }
 
 // Tests that kReplaceAtMemoryTrigger correctly replaces the "@@" trigger in a
@@ -2255,7 +2238,7 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
   blink::WebElement ce = GetWebElementById("ce");
 
   // 1. Set initial text with the trigger and position cursor at the end.
-  SimulateComplexTyping("Prefix @@");
+  SimulateSlowTyping("Prefix @@");
   EXPECT_EQ(ce.TextContent().Utf16(), u"Prefix @@");
 
   // 2. Trigger the fill action.
@@ -2282,7 +2265,7 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
   blink::WebElement ce = GetWebElementById("ce");
 
   // 1. Set initial text without the trigger and position cursor at the end.
-  SimulateComplexTyping("PrefixSuffix");
+  SimulateSlowTyping("PrefixSuffix");
 
   // 2. Put cursor position between "Prefix" and "Suffix".
   GetMainFrame()->SetEditableSelectionOffsets(6, 6);
