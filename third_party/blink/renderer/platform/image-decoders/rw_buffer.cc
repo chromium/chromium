@@ -11,6 +11,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
@@ -35,7 +36,11 @@ struct RWBuffer::BufferBlock {
     // SAFETY: The Alloc() function (in RWBuffer::BufferBlock or
     // RWBuffer::BufferHead) allocates an extra `capacity_` bytes at the end of
     // the object.
-    return UNSAFE_BUFFERS({reinterpret_cast<uint8_t*>(this + 1), capacity_});
+    //
+    // `base::unchecked`: This site shows up when profiling `decode-gif.html`.
+    // See https://crbug.com/525087502.
+    return UNSAFE_BUFFERS(base::span(
+        base::unchecked, reinterpret_cast<uint8_t*>(this + 1), capacity_));
   }
   base::span<const uint8_t> Buffer() const {
     return const_cast<RWBuffer::BufferBlock*>(this)->Buffer();
