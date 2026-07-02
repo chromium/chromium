@@ -54,7 +54,7 @@ public class AtMemoryBottomSheetViewTest {
     @Mock private Runnable mMockBackClickListener;
     @Mock private Runnable mMockSourceClickListener;
     @Mock private Runnable mMockManageClickListener;
-    @Mock private Callback<AutofillSuggestion> mMockSuggestionClickListener;
+    @Mock private Callback<Integer> mMockSuggestionClickListener;
 
     private Context mContext;
     private AtMemoryBottomSheetView mView;
@@ -270,7 +270,7 @@ public class AtMemoryBottomSheetViewTest {
         ChipView chip = getChipViews(chipsContainer).get(0);
         chip.performClick();
 
-        verify(mMockSuggestionClickListener).onResult(suggestion);
+        verify(mMockSuggestionClickListener).onResult(0);
     }
 
     private List<ChipView> getChipViews(ViewGroup viewGroup) {

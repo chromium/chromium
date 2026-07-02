@@ -26,6 +26,11 @@ class AtMemoryBottomSheetDelegate {
   // Called when the user selects a suggestion in the bottom sheet.
   virtual void OnSuggestionSelected(int position) = 0;
 
+  // Called when the user selects a child suggestion in the flyout screen of the
+  // bottom sheet.
+  virtual void OnChildSuggestionSelected(int parent_position,
+                                         int child_position) = 0;
+
   // Returns true if a search is currently in progress.
   virtual bool IsSearching() const = 0;
 };

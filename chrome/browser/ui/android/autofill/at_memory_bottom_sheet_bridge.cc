@@ -146,6 +146,14 @@ void AtMemoryBottomSheetBridge::OnSuggestionSelected(JNIEnv* env,
   }
 }
 
+void AtMemoryBottomSheetBridge::OnChildSuggestionSelected(JNIEnv* env,
+                                                          int parent_position,
+                                                          int child_position) {
+  if (delegate_) {
+    delegate_->OnChildSuggestionSelected(parent_position, child_position);
+  }
+}
+
 bool AtMemoryBottomSheetBridge::IsSearching(JNIEnv* env) {
   return delegate_ && delegate_->IsSearching();
 }

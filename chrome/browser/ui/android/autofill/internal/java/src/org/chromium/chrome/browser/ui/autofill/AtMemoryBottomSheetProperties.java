@@ -125,8 +125,8 @@ class AtMemoryBottomSheetProperties {
         static final ReadableObjectPropertyKey<Runnable> ON_MANAGE_CLICKED =
                 new ReadableObjectPropertyKey<>();
         // Invoked when an autofill suggestion is clicked in the flyout screen.
-        static final ReadableObjectPropertyKey<Callback<AutofillSuggestion>> ON_SUGGESTION_CLICKED =
-                new ReadableObjectPropertyKey<>();
+        static final WritableObjectPropertyKey<Callback<Integer>> ON_SUGGESTION_CLICKED =
+                new WritableObjectPropertyKey<>();
 
         static final PropertyKey[] ALL_KEYS = {
             TITLE,

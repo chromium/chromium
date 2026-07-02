@@ -141,6 +141,43 @@ public class AtMemoryBottomSheetMediatorTest {
     }
 
     @Test
+    public void testOnFlyoutSuggestionClicked() {
+        AutofillSuggestion childSuggestion0 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Hilton Check-in")
+                        .setSubLabel("May 16")
+                        .build();
+        AutofillSuggestion childSuggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Hilton Checkout")
+                        .setSubLabel("May 20")
+                        .build();
+        List<AutofillSuggestion> suggestions =
+                List.of(
+                        new AutofillSuggestion.Builder()
+                                .setIconId(R.drawable.flight)
+                                .setLabel("KLM204")
+                                .setSubLabel("Flight ⋅ 15 May ⋅ SEA - MUC")
+                                .build(),
+                        new AutofillSuggestion.Builder()
+                                .setIconId(R.drawable.travel_trip)
+                                .setLabel("Hotel Booking")
+                                .setSubLabel("Hilton ⋅ 16 May")
+                                .setChildren(List.of(childSuggestion0, childSuggestion1))
+                                .build());
+
+        mMediator.show(suggestions);
+
+        PropertyModel itemModel = mModelList.get(1).model;
+        itemModel.get(ON_FLYOUT_CLICKED).run();
+
+        PropertyModel flyoutModel = mMediator.getFlyoutModel();
+        flyoutModel.get(FlyoutProperties.ON_SUGGESTION_CLICKED).onResult(1);
+
+        verify(mDelegate).onChildSuggestionClicked(1, 1);
+    }
+
+    @Test
     public void testOnDismissed() {
         mModel.set(VISIBLE, true);
         mHomeModel.set(HomeProperties.IS_LOADING, true);

@@ -30,6 +30,10 @@ class MockAtMemoryBottomSheetDelegate : public AtMemoryBottomSheetDelegate {
               (const std::u16string& query),
               (override));
   MOCK_METHOD(void, OnSuggestionSelected, (int position), (override));
+  MOCK_METHOD(void,
+              OnChildSuggestionSelected,
+              (int parent_position, int child_position),
+              (override));
   MOCK_METHOD(bool, IsSearching, (), (const, override));
 };
 

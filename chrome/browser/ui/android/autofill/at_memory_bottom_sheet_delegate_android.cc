@@ -64,6 +64,31 @@ void AtMemoryBottomSheetDelegateAndroid::OnSuggestionSelected(int position) {
   }
 }
 
+void AtMemoryBottomSheetDelegateAndroid::OnChildSuggestionSelected(
+    int parent_position,
+    int child_position) {
+  if (parent_position < 0 ||
+      base::checked_cast<size_t>(parent_position) >= suggestions_.size()) {
+    return;
+  }
+
+  const Suggestion& parent_suggestion = suggestions_[parent_position];
+  if (child_position < 0 || base::checked_cast<size_t>(child_position) >=
+                                parent_suggestion.children.size()) {
+    return;
+  }
+
+  // Use a copy instead of a reference here. Under certain circumstances,
+  // `DidAcceptSuggestion()` can trigger focus changes or hiding that
+  // destroys `this` or overwrites `suggestions_`, invalidating the reference.
+  Suggestion suggestion = parent_suggestion.children[child_position];
+  if (delegate_) {
+    delegate_->DidAcceptSuggestion(
+        suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
+                        .row = child_position, .sub_popup_level = 1});
+  }
+}
+
 bool AtMemoryBottomSheetDelegateAndroid::IsSearching() const {
   return delegate_ && delegate_->IsSearching();
 }

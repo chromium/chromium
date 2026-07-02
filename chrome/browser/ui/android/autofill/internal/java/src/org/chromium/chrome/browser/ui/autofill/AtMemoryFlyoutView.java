@@ -38,7 +38,7 @@ public class AtMemoryFlyoutView extends LinearLayout {
 
     private final List<ChipView> mActiveChips = new ArrayList<>();
 
-    private @Nullable Callback<AutofillSuggestion> mSuggestionClickListener;
+    private @Nullable Callback<Integer> mSuggestionClickListener;
 
     public AtMemoryFlyoutView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -72,7 +72,7 @@ public class AtMemoryFlyoutView extends LinearLayout {
         int[] ids = new int[suggestions.size()];
         for (int i = 0; i < suggestions.size(); i++) {
             AutofillSuggestion suggestion = suggestions.get(i);
-            ChipView chip = createFlyoutChipView(mChipsContainer, suggestion);
+            ChipView chip = createFlyoutChipView(mChipsContainer, suggestion, i);
             ids[i] = chip.getId();
             mChipsContainer.addView(chip);
             mActiveChips.add(chip);
@@ -92,11 +92,12 @@ public class AtMemoryFlyoutView extends LinearLayout {
         mManageButton.setOnClickListener(v -> onClickListener.run());
     }
 
-    public void setSuggestionClickListener(Callback<AutofillSuggestion> onClickListener) {
+    public void setSuggestionClickListener(Callback<Integer> onClickListener) {
         mSuggestionClickListener = onClickListener;
     }
 
-    private ChipView createFlyoutChipView(ViewGroup parent, AutofillSuggestion suggestion) {
+    private ChipView createFlyoutChipView(
+            ViewGroup parent, AutofillSuggestion suggestion, int position) {
         Context context = parent.getContext();
         ChipView chip =
                 (ChipView)
@@ -121,7 +122,7 @@ public class AtMemoryFlyoutView extends LinearLayout {
         chip.setOnClickListener(
                 v -> {
                     if (mSuggestionClickListener != null) {
-                        mSuggestionClickListener.onResult(suggestion);
+                        mSuggestionClickListener.onResult(position);
                     }
                 });
 

@@ -16,20 +16,22 @@
 
 namespace autofill {
 
+using ::testing::NiceMock;
+
 class AtMemoryBottomSheetDelegateAndroidTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient client_;
+  NiceMock<MockAutofillSuggestionDelegate> mock_suggestion_delegate_;
 };
 
 TEST_F(AtMemoryBottomSheetDelegateAndroidTest, OnDismissedHidesSuggestions) {
-  testing::NiceMock<MockAutofillSuggestionDelegate> mock_suggestion_delegate;
   AtMemoryBottomSheetDelegateAndroid delegate(
-      &client_, mock_suggestion_delegate.GetWeakPtr(), /*suggestions=*/{});
-  ON_CALL(mock_suggestion_delegate, GetMainFillingProduct)
+      &client_, mock_suggestion_delegate_.GetWeakPtr(), /*suggestions=*/{});
+  ON_CALL(mock_suggestion_delegate_, GetMainFillingProduct)
       .WillByDefault(testing::Return(FillingProduct::kAtMemory));
   client_.ShowAutofillSuggestions(AutofillClient::PopupOpenArgs(),
-                                  mock_suggestion_delegate.GetWeakPtr());
+                                  mock_suggestion_delegate_.GetWeakPtr());
 
   delegate.OnDismissed();
 
@@ -38,26 +40,45 @@ TEST_F(AtMemoryBottomSheetDelegateAndroidTest, OnDismissedHidesSuggestions) {
 }
 
 TEST_F(AtMemoryBottomSheetDelegateAndroidTest, OnQuerySubmittedCallsDelegate) {
-  testing::NiceMock<MockAutofillSuggestionDelegate> mock_suggestion_delegate;
   AtMemoryBottomSheetDelegateAndroid delegate(
-      &client_, mock_suggestion_delegate.GetWeakPtr(), /*suggestions=*/{});
+      &client_, mock_suggestion_delegate_.GetWeakPtr(), /*suggestions=*/{});
 
-  EXPECT_CALL(mock_suggestion_delegate,
+  EXPECT_CALL(mock_suggestion_delegate_,
               OnSearchSubmitted(std::u16string(u"query")));
   delegate.OnQuerySubmitted(u"query");
 }
 
 TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
        OnSuggestionSelectedCallsDelegate) {
-  testing::NiceMock<MockAutofillSuggestionDelegate> mock_suggestion_delegate;
   std::vector<Suggestion> suggestions = {
       Suggestion(u"first", SuggestionType::kAddressEntry),
       Suggestion(u"second", SuggestionType::kAddressEntry)};
   AtMemoryBottomSheetDelegateAndroid delegate(
-      &client_, mock_suggestion_delegate.GetWeakPtr(), suggestions);
+      &client_, mock_suggestion_delegate_.GetWeakPtr(), suggestions);
 
-  EXPECT_CALL(mock_suggestion_delegate, DidAcceptSuggestion);
+  EXPECT_CALL(mock_suggestion_delegate_,
+              DidAcceptSuggestion(
+                  suggestions[1],
+                  AutofillSuggestionDelegate::SuggestionMetadata{.row = 1}));
   delegate.OnSuggestionSelected(1);
+}
+
+TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
+       OnChildSuggestionSelectedCallsDelegate) {
+  Suggestion child0(u"child0", SuggestionType::kAddressEntry);
+  Suggestion child1(u"child1", SuggestionType::kAddressEntry);
+  Suggestion parent0(u"parent0", SuggestionType::kAddressEntry);
+  Suggestion parent1(u"parent1", SuggestionType::kAddressEntry);
+  parent1.children = {child0, child1};
+  std::vector<Suggestion> suggestions = {parent0, parent1};
+  AtMemoryBottomSheetDelegateAndroid delegate(
+      &client_, mock_suggestion_delegate_.GetWeakPtr(), suggestions);
+
+  EXPECT_CALL(mock_suggestion_delegate_,
+              DidAcceptSuggestion(
+                  child1, AutofillSuggestionDelegate::SuggestionMetadata{
+                              .row = 1, .sub_popup_level = 1}));
+  delegate.OnChildSuggestionSelected(1, 1);
 }
 
 }  // namespace autofill

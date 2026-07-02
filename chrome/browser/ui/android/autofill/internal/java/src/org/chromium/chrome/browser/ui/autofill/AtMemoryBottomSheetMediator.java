@@ -203,7 +203,7 @@ class AtMemoryBottomSheetMediator {
                                     () -> onSuggestionClicked(position))
                             .with(
                                     SuggestionItemProperties.ON_FLYOUT_CLICKED,
-                                    () -> onFlyoutClicked(suggestion))
+                                    () -> onFlyoutClicked(suggestion, position))
                             .build();
             sheetItems.add(new ListItem(HomeProperties.ItemType.SUGGESTION, itemModel));
         }
@@ -213,11 +213,14 @@ class AtMemoryBottomSheetMediator {
         mDelegate.onSuggestionClicked(position);
     }
 
-    private void onFlyoutClicked(AutofillSuggestion suggestion) {
+    private void onFlyoutClicked(AutofillSuggestion suggestion, int position) {
         // TODO(crbug.com/505255929): Retrieve the actual source text dynamically.
         mFlyoutModel.set(FlyoutProperties.TITLE, suggestion.getLabel());
         mFlyoutModel.set(FlyoutProperties.SOURCE_TEXT, "Google");
         mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, suggestion.getChildren());
+        mFlyoutModel.set(
+                FlyoutProperties.ON_SUGGESTION_CLICKED,
+                childPosition -> onFlyoutSuggestionClicked(position, childPosition));
 
         mModel.set(CURRENT_SCREEN, ScreenId.FLYOUT_SCREEN);
     }
@@ -234,8 +237,8 @@ class AtMemoryBottomSheetMediator {
         // TODO(crbug.com/505255929): Implement manage clicked handler
     }
 
-    private void onFlyoutSuggestionClicked(AutofillSuggestion suggestion) {
-        // TODO(crbug.com/505255929): Implement suggestion clicked handler
+    private void onFlyoutSuggestionClicked(int parentPosition, int childPosition) {
+        mDelegate.onChildSuggestionClicked(parentPosition, childPosition);
     }
 
     void onQuerySubmitted(String query) {
@@ -292,7 +295,7 @@ class AtMemoryBottomSheetMediator {
                 .with(FlyoutProperties.ON_BACK_CLICKED, this::onFlyoutBackClicked)
                 .with(FlyoutProperties.ON_SOURCE_CLICKED, this::onFlyoutSourceClicked)
                 .with(FlyoutProperties.ON_MANAGE_CLICKED, this::onFlyoutManageClicked)
-                .with(FlyoutProperties.ON_SUGGESTION_CLICKED, this::onFlyoutSuggestionClicked)
+                .with(FlyoutProperties.ON_SUGGESTION_CLICKED, childPos -> {})
                 .build();
     }
 }
