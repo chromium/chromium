@@ -131,6 +131,10 @@ class CONTENT_EXPORT RequestService
   // Destroys the active request. Strictly for use in tests.
   void DestroyActiveRequestForTesting();
 
+  bool HasDialogControllerForTesting() const {
+    return dialog_controller_ != nullptr;
+  }
+
   void IncrementNumRequests() { ++num_requests_; }
 
  private:

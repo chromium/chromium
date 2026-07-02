@@ -39,6 +39,7 @@
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -1317,6 +1318,20 @@ class RequestTest : public RenderViewHostImplTestHarness {
   void SetDialogController(
       std::unique_ptr<TestDialogController> dialog_controller) {
     custom_dialog_controller_ = std::move(dialog_controller);
+  }
+
+  void CompleteTokenRequest(
+      RequestService* service,
+      Request* request,
+      blink::mojom::FederatedRequestService::StartTokenRequestCallback callback,
+      blink::mojom::RequestTokenStatus status,
+      const std::optional<GURL>& selected_idp_config_url,
+      std::optional<base::Value> token,
+      blink::mojom::TokenErrorPtr error,
+      bool is_auto_selected) {
+    service->OnTokenRequestComplete(request, std::move(callback), status,
+                                    selected_idp_config_url, std::move(token),
+                                    std::move(error), is_auto_selected);
   }
 
   void RunAuthTest(const RequestParameters& request_parameters,
@@ -9362,6 +9377,58 @@ TEST_F(RequestTest, AbortViaFederatedRequest) {
   // Abort the request session explicitly via the FederatedRequest pipe!
   federated_request->Abort();
   run_loop.Run();
+}
+
+class TestContentBrowserClientForDialogReset : public ContentBrowserClient {
+ public:
+  TestContentBrowserClientForDialogReset() = default;
+  ~TestContentBrowserClientForDialogReset() override = default;
+
+  std::unique_ptr<IdentityRequestDialogController>
+  CreateIdentityRequestDialogController(WebContents* web_contents) override {
+    create_count_++;
+    return std::make_unique<MockIdentityRequestDialogController>();
+  }
+
+  int create_count() const { return create_count_; }
+
+ private:
+  int create_count_ = 0;
+};
+
+TEST_F(RequestTest, DialogControllerResetOnCompletion) {
+  TestContentBrowserClientForDialogReset browser_client;
+  ContentBrowserClient* original_client =
+      SetBrowserClientForTesting(&browser_client);
+
+  RequestService* request_service =
+      RequestService::GetOrCreateForCurrentDocument(main_test_rfh());
+
+  request_service->SetDialogControllerForTests(nullptr);
+
+  EXPECT_FALSE(request_service->HasDialogControllerForTesting());
+
+  request_service->GetOrCreateActiveRequest();
+  request_service->GetOrCreateDialogController();
+
+  EXPECT_TRUE(request_service->HasDialogControllerForTesting());
+  EXPECT_EQ(browser_client.create_count(), 1);
+
+  CompleteTokenRequest(
+      request_service, request_service->GetActiveRequestForTesting(),
+      base::DoNothing(), blink::mojom::RequestTokenStatus::kError,
+      /*selected_idp_config_url=*/std::nullopt,
+      /*token=*/std::nullopt,
+      /*error=*/nullptr,
+      /*is_auto_selected=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !request_; }));
+
+  request_service->GetOrCreateActiveRequest();
+  request_service->GetOrCreateDialogController();
+
+  EXPECT_EQ(browser_client.create_count(), 2);
+
+  SetBrowserClientForTesting(original_client);
 }
 
 }  // namespace content::webid
