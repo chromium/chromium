@@ -5850,6 +5850,19 @@
       status: "experimental",
     },
     {
+      // Exposes author controls for the mobile "moderate" eagerness viewport
+      // heuristic via a ruleset-level "moderate_viewport_heuristics" key in
+      // speculation rules. Android-only, since the heuristic only runs on
+      // Android. Third-party tokens are allowed so that scripts injecting
+      // speculation rules cross-origin (e.g. performance libraries) can opt in.
+      // https://groups.google.com/a/chromium.org/g/blink-dev/c/YYBd-eksiE8
+      name: "SpeculationRulesModerateViewportHeuristicsControl",
+      origin_trial_feature_name: "SpeculationRulesModerateViewportHeuristicsControl",
+      origin_trial_allows_third_party: true,
+      origin_trial_os: ["Android"],
+      status: "experimental",
+    },
+    {
       name: "SpellCheckChunking",
       status: {"Android": "experimental"},
     },

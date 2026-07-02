@@ -10,6 +10,7 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/with_feature_override.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -1260,6 +1262,253 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
   // 1 (not all anchors are sampled in).
   ASSERT_EQ(hosts_.size(), 1u);
   EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+}
+
+// Predicate matching a "moderate" viewport heuristic trigger (as opposed to an
+// "eager" one or a hover/pointer-down call).
+bool IsModerateViewportCall(
+    const MockAnchorElementInteractionHost::Call& call) {
+  return call.type == PointerEventType::kNone && call.is_eager.has_value() &&
+         !call.is_eager.value();
+}
+
+// Verifies that an author-specified "moderate_viewport_heuristics" object,
+// delivered via speculation rules, overrides the default heuristic config when
+// the SpeculationRulesModerateViewportHeuristicsControl origin trial is
+// enabled. Here the "delay" is overridden to the (clamped) maximum of 5s, so
+// the "moderate" viewport trigger should not fire within the usual wait window
+// (it fires at the default 100ms without the override), but should fire after
+// advancing time past the overridden delay.
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       AuthorOverridesDelayViaOriginTrial) {
+  ScopedSpeculationRulesModerateViewportHeuristicsControlForTest ot_enabled(
+      true);
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <script type="speculationrules">
+      {
+        "moderate_viewport_heuristics": { "delay": 5000 }
+      }
+      </script>
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 180),
+                       .scroll_delta = -100});
+
+  // Within the standard wait window only the "eager" viewport trigger should
+  // have fired; the "moderate" trigger is still waiting out the 5s delay.
+  ASSERT_EQ(hosts_.size(), 1u);
+  auto is_moderate_viewport_call =
+      [](const MockAnchorElementInteractionHost::Call& call) {
+        return call.type == PointerEventType::kNone &&
+               call.is_eager.has_value() && !call.is_eager.value();
+      };
+  EXPECT_EQ(std::ranges::count_if(hosts_[0]->calls_, is_moderate_viewport_call),
+            0);
+
+  // After advancing past the overridden delay, the "moderate" trigger fires.
+  task_environment().FastForwardBy(base::Seconds(5));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return std::ranges::any_of(hosts_[0]->calls_, is_moderate_viewport_call);
+  }));
+  const auto moderate_viewport_call_it =
+      std::ranges::find_if(hosts_[0]->calls_, is_moderate_viewport_call);
+  ASSERT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/foo"));
+
+  // Applying author params (under the origin trial) records the use counter.
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesModerateViewportHeuristicsControl));
+}
+
+// Speculation rules are parsed regardless of the origin trial; whether the
+// author params take effect is decided live when the heuristic runs. So opting
+// into the trial *after* the rules were parsed must still apply the params on a
+// subsequent scroll, with no re-parsing required. This is the third-party
+// origin-trial ordering case (token registered after rules are injected).
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       LateOriginTrialOptInAppliesParsedParams) {
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  // The document and its speculation rules load and parse while the origin
+  // trial is NOT enabled.
+  String source(KURL("https://example.com"));
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <body style="margin: 0px">
+      <script type="speculationrules">
+      { "moderate_viewport_heuristics": { "delay": 5000 } }
+      </script>
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML");
+
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_environment().GetMainThreadTaskRunner(),
+      task_environment().GetMockTickClock());
+  Compositor().BeginFrame();
+  task_environment().FastForwardBy(base::Milliseconds(10));
+
+  // Now opt into the origin trial, after the rules have already been parsed.
+  ScopedSpeculationRulesModerateViewportHeuristicsControlForTest ot_enabled(
+      true);
+
+  DispatchPointerDownAndVerticalScroll(gfx::PointF(100, 180), -100);
+  ProcessPositionUpdates();
+  // FastForwardBy runs any tasks that come due within the window (including the
+  // mojo delivery of an eager trigger), so no explicit run-loop flush is needed
+  // before checking that no "moderate" trigger has fired yet.
+  task_environment().FastForwardBy(EnoughWaitTimeForAllViewportHeuristics());
+
+  // The author's 5s delay applies even though the trial was enabled only after
+  // parsing: with the default 100ms delay the "moderate" trigger would already
+  // have fired within this window.
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_EQ(std::ranges::count_if(hosts_[0]->calls_, IsModerateViewportCall),
+            0);
+
+  task_environment().FastForwardBy(base::Seconds(5));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return std::ranges::any_of(hosts_[0]->calls_, IsModerateViewportCall);
+  }));
+  const auto moderate_viewport_call_it =
+      std::ranges::find_if(hosts_[0]->calls_, IsModerateViewportCall);
+  ASSERT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/foo"));
+}
+
+// With the default config, the dominant anchor ("two") is selected (see the
+// MultipleAnchors test). An author-specified, very high
+// "largest_anchor_threshold" should suppress that selection, since no anchor is
+// large enough relative to its neighbours to clear the bar.
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       AuthorOverridesLargestAnchorThresholdViaOriginTrial) {
+  ScopedSpeculationRulesModerateViewportHeuristicsControlForTest ot_enabled(
+      true);
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <script type="speculationrules">
+      { "moderate_viewport_heuristics": { "largest_anchor_threshold": 5.0 } }
+      </script>
+      <div style="height: 100px"></div>
+      <a href="https://example.com/one"
+        style="display: block; height: 30px;">one</a>
+      <a href="https://example.com/two"
+        style="display: block; height: 40px;">two</a>
+      <a href="https://example.com/three"
+        style="display: block; height: 20px;">three</a>
+      <a href="https://example.com/four"
+        style="display: block; height: 20px;">four</a>
+      <a href="https://example.com/five"
+        style="display: block; height: 100px;">five</a>
+      <div style="height: 400px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 220),
+                       .scroll_delta = -25});
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_EQ(std::ranges::count_if(hosts_[0]->calls_, IsModerateViewportCall),
+            0);
+}
+
+// With the default config, "one" and "five" are excluded by the proximity
+// filter, so "two" wins. Widening "distance_from_pointer_down" to [-1, 1] lets
+// the proximity filter admit everything, so the largest anchor overall ("five")
+// is selected instead.
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       AuthorOverridesDistanceBandViaOriginTrial) {
+  ScopedSpeculationRulesModerateViewportHeuristicsControlForTest ot_enabled(
+      true);
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <script type="speculationrules">
+      { "moderate_viewport_heuristics": {
+          "distance_from_pointer_down": [-1.0, 1.0] } }
+      </script>
+      <div style="height: 100px"></div>
+      <a href="https://example.com/one"
+        style="display: block; height: 30px;">one</a>
+      <a href="https://example.com/two"
+        style="display: block; height: 40px;">two</a>
+      <a href="https://example.com/three"
+        style="display: block; height: 20px;">three</a>
+      <a href="https://example.com/four"
+        style="display: block; height: 20px;">four</a>
+      <a href="https://example.com/five"
+        style="display: block; height: 100px;">five</a>
+      <div style="height: 400px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 220),
+                       .scroll_delta = -25});
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  const auto moderate_viewport_call_it =
+      std::ranges::find_if(hosts_[0]->calls_, IsModerateViewportCall);
+  ASSERT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/five"));
+}
+
+// An author-specified "delay" larger than the 5s cap is clamped to 5s: the
+// "moderate" trigger must not have fired during the standard wait window, but
+// must fire after advancing exactly 5s (it would still be waiting if the
+// requested 10s had been honored).
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       AuthorDelayIsClampedToFiveSeconds) {
+  ScopedSpeculationRulesModerateViewportHeuristicsControlForTest ot_enabled(
+      true);
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <script type="speculationrules">
+      { "moderate_viewport_heuristics": { "delay": 10000 } }
+      </script>
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 180),
+                       .scroll_delta = -100});
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_EQ(std::ranges::count_if(hosts_[0]->calls_, IsModerateViewportCall),
+            0);
+
+  task_environment().FastForwardBy(base::Seconds(5));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return std::ranges::any_of(hosts_[0]->calls_, IsModerateViewportCall);
+  }));
+  const auto moderate_viewport_call_it =
+      std::ranges::find_if(hosts_[0]->calls_, IsModerateViewportCall);
+  ASSERT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/foo"));
 }
 
 // Regression test for https://crbug.com/458237344.

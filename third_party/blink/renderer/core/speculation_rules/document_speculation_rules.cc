@@ -218,6 +218,24 @@ DocumentSpeculationRules* DocumentSpeculationRules::FromIfExists(
   return Supplement::From<DocumentSpeculationRules>(document);
 }
 
+std::optional<ModerateViewportHeuristicsParams>
+DocumentSpeculationRules::GetModerateViewportHeuristicsParams() const {
+  // This is deliberately simplistic: the first rule set that carries a
+  // "moderate_viewport_heuristics" object wins, and any such objects on other
+  // rule sets are ignored. We intentionally do not attempt to merge or
+  // reconcile conflicting params across rule sets.
+  //
+  // This is acceptable because these controls exist only as an experimentation
+  // mechanism behind an origin trial (not a shipping web API), so the added
+  // complexity of well-defined multi-rule-set semantics isn't worth it.
+  for (const auto& rule_set : rule_sets_) {
+    if (rule_set->moderate_viewport_heuristics_params()) {
+      return rule_set->moderate_viewport_heuristics_params();
+    }
+  }
+  return std::nullopt;
+}
+
 DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
     : Supplement(document), host_(document.GetExecutionContext()) {
   if (!base::FeatureList::IsEnabled(features::kLCPTimingPredictorPrerender2)) {

@@ -24,12 +24,17 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -70,6 +75,38 @@ GetModerateViewportHeuristicConfigFromFeatureParams() {
       .distance_from_ptr_down_ratio_bounds = std::make_pair(low, high),
       .largest_anchor_threshold = std::max(kLargestAnchorThreshold.Get(), 0.0),
       .delay = kDelay.Get()};
+}
+
+// Maximum author-specifiable dwell time before the heuristic triggers.
+constexpr base::TimeDelta kMaxModerateViewportHeuristicDelay = base::Seconds(5);
+
+// Applies author-specified "moderate_viewport_heuristics" overrides on top of
+// `config`, clamping each value to a safe range. Unspecified fields are left
+// unchanged.
+void ApplyAuthorModerateViewportHeuristicsOverrides(
+    ModerateViewportHeuristicConfig& config,
+    const ModerateViewportHeuristicsParams& params) {
+  double low = config.distance_from_ptr_down_ratio_bounds.first;
+  double high = config.distance_from_ptr_down_ratio_bounds.second;
+  if (params.distance_from_pointer_down_low.has_value()) {
+    low = std::clamp(*params.distance_from_pointer_down_low, -1.0, 1.0);
+  }
+  if (params.distance_from_pointer_down_high.has_value()) {
+    high = std::clamp(*params.distance_from_pointer_down_high, -1.0, 1.0);
+  }
+  high = std::max(low, high);
+  config.distance_from_ptr_down_ratio_bounds =
+      std::make_pair(static_cast<float>(low), static_cast<float>(high));
+
+  if (params.largest_anchor_threshold.has_value()) {
+    config.largest_anchor_threshold =
+        std::max(*params.largest_anchor_threshold, 0.0);
+  }
+
+  if (params.delay.has_value()) {
+    config.delay = std::clamp(*params.delay, base::TimeDelta(),
+                              kMaxModerateViewportHeuristicDelay);
+  }
 }
 
 ModerateViewportHeuristicConfig* g_config_for_testing = nullptr;
@@ -621,7 +658,29 @@ void AnchorElementInteractionTracker::AnchorPositionsUpdated(
     moderate_viewport_heuristic_timer_.Stop();
     return;
   }
-  const ModerateViewportHeuristicConfig& config = GetViewportHeuristicConfig();
+  ModerateViewportHeuristicConfig config = GetViewportHeuristicConfig();
+
+  // Layer author-specified overrides (from a ruleset-level
+  // "moderate_viewport_heuristics" object) on top of the default config when
+  // the SpeculationRulesModerateViewportHeuristicsControl origin trial is
+  // enabled for this document.
+  if (RuntimeEnabledFeatures::
+          SpeculationRulesModerateViewportHeuristicsControlEnabled(
+              GetDocument()->GetExecutionContext())) {
+    if (auto* document_rules =
+            DocumentSpeculationRules::FromIfExists(*GetDocument())) {
+      if (auto params = document_rules->GetModerateViewportHeuristicsParams()) {
+        ApplyAuthorModerateViewportHeuristicsOverrides(config, *params);
+        // Counted here (rather than at parse time) so the metric reflects rules
+        // whose params actually take effect under the origin trial, and isn't
+        // missed when a third-party trial token is registered only after the
+        // rules were parsed.
+        UseCounter::Count(
+            GetDocument()->GetExecutionContext(),
+            WebFeature::kSpeculationRulesModerateViewportHeuristicsControl);
+      }
+    }
+  }
 
   // Reset the delay timer (if active); this could happen if a programmatic
   // scroll happened after the timer started.

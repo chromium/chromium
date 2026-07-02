@@ -687,6 +687,47 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
     ruleset_tag = String(tag_str);
   }
 
+  // Parse the ruleset-level "moderate_viewport_heuristics" object, which lets
+  // authors tune the mobile "moderate" eagerness viewport heuristic.
+  //
+  // This is parsed unconditionally, even when the
+  // SpeculationRulesModerateViewportHeuristicsControl origin trial is not (yet)
+  // enabled: whether the parsed params have any effect is gated separately, at
+  // the point the heuristic runs (see AnchorElementInteractionTracker). Gating
+  // here instead would be racy for third-party origin trials, where the token
+  // may be registered after the rules have already been parsed; parsing eagerly
+  // lets a later opt-in take effect on the next heuristic run without needing
+  // to re-parse. The use counter is likewise recorded where the params are
+  // applied.
+  //
+  // Per the design, unknown sub-keys and malformed values are ignored (they
+  // never cause the whole ruleset to fail).
+  if (JSONObject* mvh =
+          JSONObject::Cast(parsed->Get("moderate_viewport_heuristics"))) {
+    ModerateViewportHeuristicsParams params;
+    if (JSONArray* distance =
+            JSONArray::Cast(mvh->Get("distance_from_pointer_down"));
+        distance && distance->size() == 2) {
+      double low = 0.0;
+      double high = 0.0;
+      if (distance->at(0)->AsDouble(&low) && distance->at(1)->AsDouble(&high)) {
+        params.distance_from_pointer_down_low = low;
+        params.distance_from_pointer_down_high = high;
+      }
+    }
+    double threshold = 0.0;
+    if (JSONValue* threshold_value = mvh->Get("largest_anchor_threshold");
+        threshold_value && threshold_value->AsDouble(&threshold)) {
+      params.largest_anchor_threshold = threshold;
+    }
+    double delay_ms = 0.0;
+    if (JSONValue* delay_value = mvh->Get("delay");
+        delay_value && delay_value->AsDouble(&delay_ms)) {
+      params.delay = base::Milliseconds(delay_ms);
+    }
+    result->moderate_viewport_heuristics_params_ = std::move(params);
+  }
+
   const auto parse_for_action =
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
           bool allow_target_hint, bool allow_form_submission,

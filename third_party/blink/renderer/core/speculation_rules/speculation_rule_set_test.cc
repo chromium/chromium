@@ -527,6 +527,70 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
 }
 
+TEST_F(SpeculationRuleSetTest, ModerateViewportHeuristicsParsed) {
+  // Parsing is intentionally independent of the origin trial (the trial only
+  // gates whether the params take effect, checked later when the heuristic
+  // runs). So the params are populated here even without the trial enabled.
+  ScopedSpeculationRulesModerateViewportHeuristicsControlForTest disabled(
+      false);
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "moderate_viewport_heuristics": {
+          "distance_from_pointer_down": [-0.5, 0.2],
+          "largest_anchor_threshold": 0.1,
+          "delay": 200
+        },
+        "prefetch": [{"source": "list", "urls": ["https://example.com/a"]}]
+      })",
+      KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
+  const auto& params = rule_set->moderate_viewport_heuristics_params();
+  ASSERT_TRUE(params.has_value());
+  ASSERT_TRUE(params->distance_from_pointer_down_low.has_value());
+  EXPECT_DOUBLE_EQ(*params->distance_from_pointer_down_low, -0.5);
+  ASSERT_TRUE(params->distance_from_pointer_down_high.has_value());
+  EXPECT_DOUBLE_EQ(*params->distance_from_pointer_down_high, 0.2);
+  ASSERT_TRUE(params->largest_anchor_threshold.has_value());
+  EXPECT_DOUBLE_EQ(*params->largest_anchor_threshold, 0.1);
+  ASSERT_TRUE(params->delay.has_value());
+  EXPECT_EQ(*params->delay, base::Milliseconds(200));
+}
+
+TEST_F(SpeculationRuleSetTest,
+       ModerateViewportHeuristicsIgnoresMalformedAndUnknownSubKeys) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "moderate_viewport_heuristics": {
+          "distance_from_pointer_down": ["not", "numbers"],
+          "largest_anchor_threshold": "oops",
+          "delay": 300,
+          "some_unknown_subkey": 42
+        }
+      })",
+      KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  // Unknown sub-keys and malformed values are ignored; the ruleset still parses
+  // and the well-formed "delay" value is retained.
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
+  const auto& params = rule_set->moderate_viewport_heuristics_params();
+  ASSERT_TRUE(params.has_value());
+  EXPECT_FALSE(params->distance_from_pointer_down_low.has_value());
+  EXPECT_FALSE(params->largest_anchor_threshold.has_value());
+  ASSERT_TRUE(params->delay.has_value());
+  EXPECT_EQ(*params->delay, base::Milliseconds(300));
+}
+
+TEST_F(SpeculationRuleSetTest,
+       ModerateViewportHeuristicsIgnoredWhenNotAnObject) {
+  auto* rule_set =
+      CreateRuleSet(R"({"moderate_viewport_heuristics": 42})",
+                    KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
+  EXPECT_FALSE(rule_set->moderate_viewport_heuristics_params().has_value());
+}
+
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"

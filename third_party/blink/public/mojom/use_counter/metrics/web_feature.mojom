@@ -5256,6 +5256,7 @@ enum WebFeature {
   kRTCLocalSdpModificationMultiOpus = 5939,
   kRTCSctpSnapNegotiated = 5940,
   kV8RTC_StartDiagnosticLogging_Method = 5941,
+  kSpeculationRulesModerateViewportHeuristicsControl = 5942,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

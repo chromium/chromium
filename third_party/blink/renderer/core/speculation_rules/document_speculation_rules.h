@@ -71,6 +71,12 @@ class CORE_EXPORT DocumentSpeculationRules
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
+  // Returns the "moderate_viewport_heuristics" author overrides from the first
+  // rule set that specifies them, or nullopt if none do. There is intentionally
+  // no conflict resolution between rule sets: the first match wins.
+  std::optional<ModerateViewportHeuristicsParams>
+  GetModerateViewportHeuristicsParams() const;
+
   // Returns all speculation candidates ever sent to the browser process.
   // Candidates are accumulated and never removed.
   // Used by performance.getSpeculations() to expose navigation data.

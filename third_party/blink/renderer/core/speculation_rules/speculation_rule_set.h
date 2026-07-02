@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_SPECULATION_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_SPECULATION_RULE_SET_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule.h"
@@ -38,6 +41,22 @@ enum class SpeculationRuleSetErrorType {
 };
 
 enum class BrowserInjectedSpeculationRuleOptOut { kRespect, kIgnore };
+
+// Author-specified overrides for the mobile "moderate" eagerness viewport
+// heuristic, parsed from the ruleset-level "moderate_viewport_heuristics" key.
+// Only populated when the SpeculationRulesModerateViewportHeuristicsControl
+// origin trial is enabled. Unspecified fields fall back to the default
+// (field-trial-derived) values; out-of-range values are clamped when applied.
+struct ModerateViewportHeuristicsParams {
+  // Lower/upper bounds of distance_from_pointer_down_ratio ("distance_from_
+  // pointer_down": [low, high] in JSON).
+  std::optional<double> distance_from_pointer_down_low;
+  std::optional<double> distance_from_pointer_down_high;
+  // How much the largest in-viewport anchor must beat the second largest.
+  std::optional<double> largest_anchor_threshold;
+  // Dwell time before triggering ("delay" in JSON, expressed in milliseconds).
+  std::optional<base::TimeDelta> delay;
+};
 
 // A set of rules generated from a single <script type=speculationrules>, which
 // provides rules to identify URLs and corresponding conditions for speculation,
@@ -151,6 +170,11 @@ class CORE_EXPORT SpeculationRuleSet final
 
   const String& tag() const { return tag_; }
 
+  const std::optional<ModerateViewportHeuristicsParams>&
+  moderate_viewport_heuristics_params() const {
+    return moderate_viewport_heuristics_params_;
+  }
+
   void AddConsoleMessageForValidation(ScriptElementBase& script_element);
   void AddConsoleMessageForValidation(Document& element_document,
                                       SpeculationRulesResource& resource);
@@ -187,6 +211,12 @@ class CORE_EXPORT SpeculationRuleSet final
   Vector<String> warning_messages_;
 
   String tag_;
+
+  // Set iff the ruleset specified a valid "moderate_viewport_heuristics" object
+  // while the SpeculationRulesModerateViewportHeuristicsControl origin trial
+  // was enabled.
+  std::optional<ModerateViewportHeuristicsParams>
+      moderate_viewport_heuristics_params_;
 };
 
 }  // namespace blink
