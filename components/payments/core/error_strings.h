@@ -94,10 +94,6 @@ extern const char kShippingOptionIdRequired[];
 // options.
 extern const char kSkipAppForPartialDelegation[];
 
-// Used when rejecting show() with NotSupportedError, because the user did not
-// have all valid autofill data.
-extern const char kStrictBasicCardShowReject[];
-
 // Used when "total": {"label": "Total", "amount": {"currency": "USD", "value":
 // "0.01"}} is required, bot not provided.
 extern const char kTotalRequired[];

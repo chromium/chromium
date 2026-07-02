@@ -40,7 +40,6 @@ const char kShippingOptionEmpty[] = "Payment app returned invalid response. Miss
 const char kShippingOptionIdRequired[] = "Shipping option identifier required.";
 const char kSkipAppForPartialDelegation[] = "Skipping $ for not providing all of the requested PaymentOptions.";
 const char kSpcUserOptedOut[] = "User opted out of the process.";
-const char kStrictBasicCardShowReject[] = "User does not have valid information on file.";
 const char kTotalRequired[] = "Total required.";
 const char kUserCancelled[] = "User closed the Payment Request UI.";
 const char kWebAuthnOperationTimedOutOrNotAllowed[] = "The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.";
