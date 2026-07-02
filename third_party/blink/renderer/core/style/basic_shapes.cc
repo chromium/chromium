@@ -128,12 +128,11 @@ float RadiusToCorner(const gfx::PointF& center,
 
 }  // namespace
 
-gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
-                                     const BasicShapeCenterCoordinate& center_y,
+gfx::PointF PointForCenterCoordinate(const Length& center_x,
+                                     const Length& center_y,
                                      gfx::SizeF box_size) {
-  float x = FloatValueForLength(center_x.ComputedLength(), box_size.width());
-  float y = FloatValueForLength(center_y.ComputedLength(), box_size.height());
-  return gfx::PointF(x, y);
+  return gfx::PointF(FloatValueForLength(center_x, box_size.width()),
+                     FloatValueForLength(center_y, box_size.height()));
 }
 
 bool BasicShapeCircle::IsEqualAssumingSameType(const BasicShape& o) const {

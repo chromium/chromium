@@ -137,26 +137,21 @@ class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
   CoordBox coord_box_;
 };
 
-InterpolableValue* ConvertCoordinate(
-    const BasicShapeCenterCoordinate& coordinate,
-    const CSSProperty& property,
-    double zoom) {
+InterpolableValue* ConvertCoordinate(const Length& coordinate,
+                                     const CSSProperty& property,
+                                     double zoom) {
   return InterpolableLength::MaybeConvertLength(
-      coordinate.ComputedLength(), property, zoom,
-      /*interpolate_size=*/std::nullopt);
+      coordinate, property, zoom, /*interpolate_size=*/std::nullopt);
 }
 
 InterpolableValue* CreateNeutralInterpolableCoordinate() {
   return InterpolableLength::CreateNeutral();
 }
 
-BasicShapeCenterCoordinate CreateCoordinate(
-    const InterpolableValue& interpolable_value,
-    const CSSToLengthConversionData& conversion_data) {
-  return BasicShapeCenterCoordinate(
-      BasicShapeCenterCoordinate::kTopLeft,
-      To<InterpolableLength>(interpolable_value)
-          .CreateLength(conversion_data, Length::ValueRange::kAll));
+Length CreateCoordinate(const InterpolableValue& interpolable_value,
+                        const CSSToLengthConversionData& conversion_data) {
+  return To<InterpolableLength>(interpolable_value)
+      .CreateLength(conversion_data, Length::ValueRange::kAll);
 }
 
 enum RayComponentIndex : unsigned {

@@ -15,8 +15,8 @@ namespace blink {
 StyleRay::StyleRay(float angle,
                    RaySize size,
                    bool contain,
-                   const BasicShapeCenterCoordinate& center_x,
-                   const BasicShapeCenterCoordinate& center_y,
+                   const Length& center_x,
+                   const Length& center_y,
                    bool has_explicit_center)
     : angle_(angle),
       size_(size),

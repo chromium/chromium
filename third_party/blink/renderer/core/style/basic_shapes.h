@@ -82,48 +82,9 @@ class CORE_EXPORT BasicShape : public GarbageCollected<BasicShape> {
   virtual bool IsEqualAssumingSameType(const BasicShape&) const = 0;
 };
 
-class BasicShapeCenterCoordinate {
-  DISALLOW_NEW();
-
- public:
-  enum Direction { kTopLeft, kBottomRight };
-
-  explicit BasicShapeCenterCoordinate(Direction direction = kTopLeft,
-                                      const Length& length = Length::Fixed(0))
-      : direction_(direction),
-        length_(length),
-        computed_length_(direction == kTopLeft
-                             ? length
-                             : length.SubtractFromOneHundredPercent()) {}
-
-  BasicShapeCenterCoordinate(const BasicShapeCenterCoordinate&) = default;
-  BasicShapeCenterCoordinate& operator=(const BasicShapeCenterCoordinate&) =
-      default;
-
-  bool operator==(const BasicShapeCenterCoordinate& other) const {
-    return direction_ == other.direction_ && length_ == other.length_ &&
-           computed_length_ == other.computed_length_;
-  }
-
-  Direction GetDirection() const { return direction_; }
-
-  // <length> that has not been adjusted based on starting edge/direction. Used
-  // for recreating a CSSValue.
-  const Length& length() const { return length_; }
-
-  // <length> that has been adjusted based on starting edge/direction. Used to
-  // produce a used value.
-  const Length& ComputedLength() const { return computed_length_; }
-
- private:
-  Direction direction_;
-  Length length_;
-  Length computed_length_;
-};
-
 // Resolve a pair of <x, y> "center coordinates" into a point.
-gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
-                                     const BasicShapeCenterCoordinate& center_y,
+gfx::PointF PointForCenterCoordinate(const Length& center_x,
+                                     const Length& center_y,
                                      gfx::SizeF box_size);
 
 class BasicShapeRadius {
@@ -161,18 +122,18 @@ class BasicShapeWithCenterAndRadii : public BasicShape {
   }
   bool HasExplicitCenter() const { return is_center_explicitly_set_; }
 
-  void SetCenterX(BasicShapeCenterCoordinate center_x) { center_x_ = center_x; }
-  void SetCenterY(BasicShapeCenterCoordinate center_y) { center_y_ = center_y; }
-  const BasicShapeCenterCoordinate& CenterX() const { return center_x_; }
-  const BasicShapeCenterCoordinate& CenterY() const { return center_y_; }
+  void SetCenterX(Length&& center_x) { center_x_ = center_x; }
+  void SetCenterY(Length&& center_y) { center_y_ = center_y; }
+  const Length& CenterX() const { return center_x_; }
+  const Length& CenterY() const { return center_y_; }
 
   virtual Path GetPathFromCenter(const gfx::PointF&,
                                  const gfx::RectF&,
                                  float path_scale) const = 0;
 
  protected:
-  BasicShapeCenterCoordinate center_x_;
-  BasicShapeCenterCoordinate center_y_;
+  Length center_x_;
+  Length center_y_;
 
  private:
   bool is_center_explicitly_set_ = true;
