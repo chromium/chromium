@@ -34,6 +34,11 @@ DEFAULT_IGNORE_WARNINGS = (
     r'The companion object Companion could not be found',
     # https://crbug.com/408280256
     r'MethodHandle.invoke',
+    # JDK update warnings
+    r'A terminally deprecated method in sun.misc.Unsafe',
+    r'sun.misc.Unsafe::.* has been called',
+    r'sun.misc.Unsafe::.* will be removed',
+    r'Please consider reporting this to the maintainers of',
 )
 
 _MERGE_SERVICE_ENTRIES = (

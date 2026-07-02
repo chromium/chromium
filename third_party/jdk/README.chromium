@@ -1,10 +1,11 @@
 Name: Java Development Kit
 Short Name: JDK
 URL: https://openjdk.java.net/
-Version: 23
+Version: 25
 Update Mechanism: Autoroll
 CPEPrefix: cpe:/a:oracle:openjdk
 License: GPL-2.0
+License File: current/LICENSE
 Security Critical: no
 Shipped: no
 

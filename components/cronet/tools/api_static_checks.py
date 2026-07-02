@@ -162,8 +162,8 @@ def find_api_calls(dump, api_classes, bad_calls):
                 caller_class = CLASS_RE.match(line).group(2)
             if METHOD_RE.match(line):
                 caller_method = METHOD_RE.match(line).group(1)
-            if line.startswith(': invoke',
-                               8) and not line.startswith('dynamic', 16):
+            idx = line.find(': invoke')
+            if idx != -1 and not line.startswith('dynamic', idx + 8):
                 callee = line.split(' // ')[1].split('Method ')[1].split(
                     '\n')[0]
                 callee_class = callee.split('.')[0]

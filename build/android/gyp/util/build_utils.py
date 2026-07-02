@@ -50,6 +50,7 @@ def JavaCmd(xmx='1G'):
   # See: https://chromium-review.googlesource.com/c/chromium/src/+/4705883/3
   # https://github.com/iBotPeaches/Apktool/issues/3174
   ret += ['-Djdk.util.zip.disableZip64ExtraFieldValidation=true']
+  ret += ['--enable-native-access=ALL-UNNAMED']
   return ret
 
 
@@ -154,8 +155,8 @@ def FilterLines(output, filter_string):
 def FilterReflectiveAccessJavaWarnings(output):
   """Filters out warnings about illegal reflective access operation.
 
-  These warnings were introduced in Java 9, and generally mean that dependencies
-  need to be updated.
+  These warnings were introduced in Java 9 and 25, and generally mean that
+  dependencies need to be updated.
   """
   #  WARNING: An illegal reflective access operation has occurred
   #  WARNING: Illegal reflective access by ...
@@ -168,7 +169,10 @@ def FilterReflectiveAccessJavaWarnings(output):
       'Illegal reflective access|'
       'Please consider reporting this to|'
       'Use --illegal-access=warn|'
-      'All illegal access operations)')
+      'All illegal access operations|'
+      'A terminally deprecated method in sun.misc.Unsafe|'
+      'sun.misc.Unsafe::.* has been called|'
+      'sun.misc.Unsafe::.* will be removed)')
 
 
 # This filter applies globally to all CheckOutput calls. We use this to prevent

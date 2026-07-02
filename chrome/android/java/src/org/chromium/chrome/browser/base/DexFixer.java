@@ -30,13 +30,19 @@ import java.io.IOException;
 public class DexFixer {
     private static final String TAG = "DexFixer";
 
+    @VisibleForTesting
+    @FunctionalInterface
+    interface CommandExecutor {
+        void exec(String command) throws IOException;
+    }
+
     @WorkerThread
     public static void fixDexInBackground() {
         if (shouldSkipDexFix()) {
             return;
         }
 
-        fixDexIfNecessary(Runtime.getRuntime());
+        fixDexIfNecessary(command -> Runtime.getRuntime().exec(command));
     }
 
     static void scheduleDexFix() {
@@ -55,14 +61,15 @@ public class DexFixer {
                             PostTask.postTask(
                                     TaskTraits.BEST_EFFORT_MAY_BLOCK,
                                     () -> {
-                                        fixDexIfNecessary(Runtime.getRuntime());
+                                        fixDexIfNecessary(
+                                                command -> Runtime.getRuntime().exec(command));
                                     });
                         });
     }
 
     @WorkerThread
     @VisibleForTesting
-    static @DexFixerReason int fixDexIfNecessary(Runtime runtime) {
+    static @DexFixerReason int fixDexIfNecessary(CommandExecutor executor) {
         ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
         @DexFixerReason int reason = needsDexCompile(appInfo);
         if (reason > DexFixerReason.NOT_NEEDED) {
@@ -76,7 +83,7 @@ public class DexFixer {
                     cmdBuilder.append("--split ").append(apkBaseName).append(" ");
                 }
                 cmdBuilder.append(ContextUtils.getApplicationContext().getPackageName());
-                runtime.exec(cmdBuilder.toString());
+                executor.exec(cmdBuilder.toString());
             } catch (IOException e) {
                 // Don't crash.
             }

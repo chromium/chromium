@@ -20,6 +20,21 @@ from util import dep_utils
 _PACKAGE_RE = re.compile(r'^package\s+(.*?)(;|\s*$)', flags=re.MULTILINE)
 
 
+# Warnings appear in: com.google.common.util.concurrent.AbstractFuture
+_JDK_WARNING_PATTERNS = [
+    r'WARNING: A terminally deprecated method in sun\.misc\.Unsafe',
+    r'WARNING: sun\.misc\.Unsafe::.* has been called by',
+    r'WARNING: Please consider reporting this to the maintainers of',
+    r'WARNING: sun\.misc\.Unsafe::.* will be removed in a future release',
+]
+_JDK_WARNING_RE = re.compile('|'.join(_JDK_WARNING_PATTERNS))
+
+
+def _FilterJdkWarnings(output):
+  return '\n'.join(line for line in output.split('\n')
+                   if not _JDK_WARNING_RE.search(line))
+
+
 @functools.cache
 def _running_locally():
   return os.path.exists('build.ninja')
@@ -76,6 +91,10 @@ class JavacOutputProcessor:
     self._class_lookup_index = None
 
   def Process(self, output):
+    if output:
+      output = _FilterJdkWarnings(output)
+    if not output:
+      return output
     self._LookForUnknownSymbols(output)
 
     if not self._missing_classes_full:
