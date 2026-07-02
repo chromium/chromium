@@ -262,6 +262,10 @@ void BindNoStatePrefetchCanceler(
 void BindNoStatePrefetchProcessor(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver) {
+  // NoStatePrefetch is not supported inside fenced frames.
+  if (frame_host->IsNestedWithinFencedFrame()) {
+    return;
+  }
   prerender::NoStatePrefetchProcessorImpl::Create(
       frame_host, std::move(receiver),
       std::make_unique<

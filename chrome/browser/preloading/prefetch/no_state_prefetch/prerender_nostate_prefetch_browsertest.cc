@@ -2006,4 +2006,43 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchFencedFrameBrowserTest,
   EXPECT_FALSE(recorded);
 }
 
+// <link rel=prerender> inside a fenced frame must not trigger NoStatePrefetch.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchFencedFrameBrowserTest,
+                       LinkRelPrerenderInFencedFrame) {
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+
+  const GURL target_url = embedded_test_server()->GetURL(kPrefetchPage);
+  ASSERT_TRUE(content::ExecJs(
+      fenced_frame_host,
+      content::JsReplace("const l = document.createElement('link');"
+                         "l.rel = 'prerender'; l.href = $1;"
+                         "document.head.appendChild(l);",
+                         target_url)));
+
+  // Trigger and wait for NoStatePrefetch from the primary main frame for a
+  // different URL. By the time this prefetch finishes, any prefetch issued for
+  // `target_url` would have already reached the test server.
+  std::unique_ptr<TestPrerender> control_prerender =
+      no_state_prefetch_contents_factory()->ExpectNoStatePrefetchContents(
+          FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+  const GURL control_url = embedded_test_server()->GetURL(kPrefetchPage2);
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents()->GetPrimaryMainFrame(),
+      content::JsReplace("const l = document.createElement('link');"
+                         "l.rel = 'prerender'; l.href = $1;"
+                         "document.head.appendChild(l);",
+                         control_url)));
+  control_prerender->WaitForStop();
+
+  EXPECT_EQ(0u, GetRequestCount(target_url));
+}
+
 }  // namespace prerender
