@@ -10,9 +10,9 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -87,7 +87,8 @@ std::string GetUserLastInputMethodId(PrefService& local_state,
 
   // Try profile prefs. For the ephemeral case known_user does not persist the
   // data.
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
   if (profile && profile->GetPrefs()) {
     std::string input_method_id =
         profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
