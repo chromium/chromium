@@ -8,6 +8,7 @@ load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
+load("./platform.star", "platform")
 load("./tsc.star", "tsc")
 
 # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
@@ -29,6 +30,9 @@ def __step_config(ctx, step_config):
             "third_party/devtools-frontend/src/node_modules/typescript:typescript",
             "third_party/devtools-frontend/src/node_modules:node_modules",
         ],
+        "third_party/devtools-frontend/src/scripts/build/esbuild.js": [
+            "third_party/devtools-frontend/src/node_modules:node_modules",
+        ],
         "third_party/devtools-frontend/src/scripts/build/generate_css_js_files.js": [
             "third_party/devtools-frontend/src/node_modules:node_modules",
         ],
@@ -41,6 +45,12 @@ def __step_config(ctx, step_config):
             # Remote execution still doesn't work when TypeScript compiler is used.
             "remote": config.get(ctx, "default-remote") and gn.args(ctx).get("devtools_skip_typecheck") != "false",
             "output_local": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "devtools-frontend/esbuild",
+            "command_prefix": platform.python_bin + " ../../third_party/node/node.py ../../third_party/devtools-frontend/src/scripts/build/esbuild.js",
+            "remote": config.get(ctx, "default-remote"),
             "timeout": "2m",
         },
         {
