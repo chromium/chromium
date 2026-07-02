@@ -70,6 +70,8 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_alert.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/platform/assistive_tech.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2417,17 +2419,24 @@ void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
     return;
   }
 
-  if (active && selected_tabs_.active().has_value()) {
+  if (active && selected_tabs_.active().has_value() &&
+      ui::AXPlatform::GetInstance().active_assistive_tech() ==
+          ui::AssistiveTech::kJaws &&
+      ui::AXPlatform::GetInstance().JawsNeedsTabSelectionEvent()) {
     // When the browser window is activated, set the accessible selection and
     // fire a selection event on the currently active tab, to help enable
     // per-tab modes in assistive technologies.
+    //
+    // This is a workaround for older versions of JAWS, which rely on this
+    // event to restore per-tab settings (e.g. virtual cursor) when switching
+    // between windows. Newer versions of JAWS detect the active tab on their
+    // own, so the event is scoped to older versions only.
+    // TODO(crbug.com/505781387): Remove once the oldest supported JAWS version
+    // no longer needs this event.
     tab_at(selected_tabs_.active().value())
         ->GetViewAccessibility()
         .SetIsSelected(true);
 
-    // When the browser window is activated, fire a selection event on the
-    // currently active tab, to help enable per-tab modes in assistive
-    // technologies.
     // We need to make sure we fire the event manually here, because even
     // though we set the tab to selected above, there are cases where the
     // event will not be fired since the selected state was already set

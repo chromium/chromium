@@ -83,6 +83,8 @@ IN_PROC_BROWSER_TEST_P(TabStripDumpAccessibilityEventsTest,
                        DISABLED_WindowActivationFiresSelectionForJaws) {
   ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
       ui::AssistiveTech::kJaws);
+  // Simulate an older JAWS that still relies on the synthetic selection event.
+  ui::AXPlatform::GetInstance().SetJawsNeedsTabSelectionEvent(true);
 
   WaitForBrowserSerialization();
 
@@ -132,6 +134,8 @@ IN_PROC_BROWSER_TEST_P(TabStripDumpAccessibilityEventsTest,
                        MAYBE_WindowActivationFiresSelectionOnNewTab) {
   ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
       ui::AssistiveTech::kJaws);
+  // Simulate an older JAWS that still relies on the synthetic selection event.
+  ui::AXPlatform::GetInstance().SetJawsNeedsTabSelectionEvent(true);
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WaitForBrowserSerialization();

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_WIN_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_WIN_H_
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -21,6 +22,15 @@ CONTENT_EXPORT void RecordUiaClientProcessHistogramsForModeChange(
     ui::AXMode old_mode,
     ui::AXMode new_mode,
     std::vector<std::string> process_names);
+
+// Returns true if the specified JAWS version (from `fsdomsrv.dll`'s product
+// version, e.g. 2026.2606.132) still relies on the synthetic tab selection
+// event that Chromium fires on window activation to restore per-tab settings.
+// Newer versions of JAWS detect tab changes on their own. See
+// https://crbug.com/505781387.
+CONTENT_EXPORT bool DoesJawsVersionNeedTabSelectionEvent(uint16_t major,
+                                                         uint16_t minor,
+                                                         uint16_t build);
 
 }  // namespace content::internal
 

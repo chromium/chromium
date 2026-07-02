@@ -325,6 +325,25 @@ TEST(BrowserAccessibilityStateImplWinTest, RecordsDisconnectHistogram) {
       internal::HashUiaClientProcessName("narrator.exe"), 1);
 }
 
+TEST(BrowserAccessibilityStateImplWinTest,
+     JawsVersionNeedsTabSelectionEventForOlderVersions) {
+  // Versions older than 2026.2606.132 still rely on the synthetic event.
+  EXPECT_TRUE(internal::DoesJawsVersionNeedTabSelectionEvent(2022, 0, 0));
+  EXPECT_TRUE(internal::DoesJawsVersionNeedTabSelectionEvent(2024, 2312, 99));
+  EXPECT_TRUE(internal::DoesJawsVersionNeedTabSelectionEvent(2025, 9999, 9999));
+  EXPECT_TRUE(internal::DoesJawsVersionNeedTabSelectionEvent(2026, 2605, 9999));
+  EXPECT_TRUE(internal::DoesJawsVersionNeedTabSelectionEvent(2026, 2606, 131));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     JawsVersionDoesNotNeedTabSelectionEventForFixedVersions) {
+  // 2026.2606.132 is the first version that no longer needs the event.
+  EXPECT_FALSE(internal::DoesJawsVersionNeedTabSelectionEvent(2026, 2606, 132));
+  EXPECT_FALSE(internal::DoesJawsVersionNeedTabSelectionEvent(2026, 2606, 133));
+  EXPECT_FALSE(internal::DoesJawsVersionNeedTabSelectionEvent(2026, 2607, 0));
+  EXPECT_FALSE(internal::DoesJawsVersionNeedTabSelectionEvent(2027, 0, 0));
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

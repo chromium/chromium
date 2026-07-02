@@ -113,6 +113,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Is the current active assistive tech a screen reader.
   bool IsScreenReaderActive();
 
+  // Whether the active version of JAWS relies on the synthetic tab selection
+  // event that Chromium fires on window activation to restore per-tab settings
+  // (such as the virtual cursor state). Newer versions of JAWS detect tab
+  // changes on their own, so the event is only fired for older versions. This
+  // is only meaningful while JAWS is the active assistive technology; callers
+  // should also check active_assistive_tech(). See https://crbug.com/505781387.
+  bool JawsNeedsTabSelectionEvent() const;
+  void SetJawsNeedsTabSelectionEvent(bool needs_event);
+
   // Returns whether caret browsing is enabled. When caret browsing is enabled,
   // we need to ensure that we keep ATs aware of caret movement.
   bool IsCaretBrowsingEnabled();
@@ -244,6 +253,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Keeps track of the active AssistiveTech.
   AssistiveTech active_assistive_tech_ GUARDED_BY_CONTEXT(thread_checker_) =
       AssistiveTech::kUninitialized;
+
+  // See JawsNeedsTabSelectionEvent(). Defaults to false; assistive tech
+  // detection sets this to true when an older JAWS that still relies on the
+  // synthetic selection event is active.
+  bool jaws_needs_tab_selection_event_ GUARDED_BY_CONTEXT(thread_checker_) =
+      false;
 
   // Keeps track of whether caret browsing is enabled.
   bool caret_browsing_enabled_ GUARDED_BY_CONTEXT(thread_checker_) = false;

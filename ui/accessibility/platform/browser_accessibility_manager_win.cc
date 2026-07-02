@@ -344,12 +344,14 @@ void BrowserAccessibilityManagerWin::FireSourceEvent(
       // but Alt+Tabbing between windows does not, so the correct state is
       // not restored. Re-fire the event on the last selected tab when the
       // browser window is activated to bridge that gap. Only applies to
-      // BrowserRootView (not dialogs/popups).
-      // TODO(crbug.com/505781387): Collaborating with the JAWS team on a
-      // more robust signal; remove once adopted.
+      // BrowserRootView (not dialogs/popups), and only for older versions of
+      // JAWS. Newer versions detect the active tab on their own.
+      // TODO(crbug.com/505781387): Remove once the oldest supported JAWS
+      // version no longer needs this event.
       if (node == GetBrowserAccessibilityRoot() &&
           AXPlatform::GetInstance().active_assistive_tech() ==
-              AssistiveTech::kJaws) {
+              AssistiveTech::kJaws &&
+          AXPlatform::GetInstance().JawsNeedsTabSelectionEvent()) {
         const std::string& root_class = node->GetData().GetStringAttribute(
             ax::mojom::StringAttribute::kClassName);
         if (root_class == kBrowserRootViewClassName) {

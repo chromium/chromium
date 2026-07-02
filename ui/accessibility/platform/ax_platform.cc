@@ -76,6 +76,16 @@ bool AXPlatform::IsScreenReaderActive() {
   return IsScreenReader(active_assistive_tech_);
 }
 
+bool AXPlatform::JawsNeedsTabSelectionEvent() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return jaws_needs_tab_selection_event_;
+}
+
+void AXPlatform::SetJawsNeedsTabSelectionEvent(bool needs_event) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  jaws_needs_tab_selection_event_ = needs_event;
+}
+
 bool AXPlatform::IsCaretBrowsingEnabled() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return caret_browsing_enabled_;

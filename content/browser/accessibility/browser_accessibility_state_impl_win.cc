@@ -134,6 +134,24 @@ void RecordUiaClientProcessHistogramsForModeChange(
   }
 }
 
+bool DoesJawsVersionNeedTabSelectionEvent(uint16_t major,
+                                          uint16_t minor,
+                                          uint16_t build) {
+  // The first JAWS version that reliably detects the active tab on window
+  // activation without Chromium's synthetic kSelection event is 2026.2606.132.
+  // Older versions still require the event. See https://crbug.com/505781387.
+  constexpr uint16_t kFixedMajor = 2026;
+  constexpr uint16_t kFixedMinor = 2606;
+  constexpr uint16_t kFixedBuild = 132;
+  if (major != kFixedMajor) {
+    return major < kFixedMajor;
+  }
+  if (minor != kFixedMinor) {
+    return minor < kFixedMinor;
+  }
+  return build < kFixedBuild;
+}
+
 }  // namespace internal
 
 namespace {
@@ -633,6 +651,25 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
       continue;
     }
   }
+
+  // Determine whether the detected JAWS (if any) still relies on the synthetic
+  // tab selection event that is fired on window activation. If the version
+  // can't be determined, conservatively assume it does. See
+  // https://crbug.com/505781387.
+  bool jaws_needs_tab_selection_event = false;
+  for (const auto& info : at_infos) {
+    if (info.tech != AccessibilityTarget::kJaws) {
+      continue;
+    }
+    if (!info.version.has_value() ||
+        internal::DoesJawsVersionNeedTabSelectionEvent(
+            info.version->major, info.version->minor, info.version->build)) {
+      jaws_needs_tab_selection_event = true;
+      break;
+    }
+  }
+  ui::AXPlatform::GetInstance().SetJawsNeedsTabSelectionEvent(
+      jaws_needs_tab_selection_event);
 
   // Save the current assistive tech before toggling AXModes, so
   // that RefreshAssistiveTechIfNecessary() is a noop.
