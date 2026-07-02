@@ -210,7 +210,8 @@ public class SendTabToSelfCoordinatorTest {
         //    records 2 (kOneDevice) since 1 test device is active.
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        // 0 corresponds to SendTabToSelfDeviceCount::kNoTargetDevicesBecauseSignedOut
+                        // 0 corresponds to
+                        // SendTabToSelfDeviceCount::kNoTargetDevicesBecauseSignedOut
                         .expectIntRecord("Sharing.SendTabToSelf.TargetDeviceCount", 0)
                         // 2 corresponds to SendTabToSelfDeviceCount::kOneDevice
                         .expectIntRecord("Sharing.SendTabToSelf.TargetDeviceCount", 2)
@@ -321,6 +322,45 @@ public class SendTabToSelfCoordinatorTest {
         onView(withId(R.id.send_button)).check(matches(isEnabled()));
         onView(withId(R.id.send_button)).perform(click());
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
+        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
+    })
+    public void testEnhancedDevicePicker_manyDevicesTruncated() {
+        // Inject 6 more devices (in addition to the one in setUp) with an older timestamp,
+        // so there are 7 devices total - more than will fit on a regular screen.
+        for (int i = 1; i <= 6; i++) {
+            long olderTime = mSetUpTimeMs - i * 1000;
+            mSyncTestRule
+                    .getFakeServerHelper()
+                    .injectDeviceInfoEntity("Guid" + i, "Device " + i, olderTime, olderTime);
+        }
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        CriteriaHelper.pollUiThread(
+                () ->
+                        SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        HTTP_URL.getSpec())
+                                .equals(EntryPointDisplayReason.OFFER_FEATURE));
+
+        buildAndShowCoordinator();
+
+        onView(withId(R.id.sheet_item_list)).check(matches(isDisplayed()));
+
+        // Verify the newest device and (at least) the next 2 older devices are displayed.
+        onView(withText("Device")).check(matches(isDisplayed()));
+        onView(withText("Device 1")).check(matches(isDisplayed()));
+        onView(withText("Device 2")).check(matches(isDisplayed()));
+
+        // Verify the Send button is displayed and enabled.
+        onView(withId(R.id.send_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.send_button)).check(matches(isEnabled()));
     }
 
     @Test

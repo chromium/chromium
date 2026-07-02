@@ -387,6 +387,13 @@ public class SendTabToSelfCoordinator
 
         PropertyModel model = EnhancedTargetDevicePickerProperties.createDefaultModel();
 
+        // TODO(crbug.com/530535526): The bottom sheet UI currently doesn't support scrolling well.
+        // As a temporary workaround, truncate the list to 4 devices, which will fit onto almost all
+        // screens without scrolling.
+        if (targetDevices.size() > 4) {
+            targetDevices = targetDevices.subList(0, 4);
+        }
+
         new EnhancedTargetDevicePickerMediator(
                 mUrl, mTitle, targetDevices, mProfile, mTabProvider, model, mEntryPoint);
 
