@@ -116,6 +116,11 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     return;
   }
 
+  if (pending_freeze_is_in_back_forward_cache_.has_value()) {
+    GetWorkerThread()->Freeze(*pending_freeze_is_in_back_forward_cache_);
+    pending_freeze_is_in_back_forward_cache_.reset();
+  }
+
   // Step 13: "Obtain script by switching on the value of options's type
   // member:"
   if (options->type() == V8WorkerType::Enum::kClassic) {
@@ -216,16 +221,26 @@ void DedicatedWorkerMessagingProxy::DidFailToFetchScript() {
 void DedicatedWorkerMessagingProxy::Freeze(bool is_in_back_forward_cache) {
   DCHECK(IsParentContextThread());
   auto* worker_thread = GetWorkerThread();
-  if (AskedToTerminate() || !worker_thread)
+  if (AskedToTerminate()) {
     return;
+  }
+  if (!worker_thread) {
+    pending_freeze_is_in_back_forward_cache_ = is_in_back_forward_cache;
+    return;
+  }
   worker_thread->Freeze(is_in_back_forward_cache);
 }
 
 void DedicatedWorkerMessagingProxy::Resume() {
   DCHECK(IsParentContextThread());
   auto* worker_thread = GetWorkerThread();
-  if (AskedToTerminate() || !worker_thread)
+  if (AskedToTerminate()) {
     return;
+  }
+  if (!worker_thread) {
+    pending_freeze_is_in_back_forward_cache_.reset();
+    return;
+  }
   worker_thread->Resume();
 }
 

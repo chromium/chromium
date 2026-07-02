@@ -154,6 +154,9 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
 
   // Pauses virtual time in parent context until the worker is initialized.
   WebScopedVirtualTimePauser virtual_time_pauser_;
+
+  // Tracks the freeze state when the worker thread is not yet created.
+  std::optional<bool> pending_freeze_is_in_back_forward_cache_;
 };
 
 }  // namespace blink
