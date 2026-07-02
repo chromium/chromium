@@ -35,6 +35,8 @@ void MakeFirstRunRecent() {
 
 void ResetFirstRunRecency() {
   [ChromeEarlGrey removeUserDefaultsObjectForKey:kFirstRunRecencyKey];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:@"ForceExperienceForDeviceSwitcher"];
 }
 
 void RelaunchWithIPHFeature(NSString* feature, BOOL safari_switcher) {
