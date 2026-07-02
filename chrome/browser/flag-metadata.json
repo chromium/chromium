@@ -1894,11 +1894,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "composebox-ios",
-    "owners": [ "christianxu@google.com", "bling-search@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "composebox-ipad",
     "owners": [ "gambard@google.com", "meridian@google.com" ],
     "expiry_milestone": 160

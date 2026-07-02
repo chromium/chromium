@@ -201,7 +201,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxIOS);
   config.features_enabled.push_back(kComposeboxIpad);
   config.features_disabled.push_back(kComposeboxAIMDisabled);
   // Only rely on local conditions for AIM eligibility, so disable the
@@ -662,7 +661,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxIOS);
   config.features_enabled.push_back(kComposeboxIpad);
   config.features_disabled.push_back(kComposeboxAIMDisabled);
   // Only rely on local conditions for AIM eligibility, so disable the

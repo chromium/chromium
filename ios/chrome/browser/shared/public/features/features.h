@@ -743,9 +743,6 @@ BASE_DECLARE_FEATURE(kLocationBarBadgeMigration);
 // Returns true if the LocationBarBadgeMigration feature is enabled.
 bool IsLocationBarBadgeMigrationEnabled();
 
-// Enables the Composebox feature.
-BASE_DECLARE_FEATURE(kComposeboxIOS);
-
 // Returns true if the Composebox feature is enabled.
 bool IsComposeboxIOSEnabled();
 

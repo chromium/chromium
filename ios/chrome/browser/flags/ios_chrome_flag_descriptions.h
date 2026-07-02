@@ -451,10 +451,6 @@ inline constexpr char kComposeboxForceTopName[] = "ComposeboxForceTop";
 inline constexpr char kComposeboxForceTopDescription[] =
     "Forces the composebox to be at the top.";
 
-inline constexpr char kComposeboxIOSName[] = "ComposeboxIOS";
-inline constexpr char kComposeboxIOSDescription[] =
-    "Enables the composebox that replaces the regular omnibox in edit state.";
-
 inline constexpr char kComposeboxIpadName[] = "ComposeboxIpad";
 inline constexpr char kComposeboxIpadDescription[] =
     "Enables the composeboxIpad feature.";

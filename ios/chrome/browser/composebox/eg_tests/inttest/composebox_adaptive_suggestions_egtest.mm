@@ -50,7 +50,6 @@ const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxIOS);
   config.features_enabled.push_back(kComposeboxIpad);
 
   // Adaptive suggestions tests only work with bottom composebox as
