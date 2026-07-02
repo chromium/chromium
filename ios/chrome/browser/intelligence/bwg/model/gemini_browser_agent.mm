@@ -826,11 +826,17 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
     max_bottom_inset += scene_state.window.safeAreaInsets.bottom;
   }
 
-  CGFloat bottomMargin = IsChromeNextIaEnabled() ? kFloatingBottomMargin
-                                                 : kLegacyFloatingBottomMargin;
+  CGFloat bottomMargin;
+  if (IsChromeNextIaEnabled()) {
+    CGFloat safeAreaBottom = scene_state.window.safeAreaInsets.bottom;
+    bottomMargin = safeAreaBottom - kFloatingBottomMargin;
 
-  CGFloat offset = (max_bottom_inset * GetFloatyProgress()) -
-                   kFloatyIntrinsicPaddingCorrection + bottomMargin;
+  } else {
+    bottomMargin =
+        kFloatyIntrinsicPaddingCorrection - kLegacyFloatingBottomMargin;
+  }
+
+  CGFloat offset = (max_bottom_inset * GetFloatyProgress()) - bottomMargin;
 
   return offset;
 }
