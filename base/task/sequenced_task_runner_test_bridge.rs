@@ -37,6 +37,7 @@ unsafe impl scoped_refptr::CxxRefCounted for ffi::TestRefCounted {
 
     // SAFETY: The trait imposes the same requirements as `Release`.
     unsafe fn release(&self) {
+        // SAFETY: Same requirements as the function
         unsafe {
             self.Release();
         }

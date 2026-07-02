@@ -68,6 +68,7 @@ unsafe impl CxxRefCounted for ffi::SequencedTaskRunner {
 
     // SAFETY: The trait imposes the same requirements as `Release`.
     unsafe fn release(&self) {
+        // SAFETY: Same requirements as the function
         unsafe {
             ffi::Release(self);
         }
@@ -76,7 +77,9 @@ unsafe impl CxxRefCounted for ffi::SequencedTaskRunner {
 
 // SAFETY: The C++ implementation of this class is designed to be thread-safe.
 unsafe impl CxxRefCountedThreadSafe for ffi::SequencedTaskRunner {}
+// SAFETY: As above
 unsafe impl Send for ffi::SequencedTaskRunner {}
+// SAFETY: As above
 unsafe impl Sync for ffi::SequencedTaskRunner {}
 
 /// This type is the Rust representation of a C++

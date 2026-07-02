@@ -44,8 +44,10 @@ mod ffi {
 pub struct CurrentCommandLine(*const ffi::CommandLine);
 
 // SAFETY: Because CurrentCommandLine is strictly read-only on the Rust side,
-// it is fine to Send and Sync.
+// it is fine to send/share across threads.
 unsafe impl Send for CurrentCommandLine {}
+
+// SAFETY: As above
 unsafe impl Sync for CurrentCommandLine {}
 
 impl CurrentCommandLine {

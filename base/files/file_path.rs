@@ -33,6 +33,7 @@ pub mod ffi {
 // safe to share references across threads (`Sync`) and transfer ownership
 // (`Send`).
 unsafe impl Send for ffi::FilePath {}
+// SAFETY: As above
 unsafe impl Sync for ffi::FilePath {}
 
 impl ffi::FilePath {

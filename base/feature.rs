@@ -101,7 +101,9 @@ impl<'a> From<&'a Feature> for &'a ffi::Feature {
 unsafe impl Sync for Feature {}
 
 #[cxx::bridge(namespace = "base")]
-mod ffi {
+// Public so other crates can use the Feature type in their own cxx bridges
+#[doc(hidden)]
+pub mod ffi {
     unsafe extern "C++" {
         include!("base/feature.h");
         include!("base/feature_list.h");

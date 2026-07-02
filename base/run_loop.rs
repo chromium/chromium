@@ -90,4 +90,6 @@ impl RunLoop {
 
 // SAFETY: we only expose the thread-safe subset of RunLoop's functionality
 unsafe impl Send for ffi::RunLoop {}
+
+// SAFETY: As above
 unsafe impl Sync for ffi::RunLoop {}

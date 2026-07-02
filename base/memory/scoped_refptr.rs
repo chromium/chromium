@@ -122,9 +122,9 @@ impl<T: CxxRefCounted> ScopedRefPtr<T> {
     pub fn as_pin(&self) -> std::pin::Pin<&mut T> {
         let cpp_obj_ref: &T = self; // Via `impl Deref`.
 
-        // SAFETY: `&mut` exclusivity/aliasing rules don't apply to ZSTs
-        // (based on the `cxx::kind::Opaque` constraint of the type).
         assert!(std::mem::size_of::<T>() == 0);
+        // SAFETY: `&mut` exclusivity rules don't apply to ZSTs
+        // (this type is `cxx::kind::Opaque`).
         let cpp_obj_mut_ref = unsafe { std::mem::transmute::<&T, &mut T>(cpp_obj_ref) };
 
         // SAFETY:
@@ -158,10 +158,10 @@ impl<T: CxxRefCounted> std::ops::Deref for ScopedRefPtr<T> {
     type Target = T;
 
     fn deref(&self) -> &T {
+        assert!(std::mem::size_of::<T>() == 0);
         // SAFETY: The safety invariants of the `ptr` field guarantee that
         // aliasing rules don't apply (`T` is a ZST) and that `ptr` points to
         // valid, aligned data.
-        assert!(std::mem::size_of::<T>() == 0);
         unsafe { self.ptr.as_ref() }
     }
 }
@@ -186,4 +186,5 @@ const _: () = {
 // SAFETY: it's safe to send/share T, and the CxxRefCountedThreadSafe
 // implementation guarantees that the ref-counting is itself thread-safe.
 unsafe impl<T: Send + Sync + CxxRefCountedThreadSafe> Send for ScopedRefPtr<T> {}
+// SAFETY: As above
 unsafe impl<T: Send + Sync + CxxRefCountedThreadSafe> Sync for ScopedRefPtr<T> {}

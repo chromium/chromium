@@ -11,7 +11,7 @@ mod ffi {
     unsafe extern "C++" {
         include!("base/feature.h");
         #[namespace = "base"]
-        type Feature;
+        type Feature = feature::ffi::Feature;
 
         include!("base/test/scoped_feature_list_rust_shim.h");
 
@@ -42,17 +42,11 @@ impl ScopedFeatureList {
     }
 
     pub fn init_and_enable_feature(&mut self, feature: &feature::Feature) {
-        unsafe {
-            let feature: &ffi::Feature = std::mem::transmute(feature);
-            self.inner.pin_mut().InitAndEnableFeature(feature);
-        }
+        self.inner.pin_mut().InitAndEnableFeature(feature.into());
     }
 
     pub fn init_and_disable_feature(&mut self, feature: &feature::Feature) {
-        unsafe {
-            let feature: &ffi::Feature = std::mem::transmute(feature);
-            self.inner.pin_mut().InitAndDisableFeature(feature);
-        }
+        self.inner.pin_mut().InitAndDisableFeature(feature.into());
     }
 }
 
