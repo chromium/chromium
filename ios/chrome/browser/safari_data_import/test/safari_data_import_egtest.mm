@@ -80,6 +80,12 @@ NSString* const kInvalidPasswordUsername = @"Superman";
   [AutofillAppInterface clearCreditCardStore];
 }
 
+- (void)tearDownHelper {
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:@"NextPromoForDisplayOverride"];
+  [super tearDownHelper];
+}
+
 /// Verify that the current number of items in the storage matches the
 /// parameters.
 - (void)verifyItemCountForBookmarks:(int)bookmarksCount
