@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -21,7 +22,74 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-using l10n_util::GetNSString;
+using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::FullscreenSigninPrimaryButtonMatcher;
+using chrome_test_util::StaticTextWithAccessibilityLabelId;
+
+namespace {
+
+// Returns the deep link URL for the given `email`.
+NSURL* GetDeepLinkURLForEmail(NSString* email) {
+  NSString* urlString = [NSString
+      stringWithFormat:
+          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
+          email];
+  return [NSURL URLWithString:urlString];
+}
+
+void CheckAccountSignin(FakeSystemIdentity* chosenIdentity) {
+  [ChromeEarlGrey waitForMatcher:chrome_test_util::SigninScreenPromoMatcher()];
+
+  id<GREYMatcher> primaryButton =
+      FullscreenSigninPrimaryButtonMatcher(chosenIdentity);
+  [[EarlGrey
+      selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
+                                   IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
+                                          IDS_IOS_DEEPLINK_SIGNIN_SUBTITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:primaryButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:primaryButton] performAction:grey_tap()];
+  // Verify that `chosenIdentity` is now signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:chosenIdentity];
+}
+
+void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
+                        FakeSystemIdentity* chosenIdentity) {
+  [ChromeEarlGrey waitForMatcher:chrome_test_util::SigninScreenPromoMatcher()];
+
+  id<GREYMatcher> primaryButton =
+      FullscreenSigninPrimaryButtonMatcher(chosenIdentity);
+  [[EarlGrey
+      selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
+                                   IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  NSString* expectedSubtitle = l10n_util::GetNSStringF(
+      IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_SUBTITLE,
+      base::SysNSStringToUTF16(signedInIdentity.userEmail),
+      base::SysNSStringToUTF16(chosenIdentity.userEmail));
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(expectedSubtitle)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:primaryButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_NO_THANKS)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:primaryButton] performAction:grey_tap()];
+  // Verify that `chosenIdentity` is now signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:chosenIdentity];
+}
+
+}  // namespace
 
 // Tests for Deeplink Sign-in.
 @interface DeeplinkSigninTestCase : ChromeTestCase
@@ -53,15 +121,10 @@ using l10n_util::GetNSString;
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
-  // Construct the deep link URL.
-  NSString* urlString = [NSString
-      stringWithFormat:
-          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
-          fakeIdentity.userEmail];
-
   // Simulate opening the URL from an external app.
-  NSURL* NSURLToOpen = [NSURL URLWithString:urlString];
-  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:NSURLToOpen];
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity.userEmail)];
 
   // Verify that the "already signed in" snackbar is shown.
   NSString* expectedMessage = l10n_util::GetNSStringF(
@@ -73,25 +136,18 @@ using l10n_util::GetNSString;
 
 // Tests that opening a cross-device sign-in deep link for an account that is
 // not signed in shows the sign-in flow.
-- (void)testCrossDeviceSigninNotSignedIn {
+- (void)testCrossDeviceSigninSignedOutTargetAccountOnDevice {
   // Add a fake identity to the device, but keep the user signed out.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedOut];
 
-  // Construct the deep link URL.
-  NSString* urlString = [NSString
-      stringWithFormat:
-          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
-          fakeIdentity.userEmail];
-  NSURL* url = [NSURL URLWithString:urlString];
-
   // Simulate opening the URL from an external app.
-  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:url];
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity.userEmail)];
 
-  // Verify that the sign-in screen is presented.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::SigninScreenPromoMatcher()];
+  CheckAccountSignin(fakeIdentity);
 }
 
 // Tests that opening a cross-device sign-in deep link when sign-in is disabled
@@ -105,15 +161,10 @@ using l10n_util::GetNSString;
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  // Construct the deep link URL.
-  NSString* urlString = [NSString
-      stringWithFormat:
-          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
-          fakeIdentity.userEmail];
-  NSURL* url = [NSURL URLWithString:urlString];
-
   // Simulate opening the URL from an external app.
-  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:url];
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity.userEmail)];
 
   // Verify that the sign-in screen is not presented.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -133,21 +184,111 @@ using l10n_util::GetNSString;
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  // Construct the deep link URL.
-  NSString* urlString = [NSString
-      stringWithFormat:
-          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
-          fakeIdentity.userEmail];
-  NSURL* url = [NSURL URLWithString:urlString];
-
   // Simulate opening the URL from an external app.
-  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:url];
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity.userEmail)];
 
   // Verify that the sign-in screen is not presented.
   [ChromeEarlGreyUI waitForAppToIdle];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that opening a cross-device sign-in deep link when no accounts on
+// device shows the add account flow.
+- (void)testCrossDeviceSigninNoAccountOnDevice {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  // Simulate opening the URL from an external app.
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity.userEmail)];
+
+  // Verify that the "Add Account" flow is shown.
+  [ChromeEarlGrey
+      waitForMatcher:grey_accessibilityID(kFakeAuthAddAccountButtonIdentifier)];
+
+  // Finish add account flow by adding `fakeIdentity`.
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      performAction:grey_tap()];
+
+  CheckAccountSignin(fakeIdentity);
+}
+
+// Tests that opening a cross-device sign-in deep link with an account not on
+// device while there is already another account on device shows add account
+// flow.
+- (void)testCrossDeviceSigninSignedOutTargetAccountNotOnDevice {
+  // Add a fake identity to the device.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Simulate opening the URL from an external app with another email.
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity2.userEmail)];
+
+  // Verify that the "Add Account" flow is shown.
+  [ChromeEarlGrey
+      waitForMatcher:grey_accessibilityID(kFakeAuthAddAccountButtonIdentifier)];
+
+  // Finish add account flow by adding `fakeIdentity2`.
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      performAction:grey_tap()];
+
+  CheckAccountSignin(fakeIdentity2);
+}
+
+// Tests that opening a cross-device sign-in deep link with an account not on
+// device while there is already another account signed-in shows add account
+// flow.
+- (void)testCrossDeviceSigninSignedInTargetAccountNotOnDevice {
+  // Sign in with `fakeIdentity1`.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  // Simulate opening the URL from an external app with another email.
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity2.userEmail)];
+
+  // Verify that the "Add Account" flow is shown.
+  [ChromeEarlGrey
+      waitForMatcher:grey_accessibilityID(kFakeAuthAddAccountButtonIdentifier)];
+
+  // Finish add account flow by adding `fakeIdentity2`.
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      performAction:grey_tap()];
+
+  CheckAccountSwitch(fakeIdentity1, fakeIdentity2);
+}
+
+// Tests that opening a cross-device sign-in deep link with an account on device
+// while there is already another account signed-in shows switch account flow.
+- (void)testCrossDeviceSigninSignedInTargetAccountOnDevice {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+
+  // Sign in with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  // Simulate opening the URL from an external app with `fakeIdentity2` email.
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity2.userEmail)];
+
+  CheckAccountSwitch(fakeIdentity1, fakeIdentity2);
 }
 
 @end

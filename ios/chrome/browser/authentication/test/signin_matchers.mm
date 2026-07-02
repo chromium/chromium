@@ -49,6 +49,16 @@ id<GREYMatcher> AccountChooserButtonMatcher(id<SystemIdentity> identity) {
                     grey_sufficientlyVisible(), nil);
 }
 
+id<GREYMatcher> FullscreenSigninPrimaryButtonMatcher(
+    id<SystemIdentity> identity) {
+  NSString* buttonTitle =
+      l10n_util::GetNSStringF(IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
+                              base::SysNSStringToUTF16(identity.userGivenName));
+  return grey_allOf(grey_accessibilityLabel(buttonTitle),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_sufficientlyVisible(), nil);
+}
+
 id<GREYMatcher> SigninScreenPromoMatcher() {
   return grey_accessibilityID(
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);
