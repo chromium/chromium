@@ -29,12 +29,6 @@ public class OmniboxActionFactory {
     }
 
     @CalledByNative
-    public static @Nullable OmniboxAction buildOmniboxLensOverlayAction(
-            long nativeInstance, String hint, String accessibilityHint) {
-        return new OmniboxLensOverlayAction(nativeInstance, hint, accessibilityHint);
-    }
-
-    @CalledByNative
     public static @Nullable OmniboxAction buildOmniboxPedal(
             long nativeInstance,
             String hint,
