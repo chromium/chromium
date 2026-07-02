@@ -144,8 +144,7 @@ TEST_F(CanvasNon2DResourceProviderTest, BeginExternalOverwrite) {
   EXPECT_EQ(client_si_from_second_call, client_si);
 }
 
-TEST_F(CanvasNon2DResourceProviderTest,
-       CanvasResourceProviderAcceleratedOverlay) {
+TEST_F(CanvasNon2DResourceProviderTest, AcceleratedOverlay) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -165,9 +164,8 @@ TEST_F(CanvasNon2DResourceProviderTest,
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_FALSE(provider->IsSoftware());
   EXPECT_TRUE(provider->IsSingleBuffered());
-  // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
-  // Windows
+  // As it is an accelerated canvas, it will internally force it to RGBA8 on
+  // MacOS, or otherwise RGBA8 if not on Windows
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
@@ -179,7 +177,7 @@ TEST_F(CanvasNon2DResourceProviderTest,
 #endif
 }
 
-TEST_F(CanvasNon2DResourceProviderTest, CanvasResourceProviderTexture) {
+TEST_F(CanvasNon2DResourceProviderTest, Texture) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -196,16 +194,14 @@ TEST_F(CanvasNon2DResourceProviderTest, CanvasResourceProviderTexture) {
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_FALSE(provider->IsSoftware());
   EXPECT_FALSE(provider->IsSingleBuffered());
-  // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to kRGBA8
+  // As it is an accelerated canvas, it will internally force it to kRGBA8
   EXPECT_EQ(GetSkImageInfo(provider.get()),
             kInfo.makeColorType(kRGBA_8888_SkColorType));
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-TEST_F(CanvasNon2DResourceProviderTest,
-       CanvasResourceProviderSharedImageEndExternalWrite) {
+TEST_F(CanvasNon2DResourceProviderTest, EndExternalWrite) {
   // Set up this test to use GPU rasterization to be able to verify
   // conditions against the test raster interface.
   SharedGpuContext::Reset();
@@ -247,8 +243,7 @@ TEST_F(CanvasNon2DResourceProviderTest,
   EXPECT_NE(GetSyncToken(resource.get()), old_compositor_read_sync_token);
 }
 
-TEST_F(CanvasNon2DResourceProviderTest,
-       CanvasResourceProviderSoftwareSharedImage_GPUCompositing) {
+TEST_F(CanvasNon2DResourceProviderTest, SoftwareSharedImage_GPUCompositing) {
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
@@ -260,8 +255,7 @@ TEST_F(CanvasNon2DResourceProviderTest,
       test_web_shared_image_interface_provider.get()));
 }
 
-TEST_F(CanvasNon2DResourceProviderTest,
-       CanvasResourceProviderSoftwareSharedImage_SWCompositing) {
+TEST_F(CanvasNon2DResourceProviderTest, SoftwareSharedImage_SWCompositing) {
   platform_->SetGpuCompositingDisabled(true);
 
   const gfx::Size kSize(10, 10);
@@ -307,9 +301,8 @@ TEST_F(CanvasNon2DResourceProviderTest,
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_FALSE(provider->IsSoftware());
   EXPECT_TRUE(provider->IsSingleBuffered());
-  // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
-  // Windows
+  // As it is an accelerated canvas, it will internally force it to RGBA8 on
+  // MacOS, or otherwise RGBA8 if not on Windows
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
@@ -338,8 +331,8 @@ TEST_F(CanvasNon2DResourceProviderTest,
   provider = CanvasNon2DResourceProvider::Create(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       context_provider_wrapper_, gpu::SharedImageUsageSet());
-  // The CanvasResourceProvider for SharedImage should not be created
-  // if the texture size is greater than the maximum value.
+  // The provider should not be created if the texture size is greater than
+  // the maximum value.
   EXPECT_FALSE(provider);
 }
 
