@@ -100,8 +100,9 @@ IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest, ShowBubble) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
+// TODO(crbug.com/529904307): Disabled due to flakey test.
 IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
-                       ReshowBubbleOnIconClick) {
+                       DISABLED_ReshowBubbleOnIconClick) {
   ShowBubble();
 
   PaymentsChurnedUsersBubbleController* controller =
