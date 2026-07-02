@@ -153,11 +153,10 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class extensions::ChromeGuestViewManagerDelegate;
   friend class extensions::ChromeMetricsPrivateDelegate;
   friend class extensions::GlicPrivateInvokeFunction;
-  friend void metrics::ChangeMetricsReportingStateWithReplyImpl(
+  friend void metrics::ChangeMetricsReportingStateWithReply(
       bool,
       metrics::OnMetricsReportingCallbackType,
-      metrics::ChangeMetricsReportingStateCalledFrom,
-      std::optional<metrics::MetricsReportingLevel>);
+      metrics::ChangeMetricsReportingStateCalledFrom);
   friend void metrics::ApplyMetricsReportingPolicy();
   friend class ash::settings::PerSessionSettingsUserActionTracker;
   friend class settings::MetricsReportingHandler;

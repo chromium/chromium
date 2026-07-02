@@ -18,7 +18,6 @@
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/entropy_state.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -61,37 +60,22 @@ bool SetGoogleUpdateSettings(bool enabled) {
   return updated_pref;
 }
 
-// Does the necessary changes for metrics reporting state changes which needs
+// Does the necessary changes for MetricsReportingEnabled changes which needs
 // to be done in the main thread.
 // As arguments this function gets:
 //  |to_update_pref| which indicates what the desired update should be,
 //  |callback_fn| is the callback function to be called in the end,
 //  |called_from| is from where the call was made,
-//  |level_to_write| is the level to be written to the metrics reporting level
-//  pref. If the metrics consent restructure is used, then it must be set.
-//  Otherwise, if it is null, then the legacy boolean pref is updated.
+
 //  |updated_pref| is the result of attempted update.
 // Update considers to be successful if |to_update_pref| and |updated_pref| are
 // the same.
 void SetMetricsReporting(bool to_update_pref,
                          OnMetricsReportingCallbackType callback_fn,
                          ChangeMetricsReportingStateCalledFrom called_from,
-                         std::optional<MetricsReportingLevel> level_to_write,
                          bool updated_pref) {
-  // If the metrics consent restructure should be used, update the new metrics
-  // reporting level preference. Otherwise, fallback to updating the legacy
-  // boolean metrics reporting preference.
-  if (MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure(
-          g_browser_process->local_state())) {
-    CHECK(level_to_write.has_value());
-    MetricsReportingLevel final_level =
-        updated_pref ? level_to_write.value() : MetricsReportingLevel::kNone;
-    MetricsReportingChoiceService::SetMetricsReportingLevel(
-        g_browser_process->local_state(), final_level);
-  } else {
-    g_browser_process->local_state()->SetBoolean(
-        metrics::prefs::kMetricsReportingEnabled, updated_pref);
-  }
+  g_browser_process->local_state()->SetBoolean(
+      metrics::prefs::kMetricsReportingEnabled, updated_pref);
 
   UpdateMetricsPrefsOnPermissionChange(updated_pref, called_from);
 
@@ -120,11 +104,10 @@ void ChangeMetricsReportingState(
 
 // TODO(gayane): Instead of checking policy before setting the metrics pref set
 // the pref and register for notifications for the rest of the changes.
-void ChangeMetricsReportingStateWithReplyImpl(
+void ChangeMetricsReportingStateWithReply(
     bool enabled,
     OnMetricsReportingCallbackType callback_fn,
-    ChangeMetricsReportingStateCalledFrom called_from,
-    std::optional<MetricsReportingLevel> level_to_write) {
+    ChangeMetricsReportingStateCalledFrom called_from) {
 #if !BUILDFLAG(IS_ANDROID)
   // Chrome OS manages metrics settings externally and changes to reporting
   // should be propagated to metrics service regardless if the policy is managed
@@ -151,25 +134,7 @@ void ChangeMetricsReportingStateWithReplyImpl(
       ->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&SetGoogleUpdateSettings, enabled),
           base::BindOnce(&SetMetricsReporting, enabled, std::move(callback_fn),
-                         called_from, level_to_write));
-}
-
-void ChangeMetricsReportingStateWithReply(
-    bool enabled,
-    OnMetricsReportingCallbackType callback_fn,
-    ChangeMetricsReportingStateCalledFrom called_from) {
-  ChangeMetricsReportingStateWithReplyImpl(enabled, std::move(callback_fn),
-                                           called_from, std::nullopt);
-}
-
-void ChangeMetricsReportingState(
-    MetricsReportingLevel level,
-    ChangeMetricsReportingStateCalledFrom called_from) {
-  bool enabled = level == MetricsReportingLevel::kBasic ||
-                 level == MetricsReportingLevel::kAdvanced;
-
-  ChangeMetricsReportingStateWithReplyImpl(
-      enabled, OnMetricsReportingCallbackType(), called_from, level);
+                         called_from));
 }
 
 void UpdateMetricsPrefsOnPermissionChange(

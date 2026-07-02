@@ -8,9 +8,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "components/metrics/metrics_reporting_level.h"
 #include "components/prefs/pref_change_registrar.h"
-
 class PrefRegistrySimple;
 class PrefService;
 
@@ -49,10 +47,6 @@ class MetricsReportingChoiceService {
   // Returns true if the metrics consent restructure feature is enabled.
   static bool IsMetricsConsentRestructureFeatureEnabled(
       const PrefService* local_state);
-
-  // Sets the metrics reporting level to |level|.
-  static void SetMetricsReportingLevel(PrefService* local_state,
-                                       MetricsReportingLevel level);
 
   // Returns true if the metrics consent restructure should be used. This is
   // different from IsMetricsConsentRestructureFeatureEnabled() in that it also
