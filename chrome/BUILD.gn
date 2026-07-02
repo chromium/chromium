@@ -237,12 +237,6 @@ if (!is_android && !is_mac) {
         "//components/crash/win:chrome_wer",
       ]
 
-      if (is_chrome_branded) {
-        data_deps += [
-          "//chrome/common/request_header_integrity/internal:chromecompaneros",
-        ]
-      }
-
       if (enable_platform_experience) {
         data_deps +=
             [ "//chrome/browser/platform_experience/win:os_update_handler" ]
@@ -1088,16 +1082,6 @@ if (is_win) {
     }
   }
 
-  if (is_chrome_branded) {
-    bundle_data("chromecompaneros_bundle_data") {
-      sources = [ "$root_out_dir/libchromecompaneros.dylib" ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [
-        "//chrome/common/request_header_integrity/internal:chromecompaneros",
-      ]
-    }
-  }
-
   tweak_info_plist("chrome_framework_plist") {
     info_plist = "app/framework-Info.plist"
     args = [
@@ -1235,9 +1219,6 @@ if (is_win) {
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
     ]
 
-    if (is_chrome_branded) {
-      bundle_deps += [ ":chromecompaneros_bundle_data" ]
-    }
     if (!use_static_angle) {
       bundle_deps += [ ":angle_binaries" ]
     }

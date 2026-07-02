@@ -132,10 +132,7 @@ def get_parts(config):
             'libGLESv2.dylib',
         ])
     if config.is_chrome_branded():
-        dylibs.extend((
-            'liboptimization_guide_internal.dylib',
-            'libchromecompaneros.dylib',
-        ))
+        dylibs.append('liboptimization_guide_internal.dylib')
     for library in dylibs:
         library_basename = os.path.basename(library)
         parts[library_basename] = CodeSignedProduct(
