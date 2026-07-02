@@ -110,16 +110,27 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
                        kCMSampleAttachmentKey_DisplayImmediately,
                        kCFBooleanTrue);
 
-  [av_layer enqueueSampleBuffer:sample_buffer.get()];
+  AVQueuedSampleBufferRenderingStatus status;
+  NSError* error;
+  if (@available(macOS 14, iOS 17, *)) {
+    AVSampleBufferVideoRenderer* renderer = av_layer.sampleBufferRenderer;
+    [renderer enqueueSampleBuffer:sample_buffer.get()];
+    status = renderer.status;
+    error = renderer.error;
+  } else {
+    [av_layer enqueueSampleBuffer:sample_buffer.get()];
+    status = av_layer.status;
+    error = av_layer.error;
+  }
 
-  switch (av_layer.status) {
+  switch (status) {
     case AVQueuedSampleBufferRenderingStatusUnknown:
       LOG(ERROR) << "AVSampleBufferDisplayLayer has status unknown, but should "
                     "be rendering.";
       return false;
     case AVQueuedSampleBufferRenderingStatusFailed:
       LOG(ERROR) << "AVSampleBufferDisplayLayer has status failed, error: "
-                 << base::SysNSStringToUTF8(av_layer.error.description);
+                 << base::SysNSStringToUTF8(error.description);
       return false;
     case AVQueuedSampleBufferRenderingStatusRendering:
       break;
