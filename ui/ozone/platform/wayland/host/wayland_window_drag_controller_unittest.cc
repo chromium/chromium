@@ -1842,6 +1842,44 @@ TEST_P(WaylandWindowDragControllerTest, OutgoingSessionWithoutDndFinished) {
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
+// Regression test for crbug.com/498008192. Ensures that if the drag session is
+// finished/cancelled while the controller is in State::kAttaching (e.g., after
+// EndMoveLoop() during tab snapping or window destruction), HandleDragEnd()
+// processes the cleanup properly and resets state to kIdle rather than getting
+// stuck in a zombie attaching/attached state.
+TEST_P(WaylandWindowDragControllerTest, CancelDuringAttaching) {
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {10, 10});
+
+  auto* wayland_extension = GetWaylandToplevelExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    move_loop_handler->EndMoveLoop();
+    EXPECT_EQ(State::kAttaching, drag_controller_state());
+    SendDndCancelled();
+  }));
+
+  EXPECT_FALSE(move_loop_handler->RunMoveLoop({}));
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+  EXPECT_FALSE(
+      connection_->data_device_manager()->GetDevice()->IsDragInProgress());
+
+  // Verify that subsequent window dragging sessions can start cleanly.
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  EXPECT_TRUE(drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+  SendDndDropAndFinished();
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));

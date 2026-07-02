@@ -166,8 +166,15 @@ WaylandWindowDragController::~WaylandWindowDragController() {
 bool WaylandWindowDragController::StartDragSession(
     WaylandToplevelWindow* origin,
     DragEventSource drag_source) {
-  if (state_ != State::kIdle)
-    return true;
+  if (state_ != State::kIdle) {
+    if (!data_source_) {
+      LOG(ERROR) << "Received StartDragSession in non-idle state without a "
+                    "data source. Resetting state.";
+      state_ = State::kIdle;
+    } else {
+      return true;
+    }
+  }
 
   // TODO(crbug.com/340398746): This should be a CHECK instead. However
   // currently buggy compositors, eg: KWin 6, which do not send
@@ -236,16 +243,21 @@ bool WaylandWindowDragController::Drag(WaylandToplevelWindow* window,
                                        const gfx::Vector2d& offset) {
   DCHECK_GE(state_, State::kAttached);
   DCHECK(window);
+  CHECK(data_source_);
 
   SetDraggedWindow(window, offset);
   state_ = State::kDetached;
   RunLoop();
   SetDraggedWindow(nullptr, {});
 
-  DCHECK(state_ == State::kAttaching || state_ == State::kDropped ||
-         state_ == State::kCancelled) << "Drag state: " << int(state_);
+  DCHECK(state_ == State::kIdle || state_ == State::kAttaching ||
+         state_ == State::kDropped || state_ == State::kCancelled)
+      << "Drag state: " << int(state_);
   if (state_ == State::kAttaching) {
-    state_ = State::kAttached;
+    state_ = data_source_ ? State::kAttached : State::kIdle;
+    return false;
+  }
+  if (state_ == State::kIdle) {
     return false;
   }
 
@@ -514,7 +526,8 @@ void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
 void WaylandWindowDragController::HandleDragEnd(bool completed,
                                                 base::TimeTicks timestamp) {
   // No-op if drag end has already been handled.
-  if (state_ != State::kAttached && state_ != State::kDetached) {
+  if (state_ != State::kAttached && state_ != State::kDetached &&
+      state_ != State::kAttaching) {
     return;
   }
 
@@ -649,7 +662,8 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
 // about to finish.
 void WaylandWindowDragController::HandleDropAndResetState(
     base::TimeTicks timestamp) {
-  DCHECK(state_ == State::kDropped || state_ == State::kCancelled);
+  DCHECK(state_ == State::kDropped || state_ == State::kCancelled ||
+         state_ == State::kAttaching);
   VLOG(1) << "Notifying drop. window=" << events_grabber_;
 
   // StopDragging() may get called in response to bogus input events, eg:
