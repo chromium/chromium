@@ -2942,11 +2942,7 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
       if (!result) {
         return std::nullopt;
       }
-      float number = number_side->DoubleValue();
-      if (operator_ == CSSMathOperator::kDivide) {
-        number = 1.0 / number;
-      }
-      result.value() *= number;
+      result.value() *= number_side->DoubleValue();
       break;
     }
     case CSSMathOperator::kInvert:
