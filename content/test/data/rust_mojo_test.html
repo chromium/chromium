@@ -7,10 +7,11 @@ found in the LICENSE file.
 
 This script gives a minimal example of mojo usage by sending messages to a
 receiver that lives in the browser process. To execute it, build the
-`content_shell` target in some out directory (e.g. out/default), then run:
+`content_shell` target in some out directory (e.g. out/Default), then run:
 
-  out/default/content_shell --enable-blink-features=MojoJS \
-    "file://$(pwd)/content/test/data/rust_mojo_test.html?out=../../../out/default"
+  out/Default/content_shell --enable-blink-features=MojoJS \
+    --command-line-flag-parsable-by-rust="Hello from Rust!" \
+    "file://$(pwd)/content/test/data/rust_mojo_test.html?out=../../../out/Default"
 -->
 
 <head>
@@ -26,6 +27,9 @@ receiver that lives in the browser process. To execute it, build the
   </div>
   <div style="margin-top: 10px;">
     <strong>Finch Status:</strong> <span id="finchStatus">Loading...</span>
+  </div>
+  <div style="margin-top: 10px;">
+    <strong>CommandLine Status:</strong> <span id="commandLineStatus">Loading...</span>
   </div>
   <p id="responseField" style="font-family: monospace; margin-top: 20px; color: #333;"></p>
 
@@ -66,6 +70,24 @@ receiver that lives in the browser process. To execute it, build the
       }
     }
 
+    async function checkCommandLine() {
+      const commandLineStatus = document.getElementById('commandLineStatus');
+      try {
+        const remote = getRemote();
+        const { exists } = await remote.hasCommandLineSwitch('command-line-flag-parsable-by-rust');
+        if (exists) {
+          const { value } = await remote.getCommandLineSwitchValue('command-line-flag-parsable-by-rust');
+          commandLineStatus.innerText = value ? `Switch 'command-line-flag-parsable-by-rust' is set to: "${value}"` : `Switch 'command-line-flag-parsable-by-rust' is set!`;
+          commandLineStatus.style.color = 'green';
+        } else {
+          commandLineStatus.innerText = "Switch 'command-line-flag-parsable-by-rust' is not set.";
+          commandLineStatus.style.color = 'red';
+        }
+      } catch (e) {
+        commandLineStatus.innerText = "Error: " + e.message;
+      }
+    }
+
     document.getElementById('rustButton').addEventListener('click', async () => {
       const responseField = document.getElementById('responseField');
       const index = parseInt(document.getElementById('indexInput').value, 10);
@@ -79,7 +101,10 @@ receiver that lives in the browser process. To execute it, build the
     });
 
     // Check flag status on load
-    window.addEventListener('load', checkFinchFlag);
+    window.addEventListener('load', () => {
+      checkFinchFlag();
+      checkCommandLine();
+    });
   </script>
 </body>
 

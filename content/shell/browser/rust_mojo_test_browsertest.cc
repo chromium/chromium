@@ -49,15 +49,29 @@ class RustMojoTestBrowserTestWithFeatureEnabled
   base::test::ScopedFeatureList feature_list_;
 };
 
+class RustMojoTestBrowserTestWithCommandLineSwitch
+    : public RustMojoTestBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RustMojoTestBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII("command-line-flag-parsable-by-rust",
+                                    "hello_from_command_line");
+  }
+};
+
 // TODO(crbug.com/444509367): Failing on Fushia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_LoadRustMojoService DISABLED_LoadRustMojoService
 #define MAYBE_LoadRustMojoServiceWithFeatureEnabled \
   DISABLED_LoadRustMojoServiceWithFeatureEnabled
+#define MAYBE_LoadRustMojoServiceWithCommandLineSwitch \
+  DISABLED_LoadRustMojoServiceWithCommandLineSwitch
 #else
 #define MAYBE_LoadRustMojoService LoadRustMojoService
 #define MAYBE_LoadRustMojoServiceWithFeatureEnabled \
   LoadRustMojoServiceWithFeatureEnabled
+#define MAYBE_LoadRustMojoServiceWithCommandLineSwitch \
+  LoadRustMojoServiceWithCommandLineSwitch
 #endif
 IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, MAYBE_LoadRustMojoService) {
   EXPECT_TRUE(NavigateToURL(
@@ -69,6 +83,23 @@ IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, MAYBE_LoadRustMojoService) {
             EvalJs(shell(),
                    "content.rustTest.mojom.RustTestService.getRemote()."
                    "isFeatureFlagSetViaRustEnabled().then(r => r.enabled)"));
+
+  // Verify that command line switches can be read from Rust.
+  EXPECT_EQ(
+      true,
+      EvalJs(
+          shell(),
+          "content.rustTest.mojom.RustTestService.getRemote()."
+          "hasCommandLineSwitch('enable-blink-features').then(r => r.exists)"));
+  EXPECT_EQ("MojoJS,MojoJSTest",
+            EvalJs(shell(),
+                   "content.rustTest.mojom.RustTestService.getRemote()."
+                   "getCommandLineSwitchValue('enable-blink-features').then(r "
+                   "=> r.value)"));
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "content.rustTest.mojom.RustTestService.getRemote()."
+                          "hasCommandLineSwitch('command-line-flag-parsable-by-"
+                          "rust').then(r => r.exists)"));
 }
 
 IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTestWithFeatureEnabled,
@@ -81,6 +112,23 @@ IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTestWithFeatureEnabled,
             EvalJs(shell(),
                    "content.rustTest.mojom.RustTestService.getRemote()."
                    "isFeatureFlagSetViaRustEnabled().then(r => r.enabled)"));
+}
+
+IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTestWithCommandLineSwitch,
+                       MAYBE_LoadRustMojoServiceWithCommandLineSwitch) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/rust_mojo_test.html")));
+
+  // Verify that custom command line switch is detected via Rust.
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "content.rustTest.mojom.RustTestService.getRemote()."
+                         "hasCommandLineSwitch('command-line-flag-parsable-by-"
+                         "rust').then(r => r.exists)"));
+  EXPECT_EQ("hello_from_command_line",
+            EvalJs(shell(),
+                   "content.rustTest.mojom.RustTestService.getRemote()."
+                   "getCommandLineSwitchValue('command-line-flag-parsable-by-"
+                   "rust').then(r => r.value)"));
 }
 
 }  // namespace content
