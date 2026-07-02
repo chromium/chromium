@@ -171,35 +171,6 @@ void Canvas2DResourceProvider::OnResourceRefReturned(
 }
 
 
-scoped_refptr<CanvasResourceSharedImage>
-CanvasNon2DResourceProvider::NewOrRecycledResource() {
-  if (!image_pool_) {
-    return nullptr;
-  }
-
-  auto resource = image_pool_->GetImage();
-  if (!resource) {
-    return nullptr;
-  }
-
-  CHECK(!IsSingleBuffered() || !resource->IsInitialized());
-
-  if (!resource->IsInitialized()) {
-    if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(
-          CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
-    } else {
-      resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           hdr_metadata_, !is_software_);
-    }
-    ++num_inflight_resources_;
-    if (num_inflight_resources_ > max_inflight_resources_) {
-      max_inflight_resources_ = num_inflight_resources_;
-    }
-  }
-  DCHECK(resource->HasOneRef());
-  return resource;
-}
 
 std::unique_ptr<MemoryManagedPaintRecorder>
 Canvas2DResourceProvider::ReleaseRecorder() {
@@ -538,24 +509,6 @@ bool CanvasNon2DResourceProvider::UploadToBackingSharedImage(
   return true;
 }
 
-void CanvasNon2DResourceProvider::OnContextLost() {
-  if (notified_context_lost_) {
-    return;
-  }
-  ClearUnusedResources();
-  // Notify the owner of this resource provider that the GPU context was
-  // lost. The call is done in a separate task, so that the owner can delete
-  // this resource provider if needed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CanvasNon2DResourceProvider::NotifyGpuContextLostTask,
-                     CreateWeakPtr()));
-  notified_context_lost_ = true;
-}
-
-void CanvasNon2DResourceProvider::OnGpuChannelLost() {
-  OnContextLost();
-}
 
 bool CanvasNon2DResourceProvider::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
@@ -672,15 +625,6 @@ scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
   return resource_;
 }
 
-void CanvasNon2DResourceProvider::OnContextDestroyed() {
-  if (skia_canvas_) {
-    skia_canvas_->reset_image_provider();
-  }
-  canvas_image_provider_.reset();
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
 
 scoped_refptr<CanvasResource>
 CanvasNon2DResourceProvider::ProduceCanvasResource() {
@@ -728,15 +672,6 @@ bool Canvas2DResourceProvider::IsValid() const {
   return !IsGpuContextLost() && GetSkSurface();
 }
 
-bool CanvasNon2DResourceProvider::IsValid() const {
-  if (IsSoftware()) {
-    return shared_image_interface_provider_ &&
-           shared_image_interface_provider_->SharedImageInterface() &&
-           GetSkSurface();
-  }
-
-  return !IsGpuContextLost();
-}
 
 void Canvas2DResourceProvider::TransferBackFromWebGPU(
     const gpu::SyncToken& webgpu_write_sync_token) {
@@ -761,10 +696,6 @@ gpu::SharedImageUsageSet Canvas2DResourceProvider::GetSharedImageUsageFlags()
   return image_pool_->GetImageInfo().usage;
 }
 
-gpu::SharedImageUsageSet CanvasNon2DResourceProvider::GetSharedImageUsageFlags()
-    const {
-  return image_pool_->GetImageInfo().usage;
-}
 
 scoped_refptr<CanvasResource>
 CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
@@ -968,40 +899,6 @@ Canvas2DResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
                                                 orientation);
 }
 
-void CanvasNon2DResourceProvider::EnsureWriteAccess() {
-  DCHECK(resource_);
-  // In software mode, we don't need write access to the resource during
-  // drawing since it is executed on CPU memory managed by Skia.
-  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || is_software_)
-      << "Write access requires exclusive access to the resource";
-  DCHECK(!resource()->is_cross_thread())
-      << "Write access is only allowed on the owning thread";
-
-  if (current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-  current_resource_has_write_access_ = true;
-}
-
-void CanvasNon2DResourceProvider::EndWriteAccess() {
-  DCHECK(!resource()->is_cross_thread());
-
-  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-
-  if (is_software_) {
-    if (ShouldReplaceTargetBuffer()) {
-      resource_ = NewOrRecycledResource();
-    }
-    if (!resource() || !GetSkSurface()) {
-      return;
-    }
-    resource()->UploadSoftwareRenderingResults(GetSkSurface());
-  }
-
-  current_resource_has_write_access_ = false;
-}
 
 scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
     ImageOrientation orientation) {
@@ -1176,17 +1073,6 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   resource()->EndAccess(std::move(access));
 }
 
-// For WebGpu RecyclableCanvasResource.
-void CanvasNon2DResourceProvider::OnAcquireRecyclableCanvasResource() {
-  EnsureWriteAccess();
-}
-void CanvasNon2DResourceProvider::OnDestroyRecyclableCanvasResource(
-    const gpu::SyncToken& sync_token) {
-  // RecyclableCanvasResource should be the only one that holds onto
-  // |resource_|.
-  DCHECK(resource()->HasOneRef());
-  resource()->WaitSyncToken(sync_token);
-}
 
 void Canvas2DResourceProvider::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
@@ -1202,16 +1088,6 @@ void Canvas2DResourceProvider::OnFlushForImage(
   }
 }
 
-void CanvasNon2DResourceProvider::OnFlushForImage(
-    cc::PaintImage::ContentId content_id) {
-  if (cached_snapshot_ &&
-      cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
-          content_id) {
-    // This handles the case where the cached snapshot is referenced by an
-    // ImageBitmap that is being transferred to a worker.
-    cached_snapshot_.reset();
-  }
-}
 
 void Canvas2DResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
@@ -1540,15 +1416,6 @@ void Canvas2DResourceProvider::NotifyGpuContextLostTask(
   }
 }
 
-void CanvasNon2DResourceProvider::NotifyGpuContextLostTask(
-    base::WeakPtr<CanvasNon2DResourceProvider> provider) {
-  if (provider && provider->delegate_) {
-    // Move `provider` as hint that it shouldn't be reused after this point.
-    // The `delegate` owns the provider and can delete it in
-    // `NotifyGpuContextLost()`.
-    std::move(provider)->delegate_->NotifyGpuContextLost();
-  }
-}
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(
     gfx::Size size,
@@ -1860,23 +1727,6 @@ void Canvas2DResourceProvider::ClearAtCreation() {
 
 
 
-void CanvasNon2DResourceProvider::ClearUnusedResources() {
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
-
-bool CanvasNon2DResourceProvider::IsSingleBuffered() const {
-  return image_pool_ && image_pool_->GetImageInfo().usage.Has(
-                            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-}
-
-void CanvasNon2DResourceProvider::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage>&& resource) {
-  if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
-    image_pool_->ReleaseImage(std::move(resource));
-  }
-}
 
 base::ByteSize CanvasNon2DResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
@@ -1950,19 +1800,6 @@ SkSurfaceProps CanvasNon2DResourceProvider::GetSkSurfaceProps() const {
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
-gpu::raster::RasterInterface* CanvasNon2DResourceProvider::RasterInterface()
-    const {
-  if (!ContextProviderWrapper()) {
-    return nullptr;
-  }
-  return ContextProviderWrapper()->ContextProvider().RasterInterface();
-}
-
-bool CanvasNon2DResourceProvider::IsGpuContextLost() const {
-  auto* raster_interface = RasterInterface();
-  return !raster_interface ||
-         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
-}
 
 sk_sp<SkSurface> CanvasNon2DResourceProvider::CreateSkSurface() const {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::CreateSkSurface");
