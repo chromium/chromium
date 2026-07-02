@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 
 namespace base {

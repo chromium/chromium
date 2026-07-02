@@ -9,6 +9,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"

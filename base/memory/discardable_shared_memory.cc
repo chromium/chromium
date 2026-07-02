@@ -10,6 +10,7 @@
 
 #include "base/atomicops.h"
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"

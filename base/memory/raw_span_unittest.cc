@@ -5,6 +5,7 @@
 #include "base/memory/raw_span.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
