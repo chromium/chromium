@@ -25,6 +25,9 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -34,7 +37,6 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.Toast;
 
 import java.util.List;
 
@@ -88,7 +90,7 @@ public class SendTabToSelfAndroidBridge {
                         url,
                         title,
                         result -> {
-                            showPostSendToast(result, targetDeviceName);
+                            showPostSendSnackbar(webContents, result, targetDeviceName);
                             if (commitConfirmation != null) {
                                 commitConfirmation.onResult(result);
                             }
@@ -96,38 +98,46 @@ public class SendTabToSelfAndroidBridge {
                         entryPoint);
     }
 
-    private static void showPostSendToast(
-            @SendTabToSelfResult int result, String targetDeviceName) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)) {
+    private static void showPostSendSnackbar(
+            @Nullable WebContents webContents,
+            @SendTabToSelfResult int result,
+            String targetDeviceName) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+                || webContents == null) {
             return;
         }
-        Context appContext = ContextUtils.getApplicationContext();
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return;
+
+        SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        if (snackbarManager == null) return;
+
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return;
+
+        String message = getSnackbarMessage(context, result, targetDeviceName);
+        Snackbar snackbar =
+                Snackbar.make(
+                        message, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_SEND_TAB_TO_SELF);
+        snackbarManager.showSnackbar(snackbar);
+    }
+
+    private static String getSnackbarMessage(
+            Context context, @SendTabToSelfResult int result, String targetDeviceName) {
         switch (result) {
             case SendTabToSelfResult.SUCCESS:
-                String successMessage =
-                        appContext.getString(
-                                R.string.send_tab_to_self_post_send_success_toast_android,
-                                targetDeviceName);
-                Toast.makeText(appContext, successMessage, Toast.LENGTH_SHORT).show();
-                break;
+                return context.getString(
+                        R.string.send_tab_to_self_post_send_success_toast_android,
+                        targetDeviceName);
             case SendTabToSelfResult.SUCCESS_THROTTLED:
-                String throttledMessage =
-                        appContext.getString(
-                                R.string.send_tab_to_self_post_send_throttled_toast_android,
-                                targetDeviceName);
-                Toast.makeText(appContext, throttledMessage, Toast.LENGTH_SHORT).show();
-                break;
+                return context.getString(
+                        R.string.send_tab_to_self_post_send_throttled_toast_android,
+                        targetDeviceName);
             case SendTabToSelfResult.FAILURE_NO_INTERNET_CONNECTION:
             case SendTabToSelfResult.FAILURE_COMMIT_TIMEOUT:
-                String noInternetMessage =
-                        appContext.getString(R.string.send_tab_to_self_post_send_no_internet_toast);
-                Toast.makeText(appContext, noInternetMessage, Toast.LENGTH_SHORT).show();
-                break;
+                return context.getString(R.string.send_tab_to_self_post_send_no_internet_toast);
             default:
-                String failureMessage =
-                        appContext.getString(R.string.send_tab_to_self_post_send_failure_toast);
-                Toast.makeText(appContext, failureMessage, Toast.LENGTH_SHORT).show();
-                break;
+                return context.getString(R.string.send_tab_to_self_post_send_failure_toast);
         }
     }
 
