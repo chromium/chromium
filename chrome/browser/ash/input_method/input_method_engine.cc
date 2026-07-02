@@ -14,6 +14,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
