@@ -281,3 +281,153 @@ source_set("impl") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "decorators/helpers/page_live_state_decorator_helper_unittest.cc",
+    "metrics/metrics_provider_common_unittest.cc",
+    "policies/best_effort_task_inhibiting_policy_unittest.cc",
+    "policies/discard_eligibility_policy_unittest.cc",
+    "policies/frame_throttling_policy_unittest.cc",
+    "policies/keep_alive_dse_policy_unittest.cc",
+    "policies/termination_target_policy_unittest.cc",
+    "policies/working_set_trimmer_policy_unittest.cc",
+    "user_tuning/profile_discard_opt_out_list_helper_unittest.cc",
+    "user_tuning/profile_force_foreground_priority_list_helper_unittest.cc",
+  ]
+
+  deps = [
+    ":performance_manager",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+    "//components/performance_manager/test_support",
+    "//components/performance_manager/test_support:test_support_common",
+    "//components/policy/core/browser:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+
+    # Inherits -Wno-sign-compare via fuzztest_public_config. See
+    # crbug.com/527094632.
+    "//third_party/fuzztest",
+  ]
+
+  if (is_linux || is_chromeos) {
+    deps += [ "//dbus:test_support" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "execution_context_priority/side_panel_loading_voter_unittest.cc",
+      "metrics/metrics_provider_desktop_unittest.cc",
+      "persistence/site_data/site_data_cache_facade_unittest.cc",
+      "persistence/site_data/unittest_utils.cc",
+      "persistence/site_data/unittest_utils.h",
+      "policies/background_tab_loading_policy_helpers_unittest.cc",
+      "policies/background_tab_loading_policy_unittest.cc",
+      "policies/memory_saver_mode_policy_unittest.cc",
+      "policies/page_discarding_helper_unittest.cc",
+      "policies/transient_keep_alive_policy_unittest.cc",
+      "policies/urgent_page_discarding_policy_unittest.cc",
+      "user_tuning/battery_saver_mode_manager_unittest.cc",
+      "user_tuning/cpu_health_tracker_unittest.cc",
+      "user_tuning/performance_detection_manager_unittest.cc",
+      "user_tuning/user_performance_tuning_manager_unittest.cc",
+      "user_tuning/user_performance_tuning_notifier_unittest.cc",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "policies/discard_page_with_crashed_subframe_policy_unittest.cc",
+      "policies/process_rank_policy_android_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/ui/android/tab_model:test_support",
+    ]
+    if (enable_guest_view && !enable_extensions_core) {
+      deps += [
+        "//chrome/browser/android/guest_view",
+        "//components/guest_view/browser/slim_web_view",
+      ]
+    }
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "mechanisms/working_set_trimmer_chromeos_unittest.cc",
+      "policies/oom_score_policy_chromeos_unittest.cc",
+      "policies/report_page_processes_policy_unittest.cc",
+      "policies/working_set_trimmer_policy_arcvm_unittest.cc",
+      "policies/working_set_trimmer_policy_chromeos_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/ash/arc/boot_phase_monitor",
+      "//chrome/browser/ash/arc/test:arc_test_support",
+      "//chrome/browser/ash/arc/vmm",
+      "//chromeos/ash/experiences/arc:arc_test_support",
+      "//chromeos/ash/experiences/arc:notification_test_support",
+      "//chromeos/dbus/power:power_manager_proto_gen",
+      "//components/session_manager/core:test_support",
+      "//ui/display:test_support",
+    ]
+  }
+
+  if (is_linux || is_chromeos || is_mac || is_win) {
+    sources += [ "user_tuning/memory_saver_policy_handler_unittest.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "policies/dll_pre_read_policy_win_unittest.cc" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "background_tab_loading_policy_browsertest.cc",
+      "decorators/helpers/page_live_state_decorator_helper_browsertest.cc",
+      "frame_node_impl_browsertest.cc",
+      "mechanisms/page_discarder_browsertest.cc",
+      "observers/page_load_metrics_observer_browsertest.cc",
+      "page_load_tracker_decorator_browsertest.cc",
+      "page_node_browsertest.cc",
+      "persistence/site_data/site_data_cache_facade_browsertest.cc",
+      "policies/discard_eligibility_policy_browsertest.cc",
+      "policies/page_discarding_helper_browsertest.cc",
+      "policies/transient_keep_alive_policy_browsertest.cc",
+      "user_tuning/performance_detection_manager_browsertest.cc",
+    ]
+
+    deps = [
+      ":performance_manager",
+      "//base",
+      "//chrome/browser/apps/link_capturing:test_support",
+      "//chrome/browser/resource_coordinator:utils",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/performance_manager/test_support:test_support_common",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+
+      # Inherits -Wno-sign-compare via fuzztest_public_config. See
+      # crbug.com/527094632.
+      "//third_party/fuzztest",
+    ]
+
+    if (is_win) {
+      sources += [ "mechanisms/termination_target_setter_browsertest.cc" ]
+    }
+  }
+}
