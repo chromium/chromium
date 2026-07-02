@@ -369,6 +369,14 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   [self.geminiViewStateDelegate geminiLiveUserDidTapLiveButton];
 }
 
+- (void)geminiLiveUserDidPressStopButton {
+  [self.geminiViewStateDelegate geminiLiveUserDidPressStopButton];
+}
+
+- (void)didSwitchToMode:(ios::provider::GeminiViewMode)mode {
+  [self.geminiViewStateDelegate didSwitchToMode:mode];
+}
+
 - (void)geminiLiveIntroShown:(UIViewController*)viewController {
   if (_prefService) {
     gemini::SetGeminiLiveIntroPlayed(_prefService);

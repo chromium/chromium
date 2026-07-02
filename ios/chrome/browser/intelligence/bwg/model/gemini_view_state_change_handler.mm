@@ -71,11 +71,25 @@
   _target->OnLiveButtonTapped();
 }
 
+- (void)geminiLiveUserDidPressStopButton {
+  if (!_target) {
+    return;
+  }
+  _target->OnGeminiLiveUserDidPressStopButton();
+}
+
 - (void)geminiLiveUserDidBargeIn {
   if (!_target) {
     return;
   }
   _target->OnGeminiLiveUserDidBargeIn();
+}
+
+- (void)didSwitchToMode:(ios::provider::GeminiViewMode)mode {
+  if (!_target) {
+    return;
+  }
+  _target->OnModeChanged(mode);
 }
 
 - (void)geminiUIDidAppear {
