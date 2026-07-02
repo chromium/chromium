@@ -7,6 +7,7 @@
 
 #import <memory>
 #import <string>
+#import <string_view>
 #import <vector>
 
 class Browser;
@@ -36,7 +37,7 @@ std::string GetSessionIdentifier(Browser* browser);
 // Returns the recommended session identifier that would have been used for
 // a possibly `inactive_browser` Browser attached to a SceneState with the
 // given `scene_session_identifier`.
-std::string GetSessionIdentifier(const std::string& scene_session_identifier,
+std::string GetSessionIdentifier(std::string_view scene_session_identifier,
                                  bool inactive_browser);
 
 }  // namespace session_util

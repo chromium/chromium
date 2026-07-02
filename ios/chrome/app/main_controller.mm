@@ -1723,7 +1723,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
                          sceneDelegate.window)];
 
   ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
-  const std::string& sceneIdentifier = sceneState.sceneSessionID;
+  const std::string_view sceneIdentifier = sceneState.sceneSessionID;
 
   // If the SceneState is not associated with the correct profile, then
   // perform the necessary work to switch the profile used for the scene.
@@ -1834,7 +1834,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
               profileManager:(ProfileManagerIOS*)manager
            attributesStorage:(ProfileAttributesStorageIOS*)storage
                   localState:(PrefService*)localState {
-  const std::string& sceneID = sceneState.sceneSessionID;
+  const std::string_view sceneID = sceneState.sceneSessionID;
 
   // Determine which profile to use. The logic is to take the first valid
   // profile (i.e. the value is set and the profile is known) amongst the
