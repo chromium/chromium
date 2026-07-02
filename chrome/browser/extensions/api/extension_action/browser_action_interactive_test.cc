@@ -407,24 +407,29 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
 // (crbug.com/40401189)
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupIncognitoFromBackground) {
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP()
-        << "Skipping test because it's flaky with InitialWebUI enabled. "
-           "See crbug.com/477426026.";
-  }
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
 
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("browser_action")
                         .AppendASCII("open_popup_background"),
                     {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
-  ExtensionTestMessageListener listener;
-  listener.set_extension_id(extension->id());
+  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
   Browser* incognito_browser =
       OpenURLOffTheRecord(profile(), GURL("chrome://newtab/"));
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-  EXPECT_EQ(std::string("opened"), listener.message());
+  ASSERT_TRUE(incognito_browser);
+
+  // Ensure the incognito browser is fully active/shown.
+  ui_test_utils::BrowserActivationWaiter waiter(incognito_browser);
+  waiter.WaitForActivation();
+
+  // Tell the background page to trigger the openPopup call.
+  ExtensionTestMessageListener response_listener("opened");
+  ready_listener.Reply("openPopup");
+  EXPECT_TRUE(response_listener.WaitUntilSatisfied());
+
   auto test_util = ExtensionActionTestHelper::Create(incognito_browser);
   EXPECT_TRUE(test_util->HasPopup());
   test_util->HidePopup();
