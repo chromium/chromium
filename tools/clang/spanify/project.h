@@ -33,6 +33,9 @@ class Project {
   virtual std::string_view GetAsWritableByteSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result) const = 0;
   virtual std::string_view GetSafeConversionsIncludePath() const = 0;
+  virtual std::string_view GetCheckedCastSizeTOpener() const {
+    return "base::checked_cast<size_t>(";
+  }
   virtual std::string_view GetRawSpanIncludePath() const = 0;
   virtual std::string_view GetAutoSpanificationHelperIncludePath() const = 0;
   virtual const std::vector<FuncMapping>& GetFuncMappingTable() const = 0;

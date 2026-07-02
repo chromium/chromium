@@ -1316,7 +1316,8 @@ SubspanExprReplacement GetSubspanExprReplacement(
   EmitReplacement(key, GetIncludeDirective(range, source_manager, "<cstdint>"));
   return CheckedCastReplacement{
       .opener = {.range = range.getBegin(),
-                 .text = "base::checked_cast<size_t>("},
+                 .text =
+                     std::string(GetProject()->GetCheckedCastSizeTOpener())},
       .closer = {.range = range.getEnd(), .text = ")"}};
 }
 

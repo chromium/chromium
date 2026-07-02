@@ -48,7 +48,10 @@ class SkiaProject : public Project {
     return "AS_WRITABLE_BYTE_SPAN_NOT_AVAILABLE";
   }
   std::string_view GetSafeConversionsIncludePath() const override {
-    return "NOT_AVAILABLE base/numerics/safe_conversions.h";
+    return "include/private/SkTo.h";
+  }
+  std::string_view GetCheckedCastSizeTOpener() const override {
+    return "SkTo<size_t>(";
   }
   std::string_view GetRawSpanIncludePath() const override {
     return "PATH_TO_RAW_SPAN_H_NOT_AVAILABLE";
