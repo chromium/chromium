@@ -4603,6 +4603,10 @@ inline constexpr char kToolbarGlicButtonResizingDescription[] =
 inline constexpr char kRoundedIconsName[] = "Rounded Icons";
 inline constexpr char kRoundedIconsDescription[] = "Enables rounded icons.";
 
+inline constexpr char kWebUIRoundedIconsName[] = "WebUI Rounded Icons";
+inline constexpr char kWebUIRoundedIconsDescription[] =
+    "Enables rounded icons in WebUI pages.";
+
 inline constexpr char kToolbarPhoneAnimationRefactorName[] =
     "Toolbar Phone Animation Refactor";
 inline constexpr char kToolbarPhoneAnimationRefactorDescription[] =

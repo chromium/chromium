@@ -13815,6 +13815,7 @@ from previous Chrome versions.
   <int value="-234231190" label="SharingDeviceRegistration:enabled"/>
   <int value="-233334129" label="BiometricTouchToFill:disabled"/>
   <int value="-232769318" label="EventBasedLogUpload:disabled"/>
+  <int value="-232581478" label="WebUIRoundedIcons:disabled"/>
   <int value="-231967261" label="AutofillUpdatedCardUnmaskPromptUi:disabled"/>
   <int value="-231922000" label="enable-renderer-mojo-channel"/>
   <int value="-231699759" label="SafetyHubLocalPasswordsModule:disabled"/>
@@ -17835,6 +17836,7 @@ from previous Chrome versions.
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>
   <int value="1075191614" label="LauncherSystemInfoAnswerCards:disabled"/>
+  <int value="1075390184" label="WebUIRoundedIcons:enabled"/>
   <int value="1075535842" label="TabStripGroupContextMenuAndroid:enabled"/>
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1075862390" label="LauncherItemSuggest:enabled"/>

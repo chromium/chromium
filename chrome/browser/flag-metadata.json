@@ -10072,6 +10072,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "webui-rounded-icons",
+    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "webui-toolbar",
     "owners": [ "//chrome/browser/ui/waap/OWNERS" ],
     "expiry_milestone": 170

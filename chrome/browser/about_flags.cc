@@ -9718,6 +9718,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRoundedIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRoundedIcons)},
 
+    {"webui-rounded-icons", flag_descriptions::kWebUIRoundedIconsName,
+     flag_descriptions::kWebUIRoundedIconsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebUIRoundedIcons)},
+
     {"tab-group-color-refresh", flag_descriptions::kTabGroupColorRefreshName,
      flag_descriptions::kTabGroupColorRefreshDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupColorRefresh)},

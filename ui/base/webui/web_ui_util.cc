@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -190,6 +191,8 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
   localized_strings->Set("fontsize", GetFontSize());
   localized_strings->Set("language", l10n_util::GetLanguage(app_locale));
   localized_strings->Set("textdirection", GetTextDirection());
+  localized_strings->Set("webuiRoundedIconsEnabled",
+                         features::IsWebUIRoundedIconsEnabled());
 }
 
 void SetLoadTimeDataDefaults(const std::string& app_locale,
@@ -199,6 +202,8 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
   (*replacements)["fontsize"] = GetFontSize();
   (*replacements)["language"] = l10n_util::GetLanguage(app_locale);
   (*replacements)["textdirection"] = GetTextDirection();
+  (*replacements)["webuiRoundedIconsEnabled"] =
+      features::IsWebUIRoundedIconsEnabled() ? "true" : "false";
 }
 
 std::string GetWebUiCssTextDefaults() {
