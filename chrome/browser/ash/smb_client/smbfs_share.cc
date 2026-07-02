@@ -89,7 +89,8 @@ void SmbFsShare::Mount(SmbFsShare::MountCallback callback) {
         disks::DiskMountManager::GetInstance());
   }
   mounter_->Mount(base::BindOnce(&SmbFsShare::OnMountDone,
-                                 base::Unretained(this), std::move(callback)));
+                                 weak_factory_.GetWeakPtr(),
+                                 std::move(callback)));
 }
 
 void SmbFsShare::Remount(const MountOptions& options,
@@ -134,7 +135,7 @@ void SmbFsShare::DeleteRecursively(
   delete_recursively_callback_ = std::move(callback);
   host_->DeleteRecursively(std::move(transformed_path),
                            base::BindOnce(&SmbFsShare::OnDeleteRecursivelyDone,
-                                          base::Unretained(this)));
+                                          weak_factory_.GetWeakPtr()));
 }
 
 void SmbFsShare::OnDeleteRecursivelyDone(base::File::Error error) {
@@ -178,7 +179,8 @@ void SmbFsShare::Unmount(SmbFsShare::UnmountCallback callback) {
   // may result in OnDisconnected() being called, but reentrant calls to
   // Unmount() will be aborted as unmount_pending_ == true.
   host_->Unmount(base::BindOnce(&SmbFsShare::OnUnmountDone,
-                                base::Unretained(this), std::move(callback)));
+                                weak_factory_.GetWeakPtr(),
+                                std::move(callback)));
 }
 
 void SmbFsShare::OnUnmountDone(SmbFsShare::UnmountCallback callback,
@@ -302,7 +304,7 @@ void SmbFsShare::RemoveSavedCredentials(RemoveCredentialsCallback callback) {
 
   remove_credentials_callback_ = std::move(callback);
   host_->RemoveSavedCredentials(base::BindOnce(
-      &SmbFsShare::OnRemoveSavedCredentialsDone, base::Unretained(this)));
+      &SmbFsShare::OnRemoveSavedCredentialsDone, weak_factory_.GetWeakPtr()));
 }
 
 void SmbFsShare::OnRemoveSavedCredentialsDone(bool success) {
