@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/drive_base_requests.h"
-
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -11,10 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/task_util.h"
 #include "google_apis/common/test_util.h"
+#include "google_apis/drive/drive_base_requests.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -165,5 +165,40 @@ TEST_F(BaseRequestsServerTest, DownloadFileRequest_NonExistentFile) {
   EXPECT_EQ("/files/gdata/no-such-file.txt", http_request_.relative_url);
   // Do not verify the not found message.
 }
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(BaseRequestsServerTest, DownloadFileRequest_SymlinkOutputPath) {
+  const std::string kTargetContents = "must not be overwritten";
+  const base::FilePath target_path =
+      GetTestCachedFilePath(base::FilePath::FromUTF8Unsafe("symlink_target"));
+  ASSERT_TRUE(base::WriteFile(target_path, kTargetContents));
+
+  const base::FilePath link_path =
+      GetTestCachedFilePath(base::FilePath::FromUTF8Unsafe("symlink_output"));
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, link_path));
+
+  ApiErrorCode result_code = OTHER_ERROR;
+  base::FilePath temp_file;
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<DownloadFileRequestBase> request =
+        std::make_unique<DownloadFileRequestBase>(
+            request_sender_.get(),
+            test_util::CreateQuitCallback(
+                &run_loop,
+                test_util::CreateCopyResultCallback(&result_code, &temp_file)),
+            GetContentCallback(), ProgressCallback(),
+            test_server_.GetURL("/files/drive/testfile.txt"), link_path);
+    request_sender_->StartRequestWithAuthRetry(std::move(request));
+    run_loop.Run();
+  }
+
+  EXPECT_NE(HTTP_SUCCESS, result_code);
+
+  std::string target_contents;
+  ASSERT_TRUE(base::ReadFileToString(target_path, &target_contents));
+  EXPECT_EQ(kTargetContents, target_contents);
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace google_apis

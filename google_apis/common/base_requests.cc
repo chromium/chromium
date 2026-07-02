@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -21,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/task_util.h"
 #include "google_apis/credentials_mode.h"
@@ -30,6 +32,15 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <fcntl.h>
+#include <sys/stat.h>
+
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/threading/scoped_blocking_call.h"
+#endif
 
 namespace {
 
@@ -336,9 +347,24 @@ UrlFetchRequestBase::DownloadData::~DownloadData() {
 bool UrlFetchRequestBase::WriteFileData(std::string file_data,
                                         DownloadData* download_data) {
   if (!download_data->output_file.IsValid()) {
+#if BUILDFLAG(IS_POSIX)
+    // The output path may refer to a temporary file that was created in
+    // advance and is being reopened here, so do not follow symbolic links.
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    base::ScopedFD fd(
+        HANDLE_EINTR(open(download_data->output_file_path.value().c_str(),
+                          O_CREAT | O_TRUNC | O_WRONLY | O_NOFOLLOW | O_CLOEXEC,
+                          S_IRUSR | S_IWUSR)));
+    if (!fd.is_valid()) {
+      return false;
+    }
+    download_data->output_file = base::File(std::move(fd));
+#else
     download_data->output_file.Initialize(
         download_data->output_file_path,
         base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+#endif
     if (!download_data->output_file.IsValid())
       return false;
   }
