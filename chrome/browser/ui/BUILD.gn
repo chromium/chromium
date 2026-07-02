@@ -1143,7 +1143,14 @@ static_library("ui") {
     # optimization_guide:impl includes headers from //chrome/browser/ui
     # that can't be split out yet.
     "//chrome/browser/optimization_guide:impl",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/ui/autofill/payments",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_window.h, chrome_pages.h
     "//chrome/browser/ui/autofill/payments:impl",
 
     # TODO(crbug.com/502936350): Remove this circular dependency.
@@ -1153,7 +1160,13 @@ static_library("ui") {
 
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/favicon",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/feedback",
 
     # glic's :impl includes headers from //chrome/browser/ui (e.g. browser.h,
@@ -1161,7 +1174,16 @@ static_library("ui") {
     # yet.
     "//chrome/browser/glic:impl",
 
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_commands.h, browser_window.h, chrome_pages.h
+    # c/b/ui/scoped_tabbed_browser_displayer.h
+    # c/b/ui/views/frame/browser_view.h
+    # c/b/ui/views/safe_browsing/tailored_security_unconsented_modal.h
     "//chrome/browser/safe_browsing",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/profiling_host",
 
     # TODO(crbug.com/364667551): Remove this circular dependency when
@@ -1177,10 +1199,32 @@ static_library("ui") {
     # notifications:impl includes chrome/browser/ui/browser.h,
     # chrome/browser/ui/chrome_pages.h,
     "//chrome/browser/notifications:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_window.h
     "//chrome/browser/password_manager:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following header gets componentized:
+    # c/b/ui/browser.h
     "//chrome/browser/permissions",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/search",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_commands.h, browser_window.h
+    # c/b/ui/views/frame/browser_view.h
+    # c/b/ui/views/omnibox/omnibox_popup_closer.h
+    # c/b/ui/views/omnibox/rounded_omnibox_results_frame.h
+    # c/b/ui/views/search_engines/dse_reset_dialog.h
     "//chrome/browser/ui/omnibox:impl",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/ui/webui/bluetooth_internals",
 
     # TODO(crbug.com/353332589): version_ui.cc includes theme_source.h from
@@ -1192,39 +1236,130 @@ static_library("ui") {
 
     # TODO(crbug.com/353284909): Remove this circular dependency.
     "//chrome/browser/media/webrtc",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/memory",
 
     # metrics:impl includes headers from //chrome/browser/ui that can't be
     # split out yet.
     "//chrome/browser/metrics:impl",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/net",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/chrome_pages.h, crypto_module_delegate_nss.h
     "//chrome/browser/net:impl",
+
+    # TODO(crbug.com/353332589): This entry produces no gn check failure on
+    # the various platform configs. It may be stale.
     "//chrome/browser/performance_manager:impl",
 
     # TODO(crbug.com/360599255): popunder_preventer.cc includes browser.h
     "//chrome/browser/ui/blocked_content:impl",
 
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser_window.h
+    # c/b/ui/views/frame/browser_view.h
     "//chrome/browser/picture_in_picture:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_window.h, chrome_pages.h, singleton_tabs.h
+    # c/b/ui/views/autofill/popup/email_verifier/email_verification_popup_view.h
+    # c/b/ui/views/frame/browser_view.h
     "//chrome/browser/ui/autofill:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, scoped_tabbed_browser_displayer.h
+    # c/b/ui/settings_window_manager_chromeos.h
     "//chrome/browser/ui/bluetooth:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_window.h, chrome_pages.h
+    # c/b/ui/views/profiles/profile_management_types.h
     "//chrome/browser/ui/profiles:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, scoped_tabbed_browser_displayer.h
+    # c/b/ui/settings_window_manager_chromeos.h
     "//chrome/browser/ui/serial:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_commands.h, browser_tabstrip.h, browser_window.h
+    # c/b/ui/chrome_pages.h
+    # c/b/ui/webui/settings/reset_settings_handler.h
     "//chrome/browser/ui/startup:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following header gets componentized:
+    # c/b/ui/browser_command_controller.h
     "//chrome/browser/ui/tab_contents:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_commands.h, browser_window.h, managed_ui.h
+    # c/b/ui/singleton_tabs.h
     "//chrome/browser/ui/toolbar:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h
+    # c/b/ui/views/profiles/profile_customization_bubble_sync_controller.h
     "//chrome/browser/search_engine_choice:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following header gets componentized:
+    # c/b/ui/views/dotted_icon.h
     "//chrome/browser/profiles:profile_util_impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_commands.h, browser_window.h, chrome_pages.h
+    # c/b/ui/scoped_tabbed_browser_displayer.h
+    # c/b/ui/webui/profile_helper.h
     "//chrome/browser/signin:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, tab_modal_confirm_dialog.h
     "//chrome/browser/ui/javascript_dialogs:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, bubble_anchor_util.h, chrome_pages.h, tab_dialogs.h
     "//chrome/browser/ui/page_info:impl",
 
     # TODO(crbug.com/366272539): It includes //c/b/ui/browser_dialogs.h.
     "//chrome/browser/ui/file_system_access:impl",
 
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/browser.h, browser_window.h
+    # c/b/ui/views/frame/browser_view.h, picture_in_picture_browser_frame_view.h
     "//chrome/browser/content_settings:content_settings_util_impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following header gets componentized:
+    # c/b/ui/browser.h
     "//chrome/browser/updates/announcement_notification:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/ui/webui/settings/reset_settings_handler.h, settings_ui.h
     "//chrome/browser/prefs:impl",
 
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following header gets componentized:
+    # c/b/ui/chrome_pages.h
     "//chrome/browser/task_manager:impl",
 
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
