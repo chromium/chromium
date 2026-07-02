@@ -2,3 +2,6 @@ davidbienvenu@chromium.org
 deepakr@google.com
 jessemckenna@google.com
 robliao@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

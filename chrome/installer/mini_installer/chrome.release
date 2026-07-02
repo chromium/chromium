@@ -82,6 +82,7 @@ ffmpeg.dll: %(VersionDir)s\
 elevated_tracing_service.exe: %(VersionDir)s\
 elevation_service.exe: %(VersionDir)s\
 os_update_handler.exe: %(VersionDir)s\
+chromecompaneros.dll: %(VersionDir)s\
 
 #
 # VisualElements sub-dir.

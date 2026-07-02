@@ -77,6 +77,18 @@ class TestGetParts(unittest.TestCase):
         self.assertEqual('test.signing.bundle_id.helper',
                          all_parts['helper-app'].identifier)
 
+    def test_get_parts_chrome_branded(self):
+        config = test_config.TestConfig()
+        all_parts = parts.get_parts(config)
+        self.assertIn('libchromecompaneros.dylib', all_parts)
+        self.assertEqual('libchromecompaneros',
+                         all_parts['libchromecompaneros.dylib'].identifier)
+
+    def test_get_parts_non_chrome_branded(self):
+        config = test_config.TestConfigNonChromeBranded()
+        all_parts = parts.get_parts(config)
+        self.assertNotIn('libchromecompaneros.dylib', all_parts)
+
     def test_part_options(self):
         all_parts = parts.get_parts(test_config.TestConfig())
         self.assertEqual(
