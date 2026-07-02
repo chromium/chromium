@@ -129,19 +129,25 @@ void PrintDefaultHelpMessage(const char* process_name) {
 }
 
 void PrintCorpUserHelpMessage(const char* process_name) {
-  UNSAFE_TODO(fprintf(
-      stdout,
+  std::cerr << base::StringPrintf(
       "Setting up a machine for a corp user requires the username of that "
-      "user and an optional display name.\n\nExample usage:\n"
-      "%s --%s=<username> [--%s=corp-machine-name]\n",
-      process_name, kCorpUserSwitchName, kDisplayNameSwitchName));
+      "user and an optional display name.\n\n"
+      "Example usage:\n%s --%s=<username> [--%s=corp-machine-name]",
+      process_name, kCorpUserSwitchName, kDisplayNameSwitchName);
+
+#if BUILDFLAG(IS_LINUX)
+  std::cerr << base::StringPrintf(" [--%s=<host type>]", kHostTypeSwitchName)
+            << "\n\n";
+  HostType::PrintHostTypeHelp();
+#endif
+
+  std::cerr << "\n";
 }
 
 void PrintCloudUserHelpMessage(const char* process_name) {
   // TODO: joedow - Add a link to public documentation and/or samples when they
   // are available.
-  UNSAFE_TODO(fprintf(
-      stdout,
+  std::cerr << base::StringPrintf(
       "Setting up a Compute Engine Instance requires the email address of "
       "the user.\n\nAn optional API_KEY, created for the project the "
       "Compute Engine Instance is in, can be provided. Otherwise an access "
@@ -149,9 +155,17 @@ void PrintCloudUserHelpMessage(const char* process_name) {
       "optional display name can also be provided, otherwise the hostname, "
       "or FQDN, of the instance will be used.\n\n"
       "Example usage:\n%s --%s=<user_email_address> [--%s=<API_KEY>] "
-      "[--%s=cloud-instance-display-name] [--%s]\n",
+      "[--%s=cloud-instance-display-name] [--%s]",
       process_name, kCloudUserSwitchName, kCloudApiKeySwitchName,
-      kDisplayNameSwitchName, kDisableCrashReportingSwitchName));
+      kDisplayNameSwitchName, kDisableCrashReportingSwitchName);
+
+#if BUILDFLAG(IS_LINUX)
+  std::cerr << base::StringPrintf(" [--%s=<host type>]", kHostTypeSwitchName)
+            << "\n\n";
+  HostType::PrintHostTypeHelp();
+#endif
+
+  std::cerr << "\n";
 }
 
 // Lets us hide the PIN that a user types.
@@ -325,6 +339,12 @@ bool InitializeCorpMachineParams(HostStarter::Params& params,
     params.name = command_line->GetSwitchValueASCII(kDisplayNameSwitchName);
   }
 
+#if BUILDFLAG(IS_LINUX)
+  if (command_line->HasSwitch(kHostTypeSwitchName)) {
+    corp_arg_count++;
+  }
+#endif
+
   // Allow debugging switches.
   if (command_line->HasSwitch("v")) {
     corp_arg_count++;
@@ -367,6 +387,12 @@ bool InitializeCloudMachineParams(HostStarter::Params& params,
   if (has_disable_crash_reporting_switch) {
     cloud_arg_count++;
   }
+
+#if BUILDFLAG(IS_LINUX)
+  if (command_line->HasSwitch(kHostTypeSwitchName)) {
+    cloud_arg_count++;
+  }
+#endif
 
   // Allow debugging switches.
   if (command_line->HasSwitch("v")) {
