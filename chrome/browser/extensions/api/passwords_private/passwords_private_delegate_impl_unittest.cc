@@ -65,6 +65,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
@@ -268,9 +269,13 @@ class PasswordsPrivateDelegateImplTest : public testing::Test {
   MockEnclaveManager* enclave_manager() { return &enclave_manager_; }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable testing_pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -658,6 +663,91 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
       password_manager::metrics_util::ACCESS_PASSWORD_COPIED, 1);
 }
 
+TEST_F(
+    PasswordsPrivateDelegateImplTest,
+    TestCopyPasswordCallbackResult_ClipboardClearTimerStarted) {
+  PasswordForm form = CreateSampleForm();
+  SetUpPasswordStores({form});
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+  {
+    base::RunLoop run_loop;
+    delegate->GetSavedPasswordsList(base::BindLambdaForTesting(
+        [&](const PasswordsPrivateDelegate::UiEntries&) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  ExpectAuthentication(delegate, /*successful=*/true);
+
+  base::MockCallback<PasswordsPrivateDelegate::PlaintextPasswordCallback>
+      password_callback;
+  EXPECT_CALL(password_callback, Run(Eq(std::u16string())));
+  delegate->RequestPlaintextPassword(
+      0, api::passwords_private::PlaintextReason::kCopy,
+      password_callback.Get());
+
+  std::u16string result;
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(form.password_value, result);
+
+  // Simulate the clipboard clear timer expiring.
+  FastForwardBy(base::Seconds(120));
+
+  // Verify that the clipboard is now empty.
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_TRUE(result.empty());
+}
+
+TEST_F(
+    PasswordsPrivateDelegateImplTest,
+    TestCopyPasswordCallbackResult_ClipboardClearTimerStarted_NotClearedIfOverwritten) {
+  PasswordForm form = CreateSampleForm();
+  SetUpPasswordStores({form});
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+  {
+    base::RunLoop run_loop;
+    delegate->GetSavedPasswordsList(base::BindLambdaForTesting(
+        [&](const PasswordsPrivateDelegate::UiEntries&) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  ExpectAuthentication(delegate, /*successful=*/true);
+
+  base::MockCallback<PasswordsPrivateDelegate::PlaintextPasswordCallback>
+      password_callback;
+  EXPECT_CALL(password_callback, Run(Eq(std::u16string())));
+  delegate->RequestPlaintextPassword(
+      0, api::passwords_private::PlaintextReason::kCopy,
+      password_callback.Get());
+
+  std::u16string result;
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(form.password_value, result);
+
+  // Simulate user copying another piece of text before the timer fires.
+  {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(u"new text");
+  }
+
+  // Simulate the clipboard clear timer expiring.
+  FastForwardBy(base::Seconds(120));
+
+  // Verify that the clipboard still contains the new text and has not been
+  // cleared.
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(u"new text", result);
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest, CopyPlaintextBackupPassword) {
   PasswordForm form = CreateSampleForm();
   form.SetPasswordBackupNote(u"backup");
@@ -677,6 +767,59 @@ TEST_F(PasswordsPrivateDelegateImplTest, CopyPlaintextBackupPassword) {
       ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr);
   EXPECT_EQ(result, form.GetPasswordBackup());
+
+  // Simulate the clipboard clear timer expiring.
+  FastForwardBy(base::Seconds(120));
+
+  // Verify that the clipboard is now empty.
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_TRUE(result.empty());
+}
+
+TEST_F(
+    PasswordsPrivateDelegateImplTest,
+    CopyPlaintextBackupPassword_NotClearedIfOverwritten) {
+  PasswordForm form = CreateSampleForm();
+  form.SetPasswordBackupNote(u"backup");
+  SetUpPasswordStores({form});
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+  {
+    base::RunLoop run_loop;
+    delegate->GetSavedPasswordsList(base::BindLambdaForTesting(
+        [&](const PasswordsPrivateDelegate::UiEntries&) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  ExpectAuthentication(delegate, /*successful=*/true);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  EXPECT_CALL(result_callback, Run(Eq(true)));
+  delegate->CopyPlaintextBackupPassword(0, result_callback.Get());
+
+  std::u16string result;
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(result, form.GetPasswordBackup());
+
+  // Simulate user copying another piece of text before the timer fires.
+  {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(u"new text");
+  }
+
+  // Simulate the clipboard clear timer expiring.
+  FastForwardBy(base::Seconds(120));
+
+  // Verify that the clipboard still contains the new text and has not been
+  // cleared.
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(u"new text", result);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestShouldActivateAccountStorage) {

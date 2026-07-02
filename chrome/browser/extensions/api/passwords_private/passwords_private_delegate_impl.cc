@@ -71,6 +71,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -86,6 +88,8 @@ using password_manager::CredentialFacet;
 using password_manager::CredentialUIEntry;
 using password_manager::FetchFamilyMembersRequestStatus;
 using password_manager::constants::kPasswordManagerAuthValidity;
+// Time to keep password in clipboard before clearing.
+constexpr base::TimeDelta kClipboardClearDelay = base::Seconds(120);
 
 // Map password_manager::ExportProgressStatus to
 // extensions::api::passwords_private::ExportProgressStatus.
@@ -1103,9 +1107,8 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
   }
 
   if (reason == api::passwords_private::PlaintextReason::kCopy) {
-    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteText(entry->password);
-    clipboard_writer.MarkAsConfidential();
+    WriteToClipboardAndScheduleClear(entry->password);
+
     // In case of copy we don't need to give password back to UI. callback
     // will receive either empty string in case of success or null otherwise.
     // Copying occurs here so javascript doesn't need plaintext password.
@@ -1114,6 +1117,35 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
     std::move(callback).Run(entry->password);
   }
   EmitHistogramsForCredentialAccess(*entry, reason);
+}
+
+void PasswordsPrivateDelegateImpl::ClearClipboard(
+    ui::ClipboardSequenceNumberToken sequence_number) {
+  if (ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste) == sequence_number) {
+    ui::Clipboard::GetForCurrentThread()->Clear(
+        ui::ClipboardBuffer::kCopyPaste);
+  }
+}
+
+void PasswordsPrivateDelegateImpl::WriteToClipboardAndScheduleClear(
+    const std::u16string& password) {
+  {
+    // ScopedClipboardWriter commits to the clipboard on destruction.
+    // This block ensures the clipboard sequence number is updated before we
+    // capture it.
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(password);
+    clipboard_writer.MarkAsConfidential();
+  }
+
+  // Start timer to clear clipboard.
+  clipboard_clear_timer_.Start(
+      FROM_HERE, kClipboardClearDelay,
+      base::BindOnce(&PasswordsPrivateDelegateImpl::ClearClipboard,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                         ui::ClipboardBuffer::kCopyPaste)));
 }
 
 void PasswordsPrivateDelegateImpl::OnCopyBackupPasswordAuthResult(
@@ -1131,9 +1163,8 @@ void PasswordsPrivateDelegateImpl::OnCopyBackupPasswordAuthResult(
     return;
   }
 
-  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-  clipboard_writer.WriteText(entry->backup_password->value);
-  clipboard_writer.MarkAsConfidential();
+  WriteToClipboardAndScheduleClear(entry->backup_password->value);
+
   std::move(callback).Run(true);
 }
 
