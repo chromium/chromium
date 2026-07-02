@@ -320,6 +320,12 @@ bool IsZeroStateSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kZeroStateSuggestions);
 }
 
+BASE_FEATURE(kZeroStateSuggestionsWCGD, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsZeroStateSuggestionsWCGDEnabled() {
+  return base::FeatureList::IsEnabled(kZeroStateSuggestionsWCGD);
+}
+
 BASE_FEATURE(kZeroStateSuggestionsCentralization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -4,7 +4,10 @@
 
 include_rules = [
   # keep-sorted start
+  "+components/feature_engagement/test/mock_tracker.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/intelligence/zero_state_suggestions/model",
   "+ios/chrome/browser/optimization_guide/mojom",
+  "+ios/chrome/browser/shared/model/profile/profile_ios.h",
   # keep-sorted end
 ]

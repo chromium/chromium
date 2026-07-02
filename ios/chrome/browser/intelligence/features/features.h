@@ -171,6 +171,12 @@ BASE_DECLARE_FEATURE(kZeroStateSuggestions);
 // Returns true if zero-state suggestions are enabled.
 bool IsZeroStateSuggestionsEnabled();
 
+// Feature flag to enable the 'What can Gemini do' static chip.
+BASE_DECLARE_FEATURE(kZeroStateSuggestionsWCGD);
+
+// Returns true if the 'What can Gemini do' static chip is enabled.
+bool IsZeroStateSuggestionsWCGDEnabled();
+
 // Feature flag to enable centralization of zero-state suggestions.
 BASE_DECLARE_FEATURE(kZeroStateSuggestionsCentralization);
 
