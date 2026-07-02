@@ -69,8 +69,13 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
     // Keep a running sum of unplaced item spans to determine where to
     // place auto placed virtual items per the auto-fit grid-lanes heuristic.
     //
+    // Subgridded items belong to their subgrid, which is itself a grid item of
+    // this container; the subgrid's own span already represents them here.
+    // Thus, skip them to avoid overcounting their spans.
+    //
     // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
-    if (item_span.IsIndefinite()) {
+    if (item_span.IsIndefinite() &&
+        !grid_lanes_item->is_subgridded_to_parent_grid) {
       unplaced_item_span_count += item_span.SpanSize();
     }
 

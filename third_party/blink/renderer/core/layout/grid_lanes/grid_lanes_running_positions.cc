@@ -307,6 +307,17 @@ GridLanesRunningPositions::AlignmentCandidateIterator::Next() {
 
 LayoutUnit GridLanesRunningPositions::GetMaxPositionForSpan(
     const GridSpan& span) const {
+  return ComputeMaxPositionForSpan(span, /*exclude_collapsed_tracks=*/false);
+}
+
+LayoutUnit GridLanesRunningPositions::GetStackingAxisSizeForSpan(
+    const GridSpan& span) const {
+  return ComputeMaxPositionForSpan(span, /*exclude_collapsed_tracks=*/true);
+}
+
+LayoutUnit GridLanesRunningPositions::ComputeMaxPositionForSpan(
+    const GridSpan& span,
+    bool exclude_collapsed_tracks) const {
   DCHECK_LE(span.EndLine(), track_collection_openings_.size());
   const wtf_size_t span_size = span.IntegerSpan();
 
@@ -315,9 +326,23 @@ LayoutUnit GridLanesRunningPositions::GetMaxPositionForSpan(
   for (wtf_size_t offset = 0; offset < span_size; ++offset) {
     const LayoutUnit running_position_for_track =
         GetRunningPositionForTrack(start_line + offset);
+
+    // Collapsed `auto-fit` tracks carry a `LayoutUnit::Max()` sentinel running
+    // position. Skip them if required.
+    if (exclude_collapsed_tracks &&
+        running_position_for_track == LayoutUnit::Max()) {
+      continue;
+    }
     if (running_position_for_track > max_running_position_for_span) {
       max_running_position_for_span = running_position_for_track;
     }
+  }
+
+  // If every track in the span was a collapsed track that we excluded, the span
+  // contributes no size to the stacking axis.
+  if (exclude_collapsed_tracks &&
+      max_running_position_for_span == LayoutUnit::Min()) {
+    return LayoutUnit();
   }
 
   return max_running_position_for_span;

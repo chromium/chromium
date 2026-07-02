@@ -159,6 +159,11 @@ class CORE_EXPORT GridLanesRunningPositions {
   // Returns the max-position for a given span.
   LayoutUnit GetMaxPositionForSpan(const GridSpan& span) const;
 
+  // Returns the extent of real content within a span for computing the
+  // container's stacking-axis size. Unlike `GetMaxPositionForSpan`, this skips
+  // collapsed `auto-fit` tracks.
+  LayoutUnit GetStackingAxisSizeForSpan(const GridSpan& span) const;
+
   void UpdateAutoPlacementCursor(
       const GridArea& resolved_position,
       const GridTrackSizingDirection grid_axis_direction);
@@ -378,6 +383,12 @@ class CORE_EXPORT GridLanesRunningPositions {
   LayoutUnit GetRunningPositionForTrack(wtf_size_t track_index) const {
     return track_collection_openings_[track_index].back().start_position;
   }
+
+  // Computes the max running position for the given `span`. When
+  // `exclude_collapsed_tracks` is true, any collapsed tracks are skipped in
+  // the calculation.
+  LayoutUnit ComputeMaxPositionForSpan(const GridSpan& span,
+                                       bool exclude_collapsed_tracks) const;
 
   TrackOpening& GetLastTrackOpening(wtf_size_t track_index) {
     return track_collection_openings_[track_index].back();

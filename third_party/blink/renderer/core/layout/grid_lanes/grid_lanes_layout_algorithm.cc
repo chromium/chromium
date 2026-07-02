@@ -115,7 +115,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
       const auto stacking_axis_gap =
           GridTrackSizingAlgorithm::CalculateGutterSize(
               style, grid_lanes_available_size_, kForColumns);
-      return running_positions.GetMaxPositionForSpan(
+      return running_positions.GetStackingAxisSizeForSpan(
                  GridSpan::TranslatedDefiniteGridSpan(
                      /*start_line=*/0,
                      /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
@@ -449,7 +449,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   // Determine intrinsic size of the grid-lanes container. For the stacking
   // axis, remove the last gap that was added, since there is no item after it.
   stacking_axis_size_ =
-      running_positions.GetMaxPositionForSpan(
+      running_positions.GetStackingAxisSizeForSpan(
           GridSpan::TranslatedDefiniteGridSpan(
               /*start_line=*/0,
               /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
