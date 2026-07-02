@@ -359,6 +359,7 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
       original_insertion_mode_(kInitialMode),
       should_skip_leading_newline_(false),
       include_shadow_roots_(include_shadow_roots),
+      is_text_document_(document.IsTextDocument()),
       frameset_ok_(true),
       parser_(parser),
       script_to_process_start_position_(UninitializedPositionValue1()),
@@ -3192,8 +3193,14 @@ void HTMLTreeBuilder::Flush() {
   // data is still accumulating and will be flushed when the closing end tag
   // arrives. Skipping the flush here avoids O(n^2) string copies.
   // However, to avoid starving incremental rendering for large text blocks,
-  // we use an exponential backoff strategy.
-  if (insertion_mode_ == kTextMode && DeferTreeBuilderFlushEnabled()) {
+  // we use an exponential backoff strategy. We always want to avoid the
+  // O(n^2) string copies for text documents, because they generate a single
+  // <pre> with a potentially very large amount of content.
+  const bool defer_text_run =
+      insertion_mode_ == kTextMode ||
+      (is_text_document_ &&
+       !RuntimeEnabledFeatures::SplitLargeTextNodesEnabled());
+  if (defer_text_run && DeferTreeBuilderFlushEnabled()) {
     base::TimeTicks now = base::TimeTicks::Now();
 
     // The first Flush() is allowed immediately and starts the throttling.

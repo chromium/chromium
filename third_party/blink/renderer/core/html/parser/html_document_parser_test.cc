@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -81,6 +82,17 @@ class HTMLDocumentParserTest
     return parser;
   }
 
+  HTMLDocumentParser* CreateTextDocumentParser() {
+    Document* document =
+        DocumentInit::Create()
+            .WithWindow(GetFrame().DomWindow(), /*owner_document=*/nullptr)
+            .WithTypeFrom(String("text/plain"))
+            .CreateDocument();
+    DCHECK(document->IsTextDocument());
+    return static_cast<HTMLDocumentParser*>(document->OpenForNavigation(
+        GetParam(), AtomicString("text/plain"), g_null_atom));
+  }
+
  private:
   bool original_force_synchronous_parsing_for_testing_;
 };
@@ -99,6 +111,28 @@ class ScopedParserDetacher {
  private:
   UntracedMember<DocumentParser> parser_;
 };
+
+// Enables the kDeferTreeBuilderFlush feature with deterministic backoff
+// parameters, and refreshes HTMLTreeBuilder's cached feature values.
+//
+// The parameters are chosen to mirror production while keeping the clock
+// arithmetic in the tests simple:
+//   - initial_interval (16ms) and multiplier (2.0) match the production
+//     defaults (see blink::features::kDeferTreeBuilderFlush*). 16ms is also
+//     small enough that a single FastForwardBy() just past it (20ms) crosses
+//     exactly one interval.
+//   - max_interval is deliberately shortened from the production default of 2s
+//     to 160ms so the tests never have to advance the clock by seconds.
+void EnableDeferTreeBuilderFlushForTest(
+    base::test::ScopedFeatureList& scoped_feature_list) {
+  base::FieldTrialParams params;
+  params["initial_interval"] = "16ms";
+  params["max_interval"] = "160ms";
+  params["multiplier"] = "2.0";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kDeferTreeBuilderFlush, params);
+  HTMLTreeBuilder::ResetCachedFeaturesForTesting();
+}
 
 }  // namespace
 
@@ -120,13 +154,7 @@ TEST_P(HTMLDocumentParserTest, StopThenPrepareToStopShouldNotCrash) {
 
 TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlush) {
   base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams params;
-  params["initial_interval"] = "16ms";
-  params["max_interval"] = "160ms";
-  params["multiplier"] = "2.0";
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kDeferTreeBuilderFlush, params);
-  HTMLTreeBuilder::ResetCachedFeaturesForTesting();
+  EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
   auto& document = To<HTMLDocument>(GetDocument());
   if (document.documentElement()) {
     document.removeChild(document.documentElement());
@@ -183,13 +211,7 @@ TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlush) {
 
 TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlushEOF) {
   base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams params;
-  params["initial_interval"] = "16ms";
-  params["max_interval"] = "160ms";
-  params["multiplier"] = "2.0";
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kDeferTreeBuilderFlush, params);
-  HTMLTreeBuilder::ResetCachedFeaturesForTesting();
+  EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
   auto& document = To<HTMLDocument>(GetDocument());
   if (document.documentElement()) {
     document.removeChild(document.documentElement());
@@ -259,6 +281,126 @@ TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlushDisabled) {
   task_environment().FastForwardBy(base::TimeDelta());
 
   EXPECT_EQ("aaabbb", script->firstChild()->nodeValue());
+}
+
+TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlushInTextDocument) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
+  // In-body flush deferral is active for text documents when Text-node
+  // splitting is off (the default).
+  ScopedSplitLargeTextNodesForTest split_large_text_nodes(false);
+  auto* parser = CreateTextDocumentParser();
+  ScopedParserDetacher detacher(parser);
+  Document* document = parser->GetDocument();
+
+  // The TextDocumentParser inserts the UA <pre> and switches the tokenizer to
+  // PLAINTEXT on the first AppendBytes(), so the raw text below becomes an
+  // in-body text run inside that <pre>. TextDocumentParser automatically
+  // inserts the fake <pre> and flushes the initial setup immediately.
+  parser->AppendBytes(base::byte_span_from_cstring("aaa"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // The first in-body flush is allowed immediately.
+  Element* pre = document->QuerySelector(AtomicString("pre"));
+  ASSERT_TRUE(pre);
+  ASSERT_TRUE(pre->firstChild());
+  EXPECT_EQ(Node::kTextNode, pre->firstChild()->getNodeType());
+  EXPECT_EQ("aaa", pre->firstChild()->nodeValue());
+
+  // Append a second chunk. Flushes should now be deferred.
+  parser->AppendBytes(base::byte_span_from_cstring("bbb"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // Text node should still only contain "aaa".
+  EXPECT_EQ("aaa", pre->firstChild()->nodeValue());
+
+  // Fast forward by more than the initial interval (16ms).
+  task_environment().FastForwardBy(base::Milliseconds(20));
+  parser->AppendBytes(base::byte_span_from_cstring("ccc"));
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // Now it should contain "aaabbbccc", and remain a single coalesced Text node
+  // (no O(n^2) fragmentation into multiple sibling nodes).
+  EXPECT_EQ(1u, pre->childNodes()->length());
+  EXPECT_EQ("aaabbbccc", pre->firstChild()->nodeValue());
+
+  // Append a fourth chunk. Flushes should be deferred again because the
+  // interval doubled to 32ms.
+  parser->AppendBytes(base::byte_span_from_cstring("ddd"));
+  EXPECT_EQ("aaabbbccc", pre->firstChild()->nodeValue());
+
+  // Finish the parser stream to force the final flush.
+  static_cast<DocumentParser*>(parser)->Finish();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  ASSERT_TRUE(pre->firstChild());
+  EXPECT_EQ(Node::kTextNode, pre->firstChild()->getNodeType());
+  EXPECT_EQ(1u, pre->childNodes()->length());
+  EXPECT_EQ("aaabbbcccddd", pre->firstChild()->nodeValue());
+}
+
+TEST_P(HTMLDocumentParserTest,
+       DeferTreeBuilderFlushNotDeferredForHtmlDocument) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
+  // Splitting is off, but in-body deferral is scoped to text documents, so an
+  // ordinary HTML document's in-body text run must not be deferred.
+  ScopedSplitLargeTextNodesForTest split_large_text_nodes(false);
+  auto& document = To<HTMLDocument>(GetDocument());
+  ASSERT_FALSE(document.IsTextDocument());
+  if (document.documentElement()) {
+    document.removeChild(document.documentElement());
+  }
+  auto* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+
+  parser->AppendBytes(base::byte_span_from_cstring("<pre>aaa"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  Element* pre = document.QuerySelector(AtomicString("pre"));
+  ASSERT_TRUE(pre);
+  ASSERT_TRUE(pre->firstChild());
+  EXPECT_EQ("aaa", pre->firstChild()->nodeValue());
+
+  // The second chunk flushes immediately even without advancing the clock,
+  // because deferral does not apply to HTML documents.
+  parser->AppendBytes(base::byte_span_from_cstring("bbb"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  EXPECT_EQ("aaabbb", pre->firstChild()->nodeValue());
+}
+
+TEST_P(HTMLDocumentParserTest,
+       DeferTreeBuilderFlushInBodyDisabledWhenSplitting) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
+  // Even for a text document, restoring legacy 64k Text-node splitting bounds
+  // the merge cost, so in-body flush deferral is disabled.
+  ScopedSplitLargeTextNodesForTest split_large_text_nodes(true);
+  auto* parser = CreateTextDocumentParser();
+  ScopedParserDetacher detacher(parser);
+  Document* document = parser->GetDocument();
+
+  parser->AppendBytes(base::byte_span_from_cstring("aaa"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  Element* pre = document->QuerySelector(AtomicString("pre"));
+  ASSERT_TRUE(pre);
+  ASSERT_TRUE(pre->firstChild());
+  EXPECT_EQ("aaa", pre->firstChild()->nodeValue());
+
+  // With splitting on, the second chunk flushes immediately even without
+  // advancing the clock.
+  parser->AppendBytes(base::byte_span_from_cstring("bbb"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  EXPECT_EQ("aaabbb", pre->firstChild()->nodeValue());
 }
 
 TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterStopParsing) {

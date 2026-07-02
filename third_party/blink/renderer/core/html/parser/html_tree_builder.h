@@ -290,6 +290,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   const bool include_shadow_roots_;
 
+  const bool is_text_document_;
+
   bool frameset_ok_;
 #if DCHECK_IS_ON()
   bool is_attached_ = true;
