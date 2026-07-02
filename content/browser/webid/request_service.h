@@ -140,6 +140,7 @@ class CONTENT_EXPORT RequestService
   friend class RequestRegistryTest;
 
   bool SetupIdentityRegistryFromPopup();
+  IdentityRegistry* GetIdentityRegistry();
   void SetRequiresUserMediation(bool requires_user_mediation,
                                 base::OnceClosure callback);
   void OnIdpRegistrationConfigFetched(
@@ -175,7 +176,7 @@ class CONTENT_EXPORT RequestService
 
   bool force_allow_redirect_to_for_testing_ = false;
 
-  raw_ptr<IdentityRegistry> identity_registry_ = nullptr;
+  raw_ptr<IdentityRegistry> mock_identity_registry_ = nullptr;
 
   mojo::ReceiverSet<blink::mojom::FederatedRequestService> receivers_;
 

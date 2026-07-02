@@ -39,8 +39,6 @@ using blink::mojom::RegisterIdpStatus;
 
 RequestService::RequestService(RenderFrameHost* rfh)
     : DocumentUserData<RequestService>(rfh),
-      identity_registry_(IdentityRegistry::FromWebContents(
-          WebContents::FromRenderFrameHost(rfh))),
       api_permission_delegate_(
           rfh->GetBrowserContext()->GetFederatedIdentityApiPermissionContext()),
       auto_reauthn_permission_delegate_(
@@ -86,7 +84,7 @@ void RequestService::SetDelegatesForTesting(
   api_permission_delegate_ = api_permission_delegate;
   auto_reauthn_permission_delegate_ = auto_reauthn_permission_delegate;
   permission_delegate_ = permission_delegate;
-  identity_registry_ = identity_registry;
+  mock_identity_registry_ = identity_registry;
 }
 
 Request* RequestService::GetOrCreateActiveRequest() {
@@ -263,9 +261,8 @@ void RequestService::CloseModalDialogView() {
   SetupIdentityRegistryFromPopup();
 #endif
   // Invoke OnClose on the opener.
-  if (identity_registry_) {
-    identity_registry_->NotifyClose(
-        render_frame_host().GetLastCommittedOrigin());
+  if (IdentityRegistry* registry = GetIdentityRegistry()) {
+    registry->NotifyClose(render_frame_host().GetLastCommittedOrigin());
   }
 }
 void RequestService::PreventSilentAccess(PreventSilentAccessCallback callback) {
@@ -301,7 +298,7 @@ void RequestService::SetRequiresUserMediation(bool requires_user_mediation,
 
 bool RequestService::SetupIdentityRegistryFromPopup() {
 #if BUILDFLAG(IS_ANDROID)
-  if (identity_registry_) {
+  if (GetIdentityRegistry()) {
     return true;
   }
   IdentityRequestDialogController* controller = GetOrCreateDialogController();
@@ -324,7 +321,6 @@ bool RequestService::SetupIdentityRegistryFromPopup() {
   IdentityRegistry::CreateForWebContents(
       web_contents, rp_auth_request->weak_ptr_factory_.GetWeakPtr(),
       rp_auth_request->config_url_);
-  identity_registry_ = IdentityRegistry::FromWebContents(web_contents);
   return true;
 #else
   return false;
@@ -488,14 +484,16 @@ void RequestService::ResolveTokenRequest(
     }
   }
 
-  if (!identity_registry_ && !SetupIdentityRegistryFromPopup()) {
+  if (!GetIdentityRegistry() && !SetupIdentityRegistryFromPopup()) {
     std::move(callback).Run(false);
     return;
   }
 
-  bool accepted = identity_registry_->NotifyResolve(
-      render_frame_host().GetLastCommittedOrigin(), account_id,
-      std::move(params));
+  IdentityRegistry* registry = GetIdentityRegistry();
+  CHECK(registry);
+  bool accepted =
+      registry->NotifyResolve(render_frame_host().GetLastCommittedOrigin(),
+                              account_id, std::move(params));
   std::move(callback).Run(accepted);
 }
 
@@ -596,6 +594,14 @@ void RequestService::SetIdpSigninStatus(
         idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
         options);
   }
+}
+
+IdentityRegistry* RequestService::GetIdentityRegistry() {
+  if (mock_identity_registry_) {
+    return mock_identity_registry_;
+  }
+  return IdentityRegistry::FromWebContents(
+      WebContents::FromRenderFrameHost(&render_frame_host()));
 }
 
 }  // namespace webid
