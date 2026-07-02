@@ -77,13 +77,7 @@ class CONTENT_EXPORT Request
       public IdentityRegistryDelegate,
       public webid::AutofillSource {
  public:
-  Request(
-      RenderFrameHost* rfh,
-      RequestService& request_service,
-      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
-      FederatedIdentityAutoReauthnPermissionContextDelegate*
-          auto_reauthn_permission_delegate,
-      FederatedIdentityPermissionContextDelegate* permission_delegate);
+  Request(RenderFrameHost* rfh, RequestService& request_service);
 
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
@@ -477,6 +471,12 @@ class CONTENT_EXPORT Request
   // show a correct title, so we need to indicate that in the RelyingPartyData.
   RelyingPartyData CreateRpData(bool client_metadata_received) const;
 
+  FederatedIdentityApiPermissionContextDelegate* api_permission_delegate()
+      const;
+  FederatedIdentityAutoReauthnPermissionContextDelegate*
+  auto_reauthn_permission_delegate() const;
+  FederatedIdentityPermissionContextDelegate* permission_delegate() const;
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
 
   // Helper that records FedCM UMA and UKM metrics. Initialized in the
@@ -508,12 +508,6 @@ class CONTENT_EXPORT Request
   // that URL. Populated by OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
 
-  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
-      api_permission_delegate_ = nullptr;
-  raw_ptr<FederatedIdentityAutoReauthnPermissionContextDelegate>
-      auto_reauthn_permission_delegate_ = nullptr;
-  raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
-      nullptr;
   raw_ptr<RenderFrameHost> render_frame_host_;
   // RequestService owns `this`, so it is expected to outlive it.
   const raw_ref<RequestService> request_service_;

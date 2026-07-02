@@ -92,9 +92,7 @@ void RequestService::SetDelegatesForTesting(
 Request* RequestService::GetOrCreateActiveRequest() {
   if (!active_request_) {
     RenderFrameHost& rfh = render_frame_host();
-    active_request_ = std::make_unique<Request>(
-        &rfh, *this, api_permission_delegate_,
-        auto_reauthn_permission_delegate_, permission_delegate_);
+    active_request_ = std::make_unique<Request>(&rfh, *this);
   }
   return active_request_.get();
 }
@@ -114,9 +112,7 @@ void RequestService::StartTokenRequest(
     StartTokenRequestCallback callback) {
   // 1. Create the new request temporarily.
   RenderFrameHost& rfh = render_frame_host();
-  auto new_request = std::make_unique<Request>(
-      &rfh, *this, api_permission_delegate_, auto_reauthn_permission_delegate_,
-      permission_delegate_);
+  auto new_request = std::make_unique<Request>(&rfh, *this);
   new_request->BindReceiver(std::move(request_receiver));
 
   auto wrapper_callback = base::BindOnce(

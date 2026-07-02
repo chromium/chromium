@@ -54,15 +54,7 @@ class InterceptorMockNavigationHandle : public MockNavigationHandle {
 class MockRequest : public Request {
  public:
   explicit MockRequest(RenderFrameHost* rfh)
-      : Request(
-            rfh,
-            *RequestService::GetOrCreateForCurrentDocument(rfh),
-            rfh->GetBrowserContext()
-                ->GetFederatedIdentityApiPermissionContext(),
-            rfh->GetBrowserContext()
-                ->GetFederatedIdentityAutoReauthnPermissionContext(),
-            rfh->GetBrowserContext()->GetFederatedIdentityPermissionContext()) {
-  }
+      : Request(rfh, *RequestService::GetOrCreateForCurrentDocument(rfh)) {}
 
   MOCK_METHOD(
       bool,
