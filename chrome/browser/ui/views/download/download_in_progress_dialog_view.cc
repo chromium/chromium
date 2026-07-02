@@ -21,7 +21,7 @@
 void DownloadInProgressDialogView::Show(
     gfx::NativeWindow parent,
     int download_count,
-    Browser::DownloadCloseType dialog_type,
+    UnloadController::DownloadCloseType dialog_type,
     base::OnceCallback<void(bool)> callback) {
   DownloadInProgressDialogView* window = new DownloadInProgressDialogView(
       download_count, dialog_type, std::move(callback));
@@ -30,7 +30,7 @@ void DownloadInProgressDialogView::Show(
 
 DownloadInProgressDialogView::DownloadInProgressDialogView(
     int download_count,
-    Browser::DownloadCloseType dialog_type,
+    UnloadController::DownloadCloseType dialog_type,
     base::OnceCallback<void(bool)> callback)
     : callback_(std::move(callback)) {
   SetTitle(l10n_util::GetPluralStringFUTF16(IDS_ABANDON_DOWNLOAD_DIALOG_TITLE,
@@ -62,16 +62,16 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
 
   int message_id = 0;
   switch (dialog_type) {
-    case Browser::DownloadCloseType::kLastWindowInIncognitoProfile:
+    case UnloadController::DownloadCloseType::kLastWindowInIncognitoProfile:
       message_id = IDS_ABANDON_DOWNLOAD_DIALOG_INCOGNITO_MESSAGE;
       break;
-    case Browser::DownloadCloseType::kLastWindowInGuestSession:
+    case UnloadController::DownloadCloseType::kLastWindowInGuestSession:
       message_id = IDS_ABANDON_DOWNLOAD_DIALOG_GUEST_MESSAGE;
       break;
-    case Browser::DownloadCloseType::kBrowserShutdown:
+    case UnloadController::DownloadCloseType::kBrowserShutdown:
       message_id = IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE;
       break;
-    case Browser::DownloadCloseType::kOk:
+    case UnloadController::DownloadCloseType::kOk:
       // This dialog should have been created within the same thread invocation
       // as the original test, so it's never ok to close.
       NOTREACHED();

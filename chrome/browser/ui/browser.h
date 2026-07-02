@@ -123,28 +123,6 @@ class Browser : public TabStripModelObserver,
   // Possible elements of the Browser window.
   using WindowFeature = WindowFeatureController::WindowFeature;
 
-  // The context for a download blocked notification from
-  // OkToCloseWithInProgressDownloads.
-  enum class DownloadCloseType {
-    // Browser close is not blocked by download state.
-    kOk,
-
-    // The browser is shutting down and there are active downloads
-    // that would be cancelled.
-    kBrowserShutdown,
-
-    // There are active downloads associated with this incognito profile
-    // that would be canceled.
-    kLastWindowInIncognitoProfile,
-
-    // There are active downloads associated with this guest session
-    // that would be canceled.
-    kLastWindowInGuestSession,
-  };
-
-  // Represents the result of the user being warned before closing the browser.
-  // See WarnBeforeClosingCallback and WarnBeforeClosing() below.
-  enum class WarnBeforeClosingResult { kOkToClose, kDoNotClose };
 
   // Represents the source of a browser creation request.
   enum class CreationSource {
@@ -160,12 +138,6 @@ class Browser : public TabStripModelObserver,
 
   // The default value for a browser's `restore_id` param.
   static constexpr int kDefaultRestoreId = 0;
-
-  // Callback that receives the result of a user being warned about closing a
-  // browser window (for example, if closing the window would interrupt a
-  // download). The parameter is whether the close should proceed.
-  using WarnBeforeClosingCallback =
-      base::OnceCallback<void(WarnBeforeClosingResult)>;
 
   struct CreateParams {
     explicit CreateParams(Profile* profile, bool user_gesture);
@@ -455,21 +427,6 @@ class Browser : public TabStripModelObserver,
 
   // OnBeforeUnload handling //////////////////////////////////////////////////
 
-  // Displays any necessary warnings to the user on taking an action that might
-  // close the browser (for example, warning if there are downloads in progress
-  // that would be interrupted).
-  //
-  // Distinct from HandleBeforeClose() (which calls this method) because
-  // this method does not consider beforeunload handler, only things the user
-  // should be prompted about.
-  //
-  // If no warnings are needed, the method returns kOkToClose, indicating that
-  // the close can proceed immediately, and the callback is not called. If the
-  // method returns kDoNotClose, closing should be handled by |warn_callback|
-  // (and then only if the callback receives the kOkToClose value).
-  WarnBeforeClosingResult MaybeWarnBeforeClosing(
-      WarnBeforeClosingCallback warn_callback);
-
   // Gives beforeunload handlers the chance to cancel the close. Returns true if
   // the close operation was permitted. Closing can be denied due to different
   // reasons. This function checks if unload handlers are still executing. It
@@ -537,13 +494,6 @@ class Browser : public TabStripModelObserver,
 
   // In-progress download termination handling /////////////////////////////////
 
-  // Indicates whether or not this browser window can be closed, or
-  // would be blocked by in-progress downloads.
-  // If executing downloads would be cancelled by this window close,
-  // then |*num_downloads_blocking| is updated with how many downloads
-  // would be canceled if the close continued.
-  DownloadCloseType OkToCloseWithInProgressDownloads(
-      int* num_downloads_blocking) const;
 
   // External state change handling ////////////////////////////////////////////
 
@@ -994,26 +944,10 @@ class Browser : public TabStripModelObserver,
 
   // In-progress download termination handling /////////////////////////////////
 
-  // Called when the window is closing to check if potential in-progress
-  // downloads should prevent it from closing.
-  // Returns true if the window can close, false otherwise.
-  bool CanCloseWithInProgressDownloads();
-
-  // Called when the user has decided whether to proceed or not with the browser
-  // closure.  |cancel_downloads| is true if the downloads should be canceled
-  // and the browser closed, false if the browser should stay open and the
-  // downloads running.
-  void InProgressDownloadResponse(bool cancel_downloads);
-
   // Called when the user has decided whether to proceed or not with the browser
   // closure, in case the cookie migration notice was shown. |proceed_closing|
   // is true if the browser can  be closed.
   void CookieMigrationNoticeResponse(bool proceed_closing);
-
-  // Called when all warnings have completed when attempting to close the
-  // browser directly (e.g. via hotkey, close button, terminate signal, etc.)
-  // Used as a WarnBeforeClosingCallback by HandleBeforeClose().
-  void FinishWarnBeforeClosing(WarnBeforeClosingResult result);
 
   // Assorted utility functions ///////////////////////////////////////////////
 
@@ -1125,17 +1059,6 @@ class Browser : public TabStripModelObserver,
 
   // In-progress download termination handling /////////////////////////////////
 
-  enum class CancelDownloadConfirmationState {
-    kNotPrompted,         // We have not asked the user.
-    kWaitingForResponse,  // We have asked the user and have not received a
-                          // response yet.
-    kResponseReceived     // The user was prompted and made a decision already.
-  };
-
-  // State used to figure-out whether we should prompt the user for confirmation
-  // when the browser is closed with in-progress downloads.
-  CancelDownloadConfirmationState cancel_download_confirmation_state_;
-
   /////////////////////////////////////////////////////////////////////////////
 
   // Override values for the bounds of the window and its maximized or minimized
@@ -1158,8 +1081,6 @@ class Browser : public TabStripModelObserver,
   std::optional<int> initial_vertical_tab_strip_uncollapsed_width_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
-
-  WarnBeforeClosingCallback warn_before_closing_callback_;
 
   // If true, immediately updates the UI when scheduled.
   bool update_ui_immediately_for_testing_ = false;

@@ -958,7 +958,7 @@ WebUIBrowserWindow::GetDownloadBubbleUIController() {
 
 void WebUIBrowserWindow::ConfirmBrowserCloseWithPendingDownloads(
     int download_count,
-    Browser::DownloadCloseType dialog_type,
+    UnloadController::DownloadCloseType dialog_type,
     base::OnceCallback<void(bool)> callback) {
   NOTIMPLEMENTED_LOG_ONCE();
 }

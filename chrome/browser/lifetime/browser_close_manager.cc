@@ -162,7 +162,7 @@ void BrowserCloseManager::ConfirmCloseWithPendingDownloads(
     return;
   }
   BrowserWindow::FromBrowser(bwi)->ConfirmBrowserCloseWithPendingDownloads(
-      download_count, Browser::DownloadCloseType::kBrowserShutdown,
+      download_count, UnloadController::DownloadCloseType::kBrowserShutdown,
       std::move(callback));
 }
 

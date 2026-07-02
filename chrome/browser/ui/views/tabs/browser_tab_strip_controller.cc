@@ -44,7 +44,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
@@ -343,18 +345,20 @@ void BrowserTabStripController::OnCloseTab(
   if (GetCount() <= 1) {
     // Closing this tab will close the current window. See if the browser wants
     // to prompt the user before the browser is allowed to close.
-    const Browser::WarnBeforeClosingResult result =
-        browser_view_->browser()->MaybeWarnBeforeClosing(base::BindOnce(
-            [](TabStrip* tab_strip, int model_index,
-               Browser::WarnBeforeClosingResult result) {
-              if (result == Browser::WarnBeforeClosingResult::kOkToClose) {
-                tab_strip->CloseTab(tab_strip->tab_at(model_index),
-                                    CloseTabSource::kFromNonUIEvent);
-              }
-            },
-            base::Unretained(tabstrip_), model_index));
+    const UnloadController::WarnBeforeClosingResult result =
+        UnloadController::From(browser_view_->browser())
+            ->MaybeWarnBeforeClosing(base::BindOnce(
+                [](TabStrip* tab_strip, int model_index,
+                   UnloadController::WarnBeforeClosingResult result) {
+                  if (result ==
+                      UnloadController::WarnBeforeClosingResult::kOkToClose) {
+                    tab_strip->CloseTab(tab_strip->tab_at(model_index),
+                                        CloseTabSource::kFromNonUIEvent);
+                  }
+                },
+                base::Unretained(tabstrip_), model_index));
 
-    if (result != Browser::WarnBeforeClosingResult::kOkToClose) {
+    if (result != UnloadController::WarnBeforeClosingResult::kOkToClose) {
       return;
     }
   }

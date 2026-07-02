@@ -129,9 +129,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastWindowIncognito) {
   CloseBrowserSynchronously(browser());
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(Browser::DownloadCloseType::kBrowserShutdown,
-            incognito_browser->OkToCloseWithInProgressDownloads(
-                &num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kBrowserShutdown,
+            UnloadController::From(incognito_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
 }
 
@@ -141,12 +141,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastIncognito) {
   MockDownloadCount(incognito_browser->profile(), 1);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(Browser::DownloadCloseType::kLastWindowInIncognitoProfile,
-            incognito_browser->OkToCloseWithInProgressDownloads(
-                &num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kLastWindowInIncognitoProfile,
+            UnloadController::From(incognito_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
 
-  EXPECT_EQ(false, incognito_browser->CanCloseWithInProgressDownloads());
+  EXPECT_EQ(false, UnloadController::From(incognito_browser)
+                       ->CanCloseWithInProgressDownloads());
 }
 
 // Last incognito window close with no downloads => no warning.
@@ -157,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastIncognitoNoDownloads) {
   CloseBrowserSynchronously(browser());
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(Browser::DownloadCloseType::kOk,
-            incognito_browser->OkToCloseWithInProgressDownloads(
-                &num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(incognito_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
 }
 
 // Last incognito window with window+download on another incognito profile
@@ -176,9 +177,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, NoIncognitoCrossChat) {
   CloseBrowserSynchronously(browser());
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(Browser::DownloadCloseType::kOk,
-            incognito_browser1->OkToCloseWithInProgressDownloads(
-                &num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(incognito_browser1)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
 }
 
 // Non-last incognito window => no warning.
@@ -191,9 +192,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, NonLastIncognito) {
   CloseBrowserSynchronously(browser());
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(Browser::DownloadCloseType::kOk,
-            incognito_browser1->OkToCloseWithInProgressDownloads(
-                &num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(incognito_browser1)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
 }
 
 // Non-last regular window => no warning.
@@ -203,9 +204,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, NonLastRegular) {
   MockDownloadCount(profile, 1);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kOk,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
 }
 
 // Last regular window triggers browser close warning.
@@ -213,14 +214,18 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastRegular) {
   MockDownloadCount(browser()->profile(), 1);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kBrowserShutdown,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kBrowserShutdown,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(true, browser()->CanCloseWithInProgressDownloads());
+  EXPECT_EQ(
+      true,
+      UnloadController::From(browser())->CanCloseWithInProgressDownloads());
 #else
-  EXPECT_EQ(false, browser()->CanCloseWithInProgressDownloads());
+  EXPECT_EQ(
+      false,
+      UnloadController::From(browser())->CanCloseWithInProgressDownloads());
 #endif
 }
 
@@ -233,9 +238,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastRegularDifferentProfile) {
   MockDownloadCount(profile2, 1);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kBrowserShutdown,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kBrowserShutdown,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
 }
 
@@ -245,9 +250,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastRegularPlusIncognito) {
   MockDownloadCount(incognito_browser->profile(), 1);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kOk,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
 }
 
 // Last regular window + window on other profile => no warning.
@@ -258,9 +263,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastRegularPlusOtherProfile) {
   CreateBrowser(profile2);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kOk,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
 }
 
 // Last regular window + window on other incognito profile => no warning.
@@ -272,9 +277,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastRegularPlusOtherIncognito) {
   MockDownloadCount(incognito_browser2->profile(), 1);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kOk,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
 }
 
 // Last regular + download + incognito window => no warning.
@@ -285,9 +290,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastRegularPlusIncognito2) {
   MockDownloadCount(incognito_browser->profile(), 0);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kOk,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
 }
 
 // Multiple downloads are recognized.
@@ -295,9 +300,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, Plural) {
   MockDownloadCount(browser()->profile(), 2);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kBrowserShutdown,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kBrowserShutdown,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
   EXPECT_EQ(2, num_downloads_blocking);
 }
 
@@ -307,9 +312,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, PluralIncognito) {
   MockDownloadCount(incognito_browser->profile(), 2);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(Browser::DownloadCloseType::kLastWindowInIncognitoProfile,
-            incognito_browser->OkToCloseWithInProgressDownloads(
-                &num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kLastWindowInIncognitoProfile,
+            UnloadController::From(incognito_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(2, num_downloads_blocking);
 }
 
@@ -321,9 +326,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastWindowGuest) {
   CloseBrowserSynchronously(browser());
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kBrowserShutdown,
-      guest_browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kBrowserShutdown,
+            UnloadController::From(guest_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
 }
 
@@ -333,12 +338,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastGuest) {
   MockDownloadCount(guest_browser->profile(), 1);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kLastWindowInGuestSession,
-      guest_browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kLastWindowInGuestSession,
+            UnloadController::From(guest_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
 
-  EXPECT_EQ(false, guest_browser->CanCloseWithInProgressDownloads());
+  EXPECT_EQ(
+      false,
+      UnloadController::From(guest_browser)->CanCloseWithInProgressDownloads());
 }
 
 // Last guest window close with no downloads => no warning.
@@ -347,9 +354,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, LastGuestNoDownloads) {
   MockDownloadCount(guest_browser->profile(), 0);
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(
-      Browser::DownloadCloseType::kOk,
-      guest_browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(guest_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
 }
 
 // Non-last guest window => no warning.
@@ -361,8 +368,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, NonLastGuest) {
   CloseBrowserSynchronously(browser());
 
   int num_downloads_blocking = 0;
-  EXPECT_EQ(Browser::DownloadCloseType::kOk,
-            guest_browser1->OkToCloseWithInProgressDownloads(
-                &num_downloads_blocking));
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(guest_browser1)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

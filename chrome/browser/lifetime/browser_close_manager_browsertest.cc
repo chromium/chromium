@@ -1112,9 +1112,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   navigation_observer.Wait();
 
   int num_downloads_blocking = 0;
-  ASSERT_EQ(
-      Browser::DownloadCloseType::kOk,
-      otr_browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  ASSERT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(otr_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   ASSERT_EQ(0, num_downloads_blocking);
 
   {
@@ -1123,9 +1123,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
     observer.Wait();
   }
 
-  ASSERT_EQ(
-      Browser::DownloadCloseType::kBrowserShutdown,
-      browser()->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  ASSERT_EQ(UnloadController::DownloadCloseType::kBrowserShutdown,
+            UnloadController::From(browser())->OkToCloseWithInProgressDownloads(
+                &num_downloads_blocking));
   ASSERT_EQ(1, num_downloads_blocking);
 
   {

@@ -30,7 +30,7 @@ TEST_F(DownloadInProgressDialogTest, CallbackIsRunOnClose) {
                                        "DownloadInProgressDialogView");
   DownloadInProgressDialogView::Show(
       parent->GetNativeWindow(), 1,
-      Browser::DownloadCloseType::kBrowserShutdown,
+      UnloadController::DownloadCloseType::kBrowserShutdown,
       base::BindLambdaForTesting([&](bool b) { result = b; }));
   waiter.WaitIfNeededAndGet()->Close();
 

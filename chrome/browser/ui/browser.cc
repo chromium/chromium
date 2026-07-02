@@ -349,32 +349,7 @@ const extensions::Extension* GetExtensionForOrigin(
 #endif
 }
 
-// Returns a pair [last_window, last_window_for_profile] indicating if `browser`
-// is the only browser in total and for this profile.
-// Ignores browsers that are in the process of closing.
-std::pair<bool, bool> IsLastWindow(const Browser& browser) {
-  bool last_window = true;
-  bool last_window_for_profile = true;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* other_browser) {
-        // Don't count this browser window or any other in the process of
-        // closing. Window closing may be delayed, and windows that are in the
-        // process of closing don't count against our totals.
-        if (other_browser == &browser ||
-            other_browser->capabilities()->IsAttemptingToCloseBrowser()) {
-          return true;
-        }
 
-        last_window = false;
-
-        if (other_browser->GetProfile() == browser.profile()) {
-          last_window_for_profile = false;
-        }
-        return last_window_for_profile;
-      });
-
-  return {last_window, last_window_for_profile};
-}
 
 
 
@@ -530,8 +505,6 @@ Browser::Browser(const CreateParams& params)
       session_id_(SessionID::NewUnique()),
       omit_from_session_restore_(params.omit_from_session_restore),
       should_trigger_session_restore_(params.should_trigger_session_restore),
-      cancel_download_confirmation_state_(
-          CancelDownloadConfirmationState::kNotPrompted),
       override_bounds_(params.initial_bounds),
       initial_show_state_(params.initial_show_state),
       initial_workspace_(params.initial_workspace),
@@ -641,6 +614,19 @@ Browser::~Browser() {
 
   window_.reset();
 
+  // If closing the window is going to trigger a shutdown, then we need to
+  // schedule all active downloads to be cancelled. This needs to be after
+  // removing |this| from BrowserList so that OkToClose...() can determine
+  // whether there are any other windows open for the browser.
+  int num_downloads;
+  if (!browser_defaults::kBrowserAliveWithNoWindows &&
+      UnloadController::From(this)->OkToCloseWithInProgressDownloads(
+          &num_downloads) ==
+          UnloadController::DownloadCloseType::kBrowserShutdown) {
+    DownloadCoreService::CancelAllDownloads(
+        DownloadCoreService::CancelDownloadsTrigger::kShutdown);
+  }
+
   // Tear down `BrowserWindowFeatures` to avoid exposing it to Browser in a
   // partially-destroyed state.
   features_.reset();
@@ -650,18 +636,6 @@ Browser::~Browser() {
   // TODO(crbug.com/40887606): This DCHECK doesn't always pass.
   // TODO(crbug.com/40064092): convert this to CHECK.
   DCHECK(tab_strip_model_->empty());
-
-  // If closing the window is going to trigger a shutdown, then we need to
-  // schedule all active downloads to be cancelled. This needs to be after
-  // removing |this| from BrowserList so that OkToClose...() can determine
-  // whether there are any other windows open for the browser.
-  int num_downloads;
-  if (!browser_defaults::kBrowserAliveWithNoWindows &&
-      OkToCloseWithInProgressDownloads(&num_downloads) ==
-          DownloadCloseType::kBrowserShutdown) {
-    DownloadCoreService::CancelAllDownloads(
-        DownloadCoreService::CancelDownloadsTrigger::kShutdown);
-  }
 
   SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
 
@@ -701,28 +675,7 @@ GURL Browser::GetNewTabURL() const {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, OnBeforeUnload handling:
 
-Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
-    Browser::WarnBeforeClosingCallback warn_callback) {
-  // If the browser can close right away (we've indicated that we want to skip
-  // before-unload handlers by setting `force_skip_warning_user_on_close_` to
-  // true or there are no pending downloads we need to prompt about) then
-  // there's no need to warn.
-  if (UnloadController::From(this)->force_skip_warning_user_on_close()) {
-    return WarnBeforeClosingResult::kOkToClose;
-  }
 
-  // `CanCloseWithInProgressDownloads()` may trigger a modal dialog.
-  bool can_close_with_downloads = CanCloseWithInProgressDownloads();
-  if (can_close_with_downloads) {
-    return WarnBeforeClosingResult::kOkToClose;
-  }
-
-  DCHECK(!warn_before_closing_callback_)
-      << "Tried to close window during close warning; dialog should be modal.";
-  warn_before_closing_callback_ = std::move(warn_callback);
-
-  return WarnBeforeClosingResult::kDoNotClose;
-}
 
 bool Browser::HandleBeforeClose() {
   const auto get_closing_status =
@@ -735,10 +688,11 @@ bool Browser::HandleBeforeClose() {
 
     // If the user needs to see one or more warnings, hold off closing the
     // browser.
-    const WarnBeforeClosingResult result =
-        MaybeWarnBeforeClosing(base::BindOnce(&Browser::FinishWarnBeforeClosing,
-                                              weak_factory_.GetWeakPtr()));
-    if (result == WarnBeforeClosingResult::kDoNotClose) {
+    const UnloadController::WarnBeforeClosingResult result =
+        UnloadController::From(this)->MaybeWarnBeforeClosing(
+            base::BindOnce(&UnloadController::FinishWarnBeforeClosing,
+                           UnloadController::From(this)->GetWeakPtr()));
+    if (result == UnloadController::WarnBeforeClosingResult::kDoNotClose) {
       return BrowserWindowInterface::ClosingStatus::kDeniedByUser;
     }
 
@@ -759,15 +713,11 @@ bool Browser::HandleBeforeClose() {
 bool Browser::TryToCloseWindow(
     bool skip_beforeunload,
     const base::RepeatingCallback<void(bool)>& on_close_confirmed) {
-  cancel_download_confirmation_state_ =
-      CancelDownloadConfirmationState::kResponseReceived;
   return UnloadController::From(this)->TryToCloseWindow(skip_beforeunload,
                                                         on_close_confirmed);
 }
 
 void Browser::ResetTryToCloseWindow() {
-  cancel_download_confirmation_state_ =
-      CancelDownloadConfirmationState::kNotPrompted;
   UnloadController::From(this)->ResetTryToCloseWindow();
 }
 
@@ -1060,51 +1010,7 @@ void Browser::OnWindowClosing() {
 ////////////////////////////////////////////////////////////////////////////////
 // In-progress download termination handling:
 
-Browser::DownloadCloseType Browser::OkToCloseWithInProgressDownloads(
-    int* num_downloads_blocking) const {
-  DCHECK(num_downloads_blocking);
-  *num_downloads_blocking = 0;
 
-  // If we're not running a full browser process with a profile manager
-  // (testing), it's ok to close the browser.
-  if (!g_browser_process->profile_manager()) {
-    return DownloadCloseType::kOk;
-  }
-
-  int total_download_count =
-      DownloadCoreService::BlockingShutdownCountAllProfiles();
-  if (total_download_count == 0) {
-    return DownloadCloseType::kOk;  // No downloads; can definitely close.
-  }
-
-  // Figure out how many windows are open total, and associated with this
-  // profile, that are relevant for the ok-to-close decision.
-  auto [last_window, last_window_for_profile] = IsLastWindow(*this);
-
-  // If there aren't any other windows, we're at browser shutdown,
-  // which would cancel all current downloads.
-  if (last_window) {
-    *num_downloads_blocking = total_download_count;
-    return DownloadCloseType::kBrowserShutdown;
-  }
-
-  // If there aren't any other windows on our profile, and we're an Incognito
-  // or Guest profile, and there are downloads associated with that profile,
-  // those downloads would be cancelled by our window (-> profile) close.
-  DownloadCoreService* download_core_service =
-      DownloadCoreServiceFactory::GetForBrowserContext(profile());
-  if (last_window_for_profile &&
-      (download_core_service->BlockingShutdownCount() > 0) &&
-      (profile()->IsIncognitoProfile() || profile()->IsGuestSession())) {
-    *num_downloads_blocking = download_core_service->BlockingShutdownCount();
-    return profile()->IsGuestSession()
-               ? DownloadCloseType::kLastWindowInGuestSession
-               : DownloadCloseType::kLastWindowInIncognitoProfile;
-  }
-
-  // Those are the only conditions under which we will block shutdown.
-  return DownloadCloseType::kOk;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Browser, Tab adding/showing functions:
@@ -2883,86 +2789,6 @@ std::vector<StatusBubble*> Browser::GetStatusBubbles() {
 
 chrome::BrowserCommandController* Browser::GetCommandController() {
   return GetFeatures().browser_command_controller();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, Session restore functions (private):
-
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, In-progress download termination handling (private):
-
-bool Browser::CanCloseWithInProgressDownloads() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  // On Mac and ChromeOS, non-incognito and non-Guest downloads can still
-  // continue after window is closed.
-  if (!profile_->IsOffTheRecord()) {
-    return true;
-  }
-#endif
-
-  // If we've prompted, we need to hear from the user before we
-  // can close.
-  if (cancel_download_confirmation_state_ !=
-      CancelDownloadConfirmationState::kNotPrompted) {
-    return cancel_download_confirmation_state_ !=
-           CancelDownloadConfirmationState::kWaitingForResponse;
-  }
-
-  int num_downloads_blocking;
-  DownloadCloseType dialog_type =
-      OkToCloseWithInProgressDownloads(&num_downloads_blocking);
-  if (dialog_type == DownloadCloseType::kOk) {
-    return true;
-  }
-
-  // Closing this window will kill some downloads; prompt to make sure
-  // that's ok.
-  cancel_download_confirmation_state_ =
-      CancelDownloadConfirmationState::kWaitingForResponse;
-  window_->ConfirmBrowserCloseWithPendingDownloads(
-      num_downloads_blocking, dialog_type,
-      base::BindOnce(&Browser::InProgressDownloadResponse,
-                     weak_factory_.GetWeakPtr()));
-
-  // Return false so the browser does not close.  We'll close if the user
-  // confirms in the dialog.
-  return false;
-}
-
-void Browser::InProgressDownloadResponse(bool cancel_downloads) {
-  if (cancel_downloads) {
-    cancel_download_confirmation_state_ =
-        CancelDownloadConfirmationState::kResponseReceived;
-    std::move(warn_before_closing_callback_)
-        .Run(WarnBeforeClosingResult::kOkToClose);
-    return;
-  }
-
-  // Sets the confirmation state to
-  // CancelDownloadConfirmationState::kNotPrompted so that if the user tries to
-  // close again we'll show the warning again.
-  cancel_download_confirmation_state_ =
-      CancelDownloadConfirmationState::kNotPrompted;
-
-  // Show the download page so the user can figure-out what downloads are still
-  // in-progress.
-  chrome::ShowDownloads(this);
-
-  std::move(warn_before_closing_callback_)
-      .Run(WarnBeforeClosingResult::kDoNotClose);
-}
-
-void Browser::FinishWarnBeforeClosing(WarnBeforeClosingResult result) {
-  switch (result) {
-    case WarnBeforeClosingResult::kOkToClose:
-      chrome::CloseWindow(this);
-      break;
-    case WarnBeforeClosingResult::kDoNotClose:
-      // Reset UnloadController::is_attempting_to_close_browser_ so that we
-      // don't prompt every time any tab is closed. http://crbug.com/40336263
-      UnloadController::From(this)->CancelWindowClose();
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
