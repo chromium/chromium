@@ -625,7 +625,8 @@ bool ShouldShowAvatarSyncPromo(Profile* profile) {
   return true;
 }
 
-void ShowErrorDialogWithMessage(Browser* browser, int error_message_id) {
+void ShowErrorDialogWithMessage(BrowserWindowInterface* browser,
+                                int error_message_id) {
   if (!browser) {
     return;
   }

@@ -73,7 +73,7 @@ source_set("impl") {
 
   # data_sharing_bubble_controller.cc and
   # collaboration_controller_delegate_desktop.cc include headers still built as
-  # part of //chrome/browser/ui:ui (browser.h, browser_window.h, chrome_pages.h,
+  # part of //chrome/browser/ui:ui (chrome_pages.h,
   # browser_element_identifiers.h and views/frame/browser_view.h). Reach them
   # via browser_public_dependencies; the reverse edge is expressed by the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.

@@ -10,6 +10,7 @@
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -57,7 +58,7 @@ void HideTaskManager() {
   task_manager::TaskManagerView::Hide();
 }
 
-views::Widget* ShowBrowserModal(Browser* browser,
+views::Widget* ShowBrowserModal(BrowserWindowInterface* browser,
                                 std::unique_ptr<ui::DialogModel> dialog_model) {
   return constrained_window::ShowBrowserModal(
       std::move(dialog_model), browser->GetWindow()->GetNativeWindow());

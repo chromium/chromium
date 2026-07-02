@@ -14,7 +14,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/tab_groups/tab_group_id.h"
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace views {
@@ -30,7 +29,7 @@ class CollaborationControllerDelegateDesktop
     : public collaboration::CollaborationControllerDelegate {
  public:
   explicit CollaborationControllerDelegateDesktop(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::optional<data_sharing::FlowType> flow = std::nullopt);
   ~CollaborationControllerDelegateDesktop() override;
 
@@ -94,7 +93,7 @@ class CollaborationControllerDelegateDesktop
   void ExitFlow();
 
   // The browser this delegate shows UI on.
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 
   // The flow of this delegate. Only needed to set to distinguish kLeave,
   // kDelete and kRemoveLastTab flows.

@@ -357,7 +357,5 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
 void HistorySyncOptinService::ShowErrorDialogWithMessage(int error_message_id) {
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  signin_util::ShowErrorDialogWithMessage(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr,
-      error_message_id);
+  signin_util::ShowErrorDialogWithMessage(browser, error_message_id);
 }

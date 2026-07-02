@@ -23,7 +23,7 @@
 
 class GaiaId;
 class Profile;
-class Browser;
+class BrowserWindowInterface;
 
 namespace signin {
 class IdentityManager;
@@ -247,7 +247,8 @@ bool ShouldShowAvatarSyncPromo(Profile* profile);
 
 // Show a simple error message with an "OK" button to the user, displaying
 // `error_message_id`.
-void ShowErrorDialogWithMessage(Browser* browser, int error_message_id);
+void ShowErrorDialogWithMessage(BrowserWindowInterface* browser,
+                                int error_message_id);
 
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 

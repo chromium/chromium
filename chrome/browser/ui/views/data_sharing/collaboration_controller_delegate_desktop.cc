@@ -9,9 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -31,6 +29,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "ui/base/base_window.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 
@@ -157,7 +156,7 @@ signin_metrics::AccessPoint GetAccessPointForFlowType(
 }  // namespace
 
 CollaborationControllerDelegateDesktop::CollaborationControllerDelegateDesktop(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::optional<data_sharing::FlowType> flow)
     : browser_(browser),
       flow_(flow),
@@ -457,7 +456,7 @@ void CollaborationControllerDelegateDesktop::
   // `status.signin_status`. We cannot currently use `status.signin_status`, as
   // it may not update in time after `SignInFromSingleAccountPromo` sets the
   // primary account.
-  signin_ui_util::SignInAndEnableHistorySync(browser_, browser_->profile(),
+  signin_ui_util::SignInAndEnableHistorySync(browser_, browser_->GetProfile(),
                                              access_point_);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -472,7 +471,7 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
     return;
   }
 
-  Profile* profile = browser_->profile();
+  Profile* profile = browser_->GetProfile();
   switch (status.signin_status) {
     case collaboration::SigninStatus::kNotSignedIn:
       ShowSignInAndSyncUi(profile, access_point_);
@@ -520,9 +519,9 @@ void CollaborationControllerDelegateDesktop::
   AccountInfo account_for_promo =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       signin_ui_util::GetSingleAccountForPromos(
-          IdentityManagerFactory::GetForProfile(browser_->profile()));
+          IdentityManagerFactory::GetForProfile(browser_->GetProfile()));
 #else
-      GetAccountInfoFromProfile(browser_->profile());
+      GetAccountInfoFromProfile(browser_->GetProfile());
 #endif
 
   DialogText dialog_text =

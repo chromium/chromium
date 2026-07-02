@@ -26,6 +26,7 @@
 #include "ui/gfx/native_ui_types.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace base {
@@ -77,7 +78,7 @@ task_manager::TaskManagerTableModel* ShowTaskManager(
 void HideTaskManager();
 
 // Show `dialog_model` as a modal dialog to `browser`.
-views::Widget* ShowBrowserModal(Browser* browser,
+views::Widget* ShowBrowserModal(BrowserWindowInterface* browser,
                                 std::unique_ptr<ui::DialogModel> dialog_model);
 
 // Show `dialog_model` as a bubble anchored to `anchor_element` in `browser`.
