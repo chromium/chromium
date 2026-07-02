@@ -1397,7 +1397,8 @@ WebContentsImpl::~WebContentsImpl() {
   base::trace_event::TraceSessionObserverList::RemoveObserver(this);
   TRACE_EVENT0("content", "WebContentsImpl::~WebContentsImpl");
   if (tracing_track_) {
-    TRACE_STATE("content", nullptr, tracing_track_->track());
+    TRACE_STATE("content.web_contents.lifecycle", nullptr,
+                tracing_track_->track());
   }
 
   WebContentsOfBrowserContext::Detach(*this);
@@ -12947,8 +12948,8 @@ void WebContentsImpl::WarmUpAndroidSpareRenderer() {
 }
 
 void WebContentsImpl::EmitTracingSlice(const std::string& title) {
-  TRACE_STATE("content", nullptr, tracing_track_->track(),
-              [&](perfetto::EventContext ctx) {
+  TRACE_STATE("content.web_contents.lifecycle", nullptr,
+              tracing_track_->track(), [&](perfetto::EventContext ctx) {
                 if (!ctx.ShouldFilterDynamicEventNames() && !title.empty()) {
                   ctx.event()->set_name(title);
                 } else {

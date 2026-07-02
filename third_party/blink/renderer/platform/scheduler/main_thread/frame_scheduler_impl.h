@@ -356,30 +356,21 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       main_thread_scheduler_;  // NOT OWNED
   raw_ptr<PageSchedulerImpl> parent_page_scheduler_;  // NOT OWNED
   raw_ptr<FrameScheduler::Delegate> delegate_;        // NOT OWNED
-  TraceableState<PageVisibilityState,
-                 TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+  TraceableState<PageVisibilityState, "renderer.scheduler.status">
       page_visibility_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      frame_visible_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      is_visible_area_large_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      had_user_activation_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      frame_paused_;
-  TraceableState<FrameOriginType,
-                 TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+  TraceableState<bool, "renderer.scheduler.status"> frame_visible_;
+  TraceableState<bool, "renderer.scheduler.status"> is_visible_area_large_;
+  TraceableState<bool, "renderer.scheduler.status"> had_user_activation_;
+  TraceableState<bool, "renderer.scheduler.status"> frame_paused_;
+  TraceableState<FrameOriginType, "renderer.scheduler.status">
       frame_origin_type_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      subresource_loading_paused_;
+  TraceableState<bool, "renderer.scheduler.status"> subresource_loading_paused_;
   perfetto::NamedTrack url_track_;
-  TraceableState<ThrottlingType,
-                 TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      throttling_type_;
+  TraceableState<ThrottlingType, "renderer.scheduler.status"> throttling_type_;
   Vector<MainThreadTaskQueue::ThrottleHandle> throttled_task_queue_handles_;
   // TODO(https://crbug.com/827113): Trace the count of opt-outs.
   int aggressive_throttling_opt_out_count_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+  TraceableState<bool, "renderer.scheduler.status">
       opted_out_from_aggressive_throttling_;
   size_t subresource_loading_pause_count_;
 
@@ -389,12 +380,11 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().
   // they are here because we don't support page-level tracing yet.
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      page_frozen_for_tracing_;
+  TraceableState<bool, "renderer.scheduler.status"> page_frozen_for_tracing_;
 
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+  TraceableState<bool, "renderer.scheduler.status">
       waiting_for_contentful_paint_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+  TraceableState<bool, "renderer.scheduler.status">
       waiting_for_meaningful_paint_;
   base::TimeTicks first_meaningful_paint_timestamp_;
 

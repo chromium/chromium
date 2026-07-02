@@ -2618,7 +2618,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       "Navigation.RenderFrameHostConstructor");
   // Update lifecycle state on track of RenderFrameHostImpl.
   TRACE_STATE(
-      "navigation",
+      "content.frames.lifecycle",
       perfetto::StaticString{LifecycleStateImplToString(lifecycle_state_)},
       *tracing_track_);
 
@@ -3050,7 +3050,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   CHECK(guest_pages_.empty());
 
   // Matches the slice with the lifecycle state name.
-  TRACE_STATE("navigation", nullptr, *tracing_track_);
+  TRACE_STATE("content.frames.lifecycle", nullptr, *tracing_track_);
 }
 
 const blink::StorageKey& RenderFrameHostImpl::GetStorageKey() const {
@@ -19131,7 +19131,7 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
                LifecycleStateImplToString(new_state));
   // Finish the slice corresponding to the old lifecycle state and begin a new
   // slice for the lifecycle state we are transitioning to.
-  TRACE_STATE("navigation",
+  TRACE_STATE("content.frames.lifecycle",
               perfetto::StaticString{LifecycleStateImplToString(new_state)},
               *tracing_track_);
 // TODO(crbug.com/40200417): Consider associating expectations with each
@@ -19507,7 +19507,7 @@ void RenderFrameHostImpl::NotifyCookiesAccessed(
 void RenderFrameHostImpl::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   // Re-emit `lifecycle_state_` event.
   TRACE_STATE(
-      "navigation",
+      "content.frames.lifecycle",
       perfetto::StaticString{LifecycleStateImplToString(lifecycle_state_)},
       *tracing_track_);
 }

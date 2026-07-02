@@ -211,11 +211,12 @@ void MemoryPressureListenerRegistry::SetMemoryPressureLevel(
     return;
   }
 
-  TRACE_COUNTER("memory", "MemoryPressureLevel",
+  TRACE_COUNTER("memory_pressure", "MemoryPressureLevel",
                 static_cast<int>(memory_pressure_level));
 
   TRACE_EVENT(
-      "memory", "MemoryPressureListenerRegistry::SetMemoryPressureLevel",
+      "memory_pressure",
+      "MemoryPressureListenerRegistry::SetMemoryPressureLevel",
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_memory_pressure_notification();

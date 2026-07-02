@@ -246,8 +246,8 @@ FrameSchedulerImpl::FrameSchedulerImpl(
   frame_task_queue_controller_ = base::WrapUnique(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
   back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate_);
-  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
-                    "FrameScheduler.URL", url_track_, "url", "Unknown");
+  TRACE_EVENT_BEGIN("renderer.scheduler.status", "FrameScheduler.URL",
+                    url_track_, "url", "Unknown");
 }
 
 FrameSchedulerImpl::FrameSchedulerImpl()
@@ -261,7 +261,7 @@ FrameSchedulerImpl::FrameSchedulerImpl()
 FrameSchedulerImpl::~FrameSchedulerImpl() {
   weak_factory_.InvalidateWeakPtrs();
 
-  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), url_track_);
+  TRACE_EVENT_END("renderer.scheduler.status", url_track_);
 
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
@@ -460,9 +460,9 @@ void FrameSchedulerImpl::SetAgentClusterId(
 }
 
 void FrameSchedulerImpl::TraceUrlChange(const String& url) {
-  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), url_track_);
-  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
-                    "FrameScheduler.URL", url_track_, "url", url);
+  TRACE_EVENT_END("renderer.scheduler.status", url_track_);
+  TRACE_EVENT_BEGIN("renderer.scheduler.status", "FrameScheduler.URL",
+                    url_track_, "url", url);
 }
 
 void FrameSchedulerImpl::AddTaskTime(base::TimeDelta time) {

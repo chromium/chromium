@@ -98,17 +98,17 @@ void MemoryPressureVoteAggregator::OnVote(
       old_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     // End MemoryPressure::CriticalPressure/MemoryPressure::ModeratePressure
     // event.
-    TRACE_EVENT_END("base", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("memory_pressure", perfetto::Track::FromPointer(this));
   }
 
   current_pressure_level_ = EvaluateVotes();
 
   // Start an asynchronous tracing event to record this pressure session.
   if (current_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    TRACE_EVENT_BEGIN("base", "MemoryPressure::CriticalPressure",
+    TRACE_EVENT_BEGIN("memory_pressure", "MemoryPressure::CriticalPressure",
                       perfetto::Track::FromPointer(this));
   } else if (current_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    TRACE_EVENT_BEGIN("base", "MemoryPressure::ModeratePressure",
+    TRACE_EVENT_BEGIN("memory_pressure", "MemoryPressure::ModeratePressure",
                       perfetto::Track::FromPointer(this));
   }
 

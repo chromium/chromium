@@ -39,7 +39,7 @@ void BackForwardCacheDisablingFeatureTracker::SetDelegate(
 void BackForwardCacheDisablingFeatureTracker::Reset() {
   for (const auto& it : back_forward_cache_disabling_feature_counts_) {
     auto track = GetTrackForFeature(it.first);
-    TRACE_EVENT_END("renderer.scheduler", track);
+    TRACE_EVENT_END("renderer.scheduler.status", track);
   }
 
   back_forward_cache_disabling_feature_counts_.clear();
@@ -54,7 +54,7 @@ void BackForwardCacheDisablingFeatureTracker::AddFeatureInternal(
   if (back_forward_cache_disabling_feature_counts_[feature]++ == 0) {
     auto track = GetTrackForFeature(feature);
     TRACE_EVENT_BEGIN(
-        "renderer.scheduler",
+        "renderer.scheduler.status",
         perfetto::StaticString(FeatureToHumanReadableString(feature)), track);
   }
   opted_out_from_back_forward_cache_ = true;
@@ -107,7 +107,7 @@ void BackForwardCacheDisablingFeatureTracker::Remove(
   DCHECK_GT(back_forward_cache_disabling_feature_counts_[feature], 0);
   auto it = back_forward_cache_disabling_feature_counts_.find(feature);
   if (it->second == 1) {
-    TRACE_EVENT_END("renderer.scheduler", GetTrackForFeature(feature));
+    TRACE_EVENT_END("renderer.scheduler.status", GetTrackForFeature(feature));
     back_forward_cache_disabling_feature_counts_.erase(it);
   } else {
     --it->second;

@@ -70,7 +70,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("android.adpf"),
     perfetto::Category("android.ui.jank"),
     perfetto::Category("android_webview"),
-    perfetto::Category("android_webview.timeline"),
+    perfetto::Category("android_webview.timeline")
+        .SetDescription("Android WebView visibility and timeline events.")
+        .SetTags("persistent"),
     perfetto::Category("aogh").SetDescription(
       "Actions on Google Hardware, used in Google-internal code."),
     perfetto::Category("audio").SetTags("audio"),
@@ -92,7 +94,7 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("Blob"),
     perfetto::Category("base.power").SetDescription(
       "Events about global system power and battery/thermal state.")
-      .SetTags("toplevel"),
+      .SetTags("toplevel", "persistent"),
     perfetto::Category("browser").SetTags("navigation"),
     perfetto::Category("browsing_data"),
     perfetto::Category("CacheStorage"),
@@ -115,6 +117,12 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         "Traces for the Digital Credentials API"),
     perfetto::Category("content.fedcm").SetDescription(
         "Traces for the Federated Credential Management API"),
+    perfetto::Category("content.frames.lifecycle")
+        .SetDescription("RenderFrameHost lifecycle and state transitions.")
+        .SetTags("persistent"),
+    perfetto::Category("content.web_contents.lifecycle")
+        .SetDescription("Long-running lifecycle states of WebContents "
+        "instances.").SetTags("persistent"),
     perfetto::Category("content_capture"),
     perfetto::Category("cronet"),
     perfetto::Category("interactions"),
@@ -172,6 +180,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("mediastream").SetTags("audio"),
     perfetto::Category("media_router"),
     perfetto::Category("memory"),
+    perfetto::Category("memory_pressure")
+        .SetDescription("System memory pressure level transitions.")
+        .SetTags("persistent"),
     perfetto::Category("midi"),
     perfetto::Category("mojom").SetTags("ipc"),
     perfetto::Category("mojom.flow").SetDescription(
@@ -211,12 +222,13 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         "performance_scenarios.h. For each scenario type, events for "
         "ScenarioScope::kCurrentProcess are emitted to an async track under "
         "each process track, and events for ScenarioScope::kGlobal are emitted "
-        "to global async tracks."),
+        "to global async tracks.").SetTags("persistent"),
     perfetto::Category("performance_manager.cpu_metrics").SetDescription(
       "Events reporting cpu metrics computed in performance_manager"),
     perfetto::Category("performance_manager.graph").SetDescription(
       "Describes the performance manager graph structure with frames, pages, "
-      "processes, etc. and their properties.").SetTags("toplevel"),
+      "processes, etc. and their properties.")
+        .SetTags("toplevel", "persistent"),
     perfetto::Category("persistent_cache"),
     perfetto::Category("ppapi"),
     perfetto::Category("print"),
@@ -225,6 +237,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("renderer"),
     perfetto::Category("renderer_host"),
     perfetto::Category("renderer.scheduler"),
+    perfetto::Category("renderer.scheduler.status")
+        .SetDescription("Persistent frame scheduling policies, throttling "
+        "levels, and BFCache status.").SetTags("persistent"),
     perfetto::Category("resources"),
     perfetto::Category("RLZ"),
     perfetto::Category("ServiceWorker"),

@@ -104,7 +104,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
 
   base::flat_map<SchedulingPolicy::Feature, int>
       back_forward_cache_disabling_feature_counts_{};
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+  TraceableState<bool, "renderer.scheduler.status">
       opted_out_from_back_forward_cache_;
 
   BFCacheBlockingFeatureAndLocations last_reported_non_sticky_;
