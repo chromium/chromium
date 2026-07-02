@@ -21,6 +21,10 @@ MemorySearchResult CreateResultFromEntity(MemoryDataType memory_data_type,
 EntityTypeEnumSet GetEntityTypesForMemoryDataType(
     MemoryDataType memory_data_type);
 
+// Returns true if the given `type` is considered sensitive personal
+// information.
+bool IsSpiiMemoryDataType(MemoryDataType type);
+
 }  // namespace accessibility_annotator
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_DATA_TYPE_UTIL_H_

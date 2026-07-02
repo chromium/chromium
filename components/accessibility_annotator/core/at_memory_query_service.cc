@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type_util.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
@@ -265,6 +266,7 @@ MemorySearchResult ConvertToMemorySearchResult(
                                      proto_result.relevance_score());
   pcontext_result.sources = ExtractSources(proto_result);
   pcontext_result.metadata_list = ExtractMetadata(proto_result);
+  pcontext_result.is_obfuscated = IsSpiiMemoryDataType(memory_data_type);
   return pcontext_result;
 }
 

@@ -227,7 +227,6 @@ bool IsFullMemoryDataType(MemoryDataType memory_data_type) {
     case MemoryDataType::kUnknown:
       return false;
   }
-
   NOTREACHED();
 }
 
@@ -610,7 +609,91 @@ EntityTypeEnumSet GetEntityTypesForMemoryDataType(
     case MemoryDataType::kKnownTravelerNumberExpirationDate:
       return {EntityType::kUnknown};
   }
+  NOTREACHED();
+}
 
+bool IsSpiiMemoryDataType(MemoryDataType type) {
+  switch (type) {
+    case MemoryDataType::kIban:
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kPassportFull:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kNationalIdCardFull:
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kDriversLicenseFull:
+    case MemoryDataType::kRedressNumberNumber:
+    case MemoryDataType::kRedressNumberFull:
+    case MemoryDataType::kKnownTravelerNumberFull:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+      return true;
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kCompanyName:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kVehicle:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kFlightReservationFull:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+    case MemoryDataType::kOrderFull:
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kShipmentShippedDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kShipmentFull:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kUnknown:
+      return false;
+  }
   NOTREACHED();
 }
 

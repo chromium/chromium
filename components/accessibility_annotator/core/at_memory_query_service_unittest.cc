@@ -35,6 +35,8 @@ namespace {
 
 using ::accessibility_annotator::MemoryDataType;
 using ::testing::_;
+using ::testing::Field;
+using ::testing::UnorderedElementsAre;
 
 class MockAtMemoryQueryServiceDelegate : public AtMemoryQueryServiceDelegate {
  public:
@@ -537,11 +539,11 @@ TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_PreservesOrder) {
 
   ASSERT_TRUE(future.Wait());
   const MemorySearchResults& result = future.Get();
-  EXPECT_THAT(result.entries,
-              testing::ElementsAre(
-                  testing::Field(&MemorySearchResult::value, u"Alice"),
-                  testing::Field(&MemorySearchResult::value, u"Bob"),
-                  testing::Field(&MemorySearchResult::value, u"Charlie")));
+  EXPECT_THAT(
+      result.entries,
+      testing::ElementsAre(Field(&MemorySearchResult::value, u"Alice"),
+                           Field(&MemorySearchResult::value, u"Bob"),
+                           Field(&MemorySearchResult::value, u"Charlie")));
 }
 
 // Tests that deduplication retains fields like confidence_score from the first
@@ -719,7 +721,7 @@ TEST_F(AtMemoryQueryServiceTest,
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+  EXPECT_THAT(result.entries, testing::ElementsAre(Field(
                                   &MemorySearchResult::value, u"Jane Doe")));
   EXPECT_EQ(fake_data_provider->last_type(), MemoryDataType::kNameFull);
 }
@@ -751,9 +753,52 @@ TEST_F(AtMemoryQueryServiceTest,
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
   EXPECT_THAT(result.entries,
-              testing::ElementsAre(testing::Field(&MemorySearchResult::value,
-                                                  u"123 Main St, Anytown")));
+              testing::ElementsAre(
+                  Field(&MemorySearchResult::value, u"123 Main St, Anytown")));
   EXPECT_EQ(fake_data_provider->last_type(), MemoryDataType::kAddressFull);
+}
+
+// Tests that the query service correctly identifies and marks SPII data types
+// as obfuscated, while leaving non-SPII data types set to unobfuscated.
+TEST_F(AtMemoryQueryServiceTest, Query_SetsIsObfuscated) {
+  // Prepare a fake server response.
+  personal_context::proto::AtMemoryQueryResponse response;
+  response.set_query_classification(
+      personal_context::proto::AtMemoryQueryResponse::
+          QUERY_CLASSIFICATION_AT_MEMORY);
+
+  // 1. Non-SPII: Full Name
+  personal_context::proto::AtMemorySearchResult* result1 =
+      response.add_results();
+  result1->mutable_primary_attribute()->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  result1->mutable_primary_attribute()->set_value("John Doe");
+
+  // 2. SPII: Credit Card Number
+  personal_context::proto::AtMemorySearchResult* result2 =
+      response.add_results();
+  result2->mutable_primary_attribute()->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NUMBER);
+  result2->mutable_primary_attribute()->set_value("1111222233334444");
+
+  StubFetchContextResponse(std::move(response));
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::make_unique<FakeMemoryDataProvider>(), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"some query", future.GetRepeatingCallback());
+
+  const MemorySearchResults& search_results = future.Get();
+  EXPECT_THAT(
+      search_results.entries,
+      UnorderedElementsAre(
+          AllOf(Field(&MemorySearchResult::type, MemoryDataType::kNameFull),
+                Field(&MemorySearchResult::is_obfuscated, false)),
+          AllOf(Field(&MemorySearchResult::type,
+                      MemoryDataType::kCreditCardNumber),
+                Field(&MemorySearchResult::is_obfuscated, true))));
 }
 
 }  // namespace
