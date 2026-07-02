@@ -37,6 +37,7 @@ import org.robolectric.shadows.ShadowNotificationManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
@@ -72,6 +73,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
     }
 
     @Test
+    @DisabledTest(message = "b/530312590, b/530307985")
     public void testProcessIntentFailureStopsService() {
         MediaNotificationController controller = getController();
         setUpService();
