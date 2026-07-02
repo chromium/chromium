@@ -1357,8 +1357,8 @@ public class ContextMenuTest {
                         () ->
                                 ContentFeatureMap.isEnabled(
                                                 ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND)
-                                        && DeviceInput.supportsAlphabeticKeyboard()
-                                        && DeviceInput.supportsPrecisionPointer()),
+                                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                                mActivityTestRule.getActivity())),
                 baseItems,
                 new Integer[] {R.id.contextmenu_inspect_element});
     }
