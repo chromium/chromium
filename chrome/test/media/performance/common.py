@@ -4,13 +4,16 @@
 
 """A common module for media performance tests."""
 
+import glob
+import json
 import logging
 import multiprocessing
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
-import json
 import urllib.request
 
 from contextlib import AbstractContextManager
@@ -120,19 +123,19 @@ SENDER_STATUS_CMD = {
 
 SENDER_TERMINATE_DRIVER_CMD = {
     'mac': (
-        'killall chromedriver && killall "Google Chrome for Testing"'
+        'killall chromedriver 2>/dev/null || true; '
+        'killall "Google Chrome for Testing" 2>/dev/null || true'
     ),
     'win': (
-        'powershell -Command "Stop-Process -Name chromedriver,chrome '
+        'powershell -Command "Stop-Process -Name chromedriver,chrome -Force '
         '-ErrorAction SilentlyContinue; '
-        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T '
-        '/FI \'STATUS eq RUNNING\' /FI \'SESSION ne 0\'"'
+        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T 2>$null; exit 0"'
     ),
     'linux': (
-        'pkill -f chromedriver || true && pkill -f chrome || true'
+        'pkill -f chromedriver || true; pkill -f chrome || true'
     ),
     'cros': (
-        'pkill -f chromedriver || true && pkill -f chrome || true'
+        'pkill -f chromedriver || true; pkill -f chrome || true'
     ),
 }
 
@@ -220,7 +223,8 @@ def terminate_old_chromedriver(args):
     """Tries to terminate any existing chromedriver processes."""
     logging.info("Attempting to terminate old chromedriver processes...")
     send_ssh_command(args.sender, args.username,
-                     SENDER_TERMINATE_DRIVER_CMD[args.sender_os])
+                     SENDER_TERMINATE_DRIVER_CMD[args.sender_os],
+                     blocking=True)
 
     for _ in range(5):
         result = send_ssh_command(args.sender,
@@ -596,15 +600,25 @@ def install_and_setup_chrome(args, chrome_version):
             # Download and Unzip using a single robust PowerShell command
             logging.info("Downloading and unzipping Chrome/Chromedriver...")
             setup_cmd = (
-                "powershell -Command \"Set-Variable -Name "
-                "ErrorActionPreference -Value Stop; Set-Variable -Name "
-                "ProgressPreference -Value SilentlyContinue; "
+                f"powershell -Command \"Set-Variable -Name "
+                f"ErrorActionPreference -Value Stop; Set-Variable -Name "
+                f"ProgressPreference -Value SilentlyContinue; "
+                f"Stop-Process -Name chromedriver,chrome -Force "
+                f"-ErrorAction SilentlyContinue; "
+                f"Remove-Item -Path '{remote_tmp_dir}/chrome*',"
+                f"'{remote_tmp_dir}/chromedriver*' -Recurse -Force "
+                f"-ErrorAction SilentlyContinue; "
                 f"curl.exe -L '{chrome_url}' -o '{chrome_zip_path}'; "
                 f"curl.exe -L '{driver_url}' -o '{driver_zip_path}'; "
+                f"if (Get-Command tar.exe -ErrorAction SilentlyContinue) {{ "
+                f"Set-Location '{remote_tmp_dir}'; "
+                f"tar.exe -xf '{chrome_zip_name}'; "
+                f"tar.exe -xf '{driver_zip_name}' "
+                f"}} else {{ "
                 f"Expand-Archive -Path '{chrome_zip_path}' "
                 f"-DestinationPath '{remote_tmp_dir}' -Force; "
                 f"Expand-Archive -Path '{driver_zip_path}' "
-                f"-DestinationPath '{remote_tmp_dir}' -Force\""
+                f"-DestinationPath '{remote_tmp_dir}' -Force }}\""
             )
             result = send_ssh_command(args.sender, args.username, setup_cmd,
                                       blocking=True)
@@ -659,34 +673,27 @@ def install_and_setup_chrome(args, chrome_version):
 
 
 def dump_remote_logs(args, chrome_version=None, codec_name=None):
-    """Tries to dump the remote Chromedriver console logs to the local log."""
+    """Tries to dump the remote Chromedriver console logs to the local log.
+
+    Note: `chrome_version` and `codec_name` are kept for backwards compatibility
+    with callers; all console log files matching wildcard patterns in the temp
+    directory are dumped regardless of version or codec parameters.
+    """
+    _ = (chrome_version, codec_name)
     logging.error("Dumping remote console logs:")
-    codec_suffix = f"_{codec_name}" if codec_name else ""
-    log_file_name = f"chromedriver_console{codec_suffix}.log"
 
     if args.sender_os == 'win':
-        # On Windows, logs are written under:
-        # C:/cft_temp/<version>/chromedriver-win64/
-        if chrome_version:
-            log_cmd = (
-                'powershell -Command '
-                f'"Get-Content {WIN_REMOTE_TMP_DIR}/{chrome_version}/'
-                f'chromedriver-win64/{log_file_name}"'
-            )
-        else:
-            log_cmd = (
-                'powershell -Command '
-                f'"Get-Content {WIN_REMOTE_TMP_DIR}/*/'
-                f'chromedriver-win64/{log_file_name}"'
-            )
+        log_path = (
+            f"{WIN_REMOTE_TMP_DIR}/chromedriver-win*/"
+            "chromedriver_console*.log"
+        )
+        log_cmd = (
+            'powershell -Command "Get-Content -Path '
+            f'{log_path} -ErrorAction SilentlyContinue"'
+        )
     else:
         tmp_dir = '/usr/local/tmp' if args.sender_os == 'cros' else '/tmp'
-        if chrome_version:
-            log_cmd = (
-                f'cat {tmp_dir}/{chrome_version}/{log_file_name}'
-            )
-        else:
-            log_cmd = f'cat {tmp_dir}/*/{log_file_name}'
+        log_cmd = f'cat {tmp_dir}/chromedriver_console*.log 2>/dev/null || true'
 
     log_result = send_ssh_command(args.sender,
                                   args.username,
@@ -700,7 +707,7 @@ def dump_remote_logs(args, chrome_version=None, codec_name=None):
 def wait_for_chromedriver(args, chrome_version=None, codec_name=None):
     """Waits for the new chromedriver to be ready by checking its status URL."""
     logging.info("Starting Chromedriver status check...")
-    for i in range(10):
+    for i in range(30):
         try:
             result = send_ssh_command(args.sender,
                                       args.username,
@@ -1088,39 +1095,49 @@ def finalize_results(chrome_version=None):
             logging.error("Failed to upload metrics to ResultSink: %s", e)
 
 
-def cleanup_binaries(args, chrome_version):
-    """Cleans up version-specific directories on remote/local machine."""
-    if not chrome_version:
-        return
+def cleanup_binaries(args, chrome_version=None):
+    """Cleans up Chrome/Chromedriver directories on remote/local machine."""
+    _ = chrome_version
 
-    import shutil
+    logging.info("Cleaning up Chrome/Chromedriver directories...")
 
-    logging.info("Cleaning up version-specific binaries for version: %s",
-                 chrome_version)
+    try:
+        terminate_old_chromedriver(args)
+    except Exception as e:
+        logging.warning("Error terminating processes in cleanup: %s", e)
+
     if args.sender in ['localhost', '127.0.0.1', None]:
         # Local cleanup
-        import tempfile
         tmp_dir = tempfile.gettempdir()
-        version_dir = f"{tmp_dir}/{chrome_version}"
-        if os.path.exists(version_dir):
-            shutil.rmtree(version_dir, ignore_errors=True)
-            logging.info("Cleaned up local directory: %s", version_dir)
+        for pattern in ['chrome*', 'chromedriver*']:
+            for path in glob.glob(os.path.join(tmp_dir, pattern)):
+                logging.info("Removing local path: %s", path)
+                try:
+                    if os.path.isdir(path):
+                        shutil.rmtree(path, ignore_errors=True)
+                    else:
+                        os.remove(path)
+                except OSError:
+                    pass
+        logging.info("Cleaned up local Chrome/Chromedriver directories.")
         return
 
     cleanup_command = {
-        'mac': f"rm -rf /tmp/{chrome_version}",
-        'linux': f"rm -rf /tmp/{chrome_version}",
-        'cros': f"rm -rf /usr/local/tmp/{chrome_version}",
+        'mac': "rm -rf /tmp/chrome* /tmp/chromedriver*",
+        'linux': "rm -rf /tmp/chrome* /tmp/chromedriver*",
+        'cros': "rm -rf /usr/local/tmp/chrome* /usr/local/tmp/chromedriver*",
         'win': (
             'powershell -Command "Remove-Item -Path '
-            f'{WIN_REMOTE_TMP_DIR}/{chrome_version} '
+            f'{WIN_REMOTE_TMP_DIR}/chrome*,'
+            f'{WIN_REMOTE_TMP_DIR}/chromedriver* '
             '-Recurse -Force -ErrorAction SilentlyContinue"'
         ),
     }
 
     send_ssh_command(args.sender, args.username,
-                     cleanup_command[args.sender_os])
-    logging.info("Cleaned up remote version-specific directory.")
+                     cleanup_command[args.sender_os],
+                     blocking=True)
+    logging.info("Cleaned up remote Chrome/Chromedriver directories.")
 
 
 def start_glances_monitoring(args, csv_remote_path):
