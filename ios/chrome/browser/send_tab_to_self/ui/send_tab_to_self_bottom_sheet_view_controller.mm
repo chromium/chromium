@@ -56,6 +56,10 @@ NSString* const kSendTabToSelfModalMenuButton =
     _delegate = delegate;
     self.mainBackgroundColor =
         [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    // Increase the spacing between the title and the list of devices.
+    self.customSpacingBeforeImage = 8.0;
+    // Decrease the spacing between the list of devices and the "Send" button.
+    self.addsContentViewBottomInset = NO;
   }
   return self;
 }
@@ -297,6 +301,13 @@ NSString* const kSendTabToSelfModalMenuButton =
   subtitle.isAccessibilityElement = YES;
   subtitle.accessibilityLabel = subtitle.text;
   subtitle.userInteractionEnabled = YES;
+}
+
+- (CGFloat)preferredHeightForContent {
+  // The base class ConfirmationAlertViewController increases the
+  // preferredHeight by customSpacingBeforeImage, which introduces undesired
+  // extra spacing between the tableView and the primaryActionButton.
+  return [super preferredHeightForContent] - self.customSpacingBeforeImage;
 }
 
 @end
