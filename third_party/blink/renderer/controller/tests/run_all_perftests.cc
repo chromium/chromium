@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_suite.h"
 #include "content/public/test/blink_test_environment.h"
 #include "third_party/blink/renderer/controller/tests/thread_state_test_environment.h"
 
 int main(int argc, char** argv) {
+  base::test::AllowCheckIsTestForTesting();
   ::testing::AddGlobalTestEnvironment(
       new content::BlinkTestEnvironmentWithIsolate);
   ::testing::AddGlobalTestEnvironment(new ThreadStateTestEnvironment);
