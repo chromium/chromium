@@ -3375,10 +3375,18 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
           browser_->tab_strip_model()->GetActiveTab();
 
       if (active_tab->GetSplit() == change.split_id) {
-        if (change.GetVisualsChange()->new_visual_data() !=
-            change.GetVisualsChange()->old_visual_data()) {
-          multi_contents_view_->UpdateSplitVisualData(
-              change.GetVisualsChange()->new_visual_data());
+        multi_contents_view_->UpdateSplitVisualData(
+            change.GetVisualsChange()->new_visual_data());
+      }
+
+      if (change.GetVisualsChange()->reason() ==
+          SplitTabChange::SplitVisualChangeReason::kLayoutUpdated) {
+        gfx::Range split_indices_range = browser_->tab_strip_model()
+                                             ->GetSplitData(change.split_id)
+                                             ->GetIndexRange();
+        for (size_t i = split_indices_range.start();
+             i < split_indices_range.end(); ++i) {
+          UpdateAccessibleNameForTabAt(i);
         }
       }
       break;
@@ -3648,23 +3656,6 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   }
 
   return title;
-}
-
-void BrowserView::UpdateAccessibleNameForAllTabs() {
-  for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
-    std::u16string accessible_title = tabs::GetAccessibleTabLabel(
-        browser()->tab_strip_model()->GetTabAtIndex(i), /*is_for_tab=*/true);
-    views::View* tab = tab_strip_view()->GetTabAnchorViewAt(i);
-    CHECK(tab);
-    if (accessible_title.empty()) {
-      // Under the right conditions GetAccessibleTabLabel can return an empty
-      // string.
-      tab->GetViewAccessibility().SetName(
-          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-    } else {
-      tab->GetViewAccessibility().SetName(accessible_title);
-    }
-  }
 }
 
 std::vector<views::NativeViewHost*>
@@ -5925,6 +5916,29 @@ void BrowserView::FrameColorsChanged() {
     web_app_window_title_->SetEnabledColor(caption_color);
   }
   GetWidget()->SetBackgroundColor(kColorToolbar);
+}
+
+void BrowserView::UpdateAccessibleNameForAllTabs() {
+  for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
+    UpdateAccessibleNameForTabAt(i);
+  }
+}
+
+// TODO(crbug.com/529834985): See if we can consolidate the logic here and in
+// TabView::UpdateAccessibleName/TabView::UpdateAccessibleName.
+void BrowserView::UpdateAccessibleNameForTabAt(int index) {
+  std::u16string accessible_title = tabs::GetAccessibleTabLabel(
+      browser()->tab_strip_model()->GetTabAtIndex(index), /*is_for_tab=*/true);
+  views::View* tab = tab_strip_view()->GetTabAnchorViewAt(index);
+  CHECK(tab);
+  if (accessible_title.empty()) {
+    // Under the right conditions GetAccessibleTabLabel can return an empty
+    // string.
+    tab->GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    tab->GetViewAccessibility().SetName(accessible_title);
+  }
 }
 
 void BrowserView::UpdateAccessibleNameForRootView() {

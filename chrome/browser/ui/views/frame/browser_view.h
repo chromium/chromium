@@ -802,8 +802,6 @@ class BrowserView : public BrowserWindow,
   // ThemedBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
 
-  void UpdateAccessibleNameForAllTabs();
-
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   void ApplyScreenshotSettings(bool allow);
 #endif
@@ -1073,6 +1071,9 @@ class BrowserView : public BrowserWindow,
 
   // Called by BrowserWindowZoomObserver when zoom changes on the active tab.
   void ZoomChangedForActiveTab(bool can_show_bubble);
+
+  void UpdateAccessibleNameForAllTabs();
+  void UpdateAccessibleNameForTabAt(int index);
 
   void UpdateAccessibleNameForRootView();
   void UpdateAccessibleURLForRootView(const GURL& url);
