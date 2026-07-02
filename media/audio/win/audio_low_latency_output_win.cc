@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/win/audio_manager_win.h"
@@ -171,6 +172,7 @@ WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {
 }
 
 bool WASAPIAudioOutputStream::Open() {
+  TRACE_EVENT0("audio", "WASAPIAudioOutputStream::Open");
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage(
       base::StrCat({__func__, "([opened=", opened_ ? "true" : "false", "])"}));
@@ -362,7 +364,10 @@ bool WASAPIAudioOutputStream::Open() {
   audio_client_ = audio_client;
   audio_render_client_ = audio_render_client;
 
-  hr = audio_client_->GetService(IID_PPV_ARGS(&audio_clock_));
+  {
+    TRACE_EVENT0("audio", "WASAPIAudioOutputStream::GetService");
+    hr = audio_client_->GetService(IID_PPV_ARGS(&audio_clock_));
+  }
   if (FAILED(hr)) {
     RecordAudioFailure(kOpenFailureHistogram, hr);
     SendLogMessage(base::StrCat(
@@ -378,6 +383,7 @@ bool WASAPIAudioOutputStream::Open() {
 }
 
 void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
+  TRACE_EVENT0("audio", "WASAPIAudioOutputStream::Start");
   DVLOG(1) << "WASAPIAudioOutputStream::Start()";
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   CHECK(callback);
@@ -477,6 +483,7 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
 }
 
 void WASAPIAudioOutputStream::Stop() {
+  TRACE_EVENT0("audio", "WASAPIAudioOutputStream::Stop");
   DVLOG(1) << "WASAPIAudioOutputStream::Stop()";
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage(base::StrCat(
@@ -525,6 +532,7 @@ void WASAPIAudioOutputStream::Stop() {
 }
 
 void WASAPIAudioOutputStream::Close() {
+  TRACE_EVENT0("audio", "WASAPIAudioOutputStream::Close");
   DVLOG(1) << "WASAPIAudioOutputStream::Close()";
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage(base::StrCat({__func__, "()"}));
