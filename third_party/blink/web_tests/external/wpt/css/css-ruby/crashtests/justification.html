@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<title>crbug.com/394983447</title>
+<meta charset="utf-8">
+<title>Ruby base ending with trailing whitespace followed by text should not crash</title>
+<link rel="help" href="https://crbug.com/394983447">
 <style>
 body {
   text-align: justify;
 }
 </style>
-<body>
 <ruby>
 AxBxC DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
 <input />
@@ -17,7 +16,3 @@ c tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
 <ins>E F</ins>G HxIxJ
 KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 </ruby>
-<script>
-test(() => {
-}, 'Do not crash if a ruby-base ends with a trailing white-space and a text follows to it.');
-</script>
