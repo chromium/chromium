@@ -9,6 +9,7 @@
 
 #import "base/scoped_observation.h"
 #import "base/time/time.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -35,6 +36,9 @@ class SendTabToSelfTabCardLabelData
   // This can be used even if the WebState is unrealized.
   static NSString* GetLabelTextForWebState(web::WebState* web_state);
 
+  // Called when the WebState is closed by the user, to log abandonment.
+  void WebStateClosedByUser(web::WebState* web_state);
+
  private:
   friend class web::WebStateUserData<SendTabToSelfTabCardLabelData>;
 
@@ -42,8 +46,14 @@ class SendTabToSelfTabCardLabelData
   static NSString* GetLabelText(const std::u16string& device_name);
 
   SendTabToSelfTabCardLabelData(web::WebState* web_state,
+                                const std::string& entry_guid,
                                 const std::string& sender_device_name,
                                 base::Time creation_time = base::Time::Now());
+
+  // Logs the activation metric with the given entry point.
+  void MarkEntryActivated(
+      web::WebState* web_state,
+      send_tab_to_self::ShareActivatedEntryPoint entry_point);
 
   // web::WebStateObserver:
   void WasShown(web::WebState* web_state) override;
@@ -51,6 +61,7 @@ class SendTabToSelfTabCardLabelData
 
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+  std::string entry_guid_;
   std::u16string sender_device_name_;
   base::Time creation_time_;
 };

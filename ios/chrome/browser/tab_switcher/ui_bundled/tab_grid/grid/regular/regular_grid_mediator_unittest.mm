@@ -507,7 +507,8 @@ TEST_F(RegularGridMediatorTest, ActivityLabelDataForTab) {
   EXPECT_NSEQ(nil, label_data);
 
   // Attach SendTabToSelfTabCardLabelData to the WebState.
-  SendTabToSelfTabCardLabelData::CreateForWebState(web_state, "remote_device");
+  SendTabToSelfTabCardLabelData::CreateForWebState(web_state, "test_guid",
+                                                   "remote_device");
 
   // Query the activity label again.
   label_data = [mediator_ activityLabelDataForItem:item];

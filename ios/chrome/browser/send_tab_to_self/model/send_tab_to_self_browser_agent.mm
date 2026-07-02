@@ -197,6 +197,23 @@ void SendTabToSelfBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
+  if (change.type() == WebStateListChange::Type::kDetach &&
+      base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
+    const WebStateListChangeDetach& detach_change =
+        static_cast<const WebStateListChangeDetach&>(change);
+    // If the tab is being closed explicitly by the user (and not due to browser
+    // shutdown, tab strip destruction, or tab dragging between windows), log
+    // the abandonment metric.
+    if (detach_change.is_user_action() && detach_change.is_closing()) {
+      web::WebState* detached_web_state = detach_change.detached_web_state();
+      SendTabToSelfTabCardLabelData* label_data =
+          SendTabToSelfTabCardLabelData::FromWebState(detached_web_state);
+      if (label_data) {
+        label_data->WebStateClosedByUser(detached_web_state);
+      }
+    }
+  }
+
   // The active WebState can be null if the user close the last tab in the tab
   // picker.
   if (!status.active_web_state_change() || !status.new_active_web_state) {
@@ -291,9 +308,12 @@ void SendTabToSelfBrowserAgent::TabWillLoadUrl(
       // Attach a tab card label to the web state for the tab switcher UI.
       const send_tab_to_self::SendTabToSelfEntry* entry =
           model_->GetEntryByGUID(params.send_tab_to_self_entry_guid);
-      if (entry) {
+      if (entry
+          // Only attach to tabs opened in the background. This is to avoid the
+          // case where tabs are opened via the system-level notification.
+          && params.in_background()) {
         SendTabToSelfTabCardLabelData::CreateForWebState(
-            web_state.get(), entry->GetDeviceName());
+            web_state.get(), entry->GetGUID(), entry->GetDeviceName());
       }
     }
   }
