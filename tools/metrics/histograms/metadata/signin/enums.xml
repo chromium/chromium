@@ -434,6 +434,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h:ChromeSignoutConfirmationChoice) -->
 
+<!-- LINT.IfChange(CookieBindingUpgradeStatus) -->
+
+<enum name="CookieBindingUpgradeStatus">
+  <int value="0" label="FeatureNotSupported"/>
+  <int value="1" label="FeatureDisabled"/>
+  <int value="2" label="NoWrappedKey"/>
+  <int value="3" label="HasStandardSession"/>
+  <int value="4" label="HasPrototypeSession"/>
+  <int value="5" label="NotFirstRun"/>
+  <int value="6" label="NeedsUpgrade"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/account_reconcilor.h:CookieBindingUpgradeStatus) -->
+
 <!-- LINT.IfChange(DeviceBoundSessionCreateSessionsResult) -->
 
 <enum name="DeviceBoundSessionCreateSessionsResult">

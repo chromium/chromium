@@ -178,7 +178,11 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   return InconsistencyReason::kNone;
 }
 
-gaia::GaiaSource DiceAccountReconcilorDelegate::GetGaiaApiSource() const {
+gaia::GaiaSource DiceAccountReconcilorDelegate::GetGaiaApiSource(
+    bool is_cookie_upgrade) const {
+  if (is_cookie_upgrade) {
+    return gaia::GaiaSource::kAccountReconcilorDiceCookieUpgrade;
+  }
   return gaia::GaiaSource::kAccountReconcilorDice;
 }
 

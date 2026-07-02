@@ -161,7 +161,8 @@ CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
 
 void RecordCreateBoundSessionsResult(
     OAuthMultiloginHelper::DeviceBoundSessionCreateSessionsResult result,
-    PartitionSuffix partition_suffix) {
+    PartitionSuffix partition_suffix,
+    gaia::GaiaSource::Type gaia_source_type) {
   static constexpr std::string_view kBaseHistogramName =
       "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult";
   base::UmaHistogramEnumeration(kBaseHistogramName, result);
@@ -169,6 +170,11 @@ void RecordCreateBoundSessionsResult(
   if (!suffix_str.empty()) {
     base::UmaHistogramEnumeration(
         base::JoinString({kBaseHistogramName, suffix_str}, "."), result);
+  }
+  if (gaia_source_type ==
+      gaia::GaiaSource::Type::kAccountReconcilorDiceCookieUpgrade) {
+    base::UmaHistogramEnumeration(
+        "Signin.CookieBinding.UpgradeCreateBoundSessionsResult", result);
   }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -534,7 +540,7 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
   if (sessions_params.empty()) {
     RecordCreateBoundSessionsResult(
         DeviceBoundSessionCreateSessionsResult::kFallbackNoBoundSessions,
-        partition_delegate_->GetPartitionSuffix());
+        partition_delegate_->GetPartitionSuffix(), gaia_source_.type());
     return false;
   }
 
@@ -548,7 +554,7 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
   if (wrapped_key.empty()) {
     RecordCreateBoundSessionsResult(
         DeviceBoundSessionCreateSessionsResult::kFallbackNoBindingKey,
-        partition_delegate_->GetPartitionSuffix());
+        partition_delegate_->GetPartitionSuffix(), gaia_source_.type());
     return false;
   }
 
@@ -590,7 +596,7 @@ void OAuthMultiloginHelper::OnBoundSessionsCreated(
   RecordCreateBoundSessionsResult(
       all_success ? DeviceBoundSessionCreateSessionsResult::kSuccess
                   : DeviceBoundSessionCreateSessionsResult::kFailure,
-      partition_delegate_->GetPartitionSuffix());
+      partition_delegate_->GetPartitionSuffix(), gaia_source_.type());
 
   for (const auto& status : cookie_results) {
     base::UmaHistogramBoolean("Signin.SetCookieSuccess", status.IsInclude());

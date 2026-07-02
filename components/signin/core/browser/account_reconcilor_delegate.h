@@ -30,7 +30,7 @@ class AccountReconcilorDelegate {
   virtual bool IsReconcileEnabled() const;
 
   // Returns the value to set in the "source" parameter for Gaia API calls.
-  virtual gaia::GaiaSource GetGaiaApiSource() const;
+  virtual gaia::GaiaSource GetGaiaApiSource(bool is_cookie_upgrade) const;
 
   // Returns true if Reconcile should be aborted when the primary account is in
   // error state. Defaults to false.

@@ -32,7 +32,9 @@ bool MirrorAccountReconcilorDelegate::IsReconcileEnabled() const {
   return reconcile_enabled_;
 }
 
-gaia::GaiaSource MirrorAccountReconcilorDelegate::GetGaiaApiSource() const {
+gaia::GaiaSource MirrorAccountReconcilorDelegate::GetGaiaApiSource(
+    bool is_cookie_upgrade) const {
+  CHECK(!is_cookie_upgrade);
   return gaia::GaiaSource::kAccountReconcilorMirror;
 }
 

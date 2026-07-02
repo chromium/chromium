@@ -182,6 +182,9 @@ std::string GaiaSource::ToString() {
     case Type::kChromeGlic:
       source_string = "ChromiumGlic";
       break;
+    case Type::kAccountReconcilorDiceCookieUpgrade:
+      source_string = "ChromiumAccountReconcilorDiceCookieUpgrade";
+      break;
   }
 
   // All sources should start with Chromium or chromeos for better server logs.
