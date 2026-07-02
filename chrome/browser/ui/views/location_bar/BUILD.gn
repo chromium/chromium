@@ -202,6 +202,10 @@ source_set("icon_label_bubble") {
     sources += [
       "icon_label_bubble_view.cc",
       "icon_label_bubble_view.h",
+      "slide_and_crossfade_icon_label_bubble_layout_strategy.cc",
+      "slide_and_crossfade_icon_label_bubble_layout_strategy.h",
+      "standard_icon_label_bubble_layout_strategy.cc",
+      "standard_icon_label_bubble_layout_strategy.h",
       "location_bar_util.cc",
       "location_bar_util.h",
     ]

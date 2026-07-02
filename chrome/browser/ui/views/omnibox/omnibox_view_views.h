@@ -227,6 +227,8 @@ class OmniboxViewViews
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AccessibleTextSelectBoundTest);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsAIMButtonPreferenceTest,
                            ButtonVisibilityTogglesWithPref_OmniboxFocused);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsAIMButtonDynamicTest,
+                           QueryShowsArrowIcon);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsPlaceholderTest,
                            ContextualTasksPlaceholderForContextualTasksPage);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsPlaceholderTest,

@@ -380,6 +380,29 @@ void PageActionControllerImpl::ClearOverrideImage(actions::ActionId action_id) {
                          /*animation_parameters=*/std::nullopt);
 }
 
+void PageActionControllerImpl::SetAnimationStyle(
+    actions::ActionId action_id,
+    PageActionAnimationStyle style) {
+  FindPageActionModel(action_id).SetAnimationStyle(PageActionPassKey(), style);
+}
+
+void PageActionControllerImpl::SetTrailingImage(
+    actions::ActionId action_id,
+    const ui::ImageModel& trailing_image) {
+  FindPageActionModel(action_id).SetTrailingImage(PageActionPassKey(),
+                                                  trailing_image);
+}
+
+void PageActionControllerImpl::ClearTrailingImage(actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetTrailingImage(PageActionPassKey(),
+                                                  std::nullopt);
+}
+
+void PageActionControllerImpl::SetShowTrailingIcon(actions::ActionId action_id,
+                                                   bool show) {
+  FindPageActionModel(action_id).SetShowTrailingIcon(PageActionPassKey(), show);
+}
+
 void PageActionControllerImpl::OverrideTooltip(
     actions::ActionId action_id,
     const std::u16string& override_tooltip) {

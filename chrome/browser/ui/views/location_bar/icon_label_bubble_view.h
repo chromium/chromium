@@ -38,9 +38,14 @@ class AXVirtualView;
 // View used to draw a bubble, containing an icon and a label. We use this as a
 // base for the classes that handle the location icon (including the EV bubble),
 // tab-to-search UI, and content settings.
+class StandardIconLabelBubbleAnimationLayoutStrategy;
+class SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy;
+
 class IconLabelBubbleView : public views::InkDropObserver,
                             public views::LabelButton {
   METADATA_HEADER(IconLabelBubbleView, views::LabelButton)
+  friend class StandardIconLabelBubbleAnimationLayoutStrategy;
+  friend class SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy;
 
  public:
   static constexpr int kTrailingPaddingPreMd = 2;
@@ -54,6 +59,38 @@ class IconLabelBubbleView : public views::InkDropObserver,
     kNever,
     kWithLabel,
     kAlways,
+  };
+
+  enum class AnimationStyle {
+    kStandard,
+    kSlideAndCrossfade,
+  };
+
+  class IconLabelBubbleAnimationLayoutStrategy {
+   public:
+    explicit IconLabelBubbleAnimationLayoutStrategy(IconLabelBubbleView& host);
+    virtual ~IconLabelBubbleAnimationLayoutStrategy();
+
+    IconLabelBubbleView* host() { return host_; }
+
+    virtual views::ProposedLayout CalculateProposedLayout(
+        const views::SizeBounds& size_bounds,
+        const IconLabelBubbleView* host) const = 0;
+    virtual gfx::Size CalculatePreferredSize(
+        const views::SizeBounds& available_size,
+        const IconLabelBubbleView* host) const = 0;
+    virtual void UpdateAnimationProgress(IconLabelBubbleView* host,
+                                         double progress) = 0;
+    virtual void OnLayerAdded(IconLabelBubbleView* host, ui::Layer* layer) {}
+    virtual void OnLayerRemoved(IconLabelBubbleView* host, ui::Layer* layer) {}
+    virtual std::optional<base::TimeDelta> GetAnimationDuration(bool show) const = 0;
+    virtual void SetupAnimation(gfx::SlideAnimation* animation, bool show) const = 0;
+    virtual void ResetAnimation(IconLabelBubbleView* host, bool show_label) = 0;
+    virtual void OnAnimationEnded(IconLabelBubbleView* host) = 0;
+    virtual views::ImageView* GetTrailingImageView();
+
+   private:
+    raw_ptr<IconLabelBubbleView> host_;
   };
 
   // TODO(tluk): These should be updated to return ColorIds instead of raw
@@ -130,6 +167,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // is visible and not collapsed.
   void SetExpandedLabelAdditionalInsets(const views::Inset1D& insets);
 
+  void SetCrossfadeImage(const ui::ImageModel& image);
+
   gfx::RoundedCornersF GetCornerRadii() const;
   void SetCornerRadii(const gfx::RoundedCornersF& radii);
 
@@ -149,6 +188,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Exposed for testing.
   bool is_animating_label() const { return slide_animation_.is_animating(); }
+  AnimationStyle animation_style() const { return animation_style_; }
 
   void set_next_element_interior_padding(int padding) {
     next_element_interior_padding_ = padding;
@@ -212,6 +252,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
+  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+  void AddLayerToRegion(ui::Layer* new_layer,
+                        views::LayerRegion region) override;
 
   const gfx::FontList& font_list() const { return label()->font_list(); }
 
@@ -221,6 +264,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void SetImageModel(const ui::ImageModel& image);
 
   gfx::Size GetSizeForLabelWidth(int label_width) const;
+
+  views::ImageView* GetCrossfadeImageView();
+  bool IsAnimationShowing() const;
+  void UpdateAnimationProgress();
 
   // Sets the border padding around this view.
   virtual void UpdateBorder();
@@ -358,6 +405,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Padding that should be applied when the label is expanded.
   views::Inset1D expanded_label_additional_insets_;
+
+  AnimationStyle animation_style_ = AnimationStyle::kStandard;
+  std::unique_ptr<IconLabelBubbleAnimationLayoutStrategy>
+      animation_layout_strategy_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_

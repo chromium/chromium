@@ -39,6 +39,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
@@ -1033,6 +1034,22 @@ TEST_F(PageActionViewTest, CollapsedDueToSpaceMetrics) {
       "PageActionController.Chip.CollapsedDueToSpace.PreferredWidth");
   ASSERT_EQ(buckets.size(), 1u);
   EXPECT_GT(buckets[0].min, 0);
+}
+
+TEST_F(PageActionViewTest, SlideAndCrossfadeAnimationPropagated) {
+  ON_CALL(*model(), GetVisible()).WillByDefault(Return(true));
+  ON_CALL(*model(), GetAnimationStyle())
+      .WillByDefault(Return(PageActionAnimationStyle::kSlideAndCrossfade));
+  ON_CALL(*model(), GetShowTrailingIcon()).WillByDefault(Return(false));
+
+  const ui::ImageModel trailing_icon = ui::ImageModel::FromVectorIcon(
+      vector_icons::kArrowForwardIcon, ui::kColorSysPrimary, view_icon_size());
+  ON_CALL(*model(), GetTrailingImage()).WillByDefault(Return(trailing_icon));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  EXPECT_EQ(page_action_view()->animation_style(),
+            IconLabelBubbleView::AnimationStyle::kSlideAndCrossfade);
 }
 
 }  // namespace
