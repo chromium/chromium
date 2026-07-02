@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -20,21 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
-
-namespace {
-
-class MockBluetoothClassicDeviceMac : public BluetoothClassicDeviceMac {
- public:
-  MockBluetoothClassicDeviceMac(BluetoothAdapterMac* adapter,
-                                IOBluetoothDevice* device)
-      : BluetoothClassicDeviceMac(adapter, device) {}
-  MOCK_METHOD(UUIDSet, GetUUIDs, (), (const, override));
-  MOCK_METHOD(std::string, GetAddress, (), (const override));
-};
-
-}  // namespace
-
-using ::testing::Return;
 
 class BluetoothAdapterMacTest : public testing::Test {
  public:
@@ -52,6 +38,10 @@ class BluetoothAdapterMacTest : public testing::Test {
   // members.
   void PollAdapter() { adapter_mac_->PollAdapter(); }
 
+  void SetPollCallback(base::OnceClosure callback) {
+    adapter_mac_->SetPollCallbackForTesting(std::move(callback));
+  }
+
   void SetHostControllerPowerFunction(bool powered) {
     adapter_mac_->SetHostControllerStateFunctionForTesting(
         base::BindLambdaForTesting([powered] {
@@ -61,27 +51,20 @@ class BluetoothAdapterMacTest : public testing::Test {
         }));
   }
 
-  std::unique_ptr<MockBluetoothClassicDeviceMac> CreateClassicDevice(
+  BluetoothAdapterMac::DeviceInfo CreateClassicDeviceInfo(
       const std::string& device_address,
       BluetoothDevice::UUIDSet uuids) {
-    auto device =
-        std::make_unique<testing::NiceMock<MockBluetoothClassicDeviceMac>>(
-            adapter_mac_, /*device=*/nil);
-    ON_CALL(*device, GetUUIDs).WillByDefault(Return(uuids));
-    ON_CALL(*device, GetAddress).WillByDefault(Return(device_address));
-    return device;
+    BluetoothAdapterMac::DeviceInfo device_info;
+    device_info.objc_device = nil;
+    device_info.address = device_address;
+    device_info.uuids = std::vector(uuids.begin(), uuids.end());
+    return device_info;
   }
 
-  void AddClassicDevice(const std::string& device_address,
-                        BluetoothDevice::UUIDSet uuids) {
-    auto device = CreateClassicDevice(device_address, uuids);
-    adapter_mac_->ClassicDeviceAdded(std::move(device));
-  }
-
-  void ClassicDeviceConnected(const std::string& device_address,
-                              BluetoothDevice::UUIDSet uuids) {
-    auto device = CreateClassicDevice(device_address, uuids);
-    adapter_mac_->DeviceConnected(std::move(device));
+  void AddOrUpdateClassicDevice(const std::string& device_address,
+                                BluetoothDevice::UUIDSet uuids) {
+    adapter_mac_->OnConnectedDeviceStateRetrieved(
+        CreateClassicDeviceInfo(device_address, uuids));
   }
 
  protected:
@@ -94,7 +77,10 @@ class BluetoothAdapterMacTest : public testing::Test {
 
 // TODO(https://crbug.com/331653043): Re-enable when passing on macOS 14 bots.
 TEST_F(BluetoothAdapterMacTest, DISABLED_Poll) {
+  base::RunLoop run_loop;
+  SetPollCallback(run_loop.QuitClosure());
   PollAdapter();
+  run_loop.Run();
   EXPECT_TRUE(ui_task_runner_->HasPendingTask());
 }
 
@@ -105,21 +91,29 @@ TEST_F(BluetoothAdapterMacTest, DISABLED_PollAndChangePower) {
   EXPECT_FALSE(adapter_mac_->IsPowered());
   EXPECT_EQ(0, observer_.powered_changed_count());
 
-  SetHostControllerPowerFunction(true);
-  PollAdapter();
-  EXPECT_TRUE(ui_task_runner_->HasPendingTask());
-  ui_task_runner_->RunPendingTasks();
-  EXPECT_EQ(1, observer_.powered_changed_count());
-  EXPECT_TRUE(observer_.last_powered());
-  EXPECT_TRUE(adapter_mac_->IsPowered());
+  {
+    base::RunLoop run_loop;
+    SetPollCallback(run_loop.QuitClosure());
+    SetHostControllerPowerFunction(true);
+    PollAdapter();
+    run_loop.Run();
+    EXPECT_TRUE(ui_task_runner_->HasPendingTask());
+    EXPECT_EQ(1, observer_.powered_changed_count());
+    EXPECT_TRUE(observer_.last_powered());
+    EXPECT_TRUE(adapter_mac_->IsPowered());
+  }
 
-  SetHostControllerPowerFunction(false);
-  PollAdapter();
-  EXPECT_TRUE(ui_task_runner_->HasPendingTask());
-  ui_task_runner_->RunPendingTasks();
-  EXPECT_EQ(2, observer_.powered_changed_count());
-  EXPECT_FALSE(observer_.last_powered());
-  EXPECT_FALSE(adapter_mac_->IsPowered());
+  {
+    base::RunLoop run_loop;
+    SetPollCallback(run_loop.QuitClosure());
+    SetHostControllerPowerFunction(false);
+    PollAdapter();
+    run_loop.Run();
+    EXPECT_TRUE(ui_task_runner_->HasPendingTask());
+    EXPECT_EQ(2, observer_.powered_changed_count());
+    EXPECT_FALSE(observer_.last_powered());
+    EXPECT_FALSE(adapter_mac_->IsPowered());
+  }
 }
 
 TEST_F(BluetoothAdapterMacTest, ClassicDeviceAddedAndChanged) {
@@ -127,21 +121,21 @@ TEST_F(BluetoothAdapterMacTest, ClassicDeviceAddedAndChanged) {
   std::string device_address = "AA:BB:CC:DD:EE:FF";
   BluetoothDevice::UUIDSet uuids;
   uuids.insert(BluetoothUUID("110b"));
-  AddClassicDevice(device_address, uuids);
+  AddOrUpdateClassicDevice(device_address, uuids);
   EXPECT_EQ(1, observer_.device_added_count());
   EXPECT_EQ(0, observer_.device_changed_count());
   EXPECT_EQ(observer_.last_device_address(), device_address);
   observer_.Reset();
 
   // Adding the same device again does not notify observers.
-  AddClassicDevice(device_address, uuids);
+  AddOrUpdateClassicDevice(device_address, uuids);
   EXPECT_EQ(0, observer_.device_added_count());
   EXPECT_EQ(0, observer_.device_changed_count());
   observer_.Reset();
 
   // Update the device by adding a second service UUID.
   uuids.insert(BluetoothUUID("110c"));
-  AddClassicDevice(device_address, uuids);
+  AddOrUpdateClassicDevice(device_address, uuids);
   EXPECT_EQ(0, observer_.device_added_count());
   EXPECT_EQ(1, observer_.device_changed_count());
   EXPECT_EQ(observer_.last_device_address(), device_address);
@@ -154,16 +148,16 @@ TEST_F(BluetoothAdapterMacTest, DeviceConnected) {
   uuids.insert(BluetoothUUID("110b"));
 
   // Device connected when device is unknown to the adapter.
-  ClassicDeviceConnected(device_address, uuids);
+  AddOrUpdateClassicDevice(device_address, uuids);
   EXPECT_EQ(1, observer_.device_added_count());
   EXPECT_EQ(0, observer_.device_changed_count());
   EXPECT_EQ(observer_.last_device_address(), device_address);
   observer_.Reset();
 
   // Device connected when device is known to the adapter.
-  ClassicDeviceConnected(device_address, uuids);
+  AddOrUpdateClassicDevice(device_address, uuids);
   EXPECT_EQ(0, observer_.device_added_count());
-  EXPECT_EQ(1, observer_.device_changed_count());
+  EXPECT_EQ(0, observer_.device_changed_count());
 }
 
 }  // namespace device

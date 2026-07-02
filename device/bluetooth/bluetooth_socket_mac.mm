@@ -983,9 +983,20 @@ void BluetoothSocketMac::AcceptConnectionRequest() {
       std::move(accept_queue_.front());
   accept_queue_.pop();
 
-  adapter_->DeviceConnected(std::make_unique<device::BluetoothClassicDeviceMac>(
-      adapter_.get(), channel->GetDevice()));
-  BluetoothDevice* device = adapter_->GetDevice(channel->GetDeviceAddress());
+  IOBluetoothDevice* __strong objc_device = channel->GetDevice();
+  BluetoothAdapterMac::RetrieveDeviceStateAsync(
+      objc_device,
+      base::BindOnce(&BluetoothSocketMac::OnDeviceStateRetrievedForAccept,
+                     base::WrapRefCounted(this), std::move(channel)));
+}
+
+void BluetoothSocketMac::OnDeviceStateRetrievedForAccept(
+    std::unique_ptr<BluetoothChannelMac> channel,
+    BluetoothAdapterMac::DeviceInfo device_info) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  adapter_->OnConnectedDeviceStateRetrieved(std::move(device_info));
+  BluetoothDevice* device = adapter_->GetDevice(device_info.address);
   DCHECK(device);
 
   scoped_refptr<BluetoothSocketMac> client_socket =

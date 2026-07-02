@@ -33,9 +33,14 @@ class BluetoothClassicDeviceMacTest : public testing::Test {
 };
 
 TEST_F(BluetoothClassicDeviceMacTest, DeviceDisconnected) {
-  auto device = std::make_unique<BluetoothClassicDeviceMac>(adapter_.get(),
-                                                            /*device=*/nil);
+  BluetoothAdapterMac::DeviceInfo device_info;
+  device_info.objc_device = nil;
+  device_info.is_connected = true;
+  auto device = std::make_unique<BluetoothClassicDeviceMac>(
+      adapter_.get(), std::move(device_info));
+  EXPECT_TRUE(device->IsConnected());
   device->OnDeviceDisconnected();
+  EXPECT_FALSE(device->IsConnected());
   EXPECT_EQ(0, observer_.device_added_count());
   EXPECT_EQ(1, observer_.device_changed_count());
   // Reset is needed here to clear stored pointer to `device` inside

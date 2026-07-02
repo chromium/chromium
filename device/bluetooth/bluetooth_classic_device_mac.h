@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
 
 @class BluetoothDeviceDisconnectListener;
@@ -25,14 +26,18 @@ class BluetoothUUID;
 class DEVICE_BLUETOOTH_EXPORT BluetoothClassicDeviceMac
     : public BluetoothDeviceMac {
  public:
-  explicit BluetoothClassicDeviceMac(BluetoothAdapterMac* adapter,
-                                     IOBluetoothDevice* device);
+  BluetoothClassicDeviceMac(BluetoothAdapterMac* adapter,
+                            BluetoothAdapterMac::DeviceInfo device_info);
 
   BluetoothClassicDeviceMac(const BluetoothClassicDeviceMac&) = delete;
   BluetoothClassicDeviceMac& operator=(const BluetoothClassicDeviceMac&) =
       delete;
 
   ~BluetoothClassicDeviceMac() override;
+
+  // Updates the state of this device with the information contained in
+  // `device_info`. Returns whether anything was modified.
+  bool UpdateState(BluetoothAdapterMac::DeviceInfo device_info);
 
   // BluetoothDevice override
   uint32_t GetBluetoothClass() const override;
@@ -81,6 +86,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothClassicDeviceMac
 
   void OnDeviceDisconnected();
 
+  static BluetoothDevice::UUIDList GetUuids(IOBluetoothDevice* device);
+
   // Returns the Bluetooth address for the |device|. The returned address has a
   // normalized format (see below).
   static std::string GetDeviceAddress(IOBluetoothDevice* device);
@@ -98,13 +105,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothClassicDeviceMac
  private:
   friend class BluetoothAdapterMac;
 
-  // Implementation to read the host's transmit power level of type
-  // |power_level_type|.
-  int GetHostTransmitPower(
-      BluetoothHCITransmitPowerLevelType power_level_type) const;
-
   IOBluetoothDevice* __strong device_;
   BluetoothDeviceDisconnectListener* __strong disconnect_listener_;
+
+  std::string address_;
+  bool is_paired_ = false;
+  bool is_connected_ = false;
+  std::optional<std::string> name_;
 };
 
 }  // namespace device

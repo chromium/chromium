@@ -35,6 +35,47 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
       std::string address,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
+  // Struct bundling information about the state of the HostController.
+  struct HostControllerState {
+    bool is_present = false;
+    bool classic_powered = false;
+    std::string address;
+  };
+
+  // Typedef for function returning the state of the HostController.
+  using HostControllerStateFunction =
+      base::RepeatingCallback<HostControllerState()>;
+
+  struct DeviceInfo {
+    DeviceInfo();
+    DeviceInfo(const DeviceInfo&) = delete;
+    DeviceInfo(DeviceInfo&&);
+    DeviceInfo& operator=(const DeviceInfo&) = delete;
+    DeviceInfo& operator=(DeviceInfo&&);
+    ~DeviceInfo();
+
+    std::string address;
+    std::optional<std::string> name;
+    BluetoothDevice::UUIDList uuids;
+    bool is_paired = false;
+    bool is_connected = false;
+    IOBluetoothDevice* __strong objc_device;
+  };
+
+  struct AdapterState {
+    AdapterState();
+    AdapterState(const AdapterState&) = delete;
+    AdapterState(AdapterState&&);
+    AdapterState& operator=(const AdapterState&) = delete;
+    AdapterState& operator=(AdapterState&&);
+    ~AdapterState();
+
+    bool is_present = false;
+    bool classic_powered = false;
+    std::string address;
+    std::vector<DeviceInfo> paired_devices;
+  };
+
   BluetoothAdapterMac(const BluetoothAdapterMac&) = delete;
   BluetoothAdapterMac& operator=(const BluetoothAdapterMac&) = delete;
 
@@ -64,12 +105,24 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   void ClassicDeviceFound(IOBluetoothDevice* device) override;
   void ClassicDiscoveryStopped(bool unexpected) override;
 
+  // Registers that a new |device| has replied to an Inquiry, is paired, or has
+  // connected to the local host.
+  void OnConnectedDeviceStateRetrieved(DeviceInfo device_info);
+
   // Used for delivering device connect notification from MacOS IOBluetooth
   // framework to this adapter object.
   void OnConnectNotification(const std::string& device_address);
 
-  // Registers that a new |device| has connected to the local host.
-  void DeviceConnected(std::unique_ptr<BluetoothDevice> device);
+  // Invokes several blocking IOBluetooth calls. Should not be invoked on the UI
+  // thread if such a thing can be avoided.
+  static AdapterState RetrieveAdapterState(
+      HostControllerStateFunction controller_state_function);
+  // Invokes several blocking IOBluetooth calls. Should not be invoked on the UI
+  // thread if such a thing can be avoided.
+  static DeviceInfo RetrieveDeviceState(IOBluetoothDevice* device);
+  static void RetrieveDeviceStateAsync(
+      IOBluetoothDevice* device,
+      base::OnceCallback<void(DeviceInfo)> callback);
 
  protected:
   // BluetoothAdapter override:
@@ -81,17 +134,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   void TriggerSystemPermissionPrompt() override;
 
  private:
-  // Struct bundling information about the state of the HostController.
-  struct HostControllerState {
-    bool is_present = false;
-    bool classic_powered = false;
-    std::string address;
-  };
-
-  // Typedef for function returning the state of the HostController.
-  using HostControllerStateFunction =
-      base::RepeatingCallback<HostControllerState()>;
-
   // Type of the underlying implementation of SetPowered(). It takes an int
   // instead of a bool, since the production code calls into a C API that does
   // not know about bool.
@@ -105,7 +147,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   GetDevicePairedStatus() const override;
 
   // Queries the state of the IOBluetoothHostController.
-  HostControllerState GetHostControllerState();
+  static HostControllerState GetHostControllerState();
 
   // Allows configuring whether the adapter is present when running in a test
   // configuration.
@@ -122,6 +164,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   // Allow the mocking of out GetDevicePairedStatusCallback for testing.
   void SetGetDevicePairedStatusCallbackForTesting(
       BluetoothLowEnergyAdapterApple::GetDevicePairedStatusCallback callback);
+
+  // Set a callback that will be run when the background polling completes.
+  // Used for testing synchronization.
+  void SetPollCallbackForTesting(base::OnceClosure callback);
 
   // The length of time that must elapse since the last Inquiry response (on
   // Classic devices) or call to BluetoothLowEnergyDevice::Update() (on Low
@@ -142,14 +188,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   void StopScan(DiscoverySessionResultCallback callback) override;
 
   void PollAdapter();
-
-  // Registers that a new |device| has replied to an Inquiry, is paired, or has
-  // connected to the local host.
-  void ClassicDeviceAdded(std::unique_ptr<BluetoothDevice> device);
-
-  // Updates |devices_| to include the currently paired devices and notifies
-  // observers.
-  void AddPairedDevices();
+  void OnBackgroundPollComplete(AdapterState state);
 
   std::string address_;
   bool classic_powered_ = false;
@@ -187,6 +226,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   std::optional<uint32_t> paired_count_;
 
   scoped_refptr<BluetoothDevicesConnectListenerBridge> connect_listener_bridge_;
+
+  base::OnceClosure poll_callback_for_testing_;
 
   base::WeakPtrFactory<BluetoothAdapterMac> weak_ptr_factory_{this};
 };
