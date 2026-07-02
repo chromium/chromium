@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -29,6 +30,7 @@ class Label;
 class Widget;
 }  // namespace views
 
+class AutoPipSettingOverlayView;
 class ContentSettingImageView;
 class DocumentPipHost;
 class LocationBarModelImpl;
@@ -44,6 +46,36 @@ class LocationBarModelImpl;
 //     "chip" (a lock icon + origin label) that opens the Page Info dialog.
 //   - A close button and a back-to-tab button.
 //   - NonClientHitTest for proper drag, resize, and control interaction.
+//
+// View tree:
+//
+//   DocumentPipFrameView (views::FrameView)
+//   |- top_bar_container_view_ (FlexLayoutView, horizontal, cross=center)
+//   |  |- origin_chip_ (IconLabelBubbleView) -> opens Page Info on click
+//   |  |- window_title_ (views::Label, flex: scale-to-zero..preferred)
+//   |  |- spacer (views::View, flex: scale-to-zero..unbounded, draggable)
+//   |  `- button_container_view_ (FlexLayoutView)
+//   |     |- content_setting_views_[] (ContentSettingImageView: camera/mic)
+//   |     |- back_to_tab_wrapper (views::View, fill) [optional]
+//   |     |  `- back_to_tab_button_ (views::ImageButton)
+//   |     `- close_wrapper (views::View, fill)
+//   |        `- close_image_button_ (views::ImageButton)
+//   `- auto_pip_setting_overlay_ (AutoPipSettingOverlayView) [optional,
+//        overlaid on the client area, not a child of the top bar]
+//
+// Layout:
+//
+//   +-------------------------- PiP window --------------------------------+
+//   | +-- top_bar_container_view_ (kTopControlsHeight = 34px) -----------+ |
+//   | | [# origin_chip_] window_title_  <-spacer->  [cam][mic] [<>][x]   | |
+//   | +------------------------------------------------------------------+ |
+//   | +------------------------------------------------------------------+ |
+//   | |                                                                  | |
+//   | |                  client view (web contents)                      | |
+//   | |     (auto_pip_setting_overlay_ drawn over this when present)     | |
+//   | |                                                                  | |
+//   | +------------------------------------------------------------------+ |
+//   +----------------------------------------------------------------------+
 //
 // The origin chip is driven by a LocationBarModelImpl backed by a minimal
 // delegate over the opener WebContents, reusing the omnibox's URL/security
@@ -157,6 +189,12 @@ class DocumentPipFrameView : public views::FrameView,
   // dialog could not be shown.
   bool ShowPageInfo();
 
+  // Shows `auto_pip_setting_overlay_` if we have it and have a widget.
+  void ShowOverlayIfNeeded();
+
+  // True iff the auto-PiP allow/block overlay exists and is currently visible.
+  bool IsOverlayViewVisible() const;
+
   // Owns this view through its widget/delegate chain and outlives it.
   const raw_ref<DocumentPipHost> host_;
 
@@ -192,6 +230,11 @@ class DocumentPipFrameView : public views::FrameView,
   raw_ptr<views::ImageButton> back_to_tab_button_ = nullptr;
   raw_ptr<views::ImageButton> close_image_button_ = nullptr;
 
+  // Owned by the view hierarchy via AddChildView(); the raw_ptr is nulled in
+  // OnWidgetDestroying(). Mirrors
+  // PictureInPictureBrowserFrameView::auto_pip_setting_overlay_.
+  raw_ptr<AutoPipSettingOverlayView> auto_pip_setting_overlay_ = nullptr;
+
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
@@ -213,6 +256,9 @@ class DocumentPipFrameView : public views::FrameView,
   std::unique_ptr<WindowEventObserver> window_event_observer_;
 
   CloseReason close_reason_ = CloseReason::kOther;
+
+  // For posting ShowOverlayIfNeeded() from AddedToWidget().
+  base::WeakPtrFactory<DocumentPipFrameView> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_FRAME_VIEW_H_

@@ -10,8 +10,13 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,12 +48,14 @@
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -419,6 +427,28 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
   close_wrapper->SetPreferredSize(close_image_button_->GetPreferredSize());
   button_container_view_->AddChildView(std::move(close_wrapper));
 
+  // If the window manager wants us to display an overlay, get it. In practice
+  // this is the auto-PiP Allow / Block content-setting UI, shown when a site
+  // enters PiP via the Auto Picture-in-Picture path. GetOverlayView() returns
+  // null unless the opener has an AutoPictureInPictureTabHelper and auto-PiP
+  // for the origin hasn't already been allowed/blocked/embargoed. Anchored to
+  // the top bar and laid out over the contents area in Layout(). Mirrors
+  // PictureInPictureBrowserFrameView.
+  if (auto overlay =
+          PictureInPictureWindowManager::GetInstance()->GetOverlayView(
+              top_bar_container_view_, views::BubbleBorder::TOP_CENTER)) {
+    auto_pip_setting_overlay_ = AddChildView(std::move(overlay));
+  }
+
+  // Clear the picture-in-picture window's cached bounds while the overlay is
+  // visible, so the permission prompt isn't clipped by a smaller remembered
+  // size.
+  if (base::FeatureList::IsEnabled(
+          media::kClearPipCachedBoundsWhenPermissionPromptVisible) &&
+      IsOverlayViewVisible()) {
+    PictureInPictureWindowManager::GetInstance()->ClearCachedBounds();
+  }
+
   // TODO(crbug.com/40279642): Don't force dark mode once we support a
   // light mode window.
   widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
@@ -534,6 +564,13 @@ void DocumentPipFrameView::Layout(PassKey) {
   top_bar.set_height(kTopControlsHeight);
   top_bar_container_view_->SetBoundsRect(top_bar);
 
+  // The overlay covers the contents area below the top bar (not the chrome),
+  // matching PictureInPictureBrowserFrameView.
+  if (auto_pip_setting_overlay_) {
+    auto_pip_setting_overlay_->SetBoundsRect(
+        gfx::SubtractRects(content_area, top_bar));
+  }
+
   LayoutSuperclass<views::FrameView>(this);
 }
 
@@ -544,6 +581,15 @@ void DocumentPipFrameView::AddedToWidget() {
   // widget. Teardown is intentionally handled in OnWidgetDestroying rather
   // than in a symmetric RemovedFromWidget; see the comment there.
   window_event_observer_ = std::make_unique<WindowEventObserver>(this);
+
+  // If the auto-PiP overlay is set, post a task to show it rather than showing
+  // it inline, mirroring PictureInPictureBrowserFrameView::AddedToWidget. The
+  // WeakPtr guards against the task firing after teardown.
+  if (auto_pip_setting_overlay_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&DocumentPipFrameView::ShowOverlayIfNeeded,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 int DocumentPipFrameView::GetTopAreaHeight() const {
@@ -614,7 +660,7 @@ void DocumentPipFrameView::OnThemeChanged() {
 
 void DocumentPipFrameView::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
-  UpdateTopBarView(active || mouse_inside_window_);
+  UpdateTopBarView(active || mouse_inside_window_ || IsOverlayViewVisible());
 }
 
 void DocumentPipFrameView::OnWidgetDestroying(views::Widget* widget) {
@@ -637,6 +683,8 @@ void DocumentPipFrameView::OnWidgetDestroying(views::Widget* widget) {
   // away to avoid a use-after-free at ~DocumentPipFrameView.
   window_event_observer_.reset();
   widget_observation_.Reset();
+
+  auto_pip_setting_overlay_ = nullptr;
 }
 
 gfx::Rect DocumentPipFrameView::ConvertControlBoundsToFrame(
@@ -738,7 +786,18 @@ void DocumentPipFrameView::UpdateTopBarView(bool render_active) {
 void DocumentPipFrameView::OnMouseEnteredOrExitedWindow(bool entered) {
   mouse_inside_window_ = entered;
   UpdateTopBarView(mouse_inside_window_ ||
-                   (GetWidget() && GetWidget()->IsActive()));
+                   (GetWidget() && GetWidget()->IsActive()) ||
+                   IsOverlayViewVisible());
+}
+
+void DocumentPipFrameView::ShowOverlayIfNeeded() {
+  if (auto_pip_setting_overlay_ && GetWidget()) {
+    auto_pip_setting_overlay_->ShowBubble(GetWidget()->GetNativeView());
+  }
+}
+
+bool DocumentPipFrameView::IsOverlayViewVisible() const {
+  return auto_pip_setting_overlay_ && auto_pip_setting_overlay_->GetVisible();
 }
 
 bool DocumentPipFrameView::ShowPageInfo() {

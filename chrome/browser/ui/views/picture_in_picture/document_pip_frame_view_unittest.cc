@@ -7,8 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
@@ -29,7 +32,9 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -215,6 +220,32 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
     opener()->SetUserData(SecurityStateTabHelper::UserDataKey(),
                           std::make_unique<FakeSecurityStateTabHelper>(
                               opener(), malicious_content_status));
+  }
+
+  AutoPipSettingOverlayView* GetAutoPipOverlay(
+      DocumentPipFrameView* frame_view) {
+    return frame_view->auto_pip_setting_overlay_;
+  }
+
+  bool IsOverlayViewVisible(DocumentPipFrameView* frame_view) {
+    return frame_view->IsOverlayViewVisible();
+  }
+
+  // Injects a real auto-PiP overlay onto the frame view the same way the
+  // production ctor would (AddChildView + raw_ptr). The unit-test harness
+  // creates the host directly (bypassing
+  // EnterStandaloneDocumentPictureInPicture), so
+  // PictureInPictureWindowManager::GetOverlayView() returns null; this lets the
+  // overlay-dependent behaviors (layout, visibility coupling) be exercised
+  // without the full auto-PiP embargo path, which is covered by browser tests.
+  AutoPipSettingOverlayView* InjectAutoPipOverlay(
+      DocumentPipFrameView* frame_view) {
+    auto overlay = std::make_unique<AutoPipSettingOverlayView>(
+        base::DoNothing(), GURL("https://example.com/"),
+        frame_view->top_bar_container_view_, views::BubbleBorder::TOP_CENTER);
+    frame_view->auto_pip_setting_overlay_ =
+        frame_view->AddChildView(std::move(overlay));
+    return frame_view->auto_pip_setting_overlay_;
   }
 
  protected:
@@ -763,4 +794,51 @@ TEST_F(DocumentPipFrameViewTest, HitTestCloseButton_InactiveReturnsCaption) {
   frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
                                         /*active=*/false);
   EXPECT_EQ(HTCAPTION, frame_view->NonClientHitTest(center));
+}
+
+// Without an AutoPictureInPictureTabHelper on the opener (the default harness),
+// no auto-PiP overlay is created, so the accessor is null and the overlay is
+// not reported visible.
+TEST_F(DocumentPipFrameViewTest, AutoPipOverlayAbsent_WhenNoAutoPip) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_FALSE(GetAutoPipOverlay(frame_view));
+  EXPECT_FALSE(IsOverlayViewVisible(frame_view));
+}
+
+// When present, the overlay is laid out over the contents area below the top
+// bar (content_area - top_bar), matching PictureInPictureBrowserFrameView.
+TEST_F(DocumentPipFrameViewTest, AutoPipOverlayLaidOutBelowTopBar) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  AutoPipSettingOverlayView* overlay = InjectAutoPipOverlay(frame_view);
+  ASSERT_TRUE(overlay);
+
+  auto* widget = frame_view->GetWidget();
+  widget->SetBounds(gfx::Rect(0, 0, 400, 300));
+  widget->LayoutRootViewIfNecessary();
+
+  // FrameBorderInsets() is empty, so the content area equals the local bounds
+  // and the top bar occupies the top GetTopAreaHeight() px.
+  const gfx::Rect local_bounds = frame_view->GetLocalBounds();
+  const int top_height = GetTopAreaHeight(frame_view);
+  const gfx::Rect expected(local_bounds.x(), local_bounds.y() + top_height,
+                           local_bounds.width(),
+                           local_bounds.height() - top_height);
+  EXPECT_EQ(expected, overlay->bounds());
+}
+
+// IsOverlayViewVisible() reflects the overlay's own visibility.
+TEST_F(DocumentPipFrameViewTest, IsOverlayViewVisible_TracksOverlayVisibility) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  AutoPipSettingOverlayView* overlay = InjectAutoPipOverlay(frame_view);
+  ASSERT_TRUE(overlay);
+
+  // A freshly added child view is visible by default.
+  EXPECT_TRUE(IsOverlayViewVisible(frame_view));
+
+  overlay->SetVisible(false);
+  EXPECT_FALSE(IsOverlayViewVisible(frame_view));
 }

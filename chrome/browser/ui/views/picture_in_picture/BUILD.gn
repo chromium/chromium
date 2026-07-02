@@ -60,6 +60,7 @@ source_set("picture_in_picture") {
     "//components/vector_icons",
     "//components/webapps/isolated_web_apps:scheme",
     "//extensions/buildflags",
+    "//media",
     "//ui/base",
     "//ui/base/metadata",
     "//ui/display",
@@ -96,6 +97,7 @@ source_set("unit_tests") {
   deps = [
     ":picture_in_picture",
     "//base",
+    "//chrome/browser/picture_in_picture",
     "//chrome/browser/ssl",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_info",
