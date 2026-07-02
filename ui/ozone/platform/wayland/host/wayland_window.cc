@@ -1558,10 +1558,10 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // `in_flight_requests_`.
   CHECK(!applying_state_)
       << "MaybeApplyLatestStateRequest called re-entrantly.";
-  auto setter =
-      std::make_optional<base::AutoReset<bool>>(&applying_state_, true);
+  applying_state_ = true;
 
   if (in_flight_requests_.empty()) {
+    applying_state_ = false;
     return;
   }
 
@@ -1573,12 +1573,14 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
     // Allow at most 3 configure requests to be waited on at a time.
     constexpr int MAX_IN_FLIGHT_REQUESTS = 3;
     if (in_flight_applied >= MAX_IN_FLIGHT_REQUESTS) {
+      applying_state_ = false;
       return;
     }
   }
 
   auto& latest = in_flight_requests_.back();
   if (latest.applied) {
+    applying_state_ = false;
     return;
   }
   latest.applied = true;
@@ -1592,7 +1594,12 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // frame to be considered synchronized. For example, this can happen if the
   // old and new states are the same, or it only changes the origin of the
   // bounds.
-  latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
+  auto weak_this = AsWeakPtr();
+  int64_t viz_seq = delegate()->OnStateUpdate(old, latest.state);
+  if (!weak_this) {
+    return;
+  }
+  latest.viz_seq = viz_seq;
 
   if (UseTestConfigForPlatformWindows()) {
     latest_applied_viz_seq_for_testing_ = std::max(
@@ -1605,7 +1612,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // `ProcessSequencePoint` may re-entrantly call
   // `MaybeApplyLatestStateRequest`. This is safe as long as we do not hold
   // references to `in_flight_requests_` after here.
-  setter.reset();
+  applying_state_ = false;
 
   // Process any requests added re-entrantly. We need to move the requests out
   // of `reentrant_requests_` here because each re-entrant request may also add
