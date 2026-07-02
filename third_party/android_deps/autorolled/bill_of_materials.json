@@ -17,7 +17,7 @@
     {
         "name": "annotation",
         "group": "androidx.annotation",
-        "version": "1.10.0"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "annotation-experimental",
@@ -27,7 +27,7 @@
     {
         "name": "annotation-jvm",
         "group": "androidx.annotation",
-        "version": "1.10.0"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "appcompat",
@@ -517,7 +517,7 @@
     {
         "name": "fragment",
         "group": "androidx.fragment",
-        "version": "1.9.0-alpha01"
+        "version": "1.9.0-alpha02"
     },
     {
         "name": "fragment-compose",
@@ -777,7 +777,7 @@
     {
         "name": "loader",
         "group": "androidx.loader",
-        "version": "1.1.0"
+        "version": "1.2.0-alpha01"
     },
     {
         "name": "localbroadcastmanager",
@@ -877,12 +877,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0-alpha01"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0-alpha01"
     },
     {
         "name": "navigationevent-compose",
@@ -927,7 +927,7 @@
     {
         "name": "palette",
         "group": "androidx.palette",
-        "version": "1.0.0"
+        "version": "1.1.0-alpha01"
     },
     {
         "name": "pdf-core",
@@ -1047,7 +1047,7 @@
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.7.0"
     },
     {
         "name": "sqlite-framework",
@@ -1932,12 +1932,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "4.2.0"
+        "version": "4.2.1"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "4.2.0"
+        "version": "4.2.1"
     },
     {
         "name": "animal-sniffer-annotations",

@@ -3,7 +3,7 @@ Short Name: dataflow-errorprone
 URL: https://repo.maven.apache.org/maven2/io/github/eisop/dataflow-errorprone/3.41.0-eisop1/dataflow-errorprone-3.41.0-eisop1.jar
 Version: 3.41.0-eisop1
 Update Mechanism: Autoroll
-License: GNU General Public License, version 2 (GPL2), with the classpath exception
+License: GPL-2.0-with-classpath-exception
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
