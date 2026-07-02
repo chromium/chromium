@@ -11,10 +11,6 @@
 
 class ProfileIOS;
 
-namespace policy {
-class UserCloudPolicyManager;
-}
-
 namespace enterprise_connectors {
 
 // iOS-specific implementation of `ConnectorsServiceBase`, to be used to access
