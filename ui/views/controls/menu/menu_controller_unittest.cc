@@ -1079,12 +1079,12 @@ TEST_F(MenuControllerTest, EventTargeter) {
 }
 #endif  // defined(USE_AURA)
 
-#if BUILDFLAG(SUPPORTS_OZONE_X11)
+#if BUILDFLAG(IS_LINUX)
 // Tests that touch event ids are released correctly. See crbug.com/439051 for
 // details. When the ids aren't managed correctly, we get stuck down touches.
 TEST_F(MenuControllerTest, TouchIdsReleasedCorrectly) {
   // Run this test only for X11.
-  if (ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
+  if (!ui::OzonePlatform::RunningOnX11ForTest()) {
     GTEST_SKIP();
   }
 
@@ -1108,7 +1108,7 @@ TEST_F(MenuControllerTest, TouchIdsReleasedCorrectly) {
 
   GetRootWindow(owner())->RemovePreTargetHandler(&test_event_handler);
 }
-#endif  // BUILDFLAG(SUPPORTS_OZONE_X11)
+#endif  // BUILDFLAG(IS_LINUX)
 
 // Tests that initial selected menu items are correct when items are enabled or
 // disabled.
@@ -1786,7 +1786,13 @@ TEST_F(MenuControllerTest, AsynchronousDragCompleteWithoutClose) {
 
   // TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
   // because the native widget's state is not properly updated.
-  EXPECT_EQ(BUILDFLAG(SUPPORTS_OZONE_X11) ? 1 : 0,
+  int expected_closes = 0;
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnX11ForTest()) {
+    expected_closes = 1;
+  }
+#endif
+  EXPECT_EQ(expected_closes,
             menu_controller_delegate()->on_menu_closed_called());
 }
 
@@ -2598,7 +2604,13 @@ TEST_F(MenuControllerTest, RestoreCaptureAfterDrag) {
 
   // TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
   // because the native widget's state is not properly updated.
-  EXPECT_NE(base_host->HasCapture(), BUILDFLAG(SUPPORTS_OZONE_X11));
+  bool expected_capture = true;
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnX11ForTest()) {
+    expected_capture = false;
+  }
+#endif
+  EXPECT_EQ(base_host->HasCapture(), expected_capture);
 }
 
 // Tests that capture is not restored to the submenu after a drag and drop where
