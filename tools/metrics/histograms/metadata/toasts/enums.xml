@@ -106,6 +106,7 @@ chromium-metrics-reviews@google.com.
   <int value="45" label="Showed Autofill AI prefetch error message"/>
   <int value="46" label="Enterprise copy audit monitored toast"/>
   <int value="47" label="Enterprise copy kept in managed chrome toast"/>
+  <int value="48" label="Dictation error"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

@@ -6,6 +6,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -56,7 +57,8 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          {features::kGlicActorUi, {{features::kGlicActorUiToastName, "true"}}},
          {multistep_filter::kMultistepFilter, {}},
          {features::kIndigo, {}},
-         {autofill::features::kAutofillAmbientAutofill, {}}},
+         {autofill::features::kAutofillAmbientAutofill, {}},
+         {dictation::kDictation, {}}},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }

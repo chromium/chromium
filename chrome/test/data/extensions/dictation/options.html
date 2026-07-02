@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Dictation Test Extension Options</title>
 </head>
+
 <body>
   <h1>Dictation Test Extension Options</h1>
   <div>
@@ -10,19 +12,25 @@
   </div>
   <textarea id="cannedResponse" name="cannedResponse" rows="6" cols="80"></textarea>
 
-  <p>If set, the canned response is sent as partial transcriptions, advanced word by word, followed by a final transcription.</p>
+  <p>If set, the canned response is sent as partial transcriptions, advanced word by word, followed by a final
+    transcription.</p>
 
   <div>
-  <label for="wordDelay">Canned response word delay (ms):</label>
+    <label for="wordDelay">Canned response word delay (ms):</label>
   </div>
   <input type="number" id="wordDelay" name="wordDelay" min="0" />
 
   <div>
-  <label for="finalDelay">Canned response final delay (ms):</label>
+    <label for="finalDelay">Canned response final delay (ms):</label>
   </div>
   <input type="number" id="finalDelay" name="finalDelay" min="0" />
 
+  <div>
+    <label for="failOnStart">Simulate failure on stream initialization</label>
+    <input type="checkbox" id="failOnStart" name="failOnStart" />
+  </div>
+
   <script src="options.js"></script>
 </body>
-</html>
 
+</html>

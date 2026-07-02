@@ -189,7 +189,6 @@ TEST_F(DictationSessionControllerTest, StreamProviderStatePropagatesFailure) {
   controller_->DidUpdateStreamProviderState(
       *stream_provider_ptr, StreamProvider::StreamState::kTranscribing);
   run_loop.Run();
-
   EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
 }
 
@@ -423,6 +422,59 @@ TEST_F(DictationSessionControllerTest, UntrackedStreamStateChangesIgnored) {
   controller_->DidUpdateStreamProviderState(
       untracked_stream_provider, StreamProvider::StreamState::kTranscribing);
   EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
+}
+
+// Test that transitioning an active stream provider to a failure state
+// calls OnError on the UI.
+TEST_F(DictationSessionControllerTest, ActiveStreamFailureOnErrorCalled) {
+  auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
+  MockSessionUi* ui_ptr = mock_ui.get();
+  EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
+  controller_->Initialize();
+
+  auto mock_stream_provider =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider)));
+  controller_->StartDictationStream(EmptyTargetId());
+
+  EXPECT_CALL(*stream_provider_ptr, GetState())
+      .WillRepeatedly(Return(StreamProvider::StreamState::kFailed));
+  EXPECT_CALL(*ui_ptr, OnError(SessionUi::StreamType::kAttached));
+
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider_ptr, StreamProvider::StreamState::kTranscribing);
+}
+
+// Test that transitioning a completed stream provider to a failure state
+// does not call OnError on the UI.
+TEST_F(DictationSessionControllerTest, CompletedStreamFailureOnErrorNotCalled) {
+  auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
+  MockSessionUi* ui_ptr = mock_ui.get();
+  EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
+  controller_->Initialize();
+
+  auto mock_stream_provider =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider)));
+  controller_->StartDictationStream(EmptyTargetId());
+
+  // First transition to complete.
+  EXPECT_CALL(*stream_provider_ptr, GetState())
+      .WillRepeatedly(Return(StreamProvider::StreamState::kComplete));
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider_ptr, StreamProvider::StreamState::kTranscribing);
+
+  // Now transition to failed. OnError should not be called.
+  EXPECT_CALL(*stream_provider_ptr, GetState())
+      .WillRepeatedly(Return(StreamProvider::StreamState::kFailed));
+  EXPECT_CALL(*ui_ptr, OnError(_)).Times(0);
+
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider_ptr, StreamProvider::StreamState::kComplete);
 }
 
 }  // namespace

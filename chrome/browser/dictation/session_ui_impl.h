@@ -29,6 +29,10 @@ class SessionUiImpl : public SessionUi {
 
  private:
   friend class DictationSessionUiImplBrowserTest;
+
+  // SessionUi:
+  void OnError(StreamType stream_type) override;
+
   void OnDictationBubbleCloseClicked();
   void OnToggleActiveStreamClicked();
   void OnSessionStateChanged(SessionState state);
@@ -37,6 +41,10 @@ class SessionUiImpl : public SessionUi {
   void OnTabInserted(tabs::TabInterface* tab);
   void OnTabWillDeactivate(tabs::TabInterface* tab);
 
+  // Using raw_ref because we observe tab close events and synchronously end
+  // the session which owns this, so SessionUi will never outlive the tab.
+  const base::raw_ref<tabs::TabInterface> tab_;
+  // Owns this.
   const base::raw_ref<SessionUiDelegate> controller_;
 
   base::CallbackListSubscription session_state_changed_subscription_;

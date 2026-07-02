@@ -18,8 +18,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -51,6 +54,36 @@ class DictationSessionUiImplBrowserTest
       chrome::MoveTabsToExistingWindow(source, target, {index});
     });
   }
+
+  auto GetSessionState() {
+    return [this]() {
+      return dictation_service().session_controller()->GetState();
+    };
+  }
+
+  auto HasAttachedStreamProvider() {
+    return [this]() {
+      return dictation_service()
+                 .session_controller()
+                 ->attached_stream_provider() != nullptr;
+    };
+  }
+
+  auto CheckShowingDictationErrorToast(bool showing) {
+    return Check([this, showing]() {
+      ToastController* const toast_controller =
+          browser()->GetFeatures().toast_controller();
+      CHECK(toast_controller);
+      const bool is_showing_dictation_error_toast =
+          toast_controller->IsShowingToast() &&
+          toast_controller->GetCurrentToastId() == ToastId::kDictationError;
+      return is_showing_dictation_error_toast == showing;
+    });
+  }
+
+ private:
+  base::WeakPtr<ListenerStreamProvider> last_started_provider_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
@@ -287,6 +320,27 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting),
     CheckHasSession(true),
     CheckResult(GetSessionState(), SessionState::kFinalizing)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Ensure no toast is showing initially.
+    CheckShowingDictationErrorToast(false),
+
+    // Inject failure state via the extension API!
+    ExtensionAPISetStreamState(ExtensionStreamState::kFailed),
+
+    // The active stream failure should end the session, hide the bubble, and
+    // show the error toast.
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckShowingDictationErrorToast(true),
+    Check([this]{ return session_ui() == nullptr; })
   );
   // clang-format on
 }
