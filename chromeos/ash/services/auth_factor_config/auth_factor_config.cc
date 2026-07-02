@@ -61,7 +61,7 @@ void AuthFactorConfig::NotifyFactorObserversAfterSuccess(
     AuthFactorSet changed_factors,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
-    base::OnceCallback<void(mojom::ConfigureResult)> callback) {
+    ConfigureResultCallback callback) {
   CHECK(context);
 
   auth_factor_editor_.GetAuthFactorsConfiguration(
@@ -80,7 +80,7 @@ void AuthFactorConfig::NotifyFactorObserversAfterFailure(
 
   // The original callback, but with an additional ignored parameter so that we
   // can pass it to `OnGetAuthFactorsConfiguration`.
-  base::OnceCallback<void(mojom::ConfigureResult)> ignore_param_callback =
+  ConfigureResultCallback ignore_param_callback =
       base::BindOnce([](base::OnceCallback<void()> callback,
                         mojom::ConfigureResult) { std::move(callback).Run(); },
                      std::move(callback));
@@ -106,22 +106,16 @@ void AuthFactorConfig::OnUserHasKnowledgeFactor(const UserContext& context) {
 void AuthFactorConfig::IsSupported(const std::string& auth_token,
                                    mojom::AuthFactor factor,
                                    base::OnceCallback<void(bool)> callback) {
-  ObtainContext(auth_token,
-                base::BindOnce(&AuthFactorConfig::IsSupportedWithContext,
-                               weak_factory_.GetWeakPtr(), auth_token, factor,
-                               std::move(callback)));
+  ObtainContextOrFail(
+      auth_token, std::move(callback),
+      base::BindOnce(&AuthFactorConfig::IsSupportedWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, factor));
 }
 void AuthFactorConfig::IsSupportedWithContext(
     const std::string& auth_token,
     mojom::AuthFactor factor,
     base::OnceCallback<void(bool)> callback,
     std::unique_ptr<UserContext> context) {
-  if (!context) {
-    LOG(ERROR) << "Invalid or expired auth token";
-    std::move(callback).Run(false);
-    return;
-  }
-
   if (context->HasAuthFactorsConfiguration()) {
     const cryptohome::AuthFactorsSet cryptohome_supported_factors =
         context->GetAuthFactorsConfiguration().get_supported_factors();
@@ -168,10 +162,10 @@ void AuthFactorConfig::IsSupportedWithContext(
 void AuthFactorConfig::IsConfigured(const std::string& auth_token,
                                     mojom::AuthFactor factor,
                                     base::OnceCallback<void(bool)> callback) {
-  ObtainContext(auth_token,
-                base::BindOnce(&AuthFactorConfig::IsConfiguredWithContext,
-                               weak_factory_.GetWeakPtr(), auth_token, factor,
-                               std::move(callback)));
+  ObtainContextOrFail(
+      auth_token, std::move(callback),
+      base::BindOnce(&AuthFactorConfig::IsConfiguredWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, factor));
 }
 
 void AuthFactorConfig::CheckConfiguredFactors(
@@ -220,12 +214,6 @@ void AuthFactorConfig::IsConfiguredWithContext(
     mojom::AuthFactor factor,
     base::OnceCallback<void(bool)> callback,
     std::unique_ptr<UserContext> context) {
-  if (!context) {
-    LOG(ERROR) << "Invalid or expired auth token";
-    std::move(callback).Run(false);
-    return;
-  }
-
   if (context->HasAuthFactorsConfiguration()) {
     const auto& config = context->GetAuthFactorsConfiguration();
 
@@ -364,22 +352,16 @@ void AuthFactorConfig::GetManagementType(
 void AuthFactorConfig::IsEditable(const std::string& auth_token,
                                   mojom::AuthFactor factor,
                                   base::OnceCallback<void(bool)> callback) {
-  ObtainContext(auth_token,
-                base::BindOnce(&AuthFactorConfig::IsEditableWithContext,
-                               weak_factory_.GetWeakPtr(), auth_token, factor,
-                               std::move(callback)));
+  ObtainContextOrFail(
+      auth_token, std::move(callback),
+      base::BindOnce(&AuthFactorConfig::IsEditableWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, factor));
 }
 void AuthFactorConfig::IsEditableWithContext(
     const std::string& auth_token,
     mojom::AuthFactor factor,
     base::OnceCallback<void(bool)> callback,
     std::unique_ptr<UserContext> context) {
-  if (!context) {
-    LOG(ERROR) << "Invalid or expired auth token";
-    std::move(callback).Run(false);
-    return;
-  }
-
   if (context->HasAuthFactorsConfiguration()) {
     const auto& config = context->GetAuthFactorsConfiguration();
 
@@ -475,24 +457,17 @@ void AuthFactorConfig::IsEditableWithContext(
 void AuthFactorConfig::GetLocalAuthFactorsComplexity(
     const std::string& auth_token,
     GetLocalAuthFactorsComplexityCallback callback) {
-  ObtainContext(
-      auth_token,
+  ObtainContextOrFail(
+      auth_token, std::move(callback),
       base::BindOnce(
           &AuthFactorConfig::GetLocalAuthFactorsComplexityWithContext,
-          weak_factory_.GetWeakPtr(), auth_token, std::move(callback)));
+          weak_factory_.GetWeakPtr(), auth_token));
 }
 
 void AuthFactorConfig::GetLocalAuthFactorsComplexityWithContext(
     const std::string& auth_token,
     GetLocalAuthFactorsComplexityCallback callback,
     std::unique_ptr<UserContext> context) {
-  if (!context) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(
-        base::unexpected(mojom::ConfigureResult::kInvalidTokenError));
-    return;
-  }
-
   AccountId account_id = context->GetAccountId();
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
@@ -507,21 +482,10 @@ void AuthFactorConfig::GetLocalAuthFactorsComplexityWithContext(
   std::move(callback).Run(result);
 }
 
-void AuthFactorConfig::ObtainContext(
-    const std::string& auth_token,
-    base::OnceCallback<void(std::unique_ptr<UserContext>)> callback) {
-  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  ash::AuthSessionStorage::Get()->BorrowAsync(FROM_HERE, auth_token,
-                                              std::move(callback));
-}
-
 void AuthFactorConfig::OnGetAuthFactorsConfiguration(
     AuthFactorSet changed_factors,
     bool is_factor_change_success,
-    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    ConfigureResultCallback callback,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
     std::optional<AuthenticationError> error) {

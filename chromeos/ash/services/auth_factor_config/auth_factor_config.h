@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -88,11 +89,10 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   // `context` should be a copy of the user context stored in quick unlock
   // storage. In particular, `context` should contain an authenticated auth
   // session
-  void NotifyFactorObserversAfterSuccess(
-      AuthFactorSet changed_factor,
-      const std::string& auth_token,
-      std::unique_ptr<UserContext> context,
-      base::OnceCallback<void(mojom::ConfigureResult)> callback);
+  void NotifyFactorObserversAfterSuccess(AuthFactorSet changed_factor,
+                                         const std::string& auth_token,
+                                         std::unique_ptr<UserContext> context,
+                                         ConfigureResultCallback callback);
 
   // Like NotifyFactorObserversAfterSuccess, but supposed to be called before
   // we return a `kFatalError` result because of a failed mutating UserDataAuth
@@ -127,9 +127,6 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   using OnRefreshAuthFactorsConfiguration =
       base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 
-  void ObtainContext(
-      const std::string& auth_token,
-      base::OnceCallback<void(std::unique_ptr<UserContext>)> callback);
   void IsSupportedWithContext(const std::string& auth_token,
                               mojom::AuthFactor factor,
                               FactorStatusCheckResultCallback callback,
@@ -158,13 +155,12 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
       const std::string& auth_token,
       GetLocalAuthFactorsComplexityCallback callback,
       std::unique_ptr<UserContext> context);
-  void OnGetAuthFactorsConfiguration(
-      AuthFactorSet changed_factors,
-      bool is_factor_change_success,
-      base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      const std::string& auth_token,
-      std::unique_ptr<UserContext> context,
-      std::optional<AuthenticationError> error);
+  void OnGetAuthFactorsConfiguration(AuthFactorSet changed_factors,
+                                     bool is_factor_change_success,
+                                     ConfigureResultCallback callback,
+                                     const std::string& auth_token,
+                                     std::unique_ptr<UserContext> context,
+                                     std::optional<AuthenticationError> error);
 
   void SetAddKnowledgeFactorCallbackForTesting(base::OnceClosure callback);
   void SetSkipUserIntegrityNotificationForTesting(bool skip_notification);

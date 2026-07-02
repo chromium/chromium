@@ -29,9 +29,8 @@ bool IsGaiaPassword(const cryptohome::AuthFactor& factor);
 
 bool IsLocalPassword(const cryptohome::AuthFactor& factor);
 
-void FailWithInvalidTokenError(
-    base::Location from_here,
-    base::OnceCallback<void(mojom::ConfigureResult)> result_callback);
+void FailWithInvalidTokenError(base::Location from_here,
+                               ConfigureResultCallback result_callback);
 
 template <typename T>
 void FailWithInvalidTokenError(
@@ -42,6 +41,9 @@ void FailWithInvalidTokenError(
   std::move(result_callback)
       .Run(base::unexpected(mojom::ConfigureResult::kInvalidTokenError));
 }
+
+void FailWithInvalidTokenError(base::Location from_here,
+                               base::OnceCallback<void(bool)> result_callback);
 
 template <typename ResultCallback, typename Continuation>
 void OnContextBorrowed(base::Location from_here,

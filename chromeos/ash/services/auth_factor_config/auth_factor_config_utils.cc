@@ -17,11 +17,16 @@ bool IsLocalPassword(const cryptohome::AuthFactor& factor) {
   return ash::IsLocalPassword(factor);
 }
 
-void FailWithInvalidTokenError(
-    base::Location from_here,
-    base::OnceCallback<void(mojom::ConfigureResult)> result_callback) {
+void FailWithInvalidTokenError(base::Location from_here,
+                               ConfigureResultCallback result_callback) {
   SYSLOG(ERROR) << "(LOGIN) Invalid auth token: " << from_here.ToString();
   std::move(result_callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+}
+
+void FailWithInvalidTokenError(base::Location from_here,
+                               base::OnceCallback<void(bool)> result_callback) {
+  SYSLOG(ERROR) << "(LOGIN) Invalid auth token: " << from_here.ToString();
+  std::move(result_callback).Run(false);
 }
 
 }  // namespace ash::auth
