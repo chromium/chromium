@@ -135,6 +135,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
       constants::kDefaultAuthenticationFlowAutoReloadInterval);
 
   registry->RegisterBooleanPref(prefs::kAutoEnrollmentCheckExited, false);
+  registry->RegisterIntegerPref(prefs::kDeviceOnlinePasswordMismatchBehavior,
+                                0);
 }
 
 // static

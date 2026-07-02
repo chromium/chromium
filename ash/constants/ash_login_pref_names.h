@@ -247,6 +247,16 @@ inline constexpr char kEduCoexistenceArcMigrationCompleted[] =
 // Preference storing Easy Unlock pairing data.
 inline constexpr char kEasyUnlockPairing[] = "easy_unlock.pairing";
 
+// A Local State enum pref that controls the behavior when a user's online
+// password does not match the local cryptohome password (e.g. after an online
+// password change).
+// The following values are supported:
+// 0: Default behavior. The user is prompted to enter their old password or
+//    use the cryptohome recovery flow.
+// 1: AutoWipe. The user's cryptohome is automatically wiped and recreated.
+inline constexpr char kDeviceOnlinePasswordMismatchBehavior[] =
+    "device_online_password_mismatch_behavior";
+
 }  // namespace ash::prefs
 
 #endif  // ASH_CONSTANTS_ASH_LOGIN_PREF_NAMES_H_
