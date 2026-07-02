@@ -21,6 +21,8 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profile_resetter/brandcode_config_fetcher.h"
@@ -313,6 +315,15 @@ void ProfileResetter::ResetContentSettings() {
     map->SetDefaultContentSetting(info->website_settings_info()->type(),
                                   CONTENT_SETTING_DEFAULT);
   }
+
+  // Active File System Access grants are kept in memory by the permission
+  // context rather than in HostContentSettingsMap, so they need to be revoked
+  // explicitly.
+  if (auto* permission_context =
+          FileSystemAccessPermissionContextFactory::GetForProfile(profile_)) {
+    permission_context->RevokeAllActiveGrants();
+  }
+
   MarkAsDone(CONTENT_SETTINGS);
 }
 

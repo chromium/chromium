@@ -60,6 +60,7 @@ if (!is_android) {
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/extensions",
+      "//chrome/browser/file_system_access",
       "//chrome/browser/google",
       "//chrome/browser/prefs:util",
       "//chrome/browser/profiles:profile",
@@ -166,12 +167,15 @@ if (!is_android) {
       ":profile_resetter",
       ":profile_resetter_test_base",
       "//base",
+      "//chrome/browser/file_system_access",
       "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/shell_dialogs",
+      "//url",
     ]
 
     if (is_chromeos) {

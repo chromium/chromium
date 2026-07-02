@@ -6,8 +6,13 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,6 +21,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -23,6 +30,8 @@
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/containers/to_vector.h"
@@ -176,6 +185,42 @@ IN_PROC_BROWSER_TEST_F(ProfileResetTest, ResetCookiesAndSiteData) {
   ResetAndWait(ProfileResetter::COOKIES_AND_SITE_DATA);
 
   EXPECT_FALSE(tester.GetCookie(kCookieHostname, &cookie));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileResetTest,
+    ResetContentSettingsRevokesActiveFileSystemAccessGrants) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath test_file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &test_file));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "(async () => { self.handle = await self.showSaveFilePicker(); })()"));
+  ui::SelectFileDialog::SetFactory(nullptr);
+
+  ChromeFileSystemAccessPermissionContext* permission_context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(
+          browser()->profile());
+  const url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(permission_context->OriginHasReadAccess(origin));
+  ASSERT_TRUE(permission_context->OriginHasWriteAccess(origin));
+
+  ResetAndWait(ProfileResetter::CONTENT_SETTINGS);
+
+  EXPECT_FALSE(permission_context->OriginHasReadAccess(origin));
+  EXPECT_FALSE(permission_context->OriginHasWriteAccess(origin));
 }
 
 // PinnedTabsResetTest --------------------------------------------------------
