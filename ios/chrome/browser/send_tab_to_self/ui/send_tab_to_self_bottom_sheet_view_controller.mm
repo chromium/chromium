@@ -54,6 +54,8 @@ NSString* const kSendTabToSelfModalMenuButton =
     _targetDeviceList = std::move(targetDeviceList);
     _accountEmail = accountEmail;
     _delegate = delegate;
+    self.mainBackgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   }
   return self;
 }
@@ -284,7 +286,7 @@ NSString* const kSendTabToSelfModalMenuButton =
 
   cell.contentConfiguration = configuration;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  cell.backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
 
   cell.accessoryType = [self accessoryType:indexPath];
