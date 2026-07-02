@@ -87,7 +87,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
         windowAndroid.setIsOcclusionTracked(true);
 
         // No need to forward the occlusion state here, as it will be done shortly by the
-        // WindowZOrderTracker once the new window receives the initial focus change event.
+        // WindowZOrderTracker once the new window receives the top resumed activity event.
     }
 
     /**

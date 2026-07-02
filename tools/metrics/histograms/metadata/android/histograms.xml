@@ -3898,13 +3898,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.MultiWindow.WindowZOrder.FocusChangedCount"
-    units="count" expires_after="2027-04-02">
+<histogram name="Android.MultiWindow.WindowZOrder.PromotionCount" units="count"
+    expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
-    Records the number of window focus change events handled by
-    WindowZOrderTracker over the preceding 5 minutes.
+    Records the number of times a window was promoted to the top of the z-order
+    by WindowZOrderTracker over the preceding 5 minutes. Recorded every 5
+    minutes while occlusion tracking is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.WindowZOrder.ResumedCount" units="count"
+    expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of activity top resumed state transitions handled by
+    WindowZOrderTracker over the preceding 5 minutes. Recorded every 5 minutes
+    while occlusion tracking is enabled.
   </summary>
 </histogram>
 
