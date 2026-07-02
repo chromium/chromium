@@ -477,7 +477,8 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
 void ExternalBeginFrameSourceMac::SetPreferredInterval(
     base::TimeDelta interval) {
   if (interval.is_zero()) {
-    interval = GetMinimumFrameInterval();
+    interval = display_link_mac_ ? min_refresh_interval_
+                                 : BeginFrameArgs::DefaultInterval();
   }
   preferred_interval_ = interval;
 
