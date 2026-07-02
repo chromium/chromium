@@ -60,8 +60,8 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_Close) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_Complete) {
-  // Client asks to close the window
-  TriggerActionAndClose("complete");
+  // Client reports the survey is complete.
+  TriggerAction("complete");
 
   std::vector<base::Bucket> expected = {
       {3, 1}};  // 3 is the enumeration for "Complete".
@@ -115,7 +115,8 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_FullWorkflow) {
   TriggerAction("answer-1-2");
   TriggerAction("answer-2-3");
   TriggerAction("answer-3-4,5");
-  TriggerActionAndClose("complete");
+  TriggerAction("complete");
+  TriggerActionAndClose("close");
 
   std::vector<base::Bucket> expected = {{2, 1},   {3, 1},   {102, 1},
                                         {203, 1}, {304, 1}, {305, 1}};

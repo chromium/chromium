@@ -127,10 +127,12 @@ bool HatsDialog::HandleClientTriggeredAction(
     return false;
   }
 
-  // Page asks to be closed after completing the survey.
+  // Response was submitted and the survey was complete.
   if (action == kClientActionComplete) {
     LogHistogram(histogram_name, kSurveyCompleteEnumeration);
-    return true;
+    // Do not close the dialog to show the thank you message.
+    // Subsequent `kClientActionClose` will close the dialog afterwards.
+    return false;
   }
 
   // A question was answered
