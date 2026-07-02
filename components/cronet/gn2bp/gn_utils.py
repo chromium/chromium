@@ -208,6 +208,8 @@ class GnParser:
                 self.defines = set()
                 self.include_dirs = set()
                 self.deps = set()
+                self.direct_deps = set()
+                self.direct_build_only_deps = set()
                 self.transitive_static_libs_deps = set()
                 self.ldflags = []
                 # These are valid only for type == 'action'
@@ -265,6 +267,7 @@ class GnParser:
             # Deps for JNI Registration. Those are not added to deps so that
             # the generated module would not depend on those deps.
             self.jni_registration_java_deps = set()
+            self.direct_jni_deps = set()
             self.sdk_version = ""
             self.unfiltered_java_target = None
             self.build_file_path = ""
@@ -656,72 +659,21 @@ class GnParser:
         if "-frtti" in target.arch[arch].cflags:
             target.rtti = True
 
-        for gn_dep_name in set(target.jni_registration_java_deps):
+        for gn_dep_name in sorted(set(target.jni_registration_java_deps)):
             dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
-            target.transitive_jni_java_sources.update(
-                dep.transitive_jni_java_sources)
+            target.direct_jni_deps.add(dep.name)
 
         if override_deps is not None:
             deps = override_deps
 
-        # Recurse in dependencies.
-        for gn_dep_name in sorted(set(deps) | set(build_only_deps)):
+        # Recurse in dependencies to ensure they are parsed, and collect direct deps.
+        for gn_dep_name in sorted(set(deps)):
             dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
+            target.arch[arch].direct_deps.add(dep.name)
 
-            if dep.type == 'proto_library':
-                target.proto_deps.add(dep.name)
-            elif dep.type == 'copy':
-                target.update(dep, arch)
-            elif dep.type == 'group':
-                target.update(dep,
-                              arch)  # Bubble up groups's cflags/ldflags etc.
-                target.transitive_jni_java_sources.update(
-                    dep.transitive_jni_java_sources)
-            elif dep.type in ['action', 'action_foreach']:
-                target.arch[arch].deps.add(dep.name)
-                target.transitive_jni_java_sources.update(
-                    dep.transitive_jni_java_sources)
-            elif dep.is_linker_unit_type():
-                target.arch[arch].deps.add(dep.name)
-            elif dep.type == 'aidl_interface':
-                target.arch[arch].deps.add(dep.name)
-            elif dep.type == "rust_executable":
-                target.arch[arch].deps.add(dep.name)
-            elif dep.type == 'java_library':
-                if gn_dep_name in build_only_deps:
-                    # Chromium builds Java code against the unfiltered dependencies
-                    # (_java__header). This reproduces this behavior.
-                    target.build_only_deps.add(dep.unfiltered_java_target.name)
-                else:
-                    target.common.deps.add(dep.name)
-                target.transitive_jni_java_sources.update(
-                    dep.transitive_jni_java_sources)
-            elif dep.type in [
-                    'rust_binary', "rust_library", "rust_proc_macro",
-                    "rust_bindgen"
-            ]:
-                target.arch[arch].deps.add(dep.name)
-            if dep.type in ['static_library', 'source_set', 'rust_library']:
-                # Bubble up static_libs and source_set. Necessary, since soong does not propagate
-                # static_libs up the build tree.
-                # Source sets are later translated to static_libraries, so it makes sense
-                # to reuse transitive_static_libs_deps.
-                target.arch[arch].transitive_static_libs_deps.add(dep.name)
-
-            # rust_proc_macro must never propagate their dependency upward the tree. proc_macros are only used
-            # during compilations on host as they allow extending the compiler with custom macros, their dependency should
-            # be used to build the proc macro, then abandoned. Propagating it upward means that we'll be linking
-            # against code that is effectively dead, and can cause issues.
-            # Don't bubble up transitive dependencies of executables as they've already been linked.
-            # A dependency on the executable means that the output of the target (the executable) should
-            # be used, rather than its dependency.
-            if arch in dep.arch and dep.type not in [
-                    'rust_proc_macro', 'rust_executable', 'executable'
-            ]:
-                target.arch[arch].transitive_static_libs_deps.update(
-                    dep.arch[arch].transitive_static_libs_deps)
-                target.arch[arch].deps.update(
-                    target.arch[arch].transitive_static_libs_deps)
+        for gn_dep_name in sorted(set(build_only_deps)):
+            dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
+            target.arch[arch].direct_build_only_deps.add(dep.name)
 
         return target
 
@@ -744,3 +696,101 @@ class GnParser:
         return re.sub(
             '^\.\./\.\./', '',
             CommandLineUtility(args).get_flag_value('--proto-in-dir'))
+
+    def propagate_properties(self):
+        visited = set()
+        for target_name in sorted(self.all_targets.keys()):
+            self._propagate_target(target_name, visited)
+
+    def _propagate_target(self, target_name, visited):
+        if target_name in visited:
+            return
+        visited.add(target_name)
+
+        target = self.all_targets[target_name]
+
+        # First, propagate all dependencies
+        all_direct_deps = set()
+        for arch in target.arch.keys():
+            all_direct_deps.update(target.arch[arch].direct_deps)
+            all_direct_deps.update(target.arch[arch].direct_build_only_deps)
+        all_direct_deps.update(target.direct_jni_deps)
+
+        for dep_name in sorted(all_direct_deps):
+            if dep_name in self.all_targets:
+                self._propagate_target(dep_name, visited)
+
+        # 1. JNI propagation (target-global)
+        for dep_name in sorted(target.direct_jni_deps):
+            if dep_name in self.all_targets:
+                dep = self.all_targets[dep_name]
+                target.transitive_jni_java_sources.update(
+                    dep.transitive_jni_java_sources)
+
+        # 2. Arch-specific propagation
+        for arch in sorted(target.arch.keys()):
+            arch_obj = target.arch[arch]
+
+            for dep_name in sorted(arch_obj.direct_deps
+                                   | arch_obj.direct_build_only_deps):
+                if dep_name not in self.all_targets:
+                    continue
+
+                dep = self.all_targets[dep_name]
+
+                if dep.type == 'proto_library':
+                    target.proto_deps.add(dep.name)
+                elif dep.type == 'copy':
+                    target.update(dep, arch)
+                elif dep.type == 'group':
+                    target.update(dep, arch)
+                    target.transitive_jni_java_sources.update(
+                        dep.transitive_jni_java_sources)
+                elif dep.type in ['action', 'action_foreach']:
+                    arch_obj.deps.add(dep.name)
+                    target.transitive_jni_java_sources.update(
+                        dep.transitive_jni_java_sources)
+                elif dep.is_linker_unit_type():
+                    arch_obj.deps.add(dep.name)
+                elif dep.type == 'aidl_interface':
+                    arch_obj.deps.add(dep.name)
+                elif dep.type == "rust_executable":
+                    arch_obj.deps.add(dep.name)
+                elif dep.type == 'java_library':
+                    if dep_name in arch_obj.direct_build_only_deps:
+                        # Chromium builds Java code against the unfiltered dependencies
+                        # (_java__header). This reproduces this behavior.
+                        target.build_only_deps.add(
+                            dep.unfiltered_java_target.name)
+                    else:
+                        target.common.deps.add(dep.name)
+                    target.transitive_jni_java_sources.update(
+                        dep.transitive_jni_java_sources)
+                elif dep.type in [
+                        'rust_binary', "rust_library", "rust_proc_macro",
+                        "rust_bindgen"
+                ]:
+                    arch_obj.deps.add(dep.name)
+
+                if dep.type in [
+                        'static_library', 'source_set', 'rust_library'
+                ]:
+                    # Bubble up static_libs and source_set. Necessary, since soong does not propagate
+                    # static_libs up the build tree.
+                    # Source sets are later translated to static_libraries, so it makes sense
+                    # to reuse transitive_static_libs_deps.
+                    arch_obj.transitive_static_libs_deps.add(dep.name)
+
+                if arch in dep.arch and dep.type not in [
+                        'rust_proc_macro', 'rust_executable', 'executable'
+                ]:
+                    # rust_proc_macro must never propagate their dependency upward the tree. proc_macros are only used
+                    # during compilations on host as they allow extending the compiler with custom macros, their dependency should
+                    # be used to build the proc macro, then abandoned. Propagating it upward means that we'll be linking
+                    # against code that is effectively dead, and can cause issues.
+                    # Don't bubble up transitive dependencies of executables as they've already been linked.
+                    # A dependency on the executable means that the output of the target (the executable) should
+                    # be used, rather than its dependency.
+                    arch_obj.transitive_static_libs_deps.update(
+                        dep.arch[arch].transitive_static_libs_deps)
+                    arch_obj.deps.update(arch_obj.transitive_static_libs_deps)

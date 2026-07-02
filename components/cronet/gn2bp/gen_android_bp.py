@@ -662,6 +662,7 @@ def main():
             gn.parse_gn_desc(desc, target)
         for test_target in gn2bp_targets.DEFAULT_TESTS:
             gn.parse_gn_desc(desc, test_target, is_test_target=True)
+    gn.propagate_properties()
     top_level_blueprint = create_blueprint_for_targets(
         gn, targets, gn2bp_targets.DEFAULT_TESTS, context)
 
