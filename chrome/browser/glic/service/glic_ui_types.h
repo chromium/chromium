@@ -85,7 +85,7 @@ struct ShowOptions {
   bool reinitialize_if_already_active = false;
   std::optional<std::string> prompt_suggestion;
   mojom::InvocationSource invocation_source =
-      mojom::InvocationSource::kTopChromeButton;
+      mojom::InvocationSource::kUnsupported;
   mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified;
 
   // Container for options that are different between side panel and floaty.

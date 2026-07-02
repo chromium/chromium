@@ -566,6 +566,12 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="Indigo page action"/>
   <int value="33" label="Web Drag and Drop"/>
   <int value="34" label="From the promotion page"/>
+  <int value="35" label="Daisy chain on new tab"/>
+  <int value="36" label="Daisy chain on follow link"/>
+  <int value="37" label="Conversation switch"/>
+  <int value="38" label="Detach/Attach button"/>
+  <int value="39" label="Tab restore"/>
+  <int value="40" label="Reshow inactive"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -952,6 +958,30 @@ chromium-metrics-reviews@google.com.
   <int value="138" label="From the promotion page, attached, audio mode."/>
   <int value="139" label="From the promotion page, detached, text mode."/>
   <int value="140" label="From the promotion page, detached, audio mode."/>
+  <int value="141" label="Daisy chain on new tab, attached, text mode."/>
+  <int value="142" label="Daisy chain on new tab, attached, audio mode."/>
+  <int value="143" label="Daisy chain on new tab, detached, text mode."/>
+  <int value="144" label="Daisy chain on new tab, detached, audio mode."/>
+  <int value="145" label="Daisy chain on follow link, attached, text mode."/>
+  <int value="146" label="Daisy chain on follow link, attached, audio mode."/>
+  <int value="147" label="Daisy chain on follow link, detached, text mode."/>
+  <int value="148" label="Daisy chain on follow link, detached, audio mode."/>
+  <int value="149" label="Conversation switch, attached, text mode."/>
+  <int value="150" label="Conversation switch, attached, audio mode."/>
+  <int value="151" label="Conversation switch, detached, text mode."/>
+  <int value="152" label="Conversation switch, detached, audio mode."/>
+  <int value="153" label="Detach/Attach button, attached, text mode."/>
+  <int value="154" label="Detach/Attach button, attached, audio mode."/>
+  <int value="155" label="Detach/Attach button, detached, text mode."/>
+  <int value="156" label="Detach/Attach button, detached, audio mode."/>
+  <int value="157" label="Tab restore, attached, text mode."/>
+  <int value="158" label="Tab restore, attached, audio mode."/>
+  <int value="159" label="Tab restore, detached, text mode."/>
+  <int value="160" label="Tab restore, detached, audio mode."/>
+  <int value="161" label="Reshow inactive, attached, text mode."/>
+  <int value="162" label="Reshow inactive, attached, audio mode."/>
+  <int value="163" label="Reshow inactive, detached, text mode."/>
+  <int value="164" label="Reshow inactive, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
