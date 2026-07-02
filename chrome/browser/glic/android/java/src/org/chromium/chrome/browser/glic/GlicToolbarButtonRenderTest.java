@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
@@ -38,6 +39,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Render tests for Glic entrypoint button on toolbar. */
@@ -86,6 +88,7 @@ public class GlicToolbarButtonRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/530605872
     public void testGlicButton_PanelOpen() throws Exception {
         // Capture observer
         ArgumentCaptor<GlicKeyedService.GlobalShowHideObserver> observerCaptor =
