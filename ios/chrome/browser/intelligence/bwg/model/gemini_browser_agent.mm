@@ -108,8 +108,9 @@ const CGFloat kFloatingBottomMargin = 10;
 // height.
 // TODO(crbug.com/512576285): Confirm offset value with UI.
 // TODO(crbug.com/513881624): Get the actual floaty height separately, if
-// possible, so this constant can just represent the offset.
-const CGFloat kDormantSnackbarOffsetFromFloaty = 110.0;
+// possible, so these constants can just represent the offset.
+const CGFloat kDormantSnackbarOffsetFromFloatyLegacy = 135.0;
+const CGFloat kDormantSnackbarOffsetFromFloatyNext = 117.0;
 
 // Used for forcing fullscreen progress value.
 const CGFloat kFullscreenEnabled = 0.0;
@@ -649,7 +650,10 @@ void GeminiBrowserAgent::ShowLiveSessionDormantSnackbar(int message_id) {
   };
 
   CGFloat floaty_offset = GetFullyExpandedFloatyOffset();
-  CGFloat snackbar_offset = floaty_offset + kDormantSnackbarOffsetFromFloaty;
+  CGFloat offset_from_floaty = IsChromeNextIaEnabled()
+                                   ? kDormantSnackbarOffsetFromFloatyNext
+                                   : kDormantSnackbarOffsetFromFloatyLegacy;
+  CGFloat snackbar_offset = floaty_offset + offset_from_floaty;
 
   [snackbar_handler showSnackbarMessage:message bottomOffset:snackbar_offset];
 }
@@ -1059,6 +1063,7 @@ void GeminiBrowserAgent::HandleDormantStatus(
         ShowLiveSessionDormantSnackbar(
             IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR);
         break;
+      case ios::provider::GeminiDormantReason::kLongInteractionTimeout:
       case ios::provider::GeminiDormantReason::kServerPause:
         is_showing_live_session_dormant_snackbar_ = true;
         ShowLiveSessionDormantSnackbar(
