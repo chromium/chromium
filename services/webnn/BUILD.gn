@@ -355,6 +355,7 @@ if (!is_debug) {
     ]
 
     fuzztests = [
+      "CPU.Activation",
       "CPU.BatchNormalization",
       "CPU.Clamp",
       "CPU.Concat",
@@ -382,6 +383,7 @@ if (!is_debug) {
       "CPU.Split",
       "CPU.Transpose",
       "CPU.Triangular",
+      "CPU.DQActivationQ",
       "CPU.DQClampQ",
       "CPU.DQConcatQ",
       "CPU.DQConv2dQ",
@@ -397,6 +399,7 @@ if (!is_debug) {
       "CPU.DQSoftmaxQ",
       "CPU.DQSplitQ",
       "CPU.DQTransposeQ",
+      "GPU.Activation",
       "GPU.BatchNormalization",
       "GPU.Clamp",
       "GPU.Concat",
@@ -424,6 +427,7 @@ if (!is_debug) {
       "GPU.Split",
       "GPU.Transpose",
       "GPU.Triangular",
+      "GPU.DQActivationQ",
       "GPU.DQClampQ",
       "GPU.DQConcatQ",
       "GPU.DQConv2dQ",
@@ -439,6 +443,7 @@ if (!is_debug) {
       "GPU.DQSoftmaxQ",
       "GPU.DQSplitQ",
       "GPU.DQTransposeQ",
+      "NPU.Activation",
       "NPU.BatchNormalization",
       "NPU.Clamp",
       "NPU.Concat",
@@ -466,6 +471,7 @@ if (!is_debug) {
       "NPU.Split",
       "NPU.Transpose",
       "NPU.Triangular",
+      "NPU.DQActivationQ",
       "NPU.DQClampQ",
       "NPU.DQConcatQ",
       "NPU.DQConv2dQ",

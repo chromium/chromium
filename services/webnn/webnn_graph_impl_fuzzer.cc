@@ -114,8 +114,23 @@ std::vector<uint8_t> CreateBufferAsIndicesType(
   }
 }
 
-// Represents which activation function to fuse for conv2d.
+// Represents an activation that takes no extra options and whose output has the
+// same shape and data type as its input. These are all tested by the shared
+// `Activation` fuzzer.
+//
+// Activations that have extra options are not listed here; they are tested by
+// their own dedicated fuzzers.
 enum class ActivationKind : uint8_t {
+  kGelu = 0,
+  kHardSwish = 1,
+  kRelu = 2,
+  kSigmoid = 3,
+  kSoftplus = 4,
+  kSoftsign = 5,
+  kTanh = 6,
+};
+
+enum class Conv2dActivationKind : uint8_t {
   kNone = 0,
   kRelu = 1,
   kRelu6 = 2,
@@ -125,13 +140,6 @@ enum class ActivationKind : uint8_t {
   kReluViaClamp = 4,
 };
 
-// Tri-state for optional operands: not present, constant, or input.
-enum class OptionalOperandKind : uint8_t {
-  kNone = 0,
-  kConstant = 1,
-  kInput = 2,
-};
-
 enum class GemmCShapeKind : uint8_t {
   kScalar = 0,
   k1D = 1,
@@ -139,10 +147,25 @@ enum class GemmCShapeKind : uint8_t {
   k2D_MxN = 3,
 };
 
+// Tri-state for optional operands: not present, constant, or input.
+enum class OptionalOperandKind : uint8_t {
+  kNone = 0,
+  kConstant = 1,
+  kInput = 2,
+};
+
 enum class QuantizationKind : uint32_t {
   kPerTensor = 0,
   kPerChannel = 1,
   kPerBlock = 2,
+};
+
+struct ActivationParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  ActivationKind kind;
+  bool is_input_constant;
 };
 
 struct BatchNormalizationParams {
@@ -196,7 +219,7 @@ struct Conv2dParams {
   bool is_filter_constant;
   OptionalOperandKind bias_kind;
   bool is_depthwise;
-  ActivationKind activation_kind;
+  Conv2dActivationKind activation_kind;
 };
 
 struct DequantizeLinearParams {
@@ -493,6 +516,26 @@ struct TriangularParams {
   bool is_input_constant;
 };
 
+SupportedDataTypes GetActivationDataTypes(ActivationKind kind) {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  switch (kind) {
+    case ActivationKind::kGelu:
+      return limits.gelu_input.data_types;
+    case ActivationKind::kHardSwish:
+      return limits.hard_swish_input.data_types;
+    case ActivationKind::kRelu:
+      return limits.relu_input.data_types;
+    case ActivationKind::kSigmoid:
+      return limits.sigmoid_input.data_types;
+    case ActivationKind::kSoftplus:
+      return limits.softplus_input.data_types;
+    case ActivationKind::kSoftsign:
+      return limits.softsign_input.data_types;
+    case ActivationKind::kTanh:
+      return limits.tanh_input.data_types;
+  }
+}
+
 SupportedDataTypes GetElementWiseBinaryDataTypes(
     mojom::ElementWiseBinary::Kind kind) {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
@@ -562,10 +605,58 @@ SupportedDataTypes GetReduceDataTypes(mojom::Reduce::Kind reduce_kind) {
   }
 }
 
+void BuildActivation(GraphInfoBuilder& builder,
+                     ActivationKind kind,
+                     OperandId input_id,
+                     OperandId output_id) {
+  switch (kind) {
+    case ActivationKind::kGelu:
+      builder.BuildGelu(input_id, output_id);
+      return;
+    case ActivationKind::kHardSwish:
+      builder.BuildHardSwish(input_id, output_id);
+      return;
+    case ActivationKind::kRelu:
+      builder.BuildRelu(input_id, output_id);
+      return;
+    case ActivationKind::kSigmoid:
+      builder.BuildSigmoid(input_id, output_id);
+      return;
+    case ActivationKind::kSoftplus:
+      builder.BuildSoftplus(input_id, output_id);
+      return;
+    case ActivationKind::kSoftsign:
+      builder.BuildSoftsign(input_id, output_id);
+      return;
+    case ActivationKind::kTanh:
+      builder.BuildTanh(input_id, output_id);
+      return;
+  }
+}
+
 auto AnyConv2dKind() {
   return fuzztest::ElementOf<mojom::Conv2d::Kind>(
       {mojom::Conv2d::Kind::kDirect, mojom::Conv2d::Kind::kTransposed});
 }
+
+// All activations that take no extra options. Exercised by the `Activation`
+// fuzzer.
+constexpr auto kAllActivationKinds = std::to_array<ActivationKind>({
+    ActivationKind::kGelu,
+    ActivationKind::kHardSwish,
+    ActivationKind::kRelu,
+    ActivationKind::kSigmoid,
+    ActivationKind::kSoftplus,
+    ActivationKind::kSoftsign,
+    ActivationKind::kTanh,
+});
+
+// The subset of activations that have a fusible quantized path. Only sigmoid
+// and tanh satisfy the condition.
+constexpr auto kAllActivationQuantizedKinds = std::to_array<ActivationKind>({
+    ActivationKind::kSigmoid,
+    ActivationKind::kTanh,
+});
 
 constexpr auto kAllElementWiseBinaryKinds =
     std::to_array<mojom::ElementWiseBinary::Kind>({
@@ -799,6 +890,26 @@ auto AnyOperandDataTypeFor(SupportedDataTypes supported) {
   return fuzztest::ElementOf<OperandDataType>(std::move(types));
 }
 
+auto AnyActivationParams(base::span<const ActivationKind> kinds) {
+  SupportedDataTypes activation_data_types;
+  for (auto kind : kinds) {
+    activation_data_types.PutAll(GetActivationDataTypes(kind));
+  }
+
+  std::vector<ActivationKind> kinds_vec(kinds.begin(), kinds.end());
+  return fuzztest::Filter(
+      [](const ActivationParams& params) {
+        return GetActivationDataTypes(params.kind).Has(params.data_type);
+      },
+      fuzztest::StructOf<ActivationParams>(
+          AnyOperandDataTypeFor(activation_data_types),
+          AnyTensorRankIncludeZero(),          // rank
+          fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+          fuzztest::ElementOf<ActivationKind>(std::move(kinds_vec)),
+          fuzztest::Arbitrary<bool>()  // is_input_constant
+          ));
+}
+
 auto AnyBatchNormalizationParams() {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   return fuzztest::StructOf<BatchNormalizationParams>(
@@ -867,10 +978,10 @@ auto AnyConv2dParams() {
       fuzztest::Arbitrary<bool>(),    // is_filter_constant
       AnyOptionalOperandKind(),       // bias_kind
       fuzztest::Arbitrary<bool>(),    // is_depthwise
-      fuzztest::ElementOf<ActivationKind>(
-          {ActivationKind::kNone, ActivationKind::kRelu, ActivationKind::kRelu6,
-           ActivationKind::kReluN1To1,
-           ActivationKind::kReluViaClamp})  // activation_kind
+      fuzztest::ElementOf<Conv2dActivationKind>(
+          {Conv2dActivationKind::kNone, Conv2dActivationKind::kRelu,
+           Conv2dActivationKind::kRelu6, Conv2dActivationKind::kReluN1To1,
+           Conv2dActivationKind::kReluViaClamp})  // activation_kind
   );
 }
 
@@ -985,7 +1096,7 @@ auto AnyGemmParams() {
       AnyDimSize(),  // m
       AnyDimSize(),  // k
       AnyDimSize(),  // n
-      // The 1.0f value exercises the fusiable path and 0.0f exercises the
+      // The 1.0f value exercises the fusible path and 0.0f exercises the
       // alpha == 0 simplification path for TFLite backend:
       // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2083;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
       // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=5652;drc=398e74869153a12e825bc789c2134762cbe81c36
@@ -2605,6 +2716,7 @@ template <typename BaseFixture>
 class WebNNGraphImplFuzzerImpl
     : public fuzztest::PerFuzzTestFixtureAdapter<BaseFixture> {
  public:
+  void Activation(ActivationParams params, uint8_t seed_for_data);
   void BatchNormalization(BatchNormalizationParams params,
                           uint8_t seed_for_data);
   void Clamp(ClampParams params, uint8_t seed_for_data);
@@ -2641,6 +2753,11 @@ class WebNNGraphImplFuzzerImpl
   void Split(SplitParams params, uint8_t seed_for_data);
   void Transpose(TransposeParams params, uint8_t seed_for_data);
   void Triangular(TriangularParams params, uint8_t seed_for_data);
+  void DQActivationQ(ActivationParams activation_params,
+                     OperandDataType quantized_type,
+                     uint8_t seed_for_input,
+                     float seed_for_scale,
+                     uint8_t seed_for_zero_point);
   void DQClampQ(ClampParams clamp_params,
                 QuantizationParams quantization_params,
                 uint32_t channel_axis,
@@ -2729,6 +2846,40 @@ class GPU : public WebNNGraphImplFuzzerImpl<
 
 class NPU : public WebNNGraphImplFuzzerImpl<
                 WebNNGraphImplFuzzerDevice<mojom::Device::kNpu>> {};
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Activation(ActivationParams params,
+                                                       uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  // The output of the activation has the same shape and data type as the
+  // input.
+  OperandId output_id =
+      builder.BuildOutput("output", input_desc.shape(), input_desc.data_type());
+
+  BuildActivation(builder, params.kind, input_id, output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
 
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::BatchNormalization(
@@ -2928,7 +3079,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Conv2d(Conv2dParams params,
   conv2d_attr.dilations = {params.dilations.height, params.dilations.width};
   conv2d_attr.groups = params.groups;
 
-  if (params.activation_kind != ActivationKind::kNone) {
+  if (params.activation_kind != Conv2dActivationKind::kNone) {
     OperandId conv2d_output_id = builder.BuildIntermediateOperand(
         conv2d_descs.output_desc.shape(), conv2d_descs.output_desc.data_type());
     builder.BuildConv2d(params.conv2d_kind, input_id, filter_id,
@@ -2938,20 +3089,20 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Conv2d(Conv2dParams params,
         builder.BuildOutput("output", conv2d_descs.output_desc.shape(),
                             conv2d_descs.output_desc.data_type());
     switch (params.activation_kind) {
-      case ActivationKind::kNone:
+      case Conv2dActivationKind::kNone:
         NOTREACHED();
-      case ActivationKind::kRelu:
+      case Conv2dActivationKind::kRelu:
         builder.BuildRelu(conv2d_output_id, output_id);
         break;
-      case ActivationKind::kRelu6:
+      case Conv2dActivationKind::kRelu6:
         builder.BuildClamp(conv2d_output_id, output_id, /*min_value=*/0.0f,
                            /*max_value=*/6.0f);
         break;
-      case ActivationKind::kReluN1To1:
+      case Conv2dActivationKind::kReluN1To1:
         builder.BuildClamp(conv2d_output_id, output_id, /*min_value=*/-1.0f,
                            /*max_value=*/1.0f);
         break;
-      case ActivationKind::kReluViaClamp:
+      case Conv2dActivationKind::kReluViaClamp:
         builder.BuildClamp(
             conv2d_output_id, output_id, /*min_value=*/0.0f,
             /*max_value=*/std::numeric_limits<float>::infinity());
@@ -4349,6 +4500,73 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Triangular(TriangularParams params,
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQActivationQ(
+    ActivationParams params,
+    OperandDataType quantized_type,
+    uint8_t seed_for_input,
+    float seed_for_scale,
+    uint8_t seed_for_zero_point) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+
+  // kPerTensor quantization is used to exercise the fusible path for TFLite
+  // backend:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2650;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
+  // In particular sigmoid requires the output scale to be exactly 1.0f/256.0f:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2591;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
+  // TODO(crbug.com/498987226): Remove this restriction to increase test
+  // coverage.
+  QuantizationParams per_tensor_quantization_params{
+      .quantized_type = quantized_type,
+      .quantization_kind = QuantizationKind::kPerTensor,
+      .channel_block_size = 1};
+  if (params.kind == ActivationKind::kSigmoid) {
+    seed_for_scale = 1.0f / 256.0f;
+  }
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
+      auto activation_input_id,
+      BuildDequantizeInput(
+          builder, this->context_properties(), params.is_input_constant,
+          "input", input_desc, per_tensor_quantization_params,
+          /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
+          seed_for_zero_point, data_buffers, named_inputs));
+
+  // The output of the activation has the same shape and data type as the
+  // input.
+  OperandId activation_output_id = builder.BuildIntermediateOperand(
+      input_desc.shape(), input_desc.data_type());
+
+  BuildActivation(builder, params.kind, activation_input_id,
+                  activation_output_id);
+
+  if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
+                           input_desc, per_tensor_quantization_params,
+                           /*channel_axis=*/std::nullopt, activation_output_id,
+                           seed_for_scale, seed_for_zero_point)) {
+    return;
+  }
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::DQClampQ(
     ClampParams clamp_params,
     QuantizationParams quantization_params,
@@ -4420,7 +4638,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConcatQ(
       auto concat_descs,
       SetUpConcatDescriptors(this->context_properties(), concat_params));
 
-  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // kPerTensor quantization is used to exercise the fusible path for TFLite
   // backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=1845;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
   // TODO(crbug.com/498987226): Remove this restriction to increase test
@@ -4504,7 +4722,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   std::vector<std::vector<uint8_t>> data_buffers;
 
-  // These scale and zero-point values are used to exercise the fusiable path
+  // These scale and zero-point values are used to exercise the fusible path
   // for TFLite backend (input_scale=0.5, filter_scale=0.25, bias_scale=0.125,
   // output_scale=0.125, all zero_points=0):
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=1809;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
@@ -4561,24 +4779,24 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
                       conv2d_bias_id);
 
   OperandId quantize_input_id = conv_output_id;
-  if (conv2d_params.activation_kind != ActivationKind::kNone) {
+  if (conv2d_params.activation_kind != Conv2dActivationKind::kNone) {
     OperandId activation_output_id = builder.BuildIntermediateOperand(
         conv2d_descs.output_desc.shape(), conv2d_descs.output_desc.data_type());
     switch (conv2d_params.activation_kind) {
-      case ActivationKind::kNone:
+      case Conv2dActivationKind::kNone:
         NOTREACHED();
-      case ActivationKind::kRelu:
+      case Conv2dActivationKind::kRelu:
         builder.BuildRelu(conv_output_id, activation_output_id);
         break;
-      case ActivationKind::kRelu6:
+      case Conv2dActivationKind::kRelu6:
         builder.BuildClamp(conv_output_id, activation_output_id,
                            /*min_value=*/0.0f, /*max_value=*/6.0f);
         break;
-      case ActivationKind::kReluN1To1:
+      case Conv2dActivationKind::kReluN1To1:
         builder.BuildClamp(conv_output_id, activation_output_id,
                            /*min_value=*/-1.0f, /*max_value=*/1.0f);
         break;
-      case ActivationKind::kReluViaClamp:
+      case Conv2dActivationKind::kReluViaClamp:
         builder.BuildClamp(
             conv_output_id, activation_output_id,
             /*min_value=*/0.0f,
@@ -4616,7 +4834,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
                                         this->context_properties(), params));
 
   // kPerTensor quantization and the same scale/zero_point for both inputs
-  // and output is used to exercise the fusiable path for TFLite backend:
+  // and output is used to exercise the fusible path for TFLite backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=1967;drc=ce3629f6f1cdbdb670dbf759e6b7c89c4a92a8fb
   // TODO(crbug.com/498987226): Remove this restriction to increase test
   // coverage.
@@ -4682,7 +4900,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQEluQ(
   const OperandDescriptor& elu_desc = elu_descs.input_desc;
 
   // kPerTensor quantization with the Int8 quantized type and the specific
-  // alpha value is used to exercise the fusiable path for TFLite backend:
+  // alpha value is used to exercise the fusible path for TFLite backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2021;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
   // TODO(crbug.com/498987226): Remove this restriction to increase test
   // coverage.
@@ -4742,7 +4960,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGatherQ(
       SetUpGatherDescriptors(this->context_properties(), gather_params));
 
   // Use the same quantization params for both input and output to exercise the
-  // fusiable path for TFLite backend:
+  // fusible path for TFLite backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2122;drc=ce3629f6f1cdbdb670dbf759e6b7c89c4a92a8fb
   // TODO(crbug.com/498987226): Remove this restriction to increase test
   // coverage.
@@ -4842,7 +5060,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   std::vector<std::vector<uint8_t>> data_buffers;
 
-  // These scale and zero-point values are used to exercise the fusiable path
+  // These scale and zero-point values are used to exercise the fusible path
   // for TFLite backend (a_scale=0.5, b_scale=0.25, c_scale=0.125,
   // output_scale=0.125, all zero_points=0):
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2079;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
@@ -4875,7 +5093,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
     const uint32_t c_channel_axis =
         gemm_descs.c_desc->shape().size() == 1 ? 0u : 1u;
 
-    // C uses int32 quantized type to exercise the fusiable path for TFLite
+    // C uses int32 quantized type to exercise the fusible path for TFLite
     // backend:
     // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2079;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
     // TODO(crbug.com/498987226): Remove these restrictions to increase test
@@ -4926,7 +5144,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPadQ(
       auto pad_descs,
       SetUpPadDescriptors(this->context_properties(), pad_params));
 
-  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // kPerTensor quantization is used to exercise the fusible path for TFLite
   // backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2201;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
   // TODO(crbug.com/498987226): Remove this restriction to increase test
@@ -4996,7 +5214,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPool2dQ(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   std::vector<std::vector<uint8_t>> data_buffers;
 
-  // These scale and zero-point values are used to exercise the fusiable path
+  // These scale and zero-point values are used to exercise the fusible path
   // for TFLite backend (input_scale=0.25, output_scale=0.25, all
   // zero_points=0):
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2262;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
@@ -5131,7 +5349,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
                         SetUpResample2dDescriptors(this->context_properties(),
                                                    resample2d_params));
 
-  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // kPerTensor quantization is used to exercise the fusible path for TFLite
   // backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2385;drc=ce3629f6f1cdbdb670dbf759e6b7c89c4a92a8fb
   // TODO(crbug.com/498987226): Remove this restriction to increase test
@@ -5197,7 +5415,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSliceQ(
       auto slice_descs,
       SetUpSliceDescriptors(this->context_properties(), slice_params));
 
-  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // kPerTensor quantization is used to exercise the fusible path for TFLite
   // backend.
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2422;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
   // TODO(crbug.com/498987226): Remove this restriction to increase test
@@ -5259,7 +5477,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSoftmaxQ(
   const OperandDescriptor& softmax_desc = softmax_descs.input_desc;
 
   // kPerTensor quantization and the scale and zero-point values
-  // (scale=1.0f/256.0f, zero_point=-128) are used to exercise the fusiable path
+  // (scale=1.0f/256.0f, zero_point=-128) are used to exercise the fusible path
   // for TFLite backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2468;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
   // TODO(crbug.com/498987226): Remove this restriction to increase test
@@ -5321,7 +5539,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSplitQ(
       auto split_descs,
       SetUpSplitDescriptors(this->context_properties(), split_params));
 
-  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // kPerTensor quantization is used to exercise the fusible path for TFLite
   // backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2559;drc=ce3629f6f1cdbdb670dbf759e6b7c89c4a92a8fb
   // TODO(crbug.com/498987226): Remove this restriction to increase test
@@ -5393,7 +5611,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
       auto transpose_descs,
       SetUpTransposeDescriptors(this->context_properties(), transpose_params));
 
-  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // kPerTensor quantization is used to exercise the fusible path for TFLite
   // backend:
   // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2602;drc=ce3629f6f1cdbdb670dbf759e6b7c89c4a92a8fb
   // TODO(crbug.com/498987226): Remove this restriction to increase test
@@ -5455,6 +5673,21 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
 
   GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
 }
+
+// gelu, hardSwish, relu, sigmoid, softplus, softsign and tanh are all
+// activations with no extra options, so they share a single fuzzer that
+// selects among them via `kind`.
+WEBNN_FUZZ_TEST_F(Activation,
+                  .WithDomains(AnyActivationParams(kAllActivationKinds),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{ActivationParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{2, 6, 4, 4, 1, 1, 1, 1},
+                                       /*kind=*/ActivationKind::kTanh,
+                                       /*is_input_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/4}}));
 
 WEBNN_FUZZ_TEST_F(
     BatchNormalization,
@@ -5520,7 +5753,7 @@ WEBNN_FUZZ_TEST_F(Conv2d,
                                        /*bias_kind=*/OptionalOperandKind::kNone,
                                        /*is_depthwise=*/false,
                                        /*activation_kind=*/
-                                       ActivationKind::kRelu,
+                                       Conv2dActivationKind::kRelu,
                                    },
                                    /*seed_for_data=*/1}}));
 
@@ -5979,7 +6212,7 @@ WEBNN_FUZZ_TEST_F(
                                   /*bias_kind=*/OptionalOperandKind::kNone,
                                   /*is_depthwise=*/false,
                                   /*activation_kind=*/
-                                  ActivationKind::kRelu},
+                                  Conv2dActivationKind::kRelu},
                      QuantizationParams{
                          /*quantized_type=*/OperandDataType::kUint8,
                          QuantizationKind::kPerTensor,
@@ -6224,6 +6457,26 @@ WEBNN_FUZZ_TEST_F(
                          /*rank=*/4,
                          /*input_dims=*/{4, 5, 5, 6, 1, 1, 1, 1},
                          /*axis=*/2,
+                         /*is_input_constant=*/false,
+                     },
+                     /*quantized_type=*/OperandDataType::kInt8,
+                     /*seed_for_input=*/4,
+                     /*seed_for_scale=*/0.25f,
+                     /*seed_for_zero_point=*/0}}));
+
+WEBNN_FUZZ_TEST_F(
+    DQActivationQ,
+    .WithDomains(AnyActivationParams(kAllActivationQuantizedKinds),
+                 AnyQuantizedDataType(),
+                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_scale=*/
+                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
+                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{ActivationParams{
+                         /*data_type=*/OperandDataType::kFloat32,
+                         /*rank=*/4,
+                         /*input_dims=*/{4, 5, 5, 6, 1, 1, 1, 1},
+                         /*kind=*/ActivationKind::kTanh,
                          /*is_input_constant=*/false,
                      },
                      /*quantized_type=*/OperandDataType::kInt8,
