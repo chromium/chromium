@@ -14,6 +14,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/token.h"
 #include "chrome/browser/android/tab_android.h"
