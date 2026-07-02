@@ -87,8 +87,10 @@ def main(argv):
         # protoc generates superfluous warnings about LITE_RUNTIME deprecation
         # even though we are using the new non-deprecated method.
         stderr_filter=lambda output: build_utils.FilterLines(
-            output, '|'.join([r'optimize_for = LITE_RUNTIME', r'java/lite\.md'])
-        ))
+            output, '|'.join([
+                r'optimize_for = LITE_RUNTIME', r'java/lite\.md',
+                r'hugepage_text\.cc'
+            ])))
 
     if options.java_out_dir:
       build_utils.DeleteDirectory(options.java_out_dir)
