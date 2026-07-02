@@ -2319,10 +2319,10 @@ TEST_F(AdAuctionServiceImplTest, MAYBE_UpdatePriorityVector) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.priority_vector_value);
 
-    // Pass enough time so that update rate limits don't cause an update to
-    // fail.
-    task_environment()->FastForwardBy(
-        InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+    // Bypass update rate limits.
+    manager_->AllowUpdateIfOlderThan(
+        blink::InterestGroupKey(kOriginA, kInterestGroupName),
+        base::TimeDelta());
 
     // Set new update response, and update.
     network_responder_->RegisterUpdateResponse(
@@ -2514,7 +2514,12 @@ TEST_F(AdAuctionServiceImplTest, MAYBE_UpdateAlwaysTriggersKAnonFetch) {
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(1u, GetKAnonQueriedCount());
 
-  task_environment()->FastForwardBy(base::Days(2));
+  // Bypass update rate limits.
+  manager_->AllowUpdateIfOlderThan(
+      blink::InterestGroupKey(kOriginA, kInterestGroupName), base::TimeDelta());
+
+  // Advance time past the K-Anon query rate limit (1 second).
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
   UpdateInterestGroupNoFlush();
@@ -2626,10 +2631,10 @@ TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.priority_signals_overrides_value);
 
-    // Pass enough time so that update rate limits don't cause an update to
-    // fail.
-    task_environment()->FastForwardBy(
-        InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+    // Bypass update rate limits.
+    manager_->AllowUpdateIfOlderThan(
+        blink::InterestGroupKey(kOriginA, kInterestGroupName),
+        base::TimeDelta());
 
     // Set new update response, and update.
     network_responder_->RegisterUpdateResponse(
