@@ -1060,28 +1060,26 @@ def _is_allowed_ldflag(flag):
     ])
 
 
-def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
+def configure_cc_module(cc_properties, cflags, defines, ldflags, libs,
                         blueprint, context):
-    module.cflags = _get_cflags(cflags, defines)
-    ldflags, version_script = _extract_version_script(ldflags)
-    module.ldflags = [flag for flag in ldflags if _is_allowed_ldflag(flag)]
-    if version_script:
-        # Unfortunately, Soong does not allow accessing linker scripts from parent
-        # path. So create a filegroup at the top-level Android.bp and reference it instead.
-        filegroup_module = _create_linker_script_filegroup(
-            version_script, main_module._is_test, context)
-        blueprint.add_module(filegroup_module)
-        version_script_deps = f':{filegroup_module.name}'
-        assert main_module.version_script is None or main_module.version_script == version_script_deps, f'Found different version scripts across different architectures!, target name: {main_module.name}, first version_script: {main_module.version_script}, second version_script: {version_script_deps}'
-        main_module.version_script = version_script_deps
+    cc_properties.cflags = _get_cflags(cflags, defines)
+    ldflags, _ = _extract_version_script(ldflags)
+    cc_properties.ldflags = [
+        flag for flag in ldflags if _is_allowed_ldflag(flag)
+    ]
+
+    main_module = cc_properties if isinstance(
+        cc_properties, soong_ast.Module) else cc_properties._parent
+    is_test = main_module._is_test
+
     for lib in libs:
         if lib.endswith('.lds'):
             linker_script = gn_utils.label_to_path(lib)
             filegroup_module = _create_linker_script_filegroup(
-                linker_script, main_module._is_test, context)
+                linker_script, is_test, context)
             blueprint.add_module(filegroup_module)
             linker_script_deps = f':{filegroup_module.name}'
-            module.linker_scripts.add(linker_script_deps)
+            cc_properties.linker_scripts.add(linker_script_deps)
         else:
             # Generally library names should be mangled as 'libXXX', unless they
             # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
@@ -1089,19 +1087,11 @@ def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
             android_lib = lib if '@' in lib or "-cpp" in lib or "-ndk" in lib \
                 else 'lib' + lib
             if lib in shared_library_allowlist:
-                module.shared_libs.add(android_lib)
+                cc_properties.shared_libs.add(android_lib)
     # TODO: implement proper cflag parsing.
     for flag in cflags:
         if '-fexceptions' in flag:
-            module.cppflags.append('-fexceptions')
-    cpp_std = _get_cpp_std(cflags)
-    if cpp_std:
-        assert main_module.cpp_std is None or main_module.cpp_std == cpp_std, f"Found different CPP version across different architectures!, target name: {main_module.name}, first cpp version: {main_module.cpp_std}, current cpp version: {cpp_std}"
-        # The -std= compiler option has a dedicated property in Android.bp, called cpp_std. That property
-        # can only be set at module top level; it cannot be set per-target. However in GN
-        # cflags are arch-specific, so we will find -std= when running on the
-        # arch-specific module. Hence we need to go back to the main module and set it there.
-        main_module.cpp_std = cpp_std
+            cc_properties.cppflags.append('-fexceptions')
 
 
 def _create_rust_build_script_output_copy_genrule(module_name,
@@ -1119,17 +1109,17 @@ def _create_rust_build_script_output_copy_genrule(module_name,
     return module
 
 
-def set_module_include_dirs(module, cflags, include_dirs, context):
+def set_module_include_dirs(cc_properties, cflags, include_dirs, context):
     for flag in cflags:
         if '-isystem' in flag:
-            module.include_dirs.add(
+            cc_properties.include_dirs.add(
                 f"external/cronet/{context.import_channel}/{flag[len('-isystem../../'):]}"
             )
 
     depends_on_binder_ndk = any("libbinder_ndk_cpp" in include_dir
                                 for include_dir in include_dirs)
     if depends_on_binder_ndk:
-        module.shared_libs.add("libbinder_ndk")
+        cc_properties.shared_libs.add("libbinder_ndk")
         include_dirs = [
             include_dir for include_dir in include_dirs
             if "libbinder_ndk_cpp" not in include_dir
@@ -1142,20 +1132,20 @@ def set_module_include_dirs(module, cflags, include_dirs, context):
     # Note: include_dirs is used instead of local_include_dirs as an Android.bp
     # can't access other directories outside of its current directory. This
     # is worked around by using include_dirs.
-    module.include_dirs.update([
+    cc_properties.include_dirs.update([
         f"external/cronet/{context.import_channel}/{gn_utils.label_to_path(d)}"
         for d in include_dirs if not d.startswith('//out')
     ])
     # Remove prohibited include directories
-    module.include_dirs = [
-        d for d in module.include_dirs
+    cc_properties.include_dirs = [
+        d for d in cc_properties.include_dirs
         if d not in context.include_dirs_denylist
     ]
 
     # If we end up including Cronet's root, then also include the Android-side
     # unversioned include override directory, with higher precedence.
-    if f"external/cronet/{context.import_channel}/" in module.include_dirs:
-        module.include_dirs.insert(0, "external/cronet/include/")
+    if f"external/cronet/{context.import_channel}/" in cc_properties.include_dirs:
+        cc_properties.include_dirs.insert(0, "external/cronet/include/")
 
 
 def create_aidl_module(bp_module_name, target, blueprint, is_test_target,
@@ -1434,21 +1424,62 @@ def _create_initial_modules(blueprint, gn, target, bp_module_name,
     return modules
 
 
+def _extract_cc_global_properties(target):
+    cpp_std = None
+    version_script = None
+
+    # Check common
+    if target.common.cflags:
+        cpp_std = _get_cpp_std(target.common.cflags)
+    if target.common.ldflags:
+        _, version_script = _extract_version_script(target.common.ldflags)
+
+    # Check archs
+    for arch in target.get_archs().values():
+        arch_cpp_std = _get_cpp_std(arch.cflags)
+        if arch_cpp_std:
+            # The -std= compiler option has a dedicated property in Android.bp, called cpp_std. That property
+            # can only be set at module top level; it cannot be set per-target. However in GN
+            # cflags are arch-specific, so we will find -std= when running on the
+            # arch-specific module. Hence we need to go back to the main module and set it there.
+            assert cpp_std is None or cpp_std == arch_cpp_std, f"Found different CPP version across different architectures!, target name: {target.name}, first cpp version: {cpp_std}, current cpp version: {arch_cpp_std}"
+            cpp_std = arch_cpp_std
+
+        if arch.ldflags:
+            _, arch_version_script = _extract_version_script(arch.ldflags)
+            if arch_version_script:
+                assert version_script is None or version_script == arch_version_script, f"Found different version scripts across different architectures!, target name: {target.name}, first version_script: {version_script}, second version_script: {arch_version_script}"
+                version_script = arch_version_script
+
+    return cpp_std, version_script
+
+
 def _configure_cc_properties(module, target, blueprint, context):
     if isinstance(module, soong_ast.CcModule):
         module.rtti = target.rtti
 
     if target.type in gn_utils.LINKER_UNIT_TYPES:
+        cpp_std, version_script = _extract_cc_global_properties(target)
+        if cpp_std:
+            module.cpp_std = cpp_std
+        if version_script:
+            # Unfortunately, Soong does not allow accessing linker scripts from parent
+            # path. So create a filegroup at the top-level Android.bp and reference it instead.
+            filegroup_module = _create_linker_script_filegroup(
+                version_script, module._is_test, context)
+            blueprint.add_module(filegroup_module)
+            module.version_script = f':{filegroup_module.name}'
+
         configure_cc_module(module, target.common.cflags,
                             target.common.defines, target.common.ldflags,
-                            target.common.libs, module, blueprint, context)
+                            target.common.libs, blueprint, context)
         set_module_include_dirs(module, target.common.cflags,
                                 target.common.include_dirs, context)
         # TODO: set_module_xxx is confusing, apply similar function to module and target in better way.
         for arch_name, arch in target.get_archs().items():
             # TODO(aymanm): Make libs arch-specific.
             configure_cc_module(module.target[arch_name], arch.cflags,
-                                arch.defines, arch.ldflags, arch.libs, module,
+                                arch.defines, arch.ldflags, arch.libs,
                                 blueprint, context)
             # -Xclang -target-feature -Xclang +mte are used to enable MTE (Memory Tagging Extensions).
             # Flags which does not start with '-' could not be in the cflags so enabling MTE by
