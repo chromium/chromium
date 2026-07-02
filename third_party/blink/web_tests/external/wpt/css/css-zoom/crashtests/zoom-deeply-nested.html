@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-</script>
+<meta charset="utf-8">
+<title>CSS zoom on deeply nested elements should not crash</title>
+<link rel="help" href="https://crbug.com/40402005">
 <style>
-    span { zoom: .1%; }
+span { zoom: .1%; }
 </style>
-<pre>PASS if no crash</pre>
 <span><span><span><span><span><span><span><span><span><span>
 <span><span><span><span><span><span><span><span><span><span>
 <span><span><span><span><span><span><span><span><span><span>
