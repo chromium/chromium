@@ -19667,6 +19667,25 @@
             ]
         }
     ],
+    "PrecomputeSiteInfo": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260127",
+                    "enable_features": [
+                        "PrecomputeSiteInfo"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectCreateNewTab": [
         {
             "platforms": [
