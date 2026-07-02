@@ -256,11 +256,6 @@ BASE_FEATURE(kTabHoverCardImages,
 #endif
 );
 
-// Skips the synthetic tab selection event fired when a browser window is
-// activated.
-BASE_FEATURE(kTabStripSkipSelectionEventOnActivation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabStripNewTabButtonFlickerFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabModalUsesDesktopWidget, base::FEATURE_DISABLED_BY_DEFAULT);

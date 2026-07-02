@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -2418,9 +2417,7 @@ void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
     return;
   }
 
-  if (active && selected_tabs_.active().has_value() &&
-      !base::FeatureList::IsEnabled(
-          features::kTabStripSkipSelectionEventOnActivation)) {
+  if (active && selected_tabs_.active().has_value()) {
     // When the browser window is activated, set the accessible selection and
     // fire a selection event on the currently active tab, to help enable
     // per-tab modes in assistive technologies.
