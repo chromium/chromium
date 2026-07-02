@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/thread_pool.h"
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
@@ -25,41 +26,44 @@ PageContextEligibilityObserver::Create(
   if (!web_contents) {
     return nullptr;
   }
-  PageContextEligibility* api_holder = PageContextEligibility::Get();
-  if (!api_holder) {
-    return nullptr;
-  }
   return base::WrapUnique(new PageContextEligibilityObserver(
-      web_contents, std::move(account), std::move(callback), api_holder));
+      web_contents, std::move(account), std::move(callback)));
 }
 
 PageContextEligibilityObserver::PageContextEligibilityObserver(
     content::WebContents* web_contents,
     std::string account,
-    base::RepeatingCallback<void(bool)> callback,
-    const PageContextEligibility* api_holder)
+    base::RepeatingCallback<void(bool)> callback)
     : content::WebContentsObserver(web_contents),
       account_(std::move(account)),
-      api_holder_(api_holder) {
-  UpdateObserver();
-  callback_ = std::move(callback);
+      callback_(std::move(callback)) {
+  StartApiLoading();
 }
 
 PageContextEligibilityObserver::~PageContextEligibilityObserver() = default;
 
 void PageContextEligibilityObserver::CheckEligibilityAndNotify() {
-  bool current_eligibility = ComputePageContextEligibility();
-  if (!last_eligibility_.has_value() ||
-      last_eligibility_.value() != current_eligibility) {
+  if (!is_api_loaded_) {
+    return;
+  }
+  bool is_eligible = ComputePageContextEligibility();
+  PageContextEligibilityStatus current_eligibility =
+      is_eligible ? PageContextEligibilityStatus::kEligible
+                  : PageContextEligibilityStatus::kNotEligible;
+
+  bool is_initial_evaluation =
+      (last_eligibility_ == PageContextEligibilityStatus::kUnknown);
+  if (is_initial_evaluation || last_eligibility_ != current_eligibility) {
     last_eligibility_ = current_eligibility;
     if (callback_) {
-      callback_.Run(current_eligibility);
+      callback_.Run(is_eligible);
     }
   }
 }
 
-bool PageContextEligibilityObserver::IsPageContextEligible() const {
-  return last_eligibility_.value_or(true);
+PageContextEligibilityStatus
+PageContextEligibilityObserver::IsPageContextEligible() const {
+  return last_eligibility_;
 }
 
 bool PageContextEligibilityObserver::ComputePageContextEligibility() {
@@ -115,6 +119,9 @@ void PageContextEligibilityObserver::DidFinishNavigation(
 }
 
 void PageContextEligibilityObserver::UpdateObserver() {
+  if (!is_api_loaded_) {
+    return;
+  }
   std::vector<optimization_guide::FrameUrl> current_frames;
   if (web_contents()->GetPrimaryMainFrame()) {
     web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
@@ -187,6 +194,21 @@ void PageContextEligibilityObserver::OnMetaTagsChanged(
   }
 
   CheckEligibilityAndNotify();
+}
+
+void PageContextEligibilityObserver::StartApiLoading() {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&PageContextEligibility::Get),
+      base::BindOnce(&PageContextEligibilityObserver::OnApiLoaded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PageContextEligibilityObserver::OnApiLoaded(
+    const PageContextEligibility* api) {
+  api_holder_ = api;
+  is_api_loaded_ = true;
+  UpdateObserver();
 }
 
 }  // namespace optimization_guide

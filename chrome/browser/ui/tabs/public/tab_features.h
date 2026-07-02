@@ -185,6 +185,7 @@ namespace tabs {
 
 class ContextHighlightTabFeature;
 class InactiveWindowMouseEventController;
+class PageContextEligibilityHelper;
 class TabAlertController;
 class TabAttachmentTracker;
 class TabCreationMetricsController;
@@ -578,6 +579,9 @@ class TabFeatures {
 
   std::unique_ptr<skills::SkillsUiTabControllerInterface>
       skills_ui_tab_controller_;
+
+  std::unique_ptr<tabs::PageContextEligibilityHelper>
+      page_context_eligibility_helper_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

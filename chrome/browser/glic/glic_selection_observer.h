@@ -135,7 +135,7 @@ class GlicSelectionObserver
 
   void RequestLinkGeneration(content::RenderFrameHost* rfh);
 
-  void OnPageContextEligibilityChanged(bool is_eligible);
+  void OnPageContextEligibilityChanged(std::optional<bool> is_eligible);
   void CreatePageContextEligibilityAPI(std::string account);
   void OnPageContextEligibilityAPILoaded(
       std::string account,
@@ -189,11 +189,14 @@ class GlicSelectionObserver
   friend class GlicSelectionObserverTest;
 
  protected:
+  std::optional<bool> IsPageContextEligible() const;
+
   ::optimization_guide::PageContextEligibilityObserver* page_context_tracker() {
     return page_context_tracker_.get();
   }
 
  private:
+  base::CallbackListSubscription page_context_eligibility_subscription_;
   std::unique_ptr<::optimization_guide::PageContextEligibilityObserver>
       page_context_tracker_;
   base::WeakPtrFactory<GlicSelectionObserver> weak_ptr_factory_{this};
