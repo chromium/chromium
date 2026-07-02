@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
-#import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -38,6 +37,8 @@ using tabs_closure_util::GetTabsInfoForCache;
 using tabs_closure_util::GetTabsToClose;
 using tabs_closure_util::WebStateIDToTime;
 
+using TabGroupIDToIndexSet = std::map<tab_groups::TabGroupId, std::set<int>>;
+
 // List all ContentWorlds. Necessary because calling SetWebFramesManager(...)
 // with a kAllContentWorlds is not enough with FakeWebState.
 constexpr web::ContentWorld kContentWorlds[] = {
@@ -46,9 +47,6 @@ constexpr web::ContentWorld kContentWorlds[] = {
     web::ContentWorld::kIsolatedWorld,
 };
 
-// Session name used by the fake SceneState.
-const char kSceneSessionID[] = "Identifier";
-
 // Gets the WebStateIDs from `WebStateIDToTime`.
 std::set<web::WebStateID> GetWebStateIDs(WebStateIDToTime tabs) {
   std::set<web::WebStateID> expected_web_state_ids;
@@ -56,6 +54,13 @@ std::set<web::WebStateID> GetWebStateIDs(WebStateIDToTime tabs) {
     expected_web_state_ids.insert(tab.first);
   }
   return expected_web_state_ids;
+}
+
+// Returns the identifier of the tab at index.
+web::WebStateID GetWebStateIdentifierAt(const WebStateList* list, int index) {
+  CHECK_GE(index, 0);
+  CHECK_LT(index, list->count());
+  return list->GetWebStateAt(index)->GetUniqueIdentifier();
 }
 
 }  // namespace
@@ -84,74 +89,85 @@ class TabsClosureUtilTest : public PlatformTest {
     profile_ = std::move(builder).Build();
 
     scene_state_ = OCMClassMock([SceneState class]);
-    OCMStub([scene_state_ sceneSessionID]).andReturn(@(kSceneSessionID));
     browser_ = Browser::Create(profile_.get(), scene_state_);
   }
 
   Browser* browser() { return browser_.get(); }
 
-  web::WebState* web_state0() { return web_state0_; }
-  web::WebState* web_state1() { return web_state1_; }
+  // Information required to create a fake WebState.
+  struct FakeWebStateCreationParam {
+    const bool realized = false;
+    const bool pinned = false;
+    const bool set_last_active_time = false;
+  };
 
-  // Appends two unrealized WebStates in `browser_` and sets `web_state0_` and
-  // `web_state1_` with them. Returns a map with their WebState Ids and their
-  // last_navigation_time;
-  WebStateIDToTime AppendUnrealizedWebstates(base::Time last_navigation_time) {
-    web_state0_ = AppendWebState(/*realized=*/false, last_navigation_time);
-    web_state1_ = AppendWebState(/*realized=*/false, last_navigation_time);
+  // Return value of AppendFakeWebStates.
+  using AppendFakeWebStatesResult =
+      std::pair<std::vector<web::WebStateID>, WebStateIDToTime>;
 
+  // Appends fake WebStates according to params.
+  AppendFakeWebStatesResult AppendFakeWebStates(
+      base::Time last_navigation_time,
+      std::initializer_list<FakeWebStateCreationParam> params) {
+    std::vector<web::WebStateID> all_ids;
+    WebStateIDToTime unrealized_tabs_id_to_time;
+    all_ids.reserve(params.size());
+
+    constexpr std::string_view kURL = "https://example.com";
     WebStateList* web_state_list = browser()->GetWebStateList();
-    CHECK_EQ(web_state_list->count(), 2);
-    CHECK_EQ(web_state_list->GetWebStateAt(0), web_state0_);
-    CHECK_EQ(web_state_list->GetWebStateAt(1), web_state1_);
+    for (const auto& creation_param : params) {
+      auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+      navigation_manager->AddItem(GURL(kURL), ui::PAGE_TRANSITION_LINK);
+      web::NavigationItem* item = navigation_manager->GetItemAtIndex(0);
+      item->SetTimestamp(last_navigation_time);
+      navigation_manager->SetLastCommittedItem(item);
 
-    return {{web_state0_->GetUniqueIdentifier(), last_navigation_time},
-            {web_state1_->GetUniqueIdentifier(), last_navigation_time}};
-  }
+      auto web_state = std::make_unique<web::FakeWebState>();
+      web_state->SetIsRealized(creation_param.realized);
+      web_state->SetVisibleURL(GURL(kURL));
+      web_state->SetBrowserState(browser_->GetProfile());
+      web_state->SetNavigationManager(std::move(navigation_manager));
+      web_state->SetNavigationItemCount(1);
+      if (creation_param.set_last_active_time) {
+        web_state->SetLastActiveTime(last_navigation_time);
+      }
 
-  // Appends a fake WebState in `browser_`.
-  web::WebState* AppendWebState(bool realized,
-                                base::Time last_navigation_time,
-                                bool pinned = false) {
-    const GURL url = GURL("https://example.com");
-    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-    navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
-    web::NavigationItem* navigation_item =
-        navigation_manager->GetItemAtIndex(0);
-    navigation_item->SetTimestamp(last_navigation_time);
-    navigation_manager->SetLastCommittedItem(navigation_item);
+      for (const web::ContentWorld content_world : kContentWorlds) {
+        web_state->SetWebFramesManager(
+            content_world, std::make_unique<web::FakeWebFramesManager>());
+      }
 
-    auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetIsRealized(realized);
-    web_state->SetVisibleURL(url);
-    web_state->SetBrowserState(browser_->GetProfile());
-    web_state->SetNavigationManager(std::move(navigation_manager));
-    web_state->SetNavigationItemCount(1);
+      const web::WebStateID identifier = web_state->GetUniqueIdentifier();
+      const int insertion_index = web_state_list->InsertWebState(
+          std::move(web_state),
+          WebStateList::InsertionParams::AtIndex(web_state_list->count())
+              .Pinned(creation_param.pinned));
+      CHECK_GE(insertion_index, 0);
+      CHECK_EQ(insertion_index, web_state_list->count() - 1);
 
-    for (const web::ContentWorld content_world : kContentWorlds) {
-      web_state->SetWebFramesManager(
-          content_world, std::make_unique<web::FakeWebFramesManager>());
+      CHECK_EQ(GetWebStateIdentifierAt(web_state_list, insertion_index),
+               identifier);
+
+      all_ids.push_back(identifier);
+      if (!creation_param.realized) {
+        unrealized_tabs_id_to_time.insert(
+            std::make_pair(identifier, last_navigation_time));
+      }
     }
 
-    WebStateList* web_state_list = browser_->GetWebStateList();
-    // Force the insertion at the end. Otherwise, the opener will trigger logic
-    // to move an inserted WebState close to its opener.
-    const WebStateList::InsertionParams params =
-        WebStateList::InsertionParams::AtIndex(web_state_list->count())
-            .Pinned(pinned);
-    const int insertion_index =
-        web_state_list->InsertWebState(std::move(web_state), params);
-
-    return web_state_list->GetWebStateAt(insertion_index);
+    return {std::move(all_ids), std::move(unrealized_tabs_id_to_time)};
   }
 
   // Appends a tab group to  `_browser` with the tabs in `indexes`. These
   // indexes in WebStateList need to have been populated beforehand.
-  const TabGroup* AppendTabGroup(const std::set<int>& indexes) {
-    tab_groups::TabGroupVisualData visualData = tab_groups::TabGroupVisualData(
-        u"Group", tab_groups::TabGroupColorId::kPink);
-    return browser_->GetWebStateList()->CreateGroup(
-        indexes, visualData, tab_groups::TabGroupId::GenerateNew());
+  tab_groups::TabGroupId AppendTabGroup(const std::set<int>& indexes) {
+    const auto group_id = tab_groups::TabGroupId::GenerateNew();
+    browser_->GetWebStateList()->CreateGroup(
+        indexes,
+        tab_groups::TabGroupVisualData(u"Group",
+                                       tab_groups::TabGroupColorId::kPink),
+        group_id);
+    return group_id;
   }
 
  private:
@@ -160,9 +176,6 @@ class TabsClosureUtilTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
-
-  raw_ptr<web::WebState, DanglingUntriaged> web_state0_;
-  raw_ptr<web::WebState, DanglingUntriaged> web_state1_;
 };
 
 // Tests `GetTabsInfoForCache` with several time ranges.
@@ -204,52 +217,55 @@ TEST_F(TabsClosureUtilTest, GetCountOfTabsToClose) {
 // this case, all tabs associated with the browser which are unrealized.
 TEST_F(TabsClosureUtilTest, CloseTabs_RemoveAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-
-  CloseTabs(web_state_list, begin_time, end_time, tabs,
+  CloseTabs(web_state_list, begin_time, end_time, unrealized_tabs_id_to_time,
             /*keep_active_tab=*/false);
 
   EXPECT_TRUE(web_state_list->empty());
 }
 
 // Tests that `CloseTabs` correctly closes the tabs within the time range, in
-// this case, all tabs associated with the browser which are unrealized.
+// this case, all tabs associated with the browser which are unrealized except
+// the active tab.
 TEST_F(TabsClosureUtilTest, CloseTabs_KeepActiveTab) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  web::WebState* web_state = web_state_list->GetWebStateAt(0);
+  ASSERT_EQ(web_state_list->count(), 2);
+  const auto web_state0_id = GetWebStateIdentifierAt(web_state_list, 0);
   web_state_list->ActivateWebStateAt(0);
 
-  CloseTabs(web_state_list, begin_time, end_time, tabs,
+  CloseTabs(web_state_list, begin_time, end_time, unrealized_tabs_id_to_time,
             /*keep_active_tab=*/true);
 
-  EXPECT_EQ(web_state_list->count(), 1);
-  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state);
+  ASSERT_EQ(web_state_list->count(), 1);
+  EXPECT_EQ(GetWebStateIdentifierAt(web_state_list, 0), web_state0_id);
 }
 
 // Tests that `GetTabsToClose` correctly return the tabs within the time range,
 // in this case, all tabs associated with the browser which are unrealized.
 TEST_F(TabsClosureUtilTest, GetTabsToClose_RemoveAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
+  const std::set<web::WebStateID> web_state_ids = GetTabsToClose(
+      web_state_list, begin_time, end_time, unrealized_tabs_id_to_time);
 
-  std::set<web::WebStateID> web_state_ids =
-      GetTabsToClose(web_state_list, begin_time, end_time, tabs);
-
-  EXPECT_EQ(web_state_ids.size(), tabs.size());
-  EXPECT_EQ(web_state_ids, GetWebStateIDs(tabs));
+  EXPECT_EQ(web_state_ids.size(), unrealized_tabs_id_to_time.size());
+  EXPECT_EQ(web_state_ids, GetWebStateIDs(unrealized_tabs_id_to_time));
 }
 
 // Tests that `GetTabGroupsWithTabsToClose` correctly returns the tab groups
@@ -257,19 +273,21 @@ TEST_F(TabsClosureUtilTest, GetTabsToClose_RemoveAllTabs) {
 // browser which are unrealized.
 TEST_F(TabsClosureUtilTest, GetTabGroupsWithTabsToClose_RemoveAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  const TabGroup* group0 = AppendTabGroup({0});
-  const TabGroup* group1 = AppendTabGroup({1});
+  const tab_groups::TabGroupId group0 = AppendTabGroup({0});
+  const tab_groups::TabGroupId group1 = AppendTabGroup({1});
 
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
-      GetTabGroupsWithTabsToClose(web_state_list, begin_time, end_time, tabs);
+  const TabGroupIDToIndexSet tab_group_ids = GetTabGroupsWithTabsToClose(
+      web_state_list, begin_time, end_time, unrealized_tabs_id_to_time);
 
-  std::map<tab_groups::TabGroupId, std::set<int>> expected_tab_group_ids = {
-      {group0->tab_group_id(), {0}}, {group1->tab_group_id(), {1}}};
+  const TabGroupIDToIndexSet expected_tab_group_ids = {{group0, {0}},
+                                                       {group1, {1}}};
+
   EXPECT_EQ(tab_group_ids.size(), 2u);
   EXPECT_EQ(tab_group_ids, expected_tab_group_ids);
 }
@@ -280,18 +298,19 @@ TEST_F(TabsClosureUtilTest, GetTabGroupsWithTabsToClose_RemoveAllTabs) {
 TEST_F(TabsClosureUtilTest,
        GetTabGroupsWithTabsToClose_RemoveAllTabs_SameGroup) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  const TabGroup* group = AppendTabGroup({0, 1});
+  const tab_groups::TabGroupId group = AppendTabGroup({0, 1});
 
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
-      GetTabGroupsWithTabsToClose(web_state_list, begin_time, end_time, tabs);
+  const TabGroupIDToIndexSet tab_group_ids = GetTabGroupsWithTabsToClose(
+      web_state_list, begin_time, end_time, unrealized_tabs_id_to_time);
 
-  std::map<tab_groups::TabGroupId, std::set<int>> expected_tab_group_ids = {
-      {group->tab_group_id(), {0, 1}}};
+  const TabGroupIDToIndexSet expected_tab_group_ids = {{group, {0, 1}}};
+
   EXPECT_EQ(tab_group_ids.size(), 1u);
   EXPECT_EQ(tab_group_ids, expected_tab_group_ids);
 }
@@ -301,14 +320,14 @@ TEST_F(TabsClosureUtilTest,
 // are in a group.
 TEST_F(TabsClosureUtilTest, GetTabGroupsWithTabsToClose_NoTabGroups) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
-      GetTabGroupsWithTabsToClose(web_state_list, begin_time, end_time, tabs);
+  const TabGroupIDToIndexSet tab_group_ids = GetTabGroupsWithTabsToClose(
+      web_state_list, begin_time, end_time, unrealized_tabs_id_to_time);
 
   EXPECT_TRUE(tab_group_ids.empty());
 }
@@ -318,22 +337,15 @@ TEST_F(TabsClosureUtilTest, GetTabGroupsWithTabsToClose_NoTabGroups) {
 // as cached information and the ones created after.
 TEST_F(TabsClosureUtilTest, CloseTabs_NoMatchingTabsForDeletion) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}, {.realized = true}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  web::WebState* web_state3_ =
-      AppendWebState(/*realized=*/true, end_time - base::Minutes(1));
-
-  ASSERT_EQ(web_state_list->count(), 3);
-  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0());
-  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1());
-  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state3_);
-
-  // The unrelized webstates are passed direcly. The realized webstates will be
-  // checked directly.
-  CloseTabs(web_state_list, begin_time, end_time, tabs,
+  // The unrealized webstates are passed direcly. The realized webstates will
+  // be checked directly.
+  CloseTabs(web_state_list, begin_time, end_time, unrealized_tabs_id_to_time,
             /*keep_active_tab=*/false);
 
   EXPECT_TRUE(web_state_list->empty());
@@ -344,27 +356,21 @@ TEST_F(TabsClosureUtilTest, CloseTabs_NoMatchingTabsForDeletion) {
 // as cached information and the ones created after.
 TEST_F(TabsClosureUtilTest, GetTabsToClose_NoMatchingTabsForDeletion) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}, {.realized = true}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  web::WebState* web_state3_ =
-      AppendWebState(/*realized=*/true, end_time - base::Minutes(1));
-
-  ASSERT_EQ(web_state_list->count(), 3);
-  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0());
-  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1());
-  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state3_);
-
-  // The unrelized webstates are passed direcly. The realized webstates will be
-  // checked directly.
-  std::set<web::WebStateID> web_state_ids =
-      GetTabsToClose(web_state_list, begin_time, end_time, tabs);
+  // The unrealized webstates are passed direcly. The realized webstates will
+  // be checked directly.
+  const std::set<web::WebStateID> web_state_ids = GetTabsToClose(
+      web_state_list, begin_time, end_time, unrealized_tabs_id_to_time);
 
   EXPECT_EQ(web_state_ids.size(), 3u);
-  std::set<web::WebStateID> expected_web_state_ids = GetWebStateIDs(tabs);
-  expected_web_state_ids.insert(web_state3_->GetUniqueIdentifier());
+
+  const std::set<web::WebStateID> expected_web_state_ids(all_ids.begin(),
+                                                         all_ids.end());
   EXPECT_EQ(web_state_ids, expected_web_state_ids);
 }
 
@@ -375,91 +381,101 @@ TEST_F(TabsClosureUtilTest, GetTabsToClose_NoMatchingTabsForDeletion) {
 TEST_F(TabsClosureUtilTest,
        GetTabGroupsWithTabsToClose_NoMatchingTabsForDeletion) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}, {.realized = true}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  web::WebState* web_state2 =
-      AppendWebState(/*realized=*/true, end_time - base::Minutes(1));
+  const tab_groups::TabGroupId group0 = AppendTabGroup({0});
+  const tab_groups::TabGroupId group1 = AppendTabGroup({1});
+  const tab_groups::TabGroupId group2 = AppendTabGroup({2});
 
-  ASSERT_EQ(web_state_list->count(), 3);
-  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0());
-  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1());
-  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state2);
+  // The unrealized webstates are passed direcly. The realized webstates will
+  // be checked directly.
+  const TabGroupIDToIndexSet tab_group_ids = GetTabGroupsWithTabsToClose(
+      web_state_list, begin_time, end_time, unrealized_tabs_id_to_time);
 
-  const TabGroup* group0 = AppendTabGroup({0});
-  const TabGroup* group1 = AppendTabGroup({1});
-  const TabGroup* group2 = AppendTabGroup({2});
+  const TabGroupIDToIndexSet expected_tab_group_ids = {
+      {group0, {0}}, {group1, {1}}, {group2, {2}}};
 
-  // The unrelized webstates are passed direcly. The realized webstates will be
-  // checked directly.
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
-      GetTabGroupsWithTabsToClose(web_state_list, begin_time, end_time, tabs);
-
-  std::map<tab_groups::TabGroupId, std::set<int>> expected_tab_group_ids = {
-      {group0->tab_group_id(), {0}},
-      {group1->tab_group_id(), {1}},
-      {group2->tab_group_id(), {2}}};
   EXPECT_EQ(tab_group_ids.size(), 3u);
   EXPECT_EQ(tab_group_ids, expected_tab_group_ids);
 }
 
 // Tests that `CloseTabs` correctly closes the cached unrealized tab, but not
-// the non cached realized tab.
+// the non cached unrealized tab.
 TEST_F(TabsClosureUtilTest, CloseTabs_OnlyOneTabForDeletion) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
+  ASSERT_EQ(all_ids.size(), 2u);
+  const web::WebStateID web_state_id0 = all_ids[0];
+  const web::WebStateID web_state_id1 = all_ids[1];
+  ASSERT_NE(web_state_id0, web_state_id1);
 
-  CloseTabs(web_state_list, begin_time, end_time,
-            {{tabs.begin()->first, tabs.begin()->second}},
+  const auto iter = unrealized_tabs_id_to_time.find(web_state_id0);
+  ASSERT_NE(iter, unrealized_tabs_id_to_time.end());
+  CloseTabs(web_state_list, begin_time, end_time, {{iter->first, iter->second}},
             /*keep_active_tab=*/false);
 
-  EXPECT_EQ(web_state_list->count(), 1);
-  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state1());
+  ASSERT_EQ(web_state_list->count(), 1);
+  EXPECT_EQ(GetWebStateIdentifierAt(web_state_list, 0), web_state_id1);
 }
 
 // Tests that `GetTabsToClose` correctly return the cached unrealized tab, but
-// not the non cached realized tab.
+// not the non cached unrealized tab.
 TEST_F(TabsClosureUtilTest, GetTabsToClose_OnlyOneTabForDeletion) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
+  ASSERT_EQ(all_ids.size(), 2u);
+  const web::WebStateID web_state_id0 = all_ids[0];
+  const web::WebStateID web_state_id1 = all_ids[1];
+  ASSERT_NE(web_state_id0, web_state_id1);
 
-  std::set<web::WebStateID> web_state_ids =
-      GetTabsToClose(web_state_list, begin_time, end_time,
-                     {{tabs.begin()->first, tabs.begin()->second}});
+  const auto iter = unrealized_tabs_id_to_time.find(web_state_id0);
+  ASSERT_NE(iter, unrealized_tabs_id_to_time.end());
+  const std::set<web::WebStateID> web_state_ids = GetTabsToClose(
+      web_state_list, begin_time, end_time, {{iter->first, iter->second}});
 
-  EXPECT_EQ(web_state_ids.size(), 1u);
-  EXPECT_TRUE(web_state_ids.contains(web_state0()->GetUniqueIdentifier()));
+  ASSERT_EQ(web_state_ids.size(), 1u);
+  EXPECT_TRUE(web_state_ids.contains(web_state_id0));
 }
 
 // Tests that `GetTabGroupsWithTabsToClose` correctly returns the tab groups
 // with tabs within the time frame, in this case, cached unrealized tab, but not
-// the non cached realized tab.
+// the non cached unrealized tab.
 TEST_F(TabsClosureUtilTest, GetTabGroupsWithTabsToClose_OnlyOneTabForDeletion) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  const TabGroup* group0 = AppendTabGroup({0});
-  AppendTabGroup({1});
+  const tab_groups::TabGroupId group0 = AppendTabGroup({0});
+  const tab_groups::TabGroupId _ = AppendTabGroup({1});
 
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
-      GetTabGroupsWithTabsToClose(
-          web_state_list, begin_time, end_time,
-          {{tabs.begin()->first, tabs.begin()->second}});
-  std::map<tab_groups::TabGroupId, std::set<int>> expected_tab_group_ids = {
-      {group0->tab_group_id(), {0}}};
+  ASSERT_EQ(all_ids.size(), 2u);
+  const web::WebStateID web_state_id0 = all_ids[0];
+  const web::WebStateID web_state_id1 = all_ids[1];
+  ASSERT_NE(web_state_id0, web_state_id1);
+
+  const auto iter = unrealized_tabs_id_to_time.find(web_state_id0);
+  ASSERT_NE(iter, unrealized_tabs_id_to_time.end());
+
+  const TabGroupIDToIndexSet tab_group_ids = GetTabGroupsWithTabsToClose(
+      web_state_list, begin_time, end_time, {{iter->first, iter->second}});
+  const TabGroupIDToIndexSet expected_tab_group_ids = {{group0, {0}}};
 
   EXPECT_EQ(tab_group_ids.size(), 1u);
   EXPECT_EQ(tab_group_ids, expected_tab_group_ids);
@@ -467,24 +483,30 @@ TEST_F(TabsClosureUtilTest, GetTabGroupsWithTabsToClose_OnlyOneTabForDeletion) {
 
 // Tests that `GetTabGroupsWithTabsToClose` correctly returns the tab groups
 // with tabs within the time frame, in this case, the cached unrealized tab, but
-// not the non cached realized tab. This test tests tabs all within the same
+// not the non cached unrealized tab. This test tests tabs all within the same
 // group.
 TEST_F(TabsClosureUtilTest,
        GetTabGroupsWithTabsToClose_OnlyOneTabForDeletion_SameGroup) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  WebStateIDToTime tabs =
-      AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  const TabGroup* group0 = AppendTabGroup({0, 1});
+  ASSERT_EQ(all_ids.size(), 2u);
+  const web::WebStateID web_state_id0 = all_ids[0];
+  const web::WebStateID web_state_id1 = all_ids[1];
+  ASSERT_NE(web_state_id0, web_state_id1);
 
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
-      GetTabGroupsWithTabsToClose(
-          web_state_list, begin_time, end_time,
-          {{tabs.begin()->first, tabs.begin()->second}});
-  std::map<tab_groups::TabGroupId, std::set<int>> expected_tab_group_ids = {
-      {group0->tab_group_id(), {0}}};
+  const auto iter = unrealized_tabs_id_to_time.find(web_state_id0);
+  ASSERT_NE(iter, unrealized_tabs_id_to_time.end());
+
+  const tab_groups::TabGroupId group0 = AppendTabGroup({0, 1});
+
+  const TabGroupIDToIndexSet tab_group_ids = GetTabGroupsWithTabsToClose(
+      web_state_list, begin_time, end_time, {{iter->first, iter->second}});
+  const TabGroupIDToIndexSet expected_tab_group_ids = {{group0, {0}}};
 
   EXPECT_EQ(tab_group_ids.size(), 1u);
   EXPECT_EQ(tab_group_ids, expected_tab_group_ids);
@@ -494,32 +516,39 @@ TEST_F(TabsClosureUtilTest,
 // tabs for deletion matches with the ones in browser.
 TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedAndNotMatchingTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  AppendUnrealizedWebstates(end_time - base::Minutes(1));
+  ASSERT_EQ(all_ids.size(), 2u);
+  const web::WebStateID web_state_id0 = all_ids[0];
+  const web::WebStateID web_state_id1 = all_ids[1];
+  ASSERT_NE(web_state_id0, web_state_id1);
 
   CloseTabs(web_state_list, begin_time, end_time,
-            {{web::WebStateID::NewUnique(), end_time - base::Minutes(1)}},
+            {{web::WebStateID::NewUnique(), last_navigation_time}},
             /*keep_active_tab=*/false);
 
-  EXPECT_EQ(web_state_list->count(), 2);
-  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0());
-  EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1());
+  ASSERT_EQ(web_state_list->count(), 2);
+  EXPECT_EQ(GetWebStateIdentifierAt(web_state_list, 0), web_state_id0);
+  EXPECT_EQ(GetWebStateIdentifierAt(web_state_list, 1), web_state_id1);
 }
 
 // Tests that `GetTabsToClose` correctly returns the unrealized tabs when none
 // of the cached tabs for deletion matches with the ones in browser.
 TEST_F(TabsClosureUtilTest, GetTabsToClose_UnrealizedAndNotMatchingTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  AppendUnrealizedWebstates(end_time - base::Minutes(1));
-
-  std::set<web::WebStateID> web_state_ids = GetTabsToClose(
-      web_state_list, begin_time, end_time,
-      {{web::WebStateID::NewUnique(), end_time - base::Minutes(1)}});
+  const std::set<web::WebStateID> web_state_ids =
+      GetTabsToClose(web_state_list, begin_time, end_time,
+                     {{web::WebStateID::NewUnique(), last_navigation_time}});
 
   EXPECT_TRUE(web_state_ids.empty());
 }
@@ -531,16 +560,17 @@ TEST_F(TabsClosureUtilTest, GetTabsToClose_UnrealizedAndNotMatchingTabs) {
 TEST_F(TabsClosureUtilTest,
        GetTabGroupsWithTabsToClose_UnrealizedAndNotMatchingTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{}, {}});
 
-  AppendUnrealizedWebstates(end_time - base::Minutes(1));
-  AppendTabGroup({0, 1});
+  const tab_groups::TabGroupId _ = AppendTabGroup({0, 1});
 
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
-      GetTabGroupsWithTabsToClose(
-          web_state_list, begin_time, end_time,
-          {{web::WebStateID::NewUnique(), end_time - base::Minutes(1)}});
+  const TabGroupIDToIndexSet tab_group_ids = GetTabGroupsWithTabsToClose(
+      web_state_list, begin_time, end_time,
+      {{web::WebStateID::NewUnique(), last_navigation_time}});
 
   EXPECT_TRUE(tab_group_ids.empty());
 }
@@ -550,12 +580,11 @@ TEST_F(TabsClosureUtilTest,
 // range.
 TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedNotCachedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
-
-  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(
-      AppendWebState(/*realized=*/false, end_time - base::Minutes(1)));
-  webstate->SetLastActiveTime(end_time - base::Minutes(1));
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] = AppendFakeWebStates(
+      last_navigation_time, {{.set_last_active_time = true}});
 
   CloseTabs(web_state_list, begin_time, end_time, {},
             /*keep_active_tab=*/false);
@@ -568,33 +597,36 @@ TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedNotCachedTabs) {
 // range.
 TEST_F(TabsClosureUtilTest, GetTabsToClose_UnrealizedNotCachedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] = AppendFakeWebStates(
+      last_navigation_time, {{.set_last_active_time = true}});
 
-  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(
-      AppendWebState(/*realized=*/false, end_time - base::Minutes(1)));
-  webstate->SetLastActiveTime(end_time - base::Minutes(1));
-
-  std::set<web::WebStateID> web_state_ids =
+  const std::set<web::WebStateID> web_state_ids =
       GetTabsToClose(web_state_list, begin_time, end_time, {});
 
+  const std::set<web::WebStateID> expected_ids(all_ids.begin(), all_ids.end());
+
   EXPECT_EQ(web_state_ids.size(), 1u);
-  EXPECT_TRUE(web_state_ids.contains(webstate->GetUniqueIdentifier()));
+  EXPECT_EQ(web_state_ids, expected_ids);
 }
 
-// Tests that `CloseTabs doesn't close tabs within the range unrelized but
+// Tests that `CloseTabs doesn't close tabs within the range unrealized but
 // cached if they're pinned.
 TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedCachedPinnedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
-  base::Time last_navigation_time = end_time - base::Minutes(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{.pinned = true}});
 
-  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(AppendWebState(
-      /*realized=*/false, last_navigation_time, /*pinned=*/true));
+  ASSERT_EQ(all_ids.size(), 1u);
+  const web::WebStateID web_state_id = all_ids[0];
 
   CloseTabs(web_state_list, begin_time, end_time,
-            {{webstate->GetUniqueIdentifier(), last_navigation_time}},
+            {{web_state_id, last_navigation_time}},
             /*keep_active_tab=*/false);
 
   EXPECT_EQ(web_state_list->count(), 1);
@@ -604,16 +636,18 @@ TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedCachedPinnedTabs) {
 // unrealized but cached if they're pinned.
 TEST_F(TabsClosureUtilTest, GetTabsToClose_UnrealizedCachedPinnedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
-  base::Time last_navigation_time = end_time - base::Minutes(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] =
+      AppendFakeWebStates(last_navigation_time, {{.pinned = true}});
 
-  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(AppendWebState(
-      /*realized=*/false, last_navigation_time, /*pinned=*/true));
+  ASSERT_EQ(all_ids.size(), 1u);
+  const web::WebStateID web_state_id = all_ids[0];
 
-  std::set<web::WebStateID> web_state_ids =
+  const std::set<web::WebStateID> web_state_ids =
       GetTabsToClose(web_state_list, begin_time, end_time,
-                     {{webstate->GetUniqueIdentifier(), last_navigation_time}});
+                     {{web_state_id, last_navigation_time}});
 
   EXPECT_TRUE(web_state_ids.empty());
 }
@@ -622,15 +656,17 @@ TEST_F(TabsClosureUtilTest, GetTabsToClose_UnrealizedCachedPinnedTabs) {
 // but not cached if they're pinned and realized.
 TEST_F(TabsClosureUtilTest, CloseTabs_RealizedNotCachedPinnedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
-  base::Time last_navigation_time = end_time - base::Minutes(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] = AppendFakeWebStates(
+      last_navigation_time, {{.realized = true, .pinned = true}});
 
-  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(
-      AppendWebState(/*realized=*/true, last_navigation_time, /*pinned=*/true));
+  ASSERT_EQ(all_ids.size(), 1u);
+  const web::WebStateID web_state_id = all_ids[0];
 
   CloseTabs(web_state_list, begin_time, end_time,
-            {{webstate->GetUniqueIdentifier(), last_navigation_time}},
+            {{web_state_id, last_navigation_time}},
             /*keep_active_tab=*/false);
 
   EXPECT_EQ(web_state_list->count(), 1);
@@ -640,16 +676,18 @@ TEST_F(TabsClosureUtilTest, CloseTabs_RealizedNotCachedPinnedTabs) {
 // realized but not cached if they're pinned.
 TEST_F(TabsClosureUtilTest, GetTabsToClose_RealizedNotCachedPinnedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
-  base::Time last_navigation_time = end_time - base::Minutes(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] = AppendFakeWebStates(
+      last_navigation_time, {{.realized = true, .pinned = true}});
 
-  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(AppendWebState(
-      /*realized=*/true, last_navigation_time, /*pinned=*/true));
+  ASSERT_EQ(all_ids.size(), 1u);
+  const web::WebStateID web_state_id = all_ids[0];
 
-  std::set<web::WebStateID> web_state_ids =
+  const std::set<web::WebStateID> web_state_ids =
       GetTabsToClose(web_state_list, begin_time, end_time,
-                     {{webstate->GetUniqueIdentifier(), last_navigation_time}});
+                     {{web_state_id, last_navigation_time}});
 
   EXPECT_TRUE(web_state_ids.empty());
 }
@@ -660,18 +698,17 @@ TEST_F(TabsClosureUtilTest, GetTabsToClose_RealizedNotCachedPinnedTabs) {
 TEST_F(TabsClosureUtilTest,
        GetTabGroupsWithTabsToClose_UnrealizedNotCachedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
-  base::Time end_time = base::Time::Now();
-  base::Time begin_time = end_time - base::Hours(1);
+  const base::Time end_time = base::Time::Now();
+  const base::Time begin_time = end_time - base::Hours(1);
+  const base::Time last_navigation_time = end_time - base::Minutes(1);
+  const auto [all_ids, unrealized_tabs_id_to_time] = AppendFakeWebStates(
+      last_navigation_time, {{.set_last_active_time = true}});
 
-  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(
-      AppendWebState(/*realized=*/false, end_time - base::Minutes(1)));
-  webstate->SetLastActiveTime(end_time - base::Minutes(1));
-  const TabGroup* group = AppendTabGroup({0});
+  const tab_groups::TabGroupId group = AppendTabGroup({0});
 
-  std::map<tab_groups::TabGroupId, std::set<int>> tab_group_ids =
+  const TabGroupIDToIndexSet tab_group_ids =
       GetTabGroupsWithTabsToClose(web_state_list, begin_time, end_time, {});
-  std::map<tab_groups::TabGroupId, std::set<int>> expected_tab_group_ids = {
-      {group->tab_group_id(), {0}}};
+  const TabGroupIDToIndexSet expected_tab_group_ids = {{group, {0}}};
 
   EXPECT_EQ(tab_group_ids.size(), 1u);
   EXPECT_EQ(tab_group_ids, expected_tab_group_ids);
