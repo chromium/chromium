@@ -107,11 +107,6 @@ std::optional<gfx::Size> GetMinBufferSize() {
   return value;
 }
 
-// If this feature is enabled, we use the default color space
-// for SharedImage instead of passing an invalid color space.
-BASE_FEATURE(kUseDefaultColorSpaceInFuchsiaDecoder,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 // Helper used to hold mailboxes for the output textures. OutputMailbox may
@@ -136,8 +131,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
     format.SetPrefersExternalSampler();
 
     auto si_color_space = color_space;
-    if (!si_color_space.IsValid() &&
-        base::FeatureList::IsEnabled(kUseDefaultColorSpaceInFuchsiaDecoder)) {
+    if (!si_color_space.IsValid()) {
       // Fuchsia decoder video frames are always multiplanar, so use BT.709
       // color space as default.
       si_color_space = gfx::ColorSpace::CreateREC709();

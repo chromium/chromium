@@ -157,11 +157,6 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   return config;
 }
 
-// If this feature is enabled, we use the destination color space for
-// SharedImage instead of passing an invalid color space.
-BASE_FEATURE(kUseDestinationColorSpaceInVideoEncode,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 gfx::ColorSpace GetDestinationColorSpace(
     VideoPixelFormat src_format,
     const gfx::ColorSpace& src_color_space) {
@@ -213,8 +208,7 @@ class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    if (!available_shared_images_.empty() &&
-        base::FeatureList::IsEnabled(kUseDestinationColorSpaceInVideoEncode)) {
+    if (!available_shared_images_.empty()) {
       auto shared_image = available_shared_images_.back();
       // If the color space changes, clear the pool as we need to destroy
       // SharedImages with previous color space. This should not be happening
@@ -1142,11 +1136,8 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
         gpu_factories_, dest_coded_size);
   }
 
-  gfx::ColorSpace color_space;
-  if (base::FeatureList::IsEnabled(kUseDestinationColorSpaceInVideoEncode)) {
-    color_space =
-        GetDestinationColorSpace(src_frame->format(), src_frame->ColorSpace());
-  }
+  gfx::ColorSpace color_space =
+      GetDestinationColorSpace(src_frame->format(), src_frame->ColorSpace());
   auto gpu_frame = gmb_frame_pool_->MaybeCreateVideoFrame(
       dest_visible_rect.size(), color_space);
   if (!gpu_frame)
@@ -1154,12 +1145,10 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   gpu_frame->set_timestamp(src_frame->timestamp());
   gpu_frame->metadata().MergeMetadataFrom(src_frame->metadata());
-  if (base::FeatureList::IsEnabled(kUseDestinationColorSpaceInVideoEncode)) {
-    // `color_space` respects the ColorSpace set on `mapped_gpu_frame` over
-    // ConvertAndScale. It uses a default ColorSpace if the `src_frame`
-    // ColorSpace is Invalid.
-    gpu_frame->set_color_space(color_space);
-  }
+  // `color_space` respects the ColorSpace set on `mapped_gpu_frame` over
+  // ConvertAndScale. It uses a default ColorSpace if the `src_frame`
+  // ColorSpace is Invalid.
+  gpu_frame->set_color_space(color_space);
 
   // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data
   // it just maps GPU buffer owned by |gpu_frame| and presents it as mapped

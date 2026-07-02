@@ -95,12 +95,6 @@ bool ShouldUseDXVADeviceForHEVCRangeExtension(const VideoDecoderConfig& config,
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
-// Killswitch for setting default fallback color space if its invalid (BT601 for
-// multi-planar, SRGB for single-planar). This color space is used to create
-// shared image, and set on video frame which is create from shared image.
-BASE_FEATURE(kSetDefaultColorSpaceForVideoFrameAndSharedImage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
@@ -783,9 +777,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
   if (!color_space.IsValid()) {
     color_space = config_.color_space_info().ToGfxColorSpace();
   }
-  if (!color_space.IsValid() &&
-      base::FeatureList::IsEnabled(
-          kSetDefaultColorSpaceForVideoFrameAndSharedImage)) {
+  if (!color_space.IsValid()) {
     auto output_si_format = texture_selector_->OutputSharedImageFormat();
     // Use BT709 as the default color space for multi-planar formats and SRGB
     // for single-planar.
