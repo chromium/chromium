@@ -98,6 +98,10 @@ component("url") {
     output_name = "url_lib"
   }
 
+  if (is_ios) {
+    sources += [ "url_constants_ios.h" ]
+  }
+
   # ICU support.
   if (use_platform_icu_alternatives) {
     if (is_android) {

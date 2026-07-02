@@ -28,6 +28,7 @@
 #import "ios/web/public/web_client.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
+#import "url/url_constants_ios.h"
 
 namespace {
 
@@ -46,6 +47,16 @@ bool IsValidAppUrl(const GURL& app_url) {
     return false;
   }
   return true;
+}
+
+// Returns true if `url` has a scheme that shows a prompt to initiate a phone or
+// video call.
+bool UrlHasCallWithPromptScheme(const GURL& url) {
+  return url.SchemeIs(url::kTelScheme) || url.SchemeIs(url::kTelPromptScheme) ||
+         url.SchemeIs(url::kFaceTimeScheme) ||
+         url.SchemeIs(url::kFaceTimePromptScheme) ||
+         url.SchemeIs(url::kFaceTimeAudioScheme) ||
+         url.SchemeIs(url::kFaceTimeAudioPromptScheme);
 }
 
 // Returns True if `app_url` has a Chrome bundle URL scheme.
@@ -134,7 +145,7 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
   }
 
   if (!(is_user_initiated ||
-        (url.SchemeIs(url::kTelScheme) && user_tapped_recently))) {
+        (UrlHasCallWithPromptScheme(url) && user_tapped_recently))) {
     ShowAppLaunchAlert(AppLauncherAlertCause::kNoUserInteraction, url);
     return;
   }
@@ -321,8 +332,9 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
             kNoAppLaunchRequest};
   }
 
-  // Disallow navigations to tel: URLs from cross-origin frames.
-  if (request_url.SchemeIs(url::kTelScheme) &&
+  // Disallow navigations to call or messaging URLs (tel:, telprompt:,
+  // facetime:, facetime-audio:, sms:) from cross-origin frames.
+  if (UrlHasCallWithPromptScheme(request_url) &&
       request_info.target_frame_is_cross_origin) {
     return {PolicyDecision::Cancel(), kNoAppLaunchRequest};
   }

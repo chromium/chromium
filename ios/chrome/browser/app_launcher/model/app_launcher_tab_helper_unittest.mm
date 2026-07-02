@@ -13,6 +13,7 @@
 #import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
 #import "components/policy/core/browser/url_list/policy_blocklist_service.h"
@@ -874,6 +875,59 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
                                       /*is_user_initiated=*/false,
                                       /*user_tapped_recently=*/true));
   EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
+}
+
+// Tests that tel:, facetime:, facetime-prompt:, facetime-audio:,
+// facetime-audio-prompt: and telprompt: URLs are blocked when the target frame
+// is cross-origin with respect to the source origin, and allowed when
+// same-origin.
+// TODO(crbug.com/40166678): The test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_CallWithPromptUrls CallWithPromptUrls
+#else
+#define MAYBE_CallWithPromptUrls DISABLED_CallWithPromptUrls
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_CallWithPromptUrls) {
+  NSArray<NSString*>* url_strings = @[
+    @"tel:+12345551212",
+    @"facetime://+12345551212",
+    @"facetime-prompt://+12345551212",
+    @"facetime-audio://+12345551212",
+    @"telprompt:+12345551212",
+    @"facetime-audio-prompt://+12345551212",
+  ];
+  for (NSString* url_string in url_strings) {
+    EXPECT_FALSE(TestShouldAllowRequest(url_string,
+                                        /*target_frame_is_main=*/true,
+                                        /*target_frame_is_cross_origin=*/true,
+                                        /*target_window_is_cross_origin=*/false,
+                                        /*is_user_initiated=*/true,
+                                        /*user_tapped_recently=*/true));
+    EXPECT_EQ(0U, delegate_.GetAppLaunchCount())
+        << base::SysNSStringToUTF8(url_string);
+
+    EXPECT_FALSE(TestShouldAllowRequest(url_string,
+                                        /*target_frame_is_main=*/false,
+                                        /*target_frame_is_cross_origin=*/true,
+                                        /*target_window_is_cross_origin=*/false,
+                                        /*is_user_initiated=*/true,
+                                        /*user_tapped_recently=*/true));
+    EXPECT_EQ(0U, delegate_.GetAppLaunchCount())
+        << base::SysNSStringToUTF8(url_string);
+  }
+
+  size_t expected_launch_count = 0U;
+  for (NSString* url_string in url_strings) {
+    EXPECT_FALSE(TestShouldAllowRequest(url_string,
+                                        /*target_frame_is_main=*/true,
+                                        /*target_frame_is_cross_origin=*/false,
+                                        /*target_window_is_cross_origin=*/false,
+                                        /*is_user_initiated=*/true,
+                                        /*user_tapped_recently=*/true));
+    ++expected_launch_count;
+    EXPECT_EQ(expected_launch_count, delegate_.GetAppLaunchCount())
+        << base::SysNSStringToUTF8(url_string);
+  }
 }
 
 // Tests that URLs with Chrome Bundle schemes are blocked on main frames and
