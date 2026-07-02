@@ -49,6 +49,14 @@ function isSha256Fingerprint(input) {
   }
 
   async function makeRequest() {
+    // The caller just added its 'securityInfo' listener, but that registration
+    // is async: it's a message the browser may not have processed yet. If we
+    // fetched now, the response could come back before securityInfo capture is
+    // on and the listener would see none (crbug.com/478208019).
+    // handlerBehaviorChanged() round-trips through the browser, so awaiting it
+    // guarantees our listener is registered before the request goes out.
+    await new Promise(resolve =>
+        chrome.webRequest.handlerBehaviorChanged(resolve));
     try {
       if (useWebSocket) {
         await openWebSocket();
