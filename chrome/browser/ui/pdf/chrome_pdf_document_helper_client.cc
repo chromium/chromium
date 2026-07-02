@@ -83,8 +83,9 @@ ChromePDFDocumentHelperClient::~ChromePDFDocumentHelperClient() = default;
 
 void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
     content::RenderFrameHost* render_frame_host) {
+  content::WebContents* web_contents = GetWebContentsToUse(render_frame_host);
   MaybeShowFeaturePromo(feature_engagement::kIPHPdfInkSignaturesFeature,
-                        GetWebContentsToUse(render_frame_host));
+                        web_contents);
 
   auto* parent = render_frame_host->GetParent();
   bool is_pdf_viewer =
@@ -94,6 +95,11 @@ void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
 
   if (is_pdf_viewer) {
     LogGlicSummarizeMetrics(render_frame_host);
+    if (web_contents &&
+        pdf_extension_util::ShouldShowGlicSummarizeButton(web_contents)) {
+      MaybeShowFeaturePromo(feature_engagement::kIPHPdfGlicSummarizeFeature,
+                            web_contents);
+    }
   }
 }
 

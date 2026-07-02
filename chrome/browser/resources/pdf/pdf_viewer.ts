@@ -924,15 +924,35 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.zoomBounds_.max =
         Math.round(presetZoomFactors[presetZoomFactors.length - 1]! * 100);
 
-    // <if expr="enable_pdf_ink2">
-    if (this.pdfInk2Enabled_) {
+    const hasGlic = loadTimeData.getBoolean('pdfGlicSummarizeEnabled');
+    if (
+        hasGlic
+        // <if expr="enable_pdf_ink2">
+        || this.pdfInk2Enabled_
+        // </if>
+    ) {
       this.updateComplete.then(() => {
-        this.registerHelpBubble(
-            'PdfHelpBubbleHandlerFactory::kPdfInkSignaturesDrawElementId',
-            this.$.toolbar.shadowRoot.querySelector<HTMLElement>('#annotate')!);
+        if (hasGlic) {
+          const summarizeBtn =
+              this.$.toolbar.shadowRoot.querySelector<HTMLElement>(
+                  '#glic-summarize-button');
+          if (summarizeBtn) {
+            this.registerHelpBubble(
+                'PdfHelpBubbleHandlerFactory::kPdfGlicSummarizeElementId',
+                summarizeBtn);
+          }
+        }
+
+        // <if expr="enable_pdf_ink2">
+        if (this.pdfInk2Enabled_) {
+          this.registerHelpBubble(
+              'PdfHelpBubbleHandlerFactory::kPdfInkSignaturesDrawElementId',
+              this.$.toolbar.shadowRoot.querySelector<HTMLElement>(
+                  '#annotate')!);
+        }
+        // </if>
       });
     }
-    // </if>
   }
 
   override handleScriptingMessage(message: MessageEvent<unknown>) {

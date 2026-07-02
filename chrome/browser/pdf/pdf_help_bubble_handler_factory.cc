@@ -11,6 +11,7 @@
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/common/chrome_features.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25,14 +26,22 @@
 namespace pdf {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PdfHelpBubbleHandlerFactory,
+                                      kPdfGlicSummarizeElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PdfHelpBubbleHandlerFactory,
                                       kPdfInkSignaturesDrawElementId);
 
 // static
 void PdfHelpBubbleHandlerFactory::Create(
     content::RenderFrameHost* render_frame_host,
     HelpFactoryPendingReceiver receiver) {
+  bool is_feature_enabled =
+      base::FeatureList::IsEnabled(features::kPdfGlicSummarize);
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2)) {
+  is_feature_enabled |=
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2);
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+  if (!is_feature_enabled) {
     return;
   }
 
@@ -45,7 +54,6 @@ void PdfHelpBubbleHandlerFactory::Create(
   // This class inherits from content::DocumentService<>, so its lifetime is
   // bound to the associated `render_frame_host`.
   new PdfHelpBubbleHandlerFactory(render_frame_host, std::move(receiver));
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }
 
 PdfHelpBubbleHandlerFactory::PdfHelpBubbleHandlerFactory(
@@ -65,6 +73,7 @@ void PdfHelpBubbleHandlerFactory::CreateHelpBubbleHandler(
       content::WebContents::FromRenderFrameHost(&render_frame_host()),
       ui::ElementContext(this, base::PassKey<PdfHelpBubbleHandlerFactory>()),
       std::vector<ui::ElementIdentifier>{
+          PdfHelpBubbleHandlerFactory::kPdfGlicSummarizeElementId,
           PdfHelpBubbleHandlerFactory::kPdfInkSignaturesDrawElementId});
   tracked_element_handler_->BindInterface(std::move(tracked_element_handler));
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(

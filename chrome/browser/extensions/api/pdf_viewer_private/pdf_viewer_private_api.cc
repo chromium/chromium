@@ -17,10 +17,12 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -370,6 +372,14 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
       options.fre_override = glic::mojom::FreOverride::kTrustFirstText;
       glic_service->Invoke(std::move(options));
     }
+  }
+
+  if (auto* user_education =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              contents)) {
+    user_education->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHPdfGlicSummarizeFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
   success = true;
