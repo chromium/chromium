@@ -112,7 +112,10 @@ enum class ReplaceFileResult {
   // file is used, but the fallback ::MoveFile operation succeeded. It's treated
   // as success for ReplaceFile.
   kUnableToMoveReplacement2MoveSuccess = 11,
-  kMaxValue = kUnableToMoveReplacement2MoveSuccess
+  // ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT_2, a backup was
+  // used, but the replacement was completed successfully via fallback MoveFile.
+  kUnableToMoveReplacement2MoveSuccessWithBackup = 12,
+  kMaxValue = kUnableToMoveReplacement2MoveSuccessWithBackup
 };
 
 // Records histogram for the ReplaceFile result. |is_backup_path_valid|
@@ -647,13 +650,46 @@ bool ReplaceFile(const FilePath& from_path,
   if (replace_error_code == ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 &&
       !backup_path.empty()) {
     // In the case of ERROR_UNABLE_TO_MOVE_REPLACEMENT_2, the replace operation
-    // failed and |to_path| file is lost. The |backup_path| now points to the
-    // original |to_path| file. Try to recover the |to_path| file by moving the
-    // backup file back to it.
-    const bool is_move_success =
-        ::MoveFile(backup_path.value().c_str(), to_path.value().c_str());
+    // failed and `to_path` file is lost. The `backup_path` now points to the
+    // original `to_path` file.
+
+    constexpr int kMaxRetries = 3;
+
+    // Try to complete the replacement in case ReplaceFile failed because
+    // `from_path` is in use.
+    for (int retry = 0;;) {
+      if (::MoveFile(from_path.value().c_str(), to_path.value().c_str())) {
+        // The backup (the old file) is no longer needed.
+        DeleteFile(backup_path);
+        UmaHistogramEnumeration(
+            "Windows.ReplaceFileResult",
+            ReplaceFileResult::kUnableToMoveReplacement2MoveSuccessWithBackup);
+        return true;
+      }
+      if (++retry < kMaxRetries) {
+        PlatformThread::Sleep(Milliseconds(50));
+      } else {
+        break;
+      }
+    }
+
+    // Try to recover the original file.
+    bool is_recovery_success = false;
+    for (int retry = 0;;) {
+      if (::MoveFile(backup_path.value().c_str(), to_path.value().c_str())) {
+        is_recovery_success = true;
+        break;
+      }
+      if (++retry < kMaxRetries) {
+        PlatformThread::Sleep(Milliseconds(50));
+      } else {
+        break;
+      }
+    }
+
     RecordReplaceFileResult(/*is_backup_path_valid=*/true, replace_error_code,
-                            is_move_success);
+                            is_recovery_success);
+    return false;
   } else {
     // For other errors, we still try to move the |from_path| file to |to_path|
     // to see if we can complete this. It will only succeed when |to_path|
