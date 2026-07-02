@@ -614,8 +614,10 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolCancelled);
 }
 
-IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
-                       TabClosedWhileWaitingForNavigationDoesNotCrash) {
+// TODO(crbug.com/529908643): Fails due to dangling raw_ptr crash on ChromeOS.
+IN_PROC_BROWSER_TEST_P(
+    ActorToolsTestScriptTool,
+    DISABLED_TabClosedWhileWaitingForNavigationDoesNotCrash) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/script_tool_slow.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
