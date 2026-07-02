@@ -345,28 +345,28 @@ class flat_tree {
   size_type count(const KeyT<K>& key) const;
 
   template <typename K = Key>
-  iterator find(const KeyT<K>& key);
+  constexpr iterator find(const KeyT<K>& key);
   template <typename K = Key>
-  const_iterator find(const KeyT<K>& key) const;
+  constexpr const_iterator find(const KeyT<K>& key) const;
 
   template <typename K = Key>
-  bool contains(const KeyT<K>& key) const;
+  constexpr bool contains(const KeyT<K>& key) const;
 
   template <typename K = Key>
-  std::pair<iterator, iterator> equal_range(const KeyT<K>& key);
+  constexpr std::pair<iterator, iterator> equal_range(const KeyT<K>& key);
   template <typename K = Key>
-  std::pair<const_iterator, const_iterator> equal_range(
+  constexpr std::pair<const_iterator, const_iterator> equal_range(
       const KeyT<K>& key) const;
 
   template <typename K = Key>
-  iterator lower_bound(const KeyT<K>& key);
+  constexpr iterator lower_bound(const KeyT<K>& key);
   template <typename K = Key>
-  const_iterator lower_bound(const KeyT<K>& key) const;
+  constexpr const_iterator lower_bound(const KeyT<K>& key) const;
 
   template <typename K = Key>
-  iterator upper_bound(const KeyT<K>& key);
+  constexpr iterator upper_bound(const KeyT<K>& key);
   template <typename K = Key>
-  const_iterator upper_bound(const KeyT<K>& key) const;
+  constexpr const_iterator upper_bound(const KeyT<K>& key) const;
 
   // --------------------------------------------------------------------------
   // General operations.
@@ -438,21 +438,21 @@ class flat_tree {
   // to a key on the right.
   struct KeyValueCompare {
     // The key comparison object must outlive this class.
-    explicit KeyValueCompare(const key_compare& comp) : comp_(comp) {}
+    explicit constexpr KeyValueCompare(const key_compare& comp) : comp_(comp) {}
 
     template <typename T, typename U>
-    bool operator()(const T& lhs, const U& rhs) const {
+    constexpr bool operator()(const T& lhs, const U& rhs) const {
       return comp_(extract_if_value_type(lhs), extract_if_value_type(rhs));
     }
 
    private:
-    const key_type& extract_if_value_type(const value_type& v) const {
+    constexpr const key_type& extract_if_value_type(const value_type& v) const {
       GetKeyFromValue extractor;
       return extractor(v);
     }
 
     template <typename K>
-    const K& extract_if_value_type(const K& k) const {
+    constexpr const K& extract_if_value_type(const K& k) const {
       return k;
     }
     // RAW_PTR_EXCLUSION: Binary size increase. There's also little value to
@@ -966,14 +966,14 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::count(
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::find(
+constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::find(
     const KeyT<K>& key) -> iterator {
   return const_cast_it(std::as_const(*this).find(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::find(
+constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::find(
     const KeyT<K>& key) const -> const_iterator {
   auto eq_range = equal_range(key);
   return (eq_range.first == eq_range.second) ? end() : eq_range.first;
@@ -981,7 +981,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::find(
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-bool flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::contains(
+constexpr bool flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::contains(
     const KeyT<K>& key) const {
   auto lower = lower_bound(key);
   return lower != end() && !comp_(key, GetKeyFromValue()(*lower));
@@ -989,7 +989,8 @@ bool flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::contains(
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
     const KeyT<K>& key) -> std::pair<iterator, iterator> {
   auto res = std::as_const(*this).equal_range(key);
   return {const_cast_it(res.first), const_cast_it(res.second)};
@@ -997,7 +998,8 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
     const KeyT<K>& key) const -> std::pair<const_iterator, const_iterator> {
   auto lower = lower_bound(key);
 
@@ -1011,28 +1013,32 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const KeyT<K>& key) -> iterator {
   return const_cast_it(std::as_const(*this).lower_bound(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const KeyT<K>& key) const -> const_iterator {
   return std::ranges::lower_bound(*this, key, KeyValueCompare(comp_));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const KeyT<K>& key) -> iterator {
   return const_cast_it(std::as_const(*this).upper_bound(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const KeyT<K>& key) const -> const_iterator {
   return std::ranges::upper_bound(*this, key, KeyValueCompare(comp_));
 }
