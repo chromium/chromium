@@ -19,6 +19,15 @@ namespace enterprise_connectors {
 // - OnSecurityEventEnterpriseConnectors
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
+  // TODO(crbug.com/530113274): Injecting the ProfileIOS* into a KeyedService
+  // is an anti-pattern as it couple the service implementation with the
+  // integration in the rest of the application (i.e. the implementation will
+  // inevitably use other service factories).
+  //
+  // This make it difficult to unit test the code, and also leave the door open
+  // to forgetting to declare some required dependencies. ConnectorsService
+  // should thus directly receive the required dependencies, instead of being
+  // injected a ProfileIOS*.
   explicit ConnectorsService(ProfileIOS* profile);
   ~ConnectorsService() override;
 
