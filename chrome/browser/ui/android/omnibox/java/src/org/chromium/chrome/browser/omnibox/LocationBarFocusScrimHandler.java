@@ -116,8 +116,7 @@ public class LocationBarFocusScrimHandler {
         boolean useTransparentScrim =
                 isTablet
                         && (OmniboxFeatures.isMultimodalInputEnabled(mContext)
-                                || (OmniboxCapabilities.isDesktopPlatform()
-                                        && OmniboxFeatures.sAndroidDesktopAimGate.isEnabled()));
+                                || OmniboxCapabilities.isDesktopPlatform());
         boolean useLightColor =
                 !isTablet
                         && !mLocationBarDataProvider.isIncognitoBranded()

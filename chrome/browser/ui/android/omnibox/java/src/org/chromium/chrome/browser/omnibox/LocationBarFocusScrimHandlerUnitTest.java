@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Unit tests for {@link LocationBarFocusScrimHandler}. */
@@ -114,5 +115,18 @@ public class LocationBarFocusScrimHandlerUnitTest {
         assertEquals(
                 BOTTOM_CHIN_HEIGHT,
                 mScrimHandler.getScrimModelForTesting().get(ScrimProperties.BOTTOM_MARGIN));
+    }
+
+    @Test
+    @Config(qualifiers = "sw800dp")
+    public void testUpdateScrimVisualState_transparentScrim_Desktop() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mScrimHandler.updateScrimVisualState();
+        assertEquals(
+                Color.TRANSPARENT,
+                mScrimHandler
+                        .getScrimModelForTesting()
+                        .get(ScrimProperties.BACKGROUND_COLOR)
+                        .intValue());
     }
 }
