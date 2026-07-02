@@ -66,6 +66,9 @@ class AtMemoryBottomSheetViewBinder {
             view.setNoticeVisible(model.get(HomeProperties.IS_NOTICE_VISIBLE));
         } else if (propertyKey == HomeProperties.NOTICE_OK_CLICK_LISTENER) {
             view.setNoticeOkClickListener(model.get(HomeProperties.NOTICE_OK_CLICK_LISTENER));
+        } else if (propertyKey == HomeProperties.NOTICE_SETTINGS_CLICK_LISTENER) {
+            view.setNoticeSettingsClickListener(
+                    model.get(HomeProperties.NOTICE_SETTINGS_CLICK_LISTENER));
         } else {
             // Unhandled property.
             assert false : "Unhandled property: " + propertyKey;

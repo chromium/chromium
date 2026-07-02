@@ -39316,6 +39316,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PersonalContext.AtMemory.Notice.SettingsLinkClick">
+  <owner>lamzin@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when the user clicks the Manage Settings link in the AtMemory
+    notice.
+  </description>
+</action>
+
 <action name="PersonalContext.Notice.LearnMoreLinkClick">
   <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>

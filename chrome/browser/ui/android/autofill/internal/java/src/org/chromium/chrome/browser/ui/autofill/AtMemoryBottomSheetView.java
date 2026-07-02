@@ -68,4 +68,8 @@ public class AtMemoryBottomSheetView implements SearchItemProperties.Delegate {
         assert false : "Undefined ScreenId: " + screenId;
         return 0;
     }
+
+    public void setNoticeSettingsClickListener(Runnable onClick) {
+        mHomeView.setNoticeSettingsClickListener(onClick);
+    }
 }

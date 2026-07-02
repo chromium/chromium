@@ -19,6 +19,8 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TITLE;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +30,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunServiceJni;
@@ -64,7 +68,12 @@ public class AtMemoryBottomSheetMediatorTest {
     @Before
     public void setUp() {
         PersonalContextFirstRunServiceJni.setInstanceForTesting(mFirstRunServiceJniMock);
-        mMediator = new AtMemoryBottomSheetMediator(mProfile, mDelegate, mSearchDelegate);
+        mMediator =
+                new AtMemoryBottomSheetMediator(
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mDelegate,
+                        mSearchDelegate);
         mModel = mMediator.getModel();
         mHomeModel = mMediator.getHomeModel();
         mModelList = mHomeModel.get(HomeProperties.SHEET_ITEMS);
@@ -233,18 +242,58 @@ public class AtMemoryBottomSheetMediatorTest {
     public void testNoticeShownAndDismissedAfterClick() {
         when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(true);
 
+        HistogramWatcher shownWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AtMemoryBottomSheetMediator.NOTICE_INTERACTIONS_HISTOGRAM,
+                        AtMemoryBottomSheetMediator.NoticeInteraction.SHOWN);
+
         AtMemoryBottomSheetMediator mediator =
-                new AtMemoryBottomSheetMediator(mProfile, mDelegate, mSearchDelegate);
+                new AtMemoryBottomSheetMediator(
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mDelegate,
+                        mSearchDelegate);
         PropertyModel homeModel = mediator.getHomeModel();
 
         assertTrue(homeModel.get(HomeProperties.IS_NOTICE_VISIBLE));
+
+        mediator.show(List.of());
+        shownWatcher.assertExpected();
+
+        HistogramWatcher acknowledgedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AtMemoryBottomSheetMediator.NOTICE_INTERACTIONS_HISTOGRAM,
+                        AtMemoryBottomSheetMediator.NoticeInteraction.ACKNOWLEDGED);
 
         Runnable okClickListener = homeModel.get(HomeProperties.NOTICE_OK_CLICK_LISTENER);
         assertNotNull(okClickListener);
         okClickListener.run();
 
         assertFalse(homeModel.get(HomeProperties.IS_NOTICE_VISIBLE));
+        acknowledgedWatcher.assertExpected();
         verify(mFirstRunServiceJniMock).noticeAcknowledged(mProfile);
+    }
+
+    @Test
+    public void testNoticeSettingsClicked() {
+        UserActionTester userActionTester = new UserActionTester();
+        AtMemoryBottomSheetMediator mediator =
+                new AtMemoryBottomSheetMediator(
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mDelegate,
+                        mSearchDelegate);
+        PropertyModel homeModel = mediator.getHomeModel();
+
+        Runnable settingsClickListener =
+                homeModel.get(HomeProperties.NOTICE_SETTINGS_CLICK_LISTENER);
+        assertNotNull(settingsClickListener);
+        settingsClickListener.run();
+
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("PersonalContext.AtMemory.Notice.SettingsLinkClick"));
     }
 
     @Test
@@ -252,8 +301,36 @@ public class AtMemoryBottomSheetMediatorTest {
         when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(false);
 
         AtMemoryBottomSheetMediator mediator =
-                new AtMemoryBottomSheetMediator(mProfile, mDelegate, mSearchDelegate);
+                new AtMemoryBottomSheetMediator(
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mDelegate,
+                        mSearchDelegate);
 
         assertFalse(mediator.getHomeModel().get(HomeProperties.IS_NOTICE_VISIBLE));
+    }
+
+    @Test
+    public void testNoticeShownRecordedOnlyOnce() {
+        when(mFirstRunServiceJniMock.shouldShowNotice(mProfile)).thenReturn(true);
+
+        HistogramWatcher shownWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AtMemoryBottomSheetMediator.NOTICE_INTERACTIONS_HISTOGRAM,
+                                AtMemoryBottomSheetMediator.NoticeInteraction.SHOWN)
+                        .build();
+
+        AtMemoryBottomSheetMediator mediator =
+                new AtMemoryBottomSheetMediator(
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mDelegate,
+                        mSearchDelegate);
+
+        mediator.show(List.of());
+        mediator.show(List.of()); // Second call should not log again.
+
+        shownWatcher.assertExpected();
     }
 }

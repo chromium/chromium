@@ -7,9 +7,16 @@ package org.chromium.chrome.browser.ui.autofill;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
 
+import android.content.Context;
+
+import androidx.annotation.IntDef;
+
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
@@ -21,11 +28,29 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Contains the business logic for the AtMemoryBottomSheet. */
 @NullMarked
 class AtMemoryBottomSheetMediator {
+    static final String NOTICE_INTERACTIONS_HISTOGRAM =
+            "PersonalContext.AtMemory.NoticeInteractions";
+
+    // Interactions with the AtMemory notice.
+    // LINT.IfChange(NoticeInteraction)
+    @IntDef({NoticeInteraction.SHOWN, NoticeInteraction.ACKNOWLEDGED, NoticeInteraction.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface NoticeInteraction {
+        int SHOWN = 0;
+        int ACKNOWLEDGED = 1;
+        int COUNT = 2;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PersonalContextAtMemoryNoticeInteractions)
+
+    private final Context mContext;
     private final Profile mProfile;
     private final PropertyModel mModel;
     private final PropertyModel mHomeModel;
@@ -33,10 +58,14 @@ class AtMemoryBottomSheetMediator {
     private final AtMemoryBottomSheetCoordinator.Delegate mDelegate;
     private final SearchItemProperties.Delegate mSearchDelegate;
 
+    private boolean mWasNoticeShownRecorded;
+
     AtMemoryBottomSheetMediator(
+            Context context,
             Profile profile,
             AtMemoryBottomSheetCoordinator.Delegate delegate,
             SearchItemProperties.Delegate searchDelegate) {
+        mContext = context;
         mProfile = profile;
         mDelegate = delegate;
         mSearchDelegate = searchDelegate;
@@ -61,6 +90,14 @@ class AtMemoryBottomSheetMediator {
     void show(List<AutofillSuggestion> suggestions) {
         applyScreenState(getScreenState(suggestions), suggestions);
         mModel.set(VISIBLE, true);
+
+        if (mHomeModel.get(HomeProperties.IS_NOTICE_VISIBLE) && !mWasNoticeShownRecorded) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    NOTICE_INTERACTIONS_HISTOGRAM,
+                    NoticeInteraction.SHOWN,
+                    NoticeInteraction.COUNT);
+            mWasNoticeShownRecorded = true;
+        }
     }
 
     void onDismissed() {
@@ -71,7 +108,16 @@ class AtMemoryBottomSheetMediator {
 
     private void onNoticeAcknowledged() {
         mHomeModel.set(HomeProperties.IS_NOTICE_VISIBLE, false);
+        RecordHistogram.recordEnumeratedHistogram(
+                NOTICE_INTERACTIONS_HISTOGRAM,
+                NoticeInteraction.ACKNOWLEDGED,
+                NoticeInteraction.COUNT);
         PersonalContextFirstRunService.noticeAcknowledged(mProfile);
+    }
+
+    private void onNoticeSettingsClicked() {
+        RecordUserAction.record("PersonalContext.AtMemory.Notice.SettingsLinkClick");
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(mContext);
     }
 
     private AtMemoryScreenState getScreenState(List<AutofillSuggestion> suggestions) {
@@ -234,6 +280,7 @@ class AtMemoryBottomSheetMediator {
                 .with(HomeProperties.ON_QUERY_TEXT_CHANGED_CALLBACK, mDelegate::onQueryTextChanged)
                 .with(HomeProperties.IS_NOTICE_VISIBLE, shouldShowNotice)
                 .with(HomeProperties.NOTICE_OK_CLICK_LISTENER, this::onNoticeAcknowledged)
+                .with(HomeProperties.NOTICE_SETTINGS_CLICK_LISTENER, this::onNoticeSettingsClicked)
                 .build();
     }
 

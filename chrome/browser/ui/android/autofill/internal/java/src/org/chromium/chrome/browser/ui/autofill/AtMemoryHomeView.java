@@ -34,6 +34,7 @@ public class AtMemoryHomeView extends LinearLayout {
     private RecyclerView mRecyclerView;
     private View mNoticeContainer;
     private View mNoticeOkButton;
+    private View mNoticeSettingsLink;
 
     public AtMemoryHomeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -48,6 +49,7 @@ public class AtMemoryHomeView extends LinearLayout {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mNoticeContainer = findViewById(R.id.notice_container);
         mNoticeOkButton = findViewById(R.id.notice_ok_button);
+        mNoticeSettingsLink = findViewById(R.id.notice_manage_settings_link);
     }
 
     public void setUpSheetItems(ModelList items) {
@@ -90,6 +92,10 @@ public class AtMemoryHomeView extends LinearLayout {
 
     public void setNoticeOkClickListener(Runnable listener) {
         mNoticeOkButton.setOnClickListener(v -> listener.run());
+    }
+
+    public void setNoticeSettingsClickListener(Runnable listener) {
+        mNoticeSettingsLink.setOnClickListener(v -> listener.run());
     }
 
     public void setOnQuerySubmittedCallback(Callback<String> callback) {

@@ -73,6 +73,10 @@ class AtMemoryBottomSheetProperties {
         static final ReadableObjectPropertyKey<Runnable> NOTICE_OK_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>();
 
+        // Invoked when the user clicks on the "Settings" link in the onboarding notice.
+        static final ReadableObjectPropertyKey<Runnable> NOTICE_SETTINGS_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>();
+
         static final PropertyKey[] ALL_KEYS = {
             IS_LOADING,
             ON_QUERY_SUBMITTED_CALLBACK,
@@ -80,7 +84,8 @@ class AtMemoryBottomSheetProperties {
             SHOW_SUGGESTIONS_BACKGROUND,
             SHEET_ITEMS,
             IS_NOTICE_VISIBLE,
-            NOTICE_OK_CLICK_LISTENER
+            NOTICE_OK_CLICK_LISTENER,
+            NOTICE_SETTINGS_CLICK_LISTENER
         };
 
         @IntDef({ItemType.SEARCH_TILE, ItemType.SUGGESTION, ItemType.ZERO_STATE})
