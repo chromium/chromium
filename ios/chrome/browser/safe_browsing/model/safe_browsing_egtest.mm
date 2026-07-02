@@ -43,15 +43,6 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testEnterpriseWarningPage DISABLED_testEnterpriseWarningPage
-#define MAYBE_testEnterpriseWarningPageBypass \
-  DISABLED_testEnterpriseWarningPageBypass
-#else
-#define MAYBE_testEnterpriseWarningPage testEnterpriseWarningPage
-#define MAYBE_testEnterpriseWarningPageBypass testEnterpriseWarningPageBypass
-#endif
-
 using ::chrome::cros::reporting::proto::Event;
 using ::chrome::cros::reporting::proto::EventResult;
 using ::chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent;
