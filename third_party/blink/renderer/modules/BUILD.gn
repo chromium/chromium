@@ -469,6 +469,7 @@ source_set("unit_tests") {
     "device_orientation/device_motion_event_pump_unittest.cc",
     "device_orientation/device_orientation_event_pump_unittest.cc",
     "document_metadata/document_metadata_extractor_test.cc",
+    "document_metadata/document_metadata_server_test.cc",
     "document_picture_in_picture/picture_in_picture_controller_test.cc",
     "eventsource/event_source_parser_test.cc",
     "filesystem/dom_file_system_base_test.cc",

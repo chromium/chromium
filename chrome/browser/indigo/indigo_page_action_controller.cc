@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -52,18 +53,21 @@
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
+#include "url/origin.h"
 
 namespace indigo {
 
@@ -505,7 +509,19 @@ void IndigoPageActionController::DidFinishNavigation(
 
   optimization_guide_decision_ =
       optimization_guide::OptimizationGuideDecision::kUnknown;
+  page_has_allowed_category_by_heuristic_ = false;
+  metadata_remote_.reset();
   UpdateEntryPointsState();
+
+  if (navigation_handle->IsSameDocument()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &IndigoPageActionController::TriggerMetadataClassification,
+            invoke_weak_ptr_factory_.GetWeakPtr()),
+        features::kIndigoMetadataKeywordHeuristicSameDocumentNavigationDelay
+            .Get());
+  }
 
   if (optimization_guide_) {
     const GURL& url = navigation_handle->GetURL();
@@ -592,8 +608,9 @@ void IndigoPageActionController::UpdateEntryPointsState() {
   const bool forced =
       base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch);
   const bool eligible =
-      optimization_guide_decision_ ==
-          optimization_guide::OptimizationGuideDecision::kTrue &&
+      (optimization_guide_decision_ ==
+           optimization_guide::OptimizationGuideDecision::kTrue ||
+       page_has_allowed_category_by_heuristic_) &&
       indigo_service_->IsLocallyEligible();
 
   const bool should_show = forced || eligible;
@@ -854,6 +871,70 @@ void IndigoPageActionController::ClearTrackedBoundsAndHideToolbar() {
   if (toolbar_) {
     toolbar_->UpdateTrackedPosition(gfx::Rect());
   }
+}
+
+void IndigoPageActionController::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  TriggerMetadataClassification();
+}
+
+void IndigoPageActionController::TriggerMetadataClassification() {
+  if (!base::FeatureList::IsEnabled(
+          features::kIndigoMetadataKeywordHeuristic)) {
+    return;
+  }
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+
+  const GURL& url = web_contents->GetLastCommittedURL();
+
+  if (!indigo_service_) {
+    return;
+  }
+
+  if (!indigo_service_->IsConfigLoaded()) {
+    return;
+  }
+
+  url::Origin origin = url::Origin::Create(url);
+  if (!indigo_service_->IsOriginAllowed(origin)) {
+    return;
+  }
+
+  // If OptGuide already said YES, we don't need heuristic.
+  if (optimization_guide_decision_ ==
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return;
+  }
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  if (!rfh || !rfh->IsRenderFrameLive()) {
+    return;
+  }
+
+  metadata_remote_.reset();
+  rfh->GetRemoteInterfaces()->GetInterface(
+      metadata_remote_.BindNewPipeAndPassReceiver());
+
+  metadata_remote_->ClassifyProductDetails(
+      indigo_service_->GetAllowedKeywords(),
+      indigo_service_->GetBlockedKeywords(),
+      base::BindOnce(&IndigoPageActionController::OnProductClassified,
+                     invoke_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IndigoPageActionController::OnProductClassified(
+    blink::mojom::ProductClassificationResultPtr result) {
+  if (!result) {
+    // Product not found.
+    page_has_allowed_category_by_heuristic_ = false;
+  } else {
+    // Product found.
+    page_has_allowed_category_by_heuristic_ =
+        result->allowed_keyword_found && !result->blocked_keyword_found;
+  }
+  UpdateEntryPointsState();
 }
 
 }  // namespace indigo

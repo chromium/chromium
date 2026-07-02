@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome.aix.indigo;
+
+option optimize_for = LITE_RUNTIME;
+
+message PageHeuristicConfig {
+  // Origins that are allowed to run the heuristic classification.
+  repeated string allowed_origins = 1;
+
+  // Keywords that indicate a supported product category.
+  repeated string allowed_keywords = 2;
+
+  // Keywords that indicate an unsupported product category.
+  repeated string blocked_keywords = 3;
+}
+
+// Configuration for Indigo page analysis.
+message IndigoConfig {
+  PageHeuristicConfig heuristic_config = 1;
+}

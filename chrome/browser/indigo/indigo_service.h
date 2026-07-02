@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "url/origin.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -118,6 +119,25 @@ class IndigoService : public KeyedService,
   // Returns the prompt for the given key if available.
   std::optional<std::string> GetPrompt(const std::string& key) const;
 
+  const std::vector<std::string>& GetAllowedKeywords() const;
+  const std::vector<std::string>& GetBlockedKeywords() const;
+  bool IsOriginAllowed(const url::Origin& origin) const;
+  bool IsConfigLoaded() const { return config_loaded_; }
+
+  struct ConfigData {
+    ConfigData();
+    ConfigData(const ConfigData&);
+    ConfigData(ConfigData&&);
+    ConfigData& operator=(const ConfigData&);
+    ConfigData& operator=(ConfigData&&);
+    ~ConfigData();
+    std::vector<url::Origin> allowed_origins;
+    std::vector<std::string> allowed_keywords;
+    std::vector<std::string> blocked_keywords;
+  };
+
+  void SetConfigForTesting(ConfigData config);
+
   // Returns the map of all loaded prompts.
   const base::flat_map<std::string, std::string>& GetLoadedPrompts() const {
     return prompts_;
@@ -146,6 +166,7 @@ class IndigoService : public KeyedService,
       base::expected<RemoteEligibility, std::string> eligibility_or_error);
   void TriggerRemoteEligibilityFetch();
   void OnPromptsLoaded(base::flat_map<std::string, std::string> prompts);
+  void OnConfigLoaded(ConfigData config);
 
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -179,6 +200,9 @@ class IndigoService : public KeyedService,
 
   base::flat_map<std::string, std::string> prompts_;
   bool prompts_loaded_ = false;
+
+  ConfigData config_;
+  bool config_loaded_ = false;
 
   base::OnceClosure prompts_loaded_callback_for_testing_;
 
