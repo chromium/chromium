@@ -280,7 +280,8 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_NewUsers) {
   RemoveUser(AccountId::FromUserEmail(kSecondUserEmail));
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceIDTest, NewUsers) {
+// TODO(crbug.com/530372848): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(DeviceIDTest, DISABLED_NewUsers) {
   EXPECT_TRUE(GetDeviceId(AccountId::FromUserEmail(kSecondUserEmail)).empty());
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
