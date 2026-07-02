@@ -359,8 +359,7 @@ class Module:
         if 'target' in allowed_fields and self.target:
             target_out = []
             for arch, target in sorted(self.target.items()):
-                setattr(self, arch, target)
-                self._output_field(target_out, arch)
+                write_blueprint_key_value(target_out, arch, target)
 
             if target_out:
                 output.append('    target: {')
