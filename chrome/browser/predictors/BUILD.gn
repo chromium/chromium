@@ -148,6 +148,7 @@ source_set("unit_tests") {
     "loading_predictor_tab_helper_unittest.cc",
     "loading_predictor_unittest.cc",
     "loading_stats_collector_unittest.cc",
+    "network_hints_handler_impl_unittest.cc",
     "perform_network_context_prefetch_unittest.cc",
     "prefetch_manager_unittest.cc",
     "resource_prefetch_predictor_tables_unittest.cc",

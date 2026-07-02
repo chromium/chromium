@@ -241,6 +241,7 @@ class LoadingPredictor : public KeyedService,
   friend class LoadingPredictorTabHelperTest;
   friend class LoadingPredictorTabHelperTestCollectorTest;
   friend class LCPPTimingPredictorTestBase;
+  friend class NetworkHintsHandlerImplTest;
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest,
                            TestMainFrameResponseCancelsHint);
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest,
