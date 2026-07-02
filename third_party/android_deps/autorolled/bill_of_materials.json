@@ -1042,7 +1042,7 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.7.0"
     },
     {
         "name": "sqlite-android",
@@ -1052,12 +1052,12 @@
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.7.0"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.7.0-SNAPSHOT"
+        "version": "2.7.0"
     },
     {
         "name": "startup-runtime",
@@ -1112,17 +1112,17 @@
     {
         "name": "uiautomator",
         "group": "androidx.test.uiautomator",
-        "version": "2.4.0-SNAPSHOT"
+        "version": "2.4.0"
     },
     {
         "name": "uiautomator-shell",
         "group": "androidx.test.uiautomator",
-        "version": "2.4.0-SNAPSHOT"
+        "version": "2.4.0"
     },
     {
         "name": "uiautomator-shell-android",
         "group": "androidx.test.uiautomator",
-        "version": "2.4.0-SNAPSHOT"
+        "version": "2.4.0"
     },
     {
         "name": "annotation",
