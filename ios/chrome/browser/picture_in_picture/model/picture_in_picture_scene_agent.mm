@@ -20,14 +20,17 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
-    case SceneActivationLevelForegroundActive: {
-      id<PictureInPictureCommands> handler = HandlerForProtocol(
-          sceneState.browserProviderInterface.currentBrowserProvider.browser
-              ->GetCommandDispatcher(),
-          PictureInPictureCommands);
-      [handler dismissPictureInPictureIfNotPipRestore];
+    case SceneActivationLevelForegroundActive:
+      // The `currentBrowserProvider` may be nil, avoid crashing when this
+      // is the case (as `browser` is a pointer to a C++ object it is not
+      // safe to dereference if null).
+      if (Browser* browser = sceneState.browserProviderInterface
+                                 .currentBrowserProvider.browser) {
+        id<PictureInPictureCommands> handler = HandlerForProtocol(
+            browser->GetCommandDispatcher(), PictureInPictureCommands);
+        [handler dismissPictureInPictureIfNotPipRestore];
+      }
       break;
-    }
     case SceneActivationLevelUnattached:
     case SceneActivationLevelDisconnected:
     case SceneActivationLevelBackground:
