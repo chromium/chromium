@@ -37,65 +37,13 @@ class MetricsReportingChoiceServiceTest : public testing::Test {
   variations::SyntheticTrialRegistry registry_;
 };
 
-TEST_F(MetricsReportingChoiceServiceTest,
-       IsBasicMetricsReportingEnabled_FeatureDisabled) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, false);
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-
-  // When feature is disabled, it should fall back to kMetricsReportingEnabled.
+TEST_F(MetricsReportingChoiceServiceTest, IsBasicMetricsReportingEnabled) {
   prefs_.SetBoolean(prefs::kMetricsReportingEnabled, true);
   EXPECT_TRUE(
       MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
 
   prefs_.SetBoolean(prefs::kMetricsReportingEnabled, false);
   EXPECT_FALSE(
-      MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
-}
-
-TEST_F(MetricsReportingChoiceServiceTest,
-       IsBasicMetricsReportingEnabled_MigrationNotDone) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, true);
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-  prefs_.SetBoolean(prefs::kMetricsReportingMigrationDone, false);
-
-  // When migration is not done, it should fall back to
-  // kMetricsReportingEnabled.
-  prefs_.SetBoolean(prefs::kMetricsReportingEnabled, true);
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
-
-  prefs_.SetBoolean(prefs::kMetricsReportingEnabled, false);
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
-}
-
-TEST_F(MetricsReportingChoiceServiceTest,
-       IsBasicMetricsReportingEnabled_MigrationDone) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, true);
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-  prefs_.SetBoolean(prefs::kMetricsReportingMigrationDone, true);
-
-  // When migration is done, it should use kMetricsReportingLevel.
-
-  prefs_.SetInteger(prefs::kMetricsReportingLevel,
-                    static_cast<int>(MetricsReportingLevel::kNone));
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
-
-  prefs_.SetInteger(prefs::kMetricsReportingLevel,
-                    static_cast<int>(MetricsReportingLevel::kBasic));
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
-
-  prefs_.SetInteger(prefs::kMetricsReportingLevel,
-                    static_cast<int>(MetricsReportingLevel::kAdvanced));
-  EXPECT_TRUE(
       MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
 }
 
@@ -141,106 +89,23 @@ TEST_F(MetricsReportingChoiceServiceTest,
           &prefs_));
 }
 
-TEST_F(MetricsReportingChoiceServiceTest,
-       IsMetricsReportingDisabledByPolicy_FeatureDisabled_NotManaged) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, false);
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-
+TEST_F(MetricsReportingChoiceServiceTest, IsMetricsReportingDisabledByPolicy) {
+  // Not managed, disabled.
   prefs_.SetBoolean(prefs::kMetricsReportingEnabled, false);
   EXPECT_FALSE(
       MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
           &prefs_));
-}
 
-TEST_F(MetricsReportingChoiceServiceTest,
-       IsMetricsReportingDisabledByPolicy_FeatureDisabled_ManagedEnabled) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, false);
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-
+  // Managed, enabled.
   prefs_.SetManagedPref(prefs::kMetricsReportingEnabled, base::Value(true));
   EXPECT_FALSE(
       MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
           &prefs_));
-}
 
-TEST_F(MetricsReportingChoiceServiceTest,
-       IsMetricsReportingDisabledByPolicy_FeatureDisabled_ManagedDisabled) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, false);
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-
+  // Managed, disabled.
   prefs_.SetManagedPref(prefs::kMetricsReportingEnabled, base::Value(false));
   EXPECT_TRUE(MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
       &prefs_));
-}
-
-TEST_F(
-    MetricsReportingChoiceServiceTest,
-    IsMetricsReportingDisabledByPolicy_FeatureEnabled_MigrationNotDone_NotManaged) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, true);
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-  prefs_.SetBoolean(prefs::kMetricsReportingMigrationDone, false);
-
-  prefs_.SetBoolean(prefs::kMetricsReportingEnabled, false);
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
-          &prefs_));
-}
-
-TEST_F(
-    MetricsReportingChoiceServiceTest,
-    IsMetricsReportingDisabledByPolicy_FeatureEnabled_MigrationDone_NotManaged) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, true);
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-  prefs_.SetBoolean(prefs::kMetricsReportingMigrationDone, true);
-
-  prefs_.SetInteger(prefs::kMetricsReportingLevel,
-                    static_cast<int>(MetricsReportingLevel::kNone));
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
-          &prefs_));
-}
-
-TEST_F(
-    MetricsReportingChoiceServiceTest,
-    IsMetricsReportingDisabledByPolicy_FeatureEnabled_MigrationDone_ManagedNone) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, true);
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-  prefs_.SetBoolean(prefs::kMetricsReportingMigrationDone, true);
-
-  prefs_.SetManagedPref(
-      prefs::kMetricsReportingLevel,
-      base::Value(static_cast<int>(MetricsReportingLevel::kNone)));
-  EXPECT_TRUE(MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
-      &prefs_));
-}
-
-TEST_F(
-    MetricsReportingChoiceServiceTest,
-    IsMetricsReportingDisabledByPolicy_FeatureEnabled_MigrationDone_ManagedBasic) {
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, true);
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-  prefs_.SetBoolean(prefs::kMetricsReportingMigrationDone, true);
-
-  prefs_.SetManagedPref(
-      prefs::kMetricsReportingLevel,
-      base::Value(static_cast<int>(MetricsReportingLevel::kBasic)));
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
-          &prefs_));
 }
 
 TEST_F(MetricsReportingChoiceServiceTest, ObserverTriggersCallback) {

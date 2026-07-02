@@ -108,17 +108,6 @@ bool MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure(
 bool MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
     const PrefService* local_state) {
   CHECK(local_state);
-  if (ShouldUseMetricsConsentRestructure(local_state)) {
-    MetricsReportingLevel level = static_cast<MetricsReportingLevel>(
-        local_state->GetInteger(prefs::kMetricsReportingLevel));
-    switch (level) {
-      case MetricsReportingLevel::kBasic:
-      case MetricsReportingLevel::kAdvanced:
-        return true;
-      default:
-        return false;
-    }
-  }
   return local_state->GetBoolean(prefs::kMetricsReportingEnabled);
 }
 
@@ -126,10 +115,6 @@ bool MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
 bool MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
     const PrefService* local_state) {
   CHECK(local_state);
-  if (ShouldUseMetricsConsentRestructure(local_state)) {
-    return local_state->IsManagedPreference(prefs::kMetricsReportingLevel) &&
-           !IsBasicMetricsReportingEnabled(local_state);
-  }
   return local_state->IsManagedPreference(prefs::kMetricsReportingEnabled) &&
          !IsBasicMetricsReportingEnabled(local_state);
 }
