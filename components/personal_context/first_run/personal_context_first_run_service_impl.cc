@@ -14,6 +14,28 @@
 
 namespace personal_context {
 
+namespace {
+
+bool AreServicesAvailableAndAccountEligibleForPersonalIntelligence(
+    PersonalContextEnablementService* enablement_service,
+    PrefService* pref_service) {
+  if (!features::IsPersonalContextFirstRunNoticePhase2Enabled()) {
+    return false;
+  }
+  if (!enablement_service || !pref_service) {
+    return false;
+  }
+
+  if (enablement_service->GetEnablementState() !=
+      PersonalContextEnablementState::kEnabled) {
+    // Account not eligible.
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
 PersonalContextFirstRunServiceImpl::PersonalContextFirstRunServiceImpl(
     std::unique_ptr<PersonalContextFirstRunClient> client,
     PersonalContextEnablementService* enablement_service,
@@ -38,6 +60,8 @@ void PersonalContextFirstRunServiceImpl::OnPrimaryAccountChanged(
     if (pref_service_) {
       pref_service_->ClearPref(
           prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown);
+      pref_service_->ClearPref(
+          prefs::kPersonalContextAtMemoryNoticeShouldBeShown);
       pref_service_->ClearPref(
           prefs::kPersonalContextInAutofillSettingsToggleStatus);
     }
@@ -95,16 +119,8 @@ void PersonalContextFirstRunServiceImpl::
 
 bool PersonalContextFirstRunServiceImpl::
     ShouldShowPersonalContextAutofillNotice() const {
-  if (!features::IsPersonalContextFirstRunNoticePhase2Enabled()) {
-    return false;
-  }
-  if (!enablement_service_ || !pref_service_) {
-    return false;
-  }
-
-  if (enablement_service_->GetEnablementState() !=
-      PersonalContextEnablementState::kEnabled) {
-    // Account not eligible.
+  if (!AreServicesAvailableAndAccountEligibleForPersonalIntelligence(
+          enablement_service_, pref_service_)) {
     return false;
   }
 
@@ -112,6 +128,31 @@ bool PersonalContextFirstRunServiceImpl::
              prefs::kPersonalContextInAutofillSettingsToggleStatus) &&
          pref_service_->GetBoolean(
              prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown);
+}
+
+void PersonalContextFirstRunServiceImpl::
+    MarkPersonalContextInAtMemoryNoticeAsAcknowledged() {
+  if (pref_service_) {
+    // Acknowledging the AtMemory notice also counts as acknowledging the
+    // Autofill notice.
+    pref_service_->SetBoolean(
+        prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
+    pref_service_->SetBoolean(
+        prefs::kPersonalContextAtMemoryNoticeShouldBeShown, false);
+  }
+}
+
+bool PersonalContextFirstRunServiceImpl::
+    ShouldShowPersonalContextAtMemoryNotice() const {
+  if (!AreServicesAvailableAndAccountEligibleForPersonalIntelligence(
+          enablement_service_, pref_service_)) {
+    return false;
+  }
+
+  return pref_service_->GetBoolean(
+             prefs::kPersonalContextInAutofillSettingsToggleStatus) &&
+         pref_service_->GetBoolean(
+             prefs::kPersonalContextAtMemoryNoticeShouldBeShown);
 }
 
 void PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted(

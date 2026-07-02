@@ -46,6 +46,8 @@ class PersonalContextFirstRunServiceImpl
       base::OnceCallback<void(FirstRunTriggerResult)> callback) override;
   void MarkPersonalContextInAutofillNoticeAsAcknowledged() override;
   bool ShouldShowPersonalContextAutofillNotice() const override;
+  void MarkPersonalContextInAtMemoryNoticeAsAcknowledged() override;
+  bool ShouldShowPersonalContextAtMemoryNotice() const override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
