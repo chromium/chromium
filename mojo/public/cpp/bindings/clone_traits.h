@@ -6,11 +6,13 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_CLONE_TRAITS_H_
 
 #include <concepts>
+#include <deque>
 #include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 
@@ -59,6 +61,17 @@ struct CloneTraits<std::vector<T>> {
       result.push_back(mojo::Clone(element));
     }
 
+    return result;
+  }
+};
+
+template <typename T>
+struct CloneTraits<base::circular_deque<T>> {
+  static base::circular_deque<T> Clone(const base::circular_deque<T>& input) {
+    base::circular_deque<T> result;
+    for (const auto& element : input) {
+      result.push_back(mojo::Clone(element));
+    }
     return result;
   }
 };
