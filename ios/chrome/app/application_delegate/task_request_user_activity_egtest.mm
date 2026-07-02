@@ -52,6 +52,12 @@ const char exampleURL[] = "https://example.com";
   return config;
 }
 
+- (void)tearDownHelper {
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:@"IsEnableNewStartupFlowEnabled"];
+  [super tearDownHelper];
+}
+
 // Tests that the "Open In Chrome" intent opens the specified URLs.
 - (void)testOpenInChrome {
   GURL webURL = GURL(exampleURL);
