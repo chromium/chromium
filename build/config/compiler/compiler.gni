@@ -59,13 +59,10 @@ if (!is_win && !is_mac && !is_ios) {
   }
 }
 
-if (!defined(use_mold)) {
-  use_mold = false
-  linker_path = ""
-} else if (use_mold) {
+linker_path = experimental_linker_path
+use_mold = defined(use_mold) && use_mold
+if (use_mold && linker_path == "") {
   linker_path = "//buildtools/third_party/mold/cipd/mold"
-} else {
-  linker_path = experimental_linker_path
 }
 
 declare_args() {
