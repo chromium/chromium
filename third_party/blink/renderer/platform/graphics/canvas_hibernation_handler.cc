@@ -19,7 +19,7 @@
 #include "skia/ext/codec_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"

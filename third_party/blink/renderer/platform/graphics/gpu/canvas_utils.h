@@ -7,7 +7,7 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 

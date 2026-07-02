@@ -14,7 +14,7 @@
 #include "media/base/video_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"

@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"

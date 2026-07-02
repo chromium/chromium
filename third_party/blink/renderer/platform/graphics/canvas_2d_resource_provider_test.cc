@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -143,7 +143,6 @@ class CanvasResourceProviderTest : public Test {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
 };
 
-
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
@@ -194,7 +193,6 @@ scoped_refptr<CanvasResource> UpdateResource(
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
   return provider->ProduceCanvasResource(FlushReason::kOther);
 }
-
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageResourceRecycling) {
@@ -383,7 +381,6 @@ TEST_F(CanvasResourceProviderTest,
   provider->Flush(FlushReason::kOther);
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
-
 
 TEST_F(CanvasResourceProviderTest, FlushForImage) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,

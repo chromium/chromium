@@ -11,7 +11,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"

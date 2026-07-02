@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 
 #include <inttypes.h>
 
@@ -104,10 +104,6 @@ const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
     "max_recorded_op_graphite_kb",
     6 * 1024);
 
-
-
-
-
 BASE_FEATURE(kAppendCpuUsages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, unused resources (ready to be recycled) are reclaimed after a
@@ -169,8 +165,6 @@ void Canvas2DResourceProvider::OnResourceRefReturned(
     image_pool_->ReleaseImage(std::move(resource));
   }
 }
-
-
 
 std::unique_ptr<MemoryManagedPaintRecorder>
 Canvas2DResourceProvider::ReleaseRecorder() {
@@ -310,8 +304,6 @@ Canvas2DResourceProvider::WillDrawInternal() {
   return dst_access;
 }
 
-
-
 void Canvas2DResourceProvider::WillDrawUnaccelerated() {
   CHECK(!IsAccelerated());
 
@@ -336,7 +328,6 @@ void Canvas2DResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
     Recorder().DisableLineDrawingAsPaths();
   }
 }
-
 
 bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
                                            const void* pixels,
@@ -396,8 +387,6 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
   return true;
 }
 
-
-
 base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
   if (resource_) {
@@ -450,8 +439,6 @@ scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
   return resource_;
 }
 
-
-
 bool Canvas2DResourceProvider::IsValid() const {
   if (IsSoftware()) {
     // Software compositing (which always uses software raster).
@@ -469,7 +456,6 @@ bool Canvas2DResourceProvider::IsValid() const {
   return !IsGpuContextLost() && GetSkSurface();
 }
 
-
 void Canvas2DResourceProvider::TransferBackFromWebGPU(
     const gpu::SyncToken& webgpu_write_sync_token) {
   if (IsGpuContextLost()) {
@@ -479,13 +465,10 @@ void Canvas2DResourceProvider::TransferBackFromWebGPU(
   resource()->EndExternalWrite(webgpu_write_sync_token);
 }
 
-
 gpu::SharedImageUsageSet Canvas2DResourceProvider::GetSharedImageUsageFlags()
     const {
   return image_pool_->GetImageInfo().usage;
 }
-
-
 
 void Canvas2DResourceProvider::EnsureWriteAccess() {
   DCHECK(resource_);
@@ -633,8 +616,6 @@ Canvas2DResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
                                                 orientation);
 }
 
-
-
 CanvasImageProvider*
 Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
   if (!IsAccelerated()) {
@@ -745,7 +726,6 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   resource()->EndAccess(std::move(access));
 }
 
-
 void Canvas2DResourceProvider::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (Recorder().getRecordingCanvas().IsCachingImage(content_id)) {
@@ -759,7 +739,6 @@ void Canvas2DResourceProvider::OnFlushForImage(
     cached_snapshot_.reset();
   }
 }
-
 
 void Canvas2DResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
@@ -970,9 +949,6 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
   return nullptr;
 }
 
-
-
-
 void Canvas2DResourceProvider::NotifyGpuContextLostTask(
     base::WeakPtr<Canvas2DResourceProvider> provider) {
   if (provider && provider->delegate_) {
@@ -982,7 +958,6 @@ void Canvas2DResourceProvider::NotifyGpuContextLostTask(
     std::move(provider)->delegate_->NotifyGpuContextLost();
   }
 }
-
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(
     gfx::Size size,
@@ -1290,9 +1265,5 @@ void Canvas2DResourceProvider::ClearAtCreation() {
 
   RasterRecord(recorder.ReleaseMainRecording());
 }
-
-
-
-
 
 }  // namespace blink

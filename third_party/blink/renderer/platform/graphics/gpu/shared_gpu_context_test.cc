@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"

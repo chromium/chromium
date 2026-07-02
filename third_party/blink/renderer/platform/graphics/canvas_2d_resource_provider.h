@@ -1,8 +1,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_RESOURCE_PROVIDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_RESOURCE_PROVIDER_H_
 
 #include <algorithm>
 #include <memory>
@@ -135,9 +135,6 @@ class PLATFORM_EXPORT CanvasResourceProviderDelegate {
   }
   virtual void DidFlush() {}
 };
-
-
-
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
 // * by Canvas2D.
@@ -425,4 +422,4 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_RESOURCE_PROVIDER_H_

@@ -12,7 +12,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
