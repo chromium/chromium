@@ -10,10 +10,10 @@
 #include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_web_dialog.h"
 #include "chrome/grit/locale_settings.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,7 +38,8 @@ HelpAppLauncher::HelpAppLauncher(gfx::NativeWindow parent_window)
     : parent_window_(parent_window) {}
 
 void HelpAppLauncher::ShowHelpTopic(HelpTopic help_topic_id) {
-  Profile* profile = ProfileHelper::GetSigninProfile();
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetSigninBrowserContext());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
 
   DCHECK(registry);
