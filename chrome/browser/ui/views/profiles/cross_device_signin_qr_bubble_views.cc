@@ -11,14 +11,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -69,6 +72,41 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
     anchor_view = browser_view->toolbar()->avatar_toolbar_button();
   }
 
+  base::ScopedClosureRunner clear_avatar_button_effects_callback;
+
+  if (browser_view) {
+    if (AvatarToolbarButtonInterface* avatar_button =
+            browser_view->toolbar_button_provider()
+                ->GetAvatarToolbarButtonInterface()) {
+      clear_avatar_button_effects_callback =
+          avatar_button->SetExplicitButtonState(
+              l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_ON_PHONE),
+              /*accessibility_label=*/std::nullopt,
+              /*explicit_action=*/
+              base::BindRepeating(
+                  [](base::WeakPtr<Browser> weak_browser,
+                     bool is_source_accelerator) {
+                    if (weak_browser) {
+                      weak_browser->GetFeatures()
+                          .signin_view_controller()
+                          ->CloseBubbleSignin();
+                    }
+                  },
+                  browser->GetBrowserForMigrationOnly()->AsWeakPtr()));
+    }
+  }
+
+  base::OnceClosure cleanup_closure = base::BindOnce(
+      [](base::ScopedClosureRunner clear_effects,
+         base::OnceClosure closing_callback) {
+        clear_effects.RunAndReset();
+        if (closing_callback) {
+          std::move(closing_callback).Run();
+        }
+      },
+      std::move(clear_avatar_button_effects_callback),
+      std::move(closing_callback));
+
   auto web_view =
       std::make_unique<CrossDeviceSigninQrWebView>(browser->GetProfile());
   web_view->LoadInitialURL(GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
@@ -79,7 +117,7 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
       ui::DialogModel::Builder()
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE))
-          .SetDialogDestroyingCallback(std::move(closing_callback))
+          .SetDialogDestroyingCallback(std::move(cleanup_closure))
           .OverrideShowCloseButton(true)
           .DisableCloseOnDeactivate()
           .AddCustomField(
