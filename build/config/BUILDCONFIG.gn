@@ -177,6 +177,8 @@ assert(!(current_os == "ios" && is_component_build),
        "Can't use component build on iOS")
 assert(!(current_os == "watchos" && is_component_build),
        "Can't use component build on watchOS")
+assert(!(current_os == "android" && is_component_build),
+       "Can't use component build on Android")
 
 declare_args() {
   # Unsafe buffers. Location of file used by plugins to track portions of
