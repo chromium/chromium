@@ -279,8 +279,7 @@ suite('YourSavedInfoPage', function() {
 
     button.click();
     assertEquals(
-        '/autofill/suggestionsFromGemini',
-        Router.getInstance().currentRoute.path);
+        '/suggestionsFromGemini', Router.getInstance().currentRoute.path);
   });
 });
 

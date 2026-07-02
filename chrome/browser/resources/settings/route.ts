@@ -241,7 +241,7 @@ function createRoutes(): SettingsRoutes {
       }
       if (loadTimeData.getBoolean('showSuggestionsFromGeminiSettings')) {
         r.SUGGESTIONS_FROM_GEMINI =
-            r.YOUR_SAVED_INFO.createChild('/autofill/suggestionsFromGemini');
+            r.YOUR_SAVED_INFO.createChild('/suggestionsFromGemini');
       }
       // <if expr="is_win or is_macosx">
       r.PASSKEYS = r.YOUR_SAVED_INFO.createChild('/passkeys');

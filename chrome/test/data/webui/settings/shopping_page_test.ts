@@ -381,8 +381,7 @@ suite('ShoppingPage', function() {
 
       button.click();
       assertEquals(
-          '/autofill/suggestionsFromGemini',
-          Router.getInstance().currentRoute.path);
+          '/suggestionsFromGemini', Router.getInstance().currentRoute.path);
     });
 
     test('row is hidden when flag is disabled', async function() {
