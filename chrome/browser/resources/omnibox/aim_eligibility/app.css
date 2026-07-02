@@ -8,20 +8,20 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --fail-color: var(--google-red-700);
-  --pass-color: var(--google-green-700);
-  color: var(--cr-primary-text-color);
+  --fail-color: var(--color-sys-error, var(--google-red-700));
+  --pass-color: var(--color-sys-primary, var(--google-green-700));
+  color: var(--color-sys-on-surface, var(--cr-primary-text-color));
 }
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --fail-color: var(--google-red-300);
-    --pass-color: var(--google-green-300);
+    --fail-color: var(--color-sys-error, var(--google-red-300));
+    --pass-color: var(--color-sys-primary, var(--google-green-300));
   }
 }
 
 .content {
-  background-color: var(--cr-card-background-color);
+  background-color: var(--color-sys-surface, var(--cr-card-background-color));
   border-radius: 8px;
   box-shadow: var(--cr-card-shadow);
   margin-bottom: 20px;
@@ -30,7 +30,7 @@
 
 .check-item {
   border-radius: 8px;
-  border: 2px solid var(--cr-separator-color);
+  border: 2px solid var(--color-sys-divider, var(--cr-separator-color));
   margin-bottom: 12px;
   padding: 12px;
 }
@@ -44,12 +44,12 @@
 }
 
 .check-label {
-  color: var(--cr-secondary-text-color);
+  color: var(--color-sys-on-surface-subtle, var(--cr-secondary-text-color));
   margin-bottom: 12px;
 }
 
 .drive-state-header {
-  border-top: 1px solid var(--cr-separator-color);
+  border-top: 1px solid var(--color-sys-divider, var(--cr-separator-color));
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
@@ -71,18 +71,18 @@
 }
 
 .response-input {
-  background-color: var(--cr-card-background-color);
+  background-color: var(--color-sys-surface, var(--cr-card-background-color));
   border-radius: 8px;
-  border: 2px solid var(--cr-separator-color);
+  border: 2px solid var(--color-sys-divider, var(--cr-separator-color));
   box-sizing: border-box;
-  color: var(--cr-primary-text-color);
+  color: var(--color-sys-on-surface, var(--cr-primary-text-color));
   margin-bottom: 12px;
   padding: 12px;
   width: 100%;
 }
 
 .response-input:focus {
-  outline: 2px solid var(--cr-focus-outline-color);
+  outline: 2px solid var(--color-sys-outline, var(--cr-focus-outline-color));
 }
 
 .response-input.fail {
@@ -96,6 +96,6 @@
 }
 
 .footer {
-  color: var(--cr-secondary-text-color);
+  color: var(--color-sys-on-surface-subtle, var(--cr-secondary-text-color));
   text-align: center;
 }

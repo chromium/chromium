@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/extension/aim_eligibility_extension_bridge.h"  // nogncheck
@@ -19,9 +20,12 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
@@ -169,6 +173,19 @@ void BindBeforeUnloadControl(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+void BindColorChangeListenerForExtension(
+    const extensions::ExtensionId& extension_id,
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  auto* color_change_handler =
+      ui::ColorChangeHandler::GetOrCreateForCurrentDocument(frame_host);
+  bool mojo_js_enabled = extensions::util::IsMojoJsEnabledForExtension(
+      extension_id, frame_host->GetBrowserContext());
+  color_change_handler->Bind(std::move(pending_receiver),
+                             /*allow_non_webui=*/mojo_js_enabled);
+}
+
 void BindAimEligibilityPageHandlerFactory(
     content::BrowserContext* browser_context,
     mojo::PendingReceiver<aim_eligibility::mojom::PageHandlerFactory>
@@ -315,7 +332,8 @@ void PopulateChromeFrameBindersForExtension(
   binder_map->Add<mime_handler::BeforeUnloadControl>(&BindBeforeUnloadControl);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  if (extension->id() == extension_misc::kAimEligibilityExtensionId) {
+  if (extension->id() == extension_misc::kAimEligibilityExtensionId &&
+      extensions::Manifest::IsComponentLocation(extension->location())) {
     binder_map->Add<aim_eligibility::mojom::PageHandlerFactory>(
         base::BindRepeating(
             [](content::RenderFrameHost* frame_host,
@@ -324,6 +342,9 @@ void PopulateChromeFrameBindersForExtension(
               BindAimEligibilityPageHandlerFactory(
                   frame_host->GetBrowserContext(), std::move(receiver));
             }));
+    binder_map->Add<color_change_listener::mojom::PageHandler>(
+        base::BindRepeating(&BindColorChangeListenerForExtension,
+                            extension->id()));
   }
 }
 
@@ -362,7 +383,8 @@ void PopulateChromeServiceWorkerBindersForExtension(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (extension->id() == extension_misc::kAimEligibilityExtensionId) {
+  if (extension->id() == extension_misc::kAimEligibilityExtensionId &&
+      extensions::Manifest::IsComponentLocation(extension->location())) {
     binder_map->Add<aim_eligibility::mojom::PageHandlerFactory>(
         base::BindRepeating(
             [](content::BrowserContext* context,

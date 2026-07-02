@@ -28,7 +28,8 @@ class ColorChangeHandler : public content::WebContentsObserver,
   ~ColorChangeHandler() override;
 
   void Bind(mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-                pending_receiver);
+                pending_receiver,
+            bool allow_non_webui = false);
 
   // content::WebContentsObserver:
   void OnColorProviderChanged() override;

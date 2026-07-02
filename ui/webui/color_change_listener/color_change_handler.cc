@@ -21,7 +21,8 @@ ColorChangeHandler::~ColorChangeHandler() = default;
 
 void ColorChangeHandler::Bind(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
+        pending_receiver,
+    bool allow_non_webui) {
   // Note: This binder is registered for all renderers, as its exposed via
   // RegisterWebUIControllerInterfaceBinder as well as
   // WebUIBrowserInterfaceBrokerRegistry. Once its only exposed via
@@ -29,7 +30,7 @@ void ColorChangeHandler::Bind(
   // TODO(crbug.com/452983498): Remove this check once we have migrated all
   // RegisterWebUIControllerInterfaceBinder calls to registry.ForWebUI().Add()
   // calls.
-  if (!render_frame_host().GetWebUI()) {
+  if (!allow_non_webui && !render_frame_host().GetWebUI()) {
     mojo::ReportBadMessage(
         "Attempted to bind ColorChangeHandler to a non-WebUI frame");
     return;

@@ -90,4 +90,10 @@ source_set("omnibox") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  # omnibox_ui.cc includes theme_source.h (under #if !BUILDFLAG(IS_ANDROID));
+  # the theme_source target exists wherever !is_android || enable_webui_ntp.
+  if (!is_android || enable_webui_ntp) {
+    deps += [ "//chrome/browser/ui/webui:theme_source" ]
+  }
 }

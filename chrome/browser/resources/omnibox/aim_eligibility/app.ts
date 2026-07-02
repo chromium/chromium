@@ -4,6 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+// <if expr="not is_android">
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+// </if>
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -68,6 +71,10 @@ export class AimEligibilityAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    // <if expr="not is_android">
+    ColorChangeUpdater.forDocument().start();
+    // </if>
 
     this.listenerIds_.push(
         this.callbackRouter_.onEligibilityStateChanged.addListener(

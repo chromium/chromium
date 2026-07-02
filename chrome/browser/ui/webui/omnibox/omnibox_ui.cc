@@ -27,6 +27,10 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/theme_source.h"
+#endif
+
 bool OmniboxUIConfig::SupportsInProcessResourceLoadingV2() const {
   return true;
 }
@@ -37,16 +41,18 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxHost);
 
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types parse-html-subset lit-html-desktop;");
+  webui::SetupWebUIDataSource(source, kOmniboxResources,
+                              IDR_OMNIBOX_OMNIBOX_HTML);
+
+#if !BUILDFLAG(IS_ANDROID)
+  content::URLDataSource::Add(
+      Profile::FromWebUI(web_ui),
+      std::make_unique<ThemeSource>(Profile::FromWebUI(web_ui)));
+#endif
 
   // Expose version information to client because it is useful in output.
   VersionUI::AddVersionDetailStrings(source);
-  source->UseStringsJs();
 
-  source->AddResourcePaths(kOmniboxResources);
-  source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
   source->AddResourcePath("ml", IDR_OMNIBOX_ML_ML_HTML);
   source->AddResourcePath("aim-eligibility",
                           IDR_OMNIBOX_AIM_ELIGIBILITY_AIM_ELIGIBILITY_HTML);
