@@ -176,6 +176,9 @@ const gfx::VectorIcon& ComposeboxCobrowseOmniboxClient::GetVectorIcon() const {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ComposeboxCobrowseOmniboxClient::GetLensOverlaySuggestInputs() const {
+  if (!delegate_) {
+    return std::nullopt;
+  }
   return [delegate_ suggestInputs];
 }
 

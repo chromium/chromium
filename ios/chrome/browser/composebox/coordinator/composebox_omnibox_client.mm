@@ -169,6 +169,9 @@ ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ComposeboxOmniboxClient::GetLensOverlaySuggestInputs() const {
+  if (!delegate_) {
+    return std::nullopt;
+  }
   return [delegate_ suggestInputs];
 }
 
