@@ -4401,12 +4401,12 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving) {
   EXPECT_EQ(2, called_inform_about_user_input_count_);
 
   // Remove one character from the password value.
-  SimulateUserTypingASCIICharacter(ui::VKEY_BACK, true);
+  SimulateUserTypingKeyCode(ui::VKEY_BACK, true);
   EXPECT_EQ(3, called_inform_about_user_input_count_);
 
   // Add one character to the username value.
   SetFocused(username_element_);
-  SimulateUserTypingASCIICharacter('a', true);
+  SimulateUserTypingAsciiCharacter('a', true);
   EXPECT_EQ(4, called_inform_about_user_input_count_);
 
   // Remove username value.
@@ -4415,7 +4415,7 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving) {
 
   // Change the password.
   SetFocused(password_element_);
-  SimulateUserTypingASCIICharacter('a', true);
+  SimulateUserTypingAsciiCharacter('a', true);
   EXPECT_EQ(6, called_inform_about_user_input_count_);
 
   // Remove password value. Inform the driver too.
@@ -4423,7 +4423,7 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving) {
   EXPECT_EQ(7, called_inform_about_user_input_count_);
 
   // The user enters new password.
-  SimulateUserTypingASCIICharacter('a', true);
+  SimulateUserTypingAsciiCharacter('a', true);
   EXPECT_EQ(8, called_inform_about_user_input_count_);
 }
 
@@ -4447,7 +4447,7 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving_PasswordChangeForm) {
   WebInputElement new_password = GetInputElementByID("newpassword");
   ASSERT_TRUE(new_password);
   SetFocused(new_password);
-  SimulateUserTypingASCIICharacter('a', true);
+  SimulateUserTypingAsciiCharacter('a', true);
   EXPECT_EQ(3, called_inform_about_user_input_count_);
 
   // Edits of the confirmation password field trigger informing the driver.
@@ -4455,7 +4455,7 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving_PasswordChangeForm) {
       GetInputElementByID("confirmpassword");
   ASSERT_TRUE(confirmation_password);
   SetFocused(confirmation_password);
-  SimulateUserTypingASCIICharacter('a', true);
+  SimulateUserTypingAsciiCharacter('a', true);
   EXPECT_EQ(4, called_inform_about_user_input_count_);
 
   // Clear all password fields. The driver should be informed.

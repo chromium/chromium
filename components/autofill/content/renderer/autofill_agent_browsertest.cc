@@ -1906,7 +1906,7 @@ class AutofillAgentTest_AtMemory : public AutofillAgentTest {
  public:
   void SimulateTyping(std::string_view text) {
     for (char c : text) {
-      SimulateUserTypingASCIICharacter(c, /*flush_message_loop=*/true);
+      SimulateUserTypingAsciiCharacter(c, /*flush_message_loop=*/true);
       task_environment_.FastForwardBy(base::Milliseconds(100));
     }
     task_environment_.RunUntilIdle();

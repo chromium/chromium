@@ -77,6 +77,8 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/native_theme/native_theme.h"
 #include "v8/include/v8.h"
@@ -182,33 +184,40 @@ class MockColorProviderSource : public ui::ColorProviderSource {
   ui::ColorProviderKey key_;
 };
 
-// Converts |ascii_character| into |key_code| and returns true on success.
-// Handles only the characters needed by tests.
-bool GetWindowsKeyCode(char ascii_character, int* key_code) {
-  if (absl::ascii_isalnum(static_cast<unsigned char>(ascii_character))) {
-    *key_code = base::ToUpperASCII(ascii_character);
-    return true;
+// Returns the WebInputEvent modifiers necessary to produce `character` on a
+// Windows keyboard with US layout.
+//
+// This works for printable ASCII characters but may need tweaking for other
+// characters.
+int GetWindowsUsLayoutModifiers(const char character) {
+  using Modifiers = blink::WebInputEvent::Modifiers;
+
+  // Tabs, Backspaces, and Enters don't require shift modifiers for their
+  // character representation.
+  if (character == '\t' || character == '\b' || character == '\n') {
+    return Modifiers::kNoModifiers;
   }
 
-  switch (ascii_character) {
-    case '@':
-      *key_code = '2';
-      return true;
-    case '_':
-      *key_code = ui::VKEY_OEM_MINUS;
-      return true;
-    case '.':
-      *key_code = ui::VKEY_OEM_PERIOD;
-      return true;
-    case ui::VKEY_BACK:
-      *key_code = ui::VKEY_BACK;
-      return true;
-    case ui::VKEY_END:
-      *key_code = ui::VKEY_END;
-      return true;
-    default:
-      return false;
+  const ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
+  const ui::DomCode dom_code = ui::UsLayoutDomKeyToDomCode(dom_key);
+  if (dom_code == ui::DomCode::NONE) {
+    return Modifiers::kNoModifiers;
   }
+
+  // If the `unshifted_character` is different from the `character` we want to
+  // produce, then producing it requires pressing Shift.
+  const char16_t unshifted_character =
+      ui::DomCodeToUsLayoutCharacter(dom_code, ui::EF_NONE);
+  return character != unshifted_character ? Modifiers::kShiftKey
+                                          : Modifiers::kNoModifiers;
+}
+
+// Converts `character` into `key_code`.
+int GetWindowsUsLayoutKeyCode(const char character) {
+  const ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
+  const ui::DomCode dom_code = ui::UsLayoutDomKeyToDomCode(dom_key);
+  const ui::KeyboardCode key_code = ui::DomCodeToUsLayoutKeyboardCode(dom_code);
+  return key_code;
 }
 
 }  // namespace
@@ -782,21 +791,36 @@ void RenderViewTest::Resize(gfx::Size new_size, bool is_fullscreen_granted) {
   GetWebFrameWidget()->ApplyVisualProperties(visual_properties);
 }
 
-void RenderViewTest::SimulateUserTypingASCIICharacter(char ascii_character,
+void RenderViewTest::SimulateUserTypingAsciiCharacter(char ascii_character,
                                                       bool flush_message_loop) {
-  int modifiers = blink::WebInputEvent::kNoModifiers;
-  if (absl::ascii_isupper(static_cast<unsigned char>(ascii_character)) ||
-      ascii_character == '@' || ascii_character == '_') {
-    modifiers = blink::WebKeyboardEvent::kShiftKey;
-  }
-
   blink::WebKeyboardEvent event(blink::WebKeyboardEvent::Type::kRawKeyDown,
-                                modifiers, ui::EventTimeForNow());
+                                GetWindowsUsLayoutModifiers(ascii_character),
+                                ui::EventTimeForNow());
   event.text[0] = ascii_character;
-  ASSERT_TRUE(GetWindowsKeyCode(ascii_character, &event.windows_key_code));
+  event.windows_key_code = GetWindowsUsLayoutKeyCode(ascii_character);
+  ASSERT_NE(event.windows_key_code, ui::VKEY_UNKNOWN);
   SendWebKeyboardEvent(event);
 
   event.SetType(blink::WebKeyboardEvent::Type::kChar);
+  SendWebKeyboardEvent(event);
+
+  event.SetType(blink::WebKeyboardEvent::Type::kKeyUp);
+  SendWebKeyboardEvent(event);
+
+  if (flush_message_loop) {
+    // Processing is delayed because of a Blink bug:
+    // https://bugs.webkit.org/show_bug.cgi?id=16976 See
+    // PasswordAutofillAgent::TextDidChangeInTextField() for details.
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
+void RenderViewTest::SimulateUserTypingKeyCode(ui::KeyboardCode key_code,
+                                               bool flush_message_loop) {
+  blink::WebKeyboardEvent event(blink::WebKeyboardEvent::Type::kRawKeyDown,
+                                blink::WebKeyboardEvent::kNoModifiers,
+                                ui::EventTimeForNow());
+  event.windows_key_code = key_code;
   SendWebKeyboardEvent(event);
 
   event.SetType(blink::WebKeyboardEvent::Type::kKeyUp);
@@ -817,15 +841,15 @@ void RenderViewTest::SimulateUserInputChangeForElement(
   while (!input.Focused()) {
     input.GetDocument().GetFrame()->View()->AdvanceFocus(false);
   }
-  SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
+  SimulateUserTypingKeyCode(ui::VKEY_END, false);
 
   size_t previous_length = input.Value().length();
   for (size_t i = 0; i < previous_length; ++i) {
-    SimulateUserTypingASCIICharacter(ui::VKEY_BACK, false);
+    SimulateUserTypingKeyCode(ui::VKEY_BACK, false);
   }
   EXPECT_TRUE(input.Value().Utf8().empty());
   for (char c : new_value) {
-    SimulateUserTypingASCIICharacter(c, false);
+    SimulateUserTypingAsciiCharacter(c, false);
   }
   // Compare only beginning, because autocomplete may have filled out the
   // form.
