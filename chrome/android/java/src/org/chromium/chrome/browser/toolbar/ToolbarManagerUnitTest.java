@@ -715,6 +715,41 @@ public class ToolbarManagerUnitTest {
         mToolbarManager.destroy();
     }
 
+    @Test
+    public void testFullscreenHairlineVisibility() {
+        ArgumentCaptor<FullscreenManager.Observer> captor =
+                ArgumentCaptor.forClass(FullscreenManager.Observer.class);
+        verify(mFullscreenManager).addObserver(captor.capture());
+        FullscreenManager.Observer observer = captor.getValue();
+
+        AppCompatActivity activity = mActivityController.get();
+        View hairline = activity.findViewById(R.id.toolbar_hairline);
+        assertNotNull(hairline);
+
+        // Test basic fullscreen transitions.
+        observer.onEnterFullscreen(null, null);
+        assertEquals(View.INVISIBLE, hairline.getVisibility());
+        observer.onExitFullscreen(null);
+        assertEquals(View.VISIBLE, hairline.getVisibility());
+
+        // Test overlapping state suppression (XR Space Mode + Fullscreen).
+        mToolbarManager.onXrSpaceModeChanged(true);
+        assertEquals(View.INVISIBLE, hairline.getVisibility());
+
+        observer.onEnterFullscreen(null, null);
+        assertEquals(View.INVISIBLE, hairline.getVisibility());
+
+        // Exiting fullscreen while still in XR space mode should keep hairline INVISIBLE.
+        observer.onExitFullscreen(null);
+        assertEquals(View.INVISIBLE, hairline.getVisibility());
+
+        // Exiting XR space mode should finally restore hairline to VISIBLE.
+        mToolbarManager.onXrSpaceModeChanged(false);
+        assertEquals(View.VISIBLE, hairline.getVisibility());
+
+        mToolbarManager.destroy();
+    }
+
     private Tab mockTab(boolean isNtp) {
         return mockTab(isNtp, false);
     }

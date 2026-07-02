@@ -428,6 +428,10 @@ public class ToolbarManager
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenFindInPageToken = TokenHolder.INVALID_TOKEN;
+    private final TokenHolder mHairlineVisibilityTokenHolder =
+            new TokenHolder(this::updateHairlineVisibility);
+    private int mFullscreenHairlineToken = TokenHolder.INVALID_TOKEN;
+    private int mXrSpaceHairlineToken = TokenHolder.INVALID_TOKEN;
 
     private boolean mInitializedWithNative;
     private @Nullable Runnable mMenuStateObserver;
@@ -1698,6 +1702,16 @@ public class ToolbarManager
                     @Override
                     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
                         if (mFindToolbarManager != null) mFindToolbarManager.hideToolbar();
+                        mFullscreenHairlineToken =
+                                setToolbarShadowVisibilityAndClearOldToken(
+                                        false, mFullscreenHairlineToken);
+                    }
+
+                    @Override
+                    public void onExitFullscreen(Tab tab) {
+                        mFullscreenHairlineToken =
+                                setToolbarShadowVisibilityAndClearOldToken(
+                                        true, mFullscreenHairlineToken);
                     }
                 };
         mFullscreenManager.addObserver(mFullscreenObserver);
@@ -3229,6 +3243,43 @@ public class ToolbarManager
         return mEdgeToEdgeControllerSupplier;
     }
 
+    private void updateHairlineVisibility() {
+        if (mHairlineVisibilityTokenHolder != null) {
+            setToolbarShadowVisibility(
+                    mHairlineVisibilityTokenHolder.hasTokens() ? View.INVISIBLE : View.VISIBLE);
+        }
+    }
+
+    /**
+     * Suppresses or restores the toolbar shadow (hairline) via a token mechanism.
+     *
+     * <p>Tokens are required because multiple independent features (e.g., Fullscreen video, XR
+     * Space mode, and Custom Tab Media Viewer) may suppress the hairline simultaneously. Using
+     * tokens prevents state collisions where exiting one mode prematurely restores visibility while
+     * another active mode still requires the hairline to be hidden.
+     *
+     * @param visible True to restore visibility (release token), false to suppress (acquire token).
+     * @param oldToken The previous token held by the caller, or {@link TokenHolder#INVALID_TOKEN}.
+     * @return A valid token if suppressing, or {@link TokenHolder#INVALID_TOKEN} if making visible.
+     */
+    public int setToolbarShadowVisibilityAndClearOldToken(boolean visible, int oldToken) {
+        if (!visible) {
+            // If requesting suppression and we do not already hold a token, acquire one.
+            if (oldToken == TokenHolder.INVALID_TOKEN) {
+                return mHairlineVisibilityTokenHolder.acquireToken();
+            }
+            return oldToken;
+        } else {
+            // If requesting visibility and we currently hold a valid token, release it.
+            if (oldToken != TokenHolder.INVALID_TOKEN) {
+                mHairlineVisibilityTokenHolder.releaseToken(oldToken);
+            }
+            return TokenHolder.INVALID_TOKEN;
+        }
+    }
+
+    // TODO(crbug.com/528031001): Migrate CustomTabToolbarCoordinator to use
+    // setToolbarShadowVisibilityAndClearOldToken and make setToolbarShadowVisibility private.
     /** Sets the visibility of the Toolbar shadow. */
     public void setToolbarShadowVisibility(int visibility) {
         if (mToolbarHairline != null) mToolbarHairline.setVisibility(visibility);
@@ -3796,7 +3847,8 @@ public class ToolbarManager
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
         boolean isFsm = Boolean.TRUE.equals(fullSpaceMode);
         mSuppressToolbarSceneLayerSupplier.set(isFsm);
-        setToolbarShadowVisibility(isFsm ? View.INVISIBLE : View.VISIBLE);
+        mXrSpaceHairlineToken =
+                setToolbarShadowVisibilityAndClearOldToken(!isFsm, mXrSpaceHairlineToken);
         getToolbar().getProgressBar().setVisibility(isFsm ? View.INVISIBLE : View.VISIBLE);
     }
 
