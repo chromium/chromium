@@ -72,11 +72,6 @@ RequestService::~RequestService() {
   }
 }
 
-void RequestService::BindFederatedAuthRequest(
-    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  GetOrCreateActiveRequest()->BindReceiver(std::move(receiver));
-}
-
 void RequestService::BindFederatedRequestService(
     mojo::PendingReceiver<blink::mojom::FederatedRequestService> receiver) {
   receivers_.Add(this, std::move(receiver));

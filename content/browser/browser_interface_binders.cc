@@ -1394,9 +1394,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::DigitalIdentityRequest>(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::BindDigitalIdentityRequestReceiver>);
-  map->Add<blink::mojom::FederatedAuthRequest>(
-      &BindRenderFrameHostImpl<
-          &RenderFrameHostImpl::BindFederatedAuthRequestReceiver>);
   map->Add<blink::mojom::FederatedRequestService>(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::BindFederatedRequestServiceReceiver>);

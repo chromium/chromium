@@ -188,18 +188,23 @@ Request::~Request() {
 }
 
 void Request::BindReceiver(
-    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>
-        pending_receiver) {
-  auth_request_receivers_.Add(this, std::move(pending_receiver));
-}
-
-void Request::BindReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedRequest> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
 }
 
 void Request::Abort() {
-  CancelTokenRequest();
+  if (!auth_request_token_callback_) {
+    // This can happen if the renderer requested an abort() after the browser
+    // invoked the callback but before the renderer received the callback.
+    return;
+  }
+
+  // Dialog will be hidden by the destructor of the dialog controller in
+  // RequestService, triggered by CompleteRequest.
+
+  CompleteRequestWithError(FederatedAuthRequestResult::kCanceled,
+                           TokenStatus::kAborted,
+                           /*should_delay_callback=*/false);
 }
 
 void Request::OnConnectionError() {
@@ -255,15 +260,6 @@ Request::MaybeAddRegisteredProviders(
   // as added individually.
 
   return result;
-}
-
-void Request::RequestToken(
-    std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
-    MediationRequirement requirement,
-    RequestTokenCallback callback) {
-  // This call is coming from Mojo, so we have no navigation handle.
-  RequestToken(std::move(idp_get_params_ptrs), requirement,
-               /*navigation_handle=*/nullptr, GURL(), std::move(callback));
 }
 
 bool Request::RequestToken(
@@ -578,63 +574,6 @@ bool Request::RequestToken(
   }
   FetchEndpointsForIdps(std::move(unique_idps));
   return true;
-}
-
-void Request::RequestUserInfo(blink::mojom::IdentityProviderConfigPtr provider,
-                              RequestUserInfoCallback callback) {
-  request_service_->RequestUserInfo(
-      std::move(provider),
-      base::BindOnce(
-          [](RequestUserInfoCallback callback,
-             blink::mojom::RequestUserInfoResultPtr result) {
-            if (result->is_status()) {
-              std::move(callback).Run(result->get_status(), std::nullopt);
-            } else {
-              std::move(callback).Run(
-                  blink::mojom::RequestUserInfoStatus::kSuccess,
-                  std::move(result->get_user_info()));
-            }
-          },
-          std::move(callback)));
-}
-
-void Request::CancelTokenRequest() {
-  if (!auth_request_token_callback_) {
-    // This can happen if the renderer requested an abort() after the browser
-    // invoked the callback but before the renderer received the callback.
-    return;
-  }
-
-  // Dialog will be hidden by the destructor of the dialog controller in
-  // RequestService, triggered by CompleteRequest.
-
-  CompleteRequestWithError(FederatedAuthRequestResult::kCanceled,
-                           TokenStatus::kAborted,
-                           /*should_delay_callback=*/false);
-}
-
-void Request::ResolveTokenRequest(const std::optional<std::string>& account_id,
-                                  blink::mojom::ResolveTokenParamsPtr params,
-                                  ResolveTokenRequestCallback callback) {
-  request_service_->ResolveTokenRequest(account_id, std::move(params),
-                                        std::move(callback));
-}
-
-void Request::SetIdpSigninStatus(
-    const url::Origin& idp_origin,
-    blink::mojom::IdpSigninStatus status,
-    const std::optional<blink::common::webid::LoginStatusOptions>& options,
-    SetIdpSigninStatusCallback callback) {
-  request_service_->SetIdpSigninStatus(idp_origin, status, options,
-                                       std::move(callback));
-}
-
-void Request::RegisterIdP(const GURL& idp, RegisterIdPCallback callback) {
-  request_service_->RegisterIdP(idp, std::move(callback));
-}
-
-void Request::UnregisterIdP(const GURL& idp, UnregisterIdPCallback callback) {
-  request_service_->UnregisterIdP(idp, std::move(callback));
 }
 
 void Request::OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
@@ -1363,10 +1302,6 @@ void Request::ShowSingleIdpFailureDialog() {
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
-}
-
-void Request::CloseModalDialogView() {
-  request_service_->CloseModalDialogView();
 }
 
 void Request::OnAccountSelected(const GURL& idp_config_url,
@@ -2563,16 +2498,6 @@ void Request::MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
   // optional instead of empty.
   LoginToIdP(/*can_append_hints=*/false, idp_config_url, idp_login_url);
   return;
-}
-
-void Request::PreventSilentAccess(PreventSilentAccessCallback callback) {
-  request_service_->PreventSilentAccess(std::move(callback));
-}
-
-void Request::Disconnect(
-    blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
-    DisconnectCallback callback) {
-  request_service_->Disconnect(std::move(options), std::move(callback));
 }
 
 void Request::RecordErrorMetrics(

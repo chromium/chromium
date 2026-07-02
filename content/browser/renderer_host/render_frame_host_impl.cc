@@ -15024,13 +15024,6 @@ void RenderFrameHostImpl::BindDigitalIdentityRequestReceiver(
   DigitalIdentityRequestImpl::CreateInstance(*this, std::move(receiver));
 }
 
-void RenderFrameHostImpl::BindFederatedAuthRequestReceiver(
-    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  webid::RequestService* service =
-      webid::RequestService::GetOrCreateForCurrentDocument(this);
-  service->BindFederatedAuthRequest(std::move(receiver));
-}
-
 void RenderFrameHostImpl::BindFederatedRequestServiceReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedRequestService> receiver) {
   webid::RequestService* service =

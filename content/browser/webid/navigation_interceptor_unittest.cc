@@ -51,9 +51,9 @@ class InterceptorMockNavigationHandle : public MockNavigationHandle {
   bool StartedWithTransientActivation() override { return true; }
 };
 
-class MockFederatedAuthRequest : public Request {
+class MockRequest : public Request {
  public:
-  explicit MockFederatedAuthRequest(RenderFrameHost* rfh)
+  explicit MockRequest(RenderFrameHost* rfh)
       : Request(
             rfh,
             *RequestService::GetOrCreateForCurrentDocument(rfh),
@@ -74,49 +74,6 @@ class MockFederatedAuthRequest : public Request {
        const GURL& intercepted_url,
        RequestTokenCallback callback),
       (override));
-  MOCK_METHOD(void, CancelTokenRequest, (), (override));
-  MOCK_METHOD(void,
-              RequestUserInfo,
-              (blink::mojom::IdentityProviderConfigPtr provider,
-               RequestUserInfoCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              ResolveTokenRequest,
-              (const std::optional<std::string>& account_id,
-               blink::mojom::ResolveTokenParamsPtr params,
-               ResolveTokenRequestCallback callback),
-              (override));
-  MOCK_METHOD(
-      void,
-      SetIdpSigninStatus,
-      (const ::url::Origin& origin,
-       blink::mojom::IdpSigninStatus status,
-       const std::optional<::blink::common::webid::LoginStatusOptions>& options,
-       blink::mojom::FederatedAuthRequest::SetIdpSigninStatusCallback callback),
-      (override));
-  MOCK_METHOD(
-      void,
-      RegisterIdP,
-      (const ::GURL& url,
-       blink::mojom::FederatedAuthRequest::RegisterIdPCallback callback),
-      (override));
-  MOCK_METHOD(
-      void,
-      UnregisterIdP,
-      (const ::GURL& url,
-       blink::mojom::FederatedAuthRequest::UnregisterIdPCallback callback),
-      (override));
-  MOCK_METHOD(void, CloseModalDialogView, (), (override));
-  MOCK_METHOD(void,
-              PreventSilentAccess,
-              (blink::mojom::FederatedAuthRequest::PreventSilentAccessCallback
-                   callback),
-              (override));
-  MOCK_METHOD(void,
-              Disconnect,
-              (blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
-               blink::mojom::FederatedAuthRequest::DisconnectCallback callback),
-              (override));
 };
 
 net::structured_headers::Dictionary EncodeParams(
@@ -237,9 +194,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
 
-  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>(
-          web_contents()->GetPrimaryMainFrame());
+  std::unique_ptr<MockRequest> federated_auth_request =
+      std::make_unique<MockRequest>(web_contents()->GetPrimaryMainFrame());
 
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   mock_navigation_handle.set_url(base_url_);
@@ -291,9 +247,8 @@ TEST_F(NavigationInterceptorTest,
 
   NavigateAndCommit(GURL("https://rp.example/"));
 
-  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>(
-          web_contents()->GetPrimaryMainFrame());
+  std::unique_ptr<MockRequest> federated_auth_request =
+      std::make_unique<MockRequest>(web_contents()->GetPrimaryMainFrame());
 
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   mock_navigation_handle.set_url(base_url_);
@@ -344,9 +299,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
 
-  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>(
-          web_contents()->GetPrimaryMainFrame());
+  std::unique_ptr<MockRequest> federated_auth_request =
+      std::make_unique<MockRequest>(web_contents()->GetPrimaryMainFrame());
 
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   mock_navigation_handle.set_url(base_url_);
@@ -399,9 +353,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
 TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
   NavigateAndCommit(GURL("https://rp.example/"));
 
-  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>(
-          web_contents()->GetPrimaryMainFrame());
+  std::unique_ptr<MockRequest> federated_auth_request =
+      std::make_unique<MockRequest>(web_contents()->GetPrimaryMainFrame());
 
   // MockNavigationHandle (as opposed to InterceptorNavigationHandle) does not
   // have activation.
@@ -486,8 +439,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
 
-  auto federated_auth_request = std::make_unique<MockFederatedAuthRequest>(
-      web_contents()->GetPrimaryMainFrame());
+  auto federated_auth_request =
+      std::make_unique<MockRequest>(web_contents()->GetPrimaryMainFrame());
 
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   mock_navigation_handle.set_url(base_url_);
@@ -518,9 +471,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
           }));
 
   EXPECT_CALL(*federated_auth_request.get(), RequestToken)
-      .WillOnce(WithArgs<4>(
-          [](blink::mojom::FederatedAuthRequest::RequestTokenCallback
-                 callback) {
+      .WillOnce(
+          WithArgs<4>([](RequestTokenCallback callback) {
             std::move(callback).Run(
                 blink::mojom::RequestTokenStatus::kError,
                 /*selected_identity_provider_config_url=*/std::nullopt,
@@ -1075,9 +1027,8 @@ TEST_F(NavigationInterceptorTest,
 
   NavigateAndCommit(GURL("https://rp.example/"));
 
-  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>(
-          web_contents()->GetPrimaryMainFrame());
+  std::unique_ptr<MockRequest> federated_auth_request =
+      std::make_unique<MockRequest>(web_contents()->GetPrimaryMainFrame());
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(
@@ -1149,9 +1100,8 @@ TEST_F(NavigationInterceptorTest,
 
   NavigateAndCommit(GURL("https://rp.example/"));
 
-  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>(
-          web_contents()->GetPrimaryMainFrame());
+  std::unique_ptr<MockRequest> federated_auth_request =
+      std::make_unique<MockRequest>(web_contents()->GetPrimaryMainFrame());
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(

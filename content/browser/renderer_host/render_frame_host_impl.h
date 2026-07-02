@@ -2208,8 +2208,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindDigitalIdentityRequestReceiver(
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest> receiver);
 
-  void BindFederatedAuthRequestReceiver(
-      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver);
   void BindFederatedRequestServiceReceiver(
       mojo::PendingReceiver<blink::mojom::FederatedRequestService> receiver);
 

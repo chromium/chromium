@@ -76,10 +76,6 @@ class CONTENT_EXPORT RequestService
     return force_allow_redirect_to_for_testing_;
   }
 
-  // Binds a new receiver to a request session.
-  void BindFederatedAuthRequest(
-      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver);
-
   void BindFederatedRequestService(
       mojo::PendingReceiver<blink::mojom::FederatedRequestService> receiver);
 

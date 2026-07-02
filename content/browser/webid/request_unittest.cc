@@ -3777,7 +3777,7 @@ TEST_F(RequestTest,
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   // Abort the request before DelayTimer kicks in.
-  request_->CancelTokenRequest();
+  request_->Abort();
 
   // If double counted, these samples would not be unique so the following
   // checks will fail.
@@ -6867,7 +6867,9 @@ TEST_F(RequestTest, ActiveFlowDismissLoadingUI) {
 TEST_F(RequestTest, CloseModalDialogView) {
   // Test that IdentityRegistry is notified when modal dialog view is closed.
   EXPECT_FALSE(test_identity_registry_->notified_);
-  request_->CloseModalDialogView();
+  RequestService* service =
+      RequestService::GetOrCreateForCurrentDocument(main_test_rfh());
+  service->CloseModalDialogView();
   EXPECT_TRUE(test_identity_registry_->notified_);
 }
 
@@ -6918,7 +6920,7 @@ class UserInfoCallbackHelper {
   ~UserInfoCallbackHelper() = default;
 
   // This can only be called once per lifetime of this object.
-  blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback() {
+  blink::mojom::FederatedRequestService::RequestUserInfoCallback callback() {
     return base::BindOnce(&UserInfoCallbackHelper::Complete,
                           base::Unretained(this));
   }
@@ -6932,9 +6934,7 @@ class UserInfoCallbackHelper {
     wait_for_callback_loop_.Run();
   }
 
-  void Complete(
-      blink::mojom::RequestUserInfoStatus user_info_status,
-      std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info) {
+  void Complete(blink::mojom::RequestUserInfoResultPtr result) {
     CHECK(!was_called_);
     was_called_ = true;
     wait_for_callback_loop_.Quit();
@@ -6951,9 +6951,9 @@ TEST_F(RequestTest, RequestUserInfoFailure) {
   config->config_url = GURL(kIdpUrl);
   UserInfoCallbackHelper callback_helper;
   // This request will fail right away (not from IDP origin).
-  request_->RequestUserInfo(std::move(config),
-                            base::BindOnce(&UserInfoCallbackHelper::Complete,
-                                           base::Unretained(&callback_helper)));
+  service_remote_->RequestUserInfo(
+      std::move(config), base::BindOnce(&UserInfoCallbackHelper::Complete,
+                                        base::Unretained(&callback_helper)));
   // This is a regression test and it passes if the test does not crash.
   callback_helper.WaitForCallback();
 }
@@ -7079,7 +7079,7 @@ TEST_F(RequestTest, AbortedAccountsDialogShownDurationMetric) {
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
   // Abort the request.
-  request_->CancelTokenRequest();
+  request_->Abort();
 
   WaitForCurrentAuthRequest();
   RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
@@ -7124,7 +7124,7 @@ TEST_F(RequestTest, AbortedMismatchDialogShownDurationMetric) {
   EXPECT_FALSE(did_show_accounts_dialog());
 
   // Abort the request.
-  request_->CancelTokenRequest();
+  request_->Abort();
 
   RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
                                    FederatedAuthRequestResult::kCanceled,
@@ -7160,7 +7160,7 @@ TEST_F(RequestTest, RecordNumRequestsPerDocumentMetric) {
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
   // Abort the first auth request.
-  request_->CancelTokenRequest();
+  request_->Abort();
 
   WaitForCurrentAuthRequest();
   RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
