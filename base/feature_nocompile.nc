@@ -11,10 +11,12 @@ namespace base {
 
 // 1. BASE_FEATURE with FEATURE_ENABLED_FOR_COUNTRIES passed as the default state.
 // Should fail static_assert(!base::IsCountrySpecificFeatureState(default_state))
+// expected-error@+1 {{variable does not have a constant initializer}}
 BASE_FEATURE(kFeatureInvalidDefault, "FeatureInvalidDefault", FEATURE_ENABLED_FOR_COUNTRIES);  // expected-error@*:* {{static assertion failed due to requirement '!base::IsCountrySpecificFeatureState}}
 
 // 2. BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS with an incompatible default state passed in.
 // Should fail static_assert(base::IsCountrySpecificFeatureState(default_state))
+// expected-error@+1 {{variable does not have a constant initializer}}
 BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kFeatureInvalidState, FEATURE_ENABLED_BY_DEFAULT, "de");  // expected-error@*:* {{static assertion failed due to requirement 'base::IsCountrySpecificFeatureState}}
 
 // 3. BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS with an empty country list (braced).
