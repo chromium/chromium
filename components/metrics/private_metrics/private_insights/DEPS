@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/grit/components_resources.h",
   "+google_apis/google_api_keys.h",
   "+net",
   "+services/network/public/cpp",
