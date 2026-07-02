@@ -135,6 +135,7 @@ FilePath FileEnumerator::Next() {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   while (has_find_data_ || !pending_paths_.empty()) {
+    DWORD last_error = ERROR_SUCCESS;
     if (!has_find_data_) {
       // The last find FindFirstFile operation is done, prepare a new one.
       root_path_ = pending_paths_.top();
@@ -148,16 +149,19 @@ FilePath FileEnumerator::Next() {
                                      ChromeToWindowsType(&find_data_),
                                      FindExSearchNameMatch, nullptr,
                                      FIND_FIRST_EX_LARGE_FETCH);
+      if (find_handle_ == INVALID_HANDLE_VALUE) {
+        last_error = GetLastError();
+      }
       has_find_data_ = true;
     } else {
       // Search for the next file/directory.
       if (!FindNextFile(find_handle_, ChromeToWindowsType(&find_data_))) {
+        last_error = GetLastError();
         FindClose(find_handle_);
         find_handle_ = INVALID_HANDLE_VALUE;
       }
     }
 
-    DWORD last_error = GetLastError();
     if (INVALID_HANDLE_VALUE == find_handle_) {
       has_find_data_ = false;
 
