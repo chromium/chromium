@@ -129,6 +129,16 @@ GridItems* GridLanesNode::ConstructGridItems(
   const GridTrackSizingDirection grid_axis_direction =
       style.GridLanesTrackSizingDirection();
 
+  // Unlike grid, a grid-lanes container does not cache the placement of its own
+  // items (placement happens after track sizing). However, a regular-grid
+  // subgrid child *does* cache its placement, keyed on its own line resolver,
+  // which by design does not encode this container's named-line positions. If
+  // this container's placement-affecting style changed, that subgrid cache
+  // would otherwise go stale. Propagate the invalidation down the subtree.
+  CHECK(must_invalidate_placement_cache);
+  *must_invalidate_placement_cache =
+      To<LayoutGridLanes>(box_.Get())->IsGridPlacementDirty();
+
   // For grid-lanes, we only consider subgridding in the grid axis.
   const bool must_consider_for_columns = (grid_axis_direction == kForColumns);
   const bool must_consider_for_rows = (grid_axis_direction == kForRows);

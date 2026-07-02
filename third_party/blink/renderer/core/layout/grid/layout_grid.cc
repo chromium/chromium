@@ -36,36 +36,83 @@ void LayoutGrid::RemoveChild(LayoutObject* child) {
 
 namespace {
 
-bool ExplicitGridDidResize(const ComputedStyle& new_style,
-                           const ComputedStyle& old_style) {
-  const auto& old_ng_columns_track_list =
-      old_style.GridTemplateColumns().GetTrackList();
-  const auto& new_ng_columns_track_list =
-      new_style.GridTemplateColumns().GetTrackList();
-  const auto& old_ng_rows_track_list =
-      old_style.GridTemplateRows().GetTrackList();
-  const auto& new_ng_rows_track_list =
-      new_style.GridTemplateRows().GetTrackList();
+// Returns true if the placement-affecting inputs for a single track direction
+// differ between `old_style` and `new_style`.
+bool GridPlacementInputsDidChangeInDirection(
+    const ComputedStyle& new_style,
+    const ComputedStyle& old_style,
+    const StyleDifference& diff,
+    GridTrackSizingDirection track_direction) {
+  const bool is_for_columns = (track_direction == kForColumns);
+  const auto& new_template = is_for_columns ? new_style.GridTemplateColumns()
+                                            : new_style.GridTemplateRows();
+  const auto& new_track_list = new_template.GetTrackList();
 
-  return old_ng_columns_track_list.TrackCountWithoutAutoRepeat() !=
-             new_ng_columns_track_list.TrackCountWithoutAutoRepeat() ||
-         old_ng_rows_track_list.TrackCountWithoutAutoRepeat() !=
-             new_ng_rows_track_list.TrackCountWithoutAutoRepeat() ||
-         old_ng_columns_track_list.AutoRepeatTrackCount() !=
-             new_ng_columns_track_list.AutoRepeatTrackCount() ||
-         old_ng_rows_track_list.AutoRepeatTrackCount() !=
-             new_ng_rows_track_list.AutoRepeatTrackCount();
-}
+  // A full layout may resolve a different number of `auto-fit`/`auto-fill`
+  // repetitions, which changes the explicit grid and therefore placement.
+  if (diff.NeedsFullLayout() && new_track_list.AutoRepeatTrackCount()) {
+    return true;
+  }
 
-bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
-                                       const ComputedStyle& old_style) {
-  return new_style.GridTemplateRows().GetNamedGridLines() !=
-             old_style.GridTemplateRows().GetNamedGridLines() ||
-         new_style.GridTemplateColumns().GetNamedGridLines() !=
-             old_style.GridTemplateColumns().GetNamedGridLines();
+  const auto& old_template = is_for_columns ? old_style.GridTemplateColumns()
+                                            : old_style.GridTemplateRows();
+  const auto& old_track_list = old_template.GetTrackList();
+
+  // A resize of the explicit grid or a change in the number of auto-repeat
+  // tracks changes how items are placed.
+  if (new_track_list.TrackCountWithoutAutoRepeat() !=
+          old_track_list.TrackCountWithoutAutoRepeat() ||
+      new_track_list.AutoRepeatTrackCount() !=
+          old_track_list.AutoRepeatTrackCount()) {
+    return true;
+  }
+
+  if (new_track_list != old_track_list) {
+    return true;
+  }
+
+  // Named lines provide targets that items can be placed against by name.
+  if (new_template.GetNamedGridLines() != old_template.GetNamedGridLines()) {
+    return true;
+  }
+
+  // The implicit (auto) track definitions can change how items are placed into
+  // the implicit grid.
+  const auto& new_auto_tracks =
+      is_for_columns ? new_style.GridAutoColumns() : new_style.GridAutoRows();
+  const auto& old_auto_tracks =
+      is_for_columns ? old_style.GridAutoColumns() : old_style.GridAutoRows();
+  return new_auto_tracks != old_auto_tracks;
 }
 
 }  // namespace
+
+// static
+bool LayoutGrid::GridPlacementInputsDidChange(
+    const ComputedStyle& new_style,
+    const ComputedStyle& old_style,
+    const StyleDifference& diff,
+    std::optional<GridTrackSizingDirection> track_direction) {
+  // The auto-placement flow and template areas can change how items are placed.
+  if (new_style.GetGridAutoFlow() != old_style.GetGridAutoFlow() ||
+      !base::ValuesEquivalent(new_style.GridTemplateAreas(),
+                              old_style.GridTemplateAreas())) {
+    return true;
+  }
+
+  // If no track direction is specified, check both directions.
+  if ((!track_direction || *track_direction == kForColumns) &&
+      GridPlacementInputsDidChangeInDirection(new_style, old_style, diff,
+                                              kForColumns)) {
+    return true;
+  }
+  if ((!track_direction || *track_direction == kForRows) &&
+      GridPlacementInputsDidChangeInDirection(new_style, old_style, diff,
+                                              kForRows)) {
+    return true;
+  }
+  return false;
+}
 
 void LayoutGrid::StyleDidChange(
     StyleDifference diff,
@@ -76,29 +123,7 @@ void LayoutGrid::StyleDidChange(
   if (!old_style)
     return;
 
-  const auto& new_style = StyleRef();
-  const auto& new_grid_columns_track_list =
-      new_style.GridTemplateColumns().GetTrackList();
-  const auto& new_grid_rows_track_list =
-      new_style.GridTemplateRows().GetTrackList();
-
-  if (new_grid_columns_track_list !=
-          old_style->GridTemplateColumns().GetTrackList() ||
-      new_grid_rows_track_list !=
-          old_style->GridTemplateRows().GetTrackList() ||
-      new_style.GridAutoColumns() != old_style->GridAutoColumns() ||
-      new_style.GridAutoRows() != old_style->GridAutoRows() ||
-      new_style.GetGridAutoFlow() != old_style->GetGridAutoFlow()) {
-    SetGridPlacementDirty(true);
-  }
-
-  if (ExplicitGridDidResize(new_style, *old_style) ||
-      NamedGridLinesDefinitionDidChange(new_style, *old_style) ||
-      !base::ValuesEquivalent(new_style.GridTemplateAreas(),
-                              old_style->GridTemplateAreas()) ||
-      (diff.NeedsFullLayout() &&
-       (new_grid_columns_track_list.AutoRepeatTrackCount() ||
-        new_grid_rows_track_list.AutoRepeatTrackCount()))) {
+  if (GridPlacementInputsDidChange(StyleRef(), *old_style, diff)) {
     SetGridPlacementDirty(true);
   }
 }

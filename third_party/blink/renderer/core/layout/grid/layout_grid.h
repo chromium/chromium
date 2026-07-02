@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LAYOUT_GRID_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LAYOUT_GRID_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/subgrid_min_max_sizes_cache.h"
@@ -41,6 +43,16 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
       const LayoutBlock* layout_block);
   static LayoutUnit ComputeGridGap(const GridLayoutData* grid_layout_data,
                                    GridTrackSizingDirection track_direction);
+
+  // Returns true if the difference between `old_style` and `new_style` can
+  // change grid item placement. When `track_direction` is provided, only the
+  // placement inputs for that axis are considered. When it is `nullopt`, both
+  // axes are considered.
+  static bool GridPlacementInputsDidChange(
+      const ComputedStyle& new_style,
+      const ComputedStyle& old_style,
+      const StyleDifference& diff,
+      std::optional<GridTrackSizingDirection> track_direction = std::nullopt);
 
   bool HasCachedPlacementData() const;
   const GridPlacementData& CachedPlacementData() const;

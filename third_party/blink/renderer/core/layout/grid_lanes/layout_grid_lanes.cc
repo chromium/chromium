@@ -10,6 +10,51 @@ namespace blink {
 
 LayoutGridLanes::LayoutGridLanes(Element* element) : LayoutBlock(element) {}
 
+void LayoutGridLanes::AddChild(LayoutObject* new_child,
+                               LayoutObject* before_child) {
+  NOT_DESTROYED();
+  LayoutBlock::AddChild(new_child, before_child);
+  SetGridPlacementDirty(true);
+}
+
+void LayoutGridLanes::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
+  LayoutBlock::RemoveChild(child);
+  SetGridPlacementDirty(true);
+}
+
+void LayoutGridLanes::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
+  NOT_DESTROYED();
+  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
+  if (!old_style) {
+    return;
+  }
+
+  const ComputedStyle& new_style = StyleRef();
+
+  // The full direction captures the orientation and the fill/track reverse
+  // flags, and the packing mode changes how auto-placed items fill the lanes;
+  // both change where items are placed.
+  if (new_style.GetGridLanesDirection() != old_style->GetGridLanesDirection() ||
+      new_style.GridLanesPack() != old_style->GridLanesPack()) {
+    SetGridPlacementDirty(true);
+    return;
+  }
+
+  // The resolved grid axis can flip even when the `grid-lanes-direction`
+  // property itself is unchanged.
+  const GridTrackSizingDirection track_direction =
+      new_style.GridLanesTrackSizingDirection();
+  if (track_direction != old_style->GridLanesTrackSizingDirection() ||
+      LayoutGrid::GridPlacementInputsDidChange(new_style, *old_style, diff,
+                                               track_direction)) {
+    SetGridPlacementDirty(true);
+  }
+}
+
 const GridLayoutData* LayoutGridLanes::LayoutData() const {
   return LayoutGrid::GetGridLayoutDataFromFragments(this);
 }
@@ -50,6 +95,7 @@ const GridPlacementData& LayoutGridLanes::CachedPlacementData() const {
 void LayoutGridLanes::SetCachedPlacementData(
     GridPlacementData&& placement_data) {
   cached_placement_data_ = std::move(placement_data);
+  SetGridPlacementDirty(false);
 }
 
 wtf_size_t LayoutGridLanes::AutoRepeatCountForDirection(

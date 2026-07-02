@@ -28,6 +28,12 @@ class CORE_EXPORT LayoutGridLanes : public LayoutBlock {
   const GridPlacementData& CachedPlacementData() const;
   void SetCachedPlacementData(GridPlacementData&& placement_data);
 
+  void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
+  void RemoveChild(LayoutObject* child) override;
+  void StyleDidChange(StyleDifference diff,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
+
   // TODO(almaher): We are missing subgrid methods, similar to LayoutGrid.
 
   // Helper methods for DevTools inspector highlighting.

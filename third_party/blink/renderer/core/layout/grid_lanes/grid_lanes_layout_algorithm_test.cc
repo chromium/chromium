@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
@@ -165,8 +167,10 @@ TEST_F(GridLanesLayoutAlgorithmTest, ConstructGridLanesItems) {
   GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr);
+  bool must_invalidate_placement_cache = false;
+  auto* grid_lanes_items =
+      node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache);
+  EXPECT_FALSE(must_invalidate_placement_cache);
 
   const Vector<GridSpan> expected_spans = {
       GridSpan::IndefiniteGridSpan(1),
@@ -210,9 +214,11 @@ TEST_F(GridLanesLayoutAlgorithmTest, GridLanesAutoPlacedItems) {
   GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
-      /*parent_is_auto_placed=*/false);
+  bool must_invalidate_placement_cache = false;
+  auto* grid_lanes_items =
+      node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache,
+                              /*parent_is_auto_placed=*/false);
+  EXPECT_FALSE(must_invalidate_placement_cache);
 
   ASSERT_EQ(grid_lanes_items->Size(), 4u);
   EXPECT_FALSE(grid_lanes_items->At(0).is_auto_placed);
@@ -245,9 +251,11 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
-      /*parent_is_auto_placed=*/true);
+  bool must_invalidate_placement_cache = false;
+  auto* grid_lanes_items =
+      node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache,
+                              /*parent_is_auto_placed=*/true);
+  EXPECT_FALSE(must_invalidate_placement_cache);
 
   ASSERT_EQ(grid_lanes_items->Size(), 4u);
   for (const auto& grid_lanes_item : *grid_lanes_items) {
@@ -348,8 +356,11 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroups) {
 
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr);
+  bool must_invalidate_placement_cache = false;
+  const auto* grid_lanes_items =
+      node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache);
+  EXPECT_FALSE(must_invalidate_placement_cache);
+
   wtf_size_t unplaced_item_span_count = 0;
   const auto item_groups =
       node.CollectItemGroups(line_resolver, *grid_lanes_items, max_end_line,
@@ -392,8 +403,11 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroupsWithBaseline) {
 
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr);
+  bool must_invalidate_placement_cache = false;
+  const auto* grid_lanes_items =
+      node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache);
+  EXPECT_FALSE(must_invalidate_placement_cache);
+
   wtf_size_t unplaced_item_span_count = 0;
   const auto item_groups =
       node.CollectItemGroups(line_resolver, *grid_lanes_items, max_end_line,
@@ -2540,6 +2554,91 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   for (const auto& item : outer_items) {
     EXPECT_TRUE(item.is_auto_placed);
   }
+}
+
+// Changing `grid-lanes-direction` changes the grid axis and therefore where
+// items may be placed, so it must invalidate the cached placement.
+TEST_F(GridLanesLayoutAlgorithmTest,
+       GridLanesDirectionChangeMarksPlacementDirty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-lanes-direction: column;
+      grid-template-columns: 100px 100px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  EXPECT_FALSE(GetLayoutBoxByElementId("grid-lanes")->IsGridPlacementDirty());
+
+  GetElementById("grid-lanes")
+      ->SetInlineStyleProperty(CSSPropertyID::kGridLanesDirection, "row");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  EXPECT_TRUE(GetLayoutBoxByElementId("grid-lanes")->IsGridPlacementDirty());
+}
+
+// Changing `grid-lanes-pack` changes how auto-placed items are packed into the
+// lanes and therefore where items may be placed, so it must invalidate the
+// cached placement.
+TEST_F(GridLanesLayoutAlgorithmTest, GridLanesPackChangeMarksPlacementDirty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-lanes-pack: normal;
+      grid-template-columns: 100px 100px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  EXPECT_FALSE(GetLayoutBoxByElementId("grid-lanes")->IsGridPlacementDirty());
+
+  GetElementById("grid-lanes")
+      ->SetInlineStyleProperty(CSSPropertyID::kGridLanesPack, "dense");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  EXPECT_TRUE(GetLayoutBoxByElementId("grid-lanes")->IsGridPlacementDirty());
+}
+
+// With `grid-lanes-direction: normal` the grid axis resolves based on which of
+// `grid-template-columns`/`grid-template-rows` is specified. Changing
+// which template is specified flips the resolved grid axis even though the
+// `grid-lanes-direction` property itself is unchanged, so it must invalidate
+// the cached placement.
+TEST_F(GridLanesLayoutAlgorithmTest, ResolvedGridAxisFlipMarksPlacementDirty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-lanes-direction: normal;
+      grid-template-rows: 100px 100px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  EXPECT_FALSE(GetLayoutBoxByElementId("grid-lanes")->IsGridPlacementDirty());
+
+  // Removing the rows template makes the grid axis resolve to columns while
+  // `grid-lanes-direction` stays `normal`.
+  GetElementById("grid-lanes")
+      ->SetInlineStyleProperty(CSSPropertyID::kGridTemplateRows, "none");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  EXPECT_TRUE(GetLayoutBoxByElementId("grid-lanes")->IsGridPlacementDirty());
 }
 
 }  // namespace blink

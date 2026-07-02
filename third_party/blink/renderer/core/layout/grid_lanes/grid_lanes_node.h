@@ -44,12 +44,11 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
   // Collects the children of this node, sorts by order property if needed, and
   // resolves the grid line positions of the items based on style. If
   // `oof_children` is provided, aggregate any out of flow children.
-  // `must_invalidate_placement_cache` isn't used in grid-lanes because
-  // the placement cache is populated at a later point in grid-lanes, and
-  // placement also happens after track sizing in grid-lanes, so the placement
-  // cache isn't as heavily relied on for performance with subgrid as it is in
-  // grid. However, we still need to include it in the signature for common
-  // call sites with grid.
+  // `must_invalidate_placement_cache` is used to propagate placement-cache
+  // invalidation into subgrids. A grid-lanes container does not cache its own
+  // items' placement (placement happens after track sizing), but a regular-grid
+  // subgrid child does cache. When this container's placement-affecting style
+  // changes, we set this flag so the subgrid's cache is invalidated.
   //
   // `parent_is_auto_placed` is true when this grid is itself an auto-placed
   // subgrid inside a grid-lanes ancestor — i.e. the ancestor resolves its own
