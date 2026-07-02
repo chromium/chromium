@@ -170,6 +170,14 @@ public class OmniboxActionDelegateImplUnitTest {
     }
 
     @Test
+    public void openLensOverlay() {
+        // Mock UserDataHost to prevent LensOverlayCoordinator from crashing on getOrCreateForTab.
+        org.chromium.base.UserDataHost userDataHost = new org.chromium.base.UserDataHost();
+        doReturn(userDataHost).when(mTab).getUserDataHost();
+        mDelegate.openLensOverlay();
+    }
+
+    @Test
     public void startActivity_targetSelf() {
         shadowOf((Application) ApplicationProvider.getApplicationContext()).checkActivities(true);
         Intent i = new Intent();

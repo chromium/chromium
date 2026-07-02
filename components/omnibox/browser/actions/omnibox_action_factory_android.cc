@@ -58,6 +58,17 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
           tab_id, static_cast<int>(presentation_mode)));
 }
 
+base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxLensOverlayAction(
+    JNIEnv* env,
+    intptr_t instance,
+    const std::u16string& hint,
+    const std::u16string& accessibility_hint) {
+  return base::android::ScopedJavaGlobalRef<jobject>(
+      Java_OmniboxActionFactory_buildOmniboxLensOverlayAction(
+          env, instance, base::android::ConvertUTF16ToJavaString(env, hint),
+          base::android::ConvertUTF16ToJavaString(env, accessibility_hint)));
+}
+
 // Convert a vector of OmniboxActions to Java counterpart.
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,

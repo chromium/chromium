@@ -61,4 +61,10 @@ public interface OmniboxActionDelegate {
      * @param siteSearchData the site search data.
      */
     void setSiteSearchData(@Nullable SiteSearchData siteSearchData);
+
+    /**
+     * Triggered when the user taps the "Ask Google about this page" suggestion in the Omnibox. This
+     * starts the Lens Overlay experience for the current active tab.
+     */
+    void openLensOverlay();
 }

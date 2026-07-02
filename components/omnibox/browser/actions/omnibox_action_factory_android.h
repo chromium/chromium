@@ -44,6 +44,12 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     int tab_id,
     ActionPresentationMode presentation_mode);
 
+base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxLensOverlayAction(
+    JNIEnv* env,
+    intptr_t instance,
+    const std::u16string& hint,
+    const std::u16string& accessibility_hint);
+
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,
     const std::vector<scoped_refptr<OmniboxAction>>& actions);
