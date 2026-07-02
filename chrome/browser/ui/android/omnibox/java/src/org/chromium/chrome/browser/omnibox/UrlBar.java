@@ -131,6 +131,9 @@ public class UrlBar extends AutocompleteEditText {
     /** Tracks whether a long-press was performed during the current touch gesture. */
     private boolean mLongPressPerformed;
 
+    /** True while an unfocused press is in progress on desktop experience devices. */
+    private boolean mPointerDragActive;
+
     private boolean mPendingScroll;
 
     // Captures the current intended text scroll type.
@@ -646,6 +649,19 @@ public class UrlBar extends AutocompleteEditText {
         int action = event.getActionMasked();
         if (action == MotionEvent.ACTION_DOWN) {
             mLongPressPerformed = false;
+            // Reveal the full URL when an unfocused bar is pressed with desktop experience.
+            mPointerDragActive =
+                    !mFocused && OmniboxCapabilities.hasDesktopExperience(getContext());
+            if (mPointerDragActive) {
+                Editable text = getText();
+                if (text != null) {
+                    text.removeSpan(EllipsisSpan.INSTANCE);
+                    // Re-hide very long URLs to prevent crashes.
+                    limitDisplayableLength();
+                }
+            }
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            mPointerDragActive = false;
         }
 
         // We need to suppress the OS from taking ownership of initial focus.
@@ -1016,8 +1032,17 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         truncationIndex = Math.min(text.length(), truncationIndex);
-        CharSequence truncatedText = text.subSequence(0, truncationIndex);
-        setText(truncatedText);
+        if (truncationIndex < text.length()) {
+            SpannableStringBuilder builder = new SpannableStringBuilder(text);
+            builder.setSpan(
+                    EllipsisSpan.INSTANCE,
+                    truncationIndex,
+                    text.length(),
+                    Editable.SPAN_INCLUSIVE_EXCLUSIVE);
+            setText(builder);
+        } else {
+            setText(text);
+        }
     }
 
     /**
@@ -1436,7 +1461,12 @@ public class UrlBar extends AutocompleteEditText {
     public boolean bringPointIntoView(int offset) {
         // TextView internally attempts to keep the selection visible, but in the unfocused state
         // this class ensures that the TLD is visible.
-        if (!mFocused) return false;
+        if (!mFocused) {
+            boolean draggingSelection = getSelectionStart() != getSelectionEnd();
+            if (!(mPointerDragActive && draggingSelection)) {
+                return false;
+            }
+        }
         assert !mPendingScroll || hasFocus();
 
         return super.bringPointIntoView(offset);

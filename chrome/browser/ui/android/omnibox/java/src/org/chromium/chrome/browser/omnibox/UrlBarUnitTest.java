@@ -75,6 +75,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.UrlBar.EllipsisSpan;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -122,6 +123,12 @@ public class UrlBarUnitTest {
             "www."
                     + TextUtils.join("", Collections.nCopies(MIN_LENGTH_FOR_TRUNCATION, "a"))
                     + ".com";
+
+    private static final int MAX_DISPLAYABLE_LENGTH = 4000;
+
+    private static final String SUPER_LONG_URL =
+            "www.a.com/"
+                    + TextUtils.join("", Collections.nCopies(MAX_DISPLAYABLE_LENGTH + 100, "a"));
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     public @Rule TestName mTestName = new TestName();
@@ -373,8 +380,11 @@ public class UrlBarUnitTest {
         measureAndLayoutUrlBar();
         String url = SHORT_DOMAIN + LONG_PATH;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
-        String text = mUrlBar.getText().toString();
-        assertEquals(url.substring(0, NUMBER_OF_VISIBLE_CHARACTERS), text);
+        Editable text = mUrlBar.getText();
+        assertEquals(url, text.toString());
+        EllipsisSpan[] spans = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(1, spans.length);
+        assertEquals(NUMBER_OF_VISIBLE_CHARACTERS, text.getSpanStart(spans[0]));
     }
 
     @Test
@@ -384,8 +394,10 @@ public class UrlBarUnitTest {
         String url = SHORT_DOMAIN + LONG_PATH;
         url = url.substring(0, 99);
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
-        String text = mUrlBar.getText().toString();
-        assertEquals(url, text);
+        Editable text = mUrlBar.getText();
+        assertEquals(url, text.toString());
+        EllipsisSpan[] spans = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(0, spans.length);
     }
 
     @Test
@@ -394,8 +406,11 @@ public class UrlBarUnitTest {
         measureAndLayoutUrlBar();
         String url = LONG_DOMAIN + SHORT_PATH;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, LONG_DOMAIN.length());
-        String text = mUrlBar.getText().toString();
-        assertEquals(LONG_DOMAIN, text);
+        Editable text = mUrlBar.getText();
+        assertEquals(url, text.toString());
+        EllipsisSpan[] spans = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(1, spans.length);
+        assertEquals(LONG_DOMAIN.length(), text.getSpanStart(spans[0]));
     }
 
     @Test
@@ -404,8 +419,11 @@ public class UrlBarUnitTest {
         measureAndLayoutUrlBar();
         String url = SHORT_DOMAIN + LONG_PATH;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        String text = mUrlBar.getText().toString();
-        assertEquals(url.substring(0, NUMBER_OF_VISIBLE_CHARACTERS), text);
+        Editable text = mUrlBar.getText();
+        assertEquals(url, text.toString());
+        EllipsisSpan[] spans = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(1, spans.length);
+        assertEquals(NUMBER_OF_VISIBLE_CHARACTERS, text.getSpanStart(spans[0]));
     }
 
     @Test
@@ -417,8 +435,10 @@ public class UrlBarUnitTest {
         mUrlBar.setLayoutParams(params);
 
         mUrlBar.setTextWithTruncation(LONG_DOMAIN, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        String text = mUrlBar.getText().toString();
-        assertEquals(LONG_DOMAIN, text);
+        Editable text = mUrlBar.getText();
+        assertEquals(LONG_DOMAIN, text.toString());
+        EllipsisSpan[] spans = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(0, spans.length);
 
         mUrlBar.setLayoutParams(previousLayoutParams);
     }
@@ -1335,11 +1355,7 @@ public class UrlBarUnitTest {
     public void testLimitDisplayableLength_BoundsEllipsisAtEnd() {
         mUrlBar.setBoundsEllipsisEnabled(true);
         mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
-        StringBuilder longString = new StringBuilder();
-        for (int i = 0; i < 5000; i++) {
-            longString.append("a");
-        }
-        mUrlBar.setText(longString.toString());
+        mUrlBar.setText(SUPER_LONG_URL);
 
         Editable text = mUrlBar.getText();
         UrlBar.EllipsisSpan[] spans = text.getSpans(0, text.length(), UrlBar.EllipsisSpan.class);
@@ -1632,5 +1648,50 @@ public class UrlBarUnitTest {
         measureLayoutAndTriggerFirstDraw();
 
         assertEquals(UrlBar.DESKTOP_MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
+    }
+
+    @Test
+    public void testOnTouchEvent_UnfocusedSpanRemovedOnTouchDown() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+
+        mUrlBar.onFocusChanged(false, 0, null);
+        assertFalse(mUrlBar.isFocused());
+
+        String url = SHORT_DOMAIN + LONG_PATH;
+        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+
+        Editable text = mUrlBar.getText();
+        EllipsisSpan[] spansBefore = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(1, spansBefore.length);
+        assertEquals(NUMBER_OF_VISIBLE_CHARACTERS, text.getSpanStart(spansBefore[0]));
+        assertEquals(url.length(), text.getSpanEnd(spansBefore[0]));
+
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+
+        EllipsisSpan[] spansAfter = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(0, spansAfter.length);
+    }
+
+    @Test
+    public void testOnTouchEvent_VeryLongUrlReTruncatedOnTouchDown() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+
+        mUrlBar.onFocusChanged(false, 0, null);
+        assertFalse(mUrlBar.isFocused());
+
+        mUrlBar.setTextWithTruncation(SUPER_LONG_URL, UrlBar.ScrollType.SCROLL_TO_TLD, 10);
+        Editable text = mUrlBar.getText();
+        EllipsisSpan[] spansBefore = text.getSpans(0, text.length(), EllipsisSpan.class);
+
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+
+        EllipsisSpan[] spansAfter = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(1, spansAfter.length);
+
+        int spanStart = text.getSpanStart(spansAfter[0]);
+        int spanEnd = text.getSpanEnd(spansAfter[0]);
+        // SUPER_LONG_URL should still be truncated for performance.
+        assertTrue(spanStart > NUMBER_OF_VISIBLE_CHARACTERS);
+        assertEquals(SUPER_LONG_URL.length() - (MAX_DISPLAYABLE_LENGTH / 2), spanEnd);
     }
 }
