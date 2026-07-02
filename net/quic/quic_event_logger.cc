@@ -350,10 +350,8 @@ base::DictValue NetLogQuicRetireConnectionIdFrameParams(
 
 base::DictValue NetLogQuicNewTokenFrameParams(
     const quic::QuicNewTokenFrame* frame) {
-  return base::DictValue().Set(
-      "token",
-      NetLogBinaryValue(reinterpret_cast<const void*>(frame->token.data()),
-                        frame->token.length()));
+  return base::DictValue().Set("token",
+                               NetLogBinaryValue(base::as_byte_span(frame->token)));
 }
 
 }  // namespace
