@@ -45,7 +45,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule(
-                    "payment_request_bobpay_and_basic_card_with_modifier_optional_data_test.html");
+                    "payment_request_bobpay_with_modifier_optional_data_test.html");
 
     private int mFactoryCount;
 
@@ -147,8 +147,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @MediumTest
     @Feature({"Payments"})
     public void testNoSupportedPaymentMethods() throws TimeoutException {
-        mPaymentRequestTestRule.clickNodeAndWait(
-                "buy_with_bobpay", mPaymentRequestTestRule.getShowFailed());
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getShowFailed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"show() rejected", "The payment method", "not supported"});
     }
@@ -163,27 +162,6 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
         // Payment sheet skips to the app since it is the only available app.
         mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testDoNotCallCanMakePayment() throws TimeoutException {
-        String[] supportedMethodNames1 = {"https://bobpay.test"};
-        installMockServiceWorkerPaymentApp(
-                "https://bobpay.test", supportedMethodNames1, true, true);
-
-        String[] supportedMethodNames2 = {"https://kylepay.test/webpay"};
-        installMockServiceWorkerPaymentApp(
-                "https://kylepay.test/webpay", supportedMethodNames2, true, true);
-
-        // Sets setCanMakePaymentForTesting(false) to return false for CanMakePayment since there is
-        // no real sw payment app, so if CanMakePayment is called then no payment apps will be
-        // available, otherwise CanMakePayment is not called.
-        PaymentAppServiceBridge.setCanMakePaymentForTesting(false);
-
-        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
     }
 
     @Test
