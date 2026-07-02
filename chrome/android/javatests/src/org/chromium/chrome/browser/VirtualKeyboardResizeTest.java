@@ -495,7 +495,7 @@ public class VirtualKeyboardResizeTest {
     /** Test that overlays-content reports keyboard geometry relative to the viewport origin. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/375710620
+    @DisabledTest(message = "crbug.com/530667596")
     public void testOverlaysContentKeyboardGeometry() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");
