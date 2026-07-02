@@ -35,8 +35,10 @@
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
@@ -56,6 +58,17 @@ namespace {
 // The extension in "extensions/search_provider_override" uses "example.com"
 // as the search URL.
 constexpr char kExtensionSearchUrl[] = "https://www.example.com/?q=Penguin";
+
+// Used to override the prepopulated search engine to a fake default search.
+constexpr TemplateURLPrepopulateData::PrepopulatedEngine kDefaultSearch = {
+    .name = u"Default Search",
+    .keyword = u"defaultsearch.com",
+    .favicon_url = "https://www.defaultsearch.com/favicon.ico",
+    .search_url = "https://www.defaultsearch.com/search?q={searchTerms}",
+    .encoding = "UTF-8",
+    .type = SEARCH_ENGINE_OTHER,
+    .id = 999999,
+};
 
 enum class DefaultSearch {
   kUseDefault,
@@ -298,6 +311,16 @@ class SettingsOverriddenDialogInteractiveUiTest
  private:
   base::CallbackListSubscription create_services_subscription_;
   extensions::ScopedTestMV2Enabler mv2_enabler_;
+
+  // Override the list of prepopulated search engines to a deterministic set.
+  // This prevents test breaks when the production list changes. See
+  // crbug.com/530120931.
+  regional_capabilities::ScopedPrepopulatedEnginesOverride
+      prepopulated_engines_override_ =
+          regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+              /*regional_engines=*/{&TemplateURLPrepopulateData::google,
+                                    &kDefaultSearch},
+              /*other_known_engines=*/{});
 };
 
 class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
@@ -354,11 +377,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                   WaitForDialogToShow(), ScreenshotDialog());
 }
 
-// TODO(crbug.com/530120931): Re-enable once kUseNonGoogleFromDefaultList uses
-// synthetic non-Google search engine in test. See crrev.com/c/8027451 for to
-// see how to at least fix the list to static engine list.
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       DISABLED_ScreenshotPreviouslyNonGoogle) {
+                       ScreenshotPreviouslyNonGoogle) {
   RunTestSequence(
       InstrumentTab(kWebContentsId),
       SetNewSearchProvider(DefaultSearch::kUseNonGoogleFromDefaultList),
