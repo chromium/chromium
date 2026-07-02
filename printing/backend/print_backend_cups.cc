@@ -55,12 +55,6 @@ int CaptureCupsDestCallback(void* data, unsigned flags, cups_dest_t* dest) {
   return 1;  // Keep going.
 }
 
-// This may be removed when Amazon Linux 2 reaches EOL (30 Jun 2026).
-bool AreNewerCupsFunctionsAvailable() {
-  return cupsFindDestDefault && cupsFindDestSupported && cupsUserAgent &&
-         ippValidateAttributes;
-}
-
 }  // namespace
 
 PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
@@ -280,8 +274,7 @@ bool PrintBackendCUPS::IsValidPrinter(const std::string& printer_name) {
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const std::string& locale) {
-  if (AreNewerCupsFunctionsAvailable() &&
-      base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
+  if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
     return base::MakeRefCounted<PrintBackendCupsIpp>(CupsConnection::Create());
   }
   return base::MakeRefCounted<PrintBackendCUPS>(
