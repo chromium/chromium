@@ -5987,6 +5987,16 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testUpdateLastHoveredTab_ActiveTab_NoHoverCard() {
+        // Assume 4th tab is selected.
+        initializeTabHoverTest();
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[3];
+        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        verify(mTabHoverCardView, never())
+                .show(any(), anyBoolean(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    }
+
+    @Test
     public void testUpdateLastHoveredTab_NonZeroStripTopPadding() {
         // Assume tab0 is selected, tab1 is hovered on.
         initializeTabHoverTest();
@@ -6056,7 +6066,7 @@ public class StripLayoutHelperTest {
     }
 
     private void initializeTabHoverTest() {
-        initializeTest(false, false, 0, 3);
+        initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
