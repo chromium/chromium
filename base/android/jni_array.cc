@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/extend.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 

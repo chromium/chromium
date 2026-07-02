@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 

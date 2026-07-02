@@ -4,6 +4,7 @@
 
 #include "base/android/jni_bytebuffer.h"
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace base::android {
