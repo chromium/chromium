@@ -197,10 +197,6 @@ class CodeSignConfig(object):
         """
         return False
 
-    @property
-    def shared_libvulkan_on_mac(self):
-        """Returns True if ANGLE uses the shared Vulkan loader on Mac."""
-        return True
 
     @property
     def main_executable_pinned_geometry(self):

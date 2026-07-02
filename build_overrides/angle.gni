@@ -13,7 +13,7 @@ angle_has_build = true
 angle_use_static_angle = use_static_angle
 
 # Whether ANGLE is using the shared Vulkan loader on Mac.
-angle_shared_libvulkan_on_mac = shared_libvulkan_on_mac
+angle_shared_libvulkan_on_mac = true
 
 # Overrides for ANGLE's dependencies
 angle_glslang_dir = "//third_party/glslang/src"
