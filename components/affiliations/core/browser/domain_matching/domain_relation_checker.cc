@@ -6,7 +6,9 @@
 
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -23,8 +25,14 @@ void DomainRelationChecker::Check(
     const url::Origin& origin_1,
     const url::Origin& origin_2,
     base::OnceCallback<void(std::optional<MatchType>)> result_cb) {
+  if (origin_1.IsSameOriginWith(origin_2)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(result_cb), MatchType::kExact));
+    return;
+  }
   // TODO(crbug.com/504573041): Implement matching checks.
-  std::move(result_cb).Run(std::nullopt);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(result_cb), std::nullopt));
 }
 
 void DomainRelationChecker::Check(

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,23 +30,27 @@ class DomainRelationCheckerTest : public testing::Test {
   DomainRelationChecker checker_;
 };
 
-TEST_F(DomainRelationCheckerTest, SkeletonMatch) {
-  base::MockCallback<base::OnceCallback<void(std::optional<MatchType>)>>
-      callback;
-  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt)));
-
+TEST_F(DomainRelationCheckerTest, ExactMatch) {
+  base::test::TestFuture<std::optional<MatchType>> future;
   checker_.Check(url::Origin::Create(GURL("https://example.com")),
                  url::Origin::Create(GURL("https://example.com")),
-                 callback.Get());
+                 future.GetCallback());
+  EXPECT_EQ(future.Get(), MatchType::kExact);
 }
 
 TEST_F(DomainRelationCheckerTest, GURLOverload) {
-  base::MockCallback<base::OnceCallback<void(std::optional<MatchType>)>>
-      callback;
-  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt)));
-
+  base::test::TestFuture<std::optional<MatchType>> future;
   checker_.Check(GURL("https://example.com/path1"),
-                 GURL("https://example.com/path2"), callback.Get());
+                 GURL("https://example.com/path2"), future.GetCallback());
+  EXPECT_EQ(future.Get(), MatchType::kExact);
+}
+
+TEST_F(DomainRelationCheckerTest, Mismatch) {
+  base::test::TestFuture<std::optional<MatchType>> future;
+  checker_.Check(url::Origin::Create(GURL("https://example.com")),
+                 url::Origin::Create(GURL("https://different.com")),
+                 future.GetCallback());
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 }  // namespace
