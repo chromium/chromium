@@ -42,6 +42,7 @@ class FcpFlags : public fcp::client::Flags {
   int32_t waiting_period_sec_for_cancellation() const override;
   int64_t federated_training_transient_errors_retry_delay_secs() const override;
   int64_t federated_training_permanent_errors_retry_delay_secs() const override;
+  bool enable_privacy_id_generation() const override;
 };
 
 }  // namespace private_insights
