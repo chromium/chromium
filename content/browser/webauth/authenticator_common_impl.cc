@@ -3113,7 +3113,15 @@ void AuthenticatorCommonImpl::CompleteReportRequest(
 
 void AuthenticatorCommonImpl::Cleanup() {
   CHECK(!req_state_ || req_state_->request_key.value() == next_request_key_);
+  // `req_state_.reset()` destroys the embedder request delegate which can
+  // synchronously close UI which (via activation observers) may destroy the
+  // hosting WebContents and therefore `this`. See https://crbug.com/521495992.
+  base::WeakPtr<AuthenticatorCommonImpl> weak_this = weak_factory_.GetWeakPtr();
   req_state_.reset();
+  if (!weak_this) {
+    return;
+  }
+
   next_request_key_++;
   CHECK(next_request_key_);  // crash on overflow. Only 2^64 WebAuthn requests
                              // per instance of this object are supported.
