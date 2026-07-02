@@ -73,7 +73,7 @@ dom/domparsing/domparser-assign-variable.html
 dom/domparsing/xhtml-serialize.html
 dom/node/normalize-with-cdata.html
 dom/parent_node/append.html
-dom/text/normalize-crash-in-spell-checker.html
+external/wpt/dom/crashtests/normalize-crash.html
 dom/text/previous-element-sibling.html
 editing/caret/caret-height.html
 editing/caret/caret-height-multi-line.html
