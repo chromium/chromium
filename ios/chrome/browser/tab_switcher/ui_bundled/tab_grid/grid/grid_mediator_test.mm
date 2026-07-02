@@ -138,7 +138,6 @@ void GridMediatorTestClass::SetUp() {
   auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
   auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
   scene_state_ = OCMClassMock([SceneState class]);
-  OCMStub([scene_state_ sceneSessionID]).andReturn(@(kIdentifier));
   browser_ = std::make_unique<TestBrowser>(
       profile_.get(), scene_state_,
       std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
