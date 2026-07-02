@@ -100,10 +100,9 @@ ZeroCopyRasterBufferImpl::~ZeroCopyRasterBufferImpl() {
   // we can set up the texture and SyncToken here.
   // TODO(danakj): This could be done with the worker context in Playback. Do
   // we need to do things in IsResourceReadyToDraw() and OrderingBarrier then?
-  sii_->UpdateSharedImage(backing_->returned_sync_token,
-                          backing_->shared_image()->mailbox());
-
-  backing_->mailbox_sync_token = sii_->GenUnverifiedSyncToken();
+  backing_->mailbox_sync_token =
+      backing_->shared_image()->BackingWasExternallyUpdated(
+          backing_->returned_sync_token);
 }
 
 void ZeroCopyRasterBufferImpl::Playback(

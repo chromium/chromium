@@ -339,8 +339,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     needs_clear = rect_to_copy.size() != resource_size;
   }
 
-  sii_->UpdateSharedImage(staging_buffer->sync_token,
-                          staging_buffer->client_shared_image->mailbox());
+  gpu::SyncToken src_sync_token =
+      staging_buffer->client_shared_image->BackingWasExternallyUpdated(
+          staging_buffer->sync_token);
 
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       worker_context_provider_);
@@ -350,8 +351,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       backing->shared_image()->BeginRasterAccess(ri, sync_token,
                                                  /*readonly=*/false);
   std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
-      staging_buffer->client_shared_image->BeginRasterAccess(
-          ri, sii_->GenUnverifiedSyncToken(), /*readonly=*/true);
+      staging_buffer->client_shared_image->BeginRasterAccess(ri, src_sync_token,
+                                                             /*readonly=*/true);
 
   // Do not use queries unless COMMANDS_COMPLETED queries are supported, or
   // COMMANDS_ISSUED queries are sufficient.
