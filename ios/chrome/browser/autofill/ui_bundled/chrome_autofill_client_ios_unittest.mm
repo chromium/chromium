@@ -24,6 +24,8 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -248,6 +250,26 @@ TEST_F(ChromeAutofillClientIOSTest,
       client().ClassifyAsPasswordForm(
           *main_frame_manager(), browser_form.global_id(), random_field_id),
       PasswordFormClassification{});
+}
+
+// Tests that `ShowAutofillAiPreFetchFailureNotification()` successfully adds
+// the prefetch failure infobar to the InfoBarManager.
+TEST_F(ChromeAutofillClientIOSTest, ShowAutofillAiPreFetchFailureNotification) {
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  ASSERT_EQ(infobar_manager->infobars().size(), 0u);
+
+  client().ShowAutofillAiPreFetchFailureNotification();
+
+  EXPECT_EQ(infobar_manager->infobars().size(), 1u);
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
+  EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::
+                AUTOFILL_AI_PRE_FETCH_FAILURE_INFOBAR_DELEGATE_IOS);
+
+  // Calling it again should replace the existing one, so count remains 1.
+  client().ShowAutofillAiPreFetchFailureNotification();
+  EXPECT_EQ(infobar_manager->infobars().size(), 1u);
 }
 
 }  // namespace autofill

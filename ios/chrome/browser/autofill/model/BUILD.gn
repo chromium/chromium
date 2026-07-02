@@ -8,6 +8,8 @@ source_set("model") {
     "address_normalizer_factory.mm",
     "autocomplete_history_manager_factory.h",
     "autocomplete_history_manager_factory.mm",
+    "autofill_ai_prefetch_failure_infobar_delegate_ios.h",
+    "autofill_ai_prefetch_failure_infobar_delegate_ios.mm",
     "autofill_ai_save_entity_infobar_delegate_ios.h",
     "autofill_ai_save_entity_infobar_delegate_ios.mm",
     "autofill_ai_util.h",

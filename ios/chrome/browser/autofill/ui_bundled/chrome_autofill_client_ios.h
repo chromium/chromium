@@ -168,6 +168,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   void ShowAutofillAiLocalSaveNotification() override;
   void ShowAutofillAiSaveToWalletFailureNotification() override;
   void ShowAutofillAiFetchFromWalletFailureNotification() override;
+  void ShowAutofillAiPreFetchFailureNotification() override;
 
   // Searches infobars managed by the infobar_manager_ for infobar of the type
   // AutofillSaveCardInfoBarDelegateIOS and returns it if found else returns a
