@@ -65,6 +65,7 @@ source_set("impl") {
 
   if (!is_chromeos) {
     sources += [ "accessibility_focus_highlight.cc" ]
+    deps += [ "//chrome/browser/ui/webui/tab_search:mojo_bindings" ]
   } else {
     deps += [
       "//chrome/browser/ash/accessibility",
