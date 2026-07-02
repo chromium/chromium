@@ -226,7 +226,7 @@ source_set("client_test") {
     "../util",
   ]
 
-  if (!crashpad_is_ios && !crashpad_is_fuchsia) {
+  if (!crashpad_is_android && !crashpad_is_ios && !crashpad_is_fuchsia) {
     data_deps = [ "../handler:crashpad_handler" ]
   }
 

@@ -149,18 +149,17 @@ Kit)](https://developer.android.com/ndk/) runs on.
 If it’s not already present on your system, [download the NDK package for your
 system](https://developer.android.com/ndk/downloads/) and expand it to a
 suitable location. These instructions assume that it’s been expanded to
-`~/android-ndk-r21b`.
+`~/android-ndk.
 
-Note that Chrome uses Android API level 26 for both 64-bit platforms and
-32-bit platforms. See Chrome’s
-[`build/config/android/config.gni`](https://chromium.googlesource.com/chromium/src/+/main/build/config/android/config.gni)
-which sets `android_ndk_api_level`.
+Note that the minimum supported version is currently 26. See Chrome’s
+[`build/config/android/config.gni`](https://chromium.googlesource.com/chromium/src/+/main/build/config/android/config.gni),
+which sets `default_min_sdk_version`.
 
 Set these gn args
+
 ```
 target_os = "android"
-android_ndk_root = ~/android-ndk-r21b
-android_api_level = 21
+android_ndk_root = ~/android-ndk
 ```
 
 ## Testing

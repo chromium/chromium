@@ -49,10 +49,6 @@ void SetCurrentThreadName(const std::string& thread_name) {
 #if BUILDFLAG(IS_APPLE)
   // Apple's pthread_setname_np() sets errno instead of returning it.
   PCHECK(pthread_setname_np(thread_name.c_str()) == 0) << "pthread_setname_np";
-#elif BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 24
-  // pthread_setname_np() requires Android API 24 or later.
-  CHECK_LT(thread_name.length(), kPthreadNameMaxLen);
-  PCHECK(prctl(PR_SET_NAME, thread_name.c_str()) == 0) << "prctl(PR_SET_NAME)";
 #else
   PCHECK((errno = pthread_setname_np(pthread_self(), thread_name.c_str())) == 0)
       << "pthread_setname_np";
@@ -61,15 +57,10 @@ void SetCurrentThreadName(const std::string& thread_name) {
 
 std::string GetCurrentThreadName() {
   std::string result(kPthreadNameMaxLen, '\0');
-#if BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 26
-  static constexpr char kGetThreadNameFunctionName[] = "prctl";
-  PCHECK(prctl(PR_GET_NAME, result.data()) == 0) << "prctl(PR_GET_NAME)";
-#else
   static constexpr char kGetThreadNameFunctionName[] = "pthread_getname_np";
   PCHECK((errno = pthread_getname_np(
               pthread_self(), result.data(), result.length())) == 0)
       << "pthread_getname_np";
-#endif
   const auto result_nul_idx = result.find('\0');
   CHECK(result_nul_idx != std::string::npos)
       << kGetThreadNameFunctionName << " did not NUL terminate";

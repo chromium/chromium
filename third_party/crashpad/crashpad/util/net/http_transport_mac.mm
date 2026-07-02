@@ -15,10 +15,12 @@
 #include "util/net/http_transport.h"
 
 #import <Foundation/Foundation.h>
+#include <dispatch/dispatch.h>
 #include <sys/utsname.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
@@ -245,17 +247,28 @@ bool HTTPTransportMac::ExecuteSynchronously(std::string* response_body) {
         initWithBodyStream:body_stream()];
     [request setHTTPBodyStream:input_stream];
 
-    NSURLResponse* response = nil;
-    NSError* error = nil;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    // Deprecated in OS X 10.11. The suggested replacement, NSURLSession, is
-    // only available on 10.9 and later, and this needs to run on earlier
-    // releases.
-    NSData* body = [NSURLConnection sendSynchronousRequest:request
-                                         returningResponse:&response
-                                                     error:&error];
-#pragma clang diagnostic pop
+    __block NSData* body = nil;
+    __block NSURLResponse* response = nil;
+    __block NSError* error = nil;
+
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    CHECK(semaphore) << "dispatch_semaphore_create";
+    NSURLSession* session = [NSURLSession
+        sessionWithConfiguration:[NSURLSessionConfiguration
+                                     ephemeralSessionConfiguration]];
+    NSURLSessionDataTask* task =
+        [session dataTaskWithRequest:request
+                   completionHandler:^(NSData* task_data,
+                                       NSURLResponse* task_response,
+                                       NSError* task_error) {
+                     body = task_data;
+                     response = task_response;
+                     error = task_error;
+                     dispatch_semaphore_signal(semaphore);
+                   }];
+    [task resume];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    [session finishTasksAndInvalidate];
 
     if (error) {
       Metrics::CrashUploadErrorCode(error.code);

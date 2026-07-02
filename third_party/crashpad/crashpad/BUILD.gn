@@ -53,6 +53,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     }
     if (crashpad_is_android) {
       use_raw_android_executable = true
+      deps += [ "handler:crashpad_handler" ]
 
       # crbug.com/418874703 - This is a workaround to propagate the data deps to
       # //:crashpad_tests__dist for Android build.

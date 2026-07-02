@@ -53,12 +53,8 @@
 #include "util/thread/thread.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <android/api-level.h>
 #include <android/set_abort_message.h>
-#include "dlfcn_internal.h"
-
-// Normally this comes from set_abort_message.h, but only at API level 21.
-extern "C" void android_set_abort_message(const char* msg)
-    __attribute__((weak));
 #endif
 
 namespace crashpad {
@@ -187,10 +183,7 @@ void ValidateDump(const StartHandlerForSelfTestOptions& options,
   ASSERT_TRUE(minidump_snapshot.Initialize(report->Reader()));
 
 #if BUILDFLAG(IS_ANDROID)
-  // This part of the test requires Q. The API level on Q devices will be 28
-  // until the API is finalized, so we can't check API level yet. For now, test
-  // for the presence of a libc symbol which was introduced in Q.
-  if (crashpad::internal::Dlsym(RTLD_DEFAULT, "android_fdsan_close_with_tag")) {
+  if (android_get_device_api_level() >= 29) {
     const auto& annotations = minidump_snapshot.AnnotationsSimpleMap();
     auto abort_message = annotations.find("abort_message");
     ASSERT_NE(annotations.end(), abort_message);
@@ -424,9 +417,7 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (android_set_abort_message) {
-    android_set_abort_message(kTestAbortMessage);
-  }
+  android_set_abort_message(kTestAbortMessage);
 #endif
 
   if (options.crash_non_main_thread) {

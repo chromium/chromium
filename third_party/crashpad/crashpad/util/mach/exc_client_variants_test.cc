@@ -79,8 +79,19 @@ class TestExcClientVariants : public MachMultiprocess,
     EXPECT_EQ(exception_port, LocalPort());
 
     if (HasIdentity()) {
-      EXPECT_NE(thread, THREAD_NULL);
-      EXPECT_EQ(task, ChildTask());
+      const exception_behavior_t basic_behavior =
+          ExceptionBehaviorBasic(behavior_);
+      if (basic_behavior == EXCEPTION_STATE_IDENTITY_PROTECTED ||
+          basic_behavior == EXCEPTION_IDENTITY_PROTECTED) {
+        // On macOS, resolving a task identity token to a task control port is
+        // restricted by security policy for unprivileged processes, so we
+        // expect THREAD_NULL and TASK_NULL.
+        EXPECT_EQ(thread, THREAD_NULL);
+        EXPECT_EQ(task, TASK_NULL);
+      } else {
+        EXPECT_NE(thread, THREAD_NULL);
+        EXPECT_EQ(task, ChildTask());
+      }
     } else {
       EXPECT_EQ(thread, THREAD_NULL);
       EXPECT_EQ(task, TASK_NULL);
@@ -273,6 +284,8 @@ TEST(ExcClientVariants, UniversalExceptionRaise) {
       kMachExceptionCodes | EXCEPTION_DEFAULT,
       kMachExceptionCodes | EXCEPTION_STATE,
       kMachExceptionCodes | EXCEPTION_STATE_IDENTITY,
+      kMachExceptionCodes | EXCEPTION_IDENTITY_PROTECTED,
+      kMachExceptionCodes | EXCEPTION_STATE_IDENTITY_PROTECTED,
   };
 
   for (size_t index = 0; index < std::size(kBehaviors); ++index) {

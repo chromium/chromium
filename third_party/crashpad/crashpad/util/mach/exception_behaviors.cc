@@ -19,13 +19,21 @@ namespace crashpad {
 bool ExceptionBehaviorHasState(exception_behavior_t behavior) {
   const exception_behavior_t basic_behavior = ExceptionBehaviorBasic(behavior);
   return basic_behavior == EXCEPTION_STATE ||
-         basic_behavior == EXCEPTION_STATE_IDENTITY;
+         basic_behavior == EXCEPTION_STATE_IDENTITY ||
+         behavior ==
+             static_cast<exception_behavior_t>(
+                 EXCEPTION_STATE_IDENTITY_PROTECTED | MACH_EXCEPTION_CODES);
 }
 
 bool ExceptionBehaviorHasIdentity(exception_behavior_t behavior) {
   const exception_behavior_t basic_behavior = ExceptionBehaviorBasic(behavior);
   return basic_behavior == EXCEPTION_DEFAULT ||
-         basic_behavior == EXCEPTION_STATE_IDENTITY;
+         basic_behavior == EXCEPTION_STATE_IDENTITY ||
+         behavior == static_cast<exception_behavior_t>(
+                         EXCEPTION_IDENTITY_PROTECTED | MACH_EXCEPTION_CODES) ||
+         behavior ==
+             static_cast<exception_behavior_t>(
+                 EXCEPTION_STATE_IDENTITY_PROTECTED | MACH_EXCEPTION_CODES);
 }
 
 bool ExceptionBehaviorHasMachExceptionCodes(exception_behavior_t behavior) {

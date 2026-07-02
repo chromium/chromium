@@ -277,15 +277,7 @@ union FloatContext {
   } f64;
 
 #if defined(ARCH_CPU_X86)
-// __ANDROID_API_N__ is a proxy for determining whether unified headers are in
-// use. It’s only defined by unified headers. Unified headers call this
-// structure user_fpxregs_struct regardless of API level.
-#if BUILDFLAG(IS_ANDROID) && __ANDROID_API__ <= 19 && \
-    !defined(__ANDROID_API_N__)
-  using NativeFpxregs = user_fxsr_struct;
-#else
   using NativeFpxregs = user_fpxregs_struct;
-#endif  // BUILDFLAG(IS_ANDROID)
   static_assert(sizeof(f32_t::fxsave) == sizeof(NativeFpxregs),
                 "Size mismatch");
 #elif defined(ARCH_CPU_X86_64)

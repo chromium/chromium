@@ -19,6 +19,7 @@
 #include <pthread.h>
 
 #include <limits>
+#include <optional>
 
 #include "base/apple/mach_logging.h"
 #include "base/check_op.h"
@@ -239,53 +240,78 @@ bool DeprotectMallocZone(malloc_zone_t* default_zone,
                          vm_address_t* reprotection_start,
                          vm_size_t* reprotection_length,
                          vm_prot_t* reprotection_value) {
-  mach_port_t unused;
-  *reprotection_start = reinterpret_cast<vm_address_t>(default_zone);
-  struct vm_region_basic_info_64 info;
-  mach_msg_type_number_t count = VM_REGION_BASIC_INFO_COUNT_64;
-  kern_return_t result = vm_region_64(mach_task_self(),
-                                      reprotection_start,
-                                      reprotection_length,
-                                      VM_REGION_BASIC_INFO_64,
-                                      reinterpret_cast<vm_region_info_t>(&info),
-                                      &count,
-                                      &unused);
-  if (result != KERN_SUCCESS) {
-    MACH_LOG(ERROR, result) << "vm_region_64";
-    return false;
-  }
+  std::optional<vm_prot_t> protection;
+  vm_size_t size_of_structure_from_start_of_first_region = 0;
+  vm_size_t length_protected = 0;
+  vm_address_t default_zone_address =
+      reinterpret_cast<vm_address_t>(default_zone);
+  vm_address_t region_start = default_zone_address;
+  kern_return_t result;
 
-  // The kernel always returns a null object for VM_REGION_BASIC_INFO_64, but
-  // balance it with a deallocate in case this ever changes. See
-  // the VM_REGION_BASIC_INFO_64 case in vm_map_region() in 10.15's
-  // https://opensource.apple.com/source/xnu/xnu-6153.11.26/osfmk/vm/vm_map.c .
-  mach_port_deallocate(mach_task_self(), unused);
+  // `default_zone` can point to memory that straddles multiple VM regions, so
+  // we need to iterate through them, accumulating their sizes until we've
+  // covered the entire zone.
+  do {
+    mach_port_t unused;
+    struct vm_region_basic_info_64 info;
+    mach_msg_type_number_t count = VM_REGION_BASIC_INFO_COUNT_64;
+    vm_size_t region_length = 0;
+    vm_address_t query_address = region_start;
+    result = vm_region_64(mach_task_self(),
+                          &region_start,
+                          &region_length,
+                          VM_REGION_BASIC_INFO_64,
+                          reinterpret_cast<vm_region_info_t>(&info),
+                          &count,
+                          &unused);
 
-  if (!(info.max_protection & VM_PROT_WRITE)) {
-    LOG(ERROR) << "Invalid max_protection " << info.max_protection;
-    return false;
-  }
+    if (result != KERN_SUCCESS) {
+      MACH_LOG(ERROR, result) << "vm_region_64";
+      return false;
+    }
 
-  // Does the region fully enclose the zone pointers? Possibly unwarranted
-  // simplification used: using the size of a full version 10 malloc zone rather
-  // than the actual smaller size if the passed-in zone is not version 10.
-  DCHECK_LE(*reprotection_start, reinterpret_cast<vm_address_t>(default_zone));
-  vm_size_t zone_offset = reinterpret_cast<vm_address_t>(default_zone) -
-                          reinterpret_cast<vm_address_t>(*reprotection_start);
-  DCHECK_LE(zone_offset + sizeof(malloc_zone_t), *reprotection_length);
+    // The kernel always returns a null object for VM_REGION_BASIC_INFO_64, but
+    // balance it with a deallocate in case this ever changes. See
+    // the VM_REGION_BASIC_INFO_64 case in vm_map_region():
+    // https://github.com/apple-oss-distributions/xnu/blob/xnu-12377.101.15/osfmk/vm/vm_map.c#L13788
+    mach_port_deallocate(mach_task_self(), unused);
 
-  if (info.protection & VM_PROT_WRITE) {
+    if (!(info.max_protection & VM_PROT_WRITE)) {
+      LOG(ERROR) << "Invalid max_protection " << info.max_protection;
+      return false;
+    }
+
+    if (!protection.has_value()) {
+      CHECK_LE(region_start, default_zone_address);
+      CHECK_LT(default_zone_address, region_start + region_length);
+      protection = info.protection;
+      size_of_structure_from_start_of_first_region =
+          default_zone_address - region_start + sizeof(*default_zone);
+      *reprotection_start = region_start;
+    } else {
+      // A single structure shouldn't straddle non-contiguous regions.
+      CHECK_EQ(region_start, query_address);
+      // Having a single allocation straddling VM regions with different
+      // protections is not supported.
+      CHECK_EQ(*protection, info.protection);
+    }
+    length_protected += region_length;
+    region_start += region_length;
+  } while (length_protected < size_of_structure_from_start_of_first_region);
+
+  if (*protection & VM_PROT_WRITE) {
     // No change needed; the zone is already writable.
     *reprotection_start = 0;
     *reprotection_length = 0;
     *reprotection_value = VM_PROT_NONE;
   } else {
-    *reprotection_value = info.protection;
+    *reprotection_value = *protection;
+    *reprotection_length = length_protected;
     result = vm_protect(mach_task_self(),
                         *reprotection_start,
-                        *reprotection_length,
+                        length_protected,
                         false,
-                        info.protection | VM_PROT_WRITE);
+                        *protection | VM_PROT_WRITE);
     if (result != KERN_SUCCESS) {
       MACH_LOG(ERROR, result) << "vm_protect";
       return false;

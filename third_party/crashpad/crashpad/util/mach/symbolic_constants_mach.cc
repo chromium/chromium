@@ -61,6 +61,8 @@ constexpr const char* kBehaviorNames[] = {
     "DEFAULT",
     "STATE",
     "STATE_IDENTITY",
+    "IDENTITY_PROTECTED",
+    "STATE_IDENTITY_PROTECTED",
 };
 
 constexpr char kBehaviorPrefix[] = "EXCEPTION_";

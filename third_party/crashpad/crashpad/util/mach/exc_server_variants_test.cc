@@ -1000,7 +1000,8 @@ TEST(ExcServerVariants, MockUnknownID) {
       // Invalid IDs right around valid ones.
       2400,
       2404,
-      2408,
+      2409,
+      2411,
 
       // Valid and invalid IDs in the range used for replies, not requests.
       2500,
@@ -1012,6 +1013,9 @@ TEST(ExcServerVariants, MockUnknownID) {
       2506,
       2507,
       2508,
+      2509,
+      2510,
+      2511,
   };
 
   for (size_t index = 0; index < std::size(unknown_ids); ++index) {
@@ -1057,8 +1061,8 @@ TEST(ExcServerVariants, MachMessageServerRequestIDs) {
   expect_request_ids.insert(2405);
   expect_request_ids.insert(2406);
   expect_request_ids.insert(2407);
+  expect_request_ids.insert(2408);
   expect_request_ids.insert(2410);
-  expect_request_ids.insert(2411);
 
   MockUniversalMachExcServer server;
   UniversalMachExcServer universal_mach_exc_server(&server);

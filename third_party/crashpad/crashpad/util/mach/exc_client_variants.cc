@@ -122,6 +122,77 @@ kern_return_t UniversalExceptionRaise(exception_behavior_t behavior,
           new_state,
           new_state_count);
 
+    case EXCEPTION_IDENTITY_PROTECTED | kMachExceptionCodes: {
+      uint64_t thread_id = 0;
+      thread_identifier_info_data_t thread_id_info;
+      mach_msg_type_number_t count = THREAD_IDENTIFIER_INFO_COUNT;
+      if (thread_info(thread,
+                      THREAD_IDENTIFIER_INFO,
+                      reinterpret_cast<thread_info_t>(&thread_id_info),
+                      &count) == KERN_SUCCESS) {
+        thread_id = thread_id_info.thread_id;
+      }
+
+      mach_port_t task_id_token = MACH_PORT_NULL;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
+      if (__builtin_available(macOS 11.3, iOS 14.5, *)) {
+        task_create_identity_token(task, &task_id_token);
+      }
+#pragma clang diagnostic pop
+
+      kern_return_t kr = mach_exception_raise_identity_protected(
+          exception_port,
+          thread_id,
+          task_id_token,
+          exception,
+          const_cast<mach_exception_data_type_t*>(code),
+          code_count);
+
+      if (task_id_token != MACH_PORT_NULL) {
+        mach_port_deallocate(mach_task_self(), task_id_token);
+      }
+      return kr;
+    }
+
+    case EXCEPTION_STATE_IDENTITY_PROTECTED | kMachExceptionCodes: {
+      uint64_t thread_id = 0;
+      thread_identifier_info_data_t thread_id_info;
+      mach_msg_type_number_t count = THREAD_IDENTIFIER_INFO_COUNT;
+      if (thread_info(thread,
+                      THREAD_IDENTIFIER_INFO,
+                      reinterpret_cast<thread_info_t>(&thread_id_info),
+                      &count) == KERN_SUCCESS) {
+        thread_id = thread_id_info.thread_id;
+      }
+
+      mach_port_t task_id_token = MACH_PORT_NULL;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
+      if (__builtin_available(macOS 11.3, iOS 14.5, *)) {
+        task_create_identity_token(task, &task_id_token);
+      }
+#pragma clang diagnostic pop
+
+      kern_return_t kr = mach_exception_raise_state_identity_protected(
+          exception_port,
+          thread_id,
+          task_id_token,
+          exception,
+          const_cast<mach_exception_data_type_t*>(code),
+          code_count,
+          flavor,
+          const_cast<thread_state_t>(old_state),
+          old_state_count,
+          new_state,
+          new_state_count);
+
+      if (task_id_token != MACH_PORT_NULL) {
+        mach_port_deallocate(mach_task_self(), task_id_token);
+      }
+      return kr;
+    }
+
     default:
       NOTREACHED();
   }

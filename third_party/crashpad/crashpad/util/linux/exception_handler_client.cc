@@ -31,10 +31,6 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/posix/signals.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <android/api-level.h>
-#endif
-
 namespace crashpad {
 
 namespace {

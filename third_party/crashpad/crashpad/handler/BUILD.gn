@@ -200,22 +200,18 @@ if (!crashpad_is_ios) {
     if (crashpad_is_linux) {
       deps += [ "../client:pthread_create" ]
     }
+
+    if (crashpad_is_android) {
+      # crashpad_handler_trampoline is used on Android, but crashpad_handler is
+      # needed by crashpad_client_linux_test.cc (which cannot use the
+      # trampoline because it runs as a normal executable, which it does
+      # because it does not have access to chromium's base::MultiProcessTest).
+      testonly = true
+    }
   }
 }
 
-# There is not any normal way to package native executables in an Android APK.
-# It is normal to package native code as a loadable module but Android's APK
-# installer will ignore files not named like a shared object, so give the
-# handler executable an acceptable name.
 if (crashpad_is_android) {
-  copy("crashpad_handler_named_as_so") {
-    deps = [ ":crashpad_handler" ]
-
-    sources = [ "$root_out_dir/crashpad_handler" ]
-
-    outputs = [ "$root_out_dir/libcrashpad_handler.so" ]
-  }
-
   crashpad_executable("crashpad_handler_trampoline") {
     output_name = "libcrashpad_handler_trampoline.so"
 

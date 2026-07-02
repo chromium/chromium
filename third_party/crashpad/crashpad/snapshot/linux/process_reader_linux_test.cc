@@ -58,11 +58,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #include <android/set_abort_message.h>
-#include "dlfcn_internal.h"
-
-// Normally this comes from set_abort_message.h, but only at API level 21.
-extern "C" void android_set_abort_message(const char* msg)
-    __attribute__((weak));
 #endif
 
 namespace crashpad {
@@ -546,8 +541,6 @@ TEST(ProcessReaderLinux, MAYBE_ChildWithSplitStack) {
   test.Run();
 }
 
-// Android doesn't provide dl_iterate_phdr on ARM until API 21.
-#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_ARMEL) || __ANDROID_API__ >= 21
 int ExpectFindModule(dl_phdr_info* info, size_t size, void* data) {
   SCOPED_TRACE(
       base::StringPrintf("module %s at 0x%" PRIx64 " phdrs 0x%" PRIx64,
@@ -586,7 +579,6 @@ int ExpectFindModule(dl_phdr_info* info, size_t size, void* data) {
   EXPECT_TRUE(found);
   return 0;
 }
-#endif  // !BUILDFLAG(IS_ANDROID) || !ARCH_CPU_ARMEL || __ANDROID_API__ >= 21
 
 void ExpectModulesFromSelf(
     const std::vector<ProcessReaderLinux::Module>& modules) {
@@ -595,15 +587,12 @@ void ExpectModulesFromSelf(
     EXPECT_NE(module.type, ModuleSnapshot::kModuleTypeUnknown);
   }
 
-// Android doesn't provide dl_iterate_phdr on ARM until API 21.
-#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_ARMEL) || __ANDROID_API__ >= 21
   EXPECT_EQ(
       dl_iterate_phdr(
           ExpectFindModule,
           reinterpret_cast<void*>(
               const_cast<std::vector<ProcessReaderLinux::Module>*>(&modules))),
       0);
-#endif  // !BUILDFLAG(IS_ANDROID) || !ARCH_CPU_ARMEL || __ANDROID_API__ >= 21
 }
 
 #if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
@@ -699,11 +688,7 @@ TEST(ProcessReaderLinux, ChildModules) {
 const char kTestAbortMessage[] = "test abort message";
 
 TEST(ProcessReaderLinux, AbortMessage) {
-  // This test requires Q. The API level on Q devices will be 28 until the API
-  // is finalized, so we can't check API level yet. For now, test for the
-  // presence of a libc symbol which was introduced in Q.
-  if (!crashpad::internal::Dlsym(RTLD_DEFAULT,
-                                 "android_fdsan_close_with_tag")) {
+  if (android_get_device_api_level() < 29) {
     GTEST_SKIP();
   }
 

@@ -30,10 +30,6 @@
 #include "util/synchronization/semaphore.h"
 #include "util/thread/thread.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <android/api-level.h>
-#endif
-
 namespace crashpad {
 namespace test {
 namespace {

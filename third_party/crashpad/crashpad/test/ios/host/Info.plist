@@ -102,6 +102,25 @@
       <string>{832, 1114}</string>
     </dict>
   </array>
+  <key>UIApplicationSceneManifest</key>
+  <dict>
+    <key>UIApplicationSupportsMultipleScenes</key>
+    <true/>
+    <key>UISceneConfigurations</key>
+    <dict>
+      <key>UIWindowSceneSessionRoleApplication</key>
+      <array>
+        <dict>
+          <key>UISceneClassName</key>
+          <string>UIWindowScene</string>
+          <key>UISceneDelegateClassName</key>
+          <string>CPTestSceneDelegate</string>
+          <key>UISceneConfigurationName</key>
+          <string>Default Configuration</string>
+        </dict>
+      </array>
+    </dict>
+  </dict>
   <key>UISupportedInterfaceOrientation</key>
   <array>
     <string>UIInterfaceOrientationPortrait</string>

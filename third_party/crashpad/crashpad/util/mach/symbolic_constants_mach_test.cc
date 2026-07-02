@@ -539,6 +539,12 @@ constexpr struct {
     {EXCEPTION_DEFAULT, "EXCEPTION_DEFAULT", "DEFAULT"},
     {EXCEPTION_STATE, "EXCEPTION_STATE", "STATE"},
     {EXCEPTION_STATE_IDENTITY, "EXCEPTION_STATE_IDENTITY", "STATE_IDENTITY"},
+    {EXCEPTION_IDENTITY_PROTECTED,
+     "EXCEPTION_IDENTITY_PROTECTED",
+     "IDENTITY_PROTECTED"},
+    {EXCEPTION_STATE_IDENTITY_PROTECTED,
+     "EXCEPTION_STATE_IDENTITY_PROTECTED",
+     "STATE_IDENTITY_PROTECTED"},
     {implicit_cast<exception_behavior_t>(EXCEPTION_DEFAULT |
                                          MACH_EXCEPTION_CODES),
      "EXCEPTION_DEFAULT|MACH_EXCEPTION_CODES",
@@ -551,6 +557,14 @@ constexpr struct {
                                          MACH_EXCEPTION_CODES),
      "EXCEPTION_STATE_IDENTITY|MACH_EXCEPTION_CODES",
      "STATE_IDENTITY|MACH"},
+    {implicit_cast<exception_behavior_t>(EXCEPTION_IDENTITY_PROTECTED |
+                                         MACH_EXCEPTION_CODES),
+     "EXCEPTION_IDENTITY_PROTECTED|MACH_EXCEPTION_CODES",
+     "IDENTITY_PROTECTED|MACH"},
+    {implicit_cast<exception_behavior_t>(EXCEPTION_STATE_IDENTITY_PROTECTED |
+                                         MACH_EXCEPTION_CODES),
+     "EXCEPTION_STATE_IDENTITY_PROTECTED|MACH_EXCEPTION_CODES",
+     "STATE_IDENTITY_PROTECTED|MACH"},
 };
 
 struct ConvertExceptionBehaviorTraits {
@@ -588,7 +602,7 @@ TEST(SymbolicConstantsMach, ExceptionBehaviorToString) {
   for (exception_behavior_t behavior = 0; behavior < 8; ++behavior) {
     SCOPED_TRACE(base::StringPrintf("behavior %d", behavior));
     exception_behavior_t behavior_mach = behavior | MACH_EXCEPTION_CODES;
-    if (behavior > 0 && behavior <= EXCEPTION_STATE_IDENTITY) {
+    if (behavior > 0 && behavior <= EXCEPTION_STATE_IDENTITY_PROTECTED) {
       TestExceptionBehaviorToString(behavior, "", "");
       TestExceptionBehaviorToString(behavior_mach, "", "");
     } else {

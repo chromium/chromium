@@ -162,6 +162,30 @@ UIWindow* GetAnyWindow() {
 
 }  // namespace
 
+@interface CPTestSceneDelegate : UIResponder <UIWindowSceneDelegate>
+@property(strong, nonatomic) UIWindow* window;
+@end
+
+@implementation CPTestSceneDelegate
+
+- (void)scene:(UIScene*)scene
+    willConnectToSession:(UISceneSession*)session
+                 options:(UISceneConnectionOptions*)connectionOptions {
+  if (![scene isKindOfClass:[UIWindowScene class]]) {
+    return;
+  }
+  UIWindowScene* windowScene = (UIWindowScene*)scene;
+  self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
+  self.window.backgroundColor = UIColor.greenColor;
+
+  CPTestCrashViewController* controller =
+      [[CPTestCrashViewController alloc] init];
+  self.window.rootViewController = controller;
+  [self.window makeKeyAndVisible];
+}
+
+@end
+
 @interface CPTestApplicationDelegate ()
 - (void)processIntermediateDumps;
 @property(copy, nonatomic) NSString* raw_log_output;
@@ -222,13 +246,6 @@ UIWindow* GetAnyWindow() {
     extra_ranges_.Insert((void*)extra_memory_string_->c_str(), 11);
   }
 
-  self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-  [self.window makeKeyAndVisible];
-  self.window.backgroundColor = UIColor.greenColor;
-
-  CPTestCrashViewController* controller =
-      [[CPTestCrashViewController alloc] init];
-  self.window.rootViewController = controller;
 
   // Start up EDO.
   [EDOHostService serviceWithPort:12345
