@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -47,7 +48,6 @@ import java.io.InputStream;
 @NullMarked
 class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private static final String TAG = "FbAttachFetcher";
-
     private static final int THUMBNAIL_BITMAP_EDGE_SIZE = 256;
     private static final int MAX_IMAGE_EDGE_SIZE = 1600;
 
@@ -56,6 +56,10 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     @VisibleForTesting
     static final long MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK = 20 * 1000 * 1000L; /* 20 MB */
+
+    private static BitmapDecoder sBitmapDecoder = BitmapFactory::decodeByteArray;
+    private static FileStreamReader sFileStreamReader = FileUtils::readStream;
+    private static DownscaledImageDecoder sImageDecoder = ImageDecoder::decodeBitmap;
 
     private final Context mContext;
     private final ContentResolver mContentResolver;
@@ -67,11 +71,6 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private @Nullable String mTitle;
     private @Nullable String mMimeType;
     private byte @Nullable [] mData;
-
-    private static final class ImageDimensions {
-        int mWidth;
-        int mHeight;
-    }
 
     FuseboxAttachmentDetailsFetcher(
             Context context,
@@ -224,7 +223,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         if (data == null) {
             try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
                 if (inputStream == null) return null;
-                data = FileUtils.readStream(inputStream);
+                data = sFileStreamReader.readStream(inputStream);
             } catch (IOException | OutOfMemoryError e) {
                 Log.w(TAG, "Failed to read attachment data", e);
                 return null;
@@ -238,7 +237,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         Bitmap bitmap;
         try {
             bitmap =
-                    ImageDecoder.decodeBitmap(
+                    sImageDecoder.decodeBitmap(
                             ImageDecoder.createSource(mContentResolver, mUri),
                             FuseboxAttachmentDetailsFetcher::setDecoderForDownscaling);
         } catch (IOException | IllegalArgumentException e) {
@@ -345,7 +344,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private static ImageDimensions getBitmapDimensionsFromBytes(byte[] data) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(data, /* offset= */ 0, /* length= */ data.length, options);
+        sBitmapDecoder.decodeByteArray(data, /* offset= */ 0, /* length= */ data.length, options);
         ImageDimensions dims = new ImageDimensions();
         dims.mWidth = options.outWidth;
         dims.mHeight = options.outHeight;
@@ -356,11 +355,50 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = inSampleSize;
         try {
-            return BitmapFactory.decodeByteArray(
+            return sBitmapDecoder.decodeByteArray(
                     data, /* offset= */ 0, /* length= */ data.length, options);
         } catch (OutOfMemoryError e) {
             Log.w(TAG, "Failed to generate attachment thumbnail", e);
             return null;
         }
+    }
+
+    static void setBitmapDecoderForTesting(BitmapDecoder decoder) {
+        sBitmapDecoder = decoder;
+        ResettersForTesting.register(() -> sBitmapDecoder = BitmapFactory::decodeByteArray);
+    }
+
+    static void setFileStreamReaderForTesting(FileStreamReader reader) {
+        sFileStreamReader = reader;
+        ResettersForTesting.register(() -> sFileStreamReader = FileUtils::readStream);
+    }
+
+    static void setImageDecoderForTesting(DownscaledImageDecoder decoder) {
+        sImageDecoder = decoder;
+        ResettersForTesting.register(() -> sImageDecoder = ImageDecoder::decodeBitmap);
+    }
+
+    @VisibleForTesting
+    interface BitmapDecoder {
+        @Nullable Bitmap decodeByteArray(
+                byte[] data, int offset, int length, BitmapFactory.Options options)
+                throws OutOfMemoryError;
+    }
+
+    @VisibleForTesting
+    interface FileStreamReader {
+        byte[] readStream(InputStream inputStream) throws IOException, OutOfMemoryError;
+    }
+
+    @VisibleForTesting
+    interface DownscaledImageDecoder {
+        Bitmap decodeBitmap(
+                ImageDecoder.Source source, ImageDecoder.OnHeaderDecodedListener listener)
+                throws IOException;
+    }
+
+    private static final class ImageDimensions {
+        int mWidth;
+        int mHeight;
     }
 }
