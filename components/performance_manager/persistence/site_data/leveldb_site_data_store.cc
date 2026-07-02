@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/byte_size.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "components/performance_manager/public/features.h"
 #include "crypto/obsolete/md5.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -293,8 +295,9 @@ void LevelDBSiteDataStore::AsyncHelper::RemoveSiteDataFromDB(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   leveldb::WriteBatch batch;
-  for (const auto& iter : site_origins)
+  for (const auto& iter : site_origins) {
     batch.Delete(SerializeOriginIntoDatabaseKey(iter));
+  }
   leveldb::Status status = db_->Write(write_options_, &batch);
   if (!status.ok()) {
     DLOG(WARNING) << "Failed to remove some entries from the site "
@@ -341,8 +344,9 @@ DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
   std::unique_ptr<leveldb::Iterator> iterator(
       db_->NewIterator(leveldb::ReadOptions()));
   int64_t num_rows = 0;
-  for (iterator->SeekToFirst(); iterator->Valid(); iterator->Next())
+  for (iterator->SeekToFirst(); iterator->Valid(); iterator->Next()) {
     ++num_rows;
+  }
 
   ret.num_rows = num_rows;
   return ret;
@@ -421,7 +425,12 @@ LevelDBSiteDataStore::LevelDBSiteDataStore(const base::FilePath& db_path)
     : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           // The |BLOCK_SHUTDOWN| trait is required to ensure that a clearing of
           // the database won't be skipped.
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+          {base::MayBlock(),
+           base::FeatureList::IsEnabled(
+               features::kLevelDBSiteDataStoreBestEffort)
+               ? base::TaskPriority::BEST_EFFORT
+               : base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       async_helper_(new AsyncHelper(db_path),
                     base::OnTaskRunnerDeleter(blocking_task_runner_)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
