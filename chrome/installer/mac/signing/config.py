@@ -95,6 +95,12 @@ class CodeSignConfig(object):
         raise ConfigError('enable_updater')
 
     @property
+    def use_static_angle(self):
+        """Returns True if ANGLE is statically linked.
+        """
+        raise ConfigError('use_static_angle')
+
+    @property
     def identity(self):
         """Returns the code signing identity that will be used to sign the
         products, everything but PKG files.

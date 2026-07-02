@@ -123,11 +123,14 @@ def get_parts(config):
             verify_options=verify_options)
 
     dylibs = [
-        'libEGL.dylib',
-        'libGLESv2.dylib',
         'libvk_swiftshader.dylib',
         'libvulkan.dylib',
     ]
+    if not config.use_static_angle:
+        dylibs.extend([
+            'libEGL.dylib',
+            'libGLESv2.dylib',
+        ])
     if config.is_chrome_branded():
         dylibs.append('liboptimization_guide_internal.dylib')
     for library in dylibs:
