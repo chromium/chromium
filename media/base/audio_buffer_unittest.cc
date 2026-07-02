@@ -283,7 +283,7 @@ TEST(AudioBufferTest, CopyFromAudioBus) {
   for (int ch = 0; ch < kChannelCount; ++ch) {
     auto bus_data = audio_bus->channel(ch);
     const float* buffer_data = reinterpret_cast<const float*>(
-        audio_buffer_from_bus->channel_data()[ch]);
+        audio_buffer_from_bus->channel_data()[ch].get());
 
     for (int i = 0; i < kFrameCount; ++i)
       UNSAFE_TODO(EXPECT_EQ(buffer_data[i], bus_data[i]));
@@ -697,7 +697,7 @@ TEST(AudioBufferTest, WrapOrCopyToAudioBus) {
   std::unique_ptr<AudioBus> bus = AudioBuffer::WrapOrCopyToAudioBus(buffer);
   for (int ch = 0; ch < channels; ++ch) {
     EXPECT_EQ(bus->channel(ch).data(),
-              reinterpret_cast<float*>(buffer->channel_data()[ch]));
+              reinterpret_cast<float*>(buffer->channel_data()[ch].get()));
   }
 
   // |bus| should have its own reference on |buffer|, so clearing it here should
@@ -901,8 +901,8 @@ TEST(AudioBufferTest, AudioBufferMemoryPoolAlignment) {
 
   ASSERT_EQ(kChannelCount, buffer->channel_data().size());
   for (size_t i = 0; i < kChannelCount; i++) {
-    EXPECT_EQ(
-        0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i]) % kAlignment)
+    EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i].get()) %
+                      kAlignment)
         << " channel: " << i;
   }
 
@@ -921,7 +921,7 @@ TEST(AudioBufferTest, AudioBufferAlignmentUnpooled) {
 
   ASSERT_EQ(kChannelCount, buffer->channel_data().size());
   for (size_t i = 0; i < kChannelCount; i++) {
-    EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i]) %
+    EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i].get()) %
                       AudioBus::kChannelAlignment)
         << " channel: " << i;
   }

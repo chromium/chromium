@@ -343,13 +343,13 @@ HlsManifestDemuxerEngine::FilterDemuxerStreams(
   if (rendition_manager_) {
     switch (rendition_manager_->GetSupportedStreamTypes()) {
       case hls::RenditionManager::CodecSupportType::kSupportedAudioOnly: {
-        std::erase_if(all_streams, [](DemuxerStream* stream) {
+        std::erase_if(all_streams, [](raw_ptr<DemuxerStream> stream) {
           return stream->type() != DemuxerStream::AUDIO;
         });
         break;
       }
       case hls::RenditionManager::CodecSupportType::kSupportedVideoOnly: {
-        std::erase_if(all_streams, [](DemuxerStream* stream) {
+        std::erase_if(all_streams, [](raw_ptr<DemuxerStream> stream) {
           return stream->type() != DemuxerStream::VIDEO;
         });
         break;

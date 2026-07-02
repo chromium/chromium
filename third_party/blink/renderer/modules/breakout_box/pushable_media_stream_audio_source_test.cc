@@ -282,7 +282,7 @@ TEST_P(PushableMediaStreamAudioSourceTest, ConvertsFormatInternally) {
 
   // Create interleaved data, with negative values on the second channel.
   float* interleaved_buffer_data =
-      reinterpret_cast<float*>(interleaved_buffer->channel_data()[0]);
+      reinterpret_cast<float*>(interleaved_buffer->channel_data()[0].get());
   for (int i = 0; i < kFrames; ++i) {
     float value = static_cast<float>(i) / kFrames;
 

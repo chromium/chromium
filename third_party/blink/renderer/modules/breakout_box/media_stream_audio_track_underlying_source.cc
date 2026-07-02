@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "media/base/audio_buffer.h"
@@ -94,7 +95,7 @@ class AudioBufferPoolImpl
     buffer->set_timestamp(timestamp);
 
     // Copy the data over.
-    const std::vector<uint8_t*>& dest_data = buffer->channel_data();
+    const std::vector<raw_ptr<uint8_t>>& dest_data = buffer->channel_data();
     for (int ch = 0; ch < audio_bus.channels(); ++ch) {
       const float* src_channel = audio_bus.channel(ch).data();
       UNSAFE_TODO(memcpy(dest_data[ch], src_channel,

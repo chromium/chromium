@@ -128,7 +128,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
     for (int ch = 0; ch < bus.channels(); ch++) {
       base::span<const float> bus_channel = bus.channel(ch);
       const float* buffer_channel =
-          reinterpret_cast<float*>(buffer->channel_data()[ch]);
+          reinterpret_cast<float*>(buffer->channel_data()[ch].get());
       for (int i = 0; i < bus.frames(); ++i) {
         if (bus_channel[i] != UNSAFE_TODO(buffer_channel[i])) {
           return false;

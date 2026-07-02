@@ -42,7 +42,7 @@ void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
     base::span<const uint8_t> input_span(base::as_byte_span(
         base::allow_nonunique_obj, expected_data->channel(ch)));
     base::span<uint8_t> UNSAFE_TODO(
-        output_span(buffer->channel_data()[ch], kSpanSize));
+        output_span(buffer->channel_data()[ch].get(), kSpanSize));
     EXPECT_EQ(input_span, output_span);
   }
 }
@@ -151,7 +151,7 @@ TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
       *input_bus_, kBufferSize, base::TimeDelta(),
       base::BindLambdaForTesting([&](scoped_refptr<AudioBuffer> buffer) {
         const float* channel_data =
-            reinterpret_cast<const float*>(buffer->channel_data()[0]);
+            reinterpret_cast<const float*>(buffer->channel_data()[0].get());
         for (int i = 0; i < buffer->frame_count(); ++i) {
           has_values_from_first_buffer |=
               UNSAFE_TODO(channel_data[i]) == kGuardValue;
@@ -198,7 +198,7 @@ TEST_F(LimitingAudioQueueTest, Limiting_CompressesGain) {
   auto verify_buffer = [&](scoped_refptr<AudioBuffer> buffer) {
     for (int ch = 0; ch < kChannels; ++ch) {
       const float* channel_data =
-          reinterpret_cast<const float*>(buffer->channel_data()[ch]);
+          reinterpret_cast<const float*>(buffer->channel_data()[ch].get());
       for (int i = 0; i < kBufferSize; ++i) {
         has_out_of_range_value |= std::abs(UNSAFE_TODO(channel_data[i])) > 1.0f;
       }

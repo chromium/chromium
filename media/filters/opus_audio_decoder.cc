@@ -355,7 +355,7 @@ bool OpusAudioDecoder::DecodeBuffer(const scoped_refptr<DecoderBuffer>& input) {
       config_.samples_per_second(), kMaxOpusOutputPacketSizeSamples, pool_);
 
   float* float_output_buffer =
-      reinterpret_cast<float*>(output_buffer->channel_data()[0]);
+      reinterpret_cast<float*>(output_buffer->channel_data()[0].get());
 
   auto input_span = base::span(*input);
   const int frames_decoded = opus_multistream_decode_float(

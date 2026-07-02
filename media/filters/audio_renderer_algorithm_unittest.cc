@@ -23,6 +23,7 @@
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -387,13 +388,14 @@ class AudioRendererAlgorithmTest : public testing::Test {
                                   kSampleRateHz,
                                   kPulseWidthSamples);
 
-    const std::vector<uint8_t*>& channel_pointers = input->channel_data();
+    const std::vector<raw_ptr<uint8_t>>& channel_pointers =
+        input->channel_data();
     std::vector<base::span<float>> input_data(channels_);
     for (int i = 0; i < channels_; ++i) {
       // TODO(crbug.com/373960632): spanify AudioBuffer.
-      UNSAFE_TODO(input_data[i] =
-                      base::span(reinterpret_cast<float*>(channel_pointers[i]),
-                                 static_cast<size_t>(input->frame_count())));
+      UNSAFE_TODO(input_data[i] = base::span(
+                      reinterpret_cast<float*>(channel_pointers[i].get()),
+                      static_cast<size_t>(input->frame_count())));
     }
 
     // Fill |input| channels.

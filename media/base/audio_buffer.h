@@ -16,6 +16,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -267,7 +268,7 @@ class MEDIA_EXPORT AudioBuffer
   // write directly to. For planar formats the vector elements correspond to
   // the channels. For interleaved formats the resulting vector has exactly
   // one element which contains the buffer pointer.
-  const std::vector<uint8_t*>& channel_data() const {
+  const std::vector<raw_ptr<uint8_t>>& channel_data() const {
     CHECK_EQ(channel_spans_.size(), channel_data_.size());
     return channel_data_;
   }
@@ -317,7 +318,7 @@ class MEDIA_EXPORT AudioBuffer
   // Raw pointers to the beginning of each span in `channel_spans_`.
   // TODO(crbug.com/373960632): Delete this once `channel_spans_` is used
   // everywhere instead.
-  std::vector<uint8_t*> channel_data_;
+  std::vector<raw_ptr<uint8_t>> channel_data_;
 
   // For planar data, points to each channels data.
   std::vector<base::raw_span<uint8_t>> channel_spans_;

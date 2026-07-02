@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -107,7 +108,7 @@ media::SampleFormat BlinkFormatToMediaFormat(V8AudioSampleFormat blink_format) {
 
 template <typename SampleType>
 void CopyToInterleaved(uint8_t* dest_data,
-                       const std::vector<uint8_t*>& src_channels_data,
+                       const std::vector<raw_ptr<uint8_t>>& src_channels_data,
                        const int frame_offset,
                        const int frames_to_copy,
                        ExceptionState& exception_state) {
@@ -123,7 +124,8 @@ void CopyToInterleaved(uint8_t* dest_data,
   UNSAFE_TODO({
     for (int ch = 0; ch < channels; ++ch) {
       const SampleType* src_start =
-          reinterpret_cast<SampleType*>(src_channels_data[ch]) + frame_offset;
+          reinterpret_cast<SampleType*>(src_channels_data[ch].get()) +
+          frame_offset;
       for (int i = 0; i < frames_to_copy; ++i) {
         dest[i * channels + ch] = src_start[i];
       }
