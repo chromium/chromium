@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
@@ -272,11 +273,11 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     mojom::blink::DisplayMode display_mode =
         frame_->GetWidgetForLocalRoot()->DisplayMode();
     should_send_key_events_to_js =
-        display_mode == blink::mojom::DisplayMode::kMinimalUi ||
-        display_mode == blink::mojom::DisplayMode::kStandalone ||
-        display_mode == blink::mojom::DisplayMode::kFullscreen ||
-        display_mode == blink::mojom::DisplayMode::kUnframed ||
-        display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay;
+        display_mode == mojom::blink::DisplayMode::kMinimalUi ||
+        display_mode == mojom::blink::DisplayMode::kStandalone ||
+        display_mode == mojom::blink::DisplayMode::kFullscreen ||
+        display_mode == mojom::blink::DisplayMode::kUnframed ||
+        display_mode == mojom::blink::DisplayMode::kWindowControlsOverlay;
   }
 
   // We have 2 level of not exposing key event to js, not send and send but not
