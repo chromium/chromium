@@ -127,18 +127,15 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::WrapBuffer(
       base::BindOnce(&SharedMemoryVideoFramePool::OnFrameWrapperDestroyed,
                      weak_factory_.GetWeakPtr(), base::Unretained(frame.get()),
                      std::move(pooled_buffer.mapping)));
-  if (base::FeatureList::IsEnabled(
-          features::kSharedMemoryVFPoolUseCorrectColorSpace)) {
-    if (format == media::PIXEL_FORMAT_I420 ||
-        format == media::PIXEL_FORMAT_NV12) {
-      frame->set_color_space(gfx::ColorSpace::CreateREC709());
-    } else if (format == media::PIXEL_FORMAT_ARGB) {
-      frame->set_color_space(gfx::ColorSpace::CreateSRGB());
-    } else if (format == media::PIXEL_FORMAT_RGBAF16) {
-      frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
-    } else {
-      NOTREACHED() << "Unexpected pixel format: " << format;
-    }
+  if (format == media::PIXEL_FORMAT_I420 ||
+      format == media::PIXEL_FORMAT_NV12) {
+    frame->set_color_space(gfx::ColorSpace::CreateREC709());
+  } else if (format == media::PIXEL_FORMAT_ARGB) {
+    frame->set_color_space(gfx::ColorSpace::CreateSRGB());
+  } else if (format == media::PIXEL_FORMAT_RGBAF16) {
+    frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
+  } else {
+    NOTREACHED() << "Unexpected pixel format: " << format;
   }
   return frame;
 }

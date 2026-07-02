@@ -162,9 +162,6 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 BASE_FEATURE(kUseDestinationColorSpaceInVideoEncode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVideoEncodeAdapterUseCorrectColorSpace,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 gfx::ColorSpace GetDestinationColorSpace(
     VideoPixelFormat src_format,
     const gfx::ColorSpace& src_color_space) {
@@ -181,8 +178,7 @@ gfx::ColorSpace GetDestinationColorSpace(
   // For YUV frames, ConvertAndScale uses `src_frame` color space so use that
   // directly. Check for `src_color_space` validity and use default BT.709 if
   // it is invalid.
-  if (!src_color_space.IsValid() &&
-      base::FeatureList::IsEnabled(kVideoEncodeAdapterUseCorrectColorSpace)) {
+  if (!src_color_space.IsValid()) {
     return gfx::ColorSpace::CreateREC709();
   }
   return src_color_space;

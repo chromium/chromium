@@ -648,9 +648,6 @@ bool UseSoftwareForLowResolution(const webrtc::VideoCodecType codec,
   return false;
 }
 
-BASE_FEATURE(kRTCVideoEncoderUseCorrectColorSpace,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     gfx::Size size) {
@@ -667,11 +664,7 @@ scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
     return nullptr;
   }
 
-  const gfx::ColorSpace color_space =
-      base::FeatureList::IsEnabled(kRTCVideoEncoderUseCorrectColorSpace)
-          ? gfx::ColorSpace::CreateREC709()
-          : gfx::ColorSpace();
-
+  const gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
   auto shared_image = sii->CreateSharedImage(
       {si_format, size, color_space, gpu::SharedImageUsageSet(si_usage),
        "RTCVideoEncoder"},
@@ -2231,9 +2224,7 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(kRTCVideoEncoderUseCorrectColorSpace)) {
-    frame->set_color_space(nv12_shared_image->color_space());
-  }
+  frame->set_color_space(nv12_shared_image->color_space());
 
   input_buffers_free_.pop_back();
   frame->AddDestructionObserver(
@@ -2454,8 +2445,7 @@ bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
       std::move(shared_image), sync_token, base::NullCallback(),
       gfx::Rect(mapping->Size()), natural_size, base::TimeDelta());
 
-  if (black_frame_ &&
-      base::FeatureList::IsEnabled(kRTCVideoEncoderUseCorrectColorSpace)) {
+  if (black_frame_) {
     black_frame_->set_color_space(black_frame_->shared_image()->color_space());
   }
 

@@ -421,12 +421,6 @@ BASE_FEATURE(kFlingSchedulingImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
 // should be removed as soon as we confirm that the optimization is stable.
 BASE_FEATURE(kRpdqFilterLookupOptimizations, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use correct default ColorSpace in `SharedMemoryVideoFramePool::WrapBuffer`
-// when creating a VideoFrame instead of when it is used in
-// `FrameSinkVideoCapturerImpl::MaybeCaptureFrame`.
-BASE_FEATURE(kSharedMemoryVFPoolUseCorrectColorSpace,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, bypasses deadlocks caused by outdated activation dependency
 // tokens when parent frame submission lags behind child surface execution.
 BASE_FEATURE(kBypassOutdatedSurfaceActivation,

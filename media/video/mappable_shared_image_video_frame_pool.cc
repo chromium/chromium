@@ -630,9 +630,6 @@ void SetPrefersExternalSampler(viz::SharedImageFormat& format) {
   }
 }
 
-BASE_FEATURE(kUseDefaultColorSpaceInMappablePool,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 gfx::ColorSpace GetOutputColorSpace(
     const gfx::ColorSpace& source_cs,
     GpuVideoAcceleratorFactories::OutputFormat output_format) {
@@ -867,8 +864,7 @@ void MappableSharedImageVideoFramePool::PoolImpl::StartCopy() {
     // etc.) and passed here to be copied to a hardware VideoFrame. This will
     // ensure the same color space defaults are used here and in other places
     // such as WebGL Canvas copies, VideoResourceUpdater etc.
-    if (!output_color_space.IsValid() &&
-        base::FeatureList::IsEnabled(kUseDefaultColorSpaceInMappablePool)) {
+    if (!output_color_space.IsValid()) {
       if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::XR30 ||
           output_format_ == GpuVideoAcceleratorFactories::OutputFormat::XB30) {
         output_color_space = gfx::ColorSpace::CreateSRGB();
