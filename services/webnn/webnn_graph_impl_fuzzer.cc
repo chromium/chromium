@@ -223,6 +223,14 @@ struct ElementWiseBinaryParams {
   bool is_rhs_constant;
 };
 
+struct EluParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  float alpha;
+  bool is_input_constant;
+};
+
 struct ExpandParams {
   OperandDataType data_type;
   uint32_t input_rank;
@@ -909,6 +917,18 @@ auto AnyElementWiseBinaryParams(
           fuzztest::Arbitrary<bool>(),          // is_lhs_constant
           fuzztest::Arbitrary<bool>()           // is_rhs_constant
           ));
+}
+
+auto AnyEluParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<EluParams>(
+      AnyOperandDataTypeFor(limits.elu_input.data_types),
+      AnyTensorRankIncludeZero(),          // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      fuzztest::OneOf(fuzztest::Just(1.0f),
+                      fuzztest::Arbitrary<float>()),  // alpha
+      fuzztest::Arbitrary<bool>()                     // is_input_constant
+  );
 }
 
 auto AnyExpandParams() {
@@ -1785,6 +1805,34 @@ std::optional<ElementWiseBinaryDescriptors> SetUpElementWiseBinaryDescriptors(
   };
 }
 
+struct EluDescriptors {
+  // The output of elu has the same shape and data type as the input.
+  OperandDescriptor input_desc;
+  float alpha;
+};
+
+// Helper to set up EluDescriptors. Returns nullopt if any validation fails.
+std::optional<EluDescriptors> SetUpEluDescriptors(
+    const ContextProperties& context_properties,
+    const EluParams& params) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto input_desc,
+      OperandDescriptor::Create(context_properties, params.data_type,
+                                input_dims, ""));
+
+  // Replace NaN or infinite alpha with the default value so the operator is
+  // valid.
+  float alpha = std::isfinite(params.alpha) ? params.alpha : 1.0f;
+
+  return EluDescriptors{
+      .input_desc = std::move(input_desc),
+      .alpha = alpha,
+  };
+}
+
 struct GatherDescriptors {
   OperandDescriptor input_desc;
   OperandDescriptor indices_desc;
@@ -2567,6 +2615,7 @@ class WebNNGraphImplFuzzerImpl
                         float seed_for_scale,
                         uint8_t seed_for_zero_point);
   void ElementWiseBinary(ElementWiseBinaryParams params, uint8_t seed_for_data);
+  void Elu(EluParams params, uint8_t seed_for_data);
   void Expand(ExpandParams params, uint8_t seed_for_data);
   void Gather(GatherParams params, uint8_t seed_for_data);
   void GatherND(GatherNDParams params, uint8_t seed_for_data);
@@ -2611,6 +2660,10 @@ class WebNNGraphImplFuzzerImpl
                             uint8_t seed_for_input,
                             float seed_for_scale,
                             uint8_t seed_for_zero_point);
+  void DQEluQ(EluParams elu_params,
+              uint8_t seed_for_input,
+              float seed_for_scale,
+              uint8_t seed_for_zero_point);
   void DQGatherQ(GatherParams gather_params,
                  QuantizationParams quantization_params,
                  uint32_t channel_axis,
@@ -3021,6 +3074,37 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::ElementWiseBinary(
                                             descs.output_desc.data_type());
 
   builder.BuildElementWiseBinary(params.kind, lhs_id, rhs_id, output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Elu(EluParams params,
+                                                uint8_t seed_for_data) {
+  ASSIGN_OR_RETURN_VOID(
+      auto elu_descs, SetUpEluDescriptors(this->context_properties(), params));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(
+      builder, params.is_input_constant, "input", elu_descs.input_desc,
+      seed_for_data, data_buffers, named_inputs);
+
+  // The output of elu has the same shape and data type as the input.
+  OperandId output_id = builder.BuildOutput(
+      "output", elu_descs.input_desc.shape(), elu_descs.input_desc.data_type());
+
+  builder.BuildElu(input_id, output_id, elu_descs.alpha);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -4587,6 +4671,65 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQEluQ(
+    EluParams elu_params,
+    uint8_t seed_for_input,
+    float seed_for_scale,
+    uint8_t seed_for_zero_point) {
+  ASSIGN_OR_RETURN_VOID(
+      auto elu_descs,
+      SetUpEluDescriptors(this->context_properties(), elu_params));
+  const OperandDescriptor& elu_desc = elu_descs.input_desc;
+
+  // kPerTensor quantization with the Int8 quantized type and the specific
+  // alpha value is used to exercise the fusiable path for TFLite backend:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2021;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
+  // TODO(crbug.com/498987226): Remove this restriction to increase test
+  // coverage.
+  elu_descs.alpha = 1.0f;
+  QuantizationParams per_tensor_quantization_params{
+      .quantized_type = OperandDataType::kInt8,
+      .quantization_kind = QuantizationKind::kPerTensor,
+      .channel_block_size = 1};
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
+      auto elu_input_id,
+      BuildDequantizeInput(
+          builder, this->context_properties(), elu_params.is_input_constant,
+          "input", elu_desc, per_tensor_quantization_params,
+          /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
+          seed_for_zero_point, data_buffers, named_inputs));
+
+  // The output of elu has the same shape and data type as the input.
+  OperandId elu_output_id =
+      builder.BuildIntermediateOperand(elu_desc.shape(), elu_desc.data_type());
+
+  builder.BuildElu(elu_input_id, elu_output_id, elu_descs.alpha);
+
+  if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
+                           elu_desc, per_tensor_quantization_params,
+                           /*channel_axis=*/std::nullopt, elu_output_id,
+                           seed_for_scale, seed_for_zero_point)) {
+    return;
+  }
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGatherQ(
     GatherParams gather_params,
     QuantizationParams quantization_params,
@@ -5419,6 +5562,17 @@ WEBNN_FUZZ_TEST_F(
                      },
                      /*seed_for_data=*/1}}));
 
+WEBNN_FUZZ_TEST_F(Elu,
+                  .WithDomains(AnyEluParams(), fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{EluParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                                       /*alpha=*/1.0f,
+                                       /*is_input_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/1}}));
+
 WEBNN_FUZZ_TEST_F(Expand,
                   .WithDomains(AnyExpandParams(),
                                fuzztest::Arbitrary<uint8_t>())
@@ -5854,6 +6008,24 @@ WEBNN_FUZZ_TEST_F(
                      },
                      /*quantized_type=*/OperandDataType::kUint8,
                      /*seed_for_input=*/2,
+                     /*seed_for_scale=*/0.25f,
+                     /*seed_for_zero_point=*/0}}));
+
+WEBNN_FUZZ_TEST_F(
+    DQEluQ,
+    .WithDomains(AnyEluParams(),
+                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_scale=*/
+                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
+                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{EluParams{
+                         /*data_type=*/OperandDataType::kFloat32,
+                         /*rank=*/4,
+                         /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                         /*alpha=*/1.0f,
+                         /*is_input_constant=*/false,
+                     },
+                     /*seed_for_input=*/1,
                      /*seed_for_scale=*/0.25f,
                      /*seed_for_zero_point=*/0}}));
 
