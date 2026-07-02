@@ -93,7 +93,9 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target, context):
         header_genrule = soong_ast.create_module(
             "cc_genrule",
             f"{soong_ast.label_to_module_name(target.name, context)}_header_{i}",
-            target.name, context)
+            target.name,
+            context,
+            is_test=is_test_target)
         header_genrule.tools = {cxx_bridge_module_name}
         header_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) --header > $(out)"
         header_genrule.srcs = {gn_utils.label_to_path(src)}
@@ -102,7 +104,9 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target, context):
         cc_genrule = soong_ast.create_module(
             "cc_genrule",
             f"{soong_ast.label_to_module_name(target.name, context)}_{i}",
-            target.name, context)
+            target.name,
+            context,
+            is_test=is_test_target)
         cc_genrule.tools = {cxx_bridge_module_name}
         cc_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) > $(out)"
         cc_genrule.srcs = {gn_utils.label_to_path(src)}
@@ -222,14 +226,20 @@ def create_proto_modules(blueprint, gn, target, is_test_target, context):
     # source files in 'srcs' and headers in 'generated_headers' -- and it's not
     # valid to generate .h files from a source dependency and vice versa.
     source_module_name = target_module_name
-    source_module = soong_ast.create_module('cc_genrule', source_module_name,
-                                            target.name, context)
+    source_module = soong_ast.create_module('cc_genrule',
+                                            source_module_name,
+                                            target.name,
+                                            context,
+                                            is_test=is_test_target)
     blueprint.add_module(source_module)
     source_module.srcs.update(sources)
 
     header_module = soong_ast.create_module('cc_genrule',
                                             source_module_name + '_h',
-                                            target.name, context)
+                                            target.name,
+                                            context,
+                                            is_test=is_test_target,
+                                            role='h')
     blueprint.add_module(header_module)
     header_module.srcs = set(source_module.srcs)
 
@@ -299,7 +309,7 @@ def create_proto_modules(blueprint, gn, target, is_test_target, context):
     return (header_module, source_module)
 
 
-def create_gcc_preprocess_modules(blueprint, target, context):
+def create_gcc_preprocess_modules(blueprint, target, is_test_target, context):
     # gcc_preprocess.py internally execute host gcc which is not allowed in genrule.
     # So, this function create multiple modules and realize equivalent processing
     assert (len(target.common.sources) == 1)
@@ -313,7 +323,9 @@ def create_gcc_preprocess_modules(blueprint, target, context):
     # not accept .template file as srcs
     rename_module = soong_ast.create_module('genrule',
                                             bp_module_name + '_rename',
-                                            target.name, context)
+                                            target.name,
+                                            context,
+                                            is_test=is_test_target)
     rename_module.srcs.add(gn_utils.label_to_path(source))
     rename_module.out.add(stem + '.cc')
     rename_module.cmd = 'cp $(in) $(out)'
@@ -321,8 +333,11 @@ def create_gcc_preprocess_modules(blueprint, target, context):
 
     # Preprocess template file and generates java file
     preprocess_module = soong_ast.create_module(
-        'cc_preprocess_no_configuration', bp_module_name + '_preprocess',
-        target.name, context)
+        'cc_preprocess_no_configuration',
+        bp_module_name + '_preprocess',
+        target.name,
+        context,
+        is_test=is_test_target)
     # -E: stop after preprocessing.
     # -P: disable line markers, i.e. '#line 309'
     preprocess_module.cflags.extend(['-E', '-P', '-DANDROID'])
@@ -335,8 +350,11 @@ def create_gcc_preprocess_modules(blueprint, target, context):
     blueprint.add_module(preprocess_module)
 
     # Generates srcjar using soong_zip
-    module = soong_ast.create_module('genrule', bp_module_name, target.name,
-                                     context)
+    module = soong_ast.create_module('genrule',
+                                     bp_module_name,
+                                     target.name,
+                                     context,
+                                     is_test=is_test_target)
     module.srcs.add(':' + preprocess_module.name)
     module.out.add(stem + '.srcjar')
     module.cmd = [
@@ -411,14 +429,18 @@ def create_action_module_internal(gn,
                                   context,
                                   arch=None):
     if target.script == '//build/android/gyp/gcc_preprocess.py':
-        return create_gcc_preprocess_modules(blueprint, target, context)
+        return create_gcc_preprocess_modules(blueprint, target, is_test_target,
+                                             context)
     sanitizer = action_sanitizers.get_action_sanitizer(gn, target, gn_type,
                                                        arch, is_test_target,
                                                        context)
     sanitizer.sanitize()
 
-    module = soong_ast.create_module(gn_type, sanitizer.get_name(),
-                                     target.name, context)
+    module = soong_ast.create_module(gn_type,
+                                     sanitizer.get_name(),
+                                     target.name,
+                                     context,
+                                     is_test=is_test_target)
     module.cmd = sanitizer.get_cmd()
     module.out = sanitizer.get_outputs()
     if sanitizer.is_header_generated():
@@ -496,14 +518,13 @@ def merge_modules(modules, genrule_type):
     return merged_module
 
 
-def create_java_module(bp_module_name, target, blueprint, context):
-
+def create_java_module(bp_module_name, target, blueprint, is_test_target,
+                       context):
     def add_java_library_properties(module):
         module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
         module.apex_available.add(common.tethering_apex)
         module.defaults.add(context.java_framework_defaults_module)
         module.build_file_path = target.build_file_path
-
     # As hinted in `parse_gn_desc()`, Java GN targets are... complicated.
     #
     # Here the main source of complexity is the need to support the
@@ -537,7 +558,11 @@ def create_java_module(bp_module_name, target, blueprint, context):
     source_is_jar = any(source.endswith('.jar') for source in sources)
     unfiltered_module = soong_ast.create_module(
         "java_import" if source_is_jar else "java_library",
-        f"{bp_module_name}__unfiltered", target.name, context)
+        f"{bp_module_name}__unfiltered",
+        target.name,
+        context,
+        is_test=is_test_target,
+        role='unfiltered')
     add_java_library_properties(unfiltered_module)
     if source_is_jar:
         assert all(source.endswith('.jar') for source in sources), target.name
@@ -556,7 +581,10 @@ def create_java_module(bp_module_name, target, blueprint, context):
     # matter what.)
     filtered_module = soong_ast.create_module("java_genrule",
                                               f"{bp_module_name}__filtered",
-                                              target.name, context)
+                                              target.name,
+                                              context,
+                                              is_test=is_test_target,
+                                              role='filtered')
     filtered_module.srcs = [f":{unfiltered_module.name}"]
 
     jar_excluded_patterns = target.java_jar_excluded_patterns
@@ -606,8 +634,11 @@ def create_java_module(bp_module_name, target, blueprint, context):
     filtered_module.visibility = {"//external/cronet:__subpackages__"}
     blueprint.add_module(filtered_module)
 
-    top_module = soong_ast.create_module("java_library", bp_module_name,
-                                         target.name, context)
+    top_module = soong_ast.create_module("java_library",
+                                         bp_module_name,
+                                         target.name,
+                                         context,
+                                         is_test=is_test_target)
     top_module.java_unfiltered_module = unfiltered_module
     add_java_library_properties(top_module)
     top_module.static_libs.add(filtered_module.name)
@@ -666,8 +697,11 @@ def get_bindgen_flags(args: List[str]) -> List[str]:
 
 def _create_extract_rust_files_target(bindgen_module, blueprint, context):
     module = soong_ast.create_module(
-        "cc_genrule", bindgen_module.name + "__extract_rust_files",
-        f"Extract rust files from {bindgen_module.name}", context)
+        "cc_genrule",
+        bindgen_module.name + "__extract_rust_files",
+        f"Extract rust files from {bindgen_module.name}",
+        context,
+        is_test=bindgen_module._is_test)
     module.srcs = [f":{bindgen_module.name}"]
     module.cmd = [
         f'for f in $(locations :{bindgen_module.name}); do',
@@ -685,9 +719,13 @@ def _create_extract_rust_files_target(bindgen_module, blueprint, context):
 
 def create_bindgen_module(
         blueprint: soong_ast.Blueprint, target, module_name: str,
+        is_test_target: bool,
         context: translation_context.TranslationContext) -> soong_ast.Module:
-    module = soong_ast.create_module("rust_bindgen", "lib" + module_name,
-                                     target.name, context)
+    module = soong_ast.create_module("rust_bindgen",
+                                     "lib" + module_name,
+                                     target.name,
+                                     context,
+                                     is_test=is_test_target)
     if len(target.common.sources) > 1:
         raise ValueError(
             f"Expected a single source file for bindgen but found {target.common.sources}."
@@ -740,7 +778,9 @@ def create_generated_headers_export_module(
     module = soong_ast.create_module(
         "cc_library_headers",
         f"{cc_genrule_module_name}_export_generated_headers",
-        cc_genrule_module.gn_target, context)
+        cc_genrule_module.gn_target,
+        context,
+        is_test=cc_genrule_module._is_test)
     module.export_generated_headers = module.generated_headers = [
         cc_genrule_module_name
     ]
@@ -820,7 +860,9 @@ def create_jni_zero_proxy_only_module(jni_zero_generator_module, context):
     proxy_only_module = soong_ast.create_module(
         jni_zero_generator_module.type,
         f"{jni_zero_generator_module.name}_proxy_only",
-        jni_zero_generator_module.gn_target, context)
+        jni_zero_generator_module.gn_target,
+        context,
+        is_test=jni_zero_generator_module._is_test)
     proxy_only_module.cmd = "cp $(in) $(genDir)"
     proxy_only_module.srcs = [f":{jni_zero_generator_module.name}"]
     proxy_only_module.out = [os.path.basename(proxy_path)]
@@ -957,11 +999,15 @@ def _extract_version_script(ldflags):
     return new_ldflags, version_script
 
 
-def _create_linker_script_filegroup(linker_script_path, context):
+def _create_linker_script_filegroup(linker_script_path, is_test_target,
+                                    context):
     filegroup_name = linker_script_path.replace('/', '_').replace('.', '_')
     filegroup_module = soong_ast.create_module(
-        "filegroup", f"{context.module_prefix}{filegroup_name}_filegroup",
-        f"Created to reference {linker_script_path}", context)
+        "filegroup",
+        f"{context.module_prefix}{filegroup_name}_filegroup",
+        f"Created to reference {linker_script_path}",
+        context,
+        is_test=is_test_target)
     filegroup_module.srcs = [linker_script_path]
     # TODO(aymanm): Change the default for build_file_path to be top-level.
     filegroup_module.build_file_path = ""
@@ -1023,7 +1069,7 @@ def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
         # Unfortunately, Soong does not allow accessing linker scripts from parent
         # path. So create a filegroup at the top-level Android.bp and reference it instead.
         filegroup_module = _create_linker_script_filegroup(
-            version_script, context)
+            version_script, main_module._is_test, context)
         blueprint.add_module(filegroup_module)
         version_script_deps = f':{filegroup_module.name}'
         assert main_module.version_script is None or main_module.version_script == version_script_deps, f'Found different version scripts across different architectures!, target name: {main_module.name}, first version_script: {main_module.version_script}, second version_script: {version_script_deps}'
@@ -1032,7 +1078,7 @@ def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
         if lib.endswith('.lds'):
             linker_script = gn_utils.label_to_path(lib)
             filegroup_module = _create_linker_script_filegroup(
-                linker_script, context)
+                linker_script, main_module._is_test, context)
             blueprint.add_module(filegroup_module)
             linker_script_deps = f':{filegroup_module.name}'
             module.linker_scripts.add(linker_script_deps)
@@ -1060,11 +1106,13 @@ def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
 
 def _create_rust_build_script_output_copy_genrule(module_name,
                                                   path_to_directory, files,
-                                                  context):
+                                                  is_test_target, context):
     module = soong_ast.create_module(
-        "genrule", module_name,
+        "genrule",
+        module_name,
         "Copies generated Rust build script files somewhere the dependent code can find them",
-        context)
+        context,
+        is_test=is_test_target)
     module.srcs = [f"{path_to_directory}/{file_name}" for file_name in files]
     module.cmd = "cp $(in) $(genDir)"
     module.out = files
@@ -1110,9 +1158,13 @@ def set_module_include_dirs(module, cflags, include_dirs, context):
         module.include_dirs.insert(0, "external/cronet/include/")
 
 
-def create_aidl_module(bp_module_name, target, blueprint, context):
-    module = soong_ast.create_module("aidl_interface", bp_module_name,
-                                     target.name, context)
+def create_aidl_module(bp_module_name, target, blueprint, is_test_target,
+                       context):
+    module = soong_ast.create_module("aidl_interface",
+                                     bp_module_name,
+                                     target.name,
+                                     context,
+                                     is_test=is_test_target)
     module.unstable = True
     module.include_dirs = [
         f"external/cronet/{context.import_channel}/{path}"
@@ -1128,7 +1180,9 @@ def create_aidl_module(bp_module_name, target, blueprint, context):
     # See crbug.com/418726870 for more information.
     filegroup_module = soong_ast.create_module("filegroup",
                                                filegroup_module_name,
-                                               target.name, context)
+                                               target.name,
+                                               context,
+                                               is_test=is_test_target)
     filegroup_module.srcs = [
         gn_utils.label_to_path(src) for src in sorted(target.common.sources)
     ]
@@ -1345,7 +1399,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         module = _create_rust_build_script_output_copy_genrule(
             bp_module_name,
             f"{target.rust_source_dir}/gn2bp_rust_build_script_outputs/arm64",
-            generated_files, context)
+            generated_files, is_test_target, context)
         blueprint.add_module(module)
         return (module, )
 
@@ -1355,11 +1409,17 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         else:
             # Can be used for both host and device targets.
             module_type = 'cc_binary'
-        modules = (soong_ast.create_module(module_type, bp_module_name,
-                                           gn_target_name, context), )
+        modules = (soong_ast.create_module(module_type,
+                                           bp_module_name,
+                                           gn_target_name,
+                                           context,
+                                           is_test=is_test_target), )
     elif target.type == 'rust_executable':
-        modules = (soong_ast.create_module("rust_binary", bp_module_name,
-                                           gn_target_name, context), )
+        modules = (soong_ast.create_module("rust_binary",
+                                           bp_module_name,
+                                           gn_target_name,
+                                           context,
+                                           is_test=is_test_target), )
     elif target.type == "rust_library":
         # Here we have to choose between rust_library_rlib and rust_ffi_static.
         #
@@ -1376,17 +1436,29 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         #
         # This decision may need to be revisited if the AOSP build system starts
         # treating rust_library_rlib and rust_ffi_static differently.
-        modules = (soong_ast.create_module("rust_ffi_static", bp_module_name,
-                                           gn_target_name, context), )
+        modules = (soong_ast.create_module("rust_ffi_static",
+                                           bp_module_name,
+                                           gn_target_name,
+                                           context,
+                                           is_test=is_test_target), )
     elif target.type == "rust_proc_macro":
-        modules = (soong_ast.create_module("rust_proc_macro", bp_module_name,
-                                           gn_target_name, context), )
+        modules = (soong_ast.create_module("rust_proc_macro",
+                                           bp_module_name,
+                                           gn_target_name,
+                                           context,
+                                           is_test=is_test_target), )
     elif target.type in ['static_library', 'source_set']:
-        modules = (soong_ast.create_module('cc_library_static', bp_module_name,
-                                           gn_target_name, context), )
+        modules = (soong_ast.create_module('cc_library_static',
+                                           bp_module_name,
+                                           gn_target_name,
+                                           context,
+                                           is_test=is_test_target), )
     elif target.type == 'shared_library':
-        modules = (soong_ast.create_module('cc_library_shared', bp_module_name,
-                                           gn_target_name, context), )
+        modules = (soong_ast.create_module('cc_library_shared',
+                                           bp_module_name,
+                                           gn_target_name,
+                                           context,
+                                           is_test=is_test_target), )
     elif target.type == 'proto_library':
         modules = create_proto_modules(blueprint, gn, target, is_test_target,
                                        context)
@@ -1394,7 +1466,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             return ()
     elif target.type == "rust_bindgen":
         modules = (create_bindgen_module(blueprint, target, bp_module_name,
-                                         context), )
+                                         is_test_target, context), )
     elif target.type == 'action':
         module = create_action_module(
             blueprint, gn, target, 'java_genrule' if parent_gn_type
@@ -1415,10 +1487,10 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         return ()
     elif target.type == 'java_library':
         modules = (create_java_module(bp_module_name, target, blueprint,
-                                      context), )
+                                      is_test_target, context), )
     elif target.type == 'aidl_interface':
         modules = create_aidl_module(bp_module_name, target, blueprint,
-                                     context)
+                                     is_test_target, context)
     else:
         # Note we don't have to handle `group` targets because parse_gn_desc() never
         # returns any; it just recurses through them and bubbles their dependencies

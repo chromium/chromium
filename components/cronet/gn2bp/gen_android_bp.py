@@ -129,30 +129,35 @@ def create_cc_defaults_module(context: translation_context.TranslationContext):
     return defaults
 
 
+def _clean_gn_label(label: str) -> str:
+    if ':' in label:
+        path, target_name = label.rsplit(':', 1)
+        target_name = re.sub(gn_utils.TOOLCHAIN_SUFFIX + r'[a-zA-Z0-9_]+', '',
+                             target_name)
+        target_name = re.sub(gn_utils.TESTING_SUFFIX, '', target_name)
+        return f"{path}:{target_name}"
+    return label
+
+
 def apply_post_processing(module, context):
-    for key, add_val in context.additional_args.get(module.name, []):
-        curr = getattr(module, key)
-        if add_val and isinstance(add_val, set) and isinstance(curr, set):
-            curr.update(add_val)
-        elif isinstance(curr, list):
-            curr.extend(add_val)
-        elif isinstance(add_val, str) and (not curr or isinstance(curr, str)):
-            setattr(module, key, add_val)
-        elif isinstance(add_val, bool) and (not curr
-                                            or isinstance(curr, bool)):
-            setattr(module, key, add_val)
-        elif isinstance(add_val, dict) and isinstance(curr, dict):
-            curr.update(add_val)
-        elif add_val is None:
-            setattr(module, key, None)
-        elif isinstance(add_val[1], dict) and isinstance(
-                curr[add_val[0]], soong_ast.Target):
-            curr[add_val[0]].__dict__.update(add_val[1])
-        elif isinstance(curr, dict):
-            curr[add_val[0]] = add_val[1]
+    clean_target = _clean_gn_label(module.gn_target)
+    keys = []
+    if module.role is None:
+        keys.append(clean_target)
+        if module._is_test:
+            keys.append(f"{clean_target}#testing")
         else:
-            raise Exception('Unimplemented type %r of additional_args: %r' %
-                            (type(add_val), key))
+            keys.append(f"{clean_target}#nontesting")
+    else:
+        keys.append(f"{clean_target}#{module.role}")
+        if module._is_test:
+            keys.append(f"{clean_target}#{module.role}#testing")
+        else:
+            keys.append(f"{clean_target}#{module.role}#nontesting")
+
+    for key in keys:
+        for override in context.additional_args.get(key, []):
+            override.apply(module)
 
 
 def make_cc_defaults_from_boringssl(
@@ -160,14 +165,18 @@ def make_cc_defaults_from_boringssl(
         context: translation_context.TranslationContext) -> soong_ast.Module:
     module_name = boringssl_module.name + "__flags"
     cc_default_flags_module = soong_ast.create_module(
-        "cc_defaults", module_name,
+        "cc_defaults",
+        module_name,
         "Flags auto-extracted from BoringSSL GN rules, to be used in manually maintained BoringSSL Android.bp rules",
-        context)
+        context,
+        is_test=boringssl_module._is_test)
 
     libcrypto_cc_defaults_flags_module = soong_ast.create_module(
-        "cc_defaults", f'{module_name}_libcrypto',
+        "cc_defaults",
+        f'{module_name}_libcrypto',
         f"""This cc_defaults inherits the same flags from {module_name} except some flags that breaks FIPS compliance.""",
-        context)
+        context,
+        is_test=boringssl_module._is_test)
 
     def _get_libcrypto_cflags(cflags):
         return [

@@ -220,7 +220,7 @@ COMMON_FIELDS = {
     'java_unfiltered_module', 'genrule_headers', 'genrule_srcs',
     'genrule_shared_libs', 'genrule_header_libs', 'include_build_directory',
     'apex_available', 'host_supported', 'host_cross_supported',
-    'device_supported', 'defaults', 'srcs'
+    'device_supported', 'defaults', 'srcs', 'role'
 }
 
 SKIP_IF_FALSY = {
@@ -258,11 +258,19 @@ class Module:
     """Base class for Soong modules."""
     SUPPORTED_FIELDS = set()
 
-    def __init__(self, mod_type, name, gn_target, context):
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
         self.context = context
         self.type = mod_type
         self.gn_target = gn_target
         self.name = name
+        self.role = role
+        self._is_test = is_test
         self.comment = 'GN: ' + gn_target
         self.visibility = set()
         self.default_applicable_licenses = set()
@@ -431,8 +439,14 @@ class CcModule(Module):
         'rtti'
     }
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.shared_libs = set()
         self.static_libs = set()
         self.whole_static_libs = set()
@@ -477,8 +491,14 @@ class JavaModule(Module):
         'min_sdk_version'
     }
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.plugins = set()
         self.processor_class = None
         self.sdk_version = None
@@ -517,8 +537,14 @@ class RustModule(Module):
         'shared_libs', 'static_libs', 'header_libs', 'whole_static_libs'
     }
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.min_sdk_version = None
         self.shared_libs = set()
         self.static_libs = set()
@@ -542,8 +568,14 @@ class RustBindgenModule(Module):
         'c_std', 'header_libs', 'whole_static_libs'
     }
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.min_sdk_version = None
         self.shared_libs = set()
         self.static_libs = set()
@@ -565,8 +597,14 @@ class GenruleModule(Module):
         'srcs', 'tools', 'cmd', 'out', 'tool_files', 'export_include_dirs'
     }
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.tools = set()
         self.cmd = None
         self.out = set()
@@ -577,8 +615,14 @@ class GenruleModule(Module):
 class AidlModule(Module):
     SUPPORTED_FIELDS = {'srcs', 'unstable', 'include_dirs'}
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.unstable = ""
         self.include_dirs = []
 
@@ -586,16 +630,28 @@ class AidlModule(Module):
 class FilegroupModule(Module):
     SUPPORTED_FIELDS = {'srcs', 'path'}
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.path = ""
 
 
 class LicenseModule(Module):
     SUPPORTED_FIELDS = {'license_kinds', 'license_text'}
 
-    def __init__(self, mod_type, name, gn_target, context):
-        super().__init__(mod_type, name, gn_target, context)
+    def __init__(self,
+                 mod_type,
+                 name,
+                 gn_target,
+                 context,
+                 is_test=False,
+                 role=None):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.license_kinds = set()
         self.license_text = set()
 
@@ -604,27 +660,34 @@ class PackageModule(Module):
     SUPPORTED_FIELDS = set()
 
 
-def create_module(mod_type, name, gn_target, context):
+def create_module(mod_type,
+                  name,
+                  gn_target,
+                  context,
+                  is_test=False,
+                  role=None):
     if mod_type in ('cc_library_static', 'cc_library_shared', 'cc_binary',
                     'cc_test', 'cc_defaults', 'cc_library_headers',
                     'cc_preprocess_no_configuration'):
-        return CcModule(mod_type, name, gn_target, context)
+        return CcModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type in ('java_library', 'java_import', 'java_defaults'):
-        return JavaModule(mod_type, name, gn_target, context)
+        return JavaModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type in ('rust_ffi_static', 'rust_binary', 'rust_proc_macro'):
-        return RustModule(mod_type, name, gn_target, context)
+        return RustModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'rust_bindgen':
-        return RustBindgenModule(mod_type, name, gn_target, context)
+        return RustBindgenModule(mod_type, name, gn_target, context, is_test,
+                                 role)
     if mod_type in ('cc_genrule', 'java_genrule', 'genrule'):
-        return GenruleModule(mod_type, name, gn_target, context)
+        return GenruleModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'aidl_interface':
-        return AidlModule(mod_type, name, gn_target, context)
+        return AidlModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'filegroup':
-        return FilegroupModule(mod_type, name, gn_target, context)
+        return FilegroupModule(mod_type, name, gn_target, context, is_test,
+                               role)
     if mod_type == 'license':
-        return LicenseModule(mod_type, name, gn_target, context)
+        return LicenseModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'package':
-        return PackageModule(mod_type, name, gn_target, context)
+        return PackageModule(mod_type, name, gn_target, context, is_test, role)
     raise ValueError(f"Unknown module type: {mod_type}")
 
 
