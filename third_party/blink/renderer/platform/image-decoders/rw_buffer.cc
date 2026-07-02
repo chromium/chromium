@@ -113,9 +113,7 @@ struct RWBuffer::BufferHead {
       // Like unique(), the acquire is only needed on success.
       RWBuffer::BufferBlock* block = block_.next_;
 
-      // `buffer_` has a `raw_ptr` that needs to be destroyed to
-      // properly lower the refcount.
-      block_.~BufferBlock();
+      this->~BufferHead();
       Partitions::BufferFree(const_cast<RWBuffer::BufferHead*>(this));
       while (block) {
         RWBuffer::BufferBlock* next = block->next_;
