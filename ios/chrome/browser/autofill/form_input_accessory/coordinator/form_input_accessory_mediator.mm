@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/credential_provider/net_util.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -933,6 +934,16 @@ bool IsStateless() {
   }
   CHECK_EQ(_lastSeenParams, params);
   [self didSelectSuggestion:formSuggestion atIndex:index completion:completion];
+}
+
+- (BOOL)shouldShowRPId:(NSString*)rpId {
+  if (!_webState) {
+    return NO;
+  }
+  NSString* pageHost =
+      base::SysUTF8ToNSString(_webState->GetLastCommittedURL().host());
+  return rpId.length && pageHost.length &&
+         !credential_provider::SecureHostsMatch(pageHost, rpId);
 }
 
 #pragma mark - PasswordCounterObserver

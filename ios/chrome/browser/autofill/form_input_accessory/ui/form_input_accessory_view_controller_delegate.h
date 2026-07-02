@@ -38,6 +38,12 @@ enum class ManualFillDataType;
             (FormInputAccessoryViewController*)formInputAccessoryViewController
                isSuggestionAutofillAsync:(FormSuggestion*)formSuggestion;
 
+// Returns YES if the suggestion label with the given RP ID should show its RP
+// ID.
+- (BOOL)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                          shouldShowRPId:(NSString*)rpId;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_UI_FORM_INPUT_ACCESSORY_VIEW_CONTROLLER_DELEGATE_H_

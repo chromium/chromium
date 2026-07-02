@@ -23,6 +23,10 @@
        didAcceptSuggestion:(FormSuggestion*)suggestion
                    atIndex:(NSInteger)index;
 
+// Request if the suggestion label should show its RP ID.
+- (BOOL)formSuggestionView:(FormSuggestionView*)formSuggestionView
+            shouldShowRPId:(NSString*)rpId;
+
 @end
 
 // A scrollable view for displaying user-selectable autofill form suggestions.

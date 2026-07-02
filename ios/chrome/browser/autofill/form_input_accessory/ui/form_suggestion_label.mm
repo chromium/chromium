@@ -17,6 +17,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
@@ -393,6 +394,21 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   [stackView addArrangedSubview:text_label];
 }
 
+// Returns the display description for a suggestion.
+NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
+                                          BOOL showRPId) {
+  if (suggestion.type == autofill::SuggestionType::kWebauthnCredential) {
+    NSString* passkeyLabel =
+        l10n_util::GetNSString(IDS_IOS_PASSKEY_SUGGESTION_LABEL);
+    if (showRPId) {
+      return [NSString
+          stringWithFormat:@"%@ • %@", passkeyLabel, suggestion.minorValue];
+    }
+    return passkeyLabel;
+  }
+  return suggestion.displayDescription;
+}
+
 }  // namespace
 
 @interface FormSuggestionLabel () <UIContextMenuInteractionDelegate>
@@ -476,12 +492,26 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
             ? PasswordSuggestionDisplayText(suggestion.value)
             : suggestion.value;
 
+    BOOL isPasskey =
+        suggestion.type == autofill::SuggestionType::kWebauthnCredential;
+
+    if (isPasskey && [suggestionText length] == 0) {
+      suggestionText =
+          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME);
+    }
+
+    NSString* displayDescription = DisplayDescriptionForSuggestion(
+        suggestion,
+        isPasskey && [delegate shouldShowRPId:suggestion.minorValue]);
+
+    NSString* minorValue = isPasskey ? nil : suggestion.minorValue;
+
     BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 
     BOOL hasText =
         suggestion.type != SuggestionType::kAutocompleteAtMemoryButton &&
-        (suggestionText.length > 0 || suggestion.minorValue.length > 0 ||
-         suggestion.displayDescription.length > 0);
+        (suggestionText.length > 0 || minorValue.length > 0 ||
+         displayDescription.length > 0);
 
     if (hasText) {
       if (isTablet) {
@@ -493,9 +523,8 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
         // same way without having to rely on a stack of UILabel objects, which,
         // on the plus side, might actually be more light weight in the end.
         [stackView addArrangedSubview:AttributedTextLabel(
-                                          suggestionText, suggestion.minorValue,
-                                          suggestion.displayDescription,
-                                          suggestion.icon)];
+                                          suggestionText, minorValue,
+                                          displayDescription, suggestion.icon)];
       } else {
         // On phones, store the suggestion information in a stack view so that
         // it can be selectively truncated if necessary.
@@ -515,9 +544,9 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
         // Format the suggestion information using a stack view so that each
         // piece of information can be truncated individually when truncation is
         // needed.
-        NSArray<UIView*>* views = TextViews(
-            suggestionText, suggestion.minorValue,
-            suggestion.displayDescription, [self isCreditCardSuggestion]);
+        NSArray<UIView*>* views =
+            TextViews(suggestionText, minorValue, displayDescription,
+                      [self isCreditCardSuggestion]);
         for (UIView* view in views) {
           [stackView addArrangedSubview:view];
         }

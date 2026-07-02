@@ -473,6 +473,12 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   return NO;
 }
 
+- (BOOL)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                          shouldShowRPId:(NSString*)rpId {
+  return [_formInputAccessoryMediator shouldShowRPId:rpId];
+}
+
 #pragma mark - AutofillSuggestionContextMenuHandler
 
 - (void)openSettingsForSuggestion:(FormSuggestion*)suggestion {

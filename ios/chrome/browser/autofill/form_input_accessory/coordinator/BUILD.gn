@@ -65,6 +65,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/common/credential_provider:net_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/reauthentication",

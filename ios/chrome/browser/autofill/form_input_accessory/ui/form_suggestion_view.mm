@@ -199,6 +199,11 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
                                               atIndex:index];
 }
 
+- (BOOL)shouldShowRPId:(NSString*)rpId {
+  return [self.formSuggestionViewDelegate formSuggestionView:self
+                                              shouldShowRPId:rpId];
+}
+
 - (void)openSettingsForSuggestion:(FormSuggestion*)suggestion {
   [self.formSuggestionViewDelegate openSettingsForSuggestion:suggestion];
 }
