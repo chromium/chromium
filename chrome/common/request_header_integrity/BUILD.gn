@@ -65,7 +65,6 @@ source_set("request_header_integrity") {
       "internal:build_derived_values",
       "internal:internal_header_integrity_seed",
     ]
-    data_deps = [ "internal:chromecompaneros" ]
   }
 }
 
