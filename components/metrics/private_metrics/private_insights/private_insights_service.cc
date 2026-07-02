@@ -222,14 +222,19 @@ void PrivateInsightsService::TriggerUpload() {
                                   TriggerUploadOutcome::kSkippedAlreadyRunning);
     return;
   }
-  is_upload_running_ = true;
 
   base::circular_deque<ContextualCueEventEntry> pending_events =
       std::move(contextual_cue_events_);
+  if (pending_events.empty()) {
+    base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
+                                  TriggerUploadOutcome::kSkippedNoData);
+    return;
+  }
 
   fcp_task_env_->result().Clear();
   SerializeEventsToQueryResult(pending_events, &fcp_task_env_->result());
 
+  is_upload_running_ = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::WithBaseSyncPrimitives(),

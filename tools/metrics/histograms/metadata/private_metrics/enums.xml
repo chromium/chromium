@@ -116,6 +116,7 @@ chromium-metrics-reviews@google.com.
 <enum name="PrivateInsightsTriggerUploadOutcome">
   <int value="0" label="Skipped because it was already running"/>
   <int value="1" label="Task was posted"/>
+  <int value="2" label="Skipped because there was no data"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/metrics/private_metrics/private_insights/private_insights_service.h:PrivateInsightsTriggerUploadOutcome) -->

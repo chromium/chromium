@@ -117,7 +117,8 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   enum class TriggerUploadOutcome {
     kSkippedAlreadyRunning = 0,
     kTaskPosted = 1,
-    kMaxValue = kTaskPosted,
+    kSkippedNoData = 2,
+    kMaxValue = kSkippedNoData,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/private_metrics/enums.xml:PrivateInsightsTriggerUploadOutcome)
 
@@ -187,6 +188,8 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PrivateInsightsService> weak_ptr_factory_{this};
 
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
+                           TriggerUploadSkipsPostingTaskWhenNoData);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
                            TriggerUploadSkipsPostingTaskWhenAlreadyRunning);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest, MetricsChoiceCoupling);
