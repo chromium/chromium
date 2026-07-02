@@ -79,6 +79,12 @@ interface PdfListener {
   // Note: This requires the PDF document to be fully loaded before calling.
   HasMeaningfulText() => (bool has_meaningful_text);
 
+  // Returns true if the PDF contains JavaScript actions.
+  // Called by the browser process (privileged) to query the PDF plugin in the
+  // renderer process (sandboxed).
+  // Note: This requires the PDF document to be fully loaded before calling.
+  HasJavaScript() => (bool has_javascript);
+
   // Returns a `SaveDataBufferHandler` and the total file size to read the data
   // to save to Google Drive. Once the handler is acquired, caller can read the
   // data by calling `Read`. If the file is larger than INT_MAX size, returns

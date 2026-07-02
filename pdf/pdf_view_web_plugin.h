@@ -428,6 +428,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void GetMostVisiblePageIndex(
       GetMostVisiblePageIndexCallback callback) override;
   void HasMeaningfulText(HasMeaningfulTextCallback callback) override;
+  void HasJavaScript(HasJavaScriptCallback callback) override;
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   void GetSaveDataBufferHandlerForDrive(
       pdf::mojom::SaveRequestType request_type,

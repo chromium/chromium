@@ -59,6 +59,10 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               HasMeaningfulText,
               (HasMeaningfulTextCallback callback),
               (override));
+  MOCK_METHOD(void,
+              HasJavaScript,
+              (HasJavaScriptCallback callback),
+              (override));
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   MOCK_METHOD(void,
               GetSaveDataBufferHandlerForDrive,

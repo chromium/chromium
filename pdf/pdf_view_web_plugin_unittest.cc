@@ -1091,6 +1091,14 @@ TEST_F(PdfViewWebPluginTest, HasMeaningfulText) {
   EXPECT_TRUE(future.Get());
 }
 
+TEST_F(PdfViewWebPluginTest, HasJavaScript) {
+  EXPECT_CALL(*engine_ptr_, HasJavaScript).WillOnce(Return(true));
+
+  base::test::TestFuture<bool> future;
+  plugin_->HasJavaScript(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
 TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAccessibleAllowed) {
   EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))

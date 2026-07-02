@@ -1777,6 +1777,10 @@ void PdfViewWebPlugin::HasMeaningfulText(HasMeaningfulTextCallback callback) {
   std::move(callback).Run(engine_ && engine_->HasMeaningfulText());
 }
 
+void PdfViewWebPlugin::HasJavaScript(HasJavaScriptCallback callback) {
+  std::move(callback).Run(engine_ && engine_->HasJavaScript());
+}
+
 void PdfViewWebPlugin::GetPageText(int32_t page_index,
                                    GetPageTextCallback callback) {
   if (page_index < 0 || page_index >= engine_->GetNumberOfPages()) {

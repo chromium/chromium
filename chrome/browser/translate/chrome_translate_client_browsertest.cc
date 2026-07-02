@@ -52,6 +52,9 @@ class FakePdfListener : public pdf::mojom::PdfListener {
   void HasMeaningfulText(HasMeaningfulTextCallback callback) override {
     std::move(callback).Run(has_meaningful_text_);
   }
+  void HasJavaScript(HasJavaScriptCallback callback) override {
+    std::move(callback).Run(false);
+  }
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   void GetSaveDataBufferHandlerForDrive(
       pdf::mojom::SaveRequestType request_type,
