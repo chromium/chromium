@@ -89,6 +89,9 @@ ci.builder(
             "chromium_mac_gtests_no_nacl",
             "chromium_mac_rel_isolated_scripts",
             "chromium_mac_scripts",
+            # Serialized WebRtc content_browsertests; capture-device contention
+            # under parallel load times them out on this Intel bot.
+            "content_browsertests_webrtc_sequential",
         ],
         # TODO(crbug.com/40883191) - for some reason gcapi_example
         # is failing to build in this config. For now, just try
@@ -132,8 +135,19 @@ ci.builder(
                 ],
             ),
             "content_browsertests": targets.mixin(
+                # WebRtc* tests run in the serialized
+                # content_browsertests_webrtc_sequential step; exclude them from
+                # the parallel run so they don't time out under capture contention.
+                args = [
+                    "--gtest_filter=-WebRtc*",
+                ],
                 swarming = targets.swarming(
                     shards = 12,
+                ),
+            ),
+            "content_browsertests_webrtc_sequential": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
                 ),
             ),
             "interactive_ui_tests": targets.mixin(

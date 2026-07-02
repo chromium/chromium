@@ -837,6 +837,18 @@ targets.tests.gtest_test(
     binary = "content_browsertests",
 )
 
+# WebRtc browser tests contend for the audio/video capture device; under
+# parallel load capture-start can starve and getUserMedia times out. Run them
+# serially, like content_browsertests_sequential.
+targets.tests.gtest_test(
+    name = "content_browsertests_webrtc_sequential",
+    args = [
+        "--gtest_filter=WebRtc*",
+        "--test-launcher-jobs=1",
+    ],
+    binary = "content_browsertests",
+)
+
 targets.tests.gtest_test(
     name = "content_browsertests_no_field_trial",
     args = [
