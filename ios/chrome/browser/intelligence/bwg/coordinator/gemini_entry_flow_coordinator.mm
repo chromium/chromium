@@ -79,6 +79,19 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
     return;
   }
 
+  // If sign-in is disabled, finish the flow.
+  if (!authService->SigninEnabled()) {
+    if (authService->GetServiceStatus() ==
+        AuthenticationService::ServiceStatus::SigninDisabledByPolicy) {
+      [self showSnackbarForIneligibilityType:kIneligibilitySnackbarTypeAccount];
+      [self
+          finishWithResult:kGeminiEntryFlowResultAccountIneligibleByEnterprise];
+    } else {
+      [self finishWithResult:kGeminiEntryFlowResultCancelled];
+    }
+    return;
+  }
+
   // User is signed out, present sign-in.
   [self presentSignIn];
 }
