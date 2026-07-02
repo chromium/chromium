@@ -2,24 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/contextual_search/footprints/public/fpop_service.h"
 #include "components/contextual_search/footprints/public/proto/footprints_oneplatform.pb.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace drive_picker {
 namespace {
+
+#if BUILDFLAG(IS_IOS)
+constexpr char kExpectedApplicationId[] = "chrome_ios_disclaimer";
+#else
+constexpr char kExpectedApplicationId[] = "chrome_desktop_disclaimer";
+#endif
 
 class MockFpopService : public contextual_search::FpopService {
  public:
@@ -65,8 +70,7 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusAccepted) {
                    base::OnceCallback<void(
                        bool, const footprints::oneplatform::GetFacsResponse&)>
                        callback) {
-        EXPECT_EQ(request.header().application_id(),
-                  "chrome_desktop_disclaimer");
+        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
                   contextual_search::kPersonalContextSearchUsingWorkspace);
@@ -85,21 +89,6 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusAccepted) {
             DriveDisclaimerController::DisclaimerStatus::kAccepted);
 }
 
-TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusForcedAccepted) {
-  using ::testing::_;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kForceDriveDisclaimerAccepted);
-
-  // FPOP service should NOT be called when the flag is enabled.
-  EXPECT_CALL(*mock_fpop_service_, GetFacs(_, _)).Times(0);
-
-  base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
-  controller_->CheckDisclaimerStatusAsync(future.GetCallback());
-
-  EXPECT_EQ(future.Get(),
-            DriveDisclaimerController::DisclaimerStatus::kAccepted);
-}
-
 TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusRestricted) {
   using ::testing::_;
 
@@ -108,8 +97,7 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusRestricted) {
                    base::OnceCallback<void(
                        bool, const footprints::oneplatform::GetFacsResponse&)>
                        callback) {
-        EXPECT_EQ(request.header().application_id(),
-                  "chrome_desktop_disclaimer");
+        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
                   contextual_search::kPersonalContextSearchUsingWorkspace);
@@ -139,8 +127,7 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusGetFacsFailure) {
                    base::OnceCallback<void(
                        bool, const footprints::oneplatform::GetFacsResponse&)>
                        callback) {
-        EXPECT_EQ(request.header().application_id(),
-                  "chrome_desktop_disclaimer");
+        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
                   contextual_search::kPersonalContextSearchUsingWorkspace);
@@ -164,8 +151,7 @@ TEST_F(DriveDisclaimerControllerTest,
                    base::OnceCallback<void(
                        bool, const footprints::oneplatform::GetFacsResponse&)>
                        callback) {
-        EXPECT_EQ(request.header().application_id(),
-                  "chrome_desktop_disclaimer");
+        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
                   contextual_search::kPersonalContextSearchUsingWorkspace);
@@ -190,11 +176,9 @@ TEST_F(DriveDisclaimerControllerTest,
                    base::OnceCallback<void(
                        bool, const footprints::oneplatform::GetFacsResponse&)>
                        callback) {
-        EXPECT_EQ(request.header().application_id(),
-                  "chrome_desktop_disclaimer");
+        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
-
                   contextual_search::kPersonalContextSearchUsingWorkspace);
 
         footprints::oneplatform::GetFacsResponse response;

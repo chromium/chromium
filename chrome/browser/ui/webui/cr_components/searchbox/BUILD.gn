@@ -14,7 +14,10 @@ source_set("searchbox") {
     "searchbox_omnibox_client.h",
     "searchbox_utils.h",
   ]
-  public_deps = [ "//components/tabs:public" ]
+  public_deps = [
+    "//components/contextual_search/footprints/public",
+    "//components/tabs:public",
+  ]
   deps = [
     "//base",
     "//chrome/browser/autocomplete",
