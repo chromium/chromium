@@ -23,6 +23,9 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
+#import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/keyboard_accessory_optional_update_scheduler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/public/form_input_accessory_chromium_text_data.h"
@@ -899,26 +902,20 @@ bool IsStateless() {
   }
   if ([self.reauthenticationModule canAttemptReauth]) {
     NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
+    BOOL canReusePreviousAuth =
+        [self canReusePreviousAuthForSuggestion:formSuggestion];
+
     __weak __typeof(self) weakSelf = self;
     auto completionHandler = ^(ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [weakSelf logReauthenticationEvent:ReauthenticationEvent::kSuccess
-                             forSuggestion:formSuggestion];
-        [weakSelf handleSuggestion:formSuggestion
-                           atIndex:index
-                        completion:completion];
-      } else {
-        [weakSelf logReauthenticationEvent:ReauthenticationEvent::kFailure
-                             forSuggestion:formSuggestion];
-        if (completion) {
-          completion();
-        }
-      }
+      [weakSelf handleReauthenticationResult:result
+                               forSuggestion:formSuggestion
+                                     atIndex:index
+                                  completion:completion];
     };
 
     [self.reauthenticationModule
         attemptReauthWithLocalizedReason:reason
-                    canReusePreviousAuth:YES
+                    canReusePreviousAuth:canReusePreviousAuth
                                  handler:completionHandler];
   } else {
     [self logReauthenticationEvent:ReauthenticationEvent::kMissingPasscode
@@ -981,6 +978,59 @@ bool IsStateless() {
 }
 
 #pragma mark - Private
+
+// Handles the reauthentication result of a selected suggestion.
+- (void)handleReauthenticationResult:(ReauthenticationResult)result
+                       forSuggestion:(FormSuggestion*)formSuggestion
+                             atIndex:(NSInteger)index
+                          completion:(ProceduralBlock)completion {
+  if (result != ReauthenticationResult::kFailure) {
+    [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
+                     forSuggestion:formSuggestion];
+    if (result == ReauthenticationResult::kSuccess &&
+        formSuggestion.type == autofill::SuggestionType::kWebauthnCredential) {
+      [self markPasskeyAsUserVerifiedForSuggestion:formSuggestion];
+    }
+    [self handleSuggestion:formSuggestion atIndex:index completion:completion];
+  } else {
+    [self logReauthenticationEvent:ReauthenticationEvent::kFailure
+                     forSuggestion:formSuggestion];
+    if (completion) {
+      completion();
+    }
+  }
+}
+
+// Marks the passkey suggestion as user verified in the credentials delegate.
+- (void)markPasskeyAsUserVerifiedForSuggestion:(FormSuggestion*)suggestion {
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      [self webAuthnCredentialsDelegate];
+  if (delegate) {
+    delegate->MarkPasskeyAsUserVerified(
+        webauthn::GetPasskeySuggestionEncodedCredentialId(suggestion));
+  }
+}
+
+// Returns whether the previous authentication can be reused for the given
+// suggestion.
+- (BOOL)canReusePreviousAuthForSuggestion:(FormSuggestion*)suggestion {
+  if (suggestion.type != autofill::SuggestionType::kWebauthnCredential) {
+    return YES;
+  }
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      [self webAuthnCredentialsDelegate];
+  return delegate && delegate->CanReusePreviousSigninAuth();
+}
+
+// Returns the WebAuthn credentials delegate for the active frame.
+- (webauthn::IOSWebAuthnCredentialsDelegate*)webAuthnCredentialsDelegate {
+  if (!self.webState) {
+    return nullptr;
+  }
+  return webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+             self.webState)
+      ->GetDelegateForFrameId(_lastSeenParams.frame_id);
+}
 
 // Returns the SuggestionProviderType for the `suggestion` based on whether or
 // not the FormSuggestionController is stateless.

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_IOS_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define COMPONENTS_WEBAUTHN_IOS_IOS_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
+#import "base/containers/flat_set.h"
 #import "base/memory/weak_ptr.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/webauthn_credentials_delegate.h"
@@ -27,9 +28,6 @@ class IOSWebAuthnCredentialsDelegate
   std::optional<std::string> GetCableQrString() const override;
   void SelectPasskey(const std::string& backend_id,
                      OnPasskeySelectedCallback callback) override;
-  void SelectPasskey(const std::string& backend_id,
-                     bool did_complete_uv,
-                     OnPasskeySelectedCallback callback);
   base::expected<const std::vector<password_manager::PasskeyCredential>*,
                  PasskeysUnavailableReason>
   GetPasskeys() const override;
@@ -45,6 +43,13 @@ class IOSWebAuthnCredentialsDelegate
   void OnCredentialsReceived(
       std::vector<password_manager::PasskeyCredential> credentials,
       const std::string& passkey_request_id);
+
+  // Marks the passkey suggestion identified by `backend_id` as user verified.
+  // A backend_id is the base64-encoded credential ID.
+  void MarkPasskeyAsUserVerified(const std::string& backend_id);
+
+  // Returns whether the previous authentication can be reused.
+  bool CanReusePreviousSigninAuth() const;
 
  private:
   // Notify all clients that waiting for passkeys has ended, either from
@@ -71,6 +76,10 @@ class IOSWebAuthnCredentialsDelegate
   // The ID of the passkey request associated with the received passkeys
   // suggestions. Needed for when a suggestion will be accepted.
   std::string passkey_request_id_;
+
+  // Unique container of backend_ids that have been marked as user verified.
+  // A backend_id is the base64-encoded credential ID.
+  base::flat_set<std::string> verified_backend_ids_;
 
   // The WebState associated with this delegate.
   base::WeakPtr<web::WebState> web_state_;

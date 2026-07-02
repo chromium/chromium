@@ -25,6 +25,8 @@ source_set("coordinator") {
     "//components/password_manager/ios",
     "//components/prefs",
     "//components/strings",
+    "//components/webauthn/ios",
+    "//components/webauthn/ios:utils",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/atmemory/coordinator",
     "//ios/chrome/browser/autofill/atmemory/public",

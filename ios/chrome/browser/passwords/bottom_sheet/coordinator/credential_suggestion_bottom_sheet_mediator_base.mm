@@ -4,13 +4,16 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base.h"
 
+#import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
-#import "components/webauthn/ios/passkey_tab_helper.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
+#import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
@@ -40,6 +43,10 @@
 // The WebStateList observed by this mediator.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
+// Delegate used to fetch and select passkey suggestions.
+@property(nonatomic, assign) raw_ptr<webauthn::IOSWebAuthnCredentialsDelegate>
+    webAuthnCredentialsDelegate;
+
 @end
 
 @implementation CredentialSuggestionBottomSheetMediatorBase {
@@ -54,10 +61,6 @@
 
   // Information about the pending passkey request.
   std::optional<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
-
-  // Whether the last selected suggestion successfully completed user
-  // verification.
-  BOOL _didCompleteUserVerification;
 }
 
 - (instancetype)
@@ -85,6 +88,22 @@
       _domain =
           base::SysUTF8ToNSString(password_manager::GetShownOrigin(origin));
     }
+
+    if (_requestInfo.has_value() &&
+        _requestInfo->remote_frame_token.has_value()) {
+      __weak __typeof(self) weakSelf = self;
+      auto callback = base::BindOnce(
+          [](CredentialSuggestionBottomSheetMediatorBase* mediator,
+             webauthn::IOSWebAuthnCredentialsDelegate* delegate) {
+            mediator.webAuthnCredentialsDelegate = delegate;
+          },
+          weakSelf);
+
+      webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+          _webStateList->GetActiveWebState())
+          ->GetDelegateForRemoteFrameToken(*_requestInfo->remote_frame_token,
+                                           std::move(callback));
+    }
   }
   return self;
 }
@@ -106,20 +125,16 @@
   _webStateListObserver.reset();
   _webStateList = nullptr;
   _reauthenticationModule = nil;
+  _webAuthnCredentialsDelegate = nullptr;
 }
 
 - (BOOL)hasSuggestions {
   return [self.suggestions count] > 0;
 }
 
-- (BOOL)didCompleteUserVerification {
-  return _didCompleteUserVerification;
-}
-
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
-  _didCompleteUserVerification = NO;
   if (!formSuggestion.requiresReauth) {
     [self selectSuggestion:formSuggestion atIndex:index completion:completion];
     return;
@@ -157,7 +172,12 @@
     reauthenticationResult:(ReauthenticationResult)result
                 completion:(ProceduralBlock)completion {
   if (result != ReauthenticationResult::kFailure) {
-    _didCompleteUserVerification = result == ReauthenticationResult::kSuccess;
+    if (result == ReauthenticationResult::kSuccess &&
+        suggestion.type == autofill::SuggestionType::kWebauthnCredential &&
+        self.webAuthnCredentialsDelegate) {
+      self.webAuthnCredentialsDelegate->MarkPasskeyAsUserVerified(
+          webauthn::GetPasskeySuggestionEncodedCredentialId(suggestion));
+    }
     [self selectSuggestion:suggestion atIndex:index completion:completion];
   } else {
     [self disconnect];
@@ -211,21 +231,8 @@
   if (formSuggestion.type != autofill::SuggestionType::kWebauthnCredential) {
     return YES;
   }
-
-  BOOL canReusePreviousAuth = NO;
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  webauthn::PasskeyTabHelper* passkeyTabHelper =
-      activeWebState ? webauthn::PasskeyTabHelper::FromWebState(activeWebState)
-                     : nullptr;
-  if (passkeyTabHelper && _requestInfo.has_value()) {
-    std::optional<bool> shouldPerformUserVerification =
-        passkeyTabHelper->ShouldPerformUserVerification(
-            _requestInfo->request_id);
-    if (shouldPerformUserVerification.has_value()) {
-      canReusePreviousAuth = !*shouldPerformUserVerification;
-    }
-  }
-  return canReusePreviousAuth;
+  return self.webAuthnCredentialsDelegate &&
+         self.webAuthnCredentialsDelegate->CanReusePreviousSigninAuth();
 }
 
 // Closes the current bottom sheet when the web state changes.

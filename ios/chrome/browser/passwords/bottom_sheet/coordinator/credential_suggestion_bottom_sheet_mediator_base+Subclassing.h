@@ -5,9 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_BASE_SUBCLASSING_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_BASE_SUBCLASSING_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base.h"
 
 @class FormSuggestion;
+
+namespace webauthn {
+class IOSWebAuthnCredentialsDelegate;
+}
 
 @interface CredentialSuggestionBottomSheetMediatorBase (Subclassing)
 
@@ -23,15 +28,15 @@
 // The WebStateList observed by this mediator.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
-// Whether the last selected suggestion successfully completed user
-// verification.
-@property(nonatomic, readonly) BOOL didCompleteUserVerification;
-
 // Performs the actual suggestion selection after reauthentication (if required)
 // has succeeded.
 - (void)selectSuggestion:(FormSuggestion*)suggestion
                  atIndex:(NSInteger)index
               completion:(ProceduralBlock)completion;
+
+// Delegate used to fetch and select passkey suggestions.
+@property(nonatomic, assign) raw_ptr<webauthn::IOSWebAuthnCredentialsDelegate>
+    webAuthnCredentialsDelegate;
 
 @end
 

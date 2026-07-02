@@ -36,6 +36,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   bool DidFetchKeys() const;
   bool DidShowInterstitial() const;
   void SetInterstitialProceeds(bool proceeds);
+  PasskeyUserVerificationStatus last_user_verification_status() const;
 
  private:
   bool show_creation_bottom_sheet_called_ = false;
@@ -45,6 +46,8 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   bool interstitial_proceeds_ = true;
   bool gpm_passkey_saving_enabled_ = true;
   bool biometrics_enabled_ = true;
+  PasskeyUserVerificationStatus last_user_verification_status_ =
+      PasskeyUserVerificationStatus::kNotRequired;
 };
 
 }  // namespace webauthn

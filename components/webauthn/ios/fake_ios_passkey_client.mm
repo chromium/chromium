@@ -21,6 +21,7 @@ void FakeIOSPasskeyClient::FetchKeys(
     FetchKeysCallback callback) {
   static const size_t kKeyLength = 32u;
   fetch_keys_called_ = true;
+  last_user_verification_status_ = user_verification_status;
   if (!callback.is_null()) {
     // Return a single 32 bytes key (zeroed out).
     bool did_complete_uv =
@@ -81,6 +82,11 @@ bool FakeIOSPasskeyClient::IsBiometricsEnabled() const {
 
 void FakeIOSPasskeyClient::SetBiometricsEnabled(bool enabled) {
   biometrics_enabled_ = enabled;
+}
+
+PasskeyUserVerificationStatus
+FakeIOSPasskeyClient::last_user_verification_status() const {
+  return last_user_verification_status_;
 }
 
 }  // namespace webauthn
