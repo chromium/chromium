@@ -167,7 +167,8 @@ void AssertTryAgainButtonOnPage() {
 }
 
 // Tests that an NTP is shown after 2 crashes.
-- (void)testPostCrashNTP {
+// TODO(crbug.com/528004240): The test is flaky.
+- (void)DISABLED_testPostCrashNTP {
   // TODO(crbug.com/456803766): Test is flaky on iOS 18 iPad devices.
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
