@@ -357,16 +357,31 @@ void VerticalTabStripRegionView::AddedToWidget() {
             view->UpdateExpandOnHoverState();
           },
           base::Unretained(this)));
+  widget_observation_.Observe(GetWidget());
   if (GetFocusManager()) {
     GetFocusManager()->AddFocusChangeListener(&focus_listener_);
   }
 }
 
 void VerticalTabStripRegionView::RemovedFromWidget() {
+  widget_observation_.Reset();
   if (GetFocusManager()) {
     GetFocusManager()->RemoveFocusChangeListener(&focus_listener_);
   }
   BaseTabStripRegionView::RemovedFromWidget();
+}
+
+void VerticalTabStripRegionView::OnWidgetVisibilityChanged(
+    views::Widget* widget,
+    bool visible) {
+  if (visible && is_first_window_presentation_) {
+    is_first_window_presentation_ = false;
+    // Only scroll-in the active tab for the first window presentation.
+    if (tab_strip_view_) {
+      tab_strip_view_->OnTabChanged(
+          root_node_->GetController()->GetActiveTab());
+    }
+  }
 }
 
 void VerticalTabStripRegionView::Layout(PassKey) {

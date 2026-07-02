@@ -286,15 +286,6 @@ void TabStripView::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
-void TabStripView::OnWidgetVisibilityChanged(views::Widget* widget,
-                                             bool visible) {
-  if (collection_node_ && visible && is_first_window_presentation_) {
-    // Only scroll-in the active tab for the first window presentation.
-    is_first_window_presentation_ = false;
-    OnTabChanged(collection_node_->GetController()->GetActiveTab());
-  }
-}
-
 void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
   CHECK(moved_node);
 
@@ -377,7 +368,7 @@ void TabStripView::OnTabChanged(const tabs::TabInterface* active_tab) {
 }
 
 void TabStripView::ScrollToView(views::View* view) {
-  if (!view || !Contains(view) || is_first_window_presentation_) {
+  if (!view || !Contains(view)) {
     return;
   }
 

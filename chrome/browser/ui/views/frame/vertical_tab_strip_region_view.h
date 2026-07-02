@@ -54,7 +54,8 @@ class VerticalTabStripRegionView final
     : public BaseTabStripRegionView,
       public views::ResizeAreaDelegate,
       public OmniboxTabHelper::Observer,
-      public tabs::VerticalTabStripStateController::Delegate {
+      public tabs::VerticalTabStripStateController::Delegate,
+      public views::WidgetObserver {
   METADATA_HEADER(VerticalTabStripRegionView, BaseTabStripRegionView)
 
  public:
@@ -136,6 +137,9 @@ class VerticalTabStripRegionView final
       base::RepeatingCallback<void(bool)> callback) override;
   bool IsCollapsing() override;
   void RequestCollapse(bool collapse) override;
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   views::Separator* tabs_separator_for_testing() {
     return tab_strip_view_->GetTabsSeparator();
@@ -295,6 +299,10 @@ class VerticalTabStripRegionView final
 
   // The mouse exit event debounce timer.
   base::OneShotTimer mouse_exit_timer_;
+
+  bool is_first_window_presentation_ = true;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_

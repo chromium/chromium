@@ -65,7 +65,6 @@ class TabStripView final : public views::View,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void OnChildMoved(TabCollectionNode* moved_node);
   void OnTabChanged(const tabs::TabInterface* active_tab);
@@ -120,7 +119,6 @@ class TabStripView final : public views::View,
   base::CallbackListSubscription paint_as_active_subscription_;
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 
-  bool is_first_window_presentation_ = true;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 };
