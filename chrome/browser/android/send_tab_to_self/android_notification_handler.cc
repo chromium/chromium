@@ -288,7 +288,7 @@ void AndroidNotificationHandler::OnNavigationStarted(
     // Attach a visual label indicating the sender device name to the newly
     // opened background tab.
     if (TabAndroid* tab = TabAndroid::FromWebContents(new_contents)) {
-      send_tab_to_self::AttachTabLabel(tab, device_name);
+      send_tab_to_self::AttachTabLabel(tab, guid, device_name);
     }
   }
 

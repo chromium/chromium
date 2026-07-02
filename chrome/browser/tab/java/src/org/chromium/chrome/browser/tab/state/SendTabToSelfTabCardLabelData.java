@@ -10,6 +10,10 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.UserDataHost;
@@ -19,6 +23,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.send_tab_to_self.ShareActivatedEntryPoint;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -30,12 +36,17 @@ import java.util.concurrent.TimeUnit;
 
 /** PersistedTabData attached to a Tab to store the sender device name for Send Tab To Self. */
 @NullMarked
+@JNINamespace("send_tab_to_self")
 public class SendTabToSelfTabCardLabelData extends PersistedTabData {
-    private static final long EXPIRATION_MS = TimeUnit.DAYS.toMillis(5); // 5 days
+    // The expiration time for the data, same as the STTS entry expiration time.
+    private static final long EXPIRATION_MS = TimeUnit.DAYS.toMillis(10); // 10 days
+    // The expiration time for the visual label, which is shorter than the data expiration time.
+    private static final long LABEL_EXPIRATION_MS = TimeUnit.DAYS.toMillis(5); // 5 days
     private static final String TAG = "SendTabToSelfTabCardLabelData";
     private static final Class<SendTabToSelfTabCardLabelData> USER_DATA_KEY =
             SendTabToSelfTabCardLabelData.class;
 
+    private String mGuid;
     private String mSenderDeviceName;
     private long mAdditionTimestampMs;
 
@@ -53,13 +64,26 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
             new EmptyTabObserver() {
                 @Override
                 public void onShown(Tab tab, @TabSelectionType int type) {
-                    if (tab != null && tab.getUserDataHost() != null) {
-                        SendTabToSelfTabCardLabelData data =
-                                tab.getUserDataHost()
-                                        .getUserData(SendTabToSelfTabCardLabelData.class);
-                        if (data != null) {
-                            data.removeAndDestroy();
-                        }
+                    if (tab != mTab) return;
+                    SendTabToSelfTabCardLabelDataJni.get()
+                            .markEntryActivated(
+                                    tab.getProfile(), mGuid, ShareActivatedEntryPoint.TAB_STRIP);
+                    removeAndDestroy();
+                }
+
+                @Override
+                public void onDestroyed(Tab tab) {
+                    if (tab != mTab) return;
+                    // Only mark the entry as activated if the tab is closed, and not upon browser
+                    // shutdown.
+                    if (tab.isClosing()) {
+                        SendTabToSelfTabCardLabelDataJni.get()
+                                .markEntryActivated(
+                                        tab.getProfile(),
+                                        mGuid,
+                                        ShareActivatedEntryPoint
+                                                .TAB_OR_BROWSER_CLOSED_WITHOUT_ACTIVATION);
+                        removeAndDestroy();
                     }
                 }
             };
@@ -98,7 +122,8 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
     }
 
     /**
-     * Returns whether the label data has expired.
+     * Returns whether the label data has expired. Note: Upon expiration, the metric logging takes
+     * place upon garbage collection in SendTabToSelfBridge. So it does not happen here.
      *
      * @return True if the data has exceeded the 5-day expiration window, false otherwise.
      */
@@ -106,6 +131,17 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
         // Avoid marking the negative cache as expired.
         if (isNegativeCache()) return false;
         return System.currentTimeMillis() - mAdditionTimestampMs > EXPIRATION_MS;
+    }
+
+    /**
+     * Returns whether the visual label should be shown.
+     *
+     * @return True if the data is not expired and is within the 5-day label window, false
+     *     otherwise.
+     */
+    public boolean shouldShowLabel() {
+        if (isNegativeCache()) return false;
+        return System.currentTimeMillis() - mAdditionTimestampMs < LABEL_EXPIRATION_MS;
     }
 
     /**
@@ -119,7 +155,10 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
                 tab,
                 () ->
                         new SendTabToSelfTabCardLabelData(
-                                tab, /* senderDeviceName= */ "", /* additionTimestampMs= */ 0),
+                                tab,
+                                /* guid= */ "",
+                                /* senderDeviceName= */ "",
+                                /* additionTimestampMs= */ 0),
                 USER_DATA_KEY,
                 (data) -> {
                     if (data != null && data.isExpired()) {
@@ -160,7 +199,7 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
      *     background.
      */
     public SendTabToSelfTabCardLabelData(
-            Tab tab, String senderDeviceName, long additionTimestampMs) {
+            Tab tab, String guid, String senderDeviceName, long additionTimestampMs) {
         super(
                 tab,
                 PersistedTabDataConfiguration.get(
@@ -169,6 +208,7 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
                 PersistedTabDataConfiguration.get(
                                 SendTabToSelfTabCardLabelData.class, tab.isIncognito())
                         .getId());
+        mGuid = guid;
         mSenderDeviceName = senderDeviceName;
         mAdditionTimestampMs = additionTimestampMs;
 
@@ -206,12 +246,28 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
         mAdditionTimestampMs = additionTimestampMs;
     }
 
+    @VisibleForTesting
+    public String getGuidForTesting() {
+        return mGuid;
+    }
+
+    @VisibleForTesting
+    public String getSenderDeviceNameForTesting() {
+        return mSenderDeviceName;
+    }
+
+    @VisibleForTesting
+    public long getAdditionTimestampMsForTesting() {
+        return mAdditionTimestampMs;
+    }
+
     // PersistedTabData implementation.
 
     @Override
     Serializer<ByteBuffer> getSerializer() {
         return () ->
                 SendTabToSelfPersistedTabDataProto.newBuilder()
+                        .setGuid(mGuid)
                         .setSenderDeviceName(mSenderDeviceName)
                         .setAdditionTimestampMs(mAdditionTimestampMs)
                         .build()
@@ -226,6 +282,7 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
         try {
             SendTabToSelfPersistedTabDataProto proto =
                     SendTabToSelfPersistedTabDataProto.parseFrom(bytes);
+            mGuid = proto.getGuid();
             mSenderDeviceName = proto.getSenderDeviceName();
             mAdditionTimestampMs = proto.getAdditionTimestampMs();
             PostTask.postTask(
@@ -245,5 +302,13 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
     @Override
     public String getUmaTag() {
         return TAG;
+    }
+
+    @NativeMethods
+    public interface Natives {
+        void markEntryActivated(
+                @JniType("Profile*") Profile profile,
+                String guid,
+                @ShareActivatedEntryPoint int entryPoint);
     }
 }

@@ -19,6 +19,7 @@ source_set("send_tab_to_self") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/sync",
+    "//chrome/browser/tab:jni_headers",
     "//chrome/browser/ui/navigator",
     "//components/send_tab_to_self",
     "//components/shared_highlighting/core/common",

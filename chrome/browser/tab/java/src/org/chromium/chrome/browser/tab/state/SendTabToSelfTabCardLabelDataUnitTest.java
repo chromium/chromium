@@ -27,6 +27,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.send_tab_to_self.ShareActivatedEntryPoint;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -35,10 +37,13 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SendTabToSelfTabCardLabelDataUnitTest {
     private static final String DEVICE_NAME = "Example Phone";
+    private static final String GUID = "guid";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
+    @Mock private Profile mProfile;
+    @Mock private SendTabToSelfTabCardLabelData.Natives mSendTabToSelfTabCardLabelDataNatives;
 
     private Context mContext;
     private UserDataHost mUserDataHost;
@@ -49,6 +54,9 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
         mContext = RuntimeEnvironment.application;
         mUserDataHost = new UserDataHost();
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        SendTabToSelfTabCardLabelDataJni.setInstanceForTesting(
+                mSendTabToSelfTabCardLabelDataNatives);
     }
 
     @After
@@ -58,7 +66,8 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
     private SendTabToSelfTabCardLabelData createAndSetLabelData() {
         SendTabToSelfTabCardLabelData data =
-                new SendTabToSelfTabCardLabelData(mTab, DEVICE_NAME, System.currentTimeMillis());
+                new SendTabToSelfTabCardLabelData(
+                        mTab, GUID, DEVICE_NAME, System.currentTimeMillis());
         mUserDataHost.setUserData(SendTabToSelfTabCardLabelData.class, data);
         return data;
     }
@@ -79,14 +88,28 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
     @Test
     public void testUserData_Expired() {
-        // Attach expired label data exceeding the 5-day window.
+        // Attach expired label data exceeding the 10-day window.
         SendTabToSelfTabCardLabelData data = createAndSetLabelData();
         data.setAdditionTimestampMsForTesting(
-                System.currentTimeMillis() - 6L * 24 * 60 * 60 * 1000); // 6 days old
+                System.currentTimeMillis() - 11L * 24 * 60 * 60 * 1000); // 11 days old
 
         // Verify accessing expired data automatically removes it from the host.
         assertNull(SendTabToSelfTabCardLabelData.get(mTab));
         assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
+    }
+
+    @Test
+    public void testUserData_LabelExpiredButDataPersists() {
+        // Attach label data and set it to 6 days old (label expired, but data not expired).
+        SendTabToSelfTabCardLabelData data = createAndSetLabelData();
+        data.setAdditionTimestampMsForTesting(
+                System.currentTimeMillis() - 6L * 24 * 60 * 60 * 1000); // 6 days old
+
+        // Verify data is still retrievable (not expired).
+        assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
+
+        // Verify shouldShowLabel() is false.
+        assertTrue(!data.shouldShowLabel());
     }
 
     @Test
@@ -101,14 +124,65 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
         // Simulate user interaction triggering onShown.
         captor.getValue().onShown(mTab, TabSelectionType.FROM_USER);
 
+        // Verify the entry is marked as activated.
+        verify(mSendTabToSelfTabCardLabelDataNatives)
+                .markEntryActivated(mProfile, GUID, ShareActivatedEntryPoint.TAB_STRIP);
+
         // Verify the user interaction removes the UserData and unregisters the observer.
         assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
         verify(mTab).removeObserver(captor.getValue());
     }
 
     @Test
+    public void testUserData_ClosedWithoutActivation() {
+        // Attach active label data and capture the registered TabObserver.
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        createAndSetLabelData();
+        verify(mTab).addObserver(captor.capture());
+
+        assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
+
+        // Simulate tab closing.
+        when(mTab.isClosing()).thenReturn(true);
+
+        // Simulate tab destruction.
+        captor.getValue().onDestroyed(mTab);
+
+        // Verify the entry is marked as closed without activation.
+        verify(mSendTabToSelfTabCardLabelDataNatives)
+                .markEntryActivated(
+                        mProfile,
+                        GUID,
+                        ShareActivatedEntryPoint.TAB_OR_BROWSER_CLOSED_WITHOUT_ACTIVATION);
+
+        // Verify the destruction removes the UserData and unregisters the observer.
+        assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
+        verify(mTab).removeObserver(captor.getValue());
+    }
+
+    @Test
+    public void testUserData_DestroyedWithoutClosing_Shutdown() {
+        // Attach active label data and capture the registered TabObserver.
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        createAndSetLabelData();
+        verify(mTab).addObserver(captor.capture());
+
+        assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
+
+        // Simulate tab destruction WITHOUT prior closing state (shutdown).
+        when(mTab.isClosing()).thenReturn(false);
+        captor.getValue().onDestroyed(mTab);
+
+        // Verify that the entry is NOT marked as activated/closed.
+        org.mockito.Mockito.verifyNoInteractions(mSendTabToSelfTabCardLabelDataNatives);
+
+        // Verify the data is STILL attached to the tab (not removed/deleted).
+        assertNotNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
+    }
+
+    @Test
     public void testUserData_Restore() {
-        when(mTab.getId()).thenReturn(1);
+        when(mTab.getId()).thenReturn(11);
         when(mTab.isInitialized()).thenReturn(true);
 
         // Create active label data and save it to mock storage.
@@ -131,7 +205,7 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
     @Test
     public void testUserData_IdempotentDeleteAndDestroy() {
-        when(mTab.getId()).thenReturn(1);
+        when(mTab.getId()).thenReturn(12);
         when(mTab.isInitialized()).thenReturn(true);
 
         // Call from() twice for an uninitialized/empty tab (which triggers deleteAndDestroy)
@@ -144,7 +218,7 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
     @Test
     public void testUserData_NegativeCache() {
-        when(mTab.getId()).thenReturn(1);
+        when(mTab.getId()).thenReturn(13);
         when(mTab.isInitialized()).thenReturn(true);
 
         // from() should return the negative cache instance.

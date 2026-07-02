@@ -101,6 +101,8 @@ public class NotificationManager {
                 openUrl(intent.getData(), scrollToTextFragment);
                 hideNotification(guid);
                 SendTabToSelfAndroidBridge.markEntryOpened(profile, guid);
+                SendTabToSelfAndroidBridge.markEntryActivated(
+                        profile, guid, ShareActivatedEntryPoint.MOBILE_NOTIFICATION);
                 SendTabToSelfMetricsRecorder.recordNotificationOpened();
                 break;
             case NOTIFICATION_ACTION_DISMISS:

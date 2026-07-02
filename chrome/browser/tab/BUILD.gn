@@ -123,6 +123,7 @@ android_library("java") {
     "//components/payments/content/android/ui:java",
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
+    "//components/send_tab_to_self:send_tab_to_self_java",
     "//components/strings:components_strings_grd",
     "//components/tab_groups:tab_groups_java",
     "//components/tabs/public/android:java",
@@ -170,6 +171,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabData.java",
+    "java/src/org/chromium/chrome/browser/tab/state/SendTabToSelfTabCardLabelData.java",
   ]
 }
 
@@ -210,6 +212,7 @@ robolectric_library("junit") {
     "//chrome/browser/url_constants/android:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/embedder_support/android:util_java",
+    "//components/send_tab_to_self:send_tab_to_self_java",
     "//content/public/android:content_full_java",
     "//content/public/android:content_main_dex_java",
     "//content/public/test/android:content_java_test_support",

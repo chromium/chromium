@@ -14,4 +14,7 @@ message SendTabToSelfPersistedTabDataProto {
 
   // The timestamp when this tab was added in the background.
   optional int64 addition_timestamp_ms = 2;
+
+  // The GUID of the Send Tab to Self entry.
+  optional string guid = 3;
 }

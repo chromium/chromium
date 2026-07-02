@@ -124,6 +124,17 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Test
     @SmallTest
+    public void testMarkEntryActivated() {
+        String guid = "guid";
+        SendTabToSelfAndroidBridge.markEntryActivated(
+                mProfile, guid, ShareActivatedEntryPoint.MOBILE_NOTIFICATION);
+        verify(mNativeMock)
+                .markEntryActivated(
+                        eq(mProfile), eq(guid), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
+    }
+
+    @Test
+    @SmallTest
     @SuppressWarnings("unchecked")
     public void testGetAllTargetDeviceInfos() {
         List<TargetDeviceInfo> expected =
@@ -373,7 +384,7 @@ public class SendTabToSelfAndroidBridgeTest {
         Tab tab = mock(Tab.class);
         when(tab.getUserDataHost()).thenReturn(userDataHost);
 
-        SendTabToSelfAndroidBridge.attachTabLabel(tab, "Example Phone");
+        SendTabToSelfAndroidBridge.attachTabLabel(tab, "guid", "Example Phone");
 
         SendTabToSelfTabCardLabelData userData =
                 userDataHost.getUserData(SendTabToSelfTabCardLabelData.class);

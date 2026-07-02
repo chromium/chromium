@@ -152,6 +152,18 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
+     * Marks the entry associated with the GUID as activated.
+     *
+     * @param profile Profile of the user to mark entry for.
+     * @param guid The GUID to mark the entry for.
+     * @param entryPoint The entry point from which the tab was activated.
+     */
+    public static void markEntryActivated(
+            Profile profile, String guid, @ShareActivatedEntryPoint int entryPoint) {
+        SendTabToSelfAndroidBridgeJni.get().markEntryActivated(profile, guid, entryPoint);
+    }
+
+    /**
      * @param profile Profile of the user for whom to retrieve the targetDeviceInfos.
      * @return All {@link TargetDeviceInfo} for the user, or an empty list if the model isn't ready.
      */
@@ -189,7 +201,7 @@ public class SendTabToSelfAndroidBridge {
      * @param senderDeviceName The name of the device that sent the tab.
      */
     @CalledByNative
-    public static void attachTabLabel(Tab tab, String senderDeviceName) {
+    public static void attachTabLabel(Tab tab, String guid, String senderDeviceName) {
         if (tab == null || tab.getUserDataHost() == null || TextUtils.isEmpty(senderDeviceName))
             return;
 
@@ -197,7 +209,7 @@ public class SendTabToSelfAndroidBridge {
                 .setUserData(
                         SendTabToSelfTabCardLabelData.class,
                         new SendTabToSelfTabCardLabelData(
-                                tab, senderDeviceName, System.currentTimeMillis()));
+                                tab, guid, senderDeviceName, System.currentTimeMillis()));
         // TODO(crbug.com/488072250): Inform SendTabToSelfTabLabeller to update the UI. This
         // specifically affects the case where the tab switcher is already opened and a tab gets
         // auto-opened.
@@ -274,6 +286,11 @@ public class SendTabToSelfAndroidBridge {
         void markEntryOpened(@JniType("Profile*") Profile profile, String guid);
 
         void dismissEntry(@JniType("Profile*") Profile profile, String guid);
+
+        void markEntryActivated(
+                @JniType("Profile*") Profile profile,
+                String guid,
+                @ShareActivatedEntryPoint int entryPoint);
 
         @JniType("std::vector")
         List<TargetDeviceInfo> getAllTargetDeviceInfos(@JniType("Profile*") Profile profile);

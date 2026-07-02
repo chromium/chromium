@@ -150,7 +150,7 @@ public class SendTabToSelfTabLabeller implements TabModelObserver {
      *     applies.
      */
     private @Nullable TabCardLabelData buildLabel(@Nullable SendTabToSelfTabCardLabelData data) {
-        if (data == null || data.isNegativeCache()) {
+        if (data == null || data.isNegativeCache() || !data.shouldShowLabel()) {
             return null;
         }
         return new TabCardLabelData(
