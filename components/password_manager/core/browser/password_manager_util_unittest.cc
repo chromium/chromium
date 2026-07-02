@@ -890,9 +890,10 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-class PasswordManagerUtilRecoverableErrorTest : public PasswordManagerUtilTest {
+class PasswordManagerUtilTrustedVaultErrorTest
+    : public PasswordManagerUtilTest {
  protected:
-  PasswordManagerUtilRecoverableErrorTest() {
+  PasswordManagerUtilTrustedVaultErrorTest() {
     feature_list_.InitAndEnableFeature(
         password_manager::features::kPasswordSaveInContextErrorResolution);
   }
@@ -900,7 +901,7 @@ class PasswordManagerUtilRecoverableErrorTest : public PasswordManagerUtilTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PasswordManagerUtilRecoverableErrorTest,
+TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
        IsSavingBlockedByTrustedVaultError) {
   EnableSyncForTestAccount();
 
@@ -918,5 +919,39 @@ TEST_F(PasswordManagerUtilRecoverableErrorTest,
   EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS)
+class PasswordManagerUtilRecoverableErrorTest : public PasswordManagerUtilTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+};
+
+TEST_F(PasswordManagerUtilRecoverableErrorTest,
+       IsSavingBlockedByRecoverableError) {
+  EnableSyncForTestAccount();
+
+  auto account_store =
+      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
+  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
+      .WillRepeatedly(Return(account_store.get()));
+
+  EXPECT_CALL(*account_store, GetError)
+      .WillOnce(Return(ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_));
+
+  EXPECT_CALL(*account_store, GetError)
+      .WillOnce(Return(ActionableError::kSignInNeeded));
+  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_));
+
+  EXPECT_CALL(*account_store, GetError)
+      .WillOnce(Return(ActionableError::kNeedsPassphrase));
+  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_));
+
+  EXPECT_CALL(*account_store, GetError)
+      .WillOnce(Return(ActionableError::kKeychainError));
+  EXPECT_FALSE(IsSavingBlockedByRecoverableError(&mock_client_));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager_util

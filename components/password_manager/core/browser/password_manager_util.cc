@@ -189,6 +189,29 @@ bool IsSavingBlockedByTrustedVaultError(
 #endif
 }
 
+bool IsSavingBlockedByRecoverableError(
+    const password_manager::PasswordManagerClient* client) {
+#if BUILDFLAG(IS_IOS)
+  if (!password_manager::sync_util::HasChosenToSyncPasswords(
+          client->GetSyncService())) {
+    return false;
+  }
+  const password_manager::PasswordStoreInterface* account_store =
+      client->GetAccountPasswordStore();
+  if (!account_store) {
+    return false;
+  }
+  password_manager::ActionableError error = account_store->GetError();
+  return (error == password_manager::ActionableError::kTrustedVaultKeyNeeded ||
+          error == password_manager::ActionableError::kSignInNeeded ||
+          error == password_manager::ActionableError::kNeedsPassphrase) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kPasswordSaveInContextErrorResolution);
+#else  // !BUILDFLAG(IS_IOS)
+  return false;
+#endif
+}
+
 std::string_view GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {
   std::string_view signon_realm = form.signon_realm;
 
