@@ -546,7 +546,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after autofill popup appears featuring an "
                        "externally-saved card.")));
 
-
   // TODO(crbug.com/404437008): Update with final IPH strings.
   // kIPHAutofillEnableLoyaltyCardsFeature:
   registry.RegisterFeature(std::move(
@@ -897,10 +896,14 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHPdfGlicSummarizeFeature:
   registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForSnoozePromo(
+      FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHPdfGlicSummarizeFeature,
           pdf::PdfHelpBubbleHandlerFactory::kPdfGlicSummarizeElementId,
-          IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT)
+          IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT_NEW,
+          IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT_NEW_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kLegalNotice)
           .SetBubbleTitleText(IDS_PDF_GLIC_SUMMARIZE_IPH_TITLE)
           .SetBubbleIcon(&vector_icons::kChatSparkIcon)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
@@ -1627,8 +1630,7 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHBookmarkBarSimplifiedFeature,
           kBrowserDialogAnchorElementId,
-          IDS_BOOKMARK_BAR_HIDDEN_INACTIVITY_PROMO_LABEL,
-          IDS_PROMO_UNDO_BUTTON,
+          IDS_BOOKMARK_BAR_HIDDEN_INACTIVITY_PROMO_LABEL, IDS_PROMO_UNDO_BUTTON,
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -2306,57 +2308,52 @@ void MaybeRegisterChromeTutorials(
   }
 
   {  // Split view tutorial
-    auto split_view_tutorial =
-        TutorialDescription::Create<kSplitViewTutorialMetricPrefix>(
-            // Hidden step - name the last inactive tab
-            HiddenStep::WaitForShown(kBrowserViewElementId)
-                .NameElements(
-                    base::BindRepeating([](ui::InteractionSequence* sequence,
-                                           ui::TrackedElement* element) {
-                      BrowserView* const browser_view =
-                          views::AsViewClass<BrowserView>(
-                              element->AsA<views::TrackedElementViews>()
-                                  ->view());
+    auto split_view_tutorial = TutorialDescription::Create<
+        kSplitViewTutorialMetricPrefix>(
+        // Hidden step - name the last inactive tab
+        HiddenStep::WaitForShown(kBrowserViewElementId)
+            .NameElements(
+                base::BindRepeating([](ui::InteractionSequence* sequence,
+                                       ui::TrackedElement* element) {
+                  BrowserView* const browser_view =
+                      views::AsViewClass<BrowserView>(
+                          element->AsA<views::TrackedElementViews>()->view());
 
-                      SplitViewIphController* split_view_iph_controller =
-                          SplitViewIphController::From(browser_view->browser());
+                  SplitViewIphController* split_view_iph_controller =
+                      SplitViewIphController::From(browser_view->browser());
 
-                      ui::TrackedElement* last_inactive_tab_element =
-                          split_view_iph_controller->GetTabSwitchIPHAnchor(
-                              browser_view);
+                  ui::TrackedElement* last_inactive_tab_element =
+                      split_view_iph_controller->GetTabSwitchIPHAnchor(
+                          browser_view);
 
-                      sequence->NameElement(
-                          last_inactive_tab_element,
-                          std::string_view(kLastInactiveTabElementName));
-                      return true;
-                    })),
+                  sequence->NameElement(
+                      last_inactive_tab_element,
+                      std::string_view(kLastInactiveTabElementName));
+                  return true;
+                })),
 
-            // Bubble step - inactive tab to right click.
-            BubbleStep(kLastInactiveTabElementName)
-                .SetBubbleBodyText(IDS_SPLIT_VIEW_TAB_SWITCH_STEP_IPH_BODY)
-                .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-                .SetBubbleFocusOnShow(
-                    true),  // This bubble can be safely focused.
+        // Bubble step - inactive tab to right click.
+        BubbleStep(kLastInactiveTabElementName)
+            .SetBubbleBodyText(IDS_SPLIT_VIEW_TAB_SWITCH_STEP_IPH_BODY)
+            .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+            .SetBubbleFocusOnShow(true),  // This bubble can be safely focused.
 
-            HiddenStep::WaitForShown(kToolbarSplitTabsToolbarButtonElementId),
+        HiddenStep::WaitForShown(kToolbarSplitTabsToolbarButtonElementId),
 
-            // Bubble step - highlight the toolbar button.
-            BubbleStep(kToolbarSplitTabsToolbarButtonElementId)
-                .SetBubbleBodyText(IDS_SPLIT_VIEW_TOOLBAR_BUTTON_STEP_IPH_BODY)
-                .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-                .SetBubbleFocusOnShow(
-                    true),  // This bubble can be safely focused.
+        // Bubble step - highlight the toolbar button.
+        BubbleStep(kToolbarSplitTabsToolbarButtonElementId)
+            .SetBubbleBodyText(IDS_SPLIT_VIEW_TOOLBAR_BUTTON_STEP_IPH_BODY)
+            .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+            .SetBubbleFocusOnShow(true),  // This bubble can be safely focused.
 
-            HiddenStep::WaitForShown(
-                SplitTabMenuModel::kReversePositionMenuItem),
+        HiddenStep::WaitForShown(SplitTabMenuModel::kReversePositionMenuItem),
 
-            // Completion of the tutorial after split view appears.
-            BubbleStep(SplitTabMenuModel::kExitSplitMenuItem)
-                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-                .SetBubbleBodyText(
-                    IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY)
-                .SetBubbleArrow(HelpBubbleArrow::kLeftTop)
-                .InAnyContext());
+        // Completion of the tutorial after split view appears.
+        BubbleStep(SplitTabMenuModel::kExitSplitMenuItem)
+            .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+            .SetBubbleBodyText(IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY)
+            .SetBubbleArrow(HelpBubbleArrow::kLeftTop)
+            .InAnyContext());
 
     split_view_tutorial.metadata.additional_description =
         "Tutorial for the Split View.";
