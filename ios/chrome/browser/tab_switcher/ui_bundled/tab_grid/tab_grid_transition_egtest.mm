@@ -115,6 +115,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   // Release the histogram tester.
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"InactiveTabsTestMode"];
   [super tearDownHelper];
 }
 
