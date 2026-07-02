@@ -136,7 +136,7 @@ def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
             _run_generate_build_scripts(build_script_output.name, output_dir)
 
         base_cmd = [
-            sys.executable, _GN2BP_SCRIPT_PATH, '--repo_root', output_dir,
+            sys.executable, _GN2BP_SCRIPT_PATH, '--output_dir', output_dir,
             '--build_script_output', build_script_output.name
         ]
         for desc_file in desc_files:

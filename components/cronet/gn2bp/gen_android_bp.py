@@ -592,9 +592,11 @@ def main():
         'You can specify multiple --desc options for different target_cpu',
         required=True,
         action='append')
-    parser.add_argument('--repo_root',
-                        required=True,
-                        help='Path to the root of the repistory')
+    parser.add_argument(
+        '--output_dir',
+        required=True,
+        help='Directory where the generated Android.bp files should be written'
+    )
     parser.add_argument(
         '--build_script_output',
         help=
@@ -692,8 +694,8 @@ def main():
 """ % (Path(__file__).name)
 
     for (path, blueprint) in final_blueprints.items():
-        android_bp_file = Path(os.path.join(args.repo_root, path,
-                                            "Android.bp"))
+        android_bp_file = Path(
+            os.path.join(args.output_dir, path, "Android.bp"))
         android_bp_file.parent.mkdir(parents=True, exist_ok=True)
         android_bp_file.write_text("\n".join(
             [header] + translation_config.BLUEPRINTS_EXTRAS.get(path, []) +
