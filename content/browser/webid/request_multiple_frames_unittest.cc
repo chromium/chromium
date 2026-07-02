@@ -23,7 +23,7 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/request.h"
 #include "content/browser/webid/request_service.h"
-#include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
+#include "content/browser/webid/test/federated_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_registry.h"
@@ -51,8 +51,7 @@
 
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using AuthRequestCallbackHelper =
-    content::FederatedAuthRequestRequestTokenCallbackHelper;
+using AuthRequestCallbackHelper = content::FederatedRequestTokenCallbackHelper;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using RequesterFrameType = content::webid::RequesterFrameType;

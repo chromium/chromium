@@ -30,7 +30,7 @@
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
-#include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
+#include "content/browser/webid/test/federated_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_registry.h"
@@ -74,8 +74,7 @@ using blink::mojom::TokenRequestFailurePtr;
 using blink::mojom::TokenRequestSuccessPtr;
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using AuthRequestCallbackHelper =
-    content::FederatedAuthRequestRequestTokenCallbackHelper;
+using AuthRequestCallbackHelper = content::FederatedRequestTokenCallbackHelper;
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
@@ -8118,13 +8117,12 @@ TEST_F(RequestTest, BrandingWithInsufficientContrastTextColor) {
   EXPECT_EQ(brand_text_color(), std::nullopt);
 }
 
-class FederatedAuthRequestExampleOrgTest : public RequestTest {
+class FederatedRequestExampleOrgTest : public RequestTest {
  public:
-  FederatedAuthRequestExampleOrgTest()
-      : RequestTest("https://rp.example.org/") {}
+  FederatedRequestExampleOrgTest() : RequestTest("https://rp.example.org/") {}
 };
 
-TEST_F(FederatedAuthRequestExampleOrgTest, WellKnownSameSite) {
+TEST_F(FederatedRequestExampleOrgTest, WellKnownSameSite) {
   static const char kExampleOrgProviderUrl[] =
       "https://idp.example.org/fedcm.json";
 

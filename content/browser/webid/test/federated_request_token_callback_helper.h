@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_TEST_FEDERATED_AUTH_REQUEST_REQUEST_TOKEN_CALLBACK_HELPER_H_
-#define CONTENT_BROWSER_WEBID_TEST_FEDERATED_AUTH_REQUEST_REQUEST_TOKEN_CALLBACK_HELPER_H_
+#ifndef CONTENT_BROWSER_WEBID_TEST_FEDERATED_REQUEST_TOKEN_CALLBACK_HELPER_H_
+#define CONTENT_BROWSER_WEBID_TEST_FEDERATED_REQUEST_TOKEN_CALLBACK_HELPER_H_
 
 #include <optional>
 #include <string>
@@ -18,17 +18,16 @@
 
 namespace content {
 
-// Helper class for waiting for the Request::RequestToken()
-// callback.
-class FederatedAuthRequestRequestTokenCallbackHelper {
+// Helper class for waiting for the StartTokenRequest mojo callback.
+class FederatedRequestTokenCallbackHelper {
  public:
-  FederatedAuthRequestRequestTokenCallbackHelper();
-  ~FederatedAuthRequestRequestTokenCallbackHelper();
+  FederatedRequestTokenCallbackHelper();
+  ~FederatedRequestTokenCallbackHelper();
 
-  FederatedAuthRequestRequestTokenCallbackHelper(
-      const FederatedAuthRequestRequestTokenCallbackHelper&) = delete;
-  FederatedAuthRequestRequestTokenCallbackHelper& operator=(
-      const FederatedAuthRequestRequestTokenCallbackHelper&) = delete;
+  FederatedRequestTokenCallbackHelper(
+      const FederatedRequestTokenCallbackHelper&) = delete;
+  FederatedRequestTokenCallbackHelper& operator=(
+      const FederatedRequestTokenCallbackHelper&) = delete;
 
   std::optional<blink::mojom::RequestTokenStatus> status() const {
     return status_;
@@ -42,15 +41,14 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   // Returns base::OnceClosure which quits base::RunLoop started by
   // WaitForCallback().
   base::OnceClosure quit_closure() {
-    return base::BindOnce(&FederatedAuthRequestRequestTokenCallbackHelper::Quit,
+    return base::BindOnce(&FederatedRequestTokenCallbackHelper::Quit,
                           base::Unretained(this));
   }
 
   // This can only be called once per lifetime of this object.
   blink::mojom::FederatedRequestService::StartTokenRequestCallback callback() {
-    return base::BindOnce(
-        &FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod,
-        base::Unretained(this));
+    return base::BindOnce(&FederatedRequestTokenCallbackHelper::ReceiverMethod,
+                          base::Unretained(this));
   }
 
   bool was_callback_called() const { return was_called_; }
@@ -77,4 +75,4 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_TEST_FEDERATED_AUTH_REQUEST_REQUEST_TOKEN_CALLBACK_HELPER_H_
+#endif  // CONTENT_BROWSER_WEBID_TEST_FEDERATED_REQUEST_TOKEN_CALLBACK_HELPER_H_

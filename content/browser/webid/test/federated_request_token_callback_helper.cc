@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
+#include "content/browser/webid/test/federated_request_token_callback_helper.h"
 
 namespace content {
 
-FederatedAuthRequestRequestTokenCallbackHelper::
-    FederatedAuthRequestRequestTokenCallbackHelper() = default;
-FederatedAuthRequestRequestTokenCallbackHelper::
-    ~FederatedAuthRequestRequestTokenCallbackHelper() = default;
+FederatedRequestTokenCallbackHelper::FederatedRequestTokenCallbackHelper() =
+    default;
+FederatedRequestTokenCallbackHelper::~FederatedRequestTokenCallbackHelper() =
+    default;
 
-void FederatedAuthRequestRequestTokenCallbackHelper::WaitForCallback() {
+void FederatedRequestTokenCallbackHelper::WaitForCallback() {
   if (was_called_) {
     return;
   }
   wait_for_callback_loop_.Run();
 }
 
-void FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod(
+void FederatedRequestTokenCallbackHelper::ReceiverMethod(
     base::expected<blink::mojom::TokenRequestSuccessPtr,
                    blink::mojom::TokenRequestFailurePtr> result) {
   CHECK(!was_called_);
@@ -35,7 +35,7 @@ void FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod(
   wait_for_callback_loop_.Quit();
 }
 
-void FederatedAuthRequestRequestTokenCallbackHelper::Quit() {
+void FederatedRequestTokenCallbackHelper::Quit() {
   wait_for_callback_loop_.Quit();
 }
 
