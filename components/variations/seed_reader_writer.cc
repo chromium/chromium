@@ -188,17 +188,26 @@ void SetUpSeedFileTrial(
     return;
   }
 
-  // Only 10% of clients on stable should participate in the experiment.
-  base::FieldTrial::Probability group_probability =
+  // Launch seed files on desktop. Continue the experiment on
+  // Android Chrome and iOS: 50% enabled on pre-Stable and 10%
+  // enabled on Stable.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  base::FieldTrial::Probability control_probability =
       channel == version_info::Channel::STABLE ? 10 : 50;
+  base::FieldTrial::Probability seed_files_probability =
+      channel == version_info::Channel::STABLE ? 10 : 50;
+#else
+  base::FieldTrial::Probability control_probability = 0;
+  base::FieldTrial::Probability seed_files_probability = 100;
+#endif
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           kSeedFileTrial, /*total_probability=*/100, kDefaultGroup,
           entropy_provider, /*randomization_seed=*/1));
 
-  trial->AppendGroup(kControlGroup, group_probability);
-  trial->AppendGroup(kSeedFilesGroup, group_probability);
+  trial->AppendGroup(kControlGroup, control_probability);
+  trial->AppendGroup(kSeedFilesGroup, seed_files_probability);
 }
 
 // Returns the permanent country code and version. For the safe seed, version

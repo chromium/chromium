@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version_info/channel.h"
+#include "build/build_config.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/stored_seed_info.pb.h"
 
@@ -32,7 +33,12 @@ class EntropyProviders;
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
 const char kControlGroup[] = "Control_V11";
+// TODO(crbug.com/530049020): Launch on Android and iOS
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const char kSeedFilesGroup[] = "SeedFiles_V11";
+#else
+const char kSeedFilesGroup[] = "SeedFilesLaunched";
+#endif
 
 // A sentinel value that may be stored as the latest variations seed value in
 // to indicate that the latest seed is identical to the safe seed. Used to avoid

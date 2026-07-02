@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "base/timer/mock_timer.h"
 #include "base/version_info/channel.h"
+#include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/metrics.h"
 #include "components/variations/pref_names.h"
@@ -170,7 +171,7 @@ class ExpectedFieldTrialGroupChannelsTest
 
 class ExpectedFieldTrialGroupAllChannelsTest
     : public ExpectedFieldTrialGroupChannelsTest {};
-class ExpectedFieldTrialGroupPreStableTest
+class ExpectedFieldTrialGroupAssignedTest
     : public ExpectedFieldTrialGroupChannelsTest {};
 class ExpectedFieldTrialGroupUnknownTest
     : public ExpectedFieldTrialGroupChannelsTest {};
@@ -207,25 +208,37 @@ TEST_P(ExpectedFieldTrialGroupAllChannelsTest, NoEntropyProvider) {
   EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial), IsEmpty());
 }
 
+constexpr version_info::Channel kAssignedChannels[] = {
+    version_info::Channel::CANARY,
+    version_info::Channel::DEV,
+    version_info::Channel::BETA,
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    version_info::Channel::STABLE,
+#endif
+};
+
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ExpectedFieldTrialGroupPreStableTest,
+    ExpectedFieldTrialGroupAssignedTest,
     ::testing::ConvertGenerator<ExpectedFieldTrialGroupTestParams::TupleT>(
         ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
                                              kSafeSeedFieldsPrefs),
-                           ::testing::Values(version_info::Channel::CANARY,
-                                             version_info::Channel::DEV,
-                                             version_info::Channel::BETA))));
+                           ::testing::ValuesIn(kAssignedChannels))));
 
-// If channel is canary or dev, client is assigned a group.
-TEST_P(ExpectedFieldTrialGroupPreStableTest, AssignedGroup) {
+// If channel is in kAssignedChannels, client is assigned a group.
+TEST_P(ExpectedFieldTrialGroupAssignedTest, AssignedGroup) {
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
       kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
       entropy_providers_.get(), GetHistogramSuffix(),
       file_writer_thread_.task_runner());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial),
               ::testing::AnyOf(kControlGroup, kSeedFilesGroup));
+#else
+  EXPECT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            kSeedFilesGroup);
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1020,7 +1033,8 @@ INSTANTIATE_TEST_SUITE_P(
                            ::testing::Values(kSeedFilesGroup),
                            ::testing::Values(version_info::Channel::CANARY,
                                              version_info::Channel::DEV,
-                                             version_info::Channel::BETA))));
+                                             version_info::Channel::BETA,
+                                             version_info::Channel::STABLE))));
 
 // Verifies clients using local state to store seeds write seeds to Local State.
 TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
@@ -1638,6 +1652,13 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, NoSeedFile) {
   EXPECT_EQ(stored_seed_data, variations_seed);
 }
 
+constexpr version_info::Channel kLocalStateNoGroupChannels[] = {
+    version_info::Channel::UNKNOWN,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    version_info::Channel::STABLE,
+#endif
+};
+
 INSTANTIATE_TEST_SUITE_P(
     NoGroup,
     SeedReaderWriterLocalStateGroupsTest,
@@ -1645,8 +1666,15 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
                                              kSafeSeedFieldsPrefs),
                            ::testing::Values(kNoGroup),
-                           ::testing::Values(version_info::Channel::UNKNOWN,
-                                             version_info::Channel::STABLE))));
+                           ::testing::ValuesIn(kLocalStateNoGroupChannels))));
+
+constexpr version_info::Channel kLocalStateGroupsChannels[] = {
+    version_info::Channel::UNKNOWN, version_info::Channel::CANARY,
+    version_info::Channel::DEV,     version_info::Channel::BETA,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    version_info::Channel::STABLE,
+#endif
+};
 
 INSTANTIATE_TEST_SUITE_P(
     ControlAndDefaultGroup,
@@ -1655,11 +1683,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
                                              kSafeSeedFieldsPrefs),
                            ::testing::Values(kControlGroup, kDefaultGroup),
-                           ::testing::Values(version_info::Channel::UNKNOWN,
-                                             version_info::Channel::CANARY,
-                                             version_info::Channel::DEV,
-                                             version_info::Channel::BETA,
-                                             version_info::Channel::STABLE))));
+                           ::testing::ValuesIn(kLocalStateGroupsChannels))));
 
 class SeedReaderWriterAllGroupsTest : public SeedReaderWriterGroupTest {};
 
