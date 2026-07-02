@@ -4,20 +4,25 @@
 
 let count = 0;
 
-function register(tagName) {
-  const elements = document.getElementsByTagName(tagName);
+function markPlaying() {
+  // Signal "Ready" (the C++ TitleWatcher handshake) when all elements play.
+  if (--count == 0)
+    window.document.title = "Ready";
+}
 
-  for (let i = 0; i < elements.length; i++) {
-    count++;
+function register(...tagNames) {
+  const elements =
+      tagNames.flatMap(t => [...document.getElementsByTagName(t)]);
 
-    elements[i].addEventListener('play', () => {
-      count--;
-
-      if (count == 0)
-        window.document.title = "Ready";
-    }, { once: true });
+  // Count all elements up front to avoid signalling "Ready" too early.
+  count = elements.length;
+  for (const el of elements) {
+    // Already playing: the late script missed 'play', so count it now.
+    if (!el.paused)
+      markPlaying();
+    else
+      el.addEventListener('play', markPlaying, { once: true });
   }
 }
 
-register('video');
-register('audio');
+register('video', 'audio');
