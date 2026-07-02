@@ -50,6 +50,7 @@ blink_modules_sources("credentialmanagement") {
     "public_key_credential.h",
     "scoped_promise_resolver.cc",
     "scoped_promise_resolver.h",
+    "throttle_helper.cc",
   ]
   deps = [
     "//device/fido/public",
