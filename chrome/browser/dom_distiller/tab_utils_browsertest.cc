@@ -15,13 +15,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/dom_distiller/test_distillation_observers.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -420,6 +420,42 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsPrerenderTest,
   // SelfDeletingRequestDelegate deletes itself when PrimaryPageChanged() is
   // called. Ensure that the TaskTracker has been removed.
   EXPECT_FALSE(HasTaskTracker());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DomDistillerTabUtilsBrowserTest,
+    RunReadabilityHeuristicsOnWebContents_WebContentsDestroyed) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
+
+  base::test::TestFuture<bool> future;
+  RunReadabilityHeuristicsOnWebContents(web_contents, future.GetCallback());
+
+  // Close tab / destroy WebContents while JS execution is in flight.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(), 0);
+
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DomDistillerTabUtilsBrowserTest,
+    DistillCurrentPageAndViewIfSuccessful_WebContentsDestroyed) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
+
+  base::test::TestFuture<bool> future;
+  DistillCurrentPageAndViewIfSuccessful(web_contents, future.GetCallback());
+
+  // Close tab / destroy WebContents while distillation is pending.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(), 0);
+
+  EXPECT_FALSE(future.Get());
 }
 
 }  // namespace

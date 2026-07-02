@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -224,7 +226,9 @@ void DistillCurrentPageAndViewIfSuccessful(
                       web_contents, web_contents->GetLastCommittedURL());
                 }
               },
-              std::move(callback), web_contents));
+              mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                          false),
+              web_contents));
 
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
       new SourcePageHandleWebContents(web_contents, false));
@@ -260,7 +264,9 @@ void RunReadabilityHeuristicsOnWebContents(
   std::string script = dom_distiller::GetReadabilityTriggeringScript();
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
       base::UTF8ToUTF16(script),
-      base::BindOnce(OnReadabilityHeuristicResult, std::move(callback)),
+      base::BindOnce(OnReadabilityHeuristicResult,
+                     mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                         std::move(callback), false)),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
 
