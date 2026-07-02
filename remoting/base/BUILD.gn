@@ -132,6 +132,8 @@ source_set("base") {
     "loggable.cc",
     "loggable.h",
     "logging_service_client.h",
+    "memory_consumer_registry.cc",
+    "memory_consumer_registry.h",
     "protobuf_http_client.cc",
     "protobuf_http_client.h",
     "protobuf_http_request.cc",

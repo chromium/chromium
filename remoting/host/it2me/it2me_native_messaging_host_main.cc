@@ -19,6 +19,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/memory_consumer_registry.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/chromoting_host_context.h"
@@ -79,6 +80,9 @@ bool CurrentProcessHasUiAccess() {
 // Creates a It2MeNativeMessagingHost instance, attaches it to stdin/stdout and
 // runs the task executor until It2MeNativeMessagingHost signals shutdown.
 int It2MeNativeMessagingHostMain(int argc, char** argv) {
+  base::ScopedMemoryConsumerRegistry<remoting::MemoryConsumerRegistry>
+      memory_consumer_registry;
+
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
   // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
   // use X11 safely (such as the WebRTC capturer, GTK ...)

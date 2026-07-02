@@ -16,6 +16,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/memory_consumer_registry.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/crash/minidump_handler.h"
 
@@ -26,6 +27,9 @@ constexpr char kTimeoutSwitchName[] = "timeout";
 }
 
 int CrashUploaderMain(int argc, char** argv) {
+  base::ScopedMemoryConsumerRegistry<remoting::MemoryConsumerRegistry>
+      memory_consumer_registry;
+
   base::AtExitManager exit_manager;
 
   base::SingleThreadTaskExecutor task_executor(base::MessagePumpType::IO);
