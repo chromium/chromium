@@ -839,3 +839,33 @@ TEST_F(FormInputAccessoryMediatorTest, keyboardWillShowRefresh_Suppressed) {
   task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
   EXPECT_EQ(count, 0);
 }
+// Tests that shouldShowRPId returns YES if and only if the suggestion RP ID
+// does not match the active WebState's host.
+TEST_F(FormInputAccessoryMediatorTest, ShouldShowRPId) {
+  FormInputAccessoryMediator* mediator =
+      [[FormInputAccessoryMediator alloc] initWithConsumer:consumer_
+                                                   handler:handler_
+                                              webStateList:&web_state_list_
+                                       personalDataManager:nullptr
+                                      profilePasswordStore:nullptr
+                                      accountPasswordStore:nullptr
+                                      securityAlertHandler:nil
+                                    reauthenticationModule:nil
+                                         engagementTracker:nullptr];
+  [mediator injectWebState:GetActiveFakeWebState()];
+
+  // Set active web state host.
+  GetActiveFakeWebState()->SetCurrentURL(GURL("https://foo.com/login"));
+
+  // Same origin should return NO.
+  EXPECT_FALSE([mediator shouldShowRPId:@"foo.com"]);
+
+  // Different origin should return YES.
+  EXPECT_TRUE([mediator shouldShowRPId:@"bar.com"]);
+
+  // Empty or nil cases should return NO.
+  EXPECT_FALSE([mediator shouldShowRPId:@""]);
+  EXPECT_FALSE([mediator shouldShowRPId:nil]);
+
+  [mediator disconnect];
+}
