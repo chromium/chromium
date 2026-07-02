@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/scene/ui/scene_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -90,6 +91,48 @@ void OpenAssistantFromOmnibox() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kAssistantContainerAccessibilityIdentifier)];
+}
+
+// Tests that dragging the assistant sheet down dismisses the keyboard.
+- (void)testDismissKeyboardOnSheetDrag {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  OpenAssistantFromOmnibox();
+
+  // Verify assistant container is shown.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kAssistantContainerAccessibilityIdentifier)];
+
+  // Tap the composebox to bring up the keyboard (or focus if hardware keyboard
+  // is attached).
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kComposeboxAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> firstResponderInComposebox = grey_allOf(
+      grey_firstResponder(),
+      grey_ancestor(grey_accessibilityID(kComposeboxAccessibilityIdentifier)),
+      nil);
+
+  // Wait for the composebox to become the first responder.
+  // This verifies the field is active, regardless of hardware keyboard state.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:firstResponderInComposebox];
+
+  // Drag the sheet down to dismiss the keyboard.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kAssistantContainerAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Verify the composebox is no longer the first responder (meaning the
+  // keyboard is dismissed).
+  // We assert grey_nil() because the matcher `firstResponderInComposebox`
+  // inherently checks for `grey_firstResponder()`. Once the keyboard is
+  // dismissed, no element will match it anymore.
+  [[EarlGrey selectElementWithMatcher:firstResponderInComposebox]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

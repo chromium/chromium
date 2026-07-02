@@ -715,6 +715,8 @@ inline LayoutStateAssistantPassKey PassKey() {
     return;
   }
 
+  [self.view endEditing:YES];
+
   std::vector<AssistantContainerDetent> currentDetents = self.detents;
 
   AssistantContainerDetent currentDetent =
@@ -783,6 +785,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 // Handles the state when the pan gesture begins.
 - (void)handlePanGestureBegan:(UIPanGestureRecognizer*)gesture {
   CHECK(gesture == _headerPanGesture);
+  [self.view endEditing:YES];
   _initialConstraintHeight = _heightConstraint.constant;
 }
 
