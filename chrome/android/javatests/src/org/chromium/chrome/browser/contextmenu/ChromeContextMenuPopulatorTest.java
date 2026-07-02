@@ -36,6 +36,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.view.ContextThemeWrapper;
 
 import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -317,6 +318,10 @@ public class ChromeContextMenuPopulatorTest {
                                         == ChromeContextMenuPopulator.ContextMenuMode
                                                 .THIN_WEB_VIEW);
 
+        Context themedContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_Chromium_Activity);
+
         mPopulator =
                 Mockito.spy(
                         new ChromeContextMenuPopulator(
@@ -324,7 +329,7 @@ public class ChromeContextMenuPopulatorTest {
                                 SupplierUtils.of(mShareDelegate),
                                 actions,
                                 mode,
-                                ContextUtils.getApplicationContext(),
+                                themedContext,
                                 params,
                                 mNativeDelegate));
         GSAUtils.setFakePassableGsaEnvironmentForTesting(true);

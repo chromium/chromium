@@ -328,6 +328,12 @@ class ChromeContextMenuItem {
                         item,
                         ChromePreferenceKeys.CONTEXT_MENU_OPEN_IMAGE_IN_EPHEMERAL_TAB_CLICKED,
                         showInProductHelp);
+            case Item.SEARCH_TAB_WITH_GOOGLE_LENS:
+                return addOrRemoveNewLabel(
+                        context,
+                        item,
+                        ChromePreferenceKeys.CONTEXT_MENU_SEARCH_TAB_WITH_GOOGLE_LENS_CLICKED,
+                        showInProductHelp);
             case Item.SEARCH_IMAGE_WITH_GOOGLE_LENS:
                 return addOrRemoveNewLabel(
                         context,

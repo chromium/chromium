@@ -549,7 +549,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     pageGroup.add(
                             createListItem(
                                     Item.SEARCH_TAB_WITH_GOOGLE_LENS,
-                                    /* showInProductHelp= */ false,
+                                    /* showInProductHelp= */ true,
                                     isEnabled));
                     maybeRecordUkmLensShown();
                 }
@@ -1167,6 +1167,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 LensOverlayCoordinator.getOrCreateForTab(tab)
                         .start(LensOverlayInvocationSource.CONTEXT_MENU);
             }
+            SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
+            prefManager.writeBoolean(
+                    ChromePreferenceKeys.CONTEXT_MENU_SEARCH_TAB_WITH_GOOGLE_LENS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_send_tab_to_self) {
             recordContextMenuSelection(ContextMenuUma.Action.SEND_TAB_TO_SELF);
             Tab tab = getTab();
