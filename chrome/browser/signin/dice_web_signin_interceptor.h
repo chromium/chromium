@@ -237,14 +237,14 @@ class DiceWebSigninInterceptor : public KeyedService,
 
     ~ProfilePresets();
 
-    ProfilePresets(ProfilePresets&&);
-    ProfilePresets& operator=(ProfilePresets&&);
+    ProfilePresets(ProfilePresets&&) = default;
+    ProfilePresets& operator=(ProfilePresets&&) = default;
 
     ProfilePresets(const ProfilePresets&) = delete;
     ProfilePresets& operator=(ProfilePresets&) = delete;
 
     SkColor profile_color = SK_ColorTRANSPARENT;
-    std::optional<search_engines::ChoiceData> search_engine_choice_data;
+    search_engines::ChoiceData search_engine_choice_data;
   };
 
   // Cancels any current signin interception and resets the interceptor to its
