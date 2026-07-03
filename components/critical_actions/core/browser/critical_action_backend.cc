@@ -64,6 +64,16 @@ std::optional<CriticalActionEntry> CriticalActionBackend::GetCriticalAction(
   return db_->GetCriticalAction(critical_action_id);
 }
 
+std::vector<CriticalActionEntry> CriticalActionBackend::GetCriticalActions(
+    const CriticalActionQueryOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "CriticalActionBackend::GetCriticalActions";
+  if (!db_) {
+    return {};
+  }
+  return db_->GetCriticalActions(options);
+}
+
 void CriticalActionBackend::DeleteCriticalAction(
     std::string_view critical_action_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

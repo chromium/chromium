@@ -6,7 +6,9 @@
 #define COMPONENTS_CRITICAL_ACTIONS_CORE_BROWSER_CRITICAL_ACTION_TYPES_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -36,12 +38,37 @@ struct CriticalActionEntry {
   base::Time timestamp;
   int64_t visit_id = 0;         // References History visit
   std::string conversation_id;  // References conversation context
-  std::string actor_task_id;          // References agent task
+  std::string actor_task_id;    // References agent task
   ActionType action_type = ActionType::kUnknown;
   GURL url;
   std::string metadata;  // Action-specific details in JSON format
 
   bool operator==(const CriticalActionEntry& other) const = default;
+};
+
+// Options for querying critical action history.
+struct CriticalActionQueryOptions {
+  CriticalActionQueryOptions();
+  CriticalActionQueryOptions(const CriticalActionQueryOptions&);
+  CriticalActionQueryOptions(CriticalActionQueryOptions&&) noexcept;
+  CriticalActionQueryOptions& operator=(const CriticalActionQueryOptions&);
+  CriticalActionQueryOptions& operator=(CriticalActionQueryOptions&&) noexcept;
+  ~CriticalActionQueryOptions();
+
+  // If set, only records at or after this time are returned.
+  std::optional<base::Time> begin_time;
+  // If set, only records before this time are returned.
+  std::optional<base::Time> end_time;
+
+  // If set, only records with these action types are returned.
+  std::vector<ActionType> action_types;
+  // If set, only records with this conversation_id are returned.
+  std::optional<std::string> conversation_id;
+  // If set, only records with this actor_task_id are returned.
+  std::optional<std::string> actor_task_id;
+
+  // Maximum number of entries to return.
+  std::optional<size_t> max_count;
 };
 
 }  // namespace critical_actions

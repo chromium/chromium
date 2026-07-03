@@ -60,6 +60,20 @@ void CriticalActionService::GetCriticalAction(
       .Then(std::move(callback));
 }
 
+void CriticalActionService::GetCriticalActions(
+    const CriticalActionQueryOptions& options,
+    base::OnceCallback<void(std::vector<CriticalActionEntry>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+  if (!backend_) {
+    std::move(callback).Run({});
+    return;
+  }
+  backend_.AsyncCall(&CriticalActionBackend::GetCriticalActions)
+      .WithArgs(options)
+      .Then(std::move(callback));
+}
+
 void CriticalActionService::DeleteCriticalAction(
     std::string_view critical_action_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

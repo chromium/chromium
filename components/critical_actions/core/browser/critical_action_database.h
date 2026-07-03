@@ -46,6 +46,12 @@ class CriticalActionDatabase {
   std::optional<CriticalActionEntry> GetCriticalAction(
       std::string_view critical_action_id);
 
+  // Retrieves critical action records matching the given `options`.
+  // Returns a list of matching critical action entries, sorted by timestamp
+  // descending.
+  std::vector<CriticalActionEntry> GetCriticalActions(
+      const CriticalActionQueryOptions& options);
+
   // Deletes the critical action record matching `critical_action_id`.
   // Returns true if the query executed successfully (even if no matching record
   // was deleted), or false on database error.

@@ -208,4 +208,34 @@ TEST_F(CriticalActionServiceTest, DeleteHistoryByVisitId) {
   EXPECT_TRUE(get_future2.Get().has_value());
 }
 
+TEST_F(CriticalActionServiceTest, GetCriticalActionsWithOptions) {
+  CriticalActionEntry entry1;
+  entry1.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry1.action_type = ActionType::kFormFill;
+  service_->AddCriticalAction(entry1);
+
+  CriticalActionEntry entry2;
+  entry2.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry2.action_type = ActionType::kDownload;
+  service_->AddCriticalAction(entry2);
+
+  // Get both entries.
+  base::test::TestFuture<std::vector<CriticalActionEntry>> get_future1;
+  CriticalActionQueryOptions options;
+  service_->GetCriticalActions(options, get_future1.GetCallback());
+  auto results1 = get_future1.Get();
+  ASSERT_EQ(results1.size(), 2u);
+
+  // Filter by action_type kDownload.
+  base::test::TestFuture<std::vector<CriticalActionEntry>> get_future2;
+  CriticalActionQueryOptions options2;
+  options2.action_types = {ActionType::kDownload};
+  service_->GetCriticalActions(options2, get_future2.GetCallback());
+  auto results2 = get_future2.Get();
+  ASSERT_EQ(results2.size(), 1u);
+  EXPECT_EQ(results2[0].critical_action_id, entry2.critical_action_id);
+}
+
 }  // namespace critical_actions

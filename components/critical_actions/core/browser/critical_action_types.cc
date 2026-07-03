@@ -21,4 +21,20 @@ CriticalActionEntry& CriticalActionEntry::operator=(
 
 CriticalActionEntry::~CriticalActionEntry() = default;
 
+CriticalActionQueryOptions::CriticalActionQueryOptions() = default;
+
+CriticalActionQueryOptions::CriticalActionQueryOptions(
+    const CriticalActionQueryOptions&) = default;
+
+CriticalActionQueryOptions::CriticalActionQueryOptions(
+    CriticalActionQueryOptions&&) noexcept = default;
+
+CriticalActionQueryOptions& CriticalActionQueryOptions::operator=(
+    const CriticalActionQueryOptions&) = default;
+
+CriticalActionQueryOptions& CriticalActionQueryOptions::operator=(
+    CriticalActionQueryOptions&&) noexcept = default;
+
+CriticalActionQueryOptions::~CriticalActionQueryOptions() = default;
+
 }  // namespace critical_actions

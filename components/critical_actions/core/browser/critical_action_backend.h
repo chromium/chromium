@@ -47,6 +47,10 @@ class CriticalActionBackend {
   std::optional<CriticalActionEntry> GetCriticalAction(
       std::string_view critical_action_id);
 
+  // Retrieves critical action records matching the given `options`.
+  std::vector<CriticalActionEntry> GetCriticalActions(
+      const CriticalActionQueryOptions& options);
+
   // Deletes a single critical action record.
   void DeleteCriticalAction(std::string_view critical_action_id);
 

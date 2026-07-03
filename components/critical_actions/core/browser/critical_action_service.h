@@ -56,6 +56,12 @@ class CriticalActionService : public KeyedService,
       std::string_view critical_action_id,
       base::OnceCallback<void(std::optional<CriticalActionEntry>)> callback);
 
+  // UI thread entry point to retrieve critical action records matching
+  // `options`.
+  void GetCriticalActions(
+      const CriticalActionQueryOptions& options,
+      base::OnceCallback<void(std::vector<CriticalActionEntry>)> callback);
+
   // UI thread entry point to delete a critical action record by ID.
   void DeleteCriticalAction(std::string_view critical_action_id);
 

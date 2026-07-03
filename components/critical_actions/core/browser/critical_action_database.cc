@@ -116,6 +116,12 @@ bool CriticalActionDatabase::InitSchema() {
     return false;
   }
 
+  if (!db_.Execute(
+          "CREATE INDEX IF NOT EXISTS idx_criticalactions_actor_task_id ON "
+          "CriticalActions(actor_task_id)")) {
+    return false;
+  }
+
   return true;
 }
 
@@ -168,6 +174,96 @@ std::optional<CriticalActionEntry> CriticalActionDatabase::GetCriticalAction(
   entry.metadata = statement.ColumnString(7);
 
   return entry;
+}
+
+std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
+    const CriticalActionQueryOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<CriticalActionEntry> entries;
+
+  std::vector<std::string> conditions;
+  std::string sql_query =
+      "SELECT critical_action_id, timestamp, visit_id, conversation_id, "
+      "actor_task_id, action_type, url, metadata FROM CriticalActions";
+
+  if (options.begin_time.has_value()) {
+    conditions.push_back("timestamp >= ?");
+  }
+  if (options.end_time.has_value()) {
+    conditions.push_back("timestamp < ?");
+  }
+  if (!options.action_types.empty()) {
+    std::string condition = "action_type IN (";
+    for (size_t i = 0; i < options.action_types.size(); ++i) {
+      if (i > 0) {
+        condition += ", ";
+      }
+      condition += "?";
+    }
+    condition += ")";
+    conditions.push_back(condition);
+  }
+  if (options.conversation_id.has_value()) {
+    conditions.push_back("conversation_id = ?");
+  }
+  if (options.actor_task_id.has_value()) {
+    conditions.push_back("actor_task_id = ?");
+  }
+
+  if (!conditions.empty()) {
+    sql_query += " WHERE ";
+    for (size_t i = 0; i < conditions.size(); ++i) {
+      if (i > 0) {
+        sql_query += " AND ";
+      }
+      sql_query += conditions[i];
+    }
+  }
+
+  sql_query += " ORDER BY timestamp DESC";
+
+  if (options.max_count.has_value()) {
+    sql_query += " LIMIT ?";
+  }
+
+  sql::Statement statement(db_.GetUniqueStatement(sql_query));
+
+  int bind_index = 0;
+  if (options.begin_time.has_value()) {
+    statement.BindTime(bind_index++, *options.begin_time);
+  }
+  if (options.end_time.has_value()) {
+    statement.BindTime(bind_index++, *options.end_time);
+  }
+  if (!options.action_types.empty()) {
+    for (ActionType type : options.action_types) {
+      statement.BindInt(bind_index++, static_cast<int>(type));
+    }
+  }
+  if (options.conversation_id.has_value()) {
+    statement.BindString(bind_index++, *options.conversation_id);
+  }
+  if (options.actor_task_id.has_value()) {
+    statement.BindString(bind_index++, *options.actor_task_id);
+  }
+  if (options.max_count.has_value()) {
+    statement.BindInt64(bind_index++, *options.max_count);
+  }
+
+  while (statement.Step()) {
+    CriticalActionEntry entry;
+    entry.critical_action_id = statement.ColumnString(0);
+    entry.timestamp = statement.ColumnTime(1);
+    entry.visit_id = statement.ColumnInt64(2);
+    entry.conversation_id = statement.ColumnString(3);
+    entry.actor_task_id = statement.ColumnString(4);
+    entry.action_type = static_cast<ActionType>(statement.ColumnInt(5));
+    entry.url = GURL(statement.ColumnString(6));
+    entry.metadata = statement.ColumnString(7);
+    entries.push_back(std::move(entry));
+  }
+
+  return entries;
 }
 
 bool CriticalActionDatabase::DeleteCriticalAction(
