@@ -7,6 +7,7 @@
 
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -28,24 +29,22 @@ class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
 
   void Configure(const std::string& auth_token,
                  bool enabled,
-                 base::OnceCallback<void(mojom::ConfigureResult)>) override;
+                 ConfigureResultCallback callback) override;
 
  private:
   void OnGetEditable(const std::string& auth_token,
                      bool should_enable,
-                     base::OnceCallback<void(mojom::ConfigureResult)> callback,
+                     ConfigureResultCallback callback,
                      bool is_editable);
-  void ConfigureWithContext(
-      const std::string& auth_token,
-      bool should_enable,
-      base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      bool is_editable,
-      std::unique_ptr<UserContext> user_context);
-  void OnRecoveryFactorConfigured(
-      base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      const std::string& auth_token,
-      std::unique_ptr<UserContext> context,
-      std::optional<AuthenticationError> error);
+  void ConfigureWithContext(const std::string& auth_token,
+                            bool should_enable,
+                            bool is_editable,
+                            ConfigureResultCallback callback,
+                            std::unique_ptr<UserContext> user_context);
+  void OnRecoveryFactorConfigured(ConfigureResultCallback callback,
+                                  const std::string& auth_token,
+                                  std::unique_ptr<UserContext> context,
+                                  std::optional<AuthenticationError> error);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   AuthFactorEditor auth_factor_editor_;
