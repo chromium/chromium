@@ -1,0 +1,149 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("webauthn") {
+  public = [
+    "authenticator_bio_enrollment_sheet_view.h",
+    "authenticator_client_pin_entry_sheet_view.h",
+    "authenticator_client_pin_entry_view.h",
+    "authenticator_common_views.h",
+    "authenticator_create_user_sheet_view.h",
+    "authenticator_gpm_account_info_view.h",
+    "authenticator_gpm_arbitrary_pin_sheet_view.h",
+    "authenticator_gpm_arbitrary_pin_view.h",
+    "authenticator_gpm_pin_sheet_view.h",
+    "authenticator_gpm_pin_view.h",
+    "authenticator_hybrid_and_security_key_sheet_view.h",
+    "authenticator_multi_source_picker_sheet_view.h",
+    "authenticator_multi_source_picker_view.h",
+    "authenticator_priority_mechanism_sheet_view.h",
+    "authenticator_qr_centered_view.h",
+    "authenticator_request_dialog_view.h",
+    "authenticator_request_dialog_view_controller_views.h",
+    "authenticator_request_sheet_view.h",
+    "authenticator_select_account_sheet_view.h",
+    "combined_selector_sheet_view.h",
+    "combined_selector_views.h",
+    "hover_list_view.h",
+    "passkey_deleted_confirmation_view.h",
+    "passkey_detail_view.h",
+    "passkey_not_accepted_bubble_view.h",
+    "passkey_saved_confirmation_view.h",
+    "passkey_updated_confirmation_view.h",
+    "passkey_upgrade_bubble_view.h",
+    "pin_options_button.h",
+    "pin_textfield.h",
+    "reveal_button_util.h",
+    "ring_progress_bar.h",
+    "sheet_view_factory.h",
+    "webauthn_hover_button.h",
+  ]
+
+  sources = [
+    "authenticator_bio_enrollment_sheet_view.cc",
+    "authenticator_client_pin_entry_sheet_view.cc",
+    "authenticator_client_pin_entry_view.cc",
+    "authenticator_common_views.cc",
+    "authenticator_create_user_sheet_view.cc",
+    "authenticator_gpm_account_info_view.cc",
+    "authenticator_gpm_arbitrary_pin_sheet_view.cc",
+    "authenticator_gpm_arbitrary_pin_view.cc",
+    "authenticator_gpm_pin_sheet_view.cc",
+    "authenticator_gpm_pin_view.cc",
+    "authenticator_hybrid_and_security_key_sheet_view.cc",
+    "authenticator_multi_source_picker_sheet_view.cc",
+    "authenticator_multi_source_picker_view.cc",
+    "authenticator_priority_mechanism_sheet_view.cc",
+    "authenticator_qr_centered_view.cc",
+    "authenticator_request_dialog_view.cc",
+    "authenticator_request_dialog_view_controller_views.cc",
+    "authenticator_request_sheet_view.cc",
+    "authenticator_select_account_sheet_view.cc",
+    "combined_selector_sheet_view.cc",
+    "combined_selector_views.cc",
+    "hover_list_view.cc",
+    "passkey_deleted_confirmation_view.cc",
+    "passkey_detail_view.cc",
+    "passkey_not_accepted_bubble_view.cc",
+    "passkey_saved_confirmation_view.cc",
+    "passkey_updated_confirmation_view.cc",
+    "passkey_upgrade_bubble_view.cc",
+    "pin_options_button.cc",
+    "pin_textfield.cc",
+    "reveal_button_util.cc",
+    "ring_progress_bar.cc",
+    "sheet_view_factory.cc",
+    "webauthn_hover_button.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/passwords:password_bubble_view_base",
+    "//chrome/browser/ui/webauthn",
+    "//chrome/browser/webauthn",
+    "//content/public/browser",
+    "//device/fido",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/menus",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/passwords",
+    "//chrome/browser/ui/passwords/bubble_controllers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/accessibility",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/constrained_window",
+    "//components/google/core/common",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//components/qr_code_generator:bitmap_generator",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//components/web_modal",
+    "//skia",
+    "//ui/accessibility",
+    "//ui/base/mojom",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/events",
+    "//ui/lottie",
+    "//ui/native_theme",
+  ]
+
+  if (is_mac) {
+    public += [
+      "authenticator_touch_id_view.h",
+      "mac_authentication_view.h",
+    ]
+    sources += [
+      "authenticator_touch_id_view.cc",
+      "mac_authentication_view.mm",
+    ]
+
+    deps += [
+      "//components/device_event_log",
+      "//device/fido/strings:strings_grit",
+    ]
+
+    frameworks = [ "LocalAuthenticationEmbeddedUI.framework" ]
+  }
+}

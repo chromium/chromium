@@ -2627,6 +2627,12 @@ if (!is_android) {
       "//chrome/browser/ui/views/tabs/vertical:browser_tests",
       "//chrome/browser/ui/views/toolbar:browser_tests",
       "//chrome/browser/ui/views/user_education",
+
+      # TODO(crbug.com/353332589): Depend on the views/webauthn production
+      # target directly while the webauthn browser test still live here; they
+      # will move to //chrome/browser/ui/views/webauthn test targets once that
+      # directory's modularization is finished.
+      "//chrome/browser/ui/views/webauthn",
       "//chrome/browser/ui/views/webid:browser_tests",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/waap",
@@ -7076,6 +7082,12 @@ test("unit_tests") {
       "//chrome/browser/ui/views/tabs/vertical:unit_tests",
       "//chrome/browser/ui/views/toolbar:unit_tests",
       "//chrome/browser/ui/views/user_education",
+
+      # TODO(crbug.com/353332589): Depend on the views/webauthn production
+      # target directly while the webauthn unit tests still live here; they will
+      # move to //chrome/browser/ui/views/webauthn test targets once that
+      # directory's modularization is finished.
+      "//chrome/browser/ui/views/webauthn",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/views/webid:unit_tests",
       "//chrome/browser/ui/waap:unit_tests",
