@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -125,9 +126,16 @@ bool LensOverlayHomeworkPageActionController::ShouldShow() {
     return false;
   }
 
-  views::View* const location_bar_view =
-      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
-          ->GetView(kLocationBarElementId);
+  views::View* location_bar_view = location_bar_view_tracker_.view();
+  if (!location_bar_view) {
+    location_bar_view =
+        BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+            ->GetView(kLocationBarElementId);
+    if (base::FeatureList::IsEnabled(
+            features::kLensOverlayHomeworkPageActionFocusOptimization)) {
+      location_bar_view_tracker_.SetView(location_bar_view);
+    }
+  }
   if (!location_bar_view) {
     return false;
   }
@@ -163,4 +171,7 @@ void LensOverlayHomeworkPageActionController::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
   scoped_call_to_action_lock_.reset();
+  // Reset the cached location bar view. If this tab is moved to a new
+  // window, the pointer will be re-evaluated on the next active window.
+  location_bar_view_tracker_.SetView(nullptr);
 }

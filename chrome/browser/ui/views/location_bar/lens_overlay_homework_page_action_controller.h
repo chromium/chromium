@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/view_tracker.h"
 
 class Profile;
 class ScopedCallToActionLock;
@@ -75,6 +76,10 @@ class LensOverlayHomeworkPageActionController {
   base::CallbackListSubscription tab_will_detach_subscription_;
 
   std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
+
+  // Cached pointer to the location bar view. Reset on tab detach to
+  // handle moving the tab to a new window.
+  views::ViewTracker location_bar_view_tracker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LENS_OVERLAY_HOMEWORK_PAGE_ACTION_CONTROLLER_H_
