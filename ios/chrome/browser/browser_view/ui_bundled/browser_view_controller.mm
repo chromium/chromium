@@ -883,6 +883,7 @@ bool IsFullscreenNextIAEnabled() {
 
   [self.toolbarCoordinator stop];
   self.toolbarCoordinator = nil;
+  _toolbarHandler = nil;
   [self cleanUpToolbarConstraints];
   _sideSwipeCoordinator = nil;
   [_voiceSearchController disconnect];
