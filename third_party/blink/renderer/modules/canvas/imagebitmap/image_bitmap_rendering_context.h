@@ -30,6 +30,7 @@ class ClientSharedImage;
 
 namespace blink {
 
+class CanvasNon2DResourceProvider;
 class ExceptionState;
 class ExecutionContext;
 class ImageBitmap;
