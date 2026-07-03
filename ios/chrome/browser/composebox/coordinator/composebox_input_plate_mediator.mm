@@ -780,9 +780,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
       initWithComposeboxInputItemType:ComposeboxInputItemType::
                                           kComposeboxInputItemTypeTab
-                               // TODO (crbug.com/525711987): Add the
-                               // appropriate item source.
-                               source:ComposeboxInputItemSource::kUnknown];
+                               source:ComposeboxInputItemSource::
+                                          kContextLibrary];
   item.title = title;
   item.state = ComposeboxInputItemState::kLoaded;
   base::UnguessableToken identifier = item.identifier;
