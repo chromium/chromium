@@ -11,6 +11,7 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -134,28 +135,6 @@ bool SettingsWindowFinderWin::IsLikelySettingsWindow(HWND hwnd) const {
     return false;
   }
 
-  Microsoft::WRL::ComPtr<IPropertyStore> prop_store;
-  if (FAILED(::SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&prop_store))) ||
-      !prop_store) {
-    return false;
-  }
-
-  base::win::ScopedPropVariant prop_var;
-  if (FAILED(prop_store->GetValue(PKEY_AppUserModel_ID, prop_var.Receive()))) {
-    return false;
-  }
-
-  if (prop_var.get().vt != VT_LPWSTR || !prop_var.get().pwszVal) {
-    return false;
-  }
-
-  if (!base::EqualsCaseInsensitiveASCII(
-          prop_var.get().pwszVal,
-          L"windows.immersivecontrolpanel_cw5n1h2txyewp"
-          L"!microsoft.windows.immersivecontrolpanel")) {
-    return false;
-  }
-
   base::FilePath system_dir;
   if (!base::PathService::Get(base::DIR_SYSTEM, &system_dir)) {
     return false;
@@ -166,9 +145,36 @@ bool SettingsWindowFinderWin::IsLikelySettingsWindow(HWND hwnd) const {
     return false;
   }
 
-  return base::FilePath::CompareEqualIgnoreCase(
+  bool is_app_frame = base::FilePath::CompareEqualIgnoreCase(
       path,
       system_dir.Append(FILE_PATH_LITERAL("ApplicationFrameHost.exe")).value());
+  if (!is_app_frame) {
+    return false;
+  }
+
+  // First check via PKEY_AppUserModel_ID.
+  Microsoft::WRL::ComPtr<IPropertyStore> prop_store;
+  if (FAILED(::SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&prop_store))) &&
+      prop_store) {
+    return false;
+  }
+
+  base::win::ScopedPropVariant prop_var;
+  if (FAILED(prop_store->GetValue(PKEY_AppUserModel_ID, prop_var.Receive()))) {
+    return false;
+  }
+
+  if (prop_var.get().vt == VT_LPWSTR && prop_var.get().pwszVal) {
+    std::wstring_view app_id(prop_var.get().pwszVal);
+    if (base::EqualsCaseInsensitiveASCII(
+            app_id,
+            L"windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft."
+            L"windows.immersivecontrolpanel")) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // static
@@ -185,7 +191,7 @@ SettingsWindowFinderWin::WinEventCallback(HWINEVENTHOOK hWinEventHook,
   }
 
   SettingsWindowFinderWin* finder = GetGlobalFinderInstance().get();
-  if (!finder) {
+  if (!finder || !finder->on_found_) {
     return;
   }
 
@@ -193,11 +199,8 @@ SettingsWindowFinderWin::WinEventCallback(HWINEVENTHOOK hWinEventHook,
   // the message pump of the thread that called SetWinEventHook.
   DCHECK_CALLED_ON_VALID_SEQUENCE(finder->sequence_checker_);
 
-  if (!finder->IsLikelySettingsWindow(hwnd)) {
-    return;
-  }
-
-  if (!finder->on_found_) {
+  HWND root_hwnd = ::GetAncestor(hwnd, GA_ROOT);
+  if (!finder->IsLikelySettingsWindow(root_hwnd)) {
     return;
   }
 
@@ -205,5 +208,5 @@ SettingsWindowFinderWin::WinEventCallback(HWINEVENTHOOK hWinEventHook,
   // This prevents use-after-free if the callback destroys the finder.
   WindowFoundCallback callback = std::move(finder->on_found_);
   finder->Stop();
-  std::move(callback).Run(hwnd);
+  std::move(callback).Run(root_hwnd);
 }
