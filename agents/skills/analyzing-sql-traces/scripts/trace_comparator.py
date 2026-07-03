@@ -362,7 +362,10 @@ def process_descendants_mode(args):
             args.target,
             arg_key=args.arg_key,
             arg_value=args.arg_value,
-            aggregate=args.aggregate)
+            aggregate=args.aggregate,
+            boundary_target=args.boundary_target,
+            boundary_arg_key=args.boundary_arg_key,
+            boundary_arg_value=args.boundary_arg_value)
         c_roots.extend(roots)
 
     e_roots = []
@@ -373,7 +376,10 @@ def process_descendants_mode(args):
             args.target,
             arg_key=args.arg_key,
             arg_value=args.arg_value,
-            aggregate=args.aggregate)
+            aggregate=args.aggregate,
+            boundary_target=args.boundary_target,
+            boundary_arg_key=args.boundary_arg_key,
+            boundary_arg_value=args.boundary_arg_value)
         e_roots.extend(roots)
 
     if not c_roots:
@@ -443,7 +449,10 @@ def process_window_mode(args):
             threads=set(args.threads) if args.threads else None,
             processes=set(args.processes) if args.processes else None,
             arg_key=args.arg_key,
-            arg_value=args.arg_value)
+            arg_value=args.arg_value,
+            boundary_target=args.boundary_target,
+            boundary_arg_key=args.boundary_arg_key,
+            boundary_arg_value=args.boundary_arg_value)
         if slices is None:
             continue
         c_metric_durs.append(m_dur)
@@ -482,7 +491,10 @@ def process_window_mode(args):
             threads=set(args.threads) if args.threads else None,
             processes=set(args.processes) if args.processes else None,
             arg_key=args.arg_key,
-            arg_value=args.arg_value)
+            arg_value=args.arg_value,
+            boundary_target=args.boundary_target,
+            boundary_arg_key=args.boundary_arg_key,
+            boundary_arg_value=args.boundary_arg_value)
         if slices is None:
             continue
         e_metric_durs.append(m_dur)
@@ -645,6 +657,18 @@ def main():
         "--arg-value",
         help=("Optional argument value to filter the target/metric slice "
               "(requires --arg-key)"))
+    parser.add_argument(
+        "--boundary-target",
+        help=
+        "Optional top-level boundary slice name to restrict the target slices")
+    parser.add_argument(
+        "--boundary-arg-key",
+        help=("Optional argument key to filter the boundary slice "
+              "(requires --boundary-target)"))
+    parser.add_argument(
+        "--boundary-arg-value",
+        help=("Optional argument value to filter the boundary slice "
+              "(requires --boundary-arg-key)"))
 
     args = parser.parse_args()
 
@@ -652,6 +676,14 @@ def main():
     if (args.arg_key and not args.arg_value) or (args.arg_value
                                                  and not args.arg_key):
         parser.error("--arg-key and --arg-value must be used together.")
+    if (args.boundary_arg_key and not args.boundary_arg_value) or (
+            args.boundary_arg_value and not args.boundary_arg_key):
+        parser.error(
+            "--boundary-arg-key and --boundary-arg-value must be used together."
+        )
+    if (args.boundary_arg_key
+            or args.boundary_arg_value) and not args.boundary_target:
+        parser.error("Boundary filters require specifying --boundary-target.")
     if args.mode == "descendants" and (args.threads or args.processes):
         parser.error(
             "--threads and --processes are only valid in 'window' mode.")

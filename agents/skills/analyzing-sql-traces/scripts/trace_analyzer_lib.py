@@ -424,9 +424,14 @@ def fetch_windowed_slices(
     threads: set[str] | None = None,
     processes: set[str] | None = None,
     arg_key: str | None = None,
-    arg_value: str | None = None
+    arg_value: str | None = None,
+    boundary_target: str | None = None,
+    boundary_arg_key: str | None = None,
+    boundary_arg_value: str | None = None
 ) -> tuple[dict[int, dict], float] | tuple[None, float]:
     """Queries slices overlapping the metric window on threads/processes."""
+    boundary_clause = get_boundary_clause(boundary_target, boundary_arg_key,
+                                          boundary_arg_value)
     if arg_key and arg_value:
         query = f"""
             SELECT s.ts, s.dur
@@ -440,13 +445,19 @@ def fetch_windowed_slices(
               AND (a.string_value LIKE '{arg_value}'
                    OR CAST(a.int_value AS TEXT) LIKE '{arg_value}'
                    OR CAST(a.real_value AS TEXT) LIKE '{arg_value}')
+              {boundary_clause}
             ORDER BY s.dur DESC
             LIMIT 1;
         """
     else:
-        query = (f"SELECT ts, dur FROM slice "
-                 f"WHERE name = '{metric_name}' "
-                 f"ORDER BY dur DESC LIMIT 1;")
+        query = f"""
+            SELECT s.ts, s.dur
+            FROM slice s
+            WHERE s.name = '{metric_name}'
+              {boundary_clause}
+            ORDER BY s.dur DESC
+            LIMIT 1;
+        """
     df_metric = session.query(query)
     if df_metric.empty:
         return None, 0.0

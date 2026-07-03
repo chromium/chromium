@@ -227,9 +227,6 @@ def main():
             "--threads and --processes are only valid in 'window' mode.")
     if args.mode == "window" and args.aggregate:
         parser.error("--aggregate is only valid in 'descendants' mode.")
-    if args.mode == "window" and args.boundary_target:
-        parser.error(
-            "Boundary target filtering is only valid in 'descendants' mode.")
 
     # 1. Load sessions and fetch data
     if args.mode == "descendants":
@@ -323,7 +320,10 @@ def main():
                 threads=set(args.threads) if args.threads else None,
                 processes=set(args.processes) if args.processes else None,
                 arg_key=args.arg_key,
-                arg_value=args.arg_value)
+                arg_value=args.arg_value,
+                boundary_target=args.boundary_target,
+                boundary_arg_key=args.boundary_arg_key,
+                boundary_arg_value=args.boundary_arg_value)
             if slices is None:
                 continue
             metric_durations.append(m_dur)
