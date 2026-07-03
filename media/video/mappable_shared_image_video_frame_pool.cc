@@ -1145,13 +1145,12 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   // via the raster interface for import into canvas and/or 2-copy import into
   // WebGL as well as potentially being read via the GLES interface for 1-copy
   // import into WebGL.
-  sii->UpdateSharedImage(frame_resource->sync_token,
-                         frame_resource->shared_image->mailbox());
-
   // Insert a sync_token, this is needed to make sure that the textures the
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
-  gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
+  gpu::SyncToken sync_token =
+      frame_resource->shared_image->BackingWasExternallyUpdated(
+          frame_resource->sync_token);
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 

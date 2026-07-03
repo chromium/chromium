@@ -95,7 +95,7 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
       gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   video_frame_id_ = video_frame->unique_id();
-  sync_token_ = sii->GenUnverifiedSyncToken();
+  sync_token_ = shared_image_->creation_sync_token();
 
   return {shared_image_, sync_token_, Status::kCreatedNewSharedImage};
 }
