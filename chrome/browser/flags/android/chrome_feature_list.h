@@ -354,6 +354,11 @@ inline constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
     false);
 
 inline constexpr base::FeatureParam<bool>
+    kClearDeviceSignalsPermissionOnStartup{
+        &kAndroidDeviceSignalsDisclaimer,
+        "clear_device_signals_permission_on_startup", false};
+
+inline constexpr base::FeatureParam<bool>
     kEnableAndroidSidePanelDisableAnimations(&kEnableAndroidSidePanel,
                                              "disable_animations",
                                              false);

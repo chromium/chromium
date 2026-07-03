@@ -78,6 +78,36 @@ ManagedUserProfileNoticeUI::ScreenType GetScreenTypeFromURL(const GURL& url) {
   return ManagedUserProfileNoticeUI::ScreenType::kProfilePicker;
 }
 
+base::DictValue GetSignalsDisclaimerScreenUpdateData() {
+  return base::DictValue()
+      .Set(
+          "screenType",
+          static_cast<int>(
+              ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer))
+      .Set("isModalDialog", true)
+      .Set("initialState", ManagedUserProfileNoticeHandler::State::kDisclosure)
+      .Set("profileDisclosureTitle",
+           l10n_util::GetStringUTF16(
+               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_TITLE))
+      .Set("profileDisclosureSubtitle",
+           l10n_util::GetStringUTF16(
+               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_SUBTITLE))
+      .Set(
+          "profileInformationDetails",
+          l10n_util::GetStringUTF16(
+              IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_PROFILE_INFORMATION_DETAILS))
+      .Set(
+          "deviceInformationDetails",
+          l10n_util::GetStringUTF16(
+              IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_DEVICE_INFORMATION_DETAILS))
+      .Set("continueLabel",
+           l10n_util::GetStringUTF16(
+               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CONTINUE_BUTTON_LABEL))
+      .Set("cancelLabel",
+           l10n_util::GetStringUTF16(
+               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CANCEL_BUTTON_LABEL));
+}
+
 }  // namespace
 
 ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
@@ -360,6 +390,11 @@ void ManagedUserProfileNoticeUI::Initialize(
     ManagedUserProfileNoticeUI::ScreenType type,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
+  if (type == ScreenType::kDeviceSignalsDisclaimer) {
+    InitializeForDeviceSignalsDisclaimer(browser, std::move(create_param));
+    return;
+  }
+
   auto* profile = Profile::FromWebUI(web_ui());
   bool is_school_account =
       create_param->account_info.GetAccountCapabilities()
@@ -500,36 +535,6 @@ void ManagedUserProfileNoticeUI::Initialize(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE));
   }
 
-  if (type ==
-      ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer) {
-    update_data.Set("isModalDialog", true);
-    update_data.Set("initialState",
-                    ManagedUserProfileNoticeHandler::State::kDisclosure);
-
-    update_data.Set("profileDisclosureTitle",
-                    l10n_util::GetStringUTF16(
-                        IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_TITLE));
-    update_data.Set("profileDisclosureSubtitle",
-                    l10n_util::GetStringUTF16(
-                        IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_SUBTITLE));
-    update_data.Set(
-        "profileInformationDetails",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_PROFILE_INFORMATION_DETAILS));
-    update_data.Set(
-        "deviceInformationDetails",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_DEVICE_INFORMATION_DETAILS));
-    update_data.Set(
-        "continueLabel",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CONTINUE_BUTTON_LABEL));
-    update_data.Set(
-        "cancelLabel",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CANCEL_BUTTON_LABEL));
-  }
-
   // Change the text so that the "(Recommended)" label is not shown when the
   // admin has set merging data as the default option.
   bool profile_separation_data_migration_settings_optout =
@@ -562,6 +567,22 @@ void ManagedUserProfileNoticeUI::Initialize(
 
   auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
       browser, type, std::move(create_param));
+  handler_ = handler.get();
+
+  web_ui()->AddMessageHandler(std::move(handler));
+}
+
+void ManagedUserProfileNoticeUI::InitializeForDeviceSignalsDisclaimer(
+    Browser* browser,
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
+  auto* profile = Profile::FromWebUI(web_ui());
+  content::WebUIDataSource::Update(
+      profile, chrome::kChromeUIManagedUserProfileNoticeHost,
+      GetSignalsDisclaimerScreenUpdateData());
+
+  auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
+      browser, ScreenType::kDeviceSignalsDisclaimer, std::move(create_param));
   handler_ = handler.get();
 
   web_ui()->AddMessageHandler(std::move(handler));
