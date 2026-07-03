@@ -181,6 +181,8 @@ public class NewTabAnimationLayoutUnitTest {
         when(mTabModel.getTabAt(1)).thenReturn(mNewTab);
         when(mTabModel.getTabById(CURRENT_TAB_ID)).thenReturn(mCurrentTab);
         when(mTabModel.getTabById(NEW_TAB_ID)).thenReturn(mNewTab);
+        when(mTabModel.indexOf(mCurrentTab)).thenReturn(0);
+        when(mTabModel.indexOf(mNewTab)).thenReturn(1);
         when(mCurrentTab.getId()).thenReturn(CURRENT_TAB_ID);
         mUserDataHost = new UserDataHost();
         when(mCurrentTab.getUserDataHost()).thenReturn(mUserDataHost);

@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.Tab
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.OpeningSource;
@@ -176,7 +175,7 @@ public class LocalTabGroupMutationHelper {
 
         // Update the remaining tabs. If the tab is already there, ensure its URL is up-to-date.
         // If the tab doesn't exist yet, create a new one.
-        int groupStartIndex = TabModelUtils.getTabIndexById(mTabModel, tabs.get(0).getId());
+        int groupStartIndex = mTabModel.indexOf(tabs.get(0));
         Tab parent = tabs.get(0);
         boolean wasCollapsed = mTabModel.getTabGroupCollapsed(tabGroupId);
         for (int i = 0; i < tabGroup.savedTabs.size(); i++) {

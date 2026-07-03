@@ -103,6 +103,13 @@ public class TabModelUtilsUnitTest {
     }
 
     @Test
+    public void testGetTabIndexById() {
+        assertEquals(0, TabModelUtils.getTabIndexById(mTabModel, TAB_ID));
+        assertEquals(
+                TabList.INVALID_TAB_INDEX, TabModelUtils.getTabIndexById(mTabModel, UNUSED_TAB_ID));
+    }
+
+    @Test
     public void testSelectTabById() {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
         TabModelUtils.selectTabById(mTabModelSelector, TAB_ID, TabSelectionType.FROM_USER);

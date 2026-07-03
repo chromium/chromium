@@ -434,17 +434,15 @@ public class TabModelSelectorImplTest {
                 mMockTabContentManager, regularTabModel, mIncognitoTabModel);
         MockTab tab0 = regularTabModel.addTab(0);
         MockTab tab1 = regularTabModel.addTab(1);
-        assertEquals(0, TabModelUtils.getTabIndexById(regularTabModel, tab0.getId()));
-        assertEquals(1, TabModelUtils.getTabIndexById(regularTabModel, tab1.getId()));
+        assertEquals(0, regularTabModel.indexOf(tab0));
+        assertEquals(1, regularTabModel.indexOf(tab1));
 
         for (TabObserver observer : tab1.getObservers()) {
             observer.onActivityAttachmentChanged(tab1, /* window= */ null);
         }
         verify(tabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean());
-        assertEquals(0, TabModelUtils.getTabIndexById(regularTabModel, tab0.getId()));
-        assertEquals(
-                TabModel.INVALID_TAB_INDEX,
-                TabModelUtils.getTabIndexById(regularTabModel, tab1.getId()));
+        assertEquals(0, regularTabModel.indexOf(tab0));
+        assertEquals(TabModel.INVALID_TAB_INDEX, regularTabModel.indexOf(tab1));
 
         // Simulate the tab being ungrouped.
         tab0.setTabGroupId(new Token(1, 1));
@@ -455,9 +453,7 @@ public class TabModelSelectorImplTest {
         }
         verify(tabUngrouper).ungroupTabs(any(), anyBoolean(), anyBoolean());
         assertNull(tab0.getTabGroupId());
-        assertEquals(
-                TabModel.INVALID_TAB_INDEX,
-                TabModelUtils.getTabIndexById(regularTabModel, tab0.getId()));
+        assertEquals(TabModel.INVALID_TAB_INDEX, regularTabModel.indexOf(tab0));
     }
 
     @Test

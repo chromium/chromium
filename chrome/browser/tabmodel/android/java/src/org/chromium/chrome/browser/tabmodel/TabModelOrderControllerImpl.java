@@ -91,7 +91,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                 return 0;
             }
             int currentId = currentTab.getId();
-            int currentIndex = TabModelUtils.getTabIndexById(currentModel, currentId);
+            int currentIndex = currentModel.indexOf(currentTab);
 
             // If the current tab is a pinned tab, new tabs are inserted after the last pinned tab.
             if (currentTab.getIsPinned()) {
@@ -104,8 +104,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                 // adjacent to the current tab that opened that link.
                 Tab parentTab = currentModel.getTabById(newTab.getParentId());
                 if (parentTab != null && currentTab != parentTab) {
-                    int parentTabIndex =
-                            TabModelUtils.getTabIndexById(currentModel, parentTab.getId());
+                    int parentTabIndex = currentModel.indexOf(parentTab);
                     return parentTabIndex + 1;
                 }
                 return currentIndex + 1;

@@ -561,7 +561,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         for (Tab tab : tabs) tabIds.add(tab.getId());
         assert tabIds.contains(tabToActivate.getId()) : "tabToActivate not found in tab list";
         clearMultiSelection(/* notifyObservers= */ false);
-        setIndex(TabModelUtils.getTabIndexById(this, tabToActivate.getId()));
+        setIndex(indexOf(tabToActivate));
         setTabsMultiSelected(tabIds, /* isSelected= */ true);
     }
 

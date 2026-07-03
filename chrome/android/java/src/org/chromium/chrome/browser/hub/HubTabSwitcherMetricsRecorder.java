@@ -88,7 +88,7 @@ public class HubTabSwitcherMetricsRecorder {
                 }
             }
         } else {
-            int currentIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
+            int currentIndex = tabModel.indexOf(tab);
             if (currentIndex == mIndexInModelWhenSwitched) {
                 // TabModelImpl logs this action only when a different index is set within a
                 // TabModelImpl. If we switch between normal tab model and incognito tab model and

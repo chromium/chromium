@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -107,11 +106,7 @@ public class ChromeDragDropUtils {
         if (doesBelongToCurrentModel(isSourceIncognito, selector)) {
             Tab destTab = selector.getCurrentTab();
             assumeNonNull(destTab);
-            destIndex =
-                    TabModelUtils.getTabIndexById(
-                                    selector.getModel(destTab.isIncognitoBranded()),
-                                    destTab.getId())
-                            + 1;
+            destIndex = selector.getModel(destTab.isIncognitoBranded()).indexOf(destTab) + 1;
         } else {
             destIndex = selector.getModel(isSourceIncognito).getCount();
             Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();

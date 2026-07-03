@@ -380,8 +380,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                                 intent, IntentHandler.EXTRA_PARENT_TAB_ID, parentId);
                 TabModelSelector selector = mTabModelSelectorSupplier.get();
                 parent = selector != null ? selector.getTabById(parentId) : null;
-                assert TabModelUtils.getTabIndexById(mTabModel, assignedTabId)
-                        == TabModel.INVALID_TAB_INDEX;
+                assert mTabModel.getTabById(assignedTabId) == null;
                 tab =
                         TabBuilder.createLiveTab(getProfile(), !openInForeground)
                                 .setId(assignedTabId)

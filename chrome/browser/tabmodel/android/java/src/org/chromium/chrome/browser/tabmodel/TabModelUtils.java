@@ -43,15 +43,9 @@ public class TabModelUtils {
      * @return Specified {@link Tab} index or {@link TabList#INVALID_TAB_INDEX} if the {@link Tab}
      *     is not found
      */
-    public static int getTabIndexById(TabList model, int tabId) {
-        int index = 0;
-        for (Tab tab : model) {
-            assert tab != null : "getTabAt() shouldn't return a null Tab from TabModel.";
-            if (tab != null && tab.getId() == tabId) return index;
-            index++;
-        }
-
-        return TabModel.INVALID_TAB_INDEX;
+    public static int getTabIndexById(TabModel model, int tabId) {
+        Tab tab = model.getTabById(tabId);
+        return tab == null ? TabModel.INVALID_TAB_INDEX : model.indexOf(tab);
     }
 
     /**

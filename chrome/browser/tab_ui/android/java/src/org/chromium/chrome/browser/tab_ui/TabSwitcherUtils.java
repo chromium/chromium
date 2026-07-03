@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -99,12 +98,12 @@ public class TabSwitcherUtils {
         if (tabModelSelector == null) return;
 
         TabModel tabModel = tabModelSelector.getModel(/* incognito= */ false);
-        int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
+        Tab tab = tabModel.getTabById(tabId);
         // If the backend sends us a non-existent tab ID, we should safely ignore.
-        if (tabIndex == TabModel.INVALID_TAB_INDEX) return;
+        if (tab == null) return;
 
         tabModelSelector.selectModel(/* incognito= */ false);
-        tabModel.setIndex(tabIndex, TabSelectionType.FROM_USER);
+        tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
 
         // If the tab-switcher is displayed, hide it to show the tab.
         if (layoutManager != null && layoutManager.isLayoutVisible(LayoutType.HUB)) {

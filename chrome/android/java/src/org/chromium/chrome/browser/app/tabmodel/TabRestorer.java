@@ -522,7 +522,7 @@ class TabRestorer {
 
         if (isActiveTab && tab != null) {
             TabModel model = mTabModelSelector.getModel(mIncognito);
-            TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tab.getId()));
+            TabModelUtils.setIndex(model, model.indexOf(tab));
             mDelegate.onActiveTabRestored(mIncognito);
         }
         return hasEmptyBuffer ? null : tab;

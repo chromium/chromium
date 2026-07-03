@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -255,7 +254,7 @@ public class SearchActivityUtils {
         int tabId = tabWindowInfo.tab.getId();
 
         if (tabModelSelector.getCurrentModel() == tabModel) {
-            int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
+            int tabIndex = tabModel.indexOf(tabWindowInfo.tab);
             if (tabIndex == TabModel.INVALID_TAB_INDEX) return;
             tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
             if (onTabSwitched != null) {

@@ -2831,21 +2831,21 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
                 }
 
-                int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabIdToBringToFront);
-                if (tabIndex == TabModel.INVALID_TAB_INDEX) {
+                Tab tabToBringToFront = tabModel.getTabById(tabIdToBringToFront);
+                if (tabToBringToFront == null) {
                     TabModel otherModel = getTabModelSelector().getModel(!tabModel.isIncognito());
-                    tabIndex = TabModelUtils.getTabIndexById(otherModel, tabIdToBringToFront);
-                    if (tabIndex != TabModel.INVALID_TAB_INDEX) {
+                    tabToBringToFront = otherModel.getTabById(tabIdToBringToFront);
+                    if (tabToBringToFront != null) {
                         getTabModelSelector().selectModel(otherModel.isIncognito());
-                        TabModelUtils.setIndex(otherModel, tabIndex);
-                        resultTab = otherModel.getTabAt(tabIndex);
+                        TabModelUtils.setIndex(otherModel, otherModel.indexOf(tabToBringToFront));
+                        resultTab = tabToBringToFront;
                     } else {
                         Log.e(TAG, "Failed to bring tab to front because it doesn't exist.");
                         return null;
                     }
                 } else {
-                    TabModelUtils.setIndex(tabModel, tabIndex);
-                    resultTab = tabModel.getTabAt(tabIndex);
+                    TabModelUtils.setIndex(tabModel, tabModel.indexOf(tabToBringToFront));
+                    resultTab = tabToBringToFront;
                 }
 
                 LayoutManagerChrome layoutManager = getLayoutManager();
@@ -2879,16 +2879,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 Tab.INVALID_TAB_ID);
                 if (tabId != Tab.INVALID_TAB_ID) {
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabId);
-                    int matchingTabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
-                    if (matchingTabIndex != TabModel.INVALID_TAB_INDEX) {
-                        Tab tab = tabModel.getTabAt(matchingTabIndex);
+                    Tab tab = tabModel.getTabById(tabId);
+                    if (tab != null) {
                         String spec = tab.getUrl().getSpec();
                         if (spec.equals(url)
                                 || spec.equals(
                                         IntentUtils.safeGetStringExtra(
                                                 intent,
                                                 TabOpenType.REUSE_TAB_ORIGINAL_URL_STRING))) {
-                            tabModel.setIndex(matchingTabIndex, TabSelectionType.FROM_USER);
+                            tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
                             tab.loadUrl(loadUrlParams);
                             resultTab = tab;
                         } else {

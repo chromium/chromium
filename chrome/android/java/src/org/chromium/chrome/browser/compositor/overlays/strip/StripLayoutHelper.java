@@ -3492,11 +3492,10 @@ public class StripLayoutHelper
         if (tab == null || tab.isDying() || mModel == null) return;
         RecordUserAction.record("MobileTabSwitched.TabletTabStrip");
         recordTabSwitchTimeHistogram();
-
-        int newIndex = TabModelUtils.getTabIndexById(mModel, tab.getTabId());
+        Tab modelTab = mModel.getTabById(tab.getTabId());
         // Early return, since placeholder tabs are known to not have tab ids.
-        if (newIndex == Tab.INVALID_TAB_ID) return;
-        TabModelUtils.setIndex(mModel, newIndex);
+        if (modelTab == null) return;
+        TabModelUtils.setIndex(mModel, mModel.indexOf(modelTab));
     }
 
     /**
