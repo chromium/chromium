@@ -1061,6 +1061,8 @@ component("platform") {
     "graphics/gpu/webgpu_mailbox_buffer.h",
     "graphics/gpu/webgpu_mailbox_texture.cc",
     "graphics/gpu/webgpu_mailbox_texture.h",
+    "graphics/gpu/webgpu_recyclable_resource_provider.cc",
+    "graphics/gpu/webgpu_recyclable_resource_provider.h",
     "graphics/gpu/webgpu_resource_provider_cache.cc",
     "graphics/gpu/webgpu_resource_provider_cache.h",
     "graphics/gpu/webgpu_swap_buffer_provider.cc",

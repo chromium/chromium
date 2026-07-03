@@ -17,10 +17,10 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_recyclable_resource_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -408,7 +408,7 @@ ExternalTexture CreateExternalTexture(
     return external_texture;
   }
 
-  CanvasNon2DResourceProvider* resource_provider =
+  WebGpuRecyclableResourceProvider* resource_provider =
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 

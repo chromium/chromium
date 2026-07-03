@@ -12,10 +12,10 @@
 #include "components/viz/test/test_raster_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_recyclable_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 
 namespace blink {
@@ -54,7 +54,7 @@ void WebGPURecyclableResourceCacheTest::TearDown() {
 
 TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
   auto size = gfx::Size(10, 10);
-  Vector<CanvasNon2DResourceProvider*> returned_resource_providers;
+  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
@@ -90,7 +90,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
   auto size1 = gfx::Size(10, 10);
   auto size2 = gfx::Size(20, 20);
 
-  Vector<CanvasNon2DResourceProvider*> returned_resource_providers;
+  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
@@ -134,7 +134,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   auto size1 = gfx::Size(10, 10);
   auto size2 = gfx::Size(20, 20);
 
-  Vector<CanvasNon2DResourceProvider*> returned_resource_providers;
+  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
@@ -204,7 +204,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
 
 TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
   auto resource_size = gfx::Size(10, 10);
-  Vector<CanvasNon2DResourceProvider*> returned_resource_providers;
+  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
   // The loop count for CleanUpResources before the resource gets cleaned up.
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
@@ -243,7 +243,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
 
 TEST_F(WebGPURecyclableResourceCacheTest, ReuseBeforeCleanUp) {
   auto resource_size = gfx::Size(10, 10);
-  Vector<CanvasNon2DResourceProvider*> returned_resource_providers;
+  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
   // The loop count for CleanUpResources before the resource gets cleaned up.
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
