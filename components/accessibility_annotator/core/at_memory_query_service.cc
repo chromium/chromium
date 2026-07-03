@@ -700,10 +700,8 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
   }
 
   if (local_data_types.empty() || !data_provider_) {
-    std::vector<MemorySearchResult> filtered_remote_results =
-        FilterResults(remote_results, filter_words);
     std::vector<MemorySearchResult> ranked_results =
-        RankResults(/*local_results=*/{}, std::move(filtered_remote_results));
+        RankResults(/*local_results=*/{}, std::move(remote_results));
     DeduplicateResults(ranked_results);
     callback.Run(MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
                                      std::move(ranked_results)));

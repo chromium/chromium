@@ -57,8 +57,9 @@ class AtMemoryQueryService : public KeyedService {
       personal_context::FetchContextResult result);
 
   // Called when the local data provider finishes retrieving local memory
-  // entries specified in the fetch plan. It merges these local entries with the
-  // remote results and reports the final merged results.
+  // entries specified in the fetch plan. It filters these local entries,
+  // ranks them with the remote results, deduplicates them, and reports the
+  // final results via `callback`.
   void OnLocalDataRetrieved(
       base::RepeatingCallback<void(MemorySearchResults)> callback,
       std::vector<MemorySearchResult> remote_results,
