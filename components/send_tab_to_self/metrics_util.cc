@@ -176,7 +176,7 @@ void RecordNotificationThrottled() {
 }
 
 void RecordAutoOpenOutcome(AutoOpenOutcome outcome) {
-  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.AutoOpenOutcome",
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.AutoOpenOutcome2",
                                 outcome);
 }
 

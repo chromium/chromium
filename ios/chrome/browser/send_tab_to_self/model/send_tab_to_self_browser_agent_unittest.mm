@@ -9,9 +9,11 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -317,6 +319,7 @@ class SendTabToSelfBrowserAgentAutoOpenTest
 
 TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
        ShouldAutoOpenNewEntriesInBackgroundIfActive) {
+  base::HistogramTester histogram_tester;
   web::WebState* web_state = AppendNewWebState(GURL(kBlankURL));
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
@@ -334,10 +337,15 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
   [mock_scene_commands_ verify];
   EXPECT_TRUE(model_->GetEntryByGUID(entry->GetGUID())->IsOpened());
   EXPECT_EQ(1UL, infobar_manager->infobars().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
 }
 
 TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
        ShouldNotAutoOpenNewEntriesIfNotActive) {
+  base::HistogramTester histogram_tester;
   AppendNewWebState(GURL(kBlankURL),
                     /*activate=*/true, /*is_visible=*/false);
 
@@ -349,10 +357,15 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
 
   [mock_scene_commands_ verify];
   EXPECT_FALSE(model_->GetEntryByGUID(entry->GetGUID())->IsOpened());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 1);
 }
 
 TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
        ShouldAutoOpenPendingEntriesInBackgroundOnActivation) {
+  base::HistogramTester histogram_tester;
   const send_tab_to_self::SendTabToSelfEntry* entry1 = model_->AddEntryRemotely(
       GURL("https://www.google.com/"), "title", kDeviceID,
       send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
@@ -375,6 +388,14 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
   EXPECT_TRUE(model_->GetEntryByGUID(entry2->GetGUID())->IsOpened());
   EXPECT_EQ(1UL,
             InfoBarManagerImpl::FromWebState(web_state)->infobars().size());
+
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 2);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation,
+      2);
 }
 
 // Tests that SendTabToSelfTabCardLabelData is attached when the tab is loaded

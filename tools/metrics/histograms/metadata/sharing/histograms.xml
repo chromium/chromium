@@ -393,7 +393,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SendTabToSelf.AutoOpenOutcome"
+<histogram name="Sharing.SendTabToSelf.AutoOpenOutcome2"
     enum="SendTabToSelfAutoOpenOutcome" expires_after="2027-03-30">
   <owner>ankushkush@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>

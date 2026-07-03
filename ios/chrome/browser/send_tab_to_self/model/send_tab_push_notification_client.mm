@@ -159,6 +159,9 @@ void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
         send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
   }
 
+  send_tab_to_self::RecordAutoOpenOutcome(
+      send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification);
+
   if (!IsProvisionalNotificationAlertEnabled()) {
     return;
   }

@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler_test_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -19,6 +20,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
@@ -115,6 +117,7 @@ class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(AndroidNotificationHandlerTest,
        ShouldAutoOpenNewEntriesInBackgroundIfActive) {
+  base::HistogramTester histogram_tester;
   // Attach the tab model to simulate an active browser window.
   TabModelList::AddTabModel(tab_model_.get());
 
@@ -141,11 +144,16 @@ TEST_F(AndroidNotificationHandlerTest,
   // Verify that the model was notified to mark the entry as opened.
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
 
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+
   // Clean up the tab model from the global list.
   TabModelList::RemoveTabModel(tab_model_.get());
 }
 
 TEST_F(AndroidNotificationHandlerTest, ShouldNotAutoOpenNewEntriesIfNotActive) {
+  base::HistogramTester histogram_tester;
   // Do NOT add tab_model_ to TabModelList (simulating Chrome running in
   // background or not started).
   const SendTabToSelfEntry* entry =
@@ -168,10 +176,14 @@ TEST_F(AndroidNotificationHandlerTest, ShouldNotAutoOpenNewEntriesIfNotActive) {
 
   // Verify that the entry is NOT marked as opened yet.
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                      AutoOpenOutcome::kUnopenedImmediately, 1);
 }
 
 TEST_F(AndroidNotificationHandlerTest,
        ShouldAutoOpenPendingEntriesInBackgroundOnActivation) {
+  base::HistogramTester histogram_tester;
   // Simulate multiple unread entries stored in the model.
   const SendTabToSelfEntry* entry1 =
       model()->AddEntryRemotely(GURL("https://www.google.com/"), "Google",
@@ -189,8 +201,8 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   // Expect existing system notifications for both pending entries to be hidden.
   EXPECT_CALL(*handler(), HideNotification(guid1));
-  EXPECT_CALL(*handler(), HideNotification(guid2));
   // Expect the message banner to be displayed for the opened entries.
+  EXPECT_CALL(*handler(), HideNotification(guid2));
   EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
 
   // Adding the tab model triggers OnTabModelAdded which executes auto-open on
@@ -203,12 +215,17 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_TRUE(model()->GetEntryByGUID(guid1)->IsOpened());
   EXPECT_TRUE(model()->GetEntryByGUID(guid2)->IsOpened());
 
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation, 2);
+
   // Clean up the tab model.
   TabModelList::RemoveTabModel(tab_model_.get());
 }
 
 TEST_F(AndroidNotificationHandlerTest,
        ShouldNotAutoOpenInOffTheRecordTabModel) {
+  base::HistogramTester histogram_tester;
   // Create an OffTheRecord (incognito) tab model.
   TestTabModel otr_tab_model(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
@@ -240,11 +257,15 @@ TEST_F(AndroidNotificationHandlerTest,
   // Verify that the entry is NOT marked as opened.
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
 
+  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                      AutoOpenOutcome::kUnopenedImmediately, 1);
+
   // Clean up the OTR tab model.
   TabModelList::RemoveTabModel(&otr_tab_model);
 }
 
 TEST_F(AndroidNotificationHandlerTest, ShouldEnqueueMessageBannerOnAutoOpen) {
+  base::HistogramTester histogram_tester;
   // Attach the tab model to make it active.
   TabModelList::AddTabModel(tab_model_.get());
 
@@ -265,6 +286,10 @@ TEST_F(AndroidNotificationHandlerTest, ShouldEnqueueMessageBannerOnAutoOpen) {
 
   // Verify that the entry is marked as opened.
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
 
   // Clean up the tab model.
   TabModelList::RemoveTabModel(tab_model_.get());

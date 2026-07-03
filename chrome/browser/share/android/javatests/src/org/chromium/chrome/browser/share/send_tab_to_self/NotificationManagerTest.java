@@ -63,5 +63,6 @@ public class NotificationManagerTest {
         verify(mBridgeMock)
                 .markEntryActivated(
                         any(), eq(guid), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
+        verify(mMetricsMock).recordNotificationOpened();
     }
 }

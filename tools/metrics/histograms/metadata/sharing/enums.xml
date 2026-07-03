@@ -92,9 +92,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SendTabToSelfAutoOpenOutcome) -->
 
 <enum name="SendTabToSelfAutoOpenOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Marked as pending"/>
-  <int value="2" label="Opened pending notification"/>
+  <int value="0" label="Unopened immediately (no window or in background)"/>
+  <int value="1" label="First tab opened in foreground (Desktop)"/>
+  <int value="2" label="Tabs opened immediately in background"/>
+  <int value="3" label="Tabs opened upon browser activation"/>
+  <int value="4" label="Tab opened via notification click"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:AutoOpenOutcome) -->

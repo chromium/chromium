@@ -154,12 +154,15 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
   if (target_web_contents) {
     for (const SendTabToSelfEntry& entry : new_entries) {
       OpenEntryInBackgroundTab(entry, *target_web_contents);
+      RecordAutoOpenOutcome(
+          AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
     }
     ShowMessageBanner(new_entries.back().GetDeviceName(), target_web_contents);
   } else {
     // Otherwise, show a standard system notification.
     for (const SendTabToSelfEntry& entry : new_entries) {
       ShowNotification(entry);
+      RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
     }
   }
 }
@@ -244,6 +247,8 @@ void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
   for (const SendTabToSelfEntry* entry : pending_entries) {
     OpenEntryInBackgroundTab(*entry, *target_web_contents);
     HideNotification(entry->GetGUID());
+    RecordAutoOpenOutcome(
+        AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation);
   }
 
   if (!pending_entries.empty()) {

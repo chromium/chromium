@@ -136,8 +136,16 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
     if (web_state && web_state->IsVisible()) {
       for (const send_tab_to_self::SendTabToSelfEntry* entry : new_entries) {
         OpenEntryInBackgroundTab(entry);
+        send_tab_to_self::RecordAutoOpenOutcome(
+            send_tab_to_self::AutoOpenOutcome::
+                kTabsOpenedImmediatelyInBackground);
       }
       DisplayInfoBar(web_state, new_entries.back());
+    } else {
+      for (size_t ii = 0; ii < new_entries.size(); ++ii) {
+        send_tab_to_self::RecordAutoOpenOutcome(
+            send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately);
+      }
     }
     return;
   }
@@ -331,6 +339,9 @@ void SendTabToSelfBrowserAgent::CheckAndOpenPendingEntriesIfBrowserVisible() {
 
   for (const send_tab_to_self::SendTabToSelfEntry* entry : pending_entries) {
     OpenEntryInBackgroundTab(entry);
+    send_tab_to_self::RecordAutoOpenOutcome(
+        send_tab_to_self::AutoOpenOutcome::
+            kTabsOpenedInBackgroundUponActivation);
   }
   DisplayInfoBar(web_state, pending_entries.back());
 }

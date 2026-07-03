@@ -77,10 +77,28 @@ void RecordNotificationThrottled();
 //   org.chromium.chrome.browser.share.send_tab_to_self)
 // LINT.IfChange(AutoOpenOutcome)
 enum class AutoOpenOutcome {
-  kSuccess = 0,
-  kPending = 1,
-  kOpenedPending = 2,
-  kMaxValue = kOpenedPending,
+  // Tab(s) received but could not be opened immediately. This happens when:
+  // - Desktop: No active browser window is available.
+  // - Android: The app is in the background (a system notification is shown).
+  // - iOS: The app is in the background or the active tab is not visible (e.g.,
+  //   user is in the Tab Grid).
+  kUnopenedImmediately = 0,
+
+  // Tab(s) opened immediately upon receipt (browser was active).
+  kTabOpenedInForeground = 1,  // Desktop only (single tab).
+  // Desktop (subsequent tabs) & Mobile (all tabs).
+  kTabsOpenedImmediatelyInBackground = 2,
+
+  // Tab(s) opened delayed (browser was inactive/backgrounded/closed when
+  // received). Opened when window became available (Desktop) or app
+  // foregrounded (Mobile).
+  kTabsOpenedInBackgroundUponActivation = 3,
+
+  // Tab opened via explicit user interaction, i.e. Android/iOS notification
+  // click.
+  kTabOpenedViaNotification = 4,
+
+  kMaxValue = kTabOpenedViaNotification,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfAutoOpenOutcome)
 

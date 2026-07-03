@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -137,6 +139,7 @@ class SendTabPushNotificationClientTest : public PlatformTest {
 };
 
 TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
+  base::HistogramTester histogram_tester;
   // Add an entry to the fake model.
   const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
       GURL("https://www.example.com"), "title", "device",
@@ -162,14 +165,22 @@ TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
   EXPECT_EQ(guid, model_->last_activated_guid());
   EXPECT_EQ(model_->last_activated_entry_point(),
             send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
 }
 
 TEST_F(SendTabPushNotificationClientTest,
        TestNotificationInteraction_NotSendTabNotification) {
+  base::HistogramTester histogram_tester;
   bool handle_interaction = client_->HandleNotificationInteraction(
       MockRequestResponse(/*is_send_tab_notification=*/false));
 
   // Check destination URL is not loaded.
   OCMReject([application_handler_ openURLInNewTab:[OCMArg any]]);
   EXPECT_FALSE(handle_interaction);
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    0);
 }

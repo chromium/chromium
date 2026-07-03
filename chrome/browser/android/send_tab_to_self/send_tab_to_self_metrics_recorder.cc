@@ -41,6 +41,7 @@ static void JNI_SendTabToSelfMetricsRecorder_RecordHasScrollPositionOnOpened(
 static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationOpened(
     JNIEnv* env) {
   RecordNotificationOpened();
+  RecordAutoOpenOutcome(AutoOpenOutcome::kTabOpenedViaNotification);
 }
 
 static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationDismissed(
