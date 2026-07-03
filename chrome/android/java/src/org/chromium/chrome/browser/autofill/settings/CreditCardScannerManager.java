@@ -15,8 +15,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
 import org.chromium.ui.base.IntentRequestTracker;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -84,18 +86,21 @@ public class CreditCardScannerManager implements CreditCardScanner.Delegate {
     }
 
     /** Used to identify which fields were filled by the credit card scanner. */
-    public enum FieldType {
-        UNKNOWN,
-        NUMBER,
-        NAME,
-        MONTH,
-        YEAR
+    @IntDef({FieldType.UNKNOWN, FieldType.NUMBER, FieldType.NAME, FieldType.MONTH, FieldType.YEAR})
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    public @interface FieldType {
+        int UNKNOWN = 0;
+        int NUMBER = 1;
+        int NAME = 2;
+        int MONTH = 3;
+        int YEAR = 4;
     }
 
     private final CreditCardScanner mScanner;
     private final Delegate mDelegate;
     private @ScanResult int mScanResult;
-    private final Set<FieldType> mFieldsFilledByScanner;
+    private final Set<@FieldType Integer> mFieldsFilledByScanner;
     private boolean mScanResultLogged;
 
     public CreditCardScannerManager(Delegate delegate) {
@@ -159,7 +164,7 @@ public class CreditCardScannerManager implements CreditCardScanner.Delegate {
      *
      * @param field The field that was edited.
      */
-    public void fieldEdited(FieldType field) {
+    public void fieldEdited(@FieldType int field) {
         if (!canScan()) {
             return;
         }
@@ -218,7 +223,7 @@ public class CreditCardScannerManager implements CreditCardScanner.Delegate {
         mScanResult = result;
     }
 
-    public Set<FieldType> getFieldsFilledByScannerForTesting() {
+    public Set<@FieldType Integer> getFieldsFilledByScannerForTesting() {
         return mFieldsFilledByScanner;
     }
 }

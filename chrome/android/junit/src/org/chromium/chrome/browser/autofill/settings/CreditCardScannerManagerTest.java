@@ -191,7 +191,7 @@ public class CreditCardScannerManagerTest {
     public void onFieldEditToScannedField() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
         manager.setScanResultForTesting(ScanResult.SCANNED_WITHOUT_ADDITIONAL_USER_EDITS);
-        FieldType field = FieldType.NUMBER;
+        @FieldType int field = FieldType.NUMBER;
         manager.getFieldsFilledByScannerForTesting().add(field);
 
         manager.fieldEdited(field);
@@ -272,7 +272,7 @@ public class CreditCardScannerManagerTest {
         manager.onScanCompleted(
                 /* cardholderName= */ "", cardNumber, /* expirationMonth= */ 0, expirationYear);
 
-        Set<FieldType> fieldTypes = manager.getFieldsFilledByScannerForTesting();
+        Set<@FieldType Integer> fieldTypes = manager.getFieldsFilledByScannerForTesting();
 
         // Only fields populated with real values (i.e. card number and expiration year) should be
         // in the set as fields filled by the scanner.
