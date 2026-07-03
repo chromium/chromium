@@ -243,7 +243,9 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   SkAlphaType GetAlphaType() const { return alpha_type_; }
   gfx::Size Size() const { return size_; }
 
-  void FlushIfRecordingLimitExceeded();
+  size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
+  size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
+  bool clear_frame() const { return clear_frame_; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;

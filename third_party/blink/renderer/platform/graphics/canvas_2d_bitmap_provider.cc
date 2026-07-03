@@ -154,17 +154,6 @@ void Canvas2DBitmapProvider::SetRecorder(
   recorder_ = std::move(recorder);
 }
 
-void Canvas2DBitmapProvider::FlushIfRecordingLimitExceeded() {
-  if (IsPrinting() && clear_frame_) {
-    return;
-  }
-  if (Recorder().ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
-      Recorder().ReleasableImageBytesUsed() > max_pinned_image_bytes_)
-      [[unlikely]] {
-    Flush(FlushReason::kOther);
-  }
-}
-
 scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DBitmapProvider::Snapshot");

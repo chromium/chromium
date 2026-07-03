@@ -100,7 +100,9 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
 
-  void FlushIfRecordingLimitExceeded();
+  size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
+  size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
+  bool clear_frame() const { return clear_frame_; }
 
   const MemoryManagedPaintRecorder& Recorder() const { return *recorder_; }
   MemoryManagedPaintRecorder& Recorder() { return *recorder_; }

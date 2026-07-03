@@ -103,6 +103,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
 
+  void FlushIfRecordingLimitExceeded();
+
   sk_sp<PaintFilter> StateGetFilter() final;
 
   bool HasAlpha() const final { return CreationAttributes().alpha; }

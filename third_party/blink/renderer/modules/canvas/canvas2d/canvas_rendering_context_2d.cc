@@ -473,15 +473,10 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     return nullptr;
   }
 
-  if (shared_image_provider_) {
+  if (shared_image_provider_ || bitmap_provider_) {
     if (layer_count_ == 0) [[likely]] {
       // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-      shared_image_provider_->FlushIfRecordingLimitExceeded();
-    }
-  } else if (bitmap_provider_) {
-    if (layer_count_ == 0) [[likely]] {
-      // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-      bitmap_provider_->FlushIfRecordingLimitExceeded();
+      FlushIfRecordingLimitExceeded();
     }
   } else {
     // If we have no provider, try creating one.
@@ -549,10 +544,35 @@ void CanvasRenderingContext2D::WillDraw(
   // Always draw everything during printing.
   if (layer_count_ == 0) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    if (shared_image_provider_) {
-      shared_image_provider_->FlushIfRecordingLimitExceeded();
-    } else if (bitmap_provider_) {
-      bitmap_provider_->FlushIfRecordingLimitExceeded();
+    FlushIfRecordingLimitExceeded();
+  }
+}
+
+void CanvasRenderingContext2D::FlushIfRecordingLimitExceeded() {
+  if (shared_image_provider_) {
+    if (shared_image_provider_->IsPrinting() &&
+        shared_image_provider_->clear_frame()) {
+      return;
+    }
+    const MemoryManagedPaintRecorder* recorder = Recorder();
+    CHECK(recorder);
+    if (recorder->ReleasableOpBytesUsed() >
+            shared_image_provider_->max_recorded_op_bytes() ||
+        recorder->ReleasableImageBytesUsed() >
+            shared_image_provider_->max_pinned_image_bytes()) [[unlikely]] {
+      FlushCanvas(FlushReason::kOther);
+    }
+  } else if (bitmap_provider_) {
+    if (bitmap_provider_->IsPrinting() && bitmap_provider_->clear_frame()) {
+      return;
+    }
+    const MemoryManagedPaintRecorder* recorder = Recorder();
+    CHECK(recorder);
+    if (recorder->ReleasableOpBytesUsed() >
+            bitmap_provider_->max_recorded_op_bytes() ||
+        recorder->ReleasableImageBytesUsed() >
+            bitmap_provider_->max_pinned_image_bytes()) [[unlikely]] {
+      FlushCanvas(FlushReason::kOther);
     }
   }
 }

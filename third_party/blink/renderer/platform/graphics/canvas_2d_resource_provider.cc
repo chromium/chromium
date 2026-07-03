@@ -182,17 +182,6 @@ void Canvas2DResourceProvider::SetRecorder(
   DisableLineDrawingAsPathsIfNecessary();
 }
 
-void Canvas2DResourceProvider::FlushIfRecordingLimitExceeded() {
-  if (IsPrinting() && clear_frame_) {
-    return;
-  }
-  if (Recorder().ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
-      Recorder().ReleasableImageBytesUsed() > max_pinned_image_bytes_)
-      [[unlikely]] {
-    Flush(FlushReason::kOther);
-  }
-}
-
 void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
   resource_recycling_enabled_ = value;
   if (!resource_recycling_enabled_) {
