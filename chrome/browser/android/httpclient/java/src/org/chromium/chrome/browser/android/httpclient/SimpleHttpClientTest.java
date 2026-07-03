@@ -11,7 +11,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,8 +21,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.android.httpclient.SimpleHttpClient.HttpResponse;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -40,8 +39,6 @@ import java.util.concurrent.TimeoutException;
 public class SimpleHttpClientTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/simple.html";
 
-    @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
-
     private Context mContext;
     private EmbeddedTestServer mTestServer;
     private SimpleHttpClient mHttpClient;
@@ -54,6 +51,7 @@ public class SimpleHttpClientTest {
 
     @Before
     public void setUp() throws ExecutionException {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mContext = ContextUtils.getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(mContext);
         mLastAcceptedResponse = null;
