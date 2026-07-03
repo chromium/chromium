@@ -41,7 +41,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.AppCreationFailureReason;
 import org.chromium.components.payments.CSPChecker;
@@ -88,7 +87,6 @@ public class AndroidPaymentAppFinderUnitTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
     @Mock private WebPaymentsWebDataService mWebPaymentsWebDataService;
     @Mock private PaymentManifestDownloader mPaymentManifestDownloader;
@@ -104,6 +102,7 @@ public class AndroidPaymentAppFinderUnitTest {
 
     @BeforeClass
     public static void setupSuite() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         sActivityTestRule.launchActivity(null);
     }
 

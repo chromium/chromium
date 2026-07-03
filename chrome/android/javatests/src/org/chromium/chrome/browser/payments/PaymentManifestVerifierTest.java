@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentManifestDownloader;
@@ -96,7 +95,6 @@ public class PaymentManifestVerifierTest {
     public static final Signature BOB_PAY_SIGNATURE = new Signature("01020304050607080900");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
     @Mock private WebPaymentsWebDataService mWebDataService;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;

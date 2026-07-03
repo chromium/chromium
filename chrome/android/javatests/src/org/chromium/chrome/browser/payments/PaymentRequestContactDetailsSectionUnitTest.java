@@ -8,7 +8,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,9 +18,9 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.payments.ui.ContactDetailsSection;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,6 @@ import java.util.List;
 /** Tests for the PaymentRequest ContactDetailsSection class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PaymentRequestContactDetailsSectionUnitTest {
-    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
-
     private ContactEditor mContactEditor;
     private ContactDetailsSection mContactDetailsSection;
 
@@ -51,6 +49,11 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         autofillProfiles,
                         mContactEditor,
                         null);
+    }
+
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
     }
 
     /** Tests the creation of the contact list, with most complete first. */
