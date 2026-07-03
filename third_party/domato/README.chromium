@@ -1,8 +1,8 @@
 Name: Domato
 URL: https://github.com/googleprojectzero/domato/
 Version: N/A
-Date: 2024-08-01
-Revision: 739329a915173ab001880ec313659c3125a1c8fe
+Date: 2024-11-26
+Revision: fadff396cc45d521cc594d3e2396e27e887b1963
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
