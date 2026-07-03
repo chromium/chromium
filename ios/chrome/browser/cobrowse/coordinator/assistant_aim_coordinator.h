@@ -12,8 +12,16 @@
 // Coordinator for the "AI Mode" flow.
 @interface AssistantAIMCoordinator : ChromeCoordinator
 
+// Starts the coordinator and specifies whether to present minimized.
+- (void)startInMinimizedState:(BOOL)shouldStartInMinimized;
+
 // Sets the visibility of the assistant without stopping the coordinator.
 - (void)setVisible:(BOOL)visible;
+
+// Sets the visibility of the assistant without stopping the coordinator.
+// Passing true to `inMinimizedState` will cause the assistant to open in the
+// minimized form.
+- (void)setVisible:(BOOL)visible inMinimizedState:(BOOL)minimized;
 
 @end
 

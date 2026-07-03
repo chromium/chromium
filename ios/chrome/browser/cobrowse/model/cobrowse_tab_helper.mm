@@ -79,7 +79,7 @@ void CobrowseTabHelper::DidStartNavigation(
 
   if (delegate_->CanShowAssistantForWebState(web_state)) {
     delegate_->ConfigureAssistantContextForWebState(web_state);
-    [scene_handler_ showAssistant];
+    [scene_handler_ showAssistantInMinimizedState:YES];
     delegate_->SetSessionActive(true);
   }
 }

@@ -181,6 +181,9 @@ enum class TabGridOpeningMode {
 // Displays the Assistant AIM interface.
 - (void)showAssistant;
 
+// Displays the Assistant AIM interface, optionally forcing the minimized state.
+- (void)showAssistantInMinimizedState:(BOOL)minimized;
+
 // Displays the Assistant AIM interface if hidden.
 - (void)revealAssistant;
 

@@ -166,7 +166,7 @@ TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
   web::FakeNavigationContext context;
   context.SetUrl(next_url);
 
-  OCMExpect([mock_scene_commands_handler_ showAssistant]);
+  OCMExpect([mock_scene_commands_handler_ showAssistantInMinimizedState:YES]);
 
   new_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
 
@@ -339,7 +339,7 @@ TEST_F(CobrowseTabHelperTest, HideOnNtpAndRestoreOnNormalNavigation) {
   // 1. Start session by navigating to a normal page.
   web::FakeNavigationContext context1;
   context1.SetUrl(normal_url);
-  OCMExpect([mock_scene_commands_handler_ showAssistant]);
+  OCMExpect([mock_scene_commands_handler_ showAssistantInMinimizedState:YES]);
   new_tab_helper->DidStartNavigation(new_web_state_ptr, &context1);
   [mock_scene_commands_handler_ verify];
 
@@ -353,7 +353,7 @@ TEST_F(CobrowseTabHelperTest, HideOnNtpAndRestoreOnNormalNavigation) {
   // 3. Navigate to a normal page again -> should restore (show).
   web::FakeNavigationContext context3;
   context3.SetUrl(normal_url);
-  OCMExpect([mock_scene_commands_handler_ showAssistant]);
+  OCMExpect([mock_scene_commands_handler_ showAssistantInMinimizedState:YES]);
   new_tab_helper->DidStartNavigation(new_web_state_ptr, &context3);
   [mock_scene_commands_handler_ verify];
 }

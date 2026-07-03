@@ -723,21 +723,29 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 - (void)showAssistant {
+  [self showAssistantInMinimizedState:NO];
+}
+
+- (void)showAssistantInMinimizedState:(BOOL)minimized {
   if (!IsAssistantContainerEnabled()) {
     return;
   }
   if (_assistantAIMCoordinator) {
-    [self revealAssistant];
+    [self revealAssistantInMinimizedState:minimized];
     return;
   }
   _assistantAIMCoordinator = [[AssistantAIMCoordinator alloc]
       initWithBaseViewController:self.activeViewController
                          browser:self.currentBrowser];
-  [_assistantAIMCoordinator start];
+  [_assistantAIMCoordinator startInMinimizedState:minimized];
 }
 
 - (void)revealAssistant {
-  [_assistantAIMCoordinator setVisible:YES];
+  [self revealAssistantInMinimizedState:NO];
+}
+
+- (void)revealAssistantInMinimizedState:(BOOL)minimized {
+  [_assistantAIMCoordinator setVisible:YES inMinimizedState:minimized];
 }
 
 - (void)hideAssistant {

@@ -104,11 +104,10 @@ class AssistantAIMUIStateProvider
 }
 
 - (void)start {
-  if (base::FeatureList::IsEnabled(kAssistantAimMinimizedState)) {
-    _currentDetent = AssistantContainerDetent::kMinimized;
-  } else {
-    _currentDetent = AssistantContainerDetent::kMedium;
-  }
+  [self startInMinimizedState:NO];
+}
+
+- (void)startInMinimizedState:(BOOL)shouldStartInMinimized {
   if (self.browser->GetProfile()->IsOffTheRecord()) {
     return;
   }
@@ -174,6 +173,14 @@ class AssistantAIMUIStateProvider
 
   [self dismissSnackbars];
 
+  BOOL showInMinimizedState =
+      shouldStartInMinimized ||
+      base::FeatureList::IsEnabled(kAssistantAimMinimizedState);
+  AssistantContainerDetent targetDetent =
+      showInMinimizedState ? AssistantContainerDetent::kMinimized
+                           : AssistantContainerDetent::kMedium;
+  _currentDetent = targetDetent;
+
   // This must be called AFTER the view controller and its children (like the
   // input plate) are fully set up. This is because the initial layout and
   // percentage updates need to be applied to the fully constructed content.
@@ -182,10 +189,6 @@ class AssistantAIMUIStateProvider
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:self];
 
-  AssistantContainerDetent targetDetent =
-      base::FeatureList::IsEnabled(kAssistantAimMinimizedState)
-          ? AssistantContainerDetent::kMinimized
-          : AssistantContainerDetent::kMedium;
   [_containerHandler
       animateAssistantContainerToDetent:targetDetent
                                duration:0
@@ -216,9 +219,17 @@ class AssistantAIMUIStateProvider
 }
 
 - (void)setVisible:(BOOL)visible {
+  [self setVisible:visible inMinimizedState:NO];
+}
+
+- (void)setVisible:(BOOL)visible inMinimizedState:(BOOL)minimized {
   if (visible) {
     [self dismissSnackbars];
     if (_viewController) {
+      if (minimized) {
+        _currentDetent = AssistantContainerDetent::kMinimized;
+      }
+
       AssistantContainerDetent targetDetent = _currentDetent;
       [_containerHandler showAssistantContainerWithContent:_viewController
                                                   delegate:self];
