@@ -422,6 +422,8 @@ void FcpHttpRequestManager::StartRequestOnUI(
       // all network requests initiated through it.
       base::Unretained(this), request_id, runner_ptr, latch));
   runners_[request_id] = std::move(runner);
+  base::UmaHistogramCounts100(kFcpHttpClientRunnerCountHistogram,
+                              runners_.size());
 }
 
 void FcpHttpRequestManager::OnRequestComplete(uint64_t request_id,

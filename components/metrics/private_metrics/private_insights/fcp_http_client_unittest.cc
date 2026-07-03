@@ -246,6 +246,7 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulSingle) {
   histogram_tester.ExpectUniqueSample(kFcpHttpClientBatchSizeHistogram, 1, 1);
   histogram_tester.ExpectTotalCount(kFcpHttpClientBytesReceivedHistogram, 1);
   histogram_tester.ExpectTotalCount(kFcpHttpClientBytesSentHistogram, 1);
+  histogram_tester.ExpectUniqueSample(kFcpHttpClientRunnerCountHistogram, 1, 1);
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
@@ -283,6 +284,7 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
   EXPECT_TRUE(callback2.response_completed_called_);
   EXPECT_EQ(callback2.body_received_, "resp2");
   histogram_tester.ExpectUniqueSample(kFcpHttpClientBatchSizeHistogram, 2, 1);
+  histogram_tester.ExpectTotalCount(kFcpHttpClientRunnerCountHistogram, 2);
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsNetError) {

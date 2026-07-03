@@ -198,6 +198,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrivateMetrics.PrivateInsights.FcpHttpClient.RunnerCount"
+    units="runners" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of active request runners in FcpHttpRequestManager. Logged each
+    time a new HTTP request is started on the UI thread.
+  </summary>
+</histogram>
+
 <histogram name="PrivateMetrics.PrivateInsights.FederatedComputationOutcome"
     enum="PrivateInsightsFederatedComputationOutcome"
     expires_after="2027-06-01">
