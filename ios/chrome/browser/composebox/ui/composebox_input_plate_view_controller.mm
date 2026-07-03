@@ -1913,8 +1913,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 // Updates the side paddings of the input plate stack view.
 - (void)updateInputPlateStackViewPadding {
+  CGFloat baseTrailingPadding = kInputPlatePadding.trailing;
+  if (_theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad) {
+    baseTrailingPadding = 14.0f;
+  }
+
   if (self.compact) {
-    CGFloat trailingPadding = kInputPlatePadding.trailing;
+    CGFloat trailingPadding = baseTrailingPadding;
     ComposeboxInputPlateControls shortcuts =
         ComposeboxInputPlateControls::kLens |
         ComposeboxInputPlateControls::kVoice;
@@ -1933,7 +1938,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
   } else {
     _inputPlateStackView.layoutMarginsRelativeArrangement = NO;
-    _omniboxContainer.directionalLayoutMargins = kInputPlatePadding;
+    NSDirectionalEdgeInsets margins = kInputPlatePadding;
+    margins.trailing = baseTrailingPadding;
+    _omniboxContainer.directionalLayoutMargins = margins;
   }
 }
 
