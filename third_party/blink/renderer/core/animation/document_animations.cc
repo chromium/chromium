@@ -103,12 +103,11 @@ void DocumentAnimations::FindRelevantTriggerAttachments(
       for (const auto& named_trigger : element_named_triggers->Keys()) {
         TriggerScopedName* trigger_scoped_name =
             ToTriggerScopedName(*named_trigger, *element);
-        auto it = ancestor_trigger_map->find(trigger_scoped_name);
-        // Within the ancestry, the nearest ancestor with the name is selected.
-        // So, if a name has already been found, skip the update.
-        if (it == ancestor_trigger_map->end()) {
-          ancestor_trigger_map->Set(trigger_scoped_name, element);
-        }
+        // Within the ancestry, the nearest ancestor with the name is selected,
+        // so keep the first entry found. insert() no-ops when the key is
+        // already present, matching that "skip if already found" semantics in a
+        // single lookup.
+        ancestor_trigger_map->insert(trigger_scoped_name, element);
       }
     }
 
