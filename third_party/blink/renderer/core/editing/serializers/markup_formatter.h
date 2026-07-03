@@ -71,18 +71,20 @@ class MarkupFormatter final {
   STACK_ALLOCATED();
 
  public:
-  static void AppendAttributeValue(StringBuilder&, const String&, bool);
-  static void AppendAttributeAsHtml(StringBuilder& result,
-                                    const Attribute& attribute,
-                                    const String& value);
-  static void AppendAttributeAsXmlWithoutNamespace(StringBuilder& result,
-                                                   const Attribute& attribute,
-                                                   const String& value);
-  static void AppendAttribute(StringBuilder& result,
-                              const AtomicString& prefix,
+  static void AppendAttributeValue(const String&,
+                                   SerializationType,
+                                   StringBuilder&);
+  static void AppendAttributeAsHtml(const Attribute& attribute,
+                                    const String& value,
+                                    StringBuilder& result);
+  static void AppendAttributeAsXmlWithoutNamespace(const Attribute& attribute,
+                                                   const String& value,
+                                                   StringBuilder& result);
+  static void AppendAttribute(const AtomicString& prefix,
                               const AtomicString& local_name,
                               const String& value,
-                              bool document_is_html);
+                              SerializationType type,
+                              StringBuilder& result);
   static void AppendCdataSection(StringBuilder&, const String&);
   static void AppendCharactersReplacingEntities(StringBuilder& result,
                                                 const StringView& source,
@@ -124,6 +126,11 @@ class MarkupFormatter final {
   const ResolveUrls resolve_urls_method_;
   SerializationType serialization_type_;
 };
+
+inline SerializationType GetSerializationType(const Document& document) {
+  return document.IsHTMLDocument() ? SerializationType::kHtml
+                                   : SerializationType::kXml;
+}
 
 }  // namespace blink
 

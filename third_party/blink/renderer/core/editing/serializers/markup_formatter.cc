@@ -242,19 +242,20 @@ void MarkupFormatter::AppendEndMarkup(StringBuilder& result,
   result.Append('>');
 }
 
-void MarkupFormatter::AppendAttributeValue(StringBuilder& result,
-                                           const String& attribute,
-                                           bool document_is_html) {
-  EntityMask entity_mask = document_is_html ? kEntityMaskInHtmlAttributeValue
-                                            : kEntityMaskInAttributeValue;
+void MarkupFormatter::AppendAttributeValue(const String& attribute,
+                                           SerializationType type,
+                                           StringBuilder& result) {
+  EntityMask entity_mask = type == SerializationType::kHtml
+                               ? kEntityMaskInHtmlAttributeValue
+                               : kEntityMaskInAttributeValue;
   AppendCharactersReplacingEntities(result, attribute, entity_mask);
 }
 
-void MarkupFormatter::AppendAttribute(StringBuilder& result,
-                                      const AtomicString& prefix,
+void MarkupFormatter::AppendAttribute(const AtomicString& prefix,
                                       const AtomicString& local_name,
                                       const String& value,
-                                      bool document_is_html) {
+                                      SerializationType type,
+                                      StringBuilder& result) {
   result.Append(' ');
   if (!prefix.empty()) {
     result.Append(prefix);
@@ -262,7 +263,7 @@ void MarkupFormatter::AppendAttribute(StringBuilder& result,
   }
   result.Append(local_name);
   result.Append("=\"");
-  AppendAttributeValue(result, value, document_is_html);
+  AppendAttributeValue(value, type, result);
   result.Append('"');
 }
 
@@ -365,21 +366,23 @@ void MarkupFormatter::AppendStartTagClose(StringBuilder& result,
   result.Append('>');
 }
 
-void MarkupFormatter::AppendAttributeAsHtml(StringBuilder& result,
-                                            const Attribute& attribute,
-                                            const String& value) {
+void MarkupFormatter::AppendAttributeAsHtml(const Attribute& attribute,
+                                            const String& value,
+                                            StringBuilder& result) {
   const AtomicString& resolved_prefix =
       ResolveAttributePrefixForHtml(attribute.GetName());
-  AppendAttribute(result, resolved_prefix, attribute.LocalName(), value, true);
+  AppendAttribute(resolved_prefix, attribute.LocalName(), value,
+                  SerializationType::kHtml, result);
 }
 
 void MarkupFormatter::AppendAttributeAsXmlWithoutNamespace(
-    StringBuilder& result,
     const Attribute& attribute,
-    const String& value) {
+    const String& value,
+    StringBuilder& result) {
   const AtomicString& resolved_prefix =
       ResolveAttributePrefixForXml(attribute.GetName());
-  AppendAttribute(result, resolved_prefix, attribute.LocalName(), value, false);
+  AppendAttribute(resolved_prefix, attribute.LocalName(), value,
+                  SerializationType::kXml, result);
 }
 
 void MarkupFormatter::AppendCdataSection(StringBuilder& result,

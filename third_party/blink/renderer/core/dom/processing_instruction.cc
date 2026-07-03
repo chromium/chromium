@@ -279,14 +279,14 @@ Vector<AtomicString> ProcessingInstruction::getAttributeNames() {
 void ProcessingInstruction::UpdateDataFromAttributes() {
   StringBuilder builder;
   const wtf_size_t size = attributes_.size();
+  const auto type = GetSerializationType(GetDocument());
   for (wtf_size_t i = 0; i < size; ++i) {
     if (i) {
       builder.Append(" ");
     }
     builder.Append(attributes_[i].key);
     builder.Append("=\"");
-    MarkupFormatter::AppendAttributeValue(builder, attributes_[i].value,
-                                          GetDocument().IsHTMLDocument());
+    MarkupFormatter::AppendAttributeValue(attributes_[i].value, type, builder);
     builder.Append("\"");
   }
   SetDataFromAttributeChange(builder.ReleaseString());

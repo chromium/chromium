@@ -108,8 +108,9 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
     DCHECK(document_);
 
     result_.Append("<span style=\"");
-    MarkupFormatter::AppendAttributeValue(
-        result_, inline_style->Style()->AsText(), IsA<HTMLDocument>(document_));
+    MarkupFormatter::AppendAttributeValue(inline_style->Style()->AsText(),
+                                          GetSerializationType(*document_),
+                                          result_);
     result_.Append("\">");
   }
   if (!ShouldAnnotate()) {
@@ -143,19 +144,18 @@ void StyledMarkupAccumulator::AppendElementWithInlineStyle(
     StringBuilder& out,
     const Element& element,
     EditingStyle* style) {
-  const bool document_is_html = IsA<HTMLDocument>(element.GetDocument());
+  const SerializationType type = GetSerializationType(element.GetDocument());
   formatter_.AppendStartTagOpen(out, element);
   AttributeCollection attributes = element.Attributes();
   for (const auto& attribute : attributes) {
     // We'll handle the style attribute separately, below.
     if (attribute.GetName() == html_names::kStyleAttr)
       continue;
-    AppendAttribute(out, element, attribute);
+    AppendAttribute(element, attribute, out);
   }
   if (style && !style->IsEmpty()) {
     out.Append(" style=\"");
-    MarkupFormatter::AppendAttributeValue(out, style->Style()->AsText(),
-                                          document_is_html);
+    MarkupFormatter::AppendAttributeValue(style->Style()->AsText(), type, out);
     out.Append('\"');
   }
   formatter_.AppendStartTagClose(out, element);
@@ -170,19 +170,19 @@ void StyledMarkupAccumulator::AppendElement(StringBuilder& out,
   formatter_.AppendStartTagOpen(out, element);
   AttributeCollection attributes = element.Attributes();
   for (const auto& attribute : attributes)
-    AppendAttribute(out, element, attribute);
+    AppendAttribute(element, attribute, out);
   formatter_.AppendStartTagClose(out, element);
 }
 
-void StyledMarkupAccumulator::AppendAttribute(StringBuilder& result,
-                                              const Element& element,
-                                              const Attribute& attribute) {
+void StyledMarkupAccumulator::AppendAttribute(const Element& element,
+                                              const Attribute& attribute,
+                                              StringBuilder& result) {
   String value = formatter_.ResolveUrlIfNeeded(element, attribute);
   if (formatter_.SerializeAsHtml()) {
-    MarkupFormatter::AppendAttributeAsHtml(result, attribute, value);
+    MarkupFormatter::AppendAttributeAsHtml(attribute, value, result);
   } else {
-    MarkupFormatter::AppendAttributeAsXmlWithoutNamespace(result, attribute,
-                                                          value);
+    MarkupFormatter::AppendAttributeAsXmlWithoutNamespace(attribute, value,
+                                                          result);
   }
 }
 
@@ -195,8 +195,8 @@ void StyledMarkupAccumulator::WrapWithStyleNode(CSSPropertyValueSet* style) {
 
   StringBuilder open_tag;
   open_tag.Append("<div style=\"");
-  MarkupFormatter::AppendAttributeValue(open_tag, style->AsText(),
-                                        IsA<HTMLDocument>(document_));
+  MarkupFormatter::AppendAttributeValue(
+      style->AsText(), GetSerializationType(*document_), open_tag);
   open_tag.Append("\">");
   reversed_preceding_markup_.push_back(open_tag.ToString());
 
