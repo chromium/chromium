@@ -36,7 +36,8 @@ export function getHtml(this: PolicyRowElement) {
     <a is="action-link" class="copy-value link" role="button" @click="${
       this.onCopyClick}" title="${this.getCopyLabel()}" aria-label="${
       this.getCopyLabel()}">
-      <img src="chrome://resources/images/icon_copy_content.svg" alt="">
+      <img src="chrome://resources/images/icon_copy_content.svg"
+          alt="" aria-hidden="true">
     </a>
   </div>
 </div>
