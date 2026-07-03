@@ -202,6 +202,8 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
 
   // Indicates if the dialog is being closed.
   bool closing_dialog_ = false;
+
+  base::WeakPtrFactory<SystemDialogDelegateView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT,

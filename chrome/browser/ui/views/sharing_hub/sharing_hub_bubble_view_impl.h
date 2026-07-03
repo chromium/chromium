@@ -68,6 +68,8 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
 
   // The share attempt this bubble was opened for.
   const share::ShareAttempt attempt_;
+
+  base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
 };
 
 }  // namespace sharing_hub

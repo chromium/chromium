@@ -281,8 +281,8 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   SetInitiallyFocusedView(button_container_->accept_button());
 
   // Register the close callback.
-  RegisterWindowClosingCallback(
-      base::BindOnce(&SystemDialogDelegateView::Close, base::Unretained(this)));
+  RegisterWindowClosingCallback(base::BindOnce(&SystemDialogDelegateView::Close,
+                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 SystemDialogDelegateView::~SystemDialogDelegateView() = default;

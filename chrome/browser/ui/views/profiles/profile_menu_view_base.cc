@@ -410,7 +410,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::BubbleAnchor anchor_element,
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
 
   RegisterWindowClosingCallback(base::BindOnce(
-      &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
+      &ProfileMenuViewBase::OnWindowClosing, weak_factory_.GetWeakPtr()));
 
   SetBackground(views::CreateSolidBackground(kColorProfileMenuBackground));
 }

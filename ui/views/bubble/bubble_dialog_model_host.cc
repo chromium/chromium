@@ -888,7 +888,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // only forward the call to DialogModel::OnWindowClosing if we haven't
   // already been closed.
   RegisterWindowClosingCallback(base::BindOnce(
-      &BubbleDialogModelHost::OnWindowClosing, base::Unretained(this)));
+      &BubbleDialogModelHost::OnWindowClosing, weak_ptr_factory_.GetWeakPtr()));
 
   int button_mask = static_cast<int>(ui::mojom::DialogButton::kNone);
   auto* ok_button = model_->ok_button(DialogModelHost::GetPassKey());

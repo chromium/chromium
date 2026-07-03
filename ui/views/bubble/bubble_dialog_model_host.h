@@ -162,6 +162,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   const raw_ptr<BubbleDialogModelHostContentsView> contents_view_;
   base::CallbackListSubscription on_contents_changed_subscription_;
   ThemeChangedObserver theme_observer_;
+
+  base::WeakPtrFactory<BubbleDialogModelHost> weak_ptr_factory_{this};
 };
 
 }  // namespace views

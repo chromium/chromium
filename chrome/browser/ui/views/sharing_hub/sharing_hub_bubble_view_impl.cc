@@ -59,7 +59,7 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   RegisterWindowClosingCallback(base::BindOnce(
-      &SharingHubBubbleViewImpl::OnWindowClosing, base::Unretained(this)));
+      &SharingHubBubbleViewImpl::OnWindowClosing, weak_factory_.GetWeakPtr()));
   SetEnableArrowKeyTraversal(true);
   SetShowCloseButton(false);
   SetShowTitle(false);
