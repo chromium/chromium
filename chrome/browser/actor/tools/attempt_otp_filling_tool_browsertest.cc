@@ -240,6 +240,12 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(url),
+                                /*should_use_strong_matching=*/true, {});
   SetExpectedOtp("1234");
 
   ActResultFuture result;
@@ -303,6 +309,12 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(url),
+                                /*should_use_strong_matching=*/true, {});
   SetExpectedOtp(std::nullopt);
 
   ActResultFuture result;
@@ -328,6 +340,12 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(url),
+                                /*should_use_strong_matching=*/true, {});
 
   EXPECT_CALL(GetMockOtpService(),
               Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, testing::_,
@@ -378,6 +396,12 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
                                                      trigger_fields,
                                                      /*for_signin=*/true);
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(url),
+                                /*should_use_strong_matching=*/true, {});
   SetExpectedOtp("1234");
 
   ActResultFuture result;
@@ -391,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
 // The tool can be created with for_signin set to false.
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       ToolGetsCreatedWithForSigninFalseAndTaskReturnsOk) {
+                       ToolFailsWhenForSigninFalse) {
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -403,12 +427,11 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/false);
 
-  SetExpectedOtp("1234");
-
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectOkResult(result);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_THAT(JournalEntries(),
               testing::Contains(testing::ContainsRegex(
                   "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
@@ -505,6 +528,12 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{submit_button},
           /*for_signin=*/true);
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(url),
+                                /*should_use_strong_matching=*/true, {});
   SetExpectedOtp("1234");
 
   ActResultFuture result;
@@ -575,11 +604,11 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
-  SetExpectedOtp("1234");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectOkResult(result);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
@@ -655,11 +684,11 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
-  SetExpectedOtp("1234");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectOkResult(result);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
@@ -738,11 +767,11 @@ IN_PROC_BROWSER_TEST_F(
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
-  SetExpectedOtp("1234");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectOkResult(result);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",

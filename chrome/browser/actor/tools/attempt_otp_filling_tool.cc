@@ -266,17 +266,21 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
 
   if (is_actor_login) {
     // Verified sign-in journey: proceed with silent OTP filling.
-    // TODO(crbug.com/504573041): Implement
+    tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
+        GetTargetTab(), trigger_field_ids_,
+        base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     // No recent login, origin mismatch, untracked frame, or sequence broken
     // by too many navigations: require confirmation UI (Post-MVP).
-    // TODO(crbug.com/504573041): Implement
+    // TODO(crbug.com/504573041): Implement confirmation UI.
+    // TODO(crbug.com/502908360): Add meaningful error message.
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+                   /*requires_page_stabilization=*/false,
+                   "Silent OTP filling is only allowed in the context of actor "
+                   "login flows."));
   }
-
-  tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
-      GetTargetTab(), trigger_field_ids_,
-      base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AttemptOtpFillingTool::OnOtpRetrieved(ToolCallback callback,
