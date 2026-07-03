@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs_js_on.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs_js_on.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
@@ -696,6 +698,12 @@ TEST(PublicKeyCredentialTest, ParseRequestOptionsFromJSON_InvalidBase64URL) {
   }
 }
 
+struct PRFEvalValues {
+  bool enabled;
+  std::optional<Vector<uint8_t>> first;
+  std::optional<Vector<uint8_t>> second;
+};
+
 struct ExtensionsClientOutputsValues {
   std::optional<bool> appid;
   std::optional<bool> hmac_create_secret;
@@ -704,6 +712,7 @@ struct ExtensionsClientOutputsValues {
   std::optional<Vector<uint8_t>> large_blob_data;
   std::optional<bool> large_blob_written;
   std::optional<Vector<uint8_t>> get_cred_blob;
+  std::optional<PRFEvalValues> prf_eval;
   std::optional<Vector<uint8_t>> cmtg_key_data;
   std::optional<Vector<uint8_t>> cmtg_key_sig;
   std::optional<bool> cross_device_fallback_url;
@@ -738,6 +747,23 @@ AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
   }
   if (in.get_cred_blob) {
     extensions->setGetCredBlob(DOMArrayBuffer::Create(*in.get_cred_blob));
+  }
+  if (in.prf_eval) {
+    auto* prf = AuthenticationExtensionsPRFOutputs::Create();
+    prf->setEnabled(in.prf_eval->enabled);
+    if (in.prf_eval->first) {
+      auto* prf_values = AuthenticationExtensionsPRFValues::Create();
+      prf_values->setFirst(
+          MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+              DOMArrayBuffer::Create(*in.prf_eval->first)));
+      if (in.prf_eval->second) {
+        prf_values->setSecond(
+            MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+                DOMArrayBuffer::Create(*in.prf_eval->second)));
+      }
+      prf->setResults(prf_values);
+    }
+    extensions->setPrf(prf);
   }
   if (in.cmtg_key_data || in.cmtg_key_sig) {
     auto* cmtg_key = AuthenticationExtensionsCmtgKeyOutputs::Create();
@@ -829,6 +855,48 @@ void ExpectExtensionsJSONMatch(
   } else {
     EXPECT_FALSE(extensions.hasCrossDeviceFallbackUrl());
   }
+  if (values.prf_eval) {
+    ASSERT_TRUE(extensions.hasPrf());
+    v8::Local<v8::Object> prf_obj = extensions.prf().V8Object();
+    v8::Local<v8::Value> enabled_val;
+    ASSERT_TRUE(prf_obj->Get(context, V8String(isolate, "enabled"))
+                    .ToLocal(&enabled_val));
+    ASSERT_TRUE(enabled_val->IsBoolean());
+    EXPECT_EQ(enabled_val.As<v8::Boolean>()->Value(), values.prf_eval->enabled);
+
+    if (values.prf_eval->first) {
+      v8::Local<v8::Value> results_val;
+      ASSERT_TRUE(prf_obj->Get(context, V8String(isolate, "results"))
+                      .ToLocal(&results_val));
+      ASSERT_TRUE(results_val->IsObject());
+      v8::Local<v8::Object> results_obj = results_val.As<v8::Object>();
+
+      v8::Local<v8::Value> first_val;
+      ASSERT_TRUE(results_obj->Get(context, V8String(isolate, "first"))
+                      .ToLocal(&first_val));
+      ASSERT_TRUE(first_val->IsString());
+      EXPECT_EQ(ToCoreString(isolate, first_val.As<v8::String>()),
+                WebAuthnBase64UrlEncode(
+                    DOMArrayBuffer::Create(*values.prf_eval->first)));
+
+      if (values.prf_eval->second) {
+        v8::Local<v8::Value> second_val;
+        ASSERT_TRUE(results_obj->Get(context, V8String(isolate, "second"))
+                        .ToLocal(&second_val));
+        ASSERT_TRUE(second_val->IsString());
+        EXPECT_EQ(ToCoreString(isolate, second_val.As<v8::String>()),
+                  WebAuthnBase64UrlEncode(
+                      DOMArrayBuffer::Create(*values.prf_eval->second)));
+      }
+    } else {
+      v8::Local<v8::Value> results_val;
+      EXPECT_FALSE(prf_obj->Get(context, V8String(isolate, "results"))
+                       .ToLocal(&results_val) &&
+                   !results_val->IsUndefined());
+    }
+  } else {
+    EXPECT_FALSE(extensions.hasPrf());
+  }
   if (values.cmtg_key_data || values.cmtg_key_sig) {
     ASSERT_TRUE(extensions.hasCmtgKey());
     const auto* cmtg_key = extensions.cmtgKey();
@@ -857,7 +925,6 @@ TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
   ScriptState::Scope scope(script_state);
 
   // TODO(crbug.com/530457807): Fix credBlob serialization.
-  // TODO(crbug.com/530457808): Fix PRF serialization.
   const ExtensionsClientOutputsValues kTestCases[] = {
       {.appid = true},
       {.appid = false},
@@ -873,6 +940,12 @@ TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
       {.get_cred_blob = Vector<uint8_t>{'g', 'e', 't', 't', 'y'}},
       {.cross_device_fallback_url = true},
       {.cross_device_fallback_url = false},
+      {.prf_eval =
+           PRFEvalValues{
+               .enabled = true,
+               .first = Vector<uint8_t>{'f', 'i', 'r', 's', 't', 'y'},
+               .second = Vector<uint8_t>{'s', 'e', 'c', 'o', 'n', 'd', 'y'}}},
+      {.prf_eval = PRFEvalValues{.enabled = false}},
       {.cmtg_key_data = Vector<uint8_t>{'c', 'm', 't', 'g', 'k'},
        .cmtg_key_sig = Vector<uint8_t>{'c', 'm', 't', 'g', 's'}},
   };
