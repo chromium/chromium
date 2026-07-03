@@ -187,12 +187,71 @@ double StringMatch(std::string_view expected, std::string_view extracted) {
 
 namespace screen_ai {
 
+class OpticalCharacterRecognizerTestBase : public InProcessBrowserTest {
+ public:
+  OpticalCharacterRecognizerTestBase() = default;
+  ~OpticalCharacterRecognizerTestBase() override = default;
+
+  // Returns true if ocr initialization was successful.
+  bool CreateAndInitOCR(
+      mojom::OcrClientType client_type = mojom::OcrClientType::kTest) {
+    base::test::TestFuture<bool> init_future;
+    ocr_ = OpticalCharacterRecognizer::CreateWithStatusCallback(
+        browser()->profile(), client_type, init_future.GetCallback());
+    EXPECT_TRUE(init_future.Wait());
+    return init_future.Get<bool>();
+  }
+
+  scoped_refptr<OpticalCharacterRecognizer> ocr() { return ocr_; }
+
+  mojom::VisualAnnotationPtr PerformOCR(const SkBitmap& bitmap) {
+    screen_ai::ScreenAIServiceRouter* router =
+        ScreenAIServiceRouterFactory::GetForBrowserContext(
+            browser()->profile());
+
+    // If OCR service crashes while performing OCR, the callback will not be
+    // called. A timer is used to check the connection state and stop the
+    // waiting if connection state changes. This is done to reduce test time
+    // when the test is bound to fail due to timeout.
+    base::RepeatingTimer disconnect_timer;
+    base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
+    if (router->IsProcessRunningForTesting(
+            screen_ai::ScreenAIServiceRouter::Service::kOCR)) {
+      disconnect_timer.Start(
+          FROM_HERE, base::Milliseconds(100),
+          base::BindRepeating(
+              [](screen_ai::ScreenAIServiceRouter* router,
+                 base::test::TestFuture<mojom::VisualAnnotationPtr>*
+                     perform_future,
+                 base::RepeatingTimer* timer) {
+                if (!router->IsProcessRunningForTesting(
+                        screen_ai::ScreenAIServiceRouter::Service::kOCR)) {
+                  perform_future->SetValue(mojom::VisualAnnotation::New());
+                  timer->Stop();
+                  ADD_FAILURE()
+                      << "OCR service disconnected while performing OCR.";
+                }
+              },
+              base::Unretained(router), base::Unretained(&perform_future),
+              base::Unretained(&disconnect_timer)));
+    }
+
+    ocr_->PerformOCR(bitmap, perform_future.GetCallback());
+    EXPECT_TRUE(perform_future.Wait());
+    disconnect_timer.Stop();
+    return perform_future.Take();
+  }
+
+ protected:
+  scoped_refptr<OpticalCharacterRecognizer> ocr_;
+};
+
 // This test fixture tests different running configurations of the OCR service,
 // the availability of the ScreenAI library, and usage pattern of the OCR
 // service API. It is NOT focused on the OCR results.
 // Params: (OCR service enabled, ScreenAI library available)
 class OpticalCharacterRecognizerTest
-    : public InProcessBrowserTest,
+    : public OpticalCharacterRecognizerTestBase,
       public ScreenAIInstallState::Observer,
       public ::testing::WithParamInterface<
           OpticalCharacterRecognizerTestParams> {
@@ -266,62 +325,10 @@ class OpticalCharacterRecognizerTest
     }
   }
 
-  // Returns true if ocr initialization was successful.
-  bool CreateAndInitOCR(mojom::OcrClientType client_type) {
-    base::test::TestFuture<bool> init_future;
-    ocr_ = OpticalCharacterRecognizer::CreateWithStatusCallback(
-        browser()->profile(), client_type, init_future.GetCallback());
-    EXPECT_TRUE(init_future.Wait());
-    return init_future.Get<bool>();
-  }
-
-  scoped_refptr<OpticalCharacterRecognizer> ocr() { return ocr_; }
-
-  // If OCR service crashes while performing OCR, `perform_future_`'s callback
-  // will not be called. A timer is used to check the connection state and stop
-  // the waiting if connection state changes. This is done to reduce test time
-  // when the test is bound to fail due to timeout.
-  void PerformOCRWithDisconnectTimerAndAndWait(SkBitmap* bitmap) {
-    screen_ai::ScreenAIServiceRouter* router =
-        ScreenAIServiceRouterFactory::GetForBrowserContext(
-            browser()->profile());
-    if (router->IsProcessRunningForTesting(
-            screen_ai::ScreenAIServiceRouter::Service::kOCR)) {
-      disconnect_timer_.Start(
-          FROM_HERE, base::Milliseconds(100),
-          base::BindRepeating(
-              [](screen_ai::ScreenAIServiceRouter* router,
-                 base::test::TestFuture<mojom::VisualAnnotationPtr>*
-                     perform_future,
-                 base::RepeatingTimer* timer) {
-                if (!router->IsProcessRunningForTesting(
-                        screen_ai::ScreenAIServiceRouter::Service::kOCR)) {
-                  perform_future->SetValue(mojom::VisualAnnotation::New());
-                  timer->Stop();
-                  ADD_FAILURE()
-                      << "OCR service disconnected while performing OCR.";
-                }
-              },
-              base::Unretained(router), base::Unretained(&perform_future_),
-              base::Unretained(&disconnect_timer_)));
-    }
-
-    ocr()->PerformOCR(*bitmap, perform_future_.GetCallback());
-    ASSERT_TRUE(perform_future_.Wait());
-    disconnect_timer_.Stop();
-  }
-
-  const mojom::VisualAnnotationPtr& perform_result() {
-    return perform_future_.Get();
-  }
-
  private:
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
       component_download_observer_{this};
-  scoped_refptr<OpticalCharacterRecognizer> ocr_;
   base::test::ScopedFeatureList feature_list_;
-  base::RepeatingTimer disconnect_timer_;
-  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future_;
 };
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
@@ -382,8 +389,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
 
   SkBitmap bitmap =
       LoadImageFromTestFile(base::FilePath(FILE_PATH_LITERAL("ocr/empty.png")));
-  PerformOCRWithDisconnectTimerAndAndWait(&bitmap);
-  ASSERT_TRUE(perform_result()->lines.empty());
+  mojom::VisualAnnotationPtr results = PerformOCR(bitmap);
+  ASSERT_TRUE(results->lines.empty());
 }
 
 // The image used in this test is very simple to reduce the possibility of
@@ -397,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
 
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
-  PerformOCRWithDisconnectTimerAndAndWait(&bitmap);
+  mojom::VisualAnnotationPtr results = PerformOCR(bitmap);
 
 // Fake library always returns empty.
 #if BUILDFLAG(USE_FAKE_SCREEN_AI)
@@ -405,8 +412,6 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
 #else
   bool expected_call_success = true;
 #endif
-
-  auto& results = perform_result();
   unsigned expected_lines_count =
       (expected_call_success && IsOcrAvailable()) ? 1 : 0;
   ASSERT_EQ(expected_lines_count, results->lines.size());
@@ -455,15 +460,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
       "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF", 0);
 }
 
-// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
-// builders.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PerformOCR_PdfMetrics DISABLED_PerformOCR_PdfMetrics
-#else
-#define MAYBE_PerformOCR_PdfMetrics PerformOCR_PdfMetrics
-#endif
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       MAYBE_PerformOCR_PdfMetrics) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
   base::HistogramTester histograms;
 
   ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kPdfViewer),
@@ -471,9 +468,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
-  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
-  ASSERT_TRUE(perform_future.Wait());
+  mojom::VisualAnnotationPtr results = PerformOCR(bitmap);
 
 // Fake library always returns empty.
 #if BUILDFLAG(USE_FAKE_SCREEN_AI)
@@ -552,16 +547,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 #endif
 }
 
-// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
-// builders.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PerformOCR_AfterServiceRevive \
-  DISABLED_PerformOCR_AfterServiceRevive
-#else
-#define MAYBE_PerformOCR_AfterServiceRevive PerformOCR_AfterServiceRevive
-#endif
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       MAYBE_PerformOCR_AfterServiceRevive) {
+                       PerformOCR_AfterServiceRevive) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
@@ -575,7 +562,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
       screen_ai::ScreenAIServiceRouter::Service::kOCR));
 
   // Release it and wait for shutdown due to being idle.
-  ocr().reset();
+  ocr_.reset();
   base::test::TestFuture<void> future;
   WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/3);
   ASSERT_TRUE(future.Wait());
@@ -590,25 +577,16 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   // Perform OCR.
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
-  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
-  ASSERT_TRUE(perform_future.Wait());
+  mojom::VisualAnnotationPtr results = PerformOCR(bitmap);
 
   // Fake library always returns empty results.
 #if !BUILDFLAG(USE_FAKE_SCREEN_AI)
-  ASSERT_FALSE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
+  ASSERT_FALSE(results->lines.empty());
 #endif
 }
 
-// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
-// builders.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PerformOCR_AfterDisconnect DISABLED_PerformOCR_AfterDisconnect
-#else
-#define MAYBE_PerformOCR_AfterDisconnect PerformOCR_AfterDisconnect
-#endif
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       MAYBE_PerformOCR_AfterDisconnect) {
+                       PerformOCR_AfterDisconnect) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
@@ -619,26 +597,21 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   // Perform OCR and get VisualAnnotation.
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
-  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
-  ASSERT_TRUE(perform_future.Wait());
+  mojom::VisualAnnotationPtr results = PerformOCR(bitmap);
 
   // Fake library always returns empty results.
 #if !BUILDFLAG(USE_FAKE_SCREEN_AI)
-  ASSERT_FALSE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
+  ASSERT_FALSE(results->lines.empty());
 #endif
 
   ocr()->DisconnectAnnotator();
 
   // Perform OCR and get VisualAnnotation.
-  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future2;
-  ocr()->PerformOCR(bitmap, perform_future2.GetCallback());
-  ASSERT_TRUE(perform_future2.Wait());
+  mojom::VisualAnnotationPtr results2 = PerformOCR(bitmap);
 
   // Fake library always returns empty results.
 #if !BUILDFLAG(USE_FAKE_SCREEN_AI)
-  ASSERT_FALSE(
-      perform_future2.Get<mojom::VisualAnnotationPtr>()->lines.empty());
+  ASSERT_FALSE(results2->lines.empty());
 #endif
 }
 
@@ -662,7 +635,7 @@ TEST(OpticalCharacterRecognizer, StringMatchTest) {
 // languages and image conditions and covers OCR accuracy.
 // Param: Test name.
 class OpticalCharacterRecognizerResultsTest
-    : public InProcessBrowserTest,
+    : public OpticalCharacterRecognizerTestBase,
       public ::testing::WithParamInterface<std::string_view> {
  public:
   OpticalCharacterRecognizerResultsTest() {
@@ -682,38 +655,15 @@ class OpticalCharacterRecognizerResultsTest
         GetComponentBinaryPathForTests().DirName());
   }
 
-  // Returns true if ocr initialization was successful.
-  // TODO(crbug.com/378472917): Add a `OpticalCharacterRecognizerTestBase` to
-  // avoid redundancy.
-  bool CreateAndInitOCR() {
-    base::test::TestFuture<bool> init_future;
-    ocr_ = OpticalCharacterRecognizer::CreateWithStatusCallback(
-        browser()->profile(), mojom::OcrClientType::kTest,
-        init_future.GetCallback());
-    EXPECT_TRUE(init_future.Wait());
-    return init_future.Get<bool>();
-  }
-
-  scoped_refptr<OpticalCharacterRecognizer> ocr() { return ocr_; }
-
  private:
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<OpticalCharacterRecognizer> ocr_;
 };
 
 // If this test fails after updating the library, the failure can be related to
 // minor changes in recognition results of the library. The failed cases can be
 // checked and if the new result is acceptable. For each test case, the last
 // line in the .txt file is the minimum acceptable match and it can be updated.
-// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
-// builders.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PerformOCR DISABLED_PerformOCR
-#else
-#define MAYBE_PerformOCR PerformOCR
-#endif
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest,
-                       MAYBE_PerformOCR) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest, PerformOCR) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(CreateAndInitOCR());
 
@@ -722,10 +672,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest,
       base::FilePath(FILE_PATH_LITERAL("ocr"))
           .AppendASCII(base::StringPrintf("%s.png", GetParam()));
   SkBitmap bitmap = LoadImageFromTestFile(image_path);
-  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
-  ASSERT_TRUE(perform_future.Wait());
-  auto& results = perform_future.Get<mojom::VisualAnnotationPtr>();
+  mojom::VisualAnnotationPtr results = PerformOCR(bitmap);
 
   // Load expectations.
   std::string expetations;
