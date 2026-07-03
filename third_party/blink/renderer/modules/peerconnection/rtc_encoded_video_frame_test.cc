@@ -721,8 +721,6 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorCopiesMetadata) {
   EXPECT_CALL(*frame, GetRtpTimestampInfo())
       .WillRepeatedly(
           Return(webrtc::RtpTimestampInfo(webrtc::RtpTimestampWithOffset(1u))));
-  // TODO(https://crbug.com/524901718): remove this after deprecation
-  ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(1u));
 
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));

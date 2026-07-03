@@ -77,8 +77,6 @@ void MockMetadata(MockTransformableAudioFrame* frame) {
   ON_CALL(*frame, GetRtpTimestampInfo())
       .WillByDefault(Return(webrtc::RtpTimestampInfo(
           webrtc::RtpTimestampWithOffset(kRtpTimestamp))));
-  // TODO(https://crbug.com/524901718): remove this after deprecation
-  ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(kRtpTimestamp));
   ON_CALL(*frame, GetMimeType()).WillByDefault(Return("image"));
   ON_CALL(*frame, CaptureTime())
       .WillByDefault(Return(webrtc::Timestamp::Millis(kCaptureTimeMillis)));
