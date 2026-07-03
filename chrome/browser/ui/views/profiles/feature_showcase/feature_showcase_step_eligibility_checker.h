@@ -23,6 +23,12 @@ class FeatureShowcaseStepEligibilityChecker {
 
   // Returns a unique string identifier for the step to be passed to the WebUI.
   virtual std::string GetStepIdentifier() const = 0;
+
+  // Tells the specific checker that timeout on evaluating all eligible steps
+  // has been fired. The checker should return a final say on the eligibility
+  // if it can be determined synchronously with already available local state.
+  // Defaults to false if not overridden.
+  virtual bool OnTimeout();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_FEATURE_SHOWCASE_STEP_ELIGIBILITY_CHECKER_H_

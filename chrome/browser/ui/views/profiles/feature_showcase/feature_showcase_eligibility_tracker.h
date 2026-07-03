@@ -48,21 +48,14 @@ class FeatureShowcaseEligibilityTracker {
       base::OnceCallback<void(const std::vector<std::string>&)> callback);
 
  private:
-  struct Result {
-    size_t priority = 0;
-    std::string identifier;
-  };
-
-  void OnStepEligibilityDetermined(size_t priority,
-                                   std::string identifier,
-                                   bool is_eligible);
+  void OnStepEligibilityDetermined(size_t index, bool is_eligible);
   void FinishEvaluation();
 
   std::vector<std::unique_ptr<FeatureShowcaseStepEligibilityChecker>> checkers_;
   base::OnceCallback<void(const std::vector<std::string>&)>
       on_eligibility_evaluated_callback_;
 
-  std::vector<Result> eligible_results_;
+  std::vector<std::optional<bool>> results_;
   size_t completed_checkers_ = 0;
 
   base::OneShotTimer timeout_timer_;
