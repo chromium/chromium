@@ -10,7 +10,7 @@ import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
@@ -83,7 +83,20 @@ suite('ReshowOverlay', function() {
         const finishReshowEvent =
             eventToPromise('on-finish-reshow-overlay', selectionOverlayElement);
         callbackRouterRemote.onOverlayReshown(fakeScreenshotBitmap(100, 100));
-        await flushTasks();
+        // createImageBitmap resolves in a task, so wait for the
+        // onOverlayReshown callback rather than just flushing microtasks.
+        await new Promise<void>(resolve => {
+          const observer = new MutationObserver(() => {
+            if (selectionOverlayElement.hasAttribute('side-panel-opened')) {
+              observer.disconnect();
+              resolve();
+            }
+          });
+          observer.observe(selectionOverlayElement, {
+            attributes: true,
+            attributeFilter: ['side-panel-opened'],
+          });
+        });
 
         assertFalse(selectionOverlayElement.hasAttribute('is-closing'));
         assertTrue(selectionOverlayElement.hasAttribute('side-panel-opened'));

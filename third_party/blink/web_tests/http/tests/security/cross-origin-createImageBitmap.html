@@ -56,7 +56,8 @@ image.addEventListener('load', function() {
 .then(function() {
     document.body.appendChild(video);
     video.play();
-    video.addEventListener('playing', function() {
+    video.addEventListener('timeupdate', function onTimeUpdate() {
+      video.removeEventListener('timeupdate', onTimeUpdate);
       shouldBeAcceptedAndTainted(createImageBitmap(video, 0, 0, 10, 10), 'video')
 .then(finishJSTest, ()=> {
     testFailed("Unexpected failure");

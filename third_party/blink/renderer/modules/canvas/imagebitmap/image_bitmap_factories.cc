@@ -271,6 +271,14 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
     return EmptyPromise();
   }
 
+  if ((options->hasResizeWidth() && options->resizeWidth() == 0) ||
+      (options->hasResizeHeight() && options->resizeHeight() == 0)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The options's resizeWidth or "
+                                      "resizeHeight is 0.");
+    return EmptyPromise();
+  }
+
   const ImageBitmapSourceStatus status = bitmap_source->CheckUsability();
   if (!status.has_value()) {
     ThrowExceptionForStatus(status.error(), exception_state);

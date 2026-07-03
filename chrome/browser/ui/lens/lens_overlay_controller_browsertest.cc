@@ -832,6 +832,20 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         .NotifyClick(ui::test::TestEvent());
   }
 
+  // Waits for the overlay WebUI to finish rendering the screenshot bitmap.
+  // createImageBitmap resolves in a task, so the screenshot
+  // delivery chain completes asynchronously after FlushForTesting().
+  void WaitForOverlayScreenshotRendered() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      auto result = content::EvalJs(
+          GetOverlayWebContents(),
+          "document.querySelector('lens-overlay-app')?.shadowRoot"
+          "?.querySelector('#selectionOverlay')"
+          "?.hasAttribute('is-screenshot-rendered') ?? false");
+      return result.is_bool() && result.ExtractBool();
+    }));
+  }
+
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
     auto* overlay_web_contents = GetOverlayWebContents();
 
@@ -1565,6 +1579,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(fake_controller);
   fake_controller->FlushForTesting();
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  WaitForOverlayScreenshotRendered();
 
   // Simulate mouse events on the overlay for drawing a manual region.
   gfx::Point center =
@@ -1650,6 +1665,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(fake_controller);
   fake_controller->FlushForTesting();
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  WaitForOverlayScreenshotRendered();
 
   // Simulate mouse events on the overlay for drawing a manual region.
   gfx::Point center =
@@ -8406,6 +8422,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   ASSERT_TRUE(fake_controller);
   fake_controller->FlushForTesting();
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  WaitForOverlayScreenshotRendered();
 
   // Preselection toast should be visible when the overlay is showing and is in
   // the kOverlay state.
