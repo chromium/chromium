@@ -113,7 +113,7 @@
 		</dict>
 		<dict>
 			<key>UIApplicationShortcutItemIconFile</key>
-			<string>quick_action_incognito</string>
+			<string>incognito</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE</string>
 			<key>UIApplicationShortcutItemType</key>

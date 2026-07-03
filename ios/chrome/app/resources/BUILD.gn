@@ -17,7 +17,6 @@ import("//tools/grit/grit_rule.gni")
 group("resources") {
   public_deps = [
     ":launchscreen",
-    ":quick_action_icons",
     ":system_strings",
     "//ios/chrome/app/resources:packed_resources",
   ]
@@ -225,14 +224,6 @@ generate_localizable_strings("system_strings") {
     "Intents.strings",
   ]
   deps = [ "//ios/chrome/app/resources:packed_resources" ]
-}
-
-bundle_data_xcassets("quick_action_icons") {
-  catalog = "QuickActions.xcassets"
-  sources = [
-    "QuickActions.xcassets/quick_action_incognito.symbolset/Contents.json",
-    "QuickActions.xcassets/quick_action_incognito.symbolset/incognito.cr.svg",
-  ]
 }
 
 tweak_info_plist("experimental_info_plist") {
