@@ -506,19 +506,6 @@ void CanvasNon2DResourceProvider::NotifyGpuContextLostTask(
   }
 }
 
-// For WebGpu RecyclableCanvasResource.
-void CanvasNon2DResourceProvider::OnAcquireRecyclableCanvasResource() {
-  EnsureWriteAccess();
-}
-
-void CanvasNon2DResourceProvider::OnDestroyRecyclableCanvasResource(
-    const gpu::SyncToken& sync_token) {
-  // RecyclableCanvasResource should be the only one that holds onto
-  // |resource_|.
-  DCHECK(resource()->HasOneRef());
-  resource()->WaitSyncToken(sync_token);
-}
-
 void CanvasNon2DResourceProvider::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (cached_snapshot_ &&
@@ -599,12 +586,6 @@ bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
   }
 
   return !resource_->HasOneRef();
-}
-
-void CanvasNon2DResourceProvider::PrepareForWebGPUDummyMailbox() {
-  if (resource()) {
-    resource()->PrepareForWebGPUDummyMailbox();
-  }
 }
 
 scoped_refptr<gpu::ClientSharedImage>

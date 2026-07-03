@@ -236,14 +236,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
       ImageOrientation orientation);
 
-  // For WebGpu RecyclableCanvasResource.
-  void OnAcquireRecyclableCanvasResource();
-  void OnDestroyRecyclableCanvasResource(const gpu::SyncToken& sync_token);
-
-  // This is a workaround to ensure WaitSyncToken() is still called even when
-  // copying is effectively skipped due to a dummy WebGPU texture.
-  void PrepareForWebGPUDummyMailbox();
-
   // Returns the ClientSharedImage backing this CanvasNon2DResourceProvider, if
   // one exists, after flushing the resource and signaling that an external
   // write will occur on it. The caller should wait on
