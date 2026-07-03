@@ -403,6 +403,46 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
 }
 
+// Tests that if suggestions are updated while a deletion confirmation dialog is
+// open, confirming the deletion of the old suggestion does not result in
+// deleting a wrong suggestion at a stale index.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       RemoveSuggestion_StaleIndexDeletesWrongSuggestion) {
+  const auto suggestion1 =
+      Suggestion(u"Autocomplete entry 1", SuggestionType::kAutocompleteEntry);
+  const auto suggestion2 =
+      Suggestion(u"Autocomplete entry 2", SuggestionType::kAutocompleteEntry);
+
+  ShowSuggestions(manager(), {suggestion1, suggestion2});
+  ASSERT_TRUE(client().popup_view());
+
+  base::OnceCallback<void(bool)> captured_deletion_callback;
+  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
+      .WillOnce([&](const std::u16string& title, const std::u16string& body,
+                    const std::u16string& body_link,
+                    const std::u16string& confirm_button_text,
+                    base::OnceCallback<void(bool)> deletion_callback) {
+        captured_deletion_callback = std::move(deletion_callback);
+      });
+
+  // User long-presses suggestion at index 0
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
+      /*index=*/0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+  ASSERT_FALSE(captured_deletion_callback.is_null());
+
+  // While dialog is pending, suggestions list changes
+  const auto suggestion3 =
+      Suggestion(u"Autocomplete entry 3", SuggestionType::kAutocompleteEntry);
+  ShowSuggestions(manager(), {suggestion2, suggestion3});
+
+  // When user confirms deletion dialog, suggestion1 is no longer in
+  // suggestions_, so RemoveSuggestion is NEVER called.
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
+
+  std::move(captured_deletion_callback).Run(/*confirmed=*/true);
+}
+
 // When a suggestion is accepted, the popup is hidden inside
 // `delegate->DidAcceptSuggestion()`. On Android, some code is still being
 // executed after hiding. This test makes sure no use-after-free, null pointer

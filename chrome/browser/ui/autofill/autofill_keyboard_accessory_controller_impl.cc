@@ -459,6 +459,9 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {
   CHECK_EQ(removal_method,
            AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
+    return false;
+  }
   RemovalConfirmationText removal_text;
   if (!GetRemovalConfirmationText(index, &removal_text)) {
     return false;
@@ -469,30 +472,28 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
       removal_text.confirm_button_text,
       base::BindOnce(
           &AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed,
-          GetWeakPtr(), index));
+          GetWeakPtr(), suggestions_[index]));
   return true;
 }
 
 void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
-    int index,
+    const Suggestion& suggestion,
     bool confirmed) {
-  // This function might be called in a callback, so ensure the list index is
-  // still in bounds. If not, terminate the removing and consider it failed.
-  // TODO(crbug.com/40766704): Replace these checks with a stronger identifier.
-  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
+  auto it = std::ranges::find(suggestions_, suggestion);
+  if (it == suggestions_.end()) {
     return;
   }
   CHECK_EQ(suggestions_.size(), labels_.size());
 
   const FillingProduct filling_product =
-      GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
+      GetFillingProductFromSuggestionType(suggestion.type);
 
   if (filling_product == FillingProduct::kAddress && web_contents_) {
     PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
         web_contents_->GetBrowserContext());
 
-    const auto* payload = std::get_if<Suggestion::AutofillProfilePayload>(
-        &GetSuggestionAt(index).payload);
+    const auto* payload =
+        std::get_if<Suggestion::AutofillProfilePayload>(&suggestion.payload);
     if (pdm && payload) {
       const AutofillProfile* profile =
           pdm->address_data_manager().GetProfileByGUID(payload->guid.value());
@@ -507,7 +508,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     return;
   }
 
-  if (!delegate_->RemoveSuggestion(suggestions_[index])) {
+  if (!delegate_->RemoveSuggestion(suggestion)) {
     return;
   }
   switch (filling_product) {
@@ -538,7 +539,8 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   }
 
   // Remove the deleted element.
-  suggestions_.erase(suggestions_.begin() + index);
+  const size_t index = std::distance(suggestions_.begin(), it);
+  suggestions_.erase(it);
   labels_.erase(labels_.begin() + index);
 
   if (HasSuggestions()) {

@@ -111,10 +111,9 @@ class AutofillKeyboardAccessoryControllerImpl
   // of `suggestions_`.
   void OrderSuggestionsAndCreateLabels();
 
-  // Reacts to the result of a deletion dialog by attempting to delete the
-  // suggestion at `index` if the dialog `confirmed` deletion and by emitting
-  // metrics.
-  void OnDeletionDialogClosed(int index, bool confirmed);
+  // Reacts to the result of a deletion dialog by attempting to delete
+  // `suggestion` if the dialog `confirmed` deletion and by emitting metrics.
+  void OnDeletionDialogClosed(const Suggestion& suggestion, bool confirmed);
 
   // Hides the view and asynchronously deletes itself.
   void HideViewAndDie();
