@@ -143,6 +143,11 @@ id<GREYMatcher> CloseButton() {
   return config;
 }
 
+- (void)tearDownHelper {
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"EnableOmniboxDebugging"];
+  [super tearDownHelper];
+}
+
 - (void)setUp {
   [self addTeardownBlock:^{
     // Explicitly close the Co-browse assistant sheet if it remains open.
