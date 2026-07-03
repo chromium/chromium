@@ -92,7 +92,7 @@ public class AtMemoryBottomSheetViewRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -194,6 +194,47 @@ public class AtMemoryBottomSheetViewRenderTest {
                 });
         mRenderTestRule.render(
                 mActivity.findViewById(android.R.id.content), "at_memory_main_screen");
+    }
+
+    @Test
+    @Feature({"RenderTest"})
+    public void testAtMemoryBottomSheetMainScreen_multilineSuggestionTitle() throws Exception {
+        ContextThemeWrapper themeWrapper =
+                new ContextThemeWrapper(mActivity, R.style.Theme_BrowserUI_DayNight);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mView = new AtMemoryBottomSheetView(themeWrapper);
+                    AtMemoryBottomSheetContent content =
+                            new AtMemoryBottomSheetContent(
+                                    mView.getContentView(), mBottomSheetController);
+
+                    ModelList modelList = new ModelList();
+                    PropertyModel itemModel =
+                            createSuggestionModel(
+                                    "Lufthansa Flight Reservation Details confirmation code"
+                                            + " ABC123XYZ",
+                                    "Flight ⋅ 15 May ⋅ SEA - MUC",
+                                    R.drawable.flight);
+                    modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, itemModel));
+
+                    mView.getHomeView().setUpSheetItems(modelList);
+
+                    mBottomSheetController.requestShowContent(content, false);
+                });
+
+        ViewUtils.waitForStableView(mView.getContentView());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    RecyclerView recyclerView =
+                            mView.getContentView().findViewById(R.id.suggestions_view);
+                    if (recyclerView.getChildCount() <= 0) {
+                        throw new RuntimeException("No children in recycler view");
+                    }
+                });
+        mRenderTestRule.render(
+                mActivity.findViewById(android.R.id.content),
+                "at_memory_main_screen_multiline_title");
     }
 
     @Test
