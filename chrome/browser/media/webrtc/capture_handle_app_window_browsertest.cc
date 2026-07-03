@@ -423,6 +423,10 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(web_app::WebAppManagement::Type::kKiosk,
                     web_app::WebAppManagement::Type::kPolicy));
 
+// TODO(https://crbug.com/530967723): This entire sub-suite of tests is flaky in
+// ash; disabling.
+#if !BUILDFLAG(IS_CHROMEOS)
+
 class CaptureHandlePwaBrowserTest : public CaptureHandleWindowBrowserTest {
  public:
   CaptureHandlePwaBrowserTest() = default;
@@ -676,6 +680,8 @@ IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
   session_->NavigateTargetCrossDocumentAndWait("/title3.html");
   EXPECT_EQ(session_->ReadLastEvent(), "null");
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class CaptureHandleIwaWindowBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
