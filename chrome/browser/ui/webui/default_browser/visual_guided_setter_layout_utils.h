@@ -21,7 +21,8 @@ bool IsAnchorLargeEnoughForDocking(const gfx::Rect& anchor_rect);
 // display::win::ScreenWin.
 gfx::Rect ComputeDockedSettingsRectFromAnchor(HWND chrome_hwnd,
                                               const gfx::Rect& anchor_rect_dip,
-                                              const gfx::Rect& work_area_px);
+                                              const gfx::Rect& work_area_px,
+                                              HWND settings_hwnd = nullptr);
 
 // Computes the starting point of the guidance arrow (in physical pixels,
 // screen coordinates) relative to the WebUI anchor rect.

@@ -46,6 +46,12 @@ mojom("modal_mojo_bindings") {
 }
 
 if (is_win) {
+  mojom("visual_guided_setter_mojo_bindings") {
+    sources = [ "visual_guided_setter.mojom" ]
+    webui_module_path = "/"
+    public_deps = [ "//ui/gfx/geometry/mojom" ]
+  }
+
   source_set("visual_guided_setter") {
     sources = [
       "guided_setter_overlay_window_win.cc",
@@ -56,11 +62,14 @@ if (is_win) {
       "visual_guided_setter_controller_win.h",
       "visual_guided_setter_layout_utils.cc",
       "visual_guided_setter_layout_utils.h",
+      "visual_guided_setter_page_handler.cc",
+      "visual_guided_setter_page_handler.h",
       "visual_guided_setter_ui.cc",
       "visual_guided_setter_ui.h",
     ]
 
     public_deps = [
+      ":visual_guided_setter_mojo_bindings",
       "//base",
       "//ui/gfx",
     ]
@@ -128,4 +137,22 @@ source_set("pixel_tests") {
     "//ui/base/interaction",
     "//ui/gfx",
   ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+  deps = []
+
+  if (is_win) {
+    sources += [ "visual_guided_setter_ui_browsertest.cc" ]
+
+    deps += [
+      ":visual_guided_setter",
+      "//chrome/test:test_support_ui",
+    ]
+  }
 }

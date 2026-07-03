@@ -7,10 +7,27 @@ import '/strings.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './visual_guided_setter.mojom-webui.js';
+import type {PageHandlerInterface} from './visual_guided_setter.mojom-webui.js';
+
+let handler: PageHandlerInterface|null = null;
+let callbackRouter: PageCallbackRouter|null = null;
+
+function updateAnchorRect() {
+  const container = document.getElementById('illustration-container');
+  if (!container || !handler) {
+    return;
+  }
+  const rect = container.getBoundingClientRect();
+  handler.setAnchorRect({
+    x: Math.round(rect.left),
+    y: Math.round(rect.top),
+    width: Math.round(rect.width),
+    height: Math.round(rect.height),
+  });
+}
+
 function initialize() {
-  // TODO(https://crbug.com/454597786): Setup logic for the native OS
-  // integration (Mojo, ResizeObserver, etc.) will be injected here in the
-  // subsequent CL in this chain.
   ColorChangeUpdater.forDocument().start();
 
   // Hide the second step if the user cannot pin to taskbar.
@@ -20,6 +37,25 @@ function initialize() {
       step2.hidden = true;
     }
   }
+
+  callbackRouter = new PageCallbackRouter();
+  const handlerRemote = new PageHandlerRemote();
+  handler = handlerRemote;
+
+  PageHandlerFactory.getRemote().createPageHandler(
+      callbackRouter.$.bindNewPipeAndPassRemote(),
+      handlerRemote.$.bindNewPipeAndPassReceiver());
+
+  const container = document.getElementById('illustration-container');
+  if (container) {
+    const observer = new ResizeObserver(() => {
+      updateAnchorRect();
+    });
+    observer.observe(container);
+  }
+
+  window.addEventListener('resize', updateAnchorRect);
+  updateAnchorRect();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

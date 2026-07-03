@@ -102,7 +102,7 @@ TEST_F(VisualGuidedSetterLayoutUtilsTest, ComputeArrowStartAndEndPoints) {
 
   gfx::Rect target(200, 300, 200, 200);
   gfx::Point end = ComputeArrowEndPoint(target);
-  EXPECT_EQ(end.x(), 300);
+  EXPECT_EQ(end.x(), 400);
   EXPECT_EQ(end.y(), 400);
 }
 

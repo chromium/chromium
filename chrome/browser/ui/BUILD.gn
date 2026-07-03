@@ -1044,6 +1044,10 @@ static_library("ui") {
     ]
   }
 
+  if (is_win) {
+    deps += [ "//chrome/browser/ui/webui/default_browser:visual_guided_setter" ]
+  }
+
   # //chrome/browser/ui/views/relaunch_notification:impl sources include
   # :ui headers (browser.h, views/frame/browser_view.h).
   if (!is_android && !is_chromeos) {

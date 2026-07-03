@@ -33,8 +33,9 @@ class GuidedSetterOverlayWindowWin {
 
   void Hide();
 
-  // `bounds_screen` is the window rect (screen coords); `start_screen` and
-  // `end_screen` are the arrow endpoints (screen coords).
+  // `bounds_screen` is the window rect (physical screen coords); `start_screen`
+  // and `end_screen` are the arrow endpoints (physical screen coords). They
+  // will be converted to DIPs for widget positioning and arrow rendering.
   void UpdateAndShow(const gfx::Rect& bounds_screen,
                      const gfx::Point& start_screen,
                      const gfx::Point& end_screen);

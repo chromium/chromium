@@ -3756,6 +3756,10 @@ if (!is_android) {
       deps += [ "//chrome/browser/enterprise/platform_auth:test_utils" ]
     }
 
+    if (!is_android && !is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/default_browser:browser_tests" ]
+    }
+
     if (is_win) {
       sources += [
         "../browser/ui/color/win/native_chrome_color_mixer_win_browsertest.cc",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/default_browser/visual_guided_setter_layout_utils.h"
 
+#include <windows.h>
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -26,7 +28,6 @@ constexpr int kMinAnchorHeightPx = 160;
 // Layout constants in DIPs. These values were determined based on the visual
 // alignment with the native Windows Settings app to match the UX spec.
 constexpr int kHorizontalInsetDip = 61;
-constexpr int kBottomInsetDip = -8;
 constexpr int kPreferredHeightDip = 220;
 constexpr int kMinHeightDip = 180;
 
@@ -39,30 +40,57 @@ bool IsAnchorLargeEnoughForDocking(const gfx::Rect& anchor_rect) {
 
 gfx::Rect ComputeDockedSettingsRectFromAnchor(HWND chrome_hwnd,
                                               const gfx::Rect& anchor_rect_dip,
-                                              const gfx::Rect& work_area_px) {
-  // 1. Calculate the target bounds in DIPs.
-  gfx::Rect target_dip = anchor_rect_dip;
-  target_dip.Inset(gfx::Insets::TLBR(0, kHorizontalInsetDip, kBottomInsetDip,
-                                     kHorizontalInsetDip));
-  target_dip.set_y(target_dip.bottom() - kPreferredHeightDip);
-  target_dip.set_height(kPreferredHeightDip);
+                                              const gfx::Rect& work_area_px,
+                                              HWND settings_hwnd) {
+  // 1. Convert anchor rect to physical screen pixels.
+  gfx::Rect anchor_px = display::win::GetScreenWin()->DIPToScreenRect(
+      chrome_hwnd, anchor_rect_dip);
 
-  // 2. Translate to physical screen pixels.
-  gfx::Rect target_px =
-      display::win::GetScreenWin()->DIPToScreenRect(chrome_hwnd, target_dip);
+  // 2. Compute target dimensions in physical pixels.
+  int target_width_dip =
+      std::max(0, anchor_rect_dip.width() - 2 * kHorizontalInsetDip);
+  int target_height_dip = kPreferredHeightDip;
+  gfx::Size target_size_px = display::win::GetScreenWin()->DIPToScreenSize(
+      chrome_hwnd, gfx::Size(target_width_dip, target_height_dip));
 
-  // 3. Minimum height enforcement in physical pixels.
   int min_height_px =
       display::win::GetScreenWin()
           ->DIPToScreenSize(chrome_hwnd, gfx::Size(0, kMinHeightDip))
           .height();
-
   int target_height_px =
-      std::clamp(target_px.height(), min_height_px,
+      std::clamp(target_size_px.height(), min_height_px,
                  std::max(min_height_px, work_area_px.height()));
+  int target_width_px = target_size_px.width();
 
-  target_px.set_y(target_px.bottom() - target_height_px);
-  target_px.set_height(target_height_px);
+  // 3. Compute top frame offset (titlebar + borders) so inner client top aligns
+  // directly with anchor top (no padding).
+  HMONITOR monitor = ::MonitorFromWindow(chrome_hwnd, MONITOR_DEFAULTTONEAREST);
+  int top_frame_offset =
+      display::win::GetScreenWin()->GetSystemMetricsForMonitor(monitor,
+                                                               SM_CYCAPTION) +
+      display::win::GetScreenWin()->GetSystemMetricsForMonitor(monitor,
+                                                               SM_CYSIZEFRAME) +
+      display::win::GetScreenWin()->GetSystemMetricsForMonitor(
+          monitor, SM_CXPADDEDBORDER);
+  if (settings_hwnd && ::IsWindow(settings_hwnd)) {
+    RECT win_rect, client_rect;
+    if (::GetWindowRect(settings_hwnd, &win_rect) &&
+        ::GetClientRect(settings_hwnd, &client_rect)) {
+      POINT pt = {client_rect.left, client_rect.top};
+      if (::ClientToScreen(settings_hwnd, &pt)) {
+        int measured = pt.y - win_rect.top;
+        if (measured > 0) {
+          top_frame_offset = measured;
+        }
+      }
+    }
+  }
+
+  int target_x_px = anchor_px.x() + (anchor_px.width() - target_width_px) / 2;
+  int target_y_px = anchor_px.y() - top_frame_offset;
+
+  gfx::Rect target_px(target_x_px, target_y_px, target_width_px,
+                      target_height_px);
 
   // 4. Clamp the final pixel rect to the work area.
   target_px.AdjustToFit(work_area_px);
@@ -76,7 +104,8 @@ gfx::Point ComputeArrowStartPointFromAnchor(const gfx::Rect& anchor_rect) {
 }
 
 gfx::Point ComputeArrowEndPoint(const gfx::Rect& target_rect) {
-  return target_rect.CenterPoint();
+  return gfx::Point(target_rect.right(),
+                    target_rect.y() + target_rect.height() / 2);
 }
 
 bool IsDpiCompatibleForDocking(HWND chrome_hwnd,

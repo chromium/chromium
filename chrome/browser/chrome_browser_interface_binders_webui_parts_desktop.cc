@@ -221,6 +221,10 @@
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_ui.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/webui/default_browser/visual_guided_setter_ui.h"
+#endif
+
 namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
@@ -640,6 +644,12 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         default_browser_modal::mojom::PageHandlerFactory,
         DefaultBrowserModalUI>(map);
   }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  RegisterWebUIControllerInterfaceBinder<
+      visual_guided_setter::mojom::PageHandlerFactory, VisualGuidedSetterUI>(
+      map);
 #endif
 
   RegisterWebUIControllerInterfaceBinder<

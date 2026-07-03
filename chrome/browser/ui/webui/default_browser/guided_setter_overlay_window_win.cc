@@ -4,15 +4,23 @@
 
 #include "chrome/browser/ui/webui/default_browser/guided_setter_overlay_window_win.h"
 
-#include <utility>
+#include <cmath>
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/win/hwnd_util.h"
 
 namespace {
 
@@ -34,7 +42,58 @@ class OverlayArrowView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
 
-    // TODO(https://crbug.com/454597786): Load the SVG arrow from Figma.
+    if (start_ == end_ || !GetColorProvider()) {
+      return;
+    }
+
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(GetColorProvider()->GetColor(ui::kColorAccent));
+    flags.setAntiAlias(true);
+
+    // Curved stem of the guidance arrow.
+    const SkPath path1 =
+        SkPathBuilder()
+            .moveTo(75.007f, 26.0467f)
+            .lineTo(76.8242f, 28.8725f)
+            .cubicTo(64.3189f, 37.2663f, 42.1f, 53.6201f, 7.63684f, 45.0465f)
+            .lineTo(8.35546f, 41.7782f)
+            .lineTo(9.07408f, 38.51f)
+            .cubicTo(40.5679f, 46.3449f, 60.6419f, 31.643f, 73.1897f, 23.2208f)
+            .lineTo(75.007f, 26.0467f)
+            .close()
+            .detach();
+
+    // Head of the guidance arrow.
+    const SkPath path2 = SkPathBuilder()
+                             .moveTo(4.8164f, 42.8729f)
+                             .lineTo(2.78675f, 45.1224f)
+                             .lineTo(-0.000137253f, 42.4539f)
+                             .lineTo(3.10647f, 40.2981f)
+                             .lineTo(4.8164f, 42.8729f)
+                             .close()
+                             .moveTo(29.8877f, 66.8789f)
+                             .lineTo(27.8581f, 69.1284f)
+                             .lineTo(2.78675f, 45.1224f)
+                             .lineTo(4.8164f, 42.8729f)
+                             .lineTo(6.84604f, 40.6234f)
+                             .lineTo(31.9173f, 64.6294f)
+                             .lineTo(29.8877f, 66.8789f)
+                             .close()
+                             .moveTo(4.8164f, 42.8729f)
+                             .lineTo(3.10647f, 40.2981f)
+                             .lineTo(33.6391f, 19.1103f)
+                             .lineTo(35.349f, 21.6851f)
+                             .lineTo(37.0589f, 24.2599f)
+                             .lineTo(6.52632f, 45.4477f)
+                             .lineTo(4.8164f, 42.8729f)
+                             .close()
+                             .detach();
+
+    gfx::ScopedCanvas scoped_canvas(canvas);
+    canvas->Translate(gfx::Vector2d(end_.x(), end_.y() - 65));
+    canvas->DrawPath(path1, flags);
+    canvas->DrawPath(path2, flags);
   }
 
  private:
@@ -64,10 +123,31 @@ void GuidedSetterOverlayWindowWin::Hide() {
 void GuidedSetterOverlayWindowWin::UpdateAndShow(const gfx::Rect& bounds_screen,
                                                  const gfx::Point& start_screen,
                                                  const gfx::Point& end_screen) {
-  widget_->SetBounds(bounds_screen);
+  HWND hwnd = widget_->GetNativeWindow()
+                  ? views::HWNDForNativeWindow(widget_->GetNativeWindow())
+                  : nullptr;
 
-  gfx::Point start_local = start_screen - bounds_screen.OffsetFromOrigin();
-  gfx::Point end_local = end_screen - bounds_screen.OffsetFromOrigin();
+  gfx::Rect bounds_dip =
+      display::win::GetScreenWin()
+          ? display::win::GetScreenWin()->ScreenToDIPRect(hwnd, bounds_screen)
+          : bounds_screen;
+
+  gfx::Point start_dip =
+      display::win::GetScreenWin()
+          ? gfx::ToFlooredPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
+                gfx::PointF(start_screen)))
+          : start_screen;
+
+  gfx::Point end_dip =
+      display::win::GetScreenWin()
+          ? gfx::ToFlooredPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
+                gfx::PointF(end_screen)))
+          : end_screen;
+
+  widget_->SetBounds(bounds_dip);
+
+  gfx::Point start_local = start_dip - bounds_dip.OffsetFromOrigin();
+  gfx::Point end_local = end_dip - bounds_dip.OffsetFromOrigin();
 
   static_cast<OverlayArrowView*>(arrow_view_.get())
       ->SetEndpoints(start_local, end_local);

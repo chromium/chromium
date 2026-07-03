@@ -19,6 +19,10 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "default_browser_setter.h"
 
 namespace default_browser {
@@ -132,7 +136,23 @@ void DefaultBrowserController::OnSetterExecutionComplete(
         toast_controller->MaybeShowToast(
             ToastParams(ToastId::kDefaultBrowserUpdateSuccess));
       }
+
+      tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
+      if (active_tab && active_tab->GetContents()) {
+        bool is_default_browser_page = false;
+#if BUILDFLAG(IS_WIN)
+        const GURL& url = active_tab->GetContents()->GetVisibleURL();
+        is_default_browser_page =
+            url.SchemeIs(content::kChromeUIScheme) &&
+            url.host() == chrome::kChromeUIDefaultBrowserVisualGuidedSetterHost;
+#endif
+        if (is_default_browser_page) {
+          CHECK(GetSetterType() == DefaultBrowserSetterType::kVisualGuide);
+          active_tab->Close();
+        }
+      }
     }
+
   } else if (auto* manager = DefaultBrowserManager::From(g_browser_process)) {
     manager->TrackTimeAfterSetterFailure(ui_entrypoint_, GetSetterType());
   }
