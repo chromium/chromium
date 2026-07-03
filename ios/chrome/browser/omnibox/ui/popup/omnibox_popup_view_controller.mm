@@ -838,6 +838,8 @@ const CGFloat kCloseButtonPadding = 16.0f;
   contentConfiguration.text = title;
   contentConfiguration.textProperties.font =
       [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+  contentConfiguration.textProperties.color =
+      [UIColor colorNamed:kTextSecondaryColor];
   contentConfiguration.textProperties.transform =
       UIListContentTextTransformUppercase;
   contentConfiguration.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(

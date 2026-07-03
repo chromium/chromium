@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/omnibox/model/suggestions:omnibox_pedal_swift",
     "//ios/chrome/browser/omnibox/model/suggestions:ui_interface",
+    "//ios/chrome/common/ui/colors",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

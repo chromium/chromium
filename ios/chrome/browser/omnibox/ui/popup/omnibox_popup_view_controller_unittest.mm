@@ -8,10 +8,17 @@
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_mutator.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+@interface OmniboxPopupViewController (Testing)
+@property(nonatomic, readonly) UITableView* tableView;
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section;
+@end
 
 namespace {
 
@@ -244,6 +251,34 @@ TEST_F(OmniboxPopupViewControllerTest, ReturnHighlightedSuggestion) {
   [popup_view_controller_
       performKeyboardAction:OmniboxKeyboardAction::kReturnKey];
   [mutator_ verify];
+}
+// Tests that the section header view is configured with the custom
+// `kTextSecondaryColor` text color.
+TEST_F(OmniboxPopupViewControllerTest, HeaderViewColor) {
+  id<AutocompleteSuggestionGroup> groupWithTitle =
+      [AutocompleteSuggestionGroupImpl
+          groupWithTitle:@"Test Section Header"
+             suggestions:GenerateMockSuggestions(1u)
+                    type:SuggestionGroupType::kUnspecifiedSuggestionGroup];
+
+  ExpectPreviewSuggestion(groupWithTitle.suggestions[0], YES);
+  [popup_view_controller_ updateMatches:@[ groupWithTitle ]
+             preselectedMatchGroupIndex:0];
+  [mutator_ verify];
+
+  UITableView* tableView = [popup_view_controller_ tableView];
+  UIView* headerView = [popup_view_controller_ tableView:tableView
+                                  viewForHeaderInSection:0];
+
+  EXPECT_TRUE([headerView isKindOfClass:[UITableViewHeaderFooterView class]]);
+  UITableViewHeaderFooterView* header =
+      (UITableViewHeaderFooterView*)headerView;
+
+  UIListContentConfiguration* configuration =
+      (UIListContentConfiguration*)header.contentConfiguration;
+  EXPECT_NSEQ(@"Test Section Header", configuration.text);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
+              configuration.textProperties.color);
 }
 
 }  // namespace
