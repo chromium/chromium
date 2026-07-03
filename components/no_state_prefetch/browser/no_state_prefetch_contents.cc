@@ -280,7 +280,7 @@ void NoStatePrefetchContents::StartPrerendering(
   SetPreloadingTriggeringOutcome(
       attempt_.get(), content::PreloadingTriggeringOutcome::kRunning);
 
-  no_state_prefetch_contents_ = CreateWebContents(session_storage_namespace);
+  no_state_prefetch_contents_ = CreateWebContents();
   no_state_prefetch_contents_->SetOwnerLocationForDebug(FROM_HERE);
   content::WebContentsObserver::Observe(no_state_prefetch_contents_.get());
   delegate_->OnNoStatePrefetchContentsCreated(
@@ -348,14 +348,11 @@ void NoStatePrefetchContents::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-std::unique_ptr<WebContents> NoStatePrefetchContents::CreateWebContents(
-    SessionStorageNamespace* session_storage_namespace) {
-  // TODO(ajwong): Remove the temporary map once prerendering is aware of
-  // multiple session storage namespaces per tab.
-  return WebContents::CreateWithSessionStorage(
-      WebContents::CreateParams(browser_context_),
-      CreateMapWithDefaultSessionStorageNamespace(browser_context_,
-                                                  session_storage_namespace));
+std::unique_ptr<WebContents> NoStatePrefetchContents::CreateWebContents() {
+  // The hidden WebContents is never swapped in, so it gets its own session
+  // storage namespace rather than sharing the launcher tab's namespace. The
+  // launcher's namespace id is recorded separately for matching.
+  return WebContents::Create(WebContents::CreateParams(browser_context_));
 }
 
 void NoStatePrefetchContents::NotifyPrefetchStart() {

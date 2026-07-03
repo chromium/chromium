@@ -112,9 +112,10 @@ class NoStatePrefetchContents
 
   // Starts rendering the contents in the prerendered state.
   // |bounds| indicates the rectangle that the prerendered page should be in.
-  // |session_storage_namespace| indicates the namespace that the prerendered
-  // page should be part of. |preloading_attempt| allows to log metrics for this
-  // NoStatePrefetch attempt.
+  // |session_storage_namespace| indicates the namespace of the launching tab
+  // and is recorded for use in Matches(); the hidden WebContents is given its
+  // own independent namespace. |preloading_attempt| allows to log metrics for
+  // this NoStatePrefetch attempt.
   virtual void StartPrerendering(
       const gfx::Rect& bounds,
       content::SessionStorageNamespace* session_storage_namespace,
@@ -215,8 +216,7 @@ class NoStatePrefetchContents
   void NotifyPrefetchStopLoading();
   void NotifyPrefetchStop();
 
-  std::unique_ptr<content::WebContents> CreateWebContents(
-      content::SessionStorageNamespace* session_storage_namespace);
+  std::unique_ptr<content::WebContents> CreateWebContents();
 
   bool prefetching_has_started_ = false;
 

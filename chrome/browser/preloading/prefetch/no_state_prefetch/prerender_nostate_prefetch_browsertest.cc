@@ -62,8 +62,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -1768,6 +1770,37 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, CancelAll) {
         << content::test::ActualVsExpectedUkmEntriesToString(
                attempt_ukm_entries, expected_attempt_entries);
   }
+}
+
+// Checks that the hidden WebContents created for a prefetch is given its own
+// SessionStorageNamespace rather than the namespace of the launching tab. The
+// prefetch contents are never swapped in, so they have no need for the
+// launcher's session storage data, and the launcher's namespace should remain
+// available for matching only.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       PrefetchUsesIsolatedSessionStorageNamespace) {
+  GURL url = src_server()->GetURL(kHungPrerenderPage);
+  std::unique_ptr<TestPrerender> prerender =
+      PrefetchFromURL(url, FINAL_STATUS_CANCELLED, 0);
+
+  ASSERT_TRUE(prerender->contents());
+  content::WebContents* prefetch_web_contents =
+      prerender->contents()->no_state_prefetch_contents();
+  ASSERT_TRUE(prefetch_web_contents);
+
+  content::SessionStorageNamespace* launcher_namespace =
+      GetSessionStorageNamespace();
+  ASSERT_TRUE(launcher_namespace);
+  content::SessionStorageNamespace* prefetch_namespace =
+      prefetch_web_contents->GetController()
+          .GetDefaultSessionStorageNamespace();
+  ASSERT_TRUE(prefetch_namespace);
+
+  EXPECT_NE(launcher_namespace->id(), prefetch_namespace->id());
+  EXPECT_TRUE(prerender->contents()->Matches(url, launcher_namespace));
+
+  GetNoStatePrefetchManager()->CancelAllPrerenders();
+  prerender->WaitForStop();
 }
 
 // Cancels the prerender of a page with its own prerender.  The second prerender
