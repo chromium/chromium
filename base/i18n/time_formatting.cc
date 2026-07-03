@@ -4,18 +4,17 @@
 
 #include "base/i18n/time_formatting.h"
 
-#include <stddef.h>
-
-#include <memory>
 #include <string>
 #include <string_view>
 
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/timezone.h"
 #include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
@@ -38,23 +37,22 @@ std::u16string TimeFormat(const icu::DateFormat& formatter, const Time& time) {
   return i18n::UnicodeStringToString16(date_string);
 }
 
-std::u16string TimeFormatWithoutAmPm(const icu::DateFormat* formatter,
-                                     const Time& time) {
-  DCHECK(formatter);
-  icu::UnicodeString time_string;
+const i18n::IcuBridge::DateTimeFormatter& GetDateTimeFormatter() {
+  return i18n::IcuBridge::GetInstance().date_time_formatter();
+}
 
-  icu::FieldPosition ampm_field(icu::DateFormat::kAmPmField);
-  formatter->format(ToUDate(time), time_string, ampm_field);
-  int ampm_length = ampm_field.getEndIndex() - ampm_field.getBeginIndex();
-  if (ampm_length) {
-    int begin = ampm_field.getBeginIndex();
-    // Doesn't include any spacing before the field.
-    if (begin) {
-      begin--;
-    }
-    time_string.removeBetween(begin, ampm_field.getEndIndex());
+UMeasureFormatWidth DurationWidthToMeasureWidth(DurationFormatWidth width) {
+  switch (width) {
+    case DURATION_WIDTH_WIDE:
+      return UMEASFMT_WIDTH_WIDE;
+    case DURATION_WIDTH_SHORT:
+      return UMEASFMT_WIDTH_SHORT;
+    case DURATION_WIDTH_NARROW:
+      return UMEASFMT_WIDTH_NARROW;
+    case DURATION_WIDTH_NUMERIC:
+      return UMEASFMT_WIDTH_NUMERIC;
   }
-  return i18n::UnicodeStringToString16(time_string);
+  NOTREACHED();
 }
 
 icu::SimpleDateFormat CreateSimpleDateFormatter(
@@ -83,101 +81,89 @@ icu::SimpleDateFormat CreateSimpleDateFormatter(
   return formatter;
 }
 
-UMeasureFormatWidth DurationWidthToMeasureWidth(DurationFormatWidth width) {
-  switch (width) {
-    case DURATION_WIDTH_WIDE:
-      return UMEASFMT_WIDTH_WIDE;
-    case DURATION_WIDTH_SHORT:
-      return UMEASFMT_WIDTH_SHORT;
-    case DURATION_WIDTH_NARROW:
-      return UMEASFMT_WIDTH_NARROW;
-    case DURATION_WIDTH_NUMERIC:
-      return UMEASFMT_WIDTH_NUMERIC;
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 std::u16string TimeFormatTimeOfDay(const Time& time) {
-  // We can omit the locale parameter because the default should match
-  // Chrome's application locale.
-  std::unique_ptr<icu::DateFormat> formatter(
-      icu::DateFormat::createTimeInstance(icu::DateFormat::kShort));
-  return TimeFormat(*formatter, time);
+  return GetDateTimeFormatter().Format(
+      time, i18n::datetime_options::T::Short().with_time_precision(
+                i18n::DateTimeFormatterOptions::TimePrecision::kMinute));
 }
 
 std::u16string TimeFormatTimeOfDayWithMilliseconds(const Time& time) {
-  icu::SimpleDateFormat formatter = CreateSimpleDateFormatter("HmsSSS");
-  return TimeFormatWithoutAmPm(&formatter, time);
+  return GetDateTimeFormatter().Format(
+      time, i18n::datetime_options::T::Short()
+                .with_hour_clock_type(k24HourClock)
+                .with_time_precision(
+                    i18n::DateTimeFormatterOptions::TimePrecision::kSubsecond_3)
+                .with_am_pm_clock_type(kDropAmPm));
 }
 
 std::u16string TimeFormatTimeOfDayWithHourClockType(const Time& time,
                                                     HourClockType type,
                                                     AmPmClockType ampm) {
-  // Just redirect to the normal function if the default type matches the
-  // given type.
-  HourClockType default_type = GetHourClockType();
-  if (default_type == type && (type == k24HourClock || ampm == kKeepAmPm)) {
-    return TimeFormatTimeOfDay(time);
-  }
-
-  const char* base_pattern = (type == k12HourClock ? "ahm" : "Hm");
-  icu::SimpleDateFormat formatter = CreateSimpleDateFormatter(base_pattern);
-
-  return (ampm == kKeepAmPm) ? TimeFormat(formatter, time)
-                             : TimeFormatWithoutAmPm(&formatter, time);
+  return GetDateTimeFormatter().Format(
+      time, i18n::datetime_options::T::Short()
+                .with_hour_clock_type(type)
+                .with_am_pm_clock_type(ampm)
+                .with_time_precision(
+                    i18n::DateTimeFormatterOptions::TimePrecision::kMinute));
 }
 
 std::u16string TimeFormatShortDate(const Time& time) {
-  std::unique_ptr<icu::DateFormat> formatter(
-      icu::DateFormat::createDateInstance(icu::DateFormat::kMedium));
-  return TimeFormat(*formatter, time);
+  return GetDateTimeFormatter().Format(time,
+                                       i18n::datetime_options::YMD::Medium());
 }
 
 std::u16string TimeFormatShortDateNumeric(const Time& time) {
-  std::unique_ptr<icu::DateFormat> formatter(
-      icu::DateFormat::createDateInstance(icu::DateFormat::kShort));
-  return TimeFormat(*formatter, time);
+  return GetDateTimeFormatter().Format(time,
+                                       i18n::datetime_options::YMD::Short());
 }
 
 std::u16string TimeFormatShortDateAndTime(const Time& time) {
-  std::unique_ptr<icu::DateFormat> formatter(
-      icu::DateFormat::createDateTimeInstance(icu::DateFormat::kShort));
-  return TimeFormat(*formatter, time);
+  return GetDateTimeFormatter().Format(
+      time, i18n::datetime_options::YMDT::Short().with_time_precision(
+                i18n::DateTimeFormatterOptions::TimePrecision::kSecond));
 }
 
 std::u16string TimeFormatShortDateAndTimeWithTimeZone(const Time& time) {
-  std::unique_ptr<icu::DateFormat> formatter(
-      icu::DateFormat::createDateTimeInstance(icu::DateFormat::kShort,
-                                              icu::DateFormat::kLong));
-  return TimeFormat(*formatter, time);
+  return GetDateTimeFormatter().Format(
+      time,
+      i18n::datetime_options::YMDT::Short()
+          .with_time_precision(
+              i18n::DateTimeFormatterOptions::TimePrecision::kSecond)
+          .with_time_zone_style(
+              i18n::DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::u16string TimeFormatMonthAndYearForTimeZone(
     const Time& time,
     const icu::TimeZone* time_zone) {
-  icu::SimpleDateFormat formatter = CreateSimpleDateFormatter(UDAT_YEAR_MONTH);
-  formatter.setTimeZone(*time_zone);
-  return TimeFormat(formatter, time);
+  DCHECK(time_zone);
+  icu::UnicodeString id;
+  time_zone->getID(id);
+  std::string id_str;
+  id.toUTF8String(id_str);
+
+  return GetDateTimeFormatter().Format(
+      time, i18n::datetime_options::YM::Long().with_time_zone(
+                i18n::TimeZone::FromString(id_str)));
 }
 #endif
 
 std::u16string TimeFormatMonthAndYear(const Time& time) {
-  return TimeFormat(CreateSimpleDateFormatter(UDAT_YEAR_MONTH), time);
+  return GetDateTimeFormatter().Format(time,
+                                       i18n::datetime_options::YM::Long());
 }
 
 std::u16string TimeFormatFriendlyDateAndTime(const Time& time) {
-  std::unique_ptr<icu::DateFormat> formatter(
-      icu::DateFormat::createDateTimeInstance(icu::DateFormat::kFull));
-  return TimeFormat(*formatter, time);
+  return GetDateTimeFormatter().Format(time,
+                                       i18n::datetime_options::YMDET::Long());
 }
 
 std::u16string TimeFormatFriendlyDate(const Time& time) {
-  std::unique_ptr<icu::DateFormat> formatter(
-      icu::DateFormat::createDateInstance(icu::DateFormat::kFull));
-  return TimeFormat(*formatter, time);
+  return GetDateTimeFormatter().Format(time,
+                                       i18n::datetime_options::YMDE::Long());
 }
 
 std::u16string LocalizedTimeFormatWithPattern(const Time& time,
@@ -252,14 +238,25 @@ std::string UnlocalizedTimeFormatWithPattern(const Time& time,
 }
 
 std::string TimeFormatAsIso8601(const Time& time) {
-  return UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss.SSSX",
-                                          icu::TimeZone::getGMT());
+  Time::Exploded exploded;
+  time.UTCExplode(&exploded);
+  return StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded.year,
+                      exploded.month, exploded.day_of_month, exploded.hour,
+                      exploded.minute, exploded.second, exploded.millisecond);
 }
 
 std::string TimeFormatHTTP(const Time& time) {
+  std::string day_of_week = base::UTF16ToUTF8(
+      GetDateTimeFormatter().Format(time, i18n::datetime_options::E::Short()));
+  std::string month_long = base::UTF16ToUTF8(
+      GetDateTimeFormatter().Format(time, i18n::datetime_options::M::Medium()));
+  Time::Exploded exploded;
+  time.UTCExplode(&exploded);
+  // This is mimic the skeleton: "E, dd MMM yyyy HH:mm:ss 'GMT'"
   // https://www.rfc-editor.org/rfc/rfc7231#section-7.1.1.1
-  return UnlocalizedTimeFormatWithPattern(time, "E, dd MMM yyyy HH:mm:ss 'GMT'",
-                                          icu::TimeZone::getGMT());
+  return StringPrintf("%s, %02d %s %04d %02d:%02d:%02d GMT", day_of_week,
+                      exploded.day_of_month, month_long, exploded.year,
+                      exploded.hour, exploded.minute, exploded.second);
 }
 
 bool TimeDurationFormat(TimeDelta time,

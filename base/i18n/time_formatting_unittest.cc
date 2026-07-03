@@ -570,5 +570,18 @@ TEST(TimeFormattingTest, TimeDurationCompactFormatWithSeconds) {
                             delta, DURATION_WIDTH_NUMERIC));
 }
 
+TEST(TimeFormattingTest, GetHourClockType_Persian) {
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+  i18n::SetICUDefaultLocale("fa");
+  Time time;
+  EXPECT_TRUE(Time::FromUTCString("2026-05-25 22:30:00", &time));
+  std::u16string result = TimeFormatTimeOfDay(time);
+  // Use std::cout for debugging.
+  std::cout << "Formatted time for fa: " << base::UTF16ToUTF8(result)
+            << std::endl;
+  HourClockType type = GetHourClockType();
+  EXPECT_EQ(k24HourClock, type);
+}
+
 }  // namespace
 }  // namespace base
