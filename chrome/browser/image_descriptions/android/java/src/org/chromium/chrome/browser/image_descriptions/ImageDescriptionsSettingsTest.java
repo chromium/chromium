@@ -37,12 +37,12 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Unit tests for {@link ImageDescriptionsSettings} */
@@ -67,14 +67,13 @@ public class ImageDescriptionsSettingsTest {
     public SettingsActivityTestRule<ImageDescriptionsSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ImageDescriptionsSettings.class);
 
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     @Mock private ImageDescriptionsControllerDelegate mDelegate;
 
     private Profile mProfile;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ImageDescriptionsController.getInstance().setDelegateForTesting(mDelegate);
     }
 

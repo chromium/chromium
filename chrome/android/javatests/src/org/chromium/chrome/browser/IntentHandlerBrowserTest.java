@@ -15,14 +15,14 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -32,7 +32,6 @@ import java.util.Collections;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class IntentHandlerBrowserTest {
-    @ClassRule public static final ChromeBrowserTestRule sRule = new ChromeBrowserTestRule();
 
     private static final String VOICE_SEARCH_QUERY = "VOICE_QUERY";
     private static final String VOICE_SEARCH_QUERY_URL =
@@ -40,6 +39,11 @@ public class IntentHandlerBrowserTest {
 
     private static final String VOICE_URL_QUERY = "www.google.com";
     private static final String VOICE_URL_QUERY_URL = "INVALID_URLZ";
+
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
 
     @Test
     @MediumTest

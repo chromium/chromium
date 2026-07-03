@@ -12,6 +12,7 @@ import android.graphics.Color;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,11 +24,11 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.url.GURL;
 
@@ -39,10 +40,14 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class ImageFetcherIntegrationTest {
-    @ClassRule public static final ChromeBrowserTestRule sRule = new ChromeBrowserTestRule();
 
     @ClassRule
     public static final EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
+
+    @BeforeClass
+    public static void setUpClass() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
 
     private static class TestImageFetcherCallback extends CallbackHelper
             implements Callback<Bitmap> {
