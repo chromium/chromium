@@ -6,7 +6,7 @@
       'https://devtools.test:8443/inspector-protocol/digital-credentials/resources/digital-credentials-create.html');
 
   await dp.DigitalCredentials.setVirtualWalletBehavior({
-    behavior: 'decline',
+    action: 'decline',
   });
 
   const result = await session.evaluateAsyncWithUserGesture(`createDigitalCredential({
@@ -14,7 +14,7 @@
         data: {},
       })`);
 
-  await dp.DigitalCredentials.setVirtualWalletBehavior({behavior: 'clear'});
+  await dp.DigitalCredentials.setVirtualWalletBehavior({action: 'clear'});
 
   testRunner.log(result);
   testRunner.completeTest();

@@ -181,13 +181,13 @@ TEST_F(DigitalCredentialEnvironmentTest, DevToolsDetachClearsWalletState) {
   VirtualWallet* wallet = env_->GetOrCreateVirtualWallet(frame_node);
   ASSERT_NE(wallet, nullptr);
 
-  // Set behavior on the wallet to verify it gets cleared.
-  wallet->set_behavior(VirtualWallet::Behavior::kRespond);
+  // Set action on the wallet to verify it gets cleared.
+  wallet->set_action(VirtualWallet::Action::kRespond);
   DigitalIdentityProvider::DigitalCredential credential(
       "test_protocol", base::Value(base::Value::Type::DICT));
   wallet->SetCredential(std::move(credential));
 
-  ASSERT_TRUE(wallet->behavior().has_value());
+  ASSERT_TRUE(wallet->action().has_value());
   ASSERT_TRUE(wallet->GetCredential().has_value());
 
   env_->DevToolsAgentHostDetached(agent_host.get());

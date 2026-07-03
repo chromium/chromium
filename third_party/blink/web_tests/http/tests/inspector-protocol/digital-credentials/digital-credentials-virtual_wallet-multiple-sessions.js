@@ -6,7 +6,7 @@
       'https://devtools.test:8443/inspector-protocol/digital-credentials/resources/digital-credentials-get.html');
 
   await dp1.DigitalCredentials.setVirtualWalletBehavior({
-    behavior: 'respond',
+    action: 'respond',
     protocol: 'openid4vp-v1-unsigned',
     response: {"token":"token1"},
   });

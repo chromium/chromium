@@ -1566,7 +1566,7 @@ TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetRespond) {
       base::DictValue().Set("token", "virtual-wallet-data"));
 
   VirtualWallet* wallet = GetOrCreateVirtualWallet();
-  wallet->set_behavior(VirtualWallet::Behavior::kRespond);
+  wallet->set_action(VirtualWallet::Action::kRespond);
   wallet->SetCredential(
       DigitalCredential(kProtocolInWallet, kResponseData.Clone()));
 
@@ -1581,7 +1581,7 @@ TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetRespond) {
 
 TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetDecline) {
   VirtualWallet* wallet = GetOrCreateVirtualWallet();
-  wallet->set_behavior(VirtualWallet::Behavior::kDecline);
+  wallet->set_action(VirtualWallet::Action::kDecline);
 
   base::RunLoop run_loop;
   base::MockCallback<GetCallback> mock_callback;
@@ -1595,7 +1595,7 @@ TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetDecline) {
 
 TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetWaitIsAbortable) {
   VirtualWallet* wallet = GetOrCreateVirtualWallet();
-  wallet->set_behavior(VirtualWallet::Behavior::kWait);
+  wallet->set_action(VirtualWallet::Action::kWait);
 
   base::RunLoop run_loop;
   base::MockCallback<GetCallback> mock_callback;
@@ -1613,7 +1613,7 @@ TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateRespond) {
       base::DictValue().Set("token", "virtual-wallet-data"));
 
   VirtualWallet* wallet = GetOrCreateVirtualWallet();
-  wallet->set_behavior(VirtualWallet::Behavior::kRespond);
+  wallet->set_action(VirtualWallet::Action::kRespond);
   wallet->SetCredential(
       DigitalCredential(kProtocolInWallet, kResponseData.Clone()));
 
@@ -1629,7 +1629,7 @@ TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateRespond) {
 
 TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateDecline) {
   VirtualWallet* wallet = GetOrCreateVirtualWallet();
-  wallet->set_behavior(VirtualWallet::Behavior::kDecline);
+  wallet->set_action(VirtualWallet::Action::kDecline);
 
   base::RunLoop run_loop;
   base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> mock_callback;
@@ -1644,7 +1644,7 @@ TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateDecline) {
 
 TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateWaitIsAbortable) {
   VirtualWallet* wallet = GetOrCreateVirtualWallet();
-  wallet->set_behavior(VirtualWallet::Behavior::kWait);
+  wallet->set_action(VirtualWallet::Action::kWait);
 
   base::RunLoop run_loop;
   base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> mock_callback;

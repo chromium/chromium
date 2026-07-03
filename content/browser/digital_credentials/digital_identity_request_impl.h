@@ -71,12 +71,12 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
-  // Returns the active virtual wallet behavior for this frame, or
+  // Returns the active virtual wallet action for this frame, or
   // std::nullopt if none is configured (request should proceed normally).
-  std::optional<VirtualWallet::Behavior> GetVirtualWalletBehavior();
+  std::optional<VirtualWallet::Action> GetVirtualWalletAction();
 
   // Returns true if the request was handled by the virtual wallet.
-  bool HandleVirtualWalletBehavior();
+  bool HandleVirtualWalletAction();
 
   // Called when the create request JSON has been parsed.
   void OnCreateRequestJsonParsed(

@@ -58,7 +58,7 @@ class DigitalCredentialsHandlerTest : public RenderViewHostImplTestHarness {
 
 TEST_F(DigitalCredentialsHandlerTest, NoFrameHostReturnsInvalidParams) {
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Respond, std::nullopt,
+      DigitalCredentials::VirtualWalletActionEnum::Respond, std::nullopt,
       nullptr);
   EXPECT_EQ(crdtp::DispatchCode::INVALID_PARAMS, response.Code());
 }
@@ -66,17 +66,17 @@ TEST_F(DigitalCredentialsHandlerTest, NoFrameHostReturnsInvalidParams) {
 TEST_F(DigitalCredentialsHandlerTest, ClearResetsWalletState) {
   AttachToMainFrame();
   handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Respond, "openid4vp",
+      DigitalCredentials::VirtualWalletActionEnum::Respond, "openid4vp",
       CreateDictValue(R"({"presentation":"abc"})"));
 
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Clear, std::nullopt,
+      DigitalCredentials::VirtualWalletActionEnum::Clear, std::nullopt,
       nullptr);
 
   EXPECT_EQ(crdtp::DispatchCode::SUCCESS, response.Code());
   VirtualWallet* wallet = WalletForMainFrame();
   ASSERT_NE(nullptr, wallet);
-  EXPECT_FALSE(wallet->behavior().has_value());
+  EXPECT_FALSE(wallet->action().has_value());
   EXPECT_FALSE(wallet->GetCredential().has_value());
 }
 
@@ -85,7 +85,7 @@ TEST_F(DigitalCredentialsHandlerTest,
   AttachToMainFrame();
 
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Respond, std::nullopt,
+      DigitalCredentials::VirtualWalletActionEnum::Respond, std::nullopt,
       CreateDictValue(R"({"foo":1})"));
 
   EXPECT_EQ(crdtp::DispatchCode::INVALID_PARAMS, response.Code());
@@ -96,7 +96,7 @@ TEST_F(DigitalCredentialsHandlerTest,
   AttachToMainFrame();
 
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Respond, "openid4vp",
+      DigitalCredentials::VirtualWalletActionEnum::Respond, "openid4vp",
       nullptr);
 
   EXPECT_EQ(crdtp::DispatchCode::INVALID_PARAMS, response.Code());
@@ -106,14 +106,14 @@ TEST_F(DigitalCredentialsHandlerTest, RespondStoresCredentialAndSetsBehavior) {
   AttachToMainFrame();
 
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Respond, "openid4vp",
+      DigitalCredentials::VirtualWalletActionEnum::Respond, "openid4vp",
       CreateDictValue(R"({"presentation":"abc"})"));
 
   EXPECT_EQ(crdtp::DispatchCode::SUCCESS, response.Code());
   VirtualWallet* wallet = WalletForMainFrame();
   ASSERT_NE(nullptr, wallet);
-  ASSERT_TRUE(wallet->behavior().has_value());
-  EXPECT_EQ(VirtualWallet::Behavior::kRespond, *wallet->behavior());
+  ASSERT_TRUE(wallet->action().has_value());
+  EXPECT_EQ(VirtualWallet::Action::kRespond, *wallet->action());
 
   auto stored = wallet->GetCredential();
   ASSERT_TRUE(stored.has_value());
@@ -128,31 +128,30 @@ TEST_F(DigitalCredentialsHandlerTest, DeclineSetsBehaviorKDecline) {
   AttachToMainFrame();
 
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Decline, std::nullopt,
+      DigitalCredentials::VirtualWalletActionEnum::Decline, std::nullopt,
       nullptr);
 
   EXPECT_EQ(crdtp::DispatchCode::SUCCESS, response.Code());
   VirtualWallet* wallet = WalletForMainFrame();
   ASSERT_NE(nullptr, wallet);
-  ASSERT_TRUE(wallet->behavior().has_value());
-  EXPECT_EQ(VirtualWallet::Behavior::kDecline, *wallet->behavior());
+  ASSERT_TRUE(wallet->action().has_value());
+  EXPECT_EQ(VirtualWallet::Action::kDecline, *wallet->action());
 }
 
 TEST_F(DigitalCredentialsHandlerTest, WaitSetsBehaviorKWait) {
   AttachToMainFrame();
 
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Wait, std::nullopt,
-      nullptr);
+      DigitalCredentials::VirtualWalletActionEnum::Wait, std::nullopt, nullptr);
 
   EXPECT_EQ(crdtp::DispatchCode::SUCCESS, response.Code());
   VirtualWallet* wallet = WalletForMainFrame();
   ASSERT_NE(nullptr, wallet);
-  ASSERT_TRUE(wallet->behavior().has_value());
-  EXPECT_EQ(VirtualWallet::Behavior::kWait, *wallet->behavior());
+  ASSERT_TRUE(wallet->action().has_value());
+  EXPECT_EQ(VirtualWallet::Action::kWait, *wallet->action());
 }
 
-TEST_F(DigitalCredentialsHandlerTest, UnknownBehaviorReturnsInvalidParams) {
+TEST_F(DigitalCredentialsHandlerTest, UnknownActionReturnsInvalidParams) {
   AttachToMainFrame();
 
   auto response =
@@ -162,11 +161,11 @@ TEST_F(DigitalCredentialsHandlerTest, UnknownBehaviorReturnsInvalidParams) {
 }
 
 TEST_F(DigitalCredentialsHandlerTest,
-       NonRespondBehaviorWithExtraParamsReturnsInvalidParams) {
+       NonRespondActionWithExtraParamsReturnsInvalidParams) {
   AttachToMainFrame();
 
   auto response = handler_->SetVirtualWalletBehavior(
-      DigitalCredentials::VirtualWalletBehaviorEnum::Decline, "openid4vp",
+      DigitalCredentials::VirtualWalletActionEnum::Decline, "openid4vp",
       nullptr);
 
   EXPECT_EQ(crdtp::DispatchCode::INVALID_PARAMS, response.Code());

@@ -439,20 +439,20 @@ DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
 
 DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
-std::optional<VirtualWallet::Behavior>
-DigitalIdentityRequestImpl::GetVirtualWalletBehavior() {
+std::optional<VirtualWallet::Action>
+DigitalIdentityRequestImpl::GetVirtualWalletAction() {
   VirtualWallet* wallet =
       DigitalCredentialEnvironment::GetInstance()->MaybeGetVirtualWallet(
           FrameTreeNode::From(&render_frame_host()));
   if (!wallet) {
     return std::nullopt;
   }
-  return wallet->behavior();
+  return wallet->action();
 }
 
-bool DigitalIdentityRequestImpl::HandleVirtualWalletBehavior() {
-  std::optional<VirtualWallet::Behavior> behavior = GetVirtualWalletBehavior();
-  if (!behavior) {
+bool DigitalIdentityRequestImpl::HandleVirtualWalletAction() {
+  std::optional<VirtualWallet::Action> action = GetVirtualWalletAction();
+  if (!action) {
     return false;
   }
 
@@ -463,16 +463,16 @@ bool DigitalIdentityRequestImpl::HandleVirtualWalletBehavior() {
   RequestDigitalIdentityStatus status;
   std::optional<DigitalIdentityProvider::DigitalCredential> credential;
 
-  switch (*behavior) {
-    case VirtualWallet::Behavior::kRespond:
+  switch (*action) {
+    case VirtualWallet::Action::kRespond:
       credential = wallet->GetCredential();
       status = credential ? RequestDigitalIdentityStatus::kSuccess
                           : RequestDigitalIdentityStatus::kError;
       break;
-    case VirtualWallet::Behavior::kDecline:
+    case VirtualWallet::Action::kDecline:
       status = RequestDigitalIdentityStatus::kErrorUserDeclined;
       break;
-    case VirtualWallet::Behavior::kWait:
+    case VirtualWallet::Action::kWait:
       // Leave the request's promise pending.
       return true;
   }
@@ -618,7 +618,7 @@ void DigitalIdentityRequestImpl::Get(
     return;
   }
 
-  if (HandleVirtualWalletBehavior()) {
+  if (HandleVirtualWalletAction()) {
     return;
   }
 
@@ -736,7 +736,7 @@ void DigitalIdentityRequestImpl::Create(
     return;
   }
 
-  if (HandleVirtualWalletBehavior()) {
+  if (HandleVirtualWalletAction()) {
     return;
   }
 

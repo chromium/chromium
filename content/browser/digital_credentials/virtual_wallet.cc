@@ -26,7 +26,7 @@ VirtualWallet::GetCredential() const {
 
 void VirtualWallet::Clear() {
   stored_credential_.reset();
-  behavior_.reset();
+  action_.reset();
 }
 
 }  // namespace content

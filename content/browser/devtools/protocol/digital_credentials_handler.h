@@ -38,10 +38,10 @@ class DigitalCredentialsHandler : public DevToolsDomainHandler,
   void Wire(UberDispatcher* dispatcher) override;
 
   // DigitalCredentials::Backend:
-  // |in_protocol| and |in_response| are required when |in_behavior| is
+  // |in_protocol| and |in_response| are required when |in_action| is
   // "respond" and forbidden otherwise.
   CONTENT_EXPORT DispatchResponse SetVirtualWalletBehavior(
-      const String& in_behavior,
+      const String& in_action,
       std::optional<String> in_protocol,
       std::unique_ptr<protocol::DictionaryValue> in_response) override;
 

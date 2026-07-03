@@ -6,7 +6,7 @@
       'https://devtools.test:8443/inspector-protocol/digital-credentials/resources/digital-credentials-get.html');
 
   await dp.DigitalCredentials.setVirtualWalletBehavior({
-    behavior: 'wait',
+    action: 'wait',
   });
 
   const result = await session.evaluateAsyncWithUserGesture(`(async () => {
@@ -23,7 +23,7 @@
     }
   })()`);
 
-  await dp.DigitalCredentials.setVirtualWalletBehavior({behavior: 'clear'});
+  await dp.DigitalCredentials.setVirtualWalletBehavior({action: 'clear'});
 
   testRunner.log(result);
   testRunner.completeTest();

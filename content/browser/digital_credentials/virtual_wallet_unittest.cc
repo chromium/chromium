@@ -100,14 +100,14 @@ TEST_F(VirtualWalletTest, Overwrite) {
   EXPECT_FALSE(claims->FindBool("age_over_18").has_value());
 }
 
-// Clear() wipes both the stored credential and the behavior.
+// Clear() wipes both the stored credential and the action.
 TEST_F(VirtualWalletTest, ClearWipesCredentialAndBehavior) {
   wallet()->SetCredential(GenerateTestCredential());
-  wallet()->set_behavior(VirtualWallet::Behavior::kRespond);
+  wallet()->set_action(VirtualWallet::Action::kRespond);
 
   wallet()->Clear();
 
-  EXPECT_FALSE(wallet()->behavior().has_value());
+  EXPECT_FALSE(wallet()->action().has_value());
   EXPECT_FALSE(wallet()->GetCredential().has_value());
 }
 

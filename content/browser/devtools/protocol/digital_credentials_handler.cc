@@ -29,7 +29,7 @@ void DigitalCredentialsHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 DispatchResponse DigitalCredentialsHandler::SetVirtualWalletBehavior(
-    const String& in_behavior,
+    const String& in_action,
     std::optional<String> in_protocol,
     std::unique_ptr<protocol::DictionaryValue> in_response) {
   if (!frame_host_) {
@@ -37,10 +37,10 @@ DispatchResponse DigitalCredentialsHandler::SetVirtualWalletBehavior(
         "Command must be issued on a session attached to a frame");
   }
 
-  if (in_behavior != DigitalCredentials::VirtualWalletBehaviorEnum::Respond &&
+  if (in_action != DigitalCredentials::VirtualWalletActionEnum::Respond &&
       (in_protocol || in_response)) {
     return DispatchResponse::InvalidParams(
-        "Protocol and response are only allowed when behavior is 'respond'");
+        "Protocol and response are only allowed when action is 'respond'");
   }
 
   VirtualWallet* wallet =
@@ -48,35 +48,35 @@ DispatchResponse DigitalCredentialsHandler::SetVirtualWalletBehavior(
           frame_host_->frame_tree_node());
   CHECK(wallet);
 
-  if (in_behavior == DigitalCredentials::VirtualWalletBehaviorEnum::Clear) {
+  if (in_action == DigitalCredentials::VirtualWalletActionEnum::Clear) {
     wallet->Clear();
     return DispatchResponse::Success();
   }
 
-  if (in_behavior == DigitalCredentials::VirtualWalletBehaviorEnum::Respond) {
+  if (in_action == DigitalCredentials::VirtualWalletActionEnum::Respond) {
     if (!in_protocol || !in_response) {
       return DispatchResponse::InvalidParams(
-          "Protocol and response required for 'respond' behavior");
+          "Protocol and response required for 'respond' action");
     }
 
-    wallet->set_behavior(VirtualWallet::Behavior::kRespond);
+    wallet->set_action(VirtualWallet::Action::kRespond);
     DigitalIdentityProvider::DigitalCredential credential(
         *in_protocol, base::Value(std::move(*in_response)));
     wallet->SetCredential(std::move(credential));
     return DispatchResponse::Success();
   }
 
-  if (in_behavior == DigitalCredentials::VirtualWalletBehaviorEnum::Decline) {
-    wallet->set_behavior(VirtualWallet::Behavior::kDecline);
+  if (in_action == DigitalCredentials::VirtualWalletActionEnum::Decline) {
+    wallet->set_action(VirtualWallet::Action::kDecline);
     return DispatchResponse::Success();
   }
 
-  if (in_behavior == DigitalCredentials::VirtualWalletBehaviorEnum::Wait) {
-    wallet->set_behavior(VirtualWallet::Behavior::kWait);
+  if (in_action == DigitalCredentials::VirtualWalletActionEnum::Wait) {
+    wallet->set_action(VirtualWallet::Action::kWait);
     return DispatchResponse::Success();
   }
 
-  return DispatchResponse::InvalidParams("Unknown behavior");
+  return DispatchResponse::InvalidParams("Unknown action");
 }
 
 }  // namespace content::protocol
