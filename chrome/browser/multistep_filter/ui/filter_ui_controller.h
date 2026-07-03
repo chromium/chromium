@@ -33,6 +33,7 @@ enum class SuggestionUserDecision;
 namespace internal {
 inline constexpr int kDismissCommand = 1;
 inline constexpr int kSettingsCommand = 2;
+inline constexpr int kSendFeedbackCommand = 3;
 }  // namespace internal
 
 class FilterAcceptanceMetricsLogger;
@@ -117,6 +118,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
   // Opens the settings page.
   void OpenSettings();
+
+  // Opens the feedback page.
+  void OpenFeedback();
 
   // Shows the cue for the given suggestion.
   void ShowCue(const UrlFilterSuggestion& suggestion);

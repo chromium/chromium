@@ -26,6 +26,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
+#include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/logging/filter_acceptance_metrics_logger.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
@@ -301,6 +302,9 @@ void FilterUiController::ExecuteCommand(int command_id, int event_flags) {
       ClearSuggestion(SuggestionUserDecision::kSettingsOpened);
       OpenSettings();
       break;
+    case internal::kSendFeedbackCommand:
+      OpenFeedback();
+      break;
   }
 }
 
@@ -315,6 +319,21 @@ void FilterUiController::OpenSettings() {
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui::PAGE_TRANSITION_GENERATED,
         /*is_renderer_initiated=*/false);
+    web_contents->OpenURL(params,
+                          base::BindOnce([](content::NavigationHandle&) {}));
+  }
+}
+
+void FilterUiController::OpenFeedback() {
+  GURL feedback_url(kMultistepFilterSendFeedbackUrl.Get());
+  if (!feedback_url.is_valid()) {
+    return;
+  }
+  if (content::WebContents* web_contents = tab().GetContents()) {
+    content::OpenURLParams params(feedback_url, content::Referrer(),
+                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  ui::PAGE_TRANSITION_LINK,
+                                  /*is_renderer_initiated=*/false);
     web_contents->OpenURL(params,
                           base::BindOnce([](content::NavigationHandle&) {}));
   }
@@ -360,6 +379,15 @@ void FilterUiController::ShowCue(const UrlFilterSuggestion& suggestion) {
   menu_model->AddItemWithStringIdAndIcon(
       internal::kSettingsCommand, IDS_MULTISTEP_FILTER_CUE_SETTINGS,
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon));
+  if (base::FeatureList::IsEnabled(kMultistepFilterSendFeedback)) {
+    GURL feedback_url(kMultistepFilterSendFeedbackUrl.Get());
+    if (feedback_url.is_valid()) {
+      menu_model->AddItemWithStringIdAndIcon(
+          internal::kSendFeedbackCommand,
+          IDS_MULTISTEP_FILTER_CUE_GIVE_FEEDBACK,
+          ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackIcon));
+    }
+  }
   page_action_controller_->SetAnchoredMessageAction(
       kActionMultistepFilter,
       page_actions::AnchoredMessageActionIconType::kMenu,

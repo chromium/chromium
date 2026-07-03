@@ -446,6 +446,8 @@ TEST_F(FilterUiControllerTest, IsCommandIdCheckedReturnsFalse) {
       test_api(*controller_).IsCommandIdChecked(internal::kDismissCommand));
   EXPECT_FALSE(
       test_api(*controller_).IsCommandIdChecked(internal::kSettingsCommand));
+  EXPECT_FALSE(test_api(*controller_)
+                   .IsCommandIdChecked(internal::kSendFeedbackCommand));
 }
 
 TEST_F(FilterUiControllerTest, IsCommandIdEnabledReturnsTrue) {
@@ -453,6 +455,44 @@ TEST_F(FilterUiControllerTest, IsCommandIdEnabledReturnsTrue) {
       test_api(*controller_).IsCommandIdEnabled(internal::kDismissCommand));
   EXPECT_TRUE(
       test_api(*controller_).IsCommandIdEnabled(internal::kSettingsCommand));
+  EXPECT_TRUE(test_api(*controller_)
+                  .IsCommandIdEnabled(internal::kSendFeedbackCommand));
+}
+
+TEST_F(FilterUiControllerTest, ExecuteCommandDismissClearsSuggestion) {
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion);
+  EXPECT_NE(test_api(*controller_).suggestion_state(), std::nullopt);
+
+  test_api(*controller_).ExecuteCommand(internal::kDismissCommand, 0);
+  EXPECT_EQ(test_api(*controller_).suggestion_state(), std::nullopt);
+}
+
+TEST_F(FilterUiControllerTest,
+       ExecuteCommandSendFeedbackDoesNotClearSuggestion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kMultistepFilterSendFeedback,
+      {{"MultistepFilterSendFeedbackUrl", "https://feedback.google.com"}});
+
+  MockWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  EXPECT_CALL(delegate, OpenURLFromTab(
+                            web_contents(),
+                            testing::Field(&content::OpenURLParams::url,
+                                           GURL("https://feedback.google.com")),
+                            _))
+      .WillOnce(testing::Return(web_contents()));
+
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion);
+  EXPECT_NE(test_api(*controller_).suggestion_state(), std::nullopt);
+
+  test_api(*controller_).ExecuteCommand(internal::kSendFeedbackCommand, 0);
+  EXPECT_NE(test_api(*controller_).suggestion_state(), std::nullopt);
 }
 
 // === Group 6: Action Invocation (OnActionInvoked) ===

@@ -18977,6 +18977,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MULTISTEP_FILTER_CUE_SETTINGS" desc="Text for the settings menu item on the contextual cue for multistep filters." translateable="false">
         Settings
       </message>
+      <message name="IDS_MULTISTEP_FILTER_CUE_GIVE_FEEDBACK" desc="Text for the give feedback menu item on the contextual cue for multistep filters." translateable="false">
+        Give feedback
+      </message>
       <message name="IDS_MULTISTEP_FILTER_CUE_EXPANDABLE_CONTENT_HEADING" desc="Text for the expandable content heading on the contextual cue for multistep filters." translateable="false">
         From your recent search
       </message>
