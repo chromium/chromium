@@ -53,14 +53,6 @@ if (is_ios && target_platform == "iphoneos") {
   content_app_deps += [ "//content/app/ios/appex:child_process_bridge" ]
 }
 
-if (is_android) {
-  config("javaless_renderers_define") {
-    if (enable_javaless_renderers) {
-      defines = [ "JAVALESS_RENDERERS" ]
-    }
-  }
-}
-
 # Compile content_main_runner_impl.[h, cc] in a separate target to exempt from
 # GN header checking without exempting any other source file. These files
 # includes headers of all process types and varies significantly per platform
@@ -118,7 +110,6 @@ source_set("app") {
   # internal content ones) should depend on the public one.
   visibility = [
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
-    ":javaless_renderer",
     "//content/public/app:*",
   ]
 
@@ -128,22 +119,17 @@ source_set("app") {
       "android/content_jni_onload.cc",
       "android/content_main_android.cc",
       "android/content_main_android.h",
+      "android/javaless_child_process_service.cc",
       "android/library_loader_hooks.cc",
       "android/library_loader_hooks.h",
     ]
     deps += [
+      "//base:build_info_aidl_native",
+      "//base:process_launcher_aidl_native",
+      "//content/common",
       "//mojo/public/java/system:native_support",
       "//ui/gl",
     ]
-    if (enable_javaless_renderers) {
-      configs += [ ":javaless_renderers_define" ]
-      sources += [ "android/javaless_child_process_service.cc" ]
-      deps += [
-        "//base:build_info_aidl_native",
-        "//base:process_launcher_aidl_native",
-        "//content/common",
-      ]
-    }
   }
 
   if (is_mac) {

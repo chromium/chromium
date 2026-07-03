@@ -74,7 +74,6 @@
                  android:exported="false" />
         {% endfor %}
 
-        {% if javaless_renderers is defined and javaless_renderers %}
         {% for i in range(2) %}
         <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
                  android:process=":sandboxed_process{{ i }}"
@@ -88,7 +87,6 @@
                        android:value="NativeChildProcessService_onCreate" />
         </service>
         {% endfor %}
-        {% endif %}
 
         {% set num_privileged_services = 5 %}
         <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"

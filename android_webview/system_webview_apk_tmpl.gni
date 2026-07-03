@@ -110,9 +110,6 @@ template("system_webview_apk_or_module_tmpl") {
     if (defined(invoker.jinja_extra_includes)) {
       includes += invoker.jinja_extra_includes
     }
-    if (enable_javaless_renderers) {
-      variables += [ "javaless_renderers=true" ]
-    }
   }
   if (defined(invoker.target_type)) {
     _target_type = invoker.target_type

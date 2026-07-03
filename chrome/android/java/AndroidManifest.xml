@@ -226,9 +226,7 @@ by a child template that "extends" this file.
         android:networkSecurityConfig="@xml/network_security_config"
         android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
         android:enableOnBackInvokedCallback="true"
-        {% if javaless_renderers is defined %}
         android:zygotePreloadNativeLib="lib{{ library_name }}.so"
-        {% endif %}
         {% block extra_application_attributes %}{% endblock %}>
 
         {% if channel in ['canary', 'dev', 'default'] %}
@@ -1319,7 +1317,6 @@ by a child template that "extends" this file.
           android:visibleToInstantApps="true"
           {% endif %} />
       {% endfor %}
-      {% if javaless_renderers is defined %}
       <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
       {% for i in range(2) %}
       <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
@@ -1342,7 +1339,6 @@ by a child template that "extends" this file.
               android:value="NativeChildProcessService_onCreate" />
       </service>
       {% endfor %}
-      {% endif %}
 
       {% set num_privileged_services = 10 %}
       <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"

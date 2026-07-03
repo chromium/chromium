@@ -239,9 +239,6 @@ template("chrome_common_apk_or_module_tmpl") {
     if (defined(invoker.jinja_extra_includes)) {
       includes += invoker.jinja_extra_includes
     }
-    if (enable_javaless_renderers) {
-      variables += [ "javaless_renderers=true" ]
-    }
   }
   target(_target_type, target_name) {
     android_manifest = _android_manifest

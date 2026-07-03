@@ -29,9 +29,7 @@ found in the LICENSE file.
     <application android:name="org.chromium.content_shell_apk.ContentShellApplication"
             android:icon="@mipmap/app_icon"
             android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload"
-            {% if javaless_renderers is defined %}
             android:zygotePreloadNativeLib="lib{{ library_name }}.so"
-            {% endif %}
             android:label="{% block application_label %}Content Shell{% endblock %}">
         <activity android:name="org.chromium.content_shell_apk.ContentShellActivity"
                   android:launchMode="singleTask"
@@ -69,7 +67,6 @@ found in the LICENSE file.
                  android:isolatedProcess="true"
                  android:exported="false" />
         {% endfor %}
-        {% if javaless_renderers is defined %}
         <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
         {% for i in range(2) %}
         <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
@@ -86,7 +83,6 @@ found in the LICENSE file.
                 android:value="NativeChildProcessService_onCreate" />
         </service>
         {% endfor %}
-        {% endif %}
 
         {% set num_privileged_services = 5 %}
         <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
