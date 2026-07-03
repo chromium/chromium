@@ -125,7 +125,7 @@ const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
   if (!style) {
     return nullptr;
   }
-  CSSPropertyRef ref(property_name, element_->GetDocument());
+  CSSPropertyRef ref(&property_name, element_->GetDocument());
   return ref.GetProperty().CSSValueFromComputedStyle(
       *style, nullptr /* layout_object */, false /* allow_visited_style */,
       CSSValuePhase::kComputedValue);

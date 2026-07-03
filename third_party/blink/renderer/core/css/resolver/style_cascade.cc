@@ -353,7 +353,7 @@ const CSSValue* StyleCascade::Resolve(
     const MixinParameterBindings* mixin_parameter_bindings,
     CascadeOrigin origin,
     CascadeResolver& resolver) {
-  CSSPropertyRef ref(name, state_.GetDocument());
+  CSSPropertyRef ref(&name, state_.GetDocument());
 
   const CSSValue* resolved = Resolve(ResolveSurrogate(ref.GetProperty()), value,
                                      tree_scope, mixin_parameter_bindings,
@@ -509,7 +509,7 @@ void StyleCascade::CollectFromInterpolations() {
                                /* layer_order */ 0,
                                static_cast<uint16_t>(name.Id()), i);
 
-      CSSPropertyRef ref(name, GetDocument());
+      CSSPropertyRef ref(&name, GetDocument());
       DCHECK(ref.IsValid());
 
       if (name.IsCustomProperty()) {
@@ -840,7 +840,7 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
       continue;
     }
 
-    CustomProperty property(name, GetDocument());
+    CustomProperty property(&name, GetDocument());
     if (resolver.Rejects(property)) {
       continue;
     }
@@ -874,7 +874,7 @@ void StyleCascade::ApplyInterpolationMap(const ActiveInterpolationsMap& map,
                              static_cast<uint16_t>(name.Id()), index);
     priority = CascadePriority(priority, /*already_applied=*/true);
 
-    CSSPropertyRef ref(name, GetDocument());
+    CSSPropertyRef ref(&name, GetDocument());
     if (resolver.Rejects(ref.GetProperty())) {
       continue;
     }
@@ -932,7 +932,7 @@ void StyleCascade::ApplyInterpolation(
 
 void StyleCascade::LookupAndApply(const CSSPropertyName& name,
                                   CascadeResolver& resolver) {
-  CSSPropertyRef ref(name, state_.GetDocument());
+  CSSPropertyRef ref(&name, state_.GetDocument());
   DCHECK(ref.IsValid());
   LookupAndApply(ref.GetProperty(), resolver);
 }
@@ -1783,7 +1783,7 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     }
   }
 
-  CustomProperty property(var_name, state_.GetDocument());
+  CustomProperty property(&var_name, state_.GetDocument());
 
   // Any custom property referenced (by anything, even just once) in the
   // document can currently not be animated on the compositor. Hence we mark
@@ -1841,7 +1841,7 @@ bool StyleCascade::ResolveInheritInto(CSSParserTokenStream& stream,
   if (!stream.AtEnd()) {
     DCHECK_EQ(stream.Peek().GetType(), kCommaToken);
   }
-  CustomProperty property(var_name, state_.GetDocument());
+  CustomProperty property(&var_name, state_.GetDocument());
   if (!property.IsInherited()) {
     state_.StyleBuilder().SetHasExplicitInheritance();
     state_.ParentStyle()->SetChildHasExplicitInheritance();
@@ -2580,7 +2580,7 @@ CSSVariableData* StyleCascade::GetKeywordVariableData(
     }
     // "All other CSS-wide keywords resolve to the guaranteed-invalid value."
   } else {
-    CustomProperty property(name, GetDocument());
+    CustomProperty property(&name, GetDocument());
     if (keyword_value.IsInitialValue()) {
       return GetInitialVariableData(property);
     }

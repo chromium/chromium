@@ -349,7 +349,7 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
   UpdateStyleAndLayoutTreeIfNeeded(&property_name,
                                    /*for_all_properties=*/false);
 
-  CSSPropertyRef ref(property_name, styled_element->GetDocument());
+  CSSPropertyRef ref(&property_name, styled_element->GetDocument());
   if (!ref.IsValid()) {
     return nullptr;
   }

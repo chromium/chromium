@@ -92,7 +92,7 @@ bool BuildCustomValues(
     CompositorPaintWorkletInput::PropertyKeys& input_property_keys) {
   DCHECK(IsMainThread());
   for (const auto& property_name : custom_properties) {
-    CSSPropertyRef ref(property_name, document);
+    CSSPropertyRef ref(&property_name, document);
     std::unique_ptr<CrossThreadStyleValue> value =
         ref.GetProperty().CrossThreadStyleValueFromComputedStyle(
             style, /* layout_object */ nullptr,

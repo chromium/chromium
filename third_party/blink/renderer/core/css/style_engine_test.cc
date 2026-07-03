@@ -105,7 +105,8 @@ class StyleEngineTest : public PageTestBase {
   }
 
   const CSSValue* ComputedValue(Element* element, String property_name) {
-    CSSPropertyRef ref(property_name, GetDocument());
+    AtomicString atomic_name(property_name);
+    CSSPropertyRef ref(&atomic_name, GetDocument());
     DCHECK(ref.IsValid());
     return ref.GetProperty().CSSValueFromComputedStyle(
         element->ComputedStyleRef(),

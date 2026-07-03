@@ -9,32 +9,31 @@
 
 namespace blink {
 
-CSSPropertyRef::CSSPropertyRef(const String& name, const Document& document)
-    : property_id_(
-          UnresolvedCSSPropertyID(document.GetExecutionContext(), name)) {
-  if (property_id_ == CSSPropertyID::kVariable) {
-    custom_property_ = CustomProperty(AtomicString(name), document);
-  }
-}
-
-CSSPropertyRef::CSSPropertyRef(const CSSPropertyName& name,
+CSSPropertyRef::CSSPropertyRef(const AtomicString* name,
                                const Document& document)
-    : property_id_(name.Id()) {
-  DCHECK_NE(name.Id(), CSSPropertyID::kInvalid);
-  if (property_id_ == CSSPropertyID::kVariable) {
-    custom_property_ = CustomProperty(name.ToAtomicString(), document);
-  }
+    : property_id_(
+          UnresolvedCSSPropertyID(document.GetExecutionContext(), *name)),
+      custom_property_(property_id_ == CSSPropertyID::kVariable
+                           ? CustomProperty(name, document)
+                           : CustomProperty()) {}
+
+CSSPropertyRef::CSSPropertyRef(const CSSPropertyName* name,
+                               const Document& document)
+    : property_id_(name->Id()),
+      custom_property_(property_id_ == CSSPropertyID::kVariable
+                           ? CustomProperty(&name->ToAtomicString(), document)
+                           : CustomProperty()) {
+  DCHECK_NE(name->Id(), CSSPropertyID::kInvalid);
 }
 
 CSSPropertyRef::CSSPropertyRef(const CSSProperty& property)
-    : property_id_(property.PropertyID()) {
-  if (property.PropertyID() == CSSPropertyID::kVariable) {
-    if (!Variable::IsStaticInstance(property)) {
-      custom_property_ = static_cast<const CustomProperty&>(property);
-    } else {
-      property_id_ = CSSPropertyID::kInvalid;
-    }
-  }
-}
+    : property_id_((property.PropertyID() == CSSPropertyID::kVariable &&
+                    Variable::IsStaticInstance(property))
+                       ? CSSPropertyID::kInvalid
+                       : property.PropertyID()),
+      custom_property_((property.PropertyID() == CSSPropertyID::kVariable &&
+                        !Variable::IsStaticInstance(property))
+                           ? static_cast<const CustomProperty&>(property)
+                           : CustomProperty()) {}
 
 }  // namespace blink

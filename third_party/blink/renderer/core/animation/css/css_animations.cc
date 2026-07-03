@@ -423,7 +423,11 @@ StringKeyframeVector ProcessKeyframesRule(
     keyframe->SetEasing(default_timing_function);
     const CSSPropertyValueSet& properties = style_keyframe->Properties();
     for (const CSSPropertyValue& property_reference : properties.Properties()) {
-      CSSPropertyRef ref(property_reference.Name(), document);
+      CSSPropertyName property_name =
+          property_reference
+              .Name();  // Keep property_name.custom_property_ alive for at
+                        // least as long as ref below.
+      CSSPropertyRef ref(&property_name, document);
       const CSSProperty& property = ref.GetProperty();
       if (property.PropertyID() == CSSPropertyID::kAnimationComposition) {
         if (const auto* value_list =
@@ -2688,7 +2692,8 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
       return;
     }
     if (property.IsCSSCustomProperty()) {
-      CSSPropertyRef custom_ref(property.GetCSSPropertyName(), document);
+      CSSPropertyName property_name = property.GetCSSPropertyName();
+      CSSPropertyRef custom_ref(&property_name, document);
       CSSVariableData* old_data = state.old_style.GetVariableData(
           property.CustomPropertyName(),
           custom_ref.GetProperty().IsInherited());

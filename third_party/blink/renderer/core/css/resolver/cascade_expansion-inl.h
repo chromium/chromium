@@ -47,7 +47,7 @@ void ExpandCascade(const MatchedProperties& matched_properties,
                              matched_properties_index, property_idx++);
 
     if (id == CSSPropertyID::kVariable) {
-      CustomProperty custom(reference.CustomPropertyName(), document);
+      CustomProperty custom(&reference.CustomPropertyName(), document);
       if (filter.Accepts(custom)) {
         custom_property_callback(priority, reference.CustomPropertyName());
       }

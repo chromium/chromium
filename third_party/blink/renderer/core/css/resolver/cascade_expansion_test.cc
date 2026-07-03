@@ -65,7 +65,7 @@ class CascadeExpansionTest : public PageTestBase {
         result.GetMatchedProperties()[i], GetDocument(), i,
         [this, &ret](CascadePriority cascade_priority,
                      const AtomicString& name) {
-          ExpansionResult er(CustomProperty(name, GetDocument()));
+          ExpansionResult er(CustomProperty(&name, GetDocument()));
           er.priority = cascade_priority;
           ret.push_back(er);
         },

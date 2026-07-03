@@ -20,7 +20,7 @@ class Document;
 //
 // Usage:
 //
-//   CSSPropertyRef ref(some_string, document);
+//   CSSPropertyRef ref(&some_string, document);
 //
 //   if (ref.IsValid()) {
 //     LOG(INFO) << ref.GetProperty().GetName();
@@ -37,10 +37,15 @@ class CORE_EXPORT CSSPropertyRef {
   //
   // If the incoming 'name' is not a CSS property, the CSSPropertyRef is
   // invalid.
-  CSSPropertyRef(const String& name, const Document&);
+  //
+  // “name” must live at least as long as the CSSPropertyRef.
+  // See CustomProperty.
+  CSSPropertyRef(const AtomicString* name, const Document&);
 
   // Like above, but will never produce an invalid CSSPropertyRef.
-  CSSPropertyRef(const CSSPropertyName&, const Document&);
+  // “name” must live at least as long as the CSSPropertyRef.
+  // See CustomProperty.
+  CSSPropertyRef(const CSSPropertyName* name, const Document&);
 
   // If you already have a CSSProperty& object, you may use it to get
   // a CSSPropertyRef again.

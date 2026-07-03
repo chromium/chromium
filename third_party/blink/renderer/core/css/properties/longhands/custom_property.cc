@@ -27,31 +27,28 @@ CSSProperty::Flags InheritedFlag(const PropertyRegistration* registration) {
 
 }  // namespace
 
-CustomProperty::CustomProperty(AtomicString name, const Document& document)
+CustomProperty::CustomProperty(const AtomicString* name,
+                               const Document& document)
     : CustomProperty(
-          PropertyRegistration::From(document.GetExecutionContext(), name)) {
-  // Initializing `name_` on the body prevents `name` to be used after the
-  // std::move call.
-  name_ = std::move(name);
+          name,
+          PropertyRegistration::From(document.GetExecutionContext(), *name)) {
   DCHECK_EQ(IsShorthand(), CSSProperty::IsShorthand(GetCSSPropertyName()));
   DCHECK_EQ(IsRepeated(), CSSProperty::IsRepeated(GetCSSPropertyName()));
 }
 
-CustomProperty::CustomProperty(const AtomicString& name,
+CustomProperty::CustomProperty(const AtomicString* name,
                                const PropertyRegistry* registry)
-    : CustomProperty(name, registry ? registry->Registration(name) : nullptr) {}
+    : CustomProperty(name, registry ? registry->Registration(*name) : nullptr) {
+}
 
-CustomProperty::CustomProperty(const AtomicString& name,
+CustomProperty::CustomProperty(const AtomicString* name,
                                const PropertyRegistration* registration)
     : Variable(InheritedFlag(registration)),
-      name_(name),
+      name_(*name),
       registration_(registration) {
   DCHECK_EQ(IsShorthand(), CSSProperty::IsShorthand(GetCSSPropertyName()));
   DCHECK_EQ(IsRepeated(), CSSProperty::IsRepeated(GetCSSPropertyName()));
 }
-
-CustomProperty::CustomProperty(const PropertyRegistration* registration)
-    : Variable(InheritedFlag(registration)), registration_(registration) {}
 
 const AtomicString& CustomProperty::GetPropertyNameAtomicString() const {
   return name_;

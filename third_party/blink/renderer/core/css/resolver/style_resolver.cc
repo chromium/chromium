@@ -3043,7 +3043,7 @@ const CSSValue* StyleResolver::ComputeValue(
   if (state.HasUnsupportedGuaranteedInvalid()) {
     return nullptr;
   }
-  CSSPropertyRef property_ref(property_name, document);
+  CSSPropertyRef property_ref(&property_name, document);
   flags = state.TakeLengthConversionFlags();
   const ComputedStyle* style = state.TakeStyle();
   return ComputedStyleUtils::ComputedPropertyValue(property_ref.GetProperty(),

@@ -56,7 +56,7 @@ void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
                                  StyleResolverState& state,
                                  const CSSValue& value,
                                  ValueModeFlags value_mode) {
-  CSSPropertyRef ref(name, state.GetDocument());
+  CSSPropertyRef ref(&name, state.GetDocument());
   DCHECK(ref.IsValid());
 
   ApplyProperty(ref.GetProperty(), state, value, value_mode);

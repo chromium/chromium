@@ -2582,7 +2582,8 @@ protocol::Response InspectorCSSAgent::resolveValues(
   // Temporary register property with combined syntax.
   auto_registration.emplace(document, temp_custom_property_name,
                             *property_registration);
-  CustomProperty temporary_custom_property(temp_custom_property_name, document);
+  CustomProperty temporary_custom_property(&temp_custom_property_name,
+                                           document);
 
   std::optional<CSSPropertyName> property_name;
   if (property_name_str.has_value()) {
@@ -2644,7 +2645,7 @@ protocol::Response InspectorCSSAgent::resolveValues(
     const CSSValue* parsed_value = nullptr;
     if (property_name.has_value()) {
       if (property_name->IsCustomProperty()) {
-        CustomProperty custom_property(property_name->ToAtomicString(),
+        CustomProperty custom_property(&property_name->ToAtomicString(),
                                        element->GetDocument());
         // Unregistered custom properties should always be parsed against
         // combined syntax.
@@ -3342,8 +3343,8 @@ protocol::Response InspectorCSSAgent::setNavigationText(
 
   DummyExceptionStateForTesting exception_state;
   ModifyRuleAction* action = MakeGarbageCollected<ModifyRuleAction>(
-      ModifyRuleAction::kSetNavigationRuleText, inspector_style_sheet, text_range,
-      text);
+      ModifyRuleAction::kSetNavigationRuleText, inspector_style_sheet,
+      text_range, text);
   bool success = dom_agent_->History()->Perform(action, exception_state);
   if (success) {
     CSSNavigationRule* rule =
@@ -5336,7 +5337,8 @@ void InspectorCSSAgent::DidUpdateComputedStyle(Element* element,
   // included
   for (const auto& tracked_computed_style : tracked_computed_styles_) {
     const HashSet<String>& tracked_values = tracked_computed_style.value;
-    CSSPropertyRef ref(tracked_computed_style.key, element->GetDocument());
+    AtomicString property_name(tracked_computed_style.key);
+    CSSPropertyRef ref(&property_name, element->GetDocument());
     if (!ref.IsValid())
       continue;
     const CSSProperty& tracked_property = ref.GetProperty();

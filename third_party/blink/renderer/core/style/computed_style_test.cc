@@ -864,7 +864,8 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
 
   state.CreateNewClonedStyle(*initial);
 
-  CSSPropertyRef ref("color-scheme", state.GetDocument());
+  AtomicString property_name("color-scheme");
+  CSSPropertyRef ref(&property_name, state.GetDocument());
 
   CSSValueList* dark_value = CSSValueList::CreateSpaceSeparated();
   dark_value->Append(*CSSIdentifierValue::Create(CSSValueID::kDark));

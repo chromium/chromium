@@ -977,7 +977,7 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   }
 
   PropertyRegistry* empty_registry = MakeGarbageCollected<PropertyRegistry>();
-  CustomProperty p(atomic_name, empty_registry);
+  CustomProperty p(&atomic_name, empty_registry);
 
   const CSSParserContext* parser_context = ParserContextForDocument(document);
   CSSParserLocalContext local_context =
@@ -1422,7 +1422,6 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     String* old_text,
     StyleRuleFontFeature::FeatureType* font_feature_type,
     ExceptionState& exception_state) {
-
   CSSRuleSourceData* source_data = FindRuleByDeclarationsRange(range);
   if (!source_data ||
       !(source_data->HasProperties() ||

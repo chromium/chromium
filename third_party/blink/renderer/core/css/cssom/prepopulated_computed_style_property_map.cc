@@ -71,7 +71,7 @@ void PrepopulatedComputedStylePropertyMap::UpdateCustomProperty(
     const Document& document,
     const ComputedStyle& style,
     const AtomicString& property_name) {
-  CSSPropertyRef ref(property_name, document);
+  CSSPropertyRef ref(&property_name, document);
   const CSSValue* value = ref.GetProperty().CSSValueFromComputedStyle(
       style, /*layout_object=*/nullptr,
       /*allow_visited_style=*/false, CSSValuePhase::kComputedValue);

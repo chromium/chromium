@@ -112,7 +112,8 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
 };
 
 TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
-  CustomProperty property(AtomicString("--x"), GetDocument());
+  AtomicString x_name("--x");
+  CustomProperty property(&x_name, GetDocument());
   Vector<CSSPropertyID> native_properties;
   Vector<AtomicString> custom_properties({AtomicString("--x")});
 

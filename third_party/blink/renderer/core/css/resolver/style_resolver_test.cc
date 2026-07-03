@@ -68,7 +68,8 @@ class StyleResolverTest : public PageTestBase {
   }
 
   String ComputedValue(String name, const ComputedStyle& style) {
-    CSSPropertyRef ref(name, GetDocument());
+    AtomicString atomic_name(name);
+    CSSPropertyRef ref(&atomic_name, GetDocument());
     DCHECK(ref.IsValid());
     return ref.GetProperty()
         .CSSValueFromComputedStyle(style, nullptr, false,
@@ -1386,7 +1387,7 @@ TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
 
   AtomicString custom_property_name("--color");
   const CSSValue* parsed_value = ParseCustomProperty(
-      GetDocument(), CustomProperty(custom_property_name, GetDocument()),
+      GetDocument(), CustomProperty(&custom_property_name, GetDocument()),
       "blue");
   ASSERT_TRUE(parsed_value);
   const CSSValue* computed_value = StyleResolver::ComputeValue(

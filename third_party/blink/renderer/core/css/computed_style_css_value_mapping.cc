@@ -38,7 +38,7 @@ const CSSValue* ComputedStyleCSSValueMapping::Get(
     const ComputedStyle& style,
     const PropertyRegistry* registry,
     CSSValuePhase value_phase) {
-  CustomProperty custom_property(custom_property_name, registry);
+  CustomProperty custom_property(&custom_property_name, registry);
   return custom_property.CSSValueFromComputedStyle(
       style, nullptr /* layout_object */, false /* allow_visited_style */,
       value_phase);

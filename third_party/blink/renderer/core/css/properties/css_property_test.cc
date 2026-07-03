@@ -86,7 +86,8 @@ class CSSPropertyTest : public PageTestBase {
   String ComputedValue(String property_str,
                        String value_str,
                        StyleRecalcContext style_recalc_context) {
-    CSSPropertyRef ref(property_str, GetDocument());
+    AtomicString atomic_property(property_str);
+    CSSPropertyRef ref(&atomic_property, GetDocument());
     CHECK(ref.IsValid());
     const CSSProperty& property = ref.GetProperty();
 

@@ -25,9 +25,13 @@ class CORE_EXPORT CustomProperty : public Variable {
   STACK_ALLOCATED();
 
  public:
-  CustomProperty() = default;
-  CustomProperty(AtomicString name, const Document&);
-  CustomProperty(const AtomicString& name, const PropertyRegistry*);
+  CustomProperty() : name_(g_null_atom) {}
+
+  // “name” must live at least as long as the CustomProperty.
+  // It is a pointer instead of a const reference to make sure
+  // we don't inadvertently send in short-lived temporaries.
+  CustomProperty(const AtomicString* name, const Document&);
+  CustomProperty(const AtomicString* name, const PropertyRegistry*);
 
   const AtomicString& GetPropertyNameAtomicString() const override;
   CSSPropertyName GetCSSPropertyName() const override;
@@ -70,15 +74,18 @@ class CORE_EXPORT CustomProperty : public Variable {
   bool HasUniversalSyntax() const;
 
  private:
-  CustomProperty(const AtomicString& name,
+  CustomProperty(const AtomicString* name,
                  const PropertyRegistration* registration);
-  explicit CustomProperty(const PropertyRegistration* registration);
 
   const CSSValue* ParseUntyped(StringView,
                                const CSSParserContext&,
                                CSSParserLocalContext&) const;
 
-  AtomicString name_;
+  // Avoid increasing the name's refcount by storing a reference instead;
+  // CustomProperty is often constructed and kept for very short amounts
+  // of time.
+  const AtomicString& name_;
+
   const PropertyRegistration* registration_;
 };
 

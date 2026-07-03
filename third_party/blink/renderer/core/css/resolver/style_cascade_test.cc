@@ -193,7 +193,8 @@ class TestCascade {
   }
 
   String ComputedValue(String name) const {
-    CSSPropertyRef ref(name, GetDocument());
+    AtomicString atomic_name(name);
+    CSSPropertyRef ref(&atomic_name, GetDocument());
     DCHECK(ref.IsValid());
     const LayoutObject* layout_object = nullptr;
     bool allow_visited_style = false;
@@ -718,8 +719,9 @@ TEST_F(StyleCascadeTest, DetectCycleByName) {
   TestCascadeResolver resolver;
 
   // Two different CustomProperty instances with the same name:
-  CustomProperty a1(AtomicString("--a"), GetDocument());
-  CustomProperty a2(AtomicString("--a"), GetDocument());
+  AtomicString a_name("--a");
+  CustomProperty a1(&a_name, GetDocument());
+  CustomProperty a2(&a_name, GetDocument());
 
   {
     TestCascadeAutoLock lock(a1, resolver);
@@ -737,9 +739,12 @@ TEST_F(StyleCascadeTest, ResolverDetectCycle) {
   TestCascade cascade(GetDocument());
   TestCascadeResolver resolver;
 
-  CustomProperty a(AtomicString("--a"), GetDocument());
-  CustomProperty b(AtomicString("--b"), GetDocument());
-  CustomProperty c(AtomicString("--c"), GetDocument());
+  AtomicString a_name("--a");
+  AtomicString b_name("--b");
+  AtomicString c_name("--c");
+  CustomProperty a(&a_name, GetDocument());
+  CustomProperty b(&b_name, GetDocument());
+  CustomProperty c(&c_name, GetDocument());
 
   {
     TestCascadeAutoLock lock_a(a, resolver);
@@ -765,10 +770,14 @@ TEST_F(StyleCascadeTest, ResolverDetectNoCycle) {
   TestCascade cascade(GetDocument());
   TestCascadeResolver resolver;
 
-  CustomProperty a(AtomicString("--a"), GetDocument());
-  CustomProperty b(AtomicString("--b"), GetDocument());
-  CustomProperty c(AtomicString("--c"), GetDocument());
-  CustomProperty x(AtomicString("--x"), GetDocument());
+  AtomicString a_name("--a");
+  AtomicString b_name("--b");
+  AtomicString c_name("--c");
+  AtomicString x_name("--x");
+  CustomProperty a(&a_name, GetDocument());
+  CustomProperty b(&b_name, GetDocument());
+  CustomProperty c(&c_name, GetDocument());
+  CustomProperty x(&x_name, GetDocument());
 
   {
     TestCascadeAutoLock lock_a(a, resolver);
@@ -794,7 +803,8 @@ TEST_F(StyleCascadeTest, ResolverDetectCycleSelf) {
   TestCascade cascade(GetDocument());
   TestCascadeResolver resolver;
 
-  CustomProperty a(AtomicString("--a"), GetDocument());
+  AtomicString a_name("--a");
+  CustomProperty a(&a_name, GetDocument());
 
   {
     TestCascadeAutoLock lock(a, resolver);
@@ -812,10 +822,14 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycle) {
   TestCascade cascade(GetDocument());
   TestCascadeResolver resolver;
 
-  CustomProperty a(AtomicString("--a"), GetDocument());
-  CustomProperty b(AtomicString("--b"), GetDocument());
-  CustomProperty c(AtomicString("--c"), GetDocument());
-  CustomProperty d(AtomicString("--d"), GetDocument());
+  AtomicString a_name("--a");
+  AtomicString b_name("--b");
+  AtomicString c_name("--c");
+  AtomicString d_name("--d");
+  CustomProperty a(&a_name, GetDocument());
+  CustomProperty b(&b_name, GetDocument());
+  CustomProperty c(&c_name, GetDocument());
+  CustomProperty d(&d_name, GetDocument());
 
   {
     AutoLock lock_a(a, resolver);
@@ -854,10 +868,14 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycleReverse) {
   TestCascade cascade(GetDocument());
   TestCascadeResolver resolver;
 
-  CustomProperty a(AtomicString("--a"), GetDocument());
-  CustomProperty b(AtomicString("--b"), GetDocument());
-  CustomProperty c(AtomicString("--c"), GetDocument());
-  CustomProperty d(AtomicString("--d"), GetDocument());
+  AtomicString a_name("--a");
+  AtomicString b_name("--b");
+  AtomicString c_name("--c");
+  AtomicString d_name("--d");
+  CustomProperty a(&a_name, GetDocument());
+  CustomProperty b(&b_name, GetDocument());
+  CustomProperty c(&c_name, GetDocument());
+  CustomProperty d(&d_name, GetDocument());
 
   {
     AutoLock lock_a(a, resolver);
@@ -896,9 +914,12 @@ TEST_F(StyleCascadeTest, CurrentProperty) {
   TestCascade cascade(GetDocument());
   TestCascadeResolver resolver;
 
-  CustomProperty a(AtomicString("--a"), GetDocument());
-  CustomProperty b(AtomicString("--b"), GetDocument());
-  CustomProperty c(AtomicString("--c"), GetDocument());
+  AtomicString a_name("--a");
+  AtomicString b_name("--b");
+  AtomicString c_name("--c");
+  CustomProperty a(&a_name, GetDocument());
+  CustomProperty b(&b_name, GetDocument());
+  CustomProperty c(&c_name, GetDocument());
 
   EXPECT_FALSE(resolver.CurrentProperty());
   {
@@ -924,10 +945,14 @@ TEST_F(StyleCascadeTest, CycleWithExtraEdge) {
   TestCascade cascade(GetDocument());
   TestCascadeResolver resolver;
 
-  CustomProperty a(AtomicString("--a"), GetDocument());
-  CustomProperty b(AtomicString("--b"), GetDocument());
-  CustomProperty c(AtomicString("--c"), GetDocument());
-  CustomProperty d(AtomicString("--d"), GetDocument());
+  AtomicString a_name("--a");
+  AtomicString b_name("--b");
+  AtomicString c_name("--c");
+  AtomicString d_name("--d");
+  CustomProperty a(&a_name, GetDocument());
+  CustomProperty b(&b_name, GetDocument());
+  CustomProperty c(&c_name, GetDocument());
+  CustomProperty d(&d_name, GetDocument());
 
   {
     AutoLock lock_a(a, resolver);
