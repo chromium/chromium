@@ -5,13 +5,10 @@
 create {
   source {
     git {
-      # TODO(agrieve): Move back to rui314 if PRs are accepted:
+      # TODO(agrieve): Move back to rui314 if PR is accepted:
       #    https://github.com/rui314/mold/pull/1590
-      #    https://github.com/rui314/mold/pull/1599
-      #    https://github.com/rui314/mold/pull/1600
-      #    https://github.com/rui314/mold/pull/1601
       repo: "https://github.com/agrieve/mold.git"
-      fixed_commit: "6861d4c75a99dc9a97ebdb80eaad50c5619041e2"
+      fixed_commit: "a1b3d1a6ad03c6de4a287f8393e0a52579a5a3cf"
     }
   }
 
