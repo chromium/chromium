@@ -1167,7 +1167,7 @@ void CanvasRenderingContext2D::Dispose() {
   CanvasRenderingContext::Dispose();
 }
 
-void CanvasRenderingContext2D::CreateCanvasResourceProvider() {
+void CanvasRenderingContext2D::CreateProvider() {
   CHECK(!shared_image_provider_ && !bitmap_provider_);
 
   canvas()->GetOrCreateResourceDispatcher();
@@ -1393,7 +1393,7 @@ void CanvasRenderingContext2D::RecreateResourceProvider() {
   }
 
   if (canvas()->IsValidImageSize()) {
-    CreateCanvasResourceProvider();
+    CreateProvider();
     canvas()->UpdateMemoryUsage();
   }
 

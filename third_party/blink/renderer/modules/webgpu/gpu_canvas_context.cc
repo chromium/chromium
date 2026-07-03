@@ -216,7 +216,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
 }
 
 CanvasNon2DResourceProvider*
-GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
+GPUCanvasContext::GetOrCreateCanvasNon2DResourceProvider() {
   auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
@@ -256,7 +256,7 @@ GPUCanvasContext::PaintRenderingResultsToSnapshot(
     Host()->DiscardResources();
   }
 
-  auto* resource_provider = GetOrCreateCanvasResourceProvider();
+  auto* resource_provider = GetOrCreateCanvasNon2DResourceProvider();
   if (!resource_provider) {
     return nullptr;
   }

@@ -6721,7 +6721,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
           wrapper->ContextProvider().RasterContextProvider();
     }
     if (ShouldCreateAcceleratedImages(raster_context_provider)) {
-      provider = generated_video_cache_.GetCanvasResourceProvider(info);
+      provider = generated_video_cache_.GetCanvasNon2DResourceProvider(info);
       if (!provider) {
         return;
       }
@@ -9074,12 +9074,12 @@ String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
   return text;
 }
 
-WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
-    LRUCanvasResourceProviderCache(wtf_size_t capacity)
+WebGLRenderingContextBase::LRUCanvasNon2DResourceProviderCache::
+    LRUCanvasNon2DResourceProviderCache(wtf_size_t capacity)
     : capacity_(capacity), providers_(capacity) {}
 
 CanvasNon2DResourceProvider* WebGLRenderingContextBase::
-    LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
+    LRUCanvasNon2DResourceProviderCache::GetCanvasNon2DResourceProvider(
         const CanvasSnapshotInfo& info) {
   wtf_size_t i;
   for (i = 0; i < capacity_; ++i) {
@@ -9112,8 +9112,8 @@ CanvasNon2DResourceProvider* WebGLRenderingContextBase::
   return provider;
 }
 
-void WebGLRenderingContextBase::LRUCanvasResourceProviderCache::BubbleToFront(
-    wtf_size_t idx) {
+void WebGLRenderingContextBase::LRUCanvasNon2DResourceProviderCache::
+    BubbleToFront(wtf_size_t idx) {
   for (wtf_size_t i = idx; i > 0; --i) {
     providers_[i].swap(providers_[i - 1]);
   }

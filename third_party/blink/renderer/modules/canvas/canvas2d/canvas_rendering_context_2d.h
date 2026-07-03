@@ -281,7 +281,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void Dispose() override;
 
-  void CreateCanvasResourceProvider();
+  void CreateProvider();
 
   void PruneLocalFontCache(size_t target_size);
 

@@ -895,11 +895,11 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   // Fixed-size cache of reusable snapshot providers for image and video
   // texImage2D calls.
-  class LRUCanvasResourceProviderCache {
+  class LRUCanvasNon2DResourceProviderCache {
    public:
-    LRUCanvasResourceProviderCache(wtf_size_t capacity);
+    LRUCanvasNon2DResourceProviderCache(wtf_size_t capacity);
     // The pointer returned is owned by the image buffer map.
-    CanvasNon2DResourceProvider* GetCanvasResourceProvider(
+    CanvasNon2DResourceProvider* GetCanvasNon2DResourceProvider(
         const CanvasSnapshotInfo& info);
 
    private:
@@ -907,7 +907,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
     const wtf_size_t capacity_;
     Vector<std::unique_ptr<CanvasNon2DResourceProvider>> providers_;
   };
-  LRUCanvasResourceProviderCache generated_video_cache_{4};
+  LRUCanvasNon2DResourceProviderCache generated_video_cache_{4};
 
   GLint max_texture_size_;
   GLint max_cube_map_texture_size_;

@@ -120,7 +120,7 @@ class GPUCanvasContext : public ScriptWrappable,
   bool IsGPUDeviceDestroyed() override;
 
  private:
-  CanvasNon2DResourceProvider* GetOrCreateCanvasResourceProvider();
+  CanvasNon2DResourceProvider* GetOrCreateCanvasNon2DResourceProvider();
   scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
   void DetachSwapBuffers();
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
