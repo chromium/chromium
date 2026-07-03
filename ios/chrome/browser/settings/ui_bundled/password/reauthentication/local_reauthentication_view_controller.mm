@@ -93,7 +93,7 @@
 // Forwards reauthentication result to the delegate.
 - (void)handleReauthenticationResult:(ReauthenticationResult)result {
   // Reauth can't be skipped for this surface.
-  CHECK(result != ReauthenticationResult::kSkipped);
+  CHECK_NE(result, ReauthenticationResult::kSkipped);
 
   BOOL success = result == ReauthenticationResult::kSuccess;
 

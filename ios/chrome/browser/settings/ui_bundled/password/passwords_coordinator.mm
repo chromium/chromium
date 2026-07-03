@@ -663,7 +663,12 @@
     return;
   }
 
-  CHECK(!_signinCoordinator, base::NotFatalUntil::M151);
+  // According to crbug.com/527063033 two signin coordinator may be opened
+  // simultaneously. This seems rare and it’s not clear why. Maybe because the
+  // consistency coordinator view is dismissed before the coordinator is
+  // stopped; giving a very short time to reopen this view. Let’s just stop
+  // the first one and re-open one.
+  [_signinCoordinator stop];
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kSettings;
   _signinCoordinator = [SigninCoordinator
