@@ -17,6 +17,10 @@ SigninQRCodeInfoBarDelegate::SigninQRCodeInfoBarDelegate(
   scoped_observation_.Observe(dice_tab_helper);
 }
 
+void SigninQRCodeInfoBarDelegate::OnDiceTabHelperWillDestroy() {
+  scoped_observation_.Reset();
+}
+
 SigninQRCodeInfoBarDelegate::~SigninQRCodeInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier

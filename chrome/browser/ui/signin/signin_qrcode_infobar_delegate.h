@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_SIGNIN_QRCODE_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_SIGNIN_SIGNIN_QRCODE_INFOBAR_DELEGATE_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
@@ -35,6 +37,7 @@ class SigninQRCodeInfoBarDelegate : public infobars::InfoBarDelegate,
 
   // DiceTabHelper::Observer:
   void OnIsChromeSigninPageChanged(bool is_signin_page) override;
+  void OnDiceTabHelperWillDestroy() override;
 
  private:
   raw_ptr<Profile> profile_;

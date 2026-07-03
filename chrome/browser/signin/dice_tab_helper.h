@@ -29,6 +29,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnIsChromeSigninPageChanged(bool is_signin_page) {}
+    virtual void OnDiceTabHelperWillDestroy() {}
   };
 
   // Callback starting Sync. This is a repeating callback, because multiple

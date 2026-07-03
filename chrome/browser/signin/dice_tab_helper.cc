@@ -166,7 +166,11 @@ DiceTabHelper::DiceTabHelper(content::WebContents* web_contents)
       content::WebContentsObserver(web_contents),
       state_{std::make_unique<ResetableState>()} {}
 
-DiceTabHelper::~DiceTabHelper() = default;
+DiceTabHelper::~DiceTabHelper() {
+  for (auto& observer : observer_list_) {
+    observer.OnDiceTabHelperWillDestroy();
+  }
+}
 
 void DiceTabHelper::InitializeSigninFlow(
     const GURL& signin_url,
