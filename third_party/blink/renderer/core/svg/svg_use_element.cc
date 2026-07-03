@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
+#include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
@@ -617,7 +618,8 @@ gfx::RectF SVGUseElement::GetBBox() {
   // SVGUseElement.
   gfx::RectF bbox = transformable_container.ObjectBoundingBox();
   bbox.Offset(transformable_container.AdditionalTranslation());
-  return bbox;
+  return NoopWillBeInvScaleRect(
+      bbox, transformable_container.StyleRef().EffectiveZoom());
 }
 
 void SVGUseElement::QueueOrDispatchPendingEvent(

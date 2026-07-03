@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/perspective_transform_operation.h"
@@ -2358,9 +2359,14 @@ std::optional<gfx::SizeF> ComputedStyleUtils::UsedBoxSize(
       return std::nullopt;
     }
     gfx::SizeF size = layout_object.ObjectBoundingBox().size();
-    // The object bounding box does not have zoom applied. Multiply with zoom
-    // here since we'll divide by it when we produce the CSS value.
-    size.Scale(layout_object.StyleRef().EffectiveZoom());
+    if (!RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
+      // The CSS value producer will divide by EffectiveZoom, so the value
+      // returned here must be in zoomed-pixel units.
+      // Under SvgNewZoom, ObjectBoundingBox() is already in zoomed CSS pixels
+      // (since SVG element layout absorbs EffectiveZoom). Under the old model,
+      // the bbox is in CSS pixels, so we must multiply by zoom.
+      size.Scale(layout_object.StyleRef().EffectiveZoom());
+    }
     return size;
   }
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {

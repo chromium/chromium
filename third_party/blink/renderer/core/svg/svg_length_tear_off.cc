@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -170,7 +171,8 @@ float SVGLengthTearOff::value(ExceptionState& exception_state) {
     return 0;
   }
   SVGLengthContext length_context(context_element);
-  return Target()->Value(length_context);
+  return NoopWillBeInvScaleScalar(Target()->Value(length_context),
+                                  length_context.GetZoom());
 }
 
 void SVGLengthTearOff::setValue(float value, ExceptionState& exception_state) {
@@ -187,8 +189,11 @@ void SVGLengthTearOff::setValue(float value, ExceptionState& exception_state) {
       return;
     }
     SVGLengthContext length_context(context_element);
-    Target()->SetValueInSpecifiedUnits(length_context.ConvertValueFromUserUnits(
-        value, Target()->UnitMode(), Target()->NumericLiteralType()));
+    const float zoomed_value_in_units =
+        length_context.ConvertValueFromUserUnits(
+            NoopWillBeScaleScalar(value, length_context.GetZoom()),
+            Target()->UnitMode(), Target()->NumericLiteralType());
+    Target()->SetValueInSpecifiedUnits(zoomed_value_in_units);
   }
   CommitChange(SVGPropertyCommitReason::kUpdated);
 }

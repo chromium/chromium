@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_tear_off.h"
+#include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -114,7 +115,9 @@ float SVGTextContentElement::getComputedTextLength() {
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     SvgTextQuery query(*layout_object);
-    return query.SubStringLength(0, query.NumberOfCharacters());
+    return NoopWillBeInvScaleScalar(
+        query.SubStringLength(0, query.NumberOfCharacters()),
+        layout_object->StyleRef().EffectiveZoom());
   }
   return 0;
 }
@@ -139,8 +142,11 @@ float SVGTextContentElement::getSubStringLength(
     nchars = number_of_chars - charnum;
 
   auto* layout_object = GetLayoutObject();
-  if (IsNGTextOrInline(layout_object))
-    return SvgTextQuery(*layout_object).SubStringLength(charnum, nchars);
+  if (IsNGTextOrInline(layout_object)) {
+    return NoopWillBeInvScaleScalar(
+        SvgTextQuery(*layout_object).SubStringLength(charnum, nchars),
+        layout_object->StyleRef().EffectiveZoom());
+  }
   return 0;
 }
 
@@ -161,7 +167,9 @@ SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
   gfx::PointF point;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    point = SvgTextQuery(*layout_object).StartPositionOfCharacter(charnum);
+    point = NoopWillBeInvScalePoint(
+        SvgTextQuery(*layout_object).StartPositionOfCharacter(charnum),
+        layout_object->StyleRef().EffectiveZoom());
   }
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -183,7 +191,9 @@ SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
   gfx::PointF point;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    point = SvgTextQuery(*layout_object).EndPositionOfCharacter(charnum);
+    point = NoopWillBeInvScalePoint(
+        SvgTextQuery(*layout_object).EndPositionOfCharacter(charnum),
+        layout_object->StyleRef().EffectiveZoom());
   }
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -205,7 +215,9 @@ SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
   gfx::RectF rect;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    rect = SvgTextQuery(*layout_object).ExtentOfCharacter(charnum);
+    rect = NoopWillBeInvScaleRect(
+        SvgTextQuery(*layout_object).ExtentOfCharacter(charnum),
+        layout_object->StyleRef().EffectiveZoom());
   }
   return SVGRectTearOff::CreateDetached(rect);
 }
@@ -242,7 +254,9 @@ int SVGTextContentElement::getCharNumAtPosition(const DOMPointInit* point) {
   if (IsNGTextOrInline(layout_object)) {
     const gfx::PointF local_point(ClampTo<float>(point->x()),
                                   ClampTo<float>(point->y()));
-    return SvgTextQuery(*layout_object).CharacterNumberAtPosition(local_point);
+    const gfx::PointF query_point = NoopWillBeScalePoint(
+        local_point, layout_object->StyleRef().EffectiveZoom());
+    return SvgTextQuery(*layout_object).CharacterNumberAtPosition(query_point);
   }
   return -1;
 }

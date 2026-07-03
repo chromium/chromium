@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
+#include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
@@ -138,12 +139,13 @@ bool SVGGeometryElement::isPointInFill(const DOMPointInit* point) const {
   const LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object)
     return false;
+  const ComputedStyle& style = layout_object->StyleRef();
 
   // Path::Contains will reject points with a non-finite component.
-  WindRule fill_rule = layout_object->StyleRef().FillRule();
-  const gfx::PointF local_point(ClampTo<float>(point->x()),
-                                ClampTo<float>(point->y()));
-  return AsPath().Contains(local_point, fill_rule);
+  gfx::PointF local_point(ClampTo<float>(point->x()),
+                          ClampTo<float>(point->y()));
+  local_point = NoopWillBeScalePoint(local_point, style.EffectiveZoom());
+  return AsPath().Contains(local_point, style.FillRule());
 }
 
 bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
@@ -161,12 +163,14 @@ bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
   if (!layout_object)
     return false;
   const auto& layout_shape = To<LayoutSVGShape>(*layout_object);
-
-  AffineTransform root_transform;
+  const ComputedStyle& style = layout_shape.StyleRef();
 
   PathBuilder path = AsMutablePath();
   gfx::PointF local_point(ClampTo<float>(point->x()),
                           ClampTo<float>(point->y()));
+  local_point = NoopWillBeScalePoint(local_point, style.EffectiveZoom());
+
+  AffineTransform root_transform;
   if (layout_shape.HasNonScalingStroke()) {
     const AffineTransform transform =
         layout_shape.ComputeNonScalingStrokeTransform(
@@ -174,18 +178,20 @@ bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
     path.Transform(transform);
     local_point = transform.MapPoint(local_point);
 
-    // Un-scale to get back to the root-transform (cheaper than re-computing
-    // the root transform from scratch).
-    root_transform.Scale(layout_shape.StyleRef().EffectiveZoom())
-        .PreConcat(transform);
+    if (RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
+      root_transform = transform;
+    } else {
+      // Un-scale to get back to the root-transform (cheaper than re-computing
+      // the root transform from scratch).
+      root_transform.Scale(style.EffectiveZoom()).PreConcat(transform);
+    }
   } else {
     root_transform = layout_shape.ComputeRootTransform();
   }
 
   StrokeData stroke_data;
   SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
-      stroke_data, layout_shape.StyleRef(), layout_shape,
-      PathLengthScaleFactor());
+      stroke_data, style, layout_shape, PathLengthScaleFactor());
 
   // Path::StrokeContains will reject points with a non-finite component.
   return path.Finalize().StrokeContains(local_point, stroke_data,
@@ -200,10 +206,7 @@ Path SVGGeometryElement::ToClipPath(
     path.Transform(*clip_transform);
   }
 
-  DCHECK(GetLayoutObject());
-  DCHECK(GetLayoutObject()->Style());
-  path.SetWindRule(GetLayoutObject()->StyleRef().ClipRule());
-
+  path.SetWindRule(ComputedStyleRef().ClipRule());
   return path.Finalize();
 }
 
@@ -222,7 +225,8 @@ float SVGGeometryElement::getTotalLength(ExceptionState& exception_state) {
     }
   }
 
-  return AsPath().length();
+  const ComputedStyle& style = ComputedStyleRef();
+  return NoopWillBeInvScaleScalar(AsPath().length(), style.EffectiveZoom());
 }
 
 SVGPointTearOff* SVGGeometryElement::getPointAtLength(
@@ -239,22 +243,23 @@ SVGPointTearOff* SVGGeometryElement::getPointAtLength(
   }
 
   const Path path = AsPath();
-
   if (path.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The element's path is empty.");
     return nullptr;
   }
 
+  const ComputedStyle& style = ComputedStyleRef();
   if (length < 0) {
     length = 0;
   } else {
+    length = NoopWillBeScaleScalar(length, style.EffectiveZoom());
     float computed_length = path.length();
     if (length > computed_length)
       length = computed_length;
   }
   gfx::PointF point = path.PointAtLength(length);
-
+  point = NoopWillBeInvScalePoint(point, style.EffectiveZoom());
   return SVGPointTearOff::CreateDetached(point);
 }
 
@@ -290,7 +295,6 @@ float SVGGeometryElement::PathLengthScaleFactor() const {
   float author_path_length = AuthorPathLength();
   if (std::isnan(author_path_length))
     return 1;
-  DCHECK(GetLayoutObject());
   return PathLengthScaleFactor(ComputePathLength(), author_path_length);
 }
 
