@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.feedback;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /**
@@ -18,7 +19,7 @@ import org.chromium.net.test.EmbeddedTestServer;
  * <p>It includes a {@link ConnectivityTestServer} which is set up and torn down automatically for
  * tests.
  */
-public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
+public class ConnectivityCheckerTestRule implements TestRule {
     public static final int TIMEOUT_MS = 5000;
 
     private EmbeddedTestServer mTestServer;
@@ -29,16 +30,14 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
     private String mGeneratedSlowUrl;
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        setUp();
-                        base.evaluate();
-                    }
-                },
-                description);
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                setUp();
+                base.evaluate();
+            }
+        };
     }
 
     public String getGenerated200Url() {
@@ -62,6 +61,7 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
     }
 
     private void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
