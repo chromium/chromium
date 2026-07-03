@@ -325,12 +325,26 @@ int GetMemoryLimitThreshold() {
   return base::kModerateMemoryPressureThreshold;
 }
 
+constexpr base::MemoryConsumerTraits kSpareRenderProcessHostManagerTraits(
+    // Pools pre-warmed renderer processes (tens of MBs each).
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    // Process termination lets the OS reclaim memory pages directly.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    // Eviction results in a cold start, but no user state is lost.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Cleans up host objects synchronously on the browser main thread.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // Cached memory resides out-of-process.
+    base::MemoryConsumerTraits::InProcess::kNo,
+    // Launching a replacement renderer process is expensive.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
+
 }  // namespace
 
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
     : memory_consumer_registration_(
           "SpareRenderProcessHostManagerImpl",
-          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          kSpareRenderProcessHostManagerTraits,
           this,
           base::MemoryConsumerRegistration::CheckUnregister::kDisabled),
       metrics_heartbeat_timer_(
