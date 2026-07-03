@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,6 +131,8 @@ class SuggestionListViewBinder {
             // When the suggestions list is installed for the first time, it may already contain
             // elements. Be sure to capture and reflect this fact appropriately.
             updateContainerVisibility(model, view);
+        } else if (SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR.equals(propertyKey)) {
+            updateContainerMargin(model, view);
         }
     }
 
@@ -174,10 +175,11 @@ class SuggestionListViewBinder {
         int containerVisibility = shouldContainerBeVisible ? View.VISIBLE : View.GONE;
         holder.container.setVisibility(containerVisibility);
         holder.dropdown.setVisibility(listVisibility);
-        updateContainerMargin(holder);
+        updateContainerMargin(model, holder);
     }
 
-    private static void updateContainerMargin(SuggestionListViewHolder holder) {
+    private static void updateContainerMargin(
+            PropertyModel model, SuggestionListViewHolder holder) {
         OmniboxSuggestionsContainer container = holder.container;
         var layoutParams = (ViewGroup.MarginLayoutParams) container.getLayoutParams();
         if (layoutParams == null) {
@@ -186,12 +188,14 @@ class SuggestionListViewBinder {
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-        // TODO(crbug.com/521986417): Consider plumbing SideUiStateProvider to get the Vertical Tabs
-        //     panel width. Using the constant works for now since the the width is fixed in MVP.
-        Context context = container.getContext();
+        // TODO(crbug.com/521986417): Consider plumbing SideUiStateProvider to get the
+        // Vertical Tabs panel width. Using the constant works for now since the width is
+        // fixed in MVP.
+        boolean applyMargin = model.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR);
         int leftMargin =
-                VerticalTabUtils.isVerticalTabsEnabled(context)
-                        ? ViewUtils.dpToPx(context, VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP)
+                applyMargin
+                        ? ViewUtils.dpToPx(
+                                container.getContext(), VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP)
                         : 0;
         if (layoutParams.leftMargin != leftMargin) {
             layoutParams.leftMargin = leftMargin;

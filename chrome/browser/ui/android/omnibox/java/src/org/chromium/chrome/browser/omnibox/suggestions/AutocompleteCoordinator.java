@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCall
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
+import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -107,7 +108,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             OmniboxActionDelegateImpl omniboxActionDelegate,
             @Nullable OmniboxSuggestionsDropdownScrollListener scrollListener,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            boolean forcePhoneStyleOmnibox,
+            LocationBarEmbedderUiOverrides uiOverrides,
             WindowAndroid windowAndroid,
             DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback,
             FuseboxCoordinator fuseboxCoordinator) {
@@ -124,7 +125,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                         .with(
                                 SuggestionListProperties.DRAW_OVER_ANCHOR,
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                                        && !forcePhoneStyleOmnibox)
+                                        && !uiOverrides.isForcedPhoneStyleOmnibox())
                         .with(SuggestionListProperties.SUGGESTION_MODELS, listItems)
                         .with(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, true)
                         .build();
@@ -148,7 +149,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                         windowAndroid,
                         deferredIMEWindowInsetApplicationCallback,
                         fuseboxCoordinator,
-                        forcePhoneStyleOmnibox);
+                        uiOverrides);
         mMediator.initDefaultProcessors();
 
         if (scrollListener != null) {

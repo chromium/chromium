@@ -99,12 +99,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** On-screen placement of the Toolbar. */
     WritableIntPropertyKey TOOLBAR_POSITION = new WritableIntPropertyKey();
 
+    /** Whether to apply a left margin offset to the suggestions container. */
+    WritableBooleanPropertyKey APPLY_MARGIN_FOR_LEFT_SIDE_BAR = new WritableBooleanPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 // keep-sorted start
                 ACTIVITY_WINDOW_FOCUSED,
                 ALLOW_PARKING_AT_SENTINEL,
                 ALPHA,
+                APPLY_MARGIN_FOR_LEFT_SIDE_BAR,
                 CHILD_TRANSLATION_Y,
                 COLOR_SCHEME,
                 CONTAINER_ALWAYS_VISIBLE,

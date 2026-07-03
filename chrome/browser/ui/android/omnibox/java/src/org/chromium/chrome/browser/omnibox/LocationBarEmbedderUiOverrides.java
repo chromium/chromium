@@ -13,11 +13,32 @@ public class LocationBarEmbedderUiOverrides {
     private boolean mLensEntrypointAllowed;
     private boolean mVoiceEntrypointAllowed;
     private boolean mIsEmbedderControlledHint;
+    private boolean mIsMainBrowserOmnibox;
 
     public LocationBarEmbedderUiOverrides() {
         mLensEntrypointAllowed = true;
         mVoiceEntrypointAllowed = true;
         mIsEmbedderControlledHint = false;
+    }
+
+    /**
+     * Whether the omnibox embedder represents the main browser URL bar. This refers to whether the
+     * omnibox instance was created through the toolbar or through search activity.
+     */
+    public boolean isMainBrowserOmnibox() {
+        return mIsMainBrowserOmnibox;
+    }
+
+    /**
+     * Specify that this omnibox embedder represents the main browser URL bar. This should only be
+     * set when instantiated via the {@link ToolbarManager} and not in other cases such as {@link
+     * SearchUiCoordinator}.
+     *
+     * @return {@code this} for call chaining
+     */
+    public LocationBarEmbedderUiOverrides setIsMainBrowserOmnibox() {
+        mIsMainBrowserOmnibox = true;
+        return this;
     }
 
     /**
