@@ -123,6 +123,9 @@ class PlatformAppBrowserTest : public MixinBasedExtensionApiTest {
       const gfx::Size& minimum_size,
       gfx::Rect* bounds);
 
+  // Call SetNativeWindowFullscreen of |window|.
+  void SetNativeWindowFullscreenForTesting(AppWindow* window);
+
   // Load a simple test app and create a window. The window must be closed by
   // the caller in order to terminate the test - use CloseAppWindow().
   // |window_create_options| are the options that will be passed to

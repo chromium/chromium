@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "app_window_browsertest.cc": [
+    "+extensions/components/native_app_window/native_app_window_views.h",
+  ],
+}
