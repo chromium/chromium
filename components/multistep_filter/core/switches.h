@@ -15,6 +15,10 @@ inline constexpr char kMultistepFilterIndexServerApiBaseUrl[] =
 inline constexpr char kMultistepFilterAllowHttpForTesting[] =
     "multistep-filter-allow-http-for-testing";
 
+// Enables the use of the Optimization Guide annotation index client.
+inline constexpr char kMultistepFilterOptimizationGuide[] =
+    "multistep-filter-optimization-guide";
+
 }  // namespace multistep_filter::switches
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_SWITCHES_H_

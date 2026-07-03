@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -14,11 +17,13 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/annotation_index/network_annotation_index_client.h"
+#include "components/multistep_filter/core/annotation_index/optimization_guide_annotation_index_client.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
+#include "components/multistep_filter/core/switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -45,6 +50,7 @@ MultistepFilterServiceFactory::MultistepFilterServiceFactory()
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(MultistepFilterLogRouterFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
@@ -63,11 +69,18 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   MultistepFilterLogRouter* log_router =
       MultistepFilterLogRouterFactory::GetForProfile(profile);
 
-  std::unique_ptr<NetworkAnnotationIndexClient> annotation_index_client =
-      NetworkAnnotationIndexClient::Create(
-          context->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess(),
-          identity_manager, log_router);
+  std::unique_ptr<AnnotationIndexClient> annotation_index_client;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kMultistepFilterOptimizationGuide)) {
+    annotation_index_client = OptimizationGuideAnnotationIndexClient::Create(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+        log_router);
+  } else {
+    annotation_index_client = NetworkAnnotationIndexClient::Create(
+        context->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        identity_manager, log_router);
+  }
 
   MultistepFilterService::Params params;
   params.annotation_index_client = std::move(annotation_index_client);

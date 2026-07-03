@@ -19,10 +19,12 @@ source_set("core") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/common:channel_info",
     "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core:switches",
     "//components/multistep_filter/core/prefs",
     "//components/pref_registry",
     "//components/signin/public/identity_manager",
