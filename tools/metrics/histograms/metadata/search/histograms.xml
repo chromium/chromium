@@ -386,6 +386,17 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.ChoiceDebug.PropagatedDataOutcome"
+    enum="CurrentDefaultPropagationOutcome" expires_after="2026-12-01">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the outcome of attempting to propagate the search engine choice data
+    from an existing profile to a newly created one. Recorded each time a
+    profile forks or creates a new profile while capturing preferences.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>

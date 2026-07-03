@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_H_
 #define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -152,12 +153,28 @@ class SearchEngineChoiceDialogService : public KeyedService {
   static void SetDialogDisabledForTests(bool dialog_disabled);
 
   // Returns a copy of the `ChoiceData` specific to `profile`.
-  static search_engines::ChoiceData GetChoiceDataFromProfile(Profile& profile);
+  // LINT.IfChange(CurrentDefaultPropagationOutcome)
+  enum class CurrentDefaultPropagationOutcome {
+    kPropagatedCurrentDefault = 0,
+    kSkippedDueToPolicies = 1,
+    kSkippedIsFallback = 2,
+    kSkippedIsExtension = 3,
+    kMaxValue = kSkippedIsExtension,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:CurrentDefaultPropagationOutcome)
+
+  // Returns a copy of the `ChoiceData` specific to `profile`, or `std::nullopt`
+  // if there is no default search engine to propagate. This function ignores
+  // any extension-provided default search engine to capture the underlying user
+  // choice (or system default), and skips propagation entirely if the default
+  // search is managed by an enterprise policy.
+  static std::optional<search_engines::ChoiceData> GetChoiceDataFromProfile(
+      Profile& profile);
 
   // Updates `profile` with the values from `choice_data`.
   static void UpdateProfileFromChoiceData(
       Profile& profile,
-      const search_engines::ChoiceData& choice_data);
+      const std::optional<search_engines::ChoiceData>& choice_data);
 
  private:
   friend class SearchEngineChoiceDialogServiceFactory;

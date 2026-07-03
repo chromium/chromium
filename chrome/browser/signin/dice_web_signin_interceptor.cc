@@ -413,6 +413,11 @@ DiceWebSigninInterceptor::ResetableState::~ResetableState() = default;
 DiceWebSigninInterceptor::ProfilePresets::ProfilePresets(SkColor profile_color)
     : profile_color(profile_color) {}
 
+DiceWebSigninInterceptor::ProfilePresets::ProfilePresets(ProfilePresets&&) =
+    default;
+DiceWebSigninInterceptor::ProfilePresets&
+DiceWebSigninInterceptor::ProfilePresets::operator=(ProfilePresets&&) = default;
+
 DiceWebSigninInterceptor::ProfilePresets::~ProfilePresets() = default;
 
 // static

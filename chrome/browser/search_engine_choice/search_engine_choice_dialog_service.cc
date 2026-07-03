@@ -292,49 +292,82 @@ void SearchEngineChoiceDialogService::SetDialogDisabledForTests(
 }
 
 // static
-search_engines::ChoiceData
+std::optional<search_engines::ChoiceData>
 SearchEngineChoiceDialogService::GetChoiceDataFromProfile(Profile& profile) {
   PrefService* pref_service = profile.GetPrefs();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
   CHECK(template_url_service);
+
+  switch (template_url_service->default_search_provider_source()) {
+    case DefaultSearchManager::FROM_FALLBACK:
+      base::UmaHistogramEnumeration(
+          "Search.ChoiceDebug.PropagatedDataOutcome",
+          CurrentDefaultPropagationOutcome::kSkippedIsFallback);
+      return std::nullopt;
+
+    case DefaultSearchManager::FROM_EXTENSION:
+      base::UmaHistogramEnumeration(
+          "Search.ChoiceDebug.PropagatedDataOutcome",
+          CurrentDefaultPropagationOutcome::kSkippedIsExtension);
+      return std::nullopt;
+
+    case DefaultSearchManager::FROM_POLICY:
+    case DefaultSearchManager::FROM_POLICY_RECOMMENDED:
+      base::UmaHistogramEnumeration(
+          "Search.ChoiceDebug.PropagatedDataOutcome",
+          CurrentDefaultPropagationOutcome::kSkippedDueToPolicies);
+      return std::nullopt;
+
+    case DefaultSearchManager::FROM_USER:
+      break;  // Current default eligible for propagation.
+  }
+
+  CHECK(template_url_service->GetDefaultSearchProvider());
   const TemplateURLData& default_search_engine =
       template_url_service->GetDefaultSearchProvider()->data();
 
-  return {.timestamp = pref_service->GetInt64(
-              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
-          .chrome_version = pref_service->GetString(
-              prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
-          .default_search_engine = default_search_engine};
+  base::UmaHistogramEnumeration(
+      "Search.ChoiceDebug.PropagatedDataOutcome",
+      CurrentDefaultPropagationOutcome::kPropagatedCurrentDefault);
+
+  return search_engines::ChoiceData{
+      .timestamp = pref_service->GetInt64(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+      .chrome_version = pref_service->GetString(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
+      .default_search_engine = default_search_engine};
 }
 
 // static
 void SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
     Profile& profile,
-    const search_engines::ChoiceData& choice_data) {
-  PrefService* pref_service = profile.GetPrefs();
-  if (choice_data.timestamp != 0) {
-    pref_service->SetInt64(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-        choice_data.timestamp);
-  }
-
-  if (!choice_data.chrome_version.empty()) {
-    pref_service->SetString(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-        choice_data.chrome_version);
+    const std::optional<search_engines::ChoiceData>& choice_data) {
+  if (!choice_data.has_value()) {
+    return;
   }
 
   const TemplateURLData& default_search_engine =
-      choice_data.default_search_engine;
-  if (!default_search_engine.keyword().empty() &&
-      !default_search_engine.url().empty()) {
-    TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(&profile);
-    CHECK(template_url_service);
-    TemplateURL template_url(default_search_engine);
-    template_url_service->SetUserSelectedDefaultSearchProvider(&template_url);
+      choice_data->default_search_engine;
+
+  PrefService* pref_service = profile.GetPrefs();
+  if (choice_data->timestamp != 0) {
+    pref_service->SetInt64(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+        choice_data->timestamp);
   }
+
+  if (!choice_data->chrome_version.empty()) {
+    pref_service->SetString(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+        choice_data->chrome_version);
+  }
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile);
+  CHECK(template_url_service);
+  TemplateURL template_url(default_search_engine);
+  template_url_service->SetUserSelectedDefaultSearchProvider(&template_url);
 }
 
 TemplateURL::TemplateURLVector
