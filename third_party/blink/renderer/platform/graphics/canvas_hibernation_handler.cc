@@ -250,8 +250,8 @@ void CanvasHibernationHandler::Encode(
       sk_sp<SkData> encoded_uncompressed =
           skia::FastEncodePngAsSkData(nullptr, params->image.get());
 
-      TRACE_EVENT_BEGIN2("blink", "ZstdCompression", "original_size", 0, "size",
-                         0);
+      TRACE_EVENT_BEGIN("blink", "ZstdCompression", "original_size", 0, "size",
+                        0);
       size_t uncompressed_size = encoded_uncompressed->size();
       size_t buffer_size = ZSTD_compressBound(encoded_uncompressed->size());
       std::vector<char> compressed_buffer(buffer_size);
@@ -270,8 +270,8 @@ void CanvasHibernationHandler::Encode(
       // much smaller.
       encoded_uncompressed = nullptr;
       encoded = SkData::MakeWithCopy(compressed_buffer.data(), compressed_size);
-      TRACE_EVENT_END2("blink", "ZstdCompression", "original_size",
-                       uncompressed_size, "size", compressed_size);
+      TRACE_EVENT_END("blink", "original_size", uncompressed_size, "size",
+                      compressed_size);
       break;
 #else
       NOTREACHED();

@@ -97,8 +97,8 @@ void DisplayItemList::Raster(SkCanvas* canvas,
   DCHECK(IsFinalized());
 #endif
 
-  TRACE_EVENT_BEGIN1("cc", "DisplayItemList::Raster", "total_op_count",
-                     TotalOpCount());
+  TRACE_EVENT_BEGIN("cc", "DisplayItemList::Raster", "total_op_count",
+                    TotalOpCount());
   std::vector<size_t> offsets = OffsetsOfOpsToRaster(canvas);
   if (offsets.empty()) {
     return;
@@ -113,8 +113,7 @@ void DisplayItemList::Raster(SkCanvas* canvas,
          it; ++it) {
       rastered_op_count += 1 + PaintOp::OpAdditionalOpCount(*it);
     }
-    TRACE_EVENT_END1("cc", "DisplayItemList::Raster", "rastered_op_count",
-                     rastered_op_count);
+    TRACE_EVENT_END("cc", "rastered_op_count", rastered_op_count);
   }
 }
 

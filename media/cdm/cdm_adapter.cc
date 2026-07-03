@@ -491,13 +491,11 @@ void CdmAdapter::Decrypt(StreamType stream_type,
   std::vector<cdm::SubsampleEntry> subsamples;
   std::unique_ptr<DecryptedBlockImpl> decrypted_block(new DecryptedBlockImpl());
 
-  TRACE_EVENT_BEGIN1("media", "CdmAdapter::Decrypt", "stream_type",
-                     stream_type);
+  TRACE_EVENT_BEGIN("media", "CdmAdapter::Decrypt", "stream_type", stream_type);
   ToCdmInputBuffer(*encrypted, &subsamples, &input_buffer);
   cdm::Status status = cdm_->Decrypt(input_buffer, decrypted_block.get());
-  TRACE_EVENT_END2("media", "CdmAdapter::Decrypt", "key ID",
-                   GetHexKeyId(input_buffer), "status",
-                   CdmStatusToString(status));
+  TRACE_EVENT_END("media", "key ID", GetHexKeyId(input_buffer), "status",
+                  CdmStatusToString(status));
 
   if (status != cdm::kSuccess) {
     DVLOG(1) << __func__ << ": status = " << status;
@@ -611,13 +609,12 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
   std::vector<cdm::SubsampleEntry> subsamples;
   std::unique_ptr<AudioFramesImpl> audio_frames(new AudioFramesImpl());
 
-  TRACE_EVENT_BEGIN0("media", "CdmAdapter::DecryptAndDecodeAudio");
+  TRACE_EVENT_BEGIN("media", "CdmAdapter::DecryptAndDecodeAudio");
   ToCdmInputBuffer(*encrypted, &subsamples, &input_buffer);
   cdm::Status status =
       cdm_->DecryptAndDecodeSamples(input_buffer, audio_frames.get());
-  TRACE_EVENT_END2("media", "CdmAdapter::DecryptAndDecodeAudio", "key ID",
-                   GetHexKeyId(input_buffer), "status",
-                   CdmStatusToString(status));
+  TRACE_EVENT_END("media", "key ID", GetHexKeyId(input_buffer), "status",
+                  CdmStatusToString(status));
 
   const Decryptor::AudioFrames empty_frames;
   if (status != cdm::kSuccess) {
@@ -649,7 +646,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
   std::vector<cdm::SubsampleEntry> subsamples;
   std::unique_ptr<VideoFrameImpl> video_frame = helper_->CreateCdmVideoFrame();
 
-  TRACE_EVENT_BEGIN1(
+  TRACE_EVENT_BEGIN(
       "media", "CdmAdapter::DecryptAndDecodeVideo", "buffer type",
       encrypted->end_of_stream()
           ? "end of stream"
@@ -657,9 +654,8 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
   ToCdmInputBuffer(*encrypted, &subsamples, &input_buffer);
   cdm::Status status =
       cdm_->DecryptAndDecodeFrame(input_buffer, video_frame.get());
-  TRACE_EVENT_END2("media", "CdmAdapter::DecryptAndDecodeVideo", "key ID",
-                   GetHexKeyId(input_buffer), "status",
-                   CdmStatusToString(status));
+  TRACE_EVENT_END("media", "key ID", GetHexKeyId(input_buffer), "status",
+                  CdmStatusToString(status));
 
   if (status != cdm::kSuccess) {
     DVLOG(1) << __func__ << ": status = " << status;

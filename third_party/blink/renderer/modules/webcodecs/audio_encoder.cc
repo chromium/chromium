@@ -672,13 +672,12 @@ void AudioEncoder::CallOutputCallback(
     metadata->setDecoderConfig(decoder_config);
   }
 
-  TRACE_EVENT_BEGIN1(kCategory, GetTraceNames()->output.c_str(), "timestamp",
-                     chunk->timestamp());
+  TRACE_EVENT(kCategory,
+              perfetto::StaticString(GetTraceNames()->output.c_str()),
+              "timestamp", chunk->timestamp());
 
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
-
-  TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
 }
 
 // static

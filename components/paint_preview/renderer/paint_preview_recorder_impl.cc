@@ -173,7 +173,7 @@ void FinishRecordingOnUIThread(cc::PaintRecord recording,
 
   // This cannot be done async if the recording contains a GPU accelerated
   // image.
-  TRACE_EVENT_BEGIN0("paint_preview", "ConvertToSkPicture");
+  TRACE_EVENT_BEGIN("paint_preview", "ConvertToSkPicture");
   auto skp =
       PaintRecordToSkPicture(std::move(recording), tracker.get(), bounds);
   if (!skp) {
@@ -181,7 +181,7 @@ void FinishRecordingOnUIThread(cc::PaintRecord recording,
         base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
     return;
   }
-  TRACE_EVENT_BEGIN0("paint_preview", "ConvertToSkPicture");
+  TRACE_EVENT_BEGIN("paint_preview", "ConvertToSkPicture");
 
   FinishedRecording out(mojom::PaintPreviewStatus::kOk, std::move(response));
   switch (persistence) {
@@ -398,13 +398,13 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   // 3. Record only on successes as failures are likely to be outliers (fast or
   //    slow).
   base::TimeTicks start_time = base::TimeTicks::Now();
-  TRACE_EVENT_BEGIN0("paint_preview", "WebLocalFrame::CapturePaintPreview");
+  TRACE_EVENT_BEGIN("paint_preview", "WebLocalFrame::CapturePaintPreview");
   bool success = frame->CapturePaintPreview(
       geometry.bounds, canvas,
       /*include_linked_destinations=*/params->capture_links,
       /*skip_accelerated_content=*/params->skip_accelerated_content,
       /*allow_scrollbars=*/true);
-  TRACE_EVENT_END0("paint_preview", "WebLocalFrame::CapturePaintPreview");
+  TRACE_EVENT_END("paint_preview");
   canvas->restore();
   base::TimeDelta capture_time = base::TimeTicks::Now() - start_time;
   response->blink_recording_time = capture_time;

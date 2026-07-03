@@ -2142,7 +2142,7 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
   run_loop = std::move(GetMainRunLoopInstance());
 
   // Trace the entry and exit of this main message loop. We don't use the
-  // TRACE_EVENT_BEGIN0 macro because the tracing infrastructure doesn't expect
+  // TRACE_EVENT_BEGIN macro because the tracing infrastructure doesn't expect
   // a synchronous event around the main loop of a thread.
   TRACE_EVENT_BEGIN("toplevel", "ChromeBrowserMainParts::MainMessageLoopRun",
                     perfetto::Track::FromPointer(this));

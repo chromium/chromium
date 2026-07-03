@@ -168,11 +168,12 @@ SyncerError Commit::PostAndProcessResponse(
                                    request_types, message_);
   cycle->SendProtocolEvent(request_event);
 
-  TRACE_EVENT_BEGIN0("sync", "PostCommit");
   sync_pb::ClientToServerResponse response;
-  const SyncerError post_result = SyncerProtoUtil::PostClientToServerMessage(
-      message_, &response, cycle, nullptr);
-  TRACE_EVENT_END0("sync", "PostCommit");
+  const SyncerError post_result = [&]() {
+    TRACE_EVENT("sync", "PostCommit");
+    return SyncerProtoUtil::PostClientToServerMessage(message_, &response,
+                                                      cycle, nullptr);
+  }();
 
   // TODO(rlarocque): Use result that includes errors captured later?
   CommitResponseEvent response_event(base::Time::Now(), post_result, response);

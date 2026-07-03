@@ -43,7 +43,7 @@ std::pair<int, std::u16string> Score(
     const AutocompleteInput& input,
     const query_parser::QueryNodeVector& input_query_nodes,
     const tab_groups::SavedTabGroup& group) {
-  TRACE_EVENT_BEGIN0("omnibox", "TabGroupProvider::Score");
+  TRACE_EVENT("omnibox", "TabGroupProvider::Score");
 
   std::u16string matching_url;
   // TODO(crbug.com/435705148): Remove this check when unnamed tab groups are
@@ -111,7 +111,6 @@ std::pair<int, std::u16string> Score(
                                 .ScoringFactor();
   const double normalized_factors =
       std::min((title_factor + url_factor) / (lower_title.length() + 10), 1.0);
-  TRACE_EVENT_END0("omnibox", "TabGroupProvider::Score");
 
   return {normalized_factors * kMaxScore, matching_url};
 }
@@ -134,7 +133,7 @@ void TabGroupProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  TRACE_EVENT_BEGIN0("omnibox", "TabGroupProvider::Start");
+  TRACE_EVENT("omnibox", "TabGroupProvider::Start");
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto& [adjusted_input, template_url] =
@@ -157,7 +156,6 @@ void TabGroupProvider::Start(const AutocompleteInput& input,
           CreateTabGroupMatch(input, group, score, matching_url));
     }
   }
-  TRACE_EVENT_END0("omnibox", "TabGroupProvider::Start");
 }
 
 AutocompleteMatch TabGroupProvider::CreateTabGroupMatch(

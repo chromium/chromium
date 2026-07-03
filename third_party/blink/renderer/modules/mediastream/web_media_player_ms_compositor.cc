@@ -553,9 +553,9 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
   TRACE_EVENT("media", "UpdateCurrentFrame");
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
 
-  TRACE_EVENT_BEGIN2("media", "UpdateCurrentFrame", "Actual Render Begin",
-                     deadline_min.ToInternalValue(), "Actual Render End",
-                     deadline_max.ToInternalValue());
+  TRACE_EVENT_BEGIN("media", "UpdateCurrentFrame", "Actual Render Begin",
+                    deadline_min.ToInternalValue(), "Actual Render End",
+                    deadline_max.ToInternalValue());
   if (stopped_)
     return false;
 
@@ -582,8 +582,8 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
               !rendering_frame_buffer_->NeedsReferenceTime()))
           << "VideoFrames need REFERENCE_TIME to use "
              "sophisticated video rendering algorithm.";
-      TRACE_EVENT_END2("media", "UpdateCurrentFrame", "Ideal Render Instant",
-                       render_time.ToInternalValue(), "Serial", serial_);
+      TRACE_EVENT_END("media", "Ideal Render Instant",
+                      render_time.ToInternalValue(), "Serial", serial_);
     }
   }
 

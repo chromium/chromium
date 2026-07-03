@@ -383,16 +383,14 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
                          TRACE_EVENT_SCOPE_THREAD, "name1", "value1", "name2",
                          "value2");
 
-    TRACE_EVENT_BEGIN0("test_all", "TRACE_EVENT_BEGIN0 call");
-    TRACE_EVENT_BEGIN1("test_all", "TRACE_EVENT_BEGIN1 call", "name1",
-                       "value1");
-    TRACE_EVENT_BEGIN2("test_all", "TRACE_EVENT_BEGIN2 call", "name1", "value1",
-                       "name2", "value2");
+    TRACE_EVENT_BEGIN("test_all", "TRACE_EVENT_BEGIN call");
+    TRACE_EVENT_BEGIN("test_all", "TRACE_EVENT_BEGIN call", "name1", "value1");
+    TRACE_EVENT_BEGIN("test_all", "TRACE_EVENT_BEGIN call", "name1", "value1",
+                      "name2", "value2");
 
-    TRACE_EVENT_END0("test_all", "TRACE_EVENT_BEGIN2 call");
-    TRACE_EVENT_END1("test_all", "TRACE_EVENT_BEGIN1 call", "name1", "value1");
-    TRACE_EVENT_END2("test_all", "TRACE_EVENT_BEGIN0 call", "name1", "value1",
-                     "name2", "value2");
+    TRACE_EVENT_END("test_all");
+    TRACE_EVENT_END("test_all", "name1", "value1");
+    TRACE_EVENT_END("test_all", "name1", "value1", "name2", "value2");
 
     TRACE_EVENT_ASYNC_BEGIN0("test_all", "TRACE_EVENT_ASYNC_BEGIN0 call",
                              kAsyncId);
@@ -508,11 +506,11 @@ void ValidateAllTraceMacrosCreatedData(const ListValue& trace_parsed) {
   EXPECT_SUB_FIND_("name2");
   EXPECT_SUB_FIND_("value2");
 
-  EXPECT_FIND_("TRACE_EVENT_BEGIN0 call");
-  EXPECT_FIND_("TRACE_EVENT_BEGIN1 call");
+  EXPECT_FIND_("TRACE_EVENT_BEGIN call");
+  EXPECT_FIND_("TRACE_EVENT_BEGIN call");
   EXPECT_SUB_FIND_("name1");
   EXPECT_SUB_FIND_("value1");
-  EXPECT_FIND_("TRACE_EVENT_BEGIN2 call");
+  EXPECT_FIND_("TRACE_EVENT_BEGIN call");
   EXPECT_SUB_FIND_("name1");
   EXPECT_SUB_FIND_("value1");
   EXPECT_SUB_FIND_("name2");
@@ -892,7 +890,7 @@ TEST_F(TraceEventTestFixture, AsyncBeginEndEvents) {
   TRACE_EVENT_ASYNC_BEGIN0("cat", "name1", id);
   TRACE_EVENT_ASYNC_STEP_INTO0("cat", "name1", id, "step1");
   TRACE_EVENT_ASYNC_END0("cat", "name1", id);
-  TRACE_EVENT_BEGIN0("cat", "name2");
+  TRACE_EVENT_BEGIN("cat", "name2");
   TRACE_EVENT_ASYNC_BEGIN0("cat", "name3", 0);
   TRACE_EVENT_ASYNC_STEP_PAST0("cat", "name3", 0, "step2");
 
@@ -1520,13 +1518,13 @@ TEST_F(TraceEventTestFixture, EchoToConsole) {
 
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ECHO_TO_CONSOLE));
-  TRACE_EVENT_BEGIN0("test_a", "begin_end");
+  TRACE_EVENT_BEGIN("test_a", "begin_end");
   {
     TRACE_EVENT0("test_b", "duration");
     TRACE_EVENT0("test_b1", "duration1");
   }
   TRACE_EVENT_INSTANT0("test_c", "instant", TRACE_EVENT_SCOPE_GLOBAL);
-  TRACE_EVENT_END0("test_a", "begin_end");
+  TRACE_EVENT_END("test_a");
 
   EndTraceAndFlush();
   delete g_log_buffer;

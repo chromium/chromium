@@ -445,7 +445,7 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit(
   }
 
   // Dropping the "Maybe", because now we've passed that point.
-  TRACE_EVENT_BEGIN0("xr", "CompositeAndSubmit");
+  TRACE_EVENT_BEGIN("xr", "CompositeAndSubmit");
   bool copy_successful = false;
   bool has_webxr_content = pending_frame_->webxr_submitted_ && webxr_visible_;
   bool has_overlay_content =
@@ -469,8 +469,7 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit(
     submit_successful = SubmitCompositedFrame();
   }
 
-  TRACE_EVENT_END1("xr", "CompositeAndSubmit", "success",
-                   copy_successful && submit_successful);
+  TRACE_EVENT_END("xr", "success", copy_successful && submit_successful);
 
   if (copy_successful && !submit_successful) {
     ExitPresent(ExitXrPresentReason::kSubmitFrameFailed);

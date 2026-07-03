@@ -208,15 +208,14 @@ void RuntimeCallStatsScopedTracer::AddBeginTraceEventIfEnabled(
   stats_ = stats;
   stats_->Reset();
   stats_->SetInUse(true);
-  TRACE_EVENT_BEGIN0(s_category_group_, s_name_);
+  TRACE_EVENT_BEGIN(s_category_group_, perfetto::StaticString(s_name_));
 }
 
 void RuntimeCallStatsScopedTracer::AddEndTraceEvent() {
   auto value = std::make_unique<TracedValue>();
   stats_->Dump(*value);
   stats_->SetInUse(false);
-  TRACE_EVENT_END1(s_category_group_, s_name_, "runtime-call-stats",
-                   std::move(value));
+  TRACE_EVENT_END(s_category_group_, "runtime-call-stats", std::move(value));
 }
 
 }  // namespace blink

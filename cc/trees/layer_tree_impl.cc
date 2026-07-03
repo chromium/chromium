@@ -419,8 +419,8 @@ void LayerTreeImpl::OnCanDrawStateChangedForTree() {
 
 void LayerTreeImpl::InvalidateRegionForImages(
     const PaintImageIdFlatSet& images_to_invalidate) {
-  TRACE_EVENT_BEGIN1("cc", "LayerTreeImpl::InvalidateRegionForImages",
-                     "total_layer_count", picture_layers().size());
+  TRACE_EVENT_BEGIN("cc", "LayerTreeImpl::InvalidateRegionForImages",
+                    "total_layer_count", picture_layers().size());
   DCHECK(IsSyncTree());
 
   size_t no_images_count = 0;
@@ -445,8 +445,8 @@ void LayerTreeImpl::InvalidateRegionForImages(
       }
     }
   }
-  TRACE_EVENT_END1(
-      "cc", "LayerTreeImpl::InvalidateRegionForImages", "counts",
+  TRACE_EVENT_END(
+      "cc", "counts",
       base::StringPrintf("no_images[%zu] no_invalidaton[%zu] invalidated[%zu]",
                          no_images_count, no_invalidation_count,
                          invalidated_count));
@@ -1954,8 +1954,8 @@ bool LayerTreeImpl::UpdateTiles() {
   }
   needs_update_tiles_ = false;
 
-  TRACE_EVENT_BEGIN2("cc,benchmark", "LayerTreeImpl::UpdateTiles", "IsActive",
-                     IsActiveTree(), "SourceFrameNumber", source_frame_number_);
+  TRACE_EVENT_BEGIN("cc,benchmark", "LayerTreeImpl::UpdateTiles", "IsActive",
+                    IsActiveTree(), "SourceFrameNumber", source_frame_number_);
   size_t layers_updated_count = 0;
   bool tile_priorities_updated = false;
   const bool release_tile_resources_for_hidden_layers =
@@ -1971,9 +1971,7 @@ bool LayerTreeImpl::UpdateTiles() {
     tile_priorities_updated |= layer->UpdateTiles();
   }
 
-  TRACE_EVENT_END1("cc,benchmark",
-                   "LayerTreeImpl::UpdateDrawProperties::UpdateTiles",
-                   "layers_updated_count", layers_updated_count);
+  TRACE_EVENT_END("cc,benchmark", "layers_updated_count", layers_updated_count);
   return tile_priorities_updated;
 }
 

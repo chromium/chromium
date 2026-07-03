@@ -165,7 +165,7 @@ ScopedMayLoadLibraryAtBackgroundPriority::
     already_loaded_->store(true, std::memory_order_relaxed);
   }
 #endif  // BUILDFLAG(IS_WIN)
-  TRACE_EVENT_END0("base", "ScopedMayLoadLibraryAtBackgroundPriority");
+  TRACE_EVENT_END("base");
 }
 
 }  // namespace internal

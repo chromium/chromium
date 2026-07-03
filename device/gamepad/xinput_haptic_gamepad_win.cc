@@ -29,9 +29,9 @@ void XInputHapticGamepadWin::SetVibration(
   vibration.wRightMotorSpeed =
       static_cast<long>(params->weak_magnitude * kRumbleMagnitudeMax);
 
-  TRACE_EVENT_BEGIN1("GAMEPAD", "XInputSetState", "id", pad_id_);
+  TRACE_EVENT_BEGIN("GAMEPAD", "XInputSetState", "id", pad_id_);
   xinput_set_state_(pad_id_, &vibration);
-  TRACE_EVENT_END1("GAMEPAD", "XInputSetState", "id", pad_id_);
+  TRACE_EVENT_END("GAMEPAD", "id", pad_id_);
 }
 
 base::WeakPtr<AbstractHapticGamepad> XInputHapticGamepadWin::GetWeakPtr() {

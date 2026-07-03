@@ -1109,17 +1109,19 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
         audio_buffer->mDataByteSize / audio_buffer->mNumberChannels;
     mono_buffer->mData = audio_buffer->mData;
 
-    TRACE_EVENT_BEGIN0("audio", "AudioUnitRender");
-    result = AudioUnitRender(audio_unit_, flags, time_stamp, bus_number,
-                             number_of_frames, &mono_buffer_list);
-    TRACE_EVENT_END0("audio", "AudioUnitRender");
+    {
+      TRACE_EVENT("audio", "AudioUnitRender");
+      result = AudioUnitRender(audio_unit_, flags, time_stamp, bus_number,
+                               number_of_frames, &mono_buffer_list);
+    }
     // ... then upmix it by copying it out to two channels.
     UpmixMonoToStereoInPlace(audio_buffer, format_.mBitsPerChannel / 8);
   } else {
-    TRACE_EVENT_BEGIN0("audio", "AudioUnitRender");
-    result = AudioUnitRender(audio_unit_, flags, time_stamp, bus_number,
-                             number_of_frames, &audio_buffer_list_);
-    TRACE_EVENT_END0("audio", "AudioUnitRender");
+    {
+      TRACE_EVENT("audio", "AudioUnitRender");
+      result = AudioUnitRender(audio_unit_, flags, time_stamp, bus_number,
+                               number_of_frames, &audio_buffer_list_);
+    }
   }
 
   if (result == noErr) {

@@ -110,16 +110,15 @@ AudioRendererSinkCache::~AudioRendererSinkCache() {
 media::OutputDeviceInfo AudioRendererSinkCache::GetSinkInfo(
     const LocalFrameToken& source_frame_token,
     const std::string& device_id) {
-  TRACE_EVENT_BEGIN2("audio", "AudioRendererSinkCache::GetSinkInfo",
-                     "frame_token", source_frame_token.ToString(), "device id",
-                     device_id);
+  TRACE_EVENT_BEGIN("audio", "AudioRendererSinkCache::GetSinkInfo",
+                    "frame_token", source_frame_token.ToString(), "device id",
+                    device_id);
   {
     base::AutoLock auto_lock(cache_lock_);
     auto cache_iter = FindCacheEntry_Locked(source_frame_token, device_id);
     if (cache_iter != cache_.end()) {
       // A matching cached sink is found.
-      TRACE_EVENT_END1("audio", "AudioRendererSinkCache::GetSinkInfo", "result",
-                       "Cache hit");
+      TRACE_EVENT_END("audio", "result", "Cache hit");
       return cache_iter->sink->GetOutputDeviceInfo();
     }
   }
@@ -130,8 +129,7 @@ media::OutputDeviceInfo AudioRendererSinkCache::GetSinkInfo(
 
   MaybeCacheSink(source_frame_token, device_id, sink);
 
-  TRACE_EVENT_END1("audio", "AudioRendererSinkCache::GetSinkInfo", "result",
-                   "Cache miss");
+  TRACE_EVENT_END("audio", "result", "Cache miss");
   // |sink| is ref-counted, so it's ok if it is removed from cache before we
   // get here.
   return sink->GetOutputDeviceInfo();

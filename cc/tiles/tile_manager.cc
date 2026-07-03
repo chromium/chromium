@@ -881,7 +881,7 @@ bool TileManager::TilePriorityViolatesMemoryPolicy(
 }
 
 TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
-  TRACE_EVENT_BEGIN0("cc", "TileManager::AssignGpuMemoryToTiles");
+  TRACE_EVENT_BEGIN("cc", "TileManager::AssignGpuMemoryToTiles");
 
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
@@ -1132,11 +1132,10 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   memory_stats_from_last_assign_.had_enough_memory =
       had_enough_memory_to_schedule_tiles_needed_now;
 
-  TRACE_EVENT_END2("cc", "TileManager::AssignGpuMemoryToTiles",
-                   "all_tiles_that_need_to_be_rasterized_are_scheduled",
-                   all_tiles_that_need_to_be_rasterized_are_scheduled_,
-                   "had_enough_memory_to_schedule_tiles_needed_now",
-                   had_enough_memory_to_schedule_tiles_needed_now);
+  TRACE_EVENT_END("cc", "all_tiles_that_need_to_be_rasterized_are_scheduled",
+                  all_tiles_that_need_to_be_rasterized_are_scheduled_,
+                  "had_enough_memory_to_schedule_tiles_needed_now",
+                  had_enough_memory_to_schedule_tiles_needed_now);
   image_controller_.cache()->RecordStats();
   return work_to_schedule;
 }

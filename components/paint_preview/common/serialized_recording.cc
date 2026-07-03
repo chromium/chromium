@@ -172,12 +172,12 @@ std::optional<mojo_base::BigBuffer> RecordToBuffer(
     return std::nullopt;
   }
 
-  TRACE_EVENT_BEGIN0("paint_preview", "CopyToBigBuffer");
+  TRACE_EVENT_BEGIN("paint_preview", "CopyToBigBuffer");
   sk_sp<SkData> data = memory_stream.detachAsData();
   *serialized_size = std::min(data->size(), max_capture_size);
   mojo_base::BigBuffer buffer(
       skia::as_byte_span(*data).first(*serialized_size));
-  TRACE_EVENT_END0("paint_preview", "CopyToBigBuffer");
+  TRACE_EVENT_END("paint_preview");
   if (data->size() > max_capture_size) {
     return std::nullopt;
   }

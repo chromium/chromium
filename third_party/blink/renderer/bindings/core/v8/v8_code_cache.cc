@@ -574,8 +574,9 @@ static void ProduceCacheInternal(
         break;
 
       constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
-      TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, trace_name, "fileName",
-                         source_url.GetString().Utf8());
+      TRACE_EVENT_BEGIN(kTraceEventCategoryGroup,
+                        perfetto::StaticString(trace_name), "fileName",
+                        source_url.GetString().Utf8());
 
       base::ElapsedTimer timer;
       std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
@@ -592,13 +593,13 @@ static void ProduceCacheInternal(
                                             timer.Elapsed());
       }
 
-      TRACE_EVENT_END1(kTraceEventCategoryGroup, trace_name, "data",
-                       [&](perfetto::TracedValue context) {
-                         inspector_produce_script_cache_event::Data(
-                             std::move(context), source_url.GetString(),
-                             unbound_script->ScriptId(), source_start_position,
-                             cached_data ? cached_data->length : 0);
-                       });
+      TRACE_EVENT_END(kTraceEventCategoryGroup, "data",
+                      [&](perfetto::TracedValue context) {
+                        inspector_produce_script_cache_event::Data(
+                            std::move(context), source_url.GetString(),
+                            unbound_script->ScriptId(), source_start_position,
+                            cached_data ? cached_data->length : 0);
+                      });
       break;
     }
     case V8CodeCache::ProduceCacheOptions::kNoProduceCache:
@@ -683,8 +684,8 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   const String file_name = source_url.GetString();
 
   constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
-  TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.compile", "fileName",
-                     file_name.Utf8());
+  TRACE_EVENT_BEGIN(kTraceEventCategoryGroup, "v8.compile", "fileName",
+                    file_name.Utf8());
 
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
@@ -711,9 +712,8 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
       v8::ScriptCompiler::CompileUnboundScript(
           isolate, &source, v8::ScriptCompiler::kEagerCompile);
 
-  TRACE_EVENT_END1(
-      kTraceEventCategoryGroup, "v8.compile", "data",
-      [&](perfetto::TracedValue context) {
+  TRACE_EVENT_END(
+      kTraceEventCategoryGroup, "data", [&](perfetto::TracedValue context) {
         inspector_compile_script_event::Data(
             std::move(context), file_name, maybe_unbound_script,
             TextPosition::MinimumPosition(), std::nullopt, true, false,
@@ -724,8 +724,8 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   // When failed to compile the script with syntax error, the exceptions is
   // suppressed by the v8::TryCatch, and returns null.
   if (maybe_unbound_script.ToLocal(&unbound_script)) {
-    TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.produceCache", "fileName",
-                       file_name.Utf8());
+    TRACE_EVENT_BEGIN(kTraceEventCategoryGroup, "v8.produceCache", "fileName",
+                      file_name.Utf8());
 
     std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
         v8::ScriptCompiler::CreateCodeCache(unbound_script));
@@ -735,14 +735,13 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
           static_cast<uint64_t>(DetailFlags::kFull));
     }
 
-    TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.produceCache", "data",
-                     [&](perfetto::TracedValue context) {
-                       inspector_produce_script_cache_event::Data(
-                           std::move(context), file_name,
-                           unbound_script->ScriptId(),
-                           TextPosition::MinimumPosition(),
-                           cached_data ? cached_data->length : 0);
-                     });
+    TRACE_EVENT_END(
+        kTraceEventCategoryGroup, "data", [&](perfetto::TracedValue context) {
+          inspector_produce_script_cache_event::Data(
+              std::move(context), file_name, unbound_script->ScriptId(),
+              TextPosition::MinimumPosition(),
+              cached_data ? cached_data->length : 0);
+        });
   }
 
   return cached_metadata;

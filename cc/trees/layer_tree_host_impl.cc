@@ -1183,10 +1183,10 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     return DrawResult::kSuccess;
   }
 
-  TRACE_EVENT_BEGIN2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
-                     "render_surface_list.size()",
-                     static_cast<uint64_t>(frame->render_surface_list->size()),
-                     "RequiresHighResToDraw", RequiresHighResToDraw());
+  TRACE_EVENT_BEGIN("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
+                    "render_surface_list.size()",
+                    static_cast<uint64_t>(frame->render_surface_list->size()),
+                    "RequiresHighResToDraw", RequiresHighResToDraw());
 
   // HandleVisibilityChanged contributed to the above damage check, so reset it
   // now that we're going to draw.
@@ -1549,12 +1549,10 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
 
   if (settings_.TreesInVizInClientProcess()) {
     // num_missing_tiles is not counted.
-    TRACE_EVENT_END1("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
-                     "draw_result", draw_result);
+    TRACE_EVENT_END("cc,benchmark", "draw_result", draw_result);
   } else {
-    TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
-                     "draw_result", draw_result, "missing tiles",
-                     num_missing_tiles);
+    TRACE_EVENT_END("cc,benchmark", "draw_result", draw_result, "missing tiles",
+                    num_missing_tiles);
   }
 
   // Draw has to be successful to not drop the copy request layer.

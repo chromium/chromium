@@ -33,40 +33,18 @@ void RecordMicrosecondTimesUmaByDecodeType(
 namespace internal {
 constexpr const char CategoryName::CategoryName::kTimeline[];
 constexpr const char CategoryName::CategoryName::kTimelineFrame[];
-const char kData[] = "data";
-const char kFrameId[] = "frameId";
-const char kLayerId[] = "layerId";
-const char kLayerTreeId[] = "layerTreeId";
-const char kPixelRefId[] = "pixelRefId";
-const char kFrameSequenceNumber[] = "frameSeqId";
-const char kHasPartialUpdate[] = "hasPartialUpdate";
-
-const char kImageUploadTask[] = "ImageUploadTask";
-const char kImageDecodeTask[] = "ImageDecodeTask";
-const char kBeginFrame[] = "BeginFrame";
-const char kNeedsBeginFrameChanged[] = "NeedsBeginFrameChanged";
-const char kActivateLayerTree[] = "ActivateLayerTree";
-const char kRequestMainThreadFrame[] = "RequestMainThreadFrame";
-const char kDroppedFrame[] = "DroppedFrame";
-const char kBeginMainThreadFrame[] = "BeginMainThreadFrame";
-const char kDrawFrame[] = "DrawFrame";
-const char kCommit[] = "Commit";
 }  // namespace internal
-
-const char kPaintSetup[] = "PaintSetup";
-const char kUpdateLayer[] = "UpdateLayer";
 
 ScopedImageUploadTask::ScopedImageUploadTask(const void* image_ptr,
                                              ImageType image_type)
     : ScopedImageTask(image_type) {
-  TRACE_EVENT_BEGIN1(internal::CategoryName::kTimeline,
-                     internal::kImageUploadTask, internal::kPixelRefId,
-                     reinterpret_cast<uint64_t>(image_ptr));
+  TRACE_EVENT_BEGIN(internal::CategoryName::kTimeline,
+                    internal::kImageUploadTask, internal::kPixelRefId,
+                    reinterpret_cast<uint64_t>(image_ptr));
 }
 
 ScopedImageUploadTask::~ScopedImageUploadTask() {
-  TRACE_EVENT_END0(internal::CategoryName::kTimeline,
-                   internal::kImageUploadTask);
+  TRACE_EVENT_END(internal::CategoryName::kTimeline);
 }
 
 ScopedImageDecodeTask::ScopedImageDecodeTask(const void* image_ptr,
@@ -76,14 +54,13 @@ ScopedImageDecodeTask::ScopedImageDecodeTask(const void* image_ptr,
     : ScopedImageTask(image_type),
       decode_type_(decode_type),
       task_type_(task_type) {
-  TRACE_EVENT_BEGIN1(internal::CategoryName::kTimeline,
-                     internal::kImageDecodeTask, internal::kPixelRefId,
-                     reinterpret_cast<uint64_t>(image_ptr));
+  TRACE_EVENT_BEGIN(internal::CategoryName::kTimeline,
+                    internal::kImageDecodeTask, internal::kPixelRefId,
+                    reinterpret_cast<uint64_t>(image_ptr));
 }
 
 ScopedImageDecodeTask::~ScopedImageDecodeTask() {
-  TRACE_EVENT_END0(internal::CategoryName::kTimeline,
-                   internal::kImageDecodeTask);
+  TRACE_EVENT_END(internal::CategoryName::kTimeline);
   if (suppress_metrics_)
     return;
 

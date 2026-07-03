@@ -1077,9 +1077,10 @@ XrResult OpenXrApiWrapper::BeginFrame() {
     frame_state.next = &secondary_view_frame_states;
   }
 
-  TRACE_EVENT_BEGIN0("xr", "xrWaitFrame");
-  RETURN_IF_XR_FAILED(xrWaitFrame(session_, &wait_frame_info, &frame_state));
-  TRACE_EVENT_END0("xr", "xrWaitFrame");
+  {
+    TRACE_EVENT("xr", "xrWaitFrame");
+    RETURN_IF_XR_FAILED(xrWaitFrame(session_, &wait_frame_info, &frame_state));
+  }
 
   frame_state_ = frame_state;
 
@@ -1230,9 +1231,10 @@ XrResult OpenXrApiWrapper::EndFrame() {
 
   RETURN_IF_XR_FAILED(graphics_binding_->ReleaseActiveSwapchainImages());
 
-  TRACE_EVENT_BEGIN0("xr", "xrEndFrame");
-  RETURN_IF_XR_FAILED(xrEndFrame(session_, &end_frame_info));
-  TRACE_EVENT_END0("xr", "xrEndFrame");
+  {
+    TRACE_EVENT("xr", "xrEndFrame");
+    RETURN_IF_XR_FAILED(xrEndFrame(session_, &end_frame_info));
+  }
   pending_frame_ = false;
 
   return XR_SUCCESS;

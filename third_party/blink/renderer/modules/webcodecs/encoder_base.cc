@@ -53,7 +53,7 @@ base::AtomicSequenceNumber g_sequence_num_for_counters;
 // static
 template <typename Traits>
 const CodecTraceNames* EncoderBase<Traits>::GetTraceNames() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CodecTraceNames, trace_names,
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const CodecTraceNames, trace_names,
                                   (Traits::GetName()));
   return &trace_names;
 }

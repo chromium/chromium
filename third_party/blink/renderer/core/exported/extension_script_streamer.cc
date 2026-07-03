@@ -98,7 +98,7 @@ ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
           [](scoped_refptr<BackgroundInlineScriptStreamer> script_streamer,
              scoped_refptr<base::SingleThreadTaskRunner> frame_task_runner,
              uint64_t script_id, const std::string url) {
-            TRACE_EVENT_BEGIN1(
+            TRACE_EVENT(
                 "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
                 "v8.parseOnBackground", "data",
                 [&](perfetto::TracedValue context) {
@@ -111,9 +111,6 @@ ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
                 FROM_HERE,
                 ConvertToBaseOnceCallback(CrossThreadBindOnce(
                     &EmitCompilationHistograms, std::move(script_streamer))));
-            TRACE_EVENT_END0(
-                "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                "v8.parseOnBackground");
           },
           script_streamer, std::move(frame_task_runner), script_id,
           std::string(url)));

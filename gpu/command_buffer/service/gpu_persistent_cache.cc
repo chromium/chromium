@@ -65,15 +65,15 @@ class ScopedHistogramTimer {
 
 class DiskCacheTraceScope {
  public:
-  explicit DiskCacheTraceScope(const char* name) : name_(name) {
-    TRACE_EVENT_BEGIN0("gpu", name_);
+  explicit DiskCacheTraceScope(perfetto::StaticString name) {
+    TRACE_EVENT_BEGIN("gpu", name);
   }
   ~DiskCacheTraceScope() {
     if (pending_bytes_) {
-      TRACE_EVENT_END2("gpu", name_, "idle_id", idle_id_, "pending_bytes",
-                       pending_bytes_);
+      TRACE_EVENT_END("gpu", "idle_id", idle_id_, "pending_bytes",
+                      pending_bytes_);
     } else {
-      TRACE_EVENT_END1("gpu", name_, "idle_id", idle_id_);
+      TRACE_EVENT_END("gpu", "idle_id", idle_id_);
     }
   }
 
@@ -81,7 +81,6 @@ class DiskCacheTraceScope {
   void SetPendingBytes(size_t pending_bytes) { pending_bytes_ = pending_bytes; }
 
  private:
-  const char* name_;
   uint64_t idle_id_ = 0;
   std::optional<size_t> pending_bytes_;
 };

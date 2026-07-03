@@ -141,8 +141,8 @@ void ForwardingAudioStreamFactory::Core::CreateLoopbackStream(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(loopback_source);
 
-  TRACE_EVENT_BEGIN1("audio", "CreateLoopbackStream", "group",
-                     group_id_.GetLowForSerialization());
+  TRACE_EVENT_BEGIN("audio", "CreateLoopbackStream", "group",
+                    group_id_.GetLowForSerialization());
 
   // |this| owns |inputs_|, so Unretained is safe.
   inputs_
@@ -154,8 +154,8 @@ void ForwardingAudioStreamFactory::Core::CreateLoopbackStream(
           std::move(renderer_factory_client)))
       .first->get()
       ->CreateStream(GetFactory());
-  TRACE_EVENT_END1("audio", "CreateLoopbackStream", "source",
-                   loopback_source->GetGroupID().GetLowForSerialization());
+  TRACE_EVENT_END("audio", "source",
+                  loopback_source->GetGroupID().GetLowForSerialization());
 }
 
 void ForwardingAudioStreamFactory::Core::SetMuted(bool muted) {
@@ -305,9 +305,9 @@ void ForwardingAudioStreamFactory::Core::CleanupStreamsBelongingTo(
     int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  TRACE_EVENT_BEGIN2("audio", "CleanupStreamsBelongingTo", "group",
-                     group_id_.GetLowForSerialization(), "process id",
-                     render_process_id);
+  TRACE_EVENT_BEGIN("audio", "CleanupStreamsBelongingTo", "group",
+                    group_id_.GetLowForSerialization(), "process id",
+                    render_process_id);
 
   auto match_rfh =
       [render_process_id, render_frame_id](
@@ -321,8 +321,7 @@ void ForwardingAudioStreamFactory::Core::CleanupStreamsBelongingTo(
 
   ResetRemoteFactoryPtrIfIdle();
 
-  TRACE_EVENT_END1("audio", "CleanupStreamsBelongingTo", "frame_id",
-                   render_frame_id);
+  TRACE_EVENT_END("audio", "frame_id", render_frame_id);
 }
 
 void ForwardingAudioStreamFactory::Core::RemoveInput(

@@ -152,16 +152,15 @@ int RulesetIndexer::GetChecksum() const {
 bool IndexedRulesetMatcher::Verify(base::span<const uint8_t> buffer,
                                    int expected_checksum,
                                    std::string_view uma_tag) {
-  TRACE_EVENT_BEGIN1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                     "IndexedRulesetMatcher::Verify", "size", buffer.size());
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("loading"),
+                    "IndexedRulesetMatcher::Verify", "size", buffer.size());
   base::ScopedUmaHistogramTimer scoped_timer(
       base::StrCat({uma_tag, ".IndexRuleset.Verify2.WallDuration"}));
   VerifyStatus status = GetVerifyStatus(buffer, expected_checksum);
   base::UmaHistogramEnumeration(
       base::StrCat({uma_tag, ".IndexRuleset.Verify.Status"}), status);
-  TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                   "IndexedRulesetMatcher::Verify", "status",
-                   static_cast<int>(status));
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("loading"), "status",
+                  static_cast<int>(status));
   return status == VerifyStatus::kPassValidChecksum ||
          status == VerifyStatus::kPassChecksumZero;
 }

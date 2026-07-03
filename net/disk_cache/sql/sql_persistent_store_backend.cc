@@ -342,7 +342,7 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
     int64_t user_max_bytes,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN0("disk_cache", "SqlBackend.Initialize");
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.Initialize");
   base::ElapsedTimer timer;
   CHECK(!db_init_status_.has_value());
   bool corruption_detected = false;
@@ -368,12 +368,11 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
   RecordTimeAndErrorResultHistogram("Initialize", posting_delay,
                                     timer.Elapsed(), *db_init_status_,
                                     corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.Initialize", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(*db_init_status_, store_status_,
-                                          dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(*db_init_status_, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return *db_init_status_ == Error::kOk
              ? InitResultOrError(InitResult(
@@ -516,23 +515,23 @@ EntryInfoOrErrorAndStoreStatus SqlPersistentStore::Backend::OpenOrCreateEntry(
     const CacheEntryKey& key,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenOrCreateEntry", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.OpenOrCreateEntry", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = OpenOrCreateEntryInternal(key, corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "OpenOrCreateEntry", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenOrCreateEntry", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return EntryInfoOrErrorAndStoreStatus(std::move(result), store_status_);
 }
@@ -562,22 +561,22 @@ OptionalEntryInfoOrError SqlPersistentStore::Backend::OpenEntry(
     const CacheEntryKey& key,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenEntry", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.OpenEntry", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   auto result = OpenEntryInternal(key);
   RecordTimeAndErrorResultHistogram("OpenEntry", posting_delay, timer.Elapsed(),
                                     result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenEntry", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   return result;
 }
 
@@ -623,12 +622,12 @@ EntryInfoOrErrorAndStoreStatus SqlPersistentStore::Backend::CreateEntry(
     bool run_existance_check,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.CreateEntry", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.CreateEntry", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = CreateEntryInternal(key, creation_time, run_existance_check,
@@ -636,11 +635,11 @@ EntryInfoOrErrorAndStoreStatus SqlPersistentStore::Backend::CreateEntry(
   RecordTimeAndErrorResultHistogram(
       "CreateEntry", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.CreateEntry", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return EntryInfoOrErrorAndStoreStatus(std::move(result), store_status_);
 }
@@ -714,24 +713,24 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::DoomEntry(
     ResId res_id,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DoomEntry", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       dict.Add("res_id", res_id.value());
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DoomEntry", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      dict.Add("res_id", res_id.value());
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = DoomEntryInternal(key, res_id, corruption_detected);
   RecordTimeAndErrorResultHistogram("DoomEntry", posting_delay, timer.Elapsed(),
                                     result, corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.DoomEntry", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                     dict.Add("corruption_detected", corruption_detected);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                    dict.Add("corruption_detected", corruption_detected);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndStoreStatus(result, store_status_);
 }
@@ -795,23 +794,23 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::DeleteDoomedEntry(
     ResId res_id,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteDoomedEntry", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       dict.Add("res_id", res_id.value());
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DeleteDoomedEntry", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      dict.Add("res_id", res_id.value());
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   auto result = DeleteDoomedEntryInternal(res_id);
   RecordTimeAndErrorResultHistogram("DeleteDoomedEntry", posting_delay,
                                     timer.Elapsed(), result,
                                     /*corruption_detected=*/false);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteDoomedEntry", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   return ErrorAndStoreStatus(result, store_status_);
 }
 
@@ -856,7 +855,7 @@ Error SqlPersistentStore::Backend::DeleteDoomedEntries(
     ResIdList res_ids_to_delete,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN0("disk_cache", "SqlBackend.DeleteDoomedEntries");
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DeleteDoomedEntries");
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result =
@@ -866,12 +865,12 @@ Error SqlPersistentStore::Backend::DeleteDoomedEntries(
                                     corruption_detected);
   base::UmaHistogramCounts100("Net.SqlDiskCache.DeleteDoomedEntriesCount",
                               res_ids_to_delete.size());
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteDoomedEntries", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                     dict.Add("deleted_count", res_ids_to_delete.size());
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                    dict.Add("deleted_count", res_ids_to_delete.size());
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return result;
 }
@@ -909,24 +908,24 @@ HashAndResIdListOrErrorAndStoreStatus
 SqlPersistentStore::Backend::DeleteLiveEntry(const CacheEntryKey& key,
                                              base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteLiveEntry", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DeleteLiveEntry", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = DeleteLiveEntryInternal(key, corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "DeleteLiveEntry", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteLiveEntry", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                     dict.Add("corruption_detected", corruption_detected);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                    dict.Add("corruption_detected", corruption_detected);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return HashAndResIdListOrErrorAndStoreStatus(std::move(result),
                                                store_status_);
@@ -1000,22 +999,22 @@ HashAndResIdListOrError SqlPersistentStore::Backend::DeleteLiveEntryInternal(
 ErrorAndStoreStatus SqlPersistentStore::Backend::DeleteAllEntries(
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteAllEntries", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DeleteAllEntries", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   Error result = DeleteAllEntriesInternal(corruption_detected);
   RecordTimeAndErrorResultHistogram("DeleteAllEntries", posting_delay,
                                     timer.Elapsed(), result,
                                     corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteAllEntries", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndStoreStatus(result, store_status_);
 }
@@ -1064,15 +1063,15 @@ SqlPersistentStore::Backend::DeleteLiveEntriesBetween(
     base::flat_set<ResId> excluded_res_ids,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteLiveEntriesBetween",
-                     "data", [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("initial_time", initial_time);
-                       dict.Add("end_time", end_time);
-                       dict.Add("excluded_res_ids_size",
-                                excluded_res_ids.size());
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DeleteLiveEntriesBetween", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("initial_time", initial_time);
+                      dict.Add("end_time", end_time);
+                      dict.Add("excluded_res_ids_size",
+                               excluded_res_ids.size());
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   // Flag to indicate if we encounter signs of database corruption. In
   // DeleteLiveEntriesBetween, database corruption is ignored.
@@ -1082,11 +1081,11 @@ SqlPersistentStore::Backend::DeleteLiveEntriesBetween(
   RecordTimeAndErrorResultHistogram(
       "DeleteLiveEntriesBetween", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteLiveEntriesBetween",
-                   "result", [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return HashAndResIdListOrErrorAndStoreStatus(std::move(result),
                                                store_status_);
@@ -1173,23 +1172,23 @@ SqlPersistentStore::Backend::UpdateEntryLastUsedByKey(
     base::Time last_used,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.UpdateEntryLastUsedByKey",
-                     "data", [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       dict.Add("last_used", last_used);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.UpdateEntryLastUsedByKey", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      dict.Add("last_used", last_used);
+                    });
   base::ElapsedTimer timer;
   auto result = UpdateEntryLastUsedByKeyInternal(key, last_used);
   RecordTimeAndErrorResultHistogram("UpdateEntryLastUsedByKey", posting_delay,
                                     timer.Elapsed(),
                                     result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.UpdateEntryLastUsedByKey",
-                   "result", [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   return result;
 }
 
@@ -1233,18 +1232,18 @@ SqlPersistentStore::Backend::WriteEntryDataAndMetadata(
     bool doomed_new_entry,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.WriteEntryDataAndMetadata",
-                     "data", [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       if (res_id) {
-                         dict.Add("res_id", res_id->value());
-                       }
-                       dict.Add("has_body_write", old_body_end.has_value());
-                       dict.Add("last_used", last_used);
-                       dict.Add("doomed_new_entry", doomed_new_entry);
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.WriteEntryDataAndMetadata",
+                    "data", [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("key", key.string());
+                      if (res_id) {
+                        dict.Add("res_id", res_id->value());
+                      }
+                      dict.Add("has_body_write", old_body_end.has_value());
+                      dict.Add("last_used", last_used);
+                      dict.Add("doomed_new_entry", doomed_new_entry);
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = WriteEntryDataAndMetadataInternal(
@@ -1254,11 +1253,11 @@ SqlPersistentStore::Backend::WriteEntryDataAndMetadata(
   RecordTimeAndErrorResultHistogram(
       "WriteEntryDataAndMetadata", posting_delay, timer.Elapsed(),
       result.has_value() ? Error::kOk : result.error(), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.WriteEntryDataAndMetadata",
-                   "result", [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return EntryMetadataOrErrorAndStoreStatus(result, store_status_);
 }
@@ -1526,26 +1525,23 @@ SqlPersistentStore::Backend::WriteEntryData(
     int64_t max_sparse_data_size,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.WriteEntryData", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("key", key.string());
-                       if (std::holds_alternative<ResId>(
-                               res_id_or_last_used_time)) {
-                         dict.Add(
-                             "res_id",
-                             std::get<ResId>(res_id_or_last_used_time).value());
-                       } else {
-                         dict.Add("last_used", std::get<base::Time>(
-                                                   res_id_or_last_used_time));
-                       }
-                       dict.Add("old_body_end", old_body_end);
-                       dict.Add("offset", buffer.offset);
-                       dict.Add("buf_len", buffer.size);
-                       dict.Add("truncate", truncate);
-                       dict.Add("doomed_new_entry", doomed_new_entry);
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN(
+      "disk_cache", "SqlBackend.WriteEntryData", "data",
+      [&](perfetto::TracedValue trace_context) {
+        auto dict = std::move(trace_context).WriteDictionary();
+        dict.Add("key", key.string());
+        if (std::holds_alternative<ResId>(res_id_or_last_used_time)) {
+          dict.Add("res_id", std::get<ResId>(res_id_or_last_used_time).value());
+        } else {
+          dict.Add("last_used", std::get<base::Time>(res_id_or_last_used_time));
+        }
+        dict.Add("old_body_end", old_body_end);
+        dict.Add("offset", buffer.offset);
+        dict.Add("buf_len", buffer.size);
+        dict.Add("truncate", truncate);
+        dict.Add("doomed_new_entry", doomed_new_entry);
+        PopulateTraceDetails(store_status_, dict);
+      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = WriteEntryDataInternal(
@@ -1555,11 +1551,11 @@ SqlPersistentStore::Backend::WriteEntryData(
   RecordTimeAndErrorResultHistogram(
       "WriteEntryData", posting_delay, timer.Elapsed(),
       result.has_value() ? Error::kOk : result.error(), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.WriteEntryData", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return EntryMetadataOrErrorAndStoreStatus(result, store_status_);
 }
@@ -2126,16 +2122,16 @@ ReadResultOrError SqlPersistentStore::Backend::ReadEntryData(
     bool sparse_reading,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.ReadEntryData", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("res_id", res_id.value());
-                       dict.Add("offset", offset);
-                       dict.Add("buf_len", buf_len);
-                       dict.Add("body_end", body_end);
-                       dict.Add("sparse_reading", sparse_reading);
-                       PopulateTraceDetails(store_status_, dict);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.ReadEntryData", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("res_id", res_id.value());
+                      dict.Add("offset", offset);
+                      dict.Add("buf_len", buf_len);
+                      dict.Add("body_end", body_end);
+                      dict.Add("sparse_reading", sparse_reading);
+                      PopulateTraceDetails(store_status_, dict);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result =
@@ -2144,11 +2140,11 @@ ReadResultOrError SqlPersistentStore::Backend::ReadEntryData(
   RecordTimeAndErrorResultHistogram(
       "ReadEntryData", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.ReadEntryData", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   return result;
 }
@@ -2272,24 +2268,24 @@ RangeResult SqlPersistentStore::Backend::GetEntryAvailableRange(
     int len,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.GetEntryAvailableRange", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("res_id", res_id.value());
-                       dict.Add("offset", offset);
-                       dict.Add("len", len);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.GetEntryAvailableRange", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("res_id", res_id.value());
+                      dict.Add("offset", offset);
+                      dict.Add("len", len);
+                    });
   base::ElapsedTimer timer;
   auto result = GetEntryAvailableRangeInternal(res_id, offset, len);
   RecordTimeAndErrorResultHistogram("GetEntryAvailableRange", posting_delay,
                                     timer.Elapsed(),
                                     result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.GetEntryAvailableRange", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   return result.value_or(RangeResult(net::Error::ERR_FAILED));
 }
 
@@ -2355,23 +2351,23 @@ Int64OrError SqlPersistentStore::Backend::CalculateSizeOfEntriesBetween(
     return store_status_.GetEstimatedDiskUsage();
   }
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.CalculateSizeOfEntriesBetween",
-                     "data", [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("initial_time", initial_time);
-                       dict.Add("end_time", end_time);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.CalculateSizeOfEntriesBetween",
+                    "data", [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("initial_time", initial_time);
+                      dict.Add("end_time", end_time);
+                    });
   base::ElapsedTimer timer;
   auto result = CalculateSizeOfEntriesBetweenInternal(initial_time, end_time);
   RecordTimeAndErrorResultHistogram("CalculateSizeOfEntriesBetween2",
                                     posting_delay, timer.Elapsed(),
                                     result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.CalculateSizeOfEntriesBetween",
-                   "result", [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   return result;
 }
 
@@ -2403,22 +2399,22 @@ OptionalEntryInfoWithKeyAndIterator SqlPersistentStore::Backend::OpenNextEntry(
     const EntryIterator& iterator,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenNextEntry", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("res_id_iterator", iterator.value().res_id);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.OpenNextEntry", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("res_id_iterator", iterator.value().res_id);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = OpenNextEntryInternal(iterator, corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "OpenNextEntry", posting_delay, timer.Elapsed(),
       result.error_or(Error::kOk), corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenNextEntry", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   if (!result.has_value()) {
     return std::nullopt;
@@ -2475,13 +2471,13 @@ void SqlPersistentStore::Backend::StartEviction(
         remaining_mandatory_size,
     std::optional<SqlPersistentStoreInMemoryIndex> index,
     EvictionResultWithMetadataCallback callback) {
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.StartEviction", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("size_to_be_removed", size_to_be_removed);
-                       dict.Add("is_idle_time_eviction", is_idle_time_eviction);
-                       dict.Add("excluded_res_ids", excluded_res_ids.size());
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.StartEviction", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("size_to_be_removed", size_to_be_removed);
+                      dict.Add("is_idle_time_eviction", is_idle_time_eviction);
+                      dict.Add("excluded_res_ids", excluded_res_ids.size());
+                    });
   base::ElapsedTimer timer;
   size_t scanned_count = 0;
   bool used_in_memory_index = false;
@@ -2505,15 +2501,15 @@ void SqlPersistentStore::Backend::StartEviction(
                     ".ScannedEntriesCount.", lookup_type, result_type}),
       scanned_count);
 
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.StartEviction", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     if (result.has_value()) {
-                       dict.Add("candidates_size", result->size());
-                     } else {
-                       dict.Add("error", static_cast<int>(result.error()));
-                     }
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    if (result.has_value()) {
+                      dict.Add("candidates_size", result->size());
+                    } else {
+                      dict.Add("error", static_cast<int>(result.error()));
+                    }
+                  });
   aggregator->OnCandidate(
       shard_id_,
       result.has_value() ? std::move(*result) : EvictionCandidateList(),
@@ -2696,11 +2692,11 @@ void SqlPersistentStore::Backend::EvictEntries(
   // Checks that this method is called on the expected sequence when invoked via
   // EvictionCandidateAggregator.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.EvictEntries", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("target_size", eviction_targets.size());
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.EvictEntries", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("target_size", eviction_targets.size());
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   bool index_mismatch_detected = false;
@@ -2728,11 +2724,11 @@ void SqlPersistentStore::Backend::EvictEntries(
   RecordTimeAndErrorResultHistogram(
       !is_idle_time_eviction ? "EvictEntries" : "EvictEntriesOnIdleTime",
       posting_delay, timer.Elapsed(), error, corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.EvictEntries", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(error, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(error, store_status_, dict);
+                  });
   MaybeCrashIfCorrupted(corruption_detected);
   std::move(callback).Run(EvictionResultWithMetadata(
       EvictionResult(error, evicted_entry_count), std::move(eviction_targets),
@@ -2750,13 +2746,12 @@ SqlPersistentStore::Backend::ResumePendingEviction(
     std::optional<SqlPersistentStoreInMemoryIndex> index,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.ResumePendingEviction", "data",
-                     [&](perfetto::TracedValue trace_context) {
-                       auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("eviction_target_size",
-                                eviction_targets.size());
-                       dict.Add("is_idle_time_eviction", is_idle_time_eviction);
-                     });
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.ResumePendingEviction", "data",
+                    [&](perfetto::TracedValue trace_context) {
+                      auto dict = std::move(trace_context).WriteDictionary();
+                      dict.Add("eviction_target_size", eviction_targets.size());
+                      dict.Add("is_idle_time_eviction", is_idle_time_eviction);
+                    });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   bool index_mismatch_detected = false;
@@ -2771,11 +2766,11 @@ SqlPersistentStore::Backend::ResumePendingEviction(
       !is_idle_time_eviction ? "ResumePendingEviction"
                              : "ResumePendingEvictionOnIdleTime",
       posting_delay, timer.Elapsed(), error, corruption_detected);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.ResumePendingEviction", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(error, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(error, store_status_, dict);
+                  });
   return EvictionResultWithMetadata(
       EvictionResult(error, evicted_entry_count), std::move(eviction_targets),
       std::move(index), store_status_, index_mismatch_detected);
@@ -2978,11 +2973,11 @@ SqlPersistentStore::InMemoryIndexAndDoomedResIdsOrError
 SqlPersistentStore::Backend::LoadInMemoryIndex() {
   TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.LoadInMemoryIndex");
   auto result = LoadInMemoryIndexInternal();
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.LoadInMemoryIndex", "result",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(result, store_status_, dict);
+                  });
   return result;
 }
 
@@ -3123,7 +3118,7 @@ int SqlPersistentStore::Backend::GetFreelistCount() {
 bool SqlPersistentStore::Backend::MaybeRunIncrementalVacuum(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_BEGIN0("disk_cache", "SqlBackend.MaybeRunIncrementalVacuum");
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.MaybeRunIncrementalVacuum");
   base::ElapsedTimer timer;
   int pages_vacuumed = 0;
   Error error =
@@ -3143,12 +3138,12 @@ bool SqlPersistentStore::Backend::MaybeRunIncrementalVacuum(
       base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
                     "IdleEventIncrementalVacuum.", result_type, "Pages"}),
       pages_vacuumed);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.MaybeRunIncrementalVacuum",
-                   "result", [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(error, dict);
-                     dict.Add("pages", pages_vacuumed);
-                   });
+  TRACE_EVENT_END("disk_cache", "result",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    PopulateTraceDetails(error, dict);
+                    dict.Add("pages", pages_vacuumed);
+                  });
   return error == Error::kOk;
 }
 

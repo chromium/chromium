@@ -164,9 +164,10 @@ bool XRFrameTransport::FrameSubmit(
       previous_images_.push_back(std::move(layer.current_frame_image));
     }
 
-    TRACE_EVENT_BEGIN0("gpu", "XRFrameTransport::SubmitFrame");
-    vr_presentation_provider->SubmitFrame(vr_frame_id, frame_wait_time_);
-    TRACE_EVENT_END0("gpu", "XRFrameTransport::SubmitFrame");
+    {
+      TRACE_EVENT("gpu", "XRFrameTransport::SubmitFrame");
+      vr_presentation_provider->SubmitFrame(vr_frame_id, frame_wait_time_);
+    }
   } else if (transport_options_->transport_method ==
              device::mojom::blink::XRPresentationTransportMethod::
                  DRAW_INTO_TEXTURE_MAILBOX) {

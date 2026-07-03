@@ -58,7 +58,7 @@ base::AtomicSequenceNumber g_sequence_num_for_counters;
 // static
 template <typename Traits>
 const CodecTraceNames* DecoderTemplate<Traits>::GetTraceNames() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CodecTraceNames, trace_names,
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const CodecTraceNames, trace_names,
                                   (Traits::GetName()));
   return &trace_names;
 }
@@ -786,12 +786,12 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
 
   OutputType* blink_output = std::move(output_or_error).value();
 
-  TRACE_EVENT_BEGIN1(kCategory, GetTraceNames()->output.c_str(), "timestamp",
-                     blink_output->timestamp());
-
-  output_cb_->InvokeAndReportException(nullptr, blink_output);
-
-  TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
+  {
+    TRACE_EVENT(kCategory,
+                perfetto::StaticString(GetTraceNames()->output.c_str()),
+                "timestamp", blink_output->timestamp());
+    output_cb_->InvokeAndReportException(nullptr, blink_output);
+  }
 
   MarkCodecActive();
 }

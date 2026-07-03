@@ -92,7 +92,7 @@ void SharingFCMHandler::ShutdownHandler() {
 
 void SharingFCMHandler::OnMessage(const std::string& app_id,
                                   const gcm::IncomingMessage& message) {
-  TRACE_EVENT_BEGIN0("sharing", "SharingFCMHandler::OnMessage");
+  TRACE_EVENT_BEGIN("sharing", "SharingFCMHandler::OnMessage");
 
   components_sharing_message::SharingMessage sharing_message;
   if (!sharing_message.ParseFromString(message.raw_data)) {
@@ -132,8 +132,8 @@ void SharingFCMHandler::OnMessage(const std::string& app_id,
     handler->OnMessage(std::move(sharing_message), std::move(done_callback));
   }
 
-  TRACE_EVENT_END1("sharing", "SharingFCMHandler::OnMessage", "message_type",
-                   SharingMessageTypeToString(message_type));
+  TRACE_EVENT_END("sharing", "message_type",
+                  SharingMessageTypeToString(message_type));
 }
 
 void SharingFCMHandler::OnSendAcknowledged(const std::string& app_id,

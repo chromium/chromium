@@ -135,8 +135,8 @@ void AppendToBuf8BytesBigEndian(std::vector<uint8_t>* buf, uint64_t n) {
 std::vector<uint8_t> GenerateSignedMessage(
     SignedExchangeVersion version,
     const SignedExchangeEnvelope& envelope) {
-  TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("loading"),
-                     "GenerateSignedMessage");
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("loading"),
+                    "GenerateSignedMessage");
 
   const auto signature = envelope.signature();
 
@@ -182,8 +182,8 @@ std::vector<uint8_t> GenerateSignedMessage(
   message.insert(message.end(), envelope.cbor_header().begin(),
                  envelope.cbor_header().end());
 
-  TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                   "GenerateSignedMessage", "dump", HexDump(message));
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("loading"), "dump",
+                  HexDump(message));
   return message;
 }
 

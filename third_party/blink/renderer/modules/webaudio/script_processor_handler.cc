@@ -106,8 +106,8 @@ void ScriptProcessorHandler::Initialize() {
 }
 
 void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
-  TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-                     "ScriptProcessorHandler::Process");
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+                    "ScriptProcessorHandler::Process");
 
   // As in other AudioNodes, ScriptProcessorNode uses an AudioBus for its input
   // and output (i.e. `input_bus` and `output_bus`). Additionally, there is a
@@ -127,8 +127,7 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
       TRACE_EVENT_INSTANT(
           TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
           "ScriptProcessorHandler::Process - tryLock failed (output)");
-      TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-                       "ScriptProcessorHandler::Process");
+      TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"));
       Output(0).Bus()->Zero();
       return;
     }
@@ -220,8 +219,7 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     SwapBuffers();
   }
 
-  TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-                   "ScriptProcessorHandler::Process");
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"));
 }
 
 void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {

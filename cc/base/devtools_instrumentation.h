@@ -30,45 +30,28 @@ struct CC_BASE_EXPORT CategoryName {
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame");
 };
 
-CC_BASE_EXPORT extern const char kData[];
-CC_BASE_EXPORT extern const char kFrameId[];
-CC_BASE_EXPORT extern const char kLayerId[];
-CC_BASE_EXPORT extern const char kLayerTreeId[];
-CC_BASE_EXPORT extern const char kPixelRefId[];
-CC_BASE_EXPORT extern const char kFrameSequenceNumber[];
-CC_BASE_EXPORT extern const char kHasPartialUpdate[];
+inline constexpr char kData[] = "data";
+inline constexpr char kFrameId[] = "frameId";
+inline constexpr char kLayerId[] = "layerId";
+inline constexpr char kLayerTreeId[] = "layerTreeId";
+inline constexpr char kPixelRefId[] = "pixelRefId";
+inline constexpr char kFrameSequenceNumber[] = "frameSeqId";
+inline constexpr char kHasPartialUpdate[] = "hasPartialUpdate";
 
-CC_BASE_EXPORT extern const char kImageDecodeTask[];
-CC_BASE_EXPORT extern const char kBeginFrame[];
-CC_BASE_EXPORT extern const char kNeedsBeginFrameChanged[];
-CC_BASE_EXPORT extern const char kActivateLayerTree[];
-CC_BASE_EXPORT extern const char kRequestMainThreadFrame[];
-CC_BASE_EXPORT extern const char kDroppedFrame[];
-CC_BASE_EXPORT extern const char kBeginMainThreadFrame[];
-CC_BASE_EXPORT extern const char kDrawFrame[];
-CC_BASE_EXPORT extern const char kCommit[];
+inline constexpr char kImageUploadTask[] = "ImageUploadTask";
+inline constexpr char kImageDecodeTask[] = "ImageDecodeTask";
+inline constexpr char kBeginFrame[] = "BeginFrame";
+inline constexpr char kNeedsBeginFrameChanged[] = "NeedsBeginFrameChanged";
+inline constexpr char kActivateLayerTree[] = "ActivateLayerTree";
+inline constexpr char kRequestMainThreadFrame[] = "RequestMainThreadFrame";
+inline constexpr char kDroppedFrame[] = "DroppedFrame";
+inline constexpr char kBeginMainThreadFrame[] = "BeginMainThreadFrame";
+inline constexpr char kDrawFrame[] = "DrawFrame";
+inline constexpr char kCommit[] = "Commit";
 }  // namespace internal
 
-extern const char kPaintSetup[];
-CC_BASE_EXPORT extern const char kUpdateLayer[];
-
-class CC_BASE_EXPORT ScopedLayerTask {
- public:
-  ScopedLayerTask(const char* event_name, int layer_id)
-      : event_name_(event_name) {
-    TRACE_EVENT_BEGIN1(internal::CategoryName::kTimeline, event_name_,
-                       internal::kLayerId, layer_id);
-  }
-  ScopedLayerTask(const ScopedLayerTask&) = delete;
-  ~ScopedLayerTask() {
-    TRACE_EVENT_END0(internal::CategoryName::kTimeline, event_name_);
-  }
-
-  ScopedLayerTask& operator=(const ScopedLayerTask&) = delete;
-
- private:
-  const char* event_name_;
-};
+inline constexpr char kPaintSetup[] = "PaintSetup";
+inline constexpr char kUpdateLayer[] = "UpdateLayer";
 
 class CC_BASE_EXPORT ScopedImageTask {
  public:
@@ -135,36 +118,28 @@ class CC_BASE_EXPORT ScopedImageDecodeTask : public ScopedImageTask {
 
 class CC_BASE_EXPORT ScopedLayerTreeTask {
  public:
-  ScopedLayerTreeTask(const char* event_name,
+  ScopedLayerTreeTask(perfetto::StaticString event_name,
                       int layer_id,
-                      int layer_tree_host_id)
-      : event_name_(event_name) {
-    TRACE_EVENT_BEGIN2(internal::CategoryName::kTimeline, event_name_,
-                       internal::kLayerId, layer_id, internal::kLayerTreeId,
-                       layer_tree_host_id);
+                      int layer_tree_host_id) {
+    TRACE_EVENT_BEGIN(internal::CategoryName::kTimeline, event_name,
+                      internal::kLayerId, layer_id, internal::kLayerTreeId,
+                      layer_tree_host_id);
   }
   ScopedLayerTreeTask(const ScopedLayerTreeTask&) = delete;
-  ~ScopedLayerTreeTask() {
-    TRACE_EVENT_END0(internal::CategoryName::kTimeline, event_name_);
-  }
+  ~ScopedLayerTreeTask() { TRACE_EVENT_END(internal::CategoryName::kTimeline); }
 
   ScopedLayerTreeTask& operator=(const ScopedLayerTreeTask&) = delete;
-
- private:
-  const char* event_name_;
 };
 
 struct CC_BASE_EXPORT ScopedCommitTrace {
  public:
   explicit ScopedCommitTrace(int layer_tree_host_id, uint64_t sequence_number) {
-    TRACE_EVENT_BEGIN2(internal::CategoryName::kTimeline, internal::kCommit,
-                       internal::kLayerTreeId, layer_tree_host_id,
-                       internal::kFrameSequenceNumber, sequence_number);
+    TRACE_EVENT_BEGIN(internal::CategoryName::kTimeline, internal::kCommit,
+                      internal::kLayerTreeId, layer_tree_host_id,
+                      internal::kFrameSequenceNumber, sequence_number);
   }
   ScopedCommitTrace(const ScopedCommitTrace&) = delete;
-  ~ScopedCommitTrace() {
-    TRACE_EVENT_END0(internal::CategoryName::kTimeline, internal::kCommit);
-  }
+  ~ScopedCommitTrace() { TRACE_EVENT_END(internal::CategoryName::kTimeline); }
 
   ScopedCommitTrace& operator=(const ScopedCommitTrace&) = delete;
 };

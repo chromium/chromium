@@ -986,10 +986,11 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
   DCHECK(arcore_frame_.is_valid());
   DCHECK(camera_updated);
 
-  TRACE_EVENT_BEGIN0("gpu", "ArCore Update");
-  ArStatus status =
-      ArSession_update(arcore_session_.get(), arcore_frame_.get());
-  TRACE_EVENT_END0("gpu", "ArCore Update");
+  ArStatus status;
+  {
+    TRACE_EVENT("gpu", "ArCore Update");
+    status = ArSession_update(arcore_session_.get(), arcore_frame_.get());
+  }
 
   if (status != AR_SUCCESS) {
     DLOG(ERROR) << "ArSession_update failed: " << status;

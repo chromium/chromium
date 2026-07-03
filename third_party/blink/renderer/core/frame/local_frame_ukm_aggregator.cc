@@ -59,8 +59,11 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
       start_time_(aggregator && aggregator->ShouldMeasureMetric(metric_index)
                       ? clock_->NowTicks()
                       : base::TimeTicks()) {
-  if (aggregator_ && !start_time_.is_null())
-    TRACE_EVENT_BEGIN0("blink", aggregator_->metrics_data()[metric_index].name);
+  if (aggregator_ && !start_time_.is_null()) {
+    TRACE_EVENT_BEGIN(
+        "blink",
+        perfetto::StaticString(aggregator_->metrics_data()[metric_index].name));
+  }
 }
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
@@ -79,8 +82,8 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
       aggregator_->RecordTimerSample(metric_index_, start_time_,
                                      clock_->NowTicks());
     }
-    TRACE_EVENT_END1("blink", aggregator_->metrics_data()[metric_index_].name,
-                     "preFCP", aggregator_->fcp_state_ == kBeforeFCPSignal);
+    TRACE_EVENT_END("blink", "preFCP",
+                    aggregator_->fcp_state_ == kBeforeFCPSignal);
   }
 }
 
@@ -622,7 +625,8 @@ void LocalFrameUkmAggregator::ResetAllMetrics() {
 }
 
 void LocalFrameUkmAggregator::BeginForcedLayout() {
-  TRACE_EVENT_BEGIN0("blink", metrics_data()[kForcedStyleAndLayout].name);
+  TRACE_EVENT_BEGIN("blink", perfetto::StaticString(
+                                 metrics_data()[kForcedStyleAndLayout].name));
 }
 
 void LocalFrameUkmAggregator::EndForcedLayout(
@@ -631,8 +635,7 @@ void LocalFrameUkmAggregator::EndForcedLayout(
     bool avoid_unnecessary_forced_layout_measurements,
     bool should_report_uma_this_frame,
     bool is_pre_fcp) {
-  TRACE_EVENT_END1("blink", metrics_data()[kForcedStyleAndLayout].name,
-                   "preFCP", fcp_state_ == kBeforeFCPSignal);
+  TRACE_EVENT_END("blink", "preFCP", fcp_state_ == kBeforeFCPSignal);
 
   if (avoid_unnecessary_forced_layout_measurements &&
       !(should_report_uma_this_frame || is_pre_fcp ||

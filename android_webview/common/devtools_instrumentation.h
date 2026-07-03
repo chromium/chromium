@@ -16,24 +16,22 @@ constexpr const char* Category() {
   // known at compile-time.
   return "Java,devtools,disabled-by-default-devtools.timeline";
 }
-const char kEmbedderCallback[] = "EmbedderCallback";
-const char kCallbackNameArgument[] = "callbackName";
+constexpr char kEmbedderCallback[] = "EmbedderCallback";
+constexpr char kCallbackNameArgument[] = "callbackName";
 }  // namespace internal
 
 class ScopedEmbedderCallbackTask {
  public:
   explicit ScopedEmbedderCallbackTask(const char* callback_name) {
-    TRACE_EVENT_BEGIN1(internal::Category(), internal::kEmbedderCallback,
-                       internal::kCallbackNameArgument, callback_name);
+    TRACE_EVENT_BEGIN(internal::Category(), internal::kEmbedderCallback,
+                      internal::kCallbackNameArgument, callback_name);
   }
 
   ScopedEmbedderCallbackTask(const ScopedEmbedderCallbackTask&) = delete;
   ScopedEmbedderCallbackTask& operator=(const ScopedEmbedderCallbackTask&) =
       delete;
 
-  ~ScopedEmbedderCallbackTask() {
-    TRACE_EVENT_END0(internal::Category(), internal::kEmbedderCallback);
-  }
+  ~ScopedEmbedderCallbackTask() { TRACE_EVENT_END(internal::Category()); }
 };
 
 }  // namespace devtools_instrumentation

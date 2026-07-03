@@ -24,14 +24,13 @@ static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {
   if (!enabled) {
     return;
   }
-  TRACE_EVENT_BEGIN2("memory", "CollectPageFaultCount", "minor", 0, "major", 0);
+  TRACE_EVENT_BEGIN("memory", "CollectPageFaultCount", "minor", 0, "major", 0);
   std::unique_ptr<base::ProcessMetrics> process_metrics(
       base::ProcessMetrics::CreateProcessMetrics(
           base::GetCurrentProcessHandle()));
   base::PageFaultCounts counts;
   process_metrics->GetPageFaultCounts(&counts);
-  TRACE_EVENT_END2("memory", "CollectPageFaults", "minor", counts.minor,
-                   "major", counts.major);
+  TRACE_EVENT_END("memory", "minor", counts.minor, "major", counts.major);
 }
 
 int GetCachedLowMemoryDeviceThresholdMb() {

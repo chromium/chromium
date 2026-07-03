@@ -44,13 +44,13 @@ ScopedRasterTask::ScopedRasterTask(viz::TracedValue::Id tile_id,
                                    TileResolution tile_resolution,
                                    int source_frame_number,
                                    int layer_id) {
-  TRACE_EVENT_BEGIN1(
+  TRACE_EVENT_BEGIN(
       kCategory, kRasterTask, kTileData,
       TileDataAsValue(tile_id, tile_resolution, source_frame_number, layer_id));
 }
 
 ScopedRasterTask::~ScopedRasterTask() {
-  TRACE_EVENT_END0(kCategory, kRasterTask);
+  TRACE_EVENT_END(kCategory);
 }
 
 bool IsTracingLayerTreeSnapshots() {

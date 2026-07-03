@@ -199,10 +199,9 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 
         case MOJO_RESULT_SHOULD_WAIT: {
           {
-            TRACE_EVENT_END0(
-                "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                "v8.parseOnBackgroundParsing");
-            TRACE_EVENT_BEGIN0(
+            TRACE_EVENT_END("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT(
+                "v8.compile"));
+            TRACE_EVENT_BEGIN(
                 "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
                 "v8.parseOnBackgroundWaiting");
             base::ScopedAllowBaseSyncPrimitives
@@ -211,10 +210,9 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
                 FROM_HERE, base::BlockingType::WILL_BLOCK);
 
             result = mojo::Wait(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE);
-            TRACE_EVENT_END0(
-                "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                "v8.parseOnBackgroundWaiting");
-            TRACE_EVENT_BEGIN0(
+            TRACE_EVENT_END("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT(
+                "v8.compile"));
+            TRACE_EVENT_BEGIN(
                 "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
                 "v8.parseOnBackgroundParsing");
           }
@@ -553,7 +551,7 @@ void ResourceScriptStreamer::RunScriptStreamingTask(
     ResourceScriptStreamer* streamer,
     SourceStream* stream) {
   // TODO(leszeks): Add flow event data again
-  TRACE_EVENT_BEGIN1(
+  TRACE_EVENT_BEGIN(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
       "v8.parseOnBackground", "data", [&](perfetto::TracedValue context) {
         inspector_parse_script_event::Data(std::move(context),
@@ -561,7 +559,7 @@ void ResourceScriptStreamer::RunScriptStreamingTask(
                                            streamer->ScriptURLString());
       });
 
-  TRACE_EVENT_BEGIN0(
+  TRACE_EVENT_BEGIN(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
       "v8.parseOnBackgroundParsing");
   // Running the task can and will block: SourceStream::GetSomeData will get
@@ -573,9 +571,8 @@ void ResourceScriptStreamer::RunScriptStreamingTask(
   // TODO(leszeks): This could be done asynchronously, using a mojo watcher.
   stream->DrainRemainingDataWithoutStreaming();
 
-  TRACE_EVENT_END0(
-      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackgroundParsing");
+  TRACE_EVENT_END(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"));
 
   // Send a single callback back to the streamer signifying that the streaming
   // is complete, and how it completed (success/fail/cancelled). The streamer
@@ -585,15 +582,13 @@ void ResourceScriptStreamer::RunScriptStreamingTask(
   // afterward fail to post.
   streamer->StreamingCompleteOnBackgroundThread(stream->LoadingState());
 
-  TRACE_EVENT_END0(
-      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackground");
+  TRACE_EVENT_END(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"));
 
   // TODO(crbug.com/1021571); Remove this once the last event stops being
   // dropped.
-  TRACE_EVENT_END0(
-      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackground2");
+  TRACE_EVENT_END(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"));
 }
 
 // Try to start a task streaming the script from the datapipe, with the task
@@ -1830,25 +1825,23 @@ void BackgroundJSStreamManager::RunScriptStreamingTask(
   TRACE_EVENT1("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
                "BackgroundJSStreamManager::RunScriptStreamingTask", "url",
                script_url_string.Utf8());
-  TRACE_EVENT_BEGIN1(
+  TRACE_EVENT_BEGIN(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
       "v8.parseOnBackground", "data", [&](perfetto::TracedValue context) {
         inspector_parse_script_event::Data(
             std::move(context), script_resource_identifier, script_url_string);
       });
-  TRACE_EVENT_BEGIN0(
+  TRACE_EVENT_BEGIN(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
       "v8.parseOnBackgroundParsing");
   CHECK(script_streaming_task)
       << "BackgroundJSStreamManager::RunScriptStreamingTask";
   script_streaming_task->Run();
   source_stream_ptr->DrainRemainingDataWithoutStreaming();
-  TRACE_EVENT_END0(
-      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackgroundParsing");
-  TRACE_EVENT_END0(
-      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackground");
+  TRACE_EVENT_END(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"));
+  TRACE_EVENT_END(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"));
 
   ScriptDecoder* decoder = script_decoder.get();
   decoder->FinishDecode(CrossThreadBindOnce(

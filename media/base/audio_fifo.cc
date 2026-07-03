@@ -68,8 +68,8 @@ void AudioFifo::Push(const AudioBus* source, int source_size) {
       base::CheckSub(max_frames_, frames_).ValueOrDie();
   CHECK_LE(source_frames, remaining_frames);
 
-  TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Push",
-                     "this", static_cast<void*>(this), "fifo frames", frames_);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Push",
+                    "this", static_cast<void*>(this), "fifo frames", frames_);
 
   // Figure out if wrapping is needed and if so what segment sizes we need
   // when adding the new audio bus content to the FIFO.
@@ -95,8 +95,7 @@ void AudioFifo::Push(const AudioBus* source, int source_size) {
   frames_ += source_frames;
   DCHECK_LE(frames_, max_frames_);
   write_pos_ = UpdatePos(write_pos_, source_frames, max_frames_);
-  TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Push",
-                   "frames", source_frames);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio"), "frames", source_frames);
 }
 
 void AudioFifo::Consume(AudioBus* destination,
@@ -117,8 +116,8 @@ void AudioFifo::Consume(AudioBus* destination,
       base::CheckSub(destination->frames(), dest_offset).ValueOrDie();
   CHECK_LE(frame_count, free_frames_in_dest);
 
-  TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Consume",
-                     "this", static_cast<void*>(this), "fifo frames", frames_);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Consume",
+                    "this", static_cast<void*>(this), "fifo frames", frames_);
 
   // Figure out if wrapping is needed and if so what segment sizes we need
   // when removing audio bus content from the FIFO.
@@ -144,8 +143,7 @@ void AudioFifo::Consume(AudioBus* destination,
 
   frames_ -= frame_count;
   read_pos_ = UpdatePos(read_pos_, frame_count, max_frames_);
-  TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Consume",
-                   "frames", frame_count);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio"), "frames", frame_count);
 }
 
 void AudioFifo::Clear() {

@@ -203,11 +203,13 @@ base::expected<DecodedWebFont, String> DecodedWebFont::Create(
   BlinkOTSContext ots_context;
   SegmentedBuffer::DeprecatedFlatData flattened_buffer(buffer);
 
-  TRACE_EVENT_BEGIN0("blink", "DecodeFont");
-  bool ok = ots_context.Process(
-      output.get(), reinterpret_cast<const uint8_t*>(flattened_buffer.data()),
-      buffer->size());
-  TRACE_EVENT_END0("blink", "DecodeFont");
+  bool ok;
+  {
+    TRACE_EVENT("blink", "DecodeFont");
+    ok = ots_context.Process(
+        output.get(), reinterpret_cast<const uint8_t*>(flattened_buffer.data()),
+        buffer->size());
+  }
 
   if (!ok) {
     return base::unexpected(ots_context.GetErrorString());

@@ -327,8 +327,8 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
   const TextPosition& script_start_position = classic_script.StartPosition();
 
   constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
-  TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.compile", "fileName",
-                     file_name.Utf8());
+  TRACE_EVENT_BEGIN(kTraceEventCategoryGroup, "v8.compile", "fileName",
+                    file_name.Utf8());
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   probe::V8Compile probe(execution_context, file_name,
                          script_start_position.line_.ZeroBasedInt(),
@@ -346,9 +346,8 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
       isolate, script_state, classic_script, origin, compile_options,
       no_cache_reason, can_use_crowdsourced_compile_hints, &cache_result);
 
-  TRACE_EVENT_END1(
-      kTraceEventCategoryGroup, "v8.compile", "data",
-      [&](perfetto::TracedValue context) {
+  TRACE_EVENT_END(
+      kTraceEventCategoryGroup, "data", [&](perfetto::TracedValue context) {
         inspector_compile_script_event::Data(
             std::move(context), file_name, script, script_start_position,
             cache_result, compile_options == v8::ScriptCompiler::kEagerCompile,
@@ -366,8 +365,8 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
     const ReferrerScriptInfo& referrer_info) {
   const String file_name = params.SourceURL();
   constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
-  TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.compileModule", "fileName",
-                     file_name.Utf8());
+  TRACE_EVENT_BEGIN(kTraceEventCategoryGroup, "v8.compileModule", "fileName",
+                    file_name.Utf8());
 
   // |resource_is_shared_cross_origin| is always true and |resource_is_opaque|
   // is always false because CORS is enforced to module scripts.
@@ -457,14 +456,13 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
     }
   }
 
-  TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compileModule", "data",
-                   [&](perfetto::TracedValue context) {
-                     inspector_compile_script_event::Data(
-                         std::move(context), file_name, script, start_position,
-                         cache_result,
-                         compile_options == v8::ScriptCompiler::kEagerCompile,
-                         streamer, params.NotStreamingReason());
-                   });
+  TRACE_EVENT_END(
+      kTraceEventCategoryGroup, "data", [&](perfetto::TracedValue context) {
+        inspector_compile_script_event::Data(
+            std::move(context), file_name, script, start_position, cache_result,
+            compile_options == v8::ScriptCompiler::kEagerCompile, streamer,
+            params.NotStreamingReason());
+      });
   return script;
 }
 
@@ -793,11 +791,11 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
                             depth);
 
   if (!depth) {
-    TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
-                       [&](perfetto::TracedValue ctx) {
-                         inspector_function_call_event::Data(std::move(ctx),
-                                                             context, function);
-                       });
+    TRACE_EVENT_BEGIN("devtools.timeline", "FunctionCall", "data",
+                      [&](perfetto::TracedValue ctx) {
+                        inspector_function_call_event::Data(std::move(ctx),
+                                                            context, function);
+                      });
   }
 
   v8::MaybeLocal<v8::Value> result =
@@ -805,7 +803,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
   CHECK(!isolate->IsDead());
 
   if (!depth)
-    TRACE_EVENT_END0("devtools.timeline", "FunctionCall");
+    TRACE_EVENT_END("devtools.timeline");
 
   return result;
 }
@@ -839,11 +837,11 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
              ToLocalDOMWindow(function->GetCreationContextChecked()), window));
   V8RunMicrotasksScope microtasks_scope(context);
   if (!depth) {
-    TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
-                       [&](perfetto::TracedValue trace_context) {
-                         inspector_function_call_event::Data(
-                             std::move(trace_context), context, function);
-                       });
+    TRACE_EVENT_BEGIN("devtools.timeline", "FunctionCall", "data",
+                      [&](perfetto::TracedValue trace_context) {
+                        inspector_function_call_event::Data(
+                            std::move(trace_context), context, function);
+                      });
   }
 
   probe::CallFunction probe(context, isolate->GetCurrentContext(), function,
@@ -853,7 +851,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
   CHECK(!isolate->IsDead());
 
   if (!depth)
-    TRACE_EVENT_END0("devtools.timeline", "FunctionCall");
+    TRACE_EVENT_END("devtools.timeline");
 
   return result;
 }

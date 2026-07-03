@@ -245,7 +245,7 @@ ScopedAllowBlocking::ScopedAllowBlocking(const Location& from_here)
 }
 
 ScopedAllowBlocking::~ScopedAllowBlocking() {
-  TRACE_EVENT_END0("base", "ScopedAllowBlocking");
+  TRACE_EVENT_END("base");
 
   DCHECK(!tls_blocking_disallowed)
       << "~ScopedAllowBlocking() running while surprisingly already no longer "
@@ -272,7 +272,7 @@ ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
 
 ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
     ~ScopedAllowBaseSyncPrimitivesOutsideBlockingScope() {
-  TRACE_EVENT_END0("base", "ScopedAllowBaseSyncPrimitivesOutsideBlockingScope");
+  TRACE_EVENT_END("base");
 
   DCHECK(!tls_base_sync_primitives_disallowed)
       << "~ScopedAllowBaseSyncPrimitivesOutsideBlockingScope() running while "

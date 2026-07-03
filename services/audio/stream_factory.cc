@@ -255,20 +255,20 @@ void StreamFactory::CreateLoopbackStream(
   if (loopback_worker_thread_) {
     task_runner = loopback_worker_thread_->task_runner();
   } else {
-    TRACE_EVENT_BEGIN0("audio", "Start Loopback Worker");
+    TRACE_EVENT_BEGIN("audio", "Start Loopback Worker");
     base::Thread::Options options;
     options.thread_type = base::ThreadType::kRealtimeAudio;
     loopback_worker_thread_.emplace("Loopback Worker", kReatimeThreadPeriod);
     if (loopback_worker_thread_->StartWithOptions(std::move(options))) {
       task_runner = loopback_worker_thread_->task_runner();
-      TRACE_EVENT_END1("audio", "Start Loopback Worker", "success", true);
+      TRACE_EVENT_END("audio", "success", true);
     } else {
       // Something about this platform or its current environment has prevented
       // a realtime audio thread from being started. Fall-back to using the
       // AudioManager worker thread.
       LOG(ERROR) << "Unable to start realtime loopback worker thread.";
       task_runner = audio_manager_->GetWorkerTaskRunner();
-      TRACE_EVENT_END1("audio", "Start Loopback Worker", "success", false);
+      TRACE_EVENT_END("audio", "success", false);
     }
   }
 

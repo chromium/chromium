@@ -57,7 +57,7 @@ class PaintTimelineReporter {
       : layer_(layer) {
     if (ShouldReport(should_paint_content)) {
       reset_current_reporting_.emplace(&current_reporting_, this);
-      TRACE_EVENT_BEGIN1(
+      TRACE_EVENT_BEGIN(
           kDevToolsTimelineCategory, "Paint", "data",
           [&layer](perfetto::TracedValue context) {
             const LayoutObject& object = layer.GetLayoutObject();
@@ -74,7 +74,7 @@ class PaintTimelineReporter {
 
   ~PaintTimelineReporter() {
     if (current_reporting_ == this) {
-      TRACE_EVENT_END0(kDevToolsTimelineCategory, "Paint");
+      TRACE_EVENT_END(kDevToolsTimelineCategory);
     }
   }
 

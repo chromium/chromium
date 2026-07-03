@@ -107,14 +107,14 @@ CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::
     : sequence_manager_(GetCurrentSequenceManagerImpl()),
       previous_state_(
           sequence_manager_->IsTaskExecutionAllowedInNativeNestedLoop()) {
-  TRACE_EVENT_BEGIN0("base", "ScopedNestableTaskAllower");
+  TRACE_EVENT_BEGIN("base", "ScopedNestableTaskAllower");
   sequence_manager_->SetTaskExecutionAllowedInNativeNestedLoop(true);
 }
 
 CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::
     ~ScopedAllowApplicationTasksInNativeNestedLoop() {
   sequence_manager_->SetTaskExecutionAllowedInNativeNestedLoop(previous_state_);
-  TRACE_EVENT_END0("base", "ScopedNestableTaskAllower");
+  TRACE_EVENT_END("base");
 }
 
 bool CurrentThread::ApplicationTasksAllowedInNativeNestedLoop() const {

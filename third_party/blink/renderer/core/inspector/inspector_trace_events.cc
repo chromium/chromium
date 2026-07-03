@@ -241,21 +241,20 @@ void InspectorTraceEvents::Did(const probe::ExecuteScript& probe) {
 
 void InspectorTraceEvents::Will(const probe::ParseHTML& probe) {
   // FIXME: Pass in current input length.
-  TRACE_EVENT_BEGIN1("devtools.timeline", "ParseHTML", "beginData",
-                     [&](perfetto::TracedValue context) {
-                       InspectorParseHtmlBeginData(
-                           std::move(context), probe.parser->GetDocument(),
-                           probe.parser->LineNumber().ZeroBasedInt());
-                     });
+  TRACE_EVENT_BEGIN("devtools.timeline", "ParseHTML", "beginData",
+                    [&](perfetto::TracedValue context) {
+                      InspectorParseHtmlBeginData(
+                          std::move(context), probe.parser->GetDocument(),
+                          probe.parser->LineNumber().ZeroBasedInt());
+                    });
 }
 
 void InspectorTraceEvents::Did(const probe::ParseHTML& probe) {
-  TRACE_EVENT_END1("devtools.timeline", "ParseHTML", "endData",
-                   [&](perfetto::TracedValue context) {
-                     InspectorParseHtmlEndData(
-                         std::move(context),
-                         probe.parser->LineNumber().ZeroBasedInt());
-                   });
+  TRACE_EVENT_END(
+      "devtools.timeline", "endData", [&](perfetto::TracedValue context) {
+        InspectorParseHtmlEndData(std::move(context),
+                                  probe.parser->LineNumber().ZeroBasedInt());
+      });
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters", "data",
       [&](perfetto::TracedValue context) {

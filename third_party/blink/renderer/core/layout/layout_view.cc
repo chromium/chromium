@@ -158,7 +158,7 @@ bool LayoutView::HitTest(const HitTestLocation& location,
 bool LayoutView::HitTestNoLifecycleUpdate(const HitTestLocation& location,
                                           HitTestResult& result) {
   NOT_DESTROYED();
-  TRACE_EVENT_BEGIN0("blink,devtools.timeline", "HitTest");
+  TRACE_EVENT_BEGIN("blink,devtools.timeline", "HitTest");
   hit_test_count_++;
 
   uint64_t dom_tree_version = GetDocument().DomTreeVersion();
@@ -212,12 +212,11 @@ bool LayoutView::HitTestNoLifecycleUpdate(const HitTestLocation& location,
       hit_test_cache_->AddCachedResult(location, result, dom_tree_version);
   }
 
-  TRACE_EVENT_END1("blink,devtools.timeline", "HitTest", "endData",
-                   [&](perfetto::TracedValue context) {
-                     inspector_hit_test_event::EndData(
-                         std::move(context), result.GetHitTestRequest(),
-                         location, result);
-                   });
+  TRACE_EVENT_END(
+      "blink,devtools.timeline", "endData", [&](perfetto::TracedValue context) {
+        inspector_hit_test_event::EndData(
+            std::move(context), result.GetHitTestRequest(), location, result);
+      });
   return hit_layer;
 }
 

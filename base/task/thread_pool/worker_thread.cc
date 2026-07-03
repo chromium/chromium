@@ -410,7 +410,7 @@ NOINLINE void WorkerThread::RunBackgroundDedicatedCOMWorker() {
 void WorkerThread::RunWorker() {
   DCHECK_EQ(self_, this);
   TRACE_EVENT_INSTANT("base", "WorkerThread born");
-  TRACE_EVENT_BEGIN0("base", "WorkerThread active");
+  TRACE_EVENT_BEGIN("base", "WorkerThread active");
 
   if (worker_thread_observer_) {
     worker_thread_observer_->OnWorkerThreadMainEntry();
@@ -437,7 +437,7 @@ void WorkerThread::RunWorker() {
 #endif
     std::optional<WatchHangsInScope> hang_watch_scope;
 
-    TRACE_EVENT_END0("base", "WorkerThread active");
+    TRACE_EVENT_END("base");
     hang_watch_scope.reset();
     delegate()->WaitForWork();
     TRACE_EVENT_BEGIN("base", "WorkerThread active",
@@ -508,7 +508,7 @@ void WorkerThread::RunWorker() {
   // and as such no more member accesses should be made after this point.
   self_ = nullptr;
 
-  TRACE_EVENT_END0("base", "WorkerThread active");
+  TRACE_EVENT_END("base");
   TRACE_EVENT_INSTANT("base", "WorkerThread dead");
 }
 

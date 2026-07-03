@@ -732,7 +732,7 @@ void LocalFrameView::PerformLayout() {
 
   double contents_height_before_layout =
       GetLayoutView()->DocumentRect().Height();
-  TRACE_EVENT_BEGIN1(
+  TRACE_EVENT_BEGIN(
       PERFORM_LAYOUT_TRACE_CATEGORIES, "LocalFrameView::performLayout",
       "contentsHeightBeforeLayout", contents_height_before_layout);
 
@@ -807,8 +807,7 @@ void LocalFrameView::PerformLayout() {
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
 
-  TRACE_EVENT_END0(PERFORM_LAYOUT_TRACE_CATEGORIES,
-                   "LocalFrameView::performLayout");
+  TRACE_EVENT_END(PERFORM_LAYOUT_TRACE_CATEGORIES);
   FirstMeaningfulPaintDetector::From(*document)
       .MarkNextPaintAsMeaningfulIfNeeded(
           layout_object_counter_, contents_height_before_layout,
@@ -838,7 +837,7 @@ void LocalFrameView::UpdateLayout() {
 
   v8::Isolate* isolate = frame_->GetPage()->GetAgentGroupScheduler().Isolate();
   ENTER_EMBEDDER_STATE(isolate, frame_, BlinkState::LAYOUT);
-  TRACE_EVENT_BEGIN0("blink,benchmark", "LocalFrameView::layout");
+  TRACE_EVENT_BEGIN("blink,benchmark", "LocalFrameView::layout");
   if (RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled()) [[unlikely]] {
     rcs_scope.emplace(RuntimeCallStats::From(isolate),
                       RuntimeCallStats::CounterId::kUpdateLayout);
@@ -846,22 +845,21 @@ void LocalFrameView::UpdateLayout() {
   layout_roots = layout_subtree_root_list_.Ordered();
   if (layout_roots.empty())
     layout_roots.push_back(LayoutObjectWithDepth(GetLayoutView()));
-  TRACE_EVENT_BEGIN1("devtools.timeline", "Layout", "beginData",
-                     [&](perfetto::TracedValue context) {
-                       inspector_layout_event::BeginData(std::move(context),
-                                                         this);
-                     });
+  TRACE_EVENT_BEGIN("devtools.timeline", "Layout", "beginData",
+                    [&](perfetto::TracedValue context) {
+                      inspector_layout_event::BeginData(std::move(context),
+                                                        this);
+                    });
 
   PerformLayout();
   Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
 
-  TRACE_EVENT_END0("blink,benchmark", "LocalFrameView::layout");
+  TRACE_EVENT_END("blink,benchmark");
 
-  TRACE_EVENT_END1("devtools.timeline", "Layout", "endData",
-                   [&](perfetto::TracedValue context) {
-                     inspector_layout_event::EndData(std::move(context),
-                                                     layout_roots);
-                   });
+  TRACE_EVENT_END(
+      "devtools.timeline", "endData", [&](perfetto::TracedValue context) {
+        inspector_layout_event::EndData(std::move(context), layout_roots);
+      });
   probe::DidChangeViewport(frame_.Get());
 }
 

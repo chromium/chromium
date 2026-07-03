@@ -41,15 +41,14 @@ inline constexpr const char kNavigation[] = "navigation";
 template <const char* category>
 class TraceReturnReason {
  public:
-  explicit TraceReturnReason(const char* const name)
-      : name_(name),
-        traced_value_(std::make_unique<base::trace_event::TracedValue>()) {
-    TRACE_EVENT_BEGIN0(category, name_);
+  explicit TraceReturnReason(perfetto::StaticString name)
+      : traced_value_(std::make_unique<base::trace_event::TracedValue>()) {
+    TRACE_EVENT_BEGIN(category, name);
   }
 
   ~TraceReturnReason() {
     CHECK(reason_set_);
-    TRACE_EVENT_END1(category, name_, "return", std::move(traced_value_));
+    TRACE_EVENT_END(category, "return", std::move(traced_value_));
   }
 
   void set_return_reason(const std::string& reason) {
@@ -62,7 +61,6 @@ class TraceReturnReason {
   base::trace_event::TracedValue* traced_value() { return traced_value_.get(); }
 
  private:
-  const char* const name_;
   bool reason_set_ = false;
   std::unique_ptr<base::trace_event::TracedValue> traced_value_;
 };

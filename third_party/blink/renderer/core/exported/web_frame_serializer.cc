@@ -66,9 +66,8 @@ void ContinueGenerateMHTMLParts(
   LocalFrame* frame =
       web_frame ? To<WebLocalFrameImpl>(web_frame)->GetFrame() : nullptr;
 
-  TRACE_EVENT_END1("page-serialization",
-                   "WebFrameSerializer::generateMHTMLParts serializing",
-                   "resource count", static_cast<uint64_t>(resources.size()));
+  TRACE_EVENT_END("page-serialization", "resource count",
+                  static_cast<uint64_t>(resources.size()));
 
   // There was an error serializing the frame (e.g. of an image resource).
   if (resources.empty() || !frame) {
@@ -133,8 +132,8 @@ void WebFrameSerializer::GenerateMHTMLParts(
           : MHTMLArchive::EncodingPolicy::kUseDefaultEncoding;
 
   // Serialize.
-  TRACE_EVENT_BEGIN0("page-serialization",
-                     "WebFrameSerializer::generateMHTMLParts serializing");
+  TRACE_EVENT_BEGIN("page-serialization",
+                    "WebFrameSerializer::generateMHTMLParts serializing");
   Deque<SerializedResource> resources;
   FrameSerializer::SerializeFrame(
       *web_delegate, *frame,

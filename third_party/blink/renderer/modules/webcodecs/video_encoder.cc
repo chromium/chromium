@@ -1608,13 +1608,12 @@ void VideoEncoder::CallOutputCallback(
   }
 
   encoder_metrics_provider_->IncrementEncodedFrameCount();
-  TRACE_EVENT_BEGIN1(kCategory, GetTraceNames()->output.c_str(), "timestamp",
-                     chunk->timestamp());
+  TRACE_EVENT(kCategory,
+              perfetto::StaticString(GetTraceNames()->output.c_str()),
+              "timestamp", chunk->timestamp());
 
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
-
-  TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
 }
 
 void VideoEncoder::ResetInternal(DOMException* ex) {

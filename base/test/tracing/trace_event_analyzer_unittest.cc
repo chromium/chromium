@@ -812,7 +812,7 @@ TEST_F(TraceEventAnalyzerTest, AssociateNestableAsyncEvents) {
   {
     TRACE_EVENT_BEGIN("cat", "name", perfetto::Track(0xA),
                       base::TimeTicks() + base::Milliseconds(100));
-    TRACE_EVENT_BEGIN0("noise", "name2");  // not searched for, just noise
+    TRACE_EVENT_BEGIN("noise", "name2");  // not searched for, just noise
     TRACE_EVENT_END("cat", perfetto::Track(0xA),
                     base::TimeTicks() + base::Milliseconds(200));
   }

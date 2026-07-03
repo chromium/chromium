@@ -164,7 +164,7 @@ void CommandBufferStub::ExecuteDeferredRequest(
     return;
 
   if (!context_label_.empty()) {
-    TRACE_EVENT_BEGIN0("gpu", TRACE_STR_COPY(context_label_.c_str()));
+    TRACE_EVENT_BEGIN("gpu", TRACE_STR_COPY(context_label_.c_str()));
   }
 
   switch (params.which()) {
@@ -180,7 +180,7 @@ void CommandBufferStub::ExecuteDeferredRequest(
   }
 
   if (!context_label_.empty()) {
-    TRACE_EVENT_END0("gpu", TRACE_STR_COPY(context_label_.c_str()));
+    TRACE_EVENT_END("gpu");
   }
 }
 

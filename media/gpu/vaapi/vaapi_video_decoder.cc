@@ -400,9 +400,11 @@ void VaapiVideoDecoder::HandleDecodeTask() {
     return;
   }
 
-  TRACE_EVENT_BEGIN0("media,gpu", "VaapiVideoDecoder::Decode");
-  AcceleratedVideoDecoder::DecodeResult decode_result = decoder_->Decode();
-  TRACE_EVENT_END0("media,gpu", "VaapiVideoDecoder::Decode");
+  AcceleratedVideoDecoder::DecodeResult decode_result;
+  {
+    TRACE_EVENT("media,gpu", "VaapiVideoDecoder::Decode");
+    decode_result = decoder_->Decode();
+  }
   switch (decode_result) {
     case AcceleratedVideoDecoder::kRanOutOfStreamData:
       // Decoding was successful, notify client and try to schedule the next

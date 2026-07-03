@@ -114,8 +114,7 @@ void WebRtcAudioDeviceImpl::RenderData(
   int64_t ntp_time_ms = -1;
   int16_t* audio_data = render_buffer_.data();
 
-  TRACE_EVENT_BEGIN1("audio", "VoE::PullRenderData", "frames",
-                     frames_per_10_ms);
+  TRACE_EVENT_BEGIN("audio", "VoE::PullRenderData", "frames", frames_per_10_ms);
   {
     base::AutoLock callback_lock(audio_transport_callback_lock_);
     if (audio_transport_callback_) {
@@ -124,8 +123,8 @@ void WebRtcAudioDeviceImpl::RenderData(
           frames_per_10_ms, audio_data, &elapsed_time_ms, &ntp_time_ms);
     }
   }
-  TRACE_EVENT_END2("audio", "VoE::PullRenderData", "elapsed_time_ms",
-                   elapsed_time_ms, "ntp_time_ms", ntp_time_ms);
+  TRACE_EVENT_END("audio", "elapsed_time_ms", elapsed_time_ms, "ntp_time_ms",
+                  ntp_time_ms);
   if (elapsed_time_ms >= 0) {
     *current_time = base::Milliseconds(elapsed_time_ms);
   }

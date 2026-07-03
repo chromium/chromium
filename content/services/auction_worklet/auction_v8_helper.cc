@@ -538,8 +538,8 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   if (src_string.IsEmpty() || origin_string.IsEmpty())
     return v8::MaybeLocal<v8::UnboundScript>();
 
-  TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.compile", "fileName",
-                     src_url.spec());
+  TRACE_EVENT_BEGIN(kTraceEventCategoryGroup, "v8.compile", "fileName",
+                    src_url.spec());
 
   // Compile script.
   v8::TryCatch try_catch(isolate());
@@ -565,13 +565,13 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   DCHECK(!cached_data || (script_source.GetCachedData() &&
                           !script_source.GetCachedData()->rejected));
 
-  TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compile", "data",
-                   [&](perfetto::TracedValue trace_context) {
-                     auto dict = std::move(trace_context).WriteDictionary();
-                     dict.Add("url", src_url.spec());
-                     dict.Add("lineNumber", 1);
-                     dict.Add("columnNumber", 1);
-                   });
+  TRACE_EVENT_END(kTraceEventCategoryGroup, "data",
+                  [&](perfetto::TracedValue trace_context) {
+                    auto dict = std::move(trace_context).WriteDictionary();
+                    dict.Add("url", src_url.spec());
+                    dict.Add("lineNumber", 1);
+                    dict.Add("columnNumber", 1);
+                  });
 
   return result;
 }

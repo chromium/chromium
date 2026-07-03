@@ -157,7 +157,7 @@ void FakeAudioWorker::Worker::DoCancel() {
 }
 
 void FakeAudioWorker::Worker::DoRead() {
-  TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker::DoRead");
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker::DoRead");
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
 
   const base::TimeTicks read_time =
@@ -200,10 +200,9 @@ void FakeAudioWorker::Worker::DoRead() {
       worker_task_cb_.callback(), next_read_time,
       base::subtle::DelayPolicy::kPrecise);
   CHECK(posted);
-  TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker::DoRead",
-                   "read_time",
-                   (read_time - base::TimeTicks()).InMilliseconds(), "now",
-                   (now - base::TimeTicks()).InMilliseconds());
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio"), "read_time",
+                  (read_time - base::TimeTicks()).InMilliseconds(), "now",
+                  (now - base::TimeTicks()).InMilliseconds());
 }
 
 }  // namespace media

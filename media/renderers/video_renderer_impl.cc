@@ -232,7 +232,7 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
     RenderingMode rendering_mode) {
-  TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id", player_id_);
+  TRACE_EVENT_BEGIN("media", "VideoRendererImpl::Render", "id", player_id_);
   base::AutoLock auto_lock(lock_);
   DCHECK_EQ(state_, kPlaying);
 
@@ -291,8 +291,7 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
                      weak_factory_.GetWeakPtr(), result->format(),
                      result->natural_size()));
 
-  TRACE_EVENT_END1("media", "VideoRendererImpl::Render", "frame",
-                   result->AsHumanReadableString());
+  TRACE_EVENT_END("media", "frame", result->AsHumanReadableString());
   return result;
 }
 

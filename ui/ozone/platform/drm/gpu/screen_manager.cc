@@ -344,7 +344,7 @@ void ScreenManager::RemoveDisplayControllers(
 bool ScreenManager::ConfigureDisplayControllers(
     const std::vector<ControllerConfigParams>& controllers_params,
     display::ModesetFlags modeset_flags) {
-  TRACE_EVENT_BEGIN2(
+  TRACE_EVENT_BEGIN(
       "drm", "ScreenManager::ConfigureDisplayControllers", "params",
       ([modeset_flags,
         &controllers_params](perfetto::TracedValue context) -> void {
@@ -412,8 +412,7 @@ bool ScreenManager::ConfigureDisplayControllers(
   if (commit_modeset && config_success)
     UpdateControllerToWindowMapping();
 
-  TRACE_EVENT_END2("drm", "ScreenManager::ConfigureDisplayControllers", "after",
-                   this, "success", config_success);
+  TRACE_EVENT_END("drm", "after", this, "success", config_success);
   return config_success;
 }
 

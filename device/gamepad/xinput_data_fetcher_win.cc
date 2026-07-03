@@ -173,13 +173,13 @@ void XInputDataFetcherWin::GetXInputPadData(int i) {
   // has identical layout to XINPUT_STATE except for an extra padding member at
   // the end.
   XInputStateEx state = {};
-  TRACE_EVENT_BEGIN1("GAMEPAD", "XInputGetState", "id", i);
+  TRACE_EVENT_BEGIN("GAMEPAD", "XInputGetState", "id", i);
   DWORD dwResult;
   if (xinput_get_state_ex_)
     dwResult = xinput_get_state_ex_(i, &state);
   else
     dwResult = xinput_get_state_(i, reinterpret_cast<XINPUT_STATE*>(&state));
-  TRACE_EVENT_END1("GAMEPAD", "XInputGetState", "id", i);
+  TRACE_EVENT_END("GAMEPAD", "id", i);
 
   if (dwResult == ERROR_SUCCESS) {
     pad.timestamp = CurrentTimeInMicroseconds();
