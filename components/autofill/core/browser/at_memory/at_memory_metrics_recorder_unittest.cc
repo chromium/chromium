@@ -99,25 +99,70 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
     AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
                                     FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnQuerySubmitted(u"query");
     metrics.OnSuggestionAccepted();
   }
 
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                       true, 1);
 }
 
-// Tests that the destructor correctly logs that no suggestion was accepted
-// during a shown session.
-TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_False) {
+// Tests that the metric is NOT logged if no query was submitted.
+TEST_F(AtMemoryMetricsRecorderTest,
+       Destructor_NoQuerySubmitted_NoSuggestionAcceptedMetric) {
   {
     AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
                                     FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    // No query submitted, no suggestion accepted.
+  }
+
+  histogram_tester_.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
+}
+
+// Tests that the destructor correctly logs that no suggestion was accepted
+// if a query was submitted.
+TEST_F(AtMemoryMetricsRecorderTest,
+       Destructor_QuerySubmitted_SuggestionAccepted_False) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnQuerySubmitted(u"query");
     // No suggestion accepted.
   }
 
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionAccepted", false, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                       false, 1);
+}
+
+// Tests that suggestion accepted metric is logged for multiple queries.
+// Specifically, a query that is not accepted, followed by a query that is
+// accepted.
+TEST_F(AtMemoryMetricsRecorderTest,
+       MultipleQueries_SuggestionAccepted_MultipleEmissions) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+
+    // Query 1: suggestion not accepted.
+    metrics.OnQuerySubmitted(u"query 1");
+
+    // Query 2: suggestion accepted.
+    // Submitting query 2 should log the result of query 1 (false).
+    metrics.OnQuerySubmitted(u"query 2");
+    histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                         false, 1);
+
+    metrics.OnSuggestionAccepted();
+    // Destructor should log the result of query 2 (true).
+  }
+
+  histogram_tester_.ExpectBucketCount("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester_.ExpectBucketCount("Autofill.AtMemory.SuggestionAccepted",
+                                      false, 1);
 }
 
 // Tests that `MarkFilled` correctly logs whether a suggestion was filled.

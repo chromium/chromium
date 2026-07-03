@@ -2167,17 +2167,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.AtMemory.Funnel.SuggestionAccepted" enum="Boolean"
-    expires_after="2027-03-09">
-  <owner>rahimis@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records whether a suggestion was accepted while the AtMemory popup was
-    displayed. Emitted when the popup is hidden, provided it was successfully
-    shown.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.AtMemory.Funnel.SuggestionFilled" enum="Boolean"
     expires_after="2027-03-09">
   <owner>sygiet@google.com</owner>
@@ -2231,6 +2220,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Records the trigger source of the Autofill AtMemory search bar. Emitted once
     per search bar display.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.AtMemory.SuggestionAccepted" enum="Boolean"
+    expires_after="2027-03-09">
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether a suggestion was accepted for a query in the AtMemory search
+    bar. Emitted for every submitted user query.
   </summary>
 </histogram>
 

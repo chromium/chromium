@@ -36,10 +36,8 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   if (source_.has_value()) {
     base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
                               query_submitted_);
-    // TODO(crbug.com/530393823): Fix and rename.
-    base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionAccepted",
-                              suggestion_accepted_);
-    if (suggestion_accepted_) {
+    MaybeLogSuggestionAccepted();
+    if (suggestion_accepted_.value_or(false)) {
       // TODO(crbug.com/530438524): Fix and rename.
       base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionFilled",
                                 was_filled_);
@@ -92,6 +90,9 @@ void AtMemoryMetricsRecorder::OnPopupShown(
 }
 
 void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string query) {
+  MaybeLogSuggestionAccepted();
+  suggestion_accepted_ = false;
+
   query_to_suggestions_shown_timer_.emplace();
 
   if (uploader_service_) {
@@ -168,6 +169,13 @@ void AtMemoryMetricsRecorder::OnFetchPiiCompleted() {
 
 void AtMemoryMetricsRecorder::MarkFilled() {
   was_filled_ = true;
+}
+
+void AtMemoryMetricsRecorder::MaybeLogSuggestionAccepted() {
+  if (suggestion_accepted_) {
+    base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionAccepted",
+                              *suggestion_accepted_);
+  }
 }
 
 }  // namespace autofill

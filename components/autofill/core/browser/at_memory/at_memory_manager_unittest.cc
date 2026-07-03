@@ -390,8 +390,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
                                       form.global_id(), field.global_id(),
                                       suggestion);
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
 }
@@ -457,8 +457,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
                                       form.global_id(), field.global_id(),
                                       suggestion);
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
   histogram_tester.ExpectTotalCount(
@@ -515,8 +515,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
                                       form.global_id(), field.global_id(),
                                       suggestion);
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionFilled", false, 1);
   histogram_tester.ExpectTotalCount(
@@ -699,8 +699,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
                                       form.global_id(), field.global_id(),
                                       suggestion);
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
 }
@@ -754,8 +754,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // - QuerySubmitted, SuggestionAccepted, SuggestionFilled, TimeToFetchUnmasked
   // are not logged yet because Popup 1's async fill is still pending.
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.AtMemory.Funnel.SuggestionAccepted", 0);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.Funnel.SuggestionFilled",
                                     0);
   histogram_tester.ExpectTotalCount(
@@ -782,10 +781,9 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.AtMemory.QuerySubmitted"),
       BucketsAre(Bucket(false, 1)));
-  // - SuggestionAccepted should have one sample (false, from Popup 2).
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.AtMemory.Funnel.SuggestionAccepted"),
-              BucketsAre(Bucket(false, 1)));
+  // - SuggestionAccepted should not have any samples yet (Popup 2 did not
+  //   submit a query, and Popup 1 is still pending).
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
 
   // 6. Complete the async fill for Popup 1.
   std::u16string unmasked_iban = u"ES12345678901234567890";
@@ -796,11 +794,10 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.AtMemory.QuerySubmitted"),
       BucketsAre(Bucket(false, 2)));
-  // - SuggestionAccepted should have one true (from Popup 1) and one false
-  // (from Popup 2).
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.AtMemory.Funnel.SuggestionAccepted"),
-              BucketsAre(Bucket(false, 1), Bucket(true, 1)));
+  // - SuggestionAccepted should have one true (from Popup 1).
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.AtMemory.SuggestionAccepted"),
+      BucketsAre(Bucket(true, 1)));
   // - SuggestionFilled should be logged as true.
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.AtMemory.Funnel.SuggestionFilled"),

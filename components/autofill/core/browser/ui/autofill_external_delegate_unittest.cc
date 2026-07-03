@@ -829,6 +829,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_QuerySubmitted) {
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", true,
                                       1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      false, 1);
 }
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_NoQuerySubmitted) {
@@ -839,6 +841,26 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_NoQuerySubmitted) {
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", false,
                                       1);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
+}
+
+TEST_F(AutofillExternalDelegateTest,
+       AtMemoryMetricsRecorder_SuggestionAccepted_True) {
+  base::HistogramTester histogram_tester;
+  StartAtMemorySession();
+
+  external_delegate().OnSearchSubmitted(u"some query");
+
+  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
+  suggestion.payload = Suggestion::AtMemoryPayload(
+      u"pasted text", accessibility_annotator::MemoryDataType::kUnknown);
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+  external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
 }
 
 // Tests that @memory search results from first-party sources include metadata

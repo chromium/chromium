@@ -73,6 +73,10 @@ class AtMemoryMetricsRecorder {
   void OnFetchPiiCompleted();
 
  private:
+  // Emits the `SuggestionAccepted` metric if `suggestion_accepted_` is not
+  // `std::nullopt`.
+  void MaybeLogSuggestionAccepted();
+
   // The unique identifier of the session. A session begins when the popup is
   // first shown to the user and ends when it is hidden. Popup updates (e.g.,
   // due to typing in the search bar) do not change the session.
@@ -88,7 +92,12 @@ class AtMemoryMetricsRecorder {
   // `OnQuerySubmitted` is called and will be reset when the query response was
   // received.
   std::optional<base::ElapsedTimer> query_to_suggestions_shown_timer_;
-  bool suggestion_accepted_ = false;
+
+  // Whether any suggestions were accepted since the user last submitted a
+  // query. `std::nullopt` if no suggestions have been received since the last
+  // query submission.
+  std::optional<bool> suggestion_accepted_;
+
   bool was_filled_ = false;
   // The start time of the asynchronous fetch/unmask process.
   std::optional<base::TimeTicks> fetch_pii_start_time_;
