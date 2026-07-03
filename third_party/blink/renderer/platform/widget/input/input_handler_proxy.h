@@ -385,6 +385,14 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   void GenerateSyntheticScrollPredictionFromFutureEvent(
       const viz::BeginFrameArgs& args);
 
+  // Returns the dispatch mode, overriding `kUseScrollPredictorForEmptyQueue` to
+  // `kDispatchScrollEventsImmediately` for non-touchscreen inputs
+  // (touchpads/wheels etc.) when `kUpdateScrollPredictorInputMapping` is
+  // enabled.
+  cc::InputHandlerClient::ScrollEventDispatchMode
+  GetEffectiveScrollEventDispatchMode(
+      std::optional<blink::WebGestureDevice> device) const;
+
   raw_ptr<InputHandlerProxyClient> client_;
 
   // The input handler object is owned by the compositor delegate. The input

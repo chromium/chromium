@@ -61,6 +61,10 @@ class PLATFORM_EXPORT ScrollPredictor {
 
   base::TimeDelta ResampleLatency(base::TimeDelta frame_interval) const;
 
+  bool ShouldResampleScrollEvents() const {
+    return should_resample_scroll_events_;
+  }
+
  private:
   friend class test::InputHandlerProxyEventQueueTest;
   friend class test::ScrollPredictorTest;

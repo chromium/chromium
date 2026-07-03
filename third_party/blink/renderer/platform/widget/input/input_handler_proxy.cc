@@ -421,7 +421,8 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     // production has begun.
     if (gesture_event.IsScrollEvent() &&
         ImmediatelyDispatchFirstScrollEventBeforeDeadline(
-            scroll_event_dispatch_mode_) &&
+            GetEffectiveScrollEventDispatchMode(
+                gesture_event.SourceDevice())) &&
         !enqueue_scroll_events_) {
       // TODO(jonross): this will update to a prediction that is -5ms before
       // `current_begin_frame_args_.frame_time`. We should consider not
@@ -441,8 +442,8 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
         compositor_event_queue_->Queue(std::move(event_with_callback));
       }
       if (ShouldNotDispatchLateInputEvent(
-              scroll_event_dispatch_mode_, scroll_deadline_ratio_,
-              current_begin_frame_args_, tick_clock_)) {
+              GetEffectiveScrollEventDispatchMode(gesture_event.SourceDevice()),
+              scroll_deadline_ratio_, current_begin_frame_args_, tick_clock_)) {
         input_handler_->SetNeedsAnimateInput();
         return;
       }
@@ -545,9 +546,9 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
 
   // We do not call `SetNeedsAnimateInput` here, as it is set when this event
   // was enqueued.
-  if (ShouldNotDispatchLateInputEvent(scroll_event_dispatch_mode_,
-                                      scroll_deadline_ratio_,
-                                      current_begin_frame_args_, tick_clock_)) {
+  if (ShouldNotDispatchLateInputEvent(
+          GetEffectiveScrollEventDispatchMode(currently_active_gesture_device_),
+          scroll_deadline_ratio_, current_begin_frame_args_, tick_clock_)) {
     return;
   }
 
@@ -1715,7 +1716,7 @@ void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(
 
 void InputHandlerProxy::DeliverInputForBeginFrame(
     const viz::BeginFrameArgs& args) {
-  if (scroll_event_dispatch_mode_ ==
+  if (GetEffectiveScrollEventDispatchMode(currently_active_gesture_device_) ==
       cc::InputHandlerClient::ScrollEventDispatchMode::
           kUseScrollPredictorForDeadline) {
     deadline_timer_.Stop();
@@ -1739,9 +1740,9 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
   // frame production after the deadline.
   if (enqueue_scroll_events_ &&
       args.type == viz::BeginFrameArgs::BeginFrameArgsType::MISSED &&
-      ShouldNotDispatchLateInputEvent(scroll_event_dispatch_mode_,
-                                      scroll_deadline_ratio_,
-                                      current_begin_frame_args_, tick_clock_)) {
+      ShouldNotDispatchLateInputEvent(
+          GetEffectiveScrollEventDispatchMode(currently_active_gesture_device_),
+          scroll_deadline_ratio_, current_begin_frame_args_, tick_clock_)) {
     input_handler_->SetNeedsAnimateInput();
     return;
   }
@@ -1751,7 +1752,8 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
   }
 
   base::TimeTicks sample_time = base::TimeTicks::Max();
-  if (!handling_fling_ && update_scroll_predictor_ && scroll_predictor_) {
+  if (!handling_fling_ && update_scroll_predictor_ && scroll_predictor_ &&
+      scroll_predictor_->ShouldResampleScrollEvents()) {
     base::TimeDelta latency = scroll_predictor_->ResampleLatency(args.interval);
     sample_time = args.frame_time + latency;
   }
@@ -1762,8 +1764,9 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
   // 2. The kUpdateScrollPredictorInputMapping feature and its
   // kGenerateSyntheticScrollPrediction param are both enabled.
   bool should_attempt_synthetic =
-      !handling_fling_ &&
-      (scroll_event_dispatch_mode_ ==
+      !handling_fling_ && scroll_predictor_ &&
+      scroll_predictor_->ShouldResampleScrollEvents() &&
+      (GetEffectiveScrollEventDispatchMode(currently_active_gesture_device_) ==
            cc::InputHandlerClient::ScrollEventDispatchMode::
                kUseScrollPredictorForEmptyQueue ||
        (update_scroll_predictor_ &&
@@ -1876,12 +1879,12 @@ void InputHandlerProxy::DeliverInputForDeadline() {
   }
   last_deadline_call_for_frame_id_ = current_begin_frame_args_.frame_id;
 
-  if (ShouldNotDispatchLateInputEvent(scroll_event_dispatch_mode_,
-                                      scroll_deadline_ratio_,
+  auto effective_mode =
+      GetEffectiveScrollEventDispatchMode(currently_active_gesture_device_);
+  if (ShouldNotDispatchLateInputEvent(effective_mode, scroll_deadline_ratio_,
                                       current_begin_frame_args_, tick_clock_) ||
-      scroll_event_dispatch_mode_ !=
-          cc::InputHandlerClient::ScrollEventDispatchMode::
-              kUseScrollPredictorForDeadline ||
+      effective_mode != cc::InputHandlerClient::ScrollEventDispatchMode::
+                            kUseScrollPredictorForDeadline ||
       enqueue_scroll_events_) {
     return;
   }
@@ -1906,6 +1909,24 @@ void InputHandlerProxy::SetScrollEventDispatchMode(
     double scroll_deadline_ratio) {
   scroll_event_dispatch_mode_ = mode;
   scroll_deadline_ratio_ = scroll_deadline_ratio;
+}
+
+cc::InputHandlerClient::ScrollEventDispatchMode
+InputHandlerProxy::GetEffectiveScrollEventDispatchMode(
+    std::optional<blink::WebGestureDevice> device) const {
+  // Non-touchscreen gestures (e.g., touchpad and wheel scrolls) do not support
+  // resampling (which is touchscreen-only). Gating the VSync-aligned,
+  // empty-queue scroll prediction mode (`kUseScrollPredictorForEmptyQueue`)
+  // strictly to touchscreen inputs prevents introducing unnecessary
+  // VSync-alignment delay on non-resampled inputs.
+  if (scroll_event_dispatch_mode_ ==
+          cc::InputHandlerClient::ScrollEventDispatchMode::
+              kUseScrollPredictorForEmptyQueue &&
+      device != WebGestureDevice::kTouchscreen) {
+    return cc::InputHandlerClient::ScrollEventDispatchMode::
+        kDispatchScrollEventsImmediately;
+  }
+  return scroll_event_dispatch_mode_;
 }
 
 void InputHandlerProxy::SetSynchronousInputHandler(

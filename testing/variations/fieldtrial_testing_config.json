@@ -24763,9 +24763,20 @@
     "UpdateScrollPredictorInputMapping": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
+                {
+                    "name": "Enabled_WebView_20260629",
+                    "params": {
+                        "mode": "UseScrollPredictorForEmptyQueue"
+                    },
+                    "enable_features": [
+                        "UpdateScrollPredictorInputMapping",
+                        "WaitForLateScrollEvents"
+                    ]
+                },
                 {
                     "name": "InputPredictorInputMappingEnabled_20251031",
                     "params": {
