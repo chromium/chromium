@@ -808,7 +808,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_TypedTrigger) {
   base::HistogramTester histogram_tester;
   StartAtMemorySession(AutofillSuggestionTriggerSource::kAtMemory);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
+      "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
 }
 
@@ -816,7 +816,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_ContextMenu) {
   base::HistogramTester histogram_tester;
   StartAtMemorySession(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
+      "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
 }
 
@@ -827,8 +827,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_QuerySubmitted) {
   external_delegate().OnSearchSubmitted(u"some query");
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
 
-  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.Funnel.QuerySubmitted",
-                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", true,
+                                      1);
 }
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_NoQuerySubmitted) {
@@ -837,8 +837,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_NoQuerySubmitted) {
 
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
 
-  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.Funnel.QuerySubmitted",
-                                      false, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", false,
+                                      1);
 }
 
 // Tests that @memory search results from first-party sources include metadata

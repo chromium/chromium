@@ -34,11 +34,13 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   // popup was hidden immediately after initialization (e.g., due to focus
   // loss) before the user could see or interact with it.
   if (source_.has_value()) {
-    base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.QuerySubmitted",
+    base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
                               query_submitted_);
+    // TODO(crbug.com/530393823): Fix and rename.
     base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionAccepted",
                               suggestion_accepted_);
     if (suggestion_accepted_) {
+      // TODO(crbug.com/530438524): Fix and rename.
       base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionFilled",
                                 was_filled_);
       if (fetch_pii_duration_) {
@@ -85,7 +87,7 @@ void AtMemoryMetricsRecorder::OnPopupShown(
 
   // `source_` is set only when the popup is successfully displayed. This
   // serves as a signal that the user has actually seen the suggestions.
-  base::UmaHistogramEnumeration("Autofill.AtMemory.Funnel.PopupDisplayed",
+  base::UmaHistogramEnumeration("Autofill.AtMemory.SearchBarDisplayed",
                                 *source_);
 }
 

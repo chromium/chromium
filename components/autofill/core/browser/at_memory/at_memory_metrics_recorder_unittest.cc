@@ -36,7 +36,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_TypedTrigger) {
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
 
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
+      "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
 }
 
@@ -48,7 +48,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_ContextMenu) {
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
+      "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
 }
 
@@ -62,7 +62,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
+      "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
 }
 
@@ -75,8 +75,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_True) {
     metrics.OnQuerySubmitted(u"some query");
   }
 
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.QuerySubmitted", true, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", true,
+                                       1);
 }
 
 // Tests that the destructor correctly logs that no query was submitted
@@ -89,8 +89,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_False) {
     // No query submitted.
   }
 
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.QuerySubmitted", false, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted",
+                                       false, 1);
 }
 
 // Tests that the destructor correctly logs that a suggestion was accepted.

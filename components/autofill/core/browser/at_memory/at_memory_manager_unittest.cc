@@ -748,13 +748,12 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // At this stage:
   // - Popup 1's displayed is logged.
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.AtMemory.Funnel.PopupDisplayed"),
+      histogram_tester.GetAllSamples("Autofill.AtMemory.SearchBarDisplayed"),
       BucketsAre(
           Bucket(AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1)));
   // - QuerySubmitted, SuggestionAccepted, SuggestionFilled, TimeToFetchUnmasked
   // are not logged yet because Popup 1's async fill is still pending.
-  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Funnel.QuerySubmitted",
-                                    0);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.AtMemory.Funnel.SuggestionAccepted", 0);
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.Funnel.SuggestionFilled",
@@ -775,13 +774,13 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // Verify Popup 2 logged its displayed, query submitted, suggestion accepted:
   // - PopupDisplayed should have context menu trigger as well now.
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.AtMemory.Funnel.PopupDisplayed"),
+      histogram_tester.GetAllSamples("Autofill.AtMemory.SearchBarDisplayed"),
       BucketsAre(
           Bucket(AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1),
           Bucket(AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1)));
   // - QuerySubmitted should have one sample (false, from Popup 2).
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.AtMemory.Funnel.QuerySubmitted"),
+      histogram_tester.GetAllSamples("Autofill.AtMemory.QuerySubmitted"),
       BucketsAre(Bucket(false, 1)));
   // - SuggestionAccepted should have one sample (false, from Popup 2).
   EXPECT_THAT(histogram_tester.GetAllSamples(
@@ -795,7 +794,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // Now, Popup 1's metrics should also be logged:
   // - QuerySubmitted should have two samples (both false).
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.AtMemory.Funnel.QuerySubmitted"),
+      histogram_tester.GetAllSamples("Autofill.AtMemory.QuerySubmitted"),
       BucketsAre(Bucket(false, 2)));
   // - SuggestionAccepted should have one true (from Popup 1) and one false
   // (from Popup 2).
