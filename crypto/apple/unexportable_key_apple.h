@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
+
 #if defined(__OBJC__)
 #import <LocalAuthentication/LocalAuthentication.h>
 #endif  // defined(__OBJC__)
@@ -45,6 +47,21 @@ class UnexportableKeyProviderApple : public StatefulUnexportableKeyProvider {
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       LAContext* lacontext);
+
+  // Like UnexportableKeyProvider::FromWrappedAttestationKeySlowly, but lets you
+  // pass an authenticated LAContext to avoid having macOS prompt the user for
+  // user verification.
+  std::unique_ptr<UnexportableAttestationKey> FromWrappedAttestationKeySlowly(
+      base::span<const uint8_t> wrapped_key,
+      LAContext* lacontext);
+
+  // Like UnexportableKeyProvider::GenerateAttestationKeySlowly, but lets you
+  // pass an authenticated LAContext to avoid having macOS prompt the user for
+  // user verification.
+  std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms,
+      LAContext* lacontext);
 #endif  // defined(__OBJC__)
 
   // UnexportableKeyProvider:
@@ -56,7 +73,13 @@ class UnexportableKeyProviderApple : public StatefulUnexportableKeyProvider {
           acceptable_algorithms) override;
   std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override;
-  StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider() override;
+  std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override;
+  std::unique_ptr<UnexportableAttestationKey> FromWrappedAttestationKeySlowly(
+      base::span<const uint8_t> wrapped_key) override;
+  StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      LIFETIME_BOUND override;
 
   // StatefulUnexportableKeyProvider:
   std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
