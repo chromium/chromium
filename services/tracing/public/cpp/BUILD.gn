@@ -116,21 +116,6 @@ target("component", "cpp") {
       "traced_process_impl.h",
     ]
 
-    if (is_android) {
-      sources += [
-        "perfetto/java_heap_profiler/hprof_buffer_android.cc",
-        "perfetto/java_heap_profiler/hprof_buffer_android.h",
-        "perfetto/java_heap_profiler/hprof_data_type_android.h",
-        "perfetto/java_heap_profiler/hprof_instances_android.cc",
-        "perfetto/java_heap_profiler/hprof_instances_android.h",
-        "perfetto/java_heap_profiler/hprof_parser_android.cc",
-        "perfetto/java_heap_profiler/hprof_parser_android.h",
-        "perfetto/java_heap_profiler/java_heap_profiler_android.cc",
-        "perfetto/java_heap_profiler/java_heap_profiler_android.h",
-      ]
-      public_deps += [ "//third_party/perfetto/protos/third_party/android/art:art_heap_graph_zero" ]
-    }
-
     if (is_win && enable_loader_lock_sampling) {
       sources += [
         "stack_sampling/loader_lock_sampler_win.cc",

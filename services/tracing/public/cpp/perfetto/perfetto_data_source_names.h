@@ -23,8 +23,6 @@ inline constexpr char kSystemTraceDataSourceName[] =
 inline constexpr char kArcTraceDataSourceName[] = "org.chromium.trace_arc";
 inline constexpr char kSamplerProfilerSourceName[] =
     "org.chromium.sampler_profiler";
-inline constexpr char kJavaHeapProfilerSourceName[] =
-    "org.chromium.java_heap_profiler";
 inline constexpr char kNativeHeapProfilerSourceName[] =
     "org.chromium.native_heap_profiler";
 inline constexpr char kSystemMetricsSourceName[] =

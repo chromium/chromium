@@ -1256,8 +1256,6 @@ component("base") {
       "android/input_hint_checker.h",
       "android/java_handler_thread.cc",
       "android/java_handler_thread.h",
-      "android/java_heap_dump_generator.cc",
-      "android/java_heap_dump_generator.h",
       "android/java_runtime.cc",
       "android/java_runtime.h",
       "android/locale_utils.cc",
@@ -5297,7 +5295,6 @@ if (is_android) {
   generate_jni("memory_jni") {
     sources = [
       "android/java/src/org/chromium/base/MemoryPressureListener.java",
-      "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
       "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
       "android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
     ]

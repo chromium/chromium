@@ -17,7 +17,4 @@ specific_include_rules = {
   'metadata_data_source.cc': [
     "+components/variations/active_field_trials.h",
   ],
-  'hprof_parser_android.h': [
-    "+third_party/perfetto/protos/third_party/android/art/heap_graph.pbzero.h",
-  ],
 }

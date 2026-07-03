@@ -6,8 +6,6 @@ package org.chromium.base.memory;
 
 import android.os.Debug;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 
@@ -25,7 +23,6 @@ public final class JavaHeapDumpGenerator {
      *
      * @return whether or not the hprof file was properly generated.
      */
-    @CalledByNative
     public static boolean generateHprof(String filePath) {
         try {
             Debug.dumpHprofData(filePath);

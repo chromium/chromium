@@ -161,14 +161,6 @@ void AddDataSourceConfigs(
                         convert_to_legacy_json, json_agent_label_filter,
                         enable_package_name_filter);
   }
-
-  if (stripped_config.IsCategoryGroupEnabled(
-          TRACE_DISABLED_BY_DEFAULT("java-heap-profiler"))) {
-    AddDataSourceConfig(perfetto_config, kJavaHeapProfilerSourceName,
-                        chrome_config_string, privacy_filtering_enabled,
-                        convert_to_legacy_json, json_agent_label_filter,
-                        enable_package_name_filter);
-  }
 }
 
 void AdaptBuiltinDataSourcesConfig(

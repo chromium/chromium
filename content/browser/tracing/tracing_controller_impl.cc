@@ -88,7 +88,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <sys/time.h>
 #include "content/browser/android/tracing_controller_android.h"
-#include "services/tracing/public/cpp/perfetto/java_heap_profiler/java_heap_profiler_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
