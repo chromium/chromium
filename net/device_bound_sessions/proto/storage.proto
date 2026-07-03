@@ -103,6 +103,9 @@ message Session {
   optional int64 creation_time = 8;
   // Initiator sites allowed to trigger refresh from third-party contexts
   repeated string allowed_refresh_initiators = 9;
+  // Wrapped attestation key used for this session. This field is optional and
+  // will be null (unset) if a session doesn't use attestation keys.
+  optional bytes wrapped_attestation_key = 10;
 }
 
 // All the sessions associated with a site (eTLD+1) and it's subdomains.

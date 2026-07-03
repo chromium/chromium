@@ -1319,6 +1319,87 @@ TEST_F(SessionServiceImplTest, RefreshedSessionKeepsCreationDate) {
   EXPECT_TRUE(service().GetSession({site, Session::Id("SessionA")}));
 }
 
+// Verifies that the session's attestation key state is preserved when its
+// configuration changes at a refresh.
+TEST_F(SessionServiceImplTest, RefreshedSessionKeepsAttestationKey) {
+  net::SchemefulSite site(kTestUrl);
+
+  // Generate a fake attestation key.
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableAttestationKeyId>>
+      generate_future;
+  key_service()->GenerateAttestationKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kUserBlocking,
+      generate_future.GetCallback());
+  auto key_or_error = generate_future.Get();
+  ASSERT_TRUE(key_or_error.has_value());
+  unexportable_keys::UnexportableAttestationKeyId attestation_key_id =
+      *key_or_error;
+
+  // Register a session on the site, with the attestation key.
+  {
+    auto custom_fetcher = ScopedTestRegistrationFetcher(base::BindRepeating(
+        [](unexportable_keys::UnexportableAttestationKeyId attestation_key_id,
+           const std::string& session_id, const std::string& refresh_url_string,
+           const std::string& origin_string,
+           RegistrationFetcher::RegistrationCompleteCallback callback) {
+          std::move(callback).Run(
+              /*fetcher=*/nullptr,
+              RegistrationResult(Session::CreateIfValid(SessionParams{
+                  .session_id = session_id,
+                  .fetcher_url = GURL(refresh_url_string),
+                  .refresh_url = refresh_url_string,
+                  .scope = {.include_site = true, .origin = origin_string},
+                  .credentials = {{
+                      .name = "test_cookie",
+                      .attributes = "secure",
+                  }},
+                  .attestation_key_id = attestation_key_id,
+              })));
+        },
+        attestation_key_id, "SessionA", kRefreshUrlString, kOrigin));
+
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        GURL(kRefreshUrlString),
+        {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        "challenge", /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(
+        base::DoNothing(), std::move(fetch_param),
+        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+        NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+  }
+
+  Session* session = service().GetSession({site, Session::Id("SessionA")});
+  ASSERT_TRUE(session);
+  EXPECT_THAT(session->maybe_unexportable_attestation_key_id(),
+              base::test::ValueIs(attestation_key_id));
+
+  // Perform a refresh request. The refresh response does NOT have attestation.
+  auto scoped_test_refresh_fetcher =
+      ScopedTestRegistrationFetcher::CreateWithSuccess(
+          "SessionA", kRefreshUrlString, kOrigin);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<RefreshResult> refresh_future;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id("SessionA")),
+      refresh_future.GetCallback());
+  EXPECT_EQ(refresh_future.Take(), RefreshResult::kRefreshed);
+
+  // Check that the refresh updated the session while preserving its
+  // attestation key state.
+  Session* refreshed_session =
+      service().GetSession({site, Session::Id("SessionA")});
+  ASSERT_TRUE(refreshed_session);
+  EXPECT_THAT(refreshed_session->maybe_unexportable_attestation_key_id(),
+              base::test::ValueIs(attestation_key_id));
+}
+
 TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
   GURL url_a("https://a_example.com");
   GURL url_b("https://b_example.com");

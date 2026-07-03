@@ -291,6 +291,38 @@ TEST_F(SessionTest, ToFromProto) {
   EXPECT_TRUE(restored->IsEqualForTesting(*session));
 }
 
+TEST_F(SessionTest, CreateFromProtoWithAttestationKey) {
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(CreateValidParams()));
+  ASSERT_TRUE(session);
+
+  // Proto has wrapped_attestation_key -> restored session has key ID as
+  // kKeyNotReady.
+  proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_attestation_key("mock_wrapped_attestation_key");
+
+  std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
+  ASSERT_TRUE(restored);
+  EXPECT_THAT(restored->maybe_unexportable_attestation_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
+}
+
+TEST_F(SessionTest, CreateFromProtoWithoutAttestationKey) {
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(CreateValidParams()));
+  ASSERT_TRUE(session);
+
+  // Proto lacks wrapped_attestation_key -> restored session has key ID as
+  // std::nullopt.
+  proto::Session sproto = session->ToProto();
+  sproto.clear_wrapped_attestation_key();
+
+  std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
+  ASSERT_TRUE(restored);
+  EXPECT_THAT(restored->maybe_unexportable_attestation_key_id(),
+              ValueIs(std::nullopt));
+}
+
 TEST_F(SessionTest, FailCreateFromInvalidProto) {
   // Empty proto.
   {

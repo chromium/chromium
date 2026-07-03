@@ -122,7 +122,8 @@ class DBSCSessionStorePerfTest : public testing::Test {
     std::unique_ptr<Session> session = std::move(*session_or_error);
     ASSERT_TRUE(session);
 
-    store_->SaveSession(SchemefulSite(GURL(url_str)), *session);
+    store_->SaveSession(SchemefulSite(GURL(url_str)), *session,
+                        SessionStore::SaveSessionMode::kNewSession);
   }
 
   unsigned int NumSessionsInStore() { return store_->GetAllSessions().size(); }

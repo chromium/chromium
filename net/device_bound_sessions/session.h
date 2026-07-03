@@ -172,7 +172,8 @@ class NET_EXPORT Session {
           bool should_defer_when_expired,
           base::Time creation_date,
           base::Time expiry_date,
-          std::vector<std::string> allowed_refresh_initiators);
+          std::vector<std::string> allowed_refresh_initiators,
+          AttestationMode attestation_mode = AttestationMode::kNone);
 
   // The unique server-issued identifier of the session.
   const Id id_;

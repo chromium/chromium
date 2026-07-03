@@ -604,6 +604,21 @@ historical analysis. -->
   <int value="4" label="CT_REQUIREMENT_OVERRIDDEN_APPLIES_ACROSS_NAMES"/>
 </enum>
 
+<!-- LINT.IfChange(DeviceBoundSessionAttestationKeySaveOutcome) -->
+
+<enum name="DeviceBoundSessionAttestationKeySaveOutcome">
+  <int value="0" label="No Attestation Key"/>
+  <int value="1" label="Key Not Ready: Copied Old Key"/>
+  <int value="2" label="Key Not Ready: No Site in DB"/>
+  <int value="3" label="Key Not Ready: No Session in DB"/>
+  <int value="4" label="Key Not Ready: No Old Key to Copy"/>
+  <int value="5" label="Save Session Key Success"/>
+  <int value="6" label="Get Wrapped Key Failure"/>
+  <int value="7" label="Unexpected Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_store_impl.h:AttestationKeySaveOutcome) -->
+
 <!-- LINT.IfChange(DeviceBoundSessionDeletionReason) -->
 
 <enum name="DeviceBoundSessionDeletionReason">

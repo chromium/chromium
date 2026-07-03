@@ -945,9 +945,10 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
 }
 
 void SessionServiceImpl::AddSession(const SchemefulSite& site,
-                                    std::unique_ptr<Session> session) {
+                                    std::unique_ptr<Session> session,
+                                    SessionStore::SaveSessionMode mode) {
   if (session_store_) {
-    session_store_->SaveSession(site, *session);
+    session_store_->SaveSession(site, *session, mode);
   }
 
   unpartitioned_sessions_[SessionKey{site, session->id()}] = std::move(session);
@@ -1156,13 +1157,22 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                 // browsing data.
                 new_session->set_creation_date(
                     existing_session->creation_date());
+                // The refresh fetcher does not receive the attestation key ID
+                // since AIKs are not used to sign refresh challenges. As a
+                // result, the refreshed `new_session` is created without one.
+                // We copy it here from `existing_session` to preserve the key
+                // capability (e.g. for future on-demand key certification
+                // requests) without needing to reload it from the database.
+                new_session->set_unexportable_attestation_key_id(
+                    existing_session->maybe_unexportable_attestation_key_id());
                 SchemefulSite new_site(new_session->origin());
                 // Don't bother creating the SessionDisplay if there are no
                 // observers that want to know about it.
                 std::optional<SessionDisplay> new_session_display =
                     event_callbacks_.empty() ? std::optional<SessionDisplay>()
                                              : new_session->ToDisplay();
-                AddSession(new_site, std::move(new_session));
+                AddSession(new_site, std::move(new_session),
+                           SessionStore::SaveSessionMode::kRefresh);
                 // The session has been refreshed, restart the request.
                 SessionError::ErrorType success_result = SessionError::kSuccess;
                 UnblockDeferredRequests(session_key, RefreshResult::kRefreshed,

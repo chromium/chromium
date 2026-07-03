@@ -78,7 +78,8 @@ Session::Session(Id id,
                  bool should_defer_when_expired,
                  base::Time creation_date,
                  base::Time expiry_date,
-                 std::vector<std::string> allowed_refresh_initiators)
+                 std::vector<std::string> allowed_refresh_initiators,
+                 AttestationMode attestation_mode)
     : id_(id),
       refresh_url_(refresh),
       inclusion_rules_(std::move(inclusion_rules)),
@@ -86,6 +87,11 @@ Session::Session(Id id,
       should_defer_when_expired_(should_defer_when_expired),
       creation_date_(creation_date),
       expiry_date_(expiry_date),
+      maybe_attestation_key_id_or_error_(
+          attestation_mode == AttestationMode::kRequired
+              ? MaybeAttestationKeyIdOrError(base::unexpected(
+                    unexportable_keys::ServiceError::kKeyNotReady))
+              : MaybeAttestationKeyIdOrError(std::nullopt)),
       backoff_(&kBackoffPolicy),
       allowed_refresh_initiators_(std::move(allowed_refresh_initiators)) {}
 
@@ -247,10 +253,20 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
     allowed_refresh_initiators.emplace_back(initiator);
   }
 
+  // If the proto contains a wrapped attestation key, it means this session
+  // is configured to use one, so we pass `AttestationMode::kRequired` to
+  // initialize its state to `kKeyNotReady`, indicating it needs to be loaded
+  // into the TPM. Since this is an expensive operation, we only do this if
+  // absolutely needed.
+  //
+  // Otherwise, we pass `AttestationMode::kNone` indicating no attestation key
+  // is expected.
   return base::WrapUnique(new Session(
       Id(proto.id()), std::move(refresh), std::move(*inclusion_rules),
       std::move(cravings), proto.should_defer_when_expired(), creation_date,
-      expiry_date, std::move(allowed_refresh_initiators)));
+      expiry_date, std::move(allowed_refresh_initiators),
+      proto.has_wrapped_attestation_key() ? AttestationMode::kRequired
+                                          : AttestationMode::kNone));
 }
 
 proto::Session Session::ToProto() const {
@@ -466,6 +482,8 @@ bool Session::IsEqualForTesting(const Session& other) const {
          creation_date_ == other.creation_date_ &&
          expiry_date_ == other.expiry_date_ &&
          key_id_or_error_ == other.key_id_or_error_ &&
+         maybe_attestation_key_id_or_error_ ==
+             other.maybe_attestation_key_id_or_error_ &&
          cached_challenge_ == other.cached_challenge_ &&
          allowed_refresh_initiators_ == other.allowed_refresh_initiators_;
 }

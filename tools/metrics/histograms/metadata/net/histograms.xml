@@ -2277,6 +2277,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.AttestationKeySaveOutcome"
+    enum="DeviceBoundSessionAttestationKeySaveOutcome"
+    expires_after="2026-12-25">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the outcome of attempting to save the hardware attestation key
+    during a Device Bound Session store operation (saving a new session or
+    updating an existing one).
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.DeferralResultByOutcome.{Outcome}"
     enum="DeviceBoundSessionRefreshResult" expires_after="2026-11-29">
   <owner>drubery@chromium.org</owner>

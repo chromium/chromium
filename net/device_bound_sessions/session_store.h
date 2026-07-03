@@ -41,8 +41,14 @@ class NET_EXPORT SessionStore {
   using LoadSessionsCallback = base::OnceCallback<void(SessionsMap)>;
   virtual void LoadSessions(LoadSessionsCallback callback) = 0;
 
+  enum class SaveSessionMode {
+    kNewSession,
+    kRefresh,
+  };
+
   virtual void SaveSession(const SchemefulSite& site,
-                           const Session& session) = 0;
+                           const Session& session,
+                           SaveSessionMode mode) = 0;
 
   virtual void DeleteSession(const SessionKey& key) = 0;
 
@@ -57,6 +63,15 @@ class NET_EXPORT SessionStore {
   virtual void RestoreSessionBindingKey(
       const SessionKey& session_key,
       RestoreSessionBindingKeyCallback callback) = 0;
+
+  // Asynchronously retrieves the unwrapped session attestation key
+  // from its persistent form saved in the store.
+  using RestoreSessionAttestationKeyCallback = base::OnceCallback<void(
+      unexportable_keys::ServiceErrorOr<
+          unexportable_keys::UnexportableAttestationKeyId>)>;
+  virtual void RestoreSessionAttestationKey(
+      const SessionKey& session_key,
+      RestoreSessionAttestationKeyCallback callback) = 0;
 
  protected:
   SessionStore() = default;

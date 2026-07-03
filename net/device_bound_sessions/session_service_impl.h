@@ -24,6 +24,7 @@
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/session_store.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -38,8 +39,6 @@ class UnexportableKeyService;
 }
 
 namespace net::device_bound_sessions {
-
-class SessionStore;
 
 struct DeferredURLRequest {
   // A weak pointer to the deferred request. Stored to allow resiliently
@@ -199,7 +198,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void DoGarbageCollection(
       std::vector<unexportable_keys::UnexportableKeyId> all_key_ids);
 
-  void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
+  void AddSession(const SchemefulSite& site,
+                  std::unique_ptr<Session> session,
+                  SessionStore::SaveSessionMode mode =
+                      SessionStore::SaveSessionMode::kNewSession);
   void UnblockDeferredRequests(
       const SessionKey& session_key,
       RefreshResult result,
