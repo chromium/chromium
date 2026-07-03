@@ -46,6 +46,9 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
 
 - (void)tearDownHelper {
   [self clearPolicies];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:@"CloudManagementEnrollmentToken"];
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"FirstRunForceEnabled"];
   [super tearDownHelper];
 }
 
