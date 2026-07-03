@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -44,6 +43,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.accessibility.testservice.EventMatcher;
 import org.chromium.ui.accessibility.testservice.IAccessibilityTestHelperService;
 import org.chromium.ui.accessibility.testservice.NodeMatcher;
@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for Accessibility end-to-end. */
 @Batch(Batch.PER_CLASS)
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ContentJUnit4ClassRunner.class)
 public class WebContentsAccessibilityE2ETest {
     private static final String ACCESSIBILITY_TEST_SERVICE_PACKAGE =
             "org.chromium.ui.accessibility.testservice";
@@ -269,7 +269,6 @@ public class WebContentsAccessibilityE2ETest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/530108206")
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/529881530
     public void testAccessibilityServiceReceivesInitialEvent() throws Throwable {
         // Load a page.
@@ -287,7 +286,6 @@ public class WebContentsAccessibilityE2ETest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void testAccessibilityServiceReceivesInitialEvent_SdkBalklavaAndAbove()
             throws Throwable {
         Assume.assumeTrue(
@@ -324,7 +322,6 @@ public class WebContentsAccessibilityE2ETest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void testAccessibilityServiceReceivesAccessibilityFocusEvent() throws Throwable {
         // Load a page with a focusable element.
         setupTest(
@@ -359,7 +356,6 @@ public class WebContentsAccessibilityE2ETest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void testDumpWebContentsAccessibilityTree() throws Throwable {
         // Load a page with more complex HTML content.
         String html =
@@ -410,7 +406,6 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     @EnableFeatures({ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION})
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void testDumpTreeWithInitialSelection() throws Throwable {
         Assume.assumeTrue(
                 "Requires Android 16 QPR2 (36.1) or higher",
@@ -463,7 +458,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @DisabledTest(message = "https://crbug.com/530108206")
+    @DisabledTest(message = "https://crbug.com/517964367")
     public void testFindFocus() throws Throwable {
         // Load a page with 100 arbitrary buttons and two focusable elements and a tall div.
         // The idea behind 100 buttons comes from the flakiness of the test: we do a scroll to clear
@@ -618,7 +613,6 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
         ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN,
         ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION
     })
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void testSelectionInContentEditable() throws Throwable {
         Assume.assumeTrue(
                 "Requires Android 16 QPR2 (36.1) or higher",
@@ -678,7 +672,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // API Level 34
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void fireGeneratedEvent_ariaInvalidTrue_firesContentInvalid() throws Throwable {
         // Create an HTML document where there is an input element and an element containing the
         // text for the input's aria-errormessage.
@@ -717,7 +710,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // API Level 34
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void fireGeneratedEvent_ariaInvalidChangesToFalse_firesContentInvalid()
             throws Throwable {
         // Create an HTML document where there is an input element and an element containing
@@ -759,7 +751,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     @EnableFeatures({ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION})
-    @DisabledTest(message = "https://crbug.com/530108206")
     public void testExtendedSelection() throws Throwable {
         Assume.assumeTrue(
                 "Requires Android 16 QPR2 (36.1) or higher",
