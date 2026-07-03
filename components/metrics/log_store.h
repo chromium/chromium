@@ -56,8 +56,15 @@ class LogStore {
 
   // Discards the staged log. |reason| is the reason why the log was discarded
   // (used for debugging through chrome://metrics-internals).
-  virtual void DiscardStagedLog(std::string_view reason = "") = 0;
+  void DiscardStagedLog() { DiscardStagedLogImpl(""); }
+  void DiscardStagedLog(std::string_view reason) {
+    DiscardStagedLogImpl(reason);
+  }
 
+ protected:
+  virtual void DiscardStagedLogImpl(std::string_view reason) = 0;
+
+ public:
   // Marks the staged log as sent, DiscardStagedLog() shall still be called if
   // the staged log needs discarded.
   virtual void MarkStagedLogAsSent() = 0;

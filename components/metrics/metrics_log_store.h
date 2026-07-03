@@ -124,7 +124,11 @@ class MetricsLogStore : public LogStore {
   std::optional<uint64_t> staged_log_user_id() const override;
   const LogMetadata staged_log_metadata() const override;
   void StageNextLog() override;
-  void DiscardStagedLog(std::string_view reason = "") override;
+
+ protected:
+  void DiscardStagedLogImpl(std::string_view reason) override;
+
+ public:
   void MarkStagedLogAsSent() override;
   void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
@@ -150,7 +154,7 @@ class MetricsLogStore : public LogStore {
   UnsentLogStore* GetLogStoreForLogType(MetricsLog::LogType log_type);
 
   // Tracks whether unsent logs (if any) have been loaded from the serializer.
-  bool unsent_logs_loaded_;
+  bool unsent_logs_loaded_ = false;
 
   // Event manager to notify observers of log events.
   const raw_ptr<MetricsLogsEventManager> logs_event_manager_;

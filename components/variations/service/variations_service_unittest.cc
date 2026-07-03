@@ -231,8 +231,7 @@ class TestVariationsService : public VariationsService {
 
 class TestVariationsServiceObserver : public VariationsService::Observer {
  public:
-  TestVariationsServiceObserver()
-      : best_effort_changes_notified_(0), crticial_changes_notified_(0) {}
+  TestVariationsServiceObserver() = default;
 
   TestVariationsServiceObserver(const TestVariationsServiceObserver&) = delete;
   TestVariationsServiceObserver& operator=(
@@ -259,10 +258,10 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
 
  private:
   // Number of notification received with BEST_EFFORT severity.
-  int best_effort_changes_notified_;
+  int best_effort_changes_notified_ = 0;
 
   // Number of notification received with CRITICAL severity.
-  int crticial_changes_notified_;
+  int crticial_changes_notified_ = 0;
 };
 
 // Constants used to create the test seed.
@@ -315,6 +314,10 @@ void AddOKResponseWithIM(
 }  // namespace
 
 class VariationsServiceTest : public ::testing::Test {
+ public:
+  VariationsServiceTest(const VariationsServiceTest&) = delete;
+  VariationsServiceTest& operator=(const VariationsServiceTest&) = delete;
+
  protected:
   VariationsServiceTest()
       : network_tracker_(network::TestNetworkConnectionTracker::GetInstance()),
@@ -323,9 +326,6 @@ class VariationsServiceTest : public ::testing::Test {
     metrics::MetricsStateManager::RegisterPrefs(prefs_.registry());
     VariationsService::RegisterPrefs(prefs_.registry());
   }
-
-  VariationsServiceTest(const VariationsServiceTest&) = delete;
-  VariationsServiceTest& operator=(const VariationsServiceTest&) = delete;
 
   metrics::MetricsStateManager* GetMetricsStateManager() {
     // Lazy-initialize the metrics_state_manager so that it correctly reads the

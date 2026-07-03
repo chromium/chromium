@@ -75,7 +75,7 @@ class TestLogStore : public LogStore {
       staged_log_hash_ = metrics::Sha1ForUnsentLogStore(logs_.front().log);
     }
   }
-  void DiscardStagedLog(std::string_view reason) override {
+  void DiscardStagedLogImpl(std::string_view reason) override {
     if (!has_staged_log()) {
       return;
     }

@@ -211,7 +211,7 @@ void MetricsLogStore::StageNextLog() {
     ongoing_log_queue_.StageNextLog();
 }
 
-void MetricsLogStore::DiscardStagedLog(std::string_view reason) {
+void MetricsLogStore::DiscardStagedLogImpl(std::string_view reason) {
   DCHECK(has_staged_log());
   if (initial_log_queue_.has_staged_log())
     initial_log_queue_.DiscardStagedLog(reason);

@@ -186,8 +186,7 @@ UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
       metadata_pref_name_(metadata_pref_name),
       log_store_limits_(log_store_limits),
       signing_key_(signing_key),
-      logs_event_manager_(logs_event_manager),
-      staged_log_index_(-1) {
+      logs_event_manager_(logs_event_manager) {
   DCHECK(local_state_);
   // One of the limit arguments must be non-zero.
   DCHECK(log_store_limits_.min_log_count > 0 ||
@@ -202,42 +201,39 @@ bool UnsentLogStore::has_unsent_logs() const {
 
 // True if a log has been staged.
 bool UnsentLogStore::has_staged_log() const {
-  return staged_log_index_ != -1;
+  return staged_log_index_.has_value();
 }
 
 // Returns the compressed data of the element in the front of the list.
 const std::string& UnsentLogStore::staged_log() const {
-  DCHECK(has_staged_log());
-  return list_[staged_log_index_]->compressed_log_data;
+  return current_log()->compressed_log_data;
 }
 
 // Returns the hash of element in the front of the list.
 const std::string& UnsentLogStore::staged_log_hash() const {
-  DCHECK(has_staged_log());
-  return list_[staged_log_index_]->hash;
+  return current_log()->hash;
 }
 
 // Returns the signature of element in the front of the list.
 const std::string& UnsentLogStore::staged_log_signature() const {
-  DCHECK(has_staged_log());
-  return list_[staged_log_index_]->signature;
+  return current_log()->signature;
 }
 
 // Returns the timestamp of the element in the front of the list.
 const std::string& UnsentLogStore::staged_log_timestamp() const {
-  DCHECK(has_staged_log());
-  return list_[staged_log_index_]->timestamp;
+  return current_log()->timestamp;
 }
 
 // Returns the user id of the current staged log.
 std::optional<uint64_t> UnsentLogStore::staged_log_user_id() const {
-  DCHECK(has_staged_log());
-  return list_[staged_log_index_]->log_metadata.user_id;
+  return current_log()->log_metadata.user_id;
 }
 
 const LogMetadata UnsentLogStore::staged_log_metadata() const {
+  // Use list_ directly instead of current_log() to preserve the move
+  // semantics enabled by unique_ptr's non-const operator-> in const methods.
   DCHECK(has_staged_log());
-  return std::move(list_[staged_log_index_]->log_metadata);
+  return std::move(list_[staged_log_index_.value()]->log_metadata);
 }
 
 // static
@@ -257,27 +253,27 @@ void UnsentLogStore::StageNextLog() {
   DCHECK(!has_staged_log());
   staged_log_index_ = list_.size() - 1;
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogStaged,
-                 list_[staged_log_index_]->hash);
+                 current_log()->hash);
   DCHECK(has_staged_log());
 }
 
-void UnsentLogStore::DiscardStagedLog(std::string_view reason) {
+void UnsentLogStore::DiscardStagedLogImpl(std::string_view reason) {
   DCHECK(has_staged_log());
-  DCHECK_LT(static_cast<size_t>(staged_log_index_), list_.size());
+  DCHECK_LT(staged_log_index_.value(), list_.size());
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded,
-                 list_[staged_log_index_]->hash, reason);
-  list_.erase(list_.begin() + staged_log_index_);
-  staged_log_index_ = -1;
+                 current_log()->hash, reason);
+  list_.erase(list_.begin() + staged_log_index_.value());
+  staged_log_index_ = std::nullopt;
 }
 
 void UnsentLogStore::MarkStagedLogAsSent() {
   DCHECK(has_staged_log());
-  DCHECK_LT(static_cast<size_t>(staged_log_index_), list_.size());
-  auto samples_count = list_[staged_log_index_]->log_metadata.samples_count;
+  DCHECK_LT(staged_log_index_.value(), list_.size());
+  auto samples_count = current_log()->log_metadata.samples_count;
   if (samples_count.has_value())
     total_samples_sent_ += samples_count.value();
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogUploaded,
-                 list_[staged_log_index_]->hash);
+                 current_log()->hash);
 }
 
 void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
@@ -357,11 +353,11 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
     if (staged_index_distance.has_value()) {
       staged_log_index_ = list_.size() - 1 - staged_index_distance.value();
     } else {
-      // Set |staged_log_index_| to -1. It might already be -1. E.g., at the
-      // time we are trimming logs, there was no staged log. However, it is also
-      // possible that we trimmed away the staged log, so we need to update the
-      // index to -1.
-      staged_log_index_ = -1;
+      // Set |staged_log_index_| to std::nullopt. It might already be
+      // std::nullopt. E.g., at the time we are trimming logs, there was
+      // no staged log. However, it is also possible that we trimmed away the
+      // staged log, so we need to update the index to std::nullopt.
+      staged_log_index_ = std::nullopt;
     }
   }
 
@@ -592,6 +588,16 @@ void UnsentLogStore::NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
 std::string Sha1ForUnsentLogStore(std::string_view data) {
   return std::string(base::as_string_view(
       crypto::obsolete::Sha1::Hash(base::as_byte_span(data))));
+}
+
+const UnsentLogStore::LogInfo* UnsentLogStore::current_log() const {
+  DCHECK(has_staged_log());
+  return list_[staged_log_index_.value()].get();
+}
+
+UnsentLogStore::LogInfo* UnsentLogStore::current_log() {
+  DCHECK(has_staged_log());
+  return list_[staged_log_index_.value()].get();
 }
 
 }  // namespace metrics
