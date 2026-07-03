@@ -20,7 +20,8 @@ bool AccountReconcilorDelegate::IsReconcileEnabled() const {
   return false;
 }
 
-gaia::GaiaSource AccountReconcilorDelegate::GetGaiaApiSource() const {
+gaia::GaiaSource AccountReconcilorDelegate::GetGaiaApiSource(
+    bool is_cookie_upgrade) const {
   NOTREACHED() << "Reconcile is not enabled, no Gaia API calls should be made.";
 }
 

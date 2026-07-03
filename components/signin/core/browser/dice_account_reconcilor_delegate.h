@@ -26,7 +26,7 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
 
   // AccountReconcilorDelegate:
   bool IsReconcileEnabled() const override;
-  gaia::GaiaSource GetGaiaApiSource() const override;
+  gaia::GaiaSource GetGaiaApiSource(bool is_cookie_upgrade) const override;
   void RevokeSecondaryTokensForReconcileIfNeeded(
       const std::vector<gaia::ListedAccount>& gaia_accounts) override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;

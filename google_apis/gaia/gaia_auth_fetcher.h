@@ -71,11 +71,13 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaSource {
     kAccountReconcilorMirror,
     kPrimaryAccountManager,
     kChromeGlic,  // chrome/browser/glic
+    kAccountReconcilorDiceCookieUpgrade,
   };
 
   // Implicit conversion is necessary to avoid boilerplate code.
   GaiaSource(Type type);
   GaiaSource(Type source, const std::string& suffix);
+  Type type() const { return type_; }
   void SetGaiaSourceSuffix(const std::string& suffix);
   std::string ToString();
 

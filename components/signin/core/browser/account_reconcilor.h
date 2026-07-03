@@ -146,6 +146,7 @@ class AccountReconcilor
  protected:
   void OnSetAccountsInCookieCompleted(
       const std::vector<CoreAccountId>& accounts_to_send,
+      std::optional<base::TimeTicks> cookie_upgrade_start_time,
       signin::SetAccountsInCookieResult result);
   void OnLogOutFromCookieCompleted(const GoogleServiceAuthError& error);
 
@@ -171,6 +172,20 @@ class AccountReconcilor
   FRIEND_TEST_ALL_PREFIXES(
       AccountReconcilorTest,
       NeedsCookieBindingUpgradeNoUpgradeIfPrototypeSessionExists);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           CookieBindingUpgradeStatusMetricsFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           CookieBindingUpgradeStatusMetricsNoWrappedKey);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           CookieBindingUpgradeStatusMetricsNeedsUpgrade);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           CookieBindingUpgradeStatusMetricsHasStandardSession);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           CookieBindingUpgradeStatusMetricsUpgradeNotDeferred);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           GetGaiaApiSourceNormalReconcileParameter);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           GetGaiaApiSourceCookieUpgradeParameter);
 
 #if BUILDFLAG(ENABLE_MIRROR)
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
@@ -348,6 +363,21 @@ class AccountReconcilor
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninReconcilerTrigger)
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(CookieBindingUpgradeStatus)
+  enum class CookieBindingUpgradeStatus {
+    kFeatureNotSupported = 0,
+    kFeatureDisabled = 1,
+    kNoWrappedKey = 2,
+    kHasStandardSession = 3,
+    kHasPrototypeSession = 4,
+    kNotFirstRun = 5,
+    kNeedsUpgrade = 6,
+    kMaxValue = kNeedsUpgrade,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CookieBindingUpgradeStatus)
+
   void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> timer);
 
   bool IsRegisteredWithIdentityManager() const {
@@ -375,7 +405,8 @@ class AccountReconcilor
   // consistency is enabled. Virtual so that they can be overridden in tests.
   virtual void PerformLogoutAllAccountsAction();
   virtual void PerformSetCookiesAction(
-      const signin::MultiloginParameters& parameters);
+      const signin::MultiloginParameters& parameters,
+      bool is_cookie_upgrade = false);
 
   // Used during periodic reconciliation.
   void StartReconcile(Trigger trigger);
@@ -450,15 +481,21 @@ class AccountReconcilor
   // no-op.
   bool CookieNeedsUpdate(
       const signin::MultiloginParameters& parameters,
-      const std::vector<gaia::ListedAccount>& existing_accounts);
+      const std::vector<gaia::ListedAccount>& existing_accounts,
+      CookieBindingUpgradeStatus upgrade_status);
 
-  // Returns true if the reconcilor needs to trigger a cookie upgrade to bound
-  // cookies.
-  bool NeedsCookieBindingUpgrade() const;
+  // Returns the status of the cookie binding upgrade check.
+  CookieBindingUpgradeStatus NeedsCookieBindingUpgrade() const;
 
-  // Returns true if cookie binding features are enabled and the primary account
-  // has a bound key, meaning we might need a cookie upgrade.
-  bool PreconditionsForCookieBindingUpgradeMet() const;
+  // If some of the cookie binding preconditions aren't met, returns a
+  // `CookieBindingUpgradeStatus` indicating why upgrade is not possible.
+  base::expected<void, CookieBindingUpgradeStatus>
+  CheckCookieBindingUpgradePreconditions() const;
+
+  // Defers reconciliation on startup if we need to check DBSC sessions to see
+  // if a cookie upgrade is required. Returns true if reconciliation was
+  // deferred.
+  bool MaybeDeferReconciliationForCookieUpgrade();
 
   // Sets the reconcilor state and calls Observer::OnStateChanged() if needed.
   void SetState(signin_metrics::AccountReconcilorState state);
@@ -467,6 +504,11 @@ class AccountReconcilor
   bool WasShutDown() const;
 
   static void RecordReconcileOperation(Trigger trigger, Operation operation);
+
+  void FetchDeviceBoundSessions();
+  void OnDeviceBoundSessionsFetched(
+      std::optional<base::TimeTicks> fetch_start_time,
+      const std::vector<net::device_bound_sessions::SessionKey>& sessions);
 
   // Histogram names.
   static const char kOperationHistogramName[];
@@ -554,13 +596,10 @@ class AccountReconcilor
   signin_metrics::AccountReconcilorState state_ =
       signin_metrics::AccountReconcilorState::kInactive;
 
-  void FetchDeviceBoundSessions();
-  void OnDeviceBoundSessionsFetched(
-      const std::vector<net::device_bound_sessions::SessionKey>& sessions);
-
   signin::Tribool has_standard_device_bound_session_ =
       signin::Tribool::kUnknown;
   bool reconcile_on_device_bound_sessions_fetched_ = false;
+  bool reconciliation_deferred_logged_ = false;
 
   // Set to true when Shutdown() is called.
   bool was_shut_down_ = false;

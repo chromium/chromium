@@ -97,8 +97,10 @@ class SpyReconcilorDelegate : public signin::AccountReconcilorDelegate {
 
   bool IsReconcileEnabled() const override { return true; }
 
-  gaia::GaiaSource GetGaiaApiSource() const override {
-    return gaia::GaiaSource::kChrome;
+  gaia::GaiaSource GetGaiaApiSource(bool is_cookie_upgrade) const override {
+    return is_cookie_upgrade
+               ? gaia::GaiaSource::kAccountReconcilorDiceCookieUpgrade
+               : gaia::GaiaSource::kAccountReconcilorDice;
   }
 
   bool ShouldAbortReconcileIfPrimaryHasError() const override { return true; }
@@ -213,8 +215,9 @@ class MockAccountReconcilor
       std::unique_ptr<signin::AccountReconcilorDelegate> delegate);
 
   MOCK_METHOD0(PerformLogoutAllAccountsAction, void());
-  MOCK_METHOD1(PerformSetCookiesAction,
-               void(const signin::MultiloginParameters& parameters));
+  MOCK_METHOD2(PerformSetCookiesAction,
+               void(const signin::MultiloginParameters& parameters,
+                    bool is_cookie_upgrade));
 };
 
 MockAccountReconcilor::MockAccountReconcilor(
@@ -305,7 +308,8 @@ class AccountReconcilorTest : public ::testing::Test {
   void SimulateSetAccountsInCookieCompleted(
       AccountReconcilor* reconcilor,
       const std::vector<CoreAccountId>& accounts_to_send,
-      signin::SetAccountsInCookieResult result);
+      signin::SetAccountsInCookieResult result,
+      std::optional<base::TimeTicks> cookie_upgrade_start_time = std::nullopt);
 
   void SimulateLogOutFromCookieCompleted(AccountReconcilor* reconcilor,
                                          const GoogleServiceAuthError& error);
@@ -453,8 +457,10 @@ CoreAccountId AccountReconcilorTest::PickAccountIdForAccount(
 void AccountReconcilorTest::SimulateSetAccountsInCookieCompleted(
     AccountReconcilor* reconcilor,
     const std::vector<CoreAccountId>& accounts_to_send,
-    signin::SetAccountsInCookieResult result) {
-  reconcilor->OnSetAccountsInCookieCompleted(accounts_to_send, result);
+    signin::SetAccountsInCookieResult result,
+    std::optional<base::TimeTicks> cookie_upgrade_start_time) {
+  reconcilor->OnSetAccountsInCookieCompleted(accounts_to_send,
+                                             cookie_upgrade_start_time, result);
 }
 
 void AccountReconcilorTest::SimulateLogOutFromCookieCompleted(
@@ -747,7 +753,9 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
         DCHECK(!accounts_to_send.empty());
         const signin::MultiloginParameters params(mode, accounts_to_send);
         cookies_after_reconcile = FakeSetAccountsInCookie(params, cookies);
-        EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params))
+        EXPECT_CALL(
+            *GetMockReconcilor(),
+            PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false))
             .Times(1);
       }
     }
@@ -787,7 +795,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
 
     // Another reconcile is sometimes triggered if Chrome accounts have
     // changed. Allow it to finish.
-    EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
+    EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction)
         .WillRepeatedly(testing::Return());
     ConfigureCookieManagerService({});
     base::RunLoop().RunUntilIdle();
@@ -1081,8 +1089,7 @@ TEST_F(AccountReconcilorDiceTest, ClearPrimaryAccountNotAllowed) {
   base::RunLoop run_loop;
   EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
-      .Times(0);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction).Times(0);
 
   test_signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
@@ -1118,8 +1125,7 @@ TEST_F(AccountReconcilorDiceTest, DiceTokenServiceRegistration) {
   // Reconcilor should not logout all accounts from the cookies when
   // the primary account is cleared in IdentityManager.
   EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction()).Times(0);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(::testing::_))
-      .Times(0);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction).Times(0);
 
   identity_test_env()->ClearPrimaryAccount();
   ASSERT_TRUE(reconcilor->IsRegisteredWithIdentityManager());
@@ -1132,8 +1138,7 @@ TEST_F(AccountReconcilorDiceTest, DiceReconcileWithoutSignin) {
   signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
 
   // The reconcilor does not rebuild cookies while signed out.
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
-      .Times(0);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction).Times(0);
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   TestAccountReconcilorObserver observer(
@@ -1151,8 +1156,7 @@ TEST_F(AccountReconcilorDiceTest, DiceReconcileNoop) {
   // No Chrome account and no cookie.
   signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
   EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction()).Times(0);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
-      .Times(0);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction).Times(0);
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   TestAccountReconcilorObserver observer(
@@ -1200,7 +1204,8 @@ TEST_F(AccountReconcilorDiceTest, DiceReconcileReuseGaiaFirstAccount) {
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
   base::RunLoop run_loop;
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params))
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
@@ -1251,8 +1256,7 @@ TEST_F(AccountReconcilorDiceTest, DiceLastKnownFirstAccount) {
   {
     EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
         .Times(0);
-    EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
-        .Times(0);
+    EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction).Times(0);
 
     AccountReconcilor* reconcilor = GetMockReconcilor();
     TestAccountReconcilorObserver observer(
@@ -1274,7 +1278,8 @@ TEST_F(AccountReconcilorDiceTest, DiceLastKnownFirstAccount) {
       gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
   base::RunLoop run_loop;
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params))
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
@@ -1298,8 +1303,7 @@ TEST_F(AccountReconcilorDiceTest, UnverifiedAccountNoop) {
 
   // Check that nothing happens.
   EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction()).Times(0);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
-      .Times(0);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction).Times(0);
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   TestAccountReconcilorObserver observer(
@@ -1336,7 +1340,8 @@ TEST_F(AccountReconcilorDiceTest, UnverifiedAccountMerge) {
       gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
   base::RunLoop run_loop;
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params))
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
@@ -1535,7 +1540,8 @@ TEST_F(AccountReconcilorDiceTest, SetAccountsInCookiePersistentError) {
       /*accounts_to_send=*/{account_info_1.account_id,
                             account_info_2.account_id});
   base::RunLoop run_loop;
-  EXPECT_CALL(*reconcilor, PerformSetCookiesAction(params))
+  EXPECT_CALL(*reconcilor,
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
@@ -1610,7 +1616,8 @@ TEST_F(AccountReconcilorDiceTest,
       /*accounts_to_send=*/{account_info_1.account_id,
                             account_info_2.account_id});
   base::RunLoop perform_set_cookies_run_loop;
-  EXPECT_CALL(*reconcilor, PerformSetCookiesAction(expected_params_1))
+  EXPECT_CALL(*reconcilor, PerformSetCookiesAction(expected_params_1,
+                                                   /*is_cookie_upgrade=*/false))
       .WillOnce(RunOnceClosure(perform_set_cookies_run_loop.QuitClosure()));
 
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
@@ -1796,7 +1803,8 @@ TEST_F(AccountReconcilorMirrorTest, TokensNotLoaded) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   EXPECT_EQ(AccountReconcilor::Trigger::kTokensLoaded, reconcilor->trigger_);
@@ -1822,7 +1830,8 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieSuccess) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -1859,7 +1868,8 @@ TEST_F(AccountReconcilorMirrorTest, EnableReconcileWhileAlreadyRunning) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -1925,7 +1935,8 @@ TEST_F(AccountReconcilorMirrorTest, ExtraCookieChangeNotification) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -2151,7 +2162,8 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookie) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
@@ -2260,7 +2272,8 @@ TEST_F(AccountReconcilorMirrorTest, SignoutAfterErrorDoesNotRecordUma) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
@@ -2295,7 +2308,8 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileRemoveFromCookie) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
@@ -2345,7 +2359,9 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookieTwice) {
   const signin::MultiloginParameters ml_params_1(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send_1);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(ml_params_1));
+  EXPECT_CALL(
+      *GetMockReconcilor(),
+      PerformSetCookiesAction(ml_params_1, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
@@ -2371,7 +2387,9 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookieTwice) {
   const signin::MultiloginParameters ml_params_2(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send_2);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(ml_params_2));
+  EXPECT_CALL(
+      *GetMockReconcilor(),
+      PerformSetCookiesAction(ml_params_2, /*is_cookie_upgrade=*/false));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -2399,7 +2417,8 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileBadPrimary) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
@@ -2511,7 +2530,8 @@ TEST_F(AccountReconcilorMirrorTest,
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
   reconcilor->SetState(AccountReconcilorState::kOk);
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 
@@ -2534,7 +2554,8 @@ TEST_F(AccountReconcilorMirrorTest,
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
   reconcilor->SetState(AccountReconcilorState::kError);
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 
@@ -2557,7 +2578,8 @@ TEST_F(AccountReconcilorMirrorTest,
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -2618,7 +2640,8 @@ TEST_F(AccountReconcilorMirrorTest,
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
   reconcilor->SetState(AccountReconcilorState::kOk);
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 
@@ -2658,14 +2681,16 @@ TEST_P(AccountReconcilorMethodParamTest,
       signin::MultiloginParameters params(
           gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
           accounts_to_send);
-      EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+      EXPECT_CALL(*GetMockReconcilor(),
+                  PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
       break;
     }
     case signin::AccountConsistencyMethod::kDice: {
       signin::MultiloginParameters params(
           gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
           accounts_to_send);
-      EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+      EXPECT_CALL(*GetMockReconcilor(),
+                  PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
       break;
     }
     case signin::AccountConsistencyMethod::kDisabled:
@@ -2696,7 +2721,8 @@ TEST_F(AccountReconcilorMirrorTest,
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -2729,7 +2755,8 @@ TEST_F(AccountReconcilorMirrorTest, NoLoopWithBadPrimary) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   // The primary account is in auth error, so it is not in the cookie.
   signin::SetListAccountsResponseOneAccountWithParams(
@@ -2795,7 +2822,8 @@ TEST_F(AccountReconcilorMirrorTest, WontMergeAccountsWithError) {
   const signin::MultiloginParameters params(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -2844,9 +2872,11 @@ TEST_F(AccountReconcilorMirrorTest,
   // The second call should be when the reconcilor discovers the error in the
   // second account and then retries reconciliation with just the first account.
   EXPECT_CALL(*GetMockReconcilor(),
-              PerformSetCookiesAction(params_with_both_accounts));
+              PerformSetCookiesAction(params_with_both_accounts,
+                                      /*is_cookie_upgrade=*/false));
   EXPECT_CALL(*GetMockReconcilor(),
-              PerformSetCookiesAction(params_with_primary_account));
+              PerformSetCookiesAction(params_with_primary_account,
+                                      /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* const reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -2970,7 +3000,8 @@ TEST_F(AccountReconcilorTest, ForcedReconcileTriggerShouldNotCallListAccounts) {
   // called.
   std::vector<CoreAccountId> accounts_to_send = {account_id};
   const signin::MultiloginParameters params(multilogin_mode, accounts_to_send);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -3009,7 +3040,8 @@ TEST_F(AccountReconcilorTest, ForcedReconcileTriggerShouldNotResultInNoop) {
   const signin::MultiloginParameters params(multilogin_mode, accounts_to_send);
   // `PerformSetCookiesAction()` should be called, despite the cookie jar having
   // the same account(s) as Chrome.
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  EXPECT_CALL(*GetMockReconcilor(),
+              PerformSetCookiesAction(params, /*is_cookie_upgrade=*/false));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
@@ -3075,7 +3107,7 @@ TEST_F(AccountReconcilorTest, MultiloginLogout) {
   // Logout call to Gaia.
   EXPECT_CALL(*reconcilor, PerformLogoutAllAccountsAction());
   // No multilogin call.
-  EXPECT_CALL(*reconcilor, PerformSetCookiesAction(testing::_)).Times(0);
+  EXPECT_CALL(*reconcilor, PerformSetCookiesAction).Times(0);
 
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -3190,7 +3222,8 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
     AccountReconcilor* reconcilor = GetMockReconcilor();
     for (size_t i = 0; i < number_of_requests; ++i) {
       EXPECT_CALL(*GetMockReconcilor(),
-                  PerformSetCookiesAction(expected_params));
+                  PerformSetCookiesAction(expected_params,
+                                          /*is_cookie_upgrade=*/false));
       ASSERT_FALSE(reconcilor->is_reconcile_started_);
       reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
       base::RunLoop().RunUntilIdle();
@@ -3337,7 +3370,7 @@ TEST_F(AccountReconcilorThrottlerTest, NewRequestParamsPasses) {
 
   // Trigger different params.
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_));
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction);
   identity_test_env()->MakeAccountAvailable(kFakeEmail2);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -3504,7 +3537,7 @@ TEST_F(AccountReconcilorTest,
 
   // Set standard sessions fetched to empty.
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->OnDeviceBoundSessionsFetched({});
+  reconcilor->OnDeviceBoundSessionsFetched(std::nullopt, {});
 
   // Set cookie jar containing the same account.
   signin::SetListAccountsResponseOneAccount(
@@ -3559,11 +3592,12 @@ TEST_F(AccountReconcilorTest, NeedsCookieBindingUpgradeTriggersUpgrade) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
 
   // Feed empty sessions (simulating prefetch returned no sessions).
-  reconcilor->OnDeviceBoundSessionsFetched({});
+  reconcilor->OnDeviceBoundSessionsFetched(std::nullopt, {});
 
-  // Verify that NeedsCookieBindingUpgrade returns true because no sidts_session
-  // exists.
-  EXPECT_TRUE(reconcilor->NeedsCookieBindingUpgrade());
+  // Verify that NeedsCookieBindingUpgrade returns kNeedsUpgrade because no
+  // sidts_session exists.
+  EXPECT_EQ(reconcilor->NeedsCookieBindingUpgrade(),
+            AccountReconcilor::CookieBindingUpgradeStatus::kNeedsUpgrade);
 }
 
 TEST_F(AccountReconcilorTest,
@@ -3592,11 +3626,12 @@ TEST_F(AccountReconcilorTest,
   sessions.emplace_back(
       net::SchemefulSite(GaiaUrls::GetInstance()->secure_google_url()),
       net::device_bound_sessions::SessionKey::Id("sidts_session"));
-  reconcilor->OnDeviceBoundSessionsFetched(sessions);
+  reconcilor->OnDeviceBoundSessionsFetched(std::nullopt, sessions);
 
-  // Verify that NeedsCookieBindingUpgrade returns false since standard session
-  // exists.
-  EXPECT_FALSE(reconcilor->NeedsCookieBindingUpgrade());
+  // Verify that NeedsCookieBindingUpgrade returns kHasStandardSession since
+  // standard session exists.
+  EXPECT_EQ(reconcilor->NeedsCookieBindingUpgrade(),
+            AccountReconcilor::CookieBindingUpgradeStatus::kHasStandardSession);
 }
 
 TEST_F(AccountReconcilorTest,
@@ -3635,10 +3670,409 @@ TEST_F(AccountReconcilorTest,
   AccountReconcilor* reconcilor = GetMockReconcilor();
 
   // Feed empty standard sessions.
-  reconcilor->OnDeviceBoundSessionsFetched({});
+  reconcilor->OnDeviceBoundSessionsFetched(std::nullopt, {});
 
-  // Verify that NeedsCookieBindingUpgrade returns false since prototype session
-  // exists.
-  EXPECT_FALSE(reconcilor->NeedsCookieBindingUpgrade());
+  // Verify that NeedsCookieBindingUpgrade returns kHasPrototypeSession since
+  // prototype session exists.
+  EXPECT_EQ(
+      reconcilor->NeedsCookieBindingUpgrade(),
+      AccountReconcilor::CookieBindingUpgradeStatus::kHasPrototypeSession);
+}
+
+TEST_F(AccountReconcilorTest,
+       CookieBindingUpgradeStatusMetricsFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableCookieBindingCookieUpgrade);
+  base::HistogramTester tester;
+
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+  // Make primary account available.
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+  run_loop.Run();
+
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  SimulateSetAccountsInCookieCompleted(
+      reconcilor, accounts_to_send,
+      signin::SetAccountsInCookieResult::kSuccess);
+
+  // Update cookies in IdentityManager. This will trigger a no-op reconciliation
+  // run.
+  identity_test_env()->SetCookieAccounts(
+      {{account_info.email, account_info.gaia}});
+
+  EXPECT_EQ(reconcilor->GetState(), AccountReconcilorState::kOk);
+
+  tester.ExpectUniqueSample("Signin.CookieBinding.NeedsUpgradeStatus",
+                            /*kFeatureDisabled=*/1, 1);
+}
+
+TEST_F(AccountReconcilorTest, CookieBindingUpgradeStatusMetricsNoWrappedKey) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kDeviceBoundSessions,
+                                 switches::kEnableCookieBindingCookieUpgrade},
+                                {});
+  base::HistogramTester tester;
+
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+  // Make primary account available WITHOUT wrapped key.
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+  run_loop.Run();
+
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  SimulateSetAccountsInCookieCompleted(
+      reconcilor, accounts_to_send,
+      signin::SetAccountsInCookieResult::kSuccess);
+
+  // Update cookies in IdentityManager. This will trigger a no-op reconciliation
+  // run.
+  identity_test_env()->SetCookieAccounts(
+      {{account_info.email, account_info.gaia}});
+
+  EXPECT_EQ(reconcilor->GetState(), AccountReconcilorState::kOk);
+
+  tester.ExpectUniqueSample("Signin.CookieBinding.NeedsUpgradeStatus",
+                            /*kNoWrappedKey=*/2, 1);
+}
+
+TEST_F(AccountReconcilorTest, CookieBindingUpgradeStatusMetricsNeedsUpgrade) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kDeviceBoundSessions,
+                                 switches::kEnableCookieBindingCookieUpgrade},
+                                {});
+  base::HistogramTester tester;
+
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  // Set list accounts response first.
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+
+  // Make primary account available WITH wrapped key.
+  auto builder = identity_test_env()->CreateAccountAvailabilityOptionsBuilder();
+  builder.AsPrimary(signin::ConsentLevel::kSignin)
+      .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+          /*wrapped_binding_key=*/{1, 2, 3, 4},
+          /*mtls_token_binding=*/false));
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(builder.Build(kFakeEmail));
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
+  network::MockDeviceBoundSessionManager mock_session_manager;
+  test_signin_client()->set_device_bound_session_manager(&mock_session_manager);
+  network::mojom::DeviceBoundSessionManager::GetAllSessionsCallback callback;
+  EXPECT_CALL(mock_session_manager, GetAllSessions)
+      .WillOnce(SaveArgByMove<0>(&callback));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+
+  base::RunLoop run_loop;
+  // Reconcilor will attempt to upgrade, so we must set expectation and call the
+  // real implementation.
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction)
+      .WillOnce([reconcilor, &run_loop](
+                    const signin::MultiloginParameters& parameters,
+                    bool is_cookie_upgrade) {
+        reconcilor->AccountReconcilor::PerformSetCookiesAction(
+            parameters, is_cookie_upgrade);
+        run_loop.Quit();
+      });
+
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+
+  // Deferral should be logged to true since DBSC sessions are not fetched yet.
+  tester.ExpectUniqueSample(
+      "Signin.CookieBinding.UpgradeReconciliationDeferredOnStartup", true, 1);
+
+  // Complete session fetch.
+  std::move(callback).Run({});
+  run_loop.Run();
+
+  // Simulate completion of multilogin request to log the duration.
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  SimulateSetAccountsInCookieCompleted(
+      reconcilor, accounts_to_send, signin::SetAccountsInCookieResult::kSuccess,
+      base::TimeTicks::Now());
+
+  // Update cookies in IdentityManager. This will trigger a no-op reconciliation
+  // run.
+  identity_test_env()->SetCookieAccounts(
+      {{account_info.email, account_info.gaia}});
+
+  EXPECT_EQ(reconcilor->GetState(), AccountReconcilorState::kOk);
+
+  tester.ExpectUniqueSample("Signin.CookieBinding.NeedsUpgradeStatus",
+                            /*kNeedsUpgrade=*/6, 1);
+  tester.ExpectTotalCount("Signin.CookieBinding.UpgradeSessionFetchDuration",
+                          1);
+  tester.ExpectTotalCount("Signin.CookieBinding.UpgradeOAuthMultiloginDuration",
+                          1);
+}
+
+TEST_F(AccountReconcilorTest,
+       CookieBindingUpgradeStatusMetricsHasStandardSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kDeviceBoundSessions,
+                                 switches::kEnableCookieBindingCookieUpgrade},
+                                {});
+  base::HistogramTester tester;
+
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  // Set list accounts response first.
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+
+  auto builder = identity_test_env()->CreateAccountAvailabilityOptionsBuilder();
+  builder.AsPrimary(signin::ConsentLevel::kSignin)
+      .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+          /*wrapped_binding_key=*/{1, 2, 3, 4},
+          /*mtls_token_binding=*/false));
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(builder.Build(kFakeEmail));
+
+  network::MockDeviceBoundSessionManager mock_session_manager;
+  test_signin_client()->set_device_bound_session_manager(&mock_session_manager);
+  network::mojom::DeviceBoundSessionManager::GetAllSessionsCallback callback;
+  EXPECT_CALL(mock_session_manager, GetAllSessions)
+      .WillOnce(SaveArgByMove<0>(&callback));
+
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+
+  // Reconcilor will attempt to reconcile, so we must set expectation.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+
+  // Deferral should be logged to true since DBSC sessions are not fetched yet.
+  tester.ExpectUniqueSample(
+      "Signin.CookieBinding.UpgradeReconciliationDeferredOnStartup", true, 1);
+
+  // Simulate standard session already fetched before StartReconcile completes.
+  std::vector<net::device_bound_sessions::SessionKey> sessions;
+  sessions.emplace_back(
+      net::SchemefulSite(GaiaUrls::GetInstance()->secure_google_url()),
+      net::device_bound_sessions::SessionKey::Id("sidts_session"));
+
+  std::move(callback).Run(sessions);
+  run_loop.Run();
+
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  SimulateSetAccountsInCookieCompleted(
+      reconcilor, accounts_to_send,
+      signin::SetAccountsInCookieResult::kSuccess);
+
+  // Update cookies in IdentityManager. This will trigger a no-op reconciliation
+  // run.
+  identity_test_env()->SetCookieAccounts(
+      {{account_info.email, account_info.gaia}});
+
+  EXPECT_EQ(reconcilor->GetState(), AccountReconcilorState::kOk);
+
+  tester.ExpectUniqueSample("Signin.CookieBinding.NeedsUpgradeStatus",
+                            /*kHasStandardSession=*/3, 1);
+}
+
+TEST_F(AccountReconcilorTest,
+       CookieBindingUpgradeStatusMetricsUpgradeNotDeferred) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kDeviceBoundSessions,
+                                 switches::kEnableCookieBindingCookieUpgrade},
+                                {});
+  base::HistogramTester tester;
+
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  // Set list accounts response first.
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+
+  auto builder = identity_test_env()->CreateAccountAvailabilityOptionsBuilder();
+  builder.AsPrimary(signin::ConsentLevel::kSignin)
+      .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+          /*wrapped_binding_key=*/{1, 2, 3, 4},
+          /*mtls_token_binding=*/false));
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(builder.Build(kFakeEmail));
+
+  network::MockDeviceBoundSessionManager mock_session_manager;
+  test_signin_client()->set_device_bound_session_manager(&mock_session_manager);
+  network::mojom::DeviceBoundSessionManager::GetAllSessionsCallback callback;
+  EXPECT_CALL(mock_session_manager, GetAllSessions)
+      .WillOnce(SaveArgByMove<0>(&callback));
+
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+
+  // Complete session fetch BEFORE starting reconciliation.
+  std::move(callback).Run({});
+
+  // Reconcilor will attempt to reconcile, so we must set expectation.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+  run_loop.Run();
+
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  SimulateSetAccountsInCookieCompleted(
+      reconcilor, accounts_to_send,
+      signin::SetAccountsInCookieResult::kSuccess);
+
+  // Update cookies in IdentityManager. This will trigger a no-op reconciliation
+  // run.
+  identity_test_env()->SetCookieAccounts(
+      {{account_info.email, account_info.gaia}});
+
+  EXPECT_EQ(reconcilor->GetState(), AccountReconcilorState::kOk);
+
+  // Deferral should be logged to false since DBSC sessions were already
+  // fetched.
+  tester.ExpectUniqueSample(
+      "Signin.CookieBinding.UpgradeReconciliationDeferredOnStartup", false, 1);
+}
+
+TEST_F(AccountReconcilorTest, GetGaiaApiSourceNormalReconcileParameter) {
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+
+  // Mock GetCheckConnectionInfo response to allow OAML flow to proceed.
+  test_url_loader_factory_.AddResponse(
+      GaiaUrls::GetInstance()
+          ->GetCheckConnectionInfoURLWithSource("ChromiumBrowser")
+          .spec(),
+      "cc_result");
+
+  // Enable automatic token issuance so multilogin helper can get tokens and
+  // proceed.
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
+  auto spy_delegate = std::make_unique<SpyReconcilorDelegate>();
+  auto reconcilor = std::make_unique<AccountReconcilor>(
+      identity_test_env()->identity_manager(), test_signin_client(),
+      std::move(spy_delegate));
+  reconcilor->Initialize(/*start_reconcile_if_tokens_available=*/false);
+
+  // Set up interceptor to quit run loop when multilogin request is sent.
+  base::RunLoop run_loop;
+  test_url_loader_factory_.SetInterceptor(base::BindRepeating(
+      [](base::RepeatingClosure quit_closure,
+         const network::ResourceRequest& request) {
+        if (request.url.path() == "/oauth/multilogin") {
+          quit_closure.Run();
+        }
+      },
+      run_loop.QuitClosure()));
+
+  // Trigger reconciliation.
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+  run_loop.Run();
+
+  // Verify that the Multilogin request was sent with the correct normal source.
+  GURL multilogin_url;
+  for (const auto& pending : *test_url_loader_factory_.pending_requests()) {
+    if (pending.request.url.path() == "/oauth/multilogin") {
+      multilogin_url = pending.request.url;
+      break;
+    }
+  }
+  ASSERT_FALSE(multilogin_url.is_empty());
+  EXPECT_TRUE(multilogin_url.query().find(
+                  "source=ChromiumAccountReconcilorDice") != std::string::npos);
+
+  reconcilor->Shutdown();
+}
+
+TEST_F(AccountReconcilorTest, GetGaiaApiSourceCookieUpgradeParameter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kDeviceBoundSessions,
+                                 switches::kEnableCookieBindingCookieUpgrade},
+                                {});
+
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+
+  // Mock GetCheckConnectionInfo response to allow OAML flow to proceed.
+  test_url_loader_factory_.AddResponse(
+      GaiaUrls::GetInstance()
+          ->GetCheckConnectionInfoURLWithSource("ChromiumBrowser")
+          .spec(),
+      "cc_result");
+
+  // Enable automatic token issuance so multilogin helper can get tokens and
+  // proceed.
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+  // Make primary account available with a bound key.
+  auto builder = identity_test_env()->CreateAccountAvailabilityOptionsBuilder();
+  builder.AsPrimary(signin::ConsentLevel::kSignin)
+      .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+          /*wrapped_binding_key=*/{1, 2, 3, 4},
+          /*mtls_token_binding=*/false));
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(builder.Build(kFakeEmail));
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
+  auto spy_delegate = std::make_unique<SpyReconcilorDelegate>();
+  auto reconcilor = std::make_unique<AccountReconcilor>(
+      identity_test_env()->identity_manager(), test_signin_client(),
+      std::move(spy_delegate));
+  reconcilor->Initialize(/*start_reconcile_if_tokens_available=*/false);
+
+  // Feed empty DBSC sessions so that upgrade preconditions are met.
+  reconcilor->OnDeviceBoundSessionsFetched(std::nullopt, {});
+
+  // Set up interceptor to quit run loop when multilogin request is sent.
+  base::RunLoop run_loop;
+  test_url_loader_factory_.SetInterceptor(base::BindRepeating(
+      [](base::RepeatingClosure quit_closure,
+         const network::ResourceRequest& request) {
+        if (request.url.path() == "/oauth/multilogin") {
+          quit_closure.Run();
+        }
+      },
+      run_loop.QuitClosure()));
+
+  // Trigger reconciliation.
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+  run_loop.Run();
+
+  // Verify that the Multilogin request was sent with the correct upgrade
+  // source.
+  GURL multilogin_url;
+  for (const auto& pending : *test_url_loader_factory_.pending_requests()) {
+    if (pending.request.url.path() == "/oauth/multilogin") {
+      multilogin_url = pending.request.url;
+      break;
+    }
+  }
+  ASSERT_FALSE(multilogin_url.is_empty());
+  EXPECT_TRUE(multilogin_url.query().find(
+                  "source=ChromiumAccountReconcilorDiceCookieUpgrade") !=
+              std::string::npos);
+
+  reconcilor->Shutdown();
 }
 #endif
