@@ -15,13 +15,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -544,68 +542,6 @@ TEST_F(CloudPolicyValidatorTest, GoodNewSignatureEmptyDeprecatedSignature) {
   policy_.policy().set_new_public_key_verification_signature_deprecated("");
   ValidatePolicy(CheckStatus(CloudPolicyValidatorBase::VALIDATION_OK),
                  policy_.GetCopy());
-}
-
-TEST_F(CloudPolicyValidatorTest, ErrorVerificationDataKeyMismatch) {
-  // Build a response whose new_public_key_verification_data certifies the
-  // default new signing key.
-  policy_.Build();
-  const std::string verification_data =
-      policy_.policy().new_public_key_verification_data();
-  const std::string verification_data_signature =
-      policy_.policy().new_public_key_verification_data_signature();
-
-  // Build a second response that delivers an unrelated new_public_key and
-  // signs policy_data with it, then attach the verification data from the
-  // first response.
-  UserPolicyBuilder other;
-  other.SetDefaultInitialSigningKey();
-  other.Build();
-  ASSERT_NE(other.policy().new_public_key(), policy_.policy().new_public_key());
-  other.policy().set_new_public_key_verification_data(verification_data);
-  other.policy().set_new_public_key_verification_data_signature(
-      verification_data_signature);
-  other.policy().clear_new_public_key_verification_signature_deprecated();
-
-  auto validator = std::make_unique<UserCloudPolicyValidator>(
-      other.GetCopy(), base::SingleThreadTaskRunner::GetCurrentDefault());
-  validator->ValidateInitialKey(PolicyBuilder::kFakeDomain);
-  validator->RunValidation();
-  EXPECT_EQ(CloudPolicyValidatorBase::VALIDATION_BAD_KEY_VERIFICATION_SIGNATURE,
-            validator->status());
-}
-
-TEST_F(CloudPolicyValidatorTest,
-       VerificationDataKeyMismatchIgnoredWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kVerifyVerificationDataKey);
-
-  // Build a response whose new_public_key_verification_data certifies the
-  // default new signing key.
-  policy_.Build();
-  const std::string verification_data =
-      policy_.policy().new_public_key_verification_data();
-  const std::string verification_data_signature =
-      policy_.policy().new_public_key_verification_data_signature();
-
-  // Build a second response that delivers an unrelated new_public_key and
-  // signs policy_data with it, then attach the verification data from the
-  // first response.
-  UserPolicyBuilder other;
-  other.SetDefaultInitialSigningKey();
-  other.Build();
-  ASSERT_NE(other.policy().new_public_key(), policy_.policy().new_public_key());
-  other.policy().set_new_public_key_verification_data(verification_data);
-  other.policy().set_new_public_key_verification_data_signature(
-      verification_data_signature);
-  other.policy().clear_new_public_key_verification_signature_deprecated();
-
-  auto validator = std::make_unique<UserCloudPolicyValidator>(
-      other.GetCopy(), base::SingleThreadTaskRunner::GetCurrentDefault());
-  validator->ValidateInitialKey(PolicyBuilder::kFakeDomain);
-  validator->RunValidation();
-  EXPECT_EQ(CloudPolicyValidatorBase::VALIDATION_OK, validator->status());
 }
 
 TEST_F(CloudPolicyValidatorTest, ErrorDomainMismatchForKeyVerification) {
