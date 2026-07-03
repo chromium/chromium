@@ -1154,16 +1154,26 @@ IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest,
   // Initially zero spares.
   ASSERT_EQ(spare_manager.GetSpares().size(), 0u);
 
-  // Create 2 spares. First one created manually, second one started
-  // automatically.
+  // Create the first spare manually. Keep the browser non-idle so the first
+  // spare becoming ready cannot trigger automatic extra-spare creation before
+  // the one-spare CleanupExtraSpares() check below.
+  spare_manager.SetIsBrowserIdleForTesting(false);
   spare_manager.WarmupSpare(browser_context());
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  WaitForNextSpareReady();
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-  WaitForNextSpareReady();
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-
   RenderProcessHost* first_spare = spare_manager.GetSpares()[0];
+
+  // CleanupExtraSpares() should be a no-op when there are no extra spares.
+  spare_manager.CleanupExtraSpares(std::nullopt);
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  ASSERT_EQ(spare_manager.GetSpares()[0], first_spare);
+
+  // A second spare is started automatically after the first one is ready, if
+  // the browser is idle.
+  spare_manager.SetIsBrowserIdleForTesting(true);
+  WaitForNextSpareReady();
+  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
+  WaitForNextSpareReady();
+  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
 
   spare_manager.CleanupExtraSpares(std::nullopt);
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
