@@ -12,7 +12,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,8 +21,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +35,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class MerchantTrustSignalsEventStorageTest {
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     private static final String KEY_1 = "www.amazon.com";
     private static final String KEY_2 = "www.costco.com";
     private static final String KEY_3 = "www.cvs.com";
@@ -55,6 +52,7 @@ public class MerchantTrustSignalsEventStorageTest {
 
     @Before
     public void setUp() throws Exception {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStorage =
