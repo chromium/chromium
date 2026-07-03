@@ -45,8 +45,7 @@
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [
-      "no-fallback",
-      "fail-on-bad-deps"
+      "no-fallback"
     ],
     "fail_if_reapi_used": true,
     "profile_mode": "local",

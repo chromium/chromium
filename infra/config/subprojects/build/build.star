@@ -205,7 +205,6 @@ cq_build_perf_builder(
         category = "build perf|linux",
         short_name = "siso",
     ),
-    siso_experiments = ["no-fallback", "fail-on-bad-deps"],
     siso_profile_mode = "local",
 )
 
@@ -482,7 +481,6 @@ This builder measures build performance for Linux developer builds, by simulatin
         short_name = "dev",
     ),
     reclient_jobs = 5120,
-    siso_experiments = ["no-fallback", "fail-on-bad-deps"],
     siso_profile_mode = "local",
     # Setting -1 makes siso use the default remote concurrency.
     siso_remote_jobs = -1,
@@ -640,7 +638,6 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     notifies = ["Chromium Build Time Watcher"],
-    siso_experiments = ["no-fallback", "fail-on-bad-deps"],
     siso_fail_if_reapi_used = True,
     siso_profile_mode = "local",
     siso_project = siso.project.DEFAULT_UNTRUSTED,

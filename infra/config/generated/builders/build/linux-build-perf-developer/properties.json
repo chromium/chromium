@@ -53,8 +53,7 @@
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [
-      "no-fallback",
-      "fail-on-bad-deps"
+      "no-fallback"
     ],
     "profile_mode": "local",
     "project": "rbe-chromium-untrusted",
