@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -69,11 +68,20 @@ public class MessageTest {
 
     @Before
     public void setUp() {
+        String url =
+                "data:text/html,<!DOCTYPE html><html><body style='margin: 0; display: flex;"
+                        + " justify-content: center;'><button id='test_button'"
+                        + " style='height: 100px; width: 100px;'>Button</button>"
+                        + "</body></html>";
         mPage =
-                mActivityTestRule.startOnUrl(
-                        "data:text/html,<!DOCTYPE html><html><body><button id='test_button'"
-                                + " style='height: 100px; width: 100px;'>Button</button>"
-                                + "</body></html>");
+                mActivityTestRule
+                        .startOnUrlTo(url)
+                        .withTimeout(10000L)
+                        .arriveAt(
+                                WebPageStation.newBuilder()
+                                        .withEntryPoint()
+                                        .withExpectedUrlSubstring(url)
+                                        .build());
         mActivity = mPage.getActivity();
         mMessageDispatcher =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -105,10 +113,9 @@ public class MessageTest {
     /** Test that the message container occludes the web contents. */
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/527658185")
-    // TODO(crbug.com/514848255): Failing on other larger form factors.
-    @Restriction(DeviceFormFactor.PHONE)
+    // TODO(crbug.com/514848255): Failing on desktop.
     @Features.EnableFeatures({AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS})
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     public void testMessageContainerOccludesWebContents() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
         PropertyModel model =
