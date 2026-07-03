@@ -159,7 +159,7 @@ bool IsStandaloneSuggestionType(SuggestionType type) {
   NOTREACHED();
 }
 
-content::RenderFrameHost* GetRenderFrameHost(
+content::RenderFrameHost* GetRenderFrameHost_DoNotUse(
     AutofillSuggestionDelegate& delegate) {
   return std::visit(
       absl::Overload{
@@ -172,7 +172,7 @@ content::RenderFrameHost* GetRenderFrameHost(
                        driver)
                 ->render_frame_host();
           }},
-      delegate.GetDriver());
+      delegate.GetDriver_DoNotUse());
 }
 
 bool IsAncestorOf(content::RenderFrameHost* ancestor,

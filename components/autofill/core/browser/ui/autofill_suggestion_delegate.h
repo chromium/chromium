@@ -55,9 +55,10 @@ class AutofillSuggestionDelegate {
   // Returns true if a search is currently in progress.
   virtual bool IsSearching() const = 0;
 
+  // Will be removed together with kAutofillSimplifyFocusCheck.
   virtual std::variant<AutofillDriver*,
                        password_manager::PasswordManagerDriver*>
-  GetDriver() = 0;
+  GetDriver_DoNotUse() = 0;
 
   // Called when Autofill suggestions are shown. On Desktop, where the
   // suggestions support sub-popups, only the root popup triggers this call.

@@ -325,7 +325,7 @@ void AutofillPopupControllerImpl::Show(
         Hide(SuggestionHidingReason::kNoFrameHasFocus);
         return;
       }
-      rfh = delegate_ ? GetRenderFrameHost(*delegate_) : nullptr;
+      rfh = delegate_ ? GetRenderFrameHost_DoNotUse(*delegate_) : nullptr;
     }
   }
 

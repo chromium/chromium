@@ -189,7 +189,7 @@ void PasswordManualFallbackFlow::RunFlow(
 }
 
 std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
-PasswordManualFallbackFlow::GetDriver() {
+PasswordManualFallbackFlow::GetDriver_DoNotUse() {
   return password_manager_driver_.get();
 }
 

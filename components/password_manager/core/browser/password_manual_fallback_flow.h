@@ -70,8 +70,8 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
                base::i18n::TextDirection text_direction) override;
 
   // AutofillSuggestionDelegate:
-  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
-      override;
+  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
+  GetDriver_DoNotUse() override;
   void OnSuggestionsShown(
       base::span<const autofill::Suggestion> suggestions) override;
   void OnSuggestionsHidden(autofill::SuggestionHidingReason reason) override;

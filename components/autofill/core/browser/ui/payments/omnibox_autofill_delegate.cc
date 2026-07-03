@@ -273,7 +273,7 @@ bool OmniboxAutofillDelegate::IsSearching() const {
 }
 
 std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-OmniboxAutofillDelegate::GetDriver() {
+OmniboxAutofillDelegate::GetDriver_DoNotUse() {
   auto* manager = client_->GetAutofillManagerForPrimaryMainFrame();
   if (manager) {
     return &manager->driver();

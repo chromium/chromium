@@ -77,8 +77,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   GetWebauthnSignInWithAnotherDeviceSuggestion() const override;
 
   // AutofillSuggestionDelegate implementation.
-  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
-      override;
+  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
+  GetDriver_DoNotUse() override;
   void OnSuggestionsShown(
       base::span<const autofill::Suggestion> suggestions) override;
   void OnSuggestionsHidden(autofill::SuggestionHidingReason reason) override;

@@ -76,7 +76,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   // AutofillSuggestionDelegate implementation.
   std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-  GetDriver() override;
+  GetDriver_DoNotUse() override;
   void OnSuggestionsShown(base::span<const Suggestion> suggestions) override;
   void OnSuggestionsHidden(SuggestionHidingReason reason) override;
   bool OnFilterChanged(const std::u16string& filter) override;

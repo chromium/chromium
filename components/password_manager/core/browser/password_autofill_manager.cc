@@ -243,7 +243,7 @@ PasswordAutofillManager::GetWebauthnSignInWithAnotherDeviceSuggestion() const {
 }
 
 std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
-PasswordAutofillManager::GetDriver() {
+PasswordAutofillManager::GetDriver_DoNotUse() {
   return password_manager_driver_.get();
 }
 

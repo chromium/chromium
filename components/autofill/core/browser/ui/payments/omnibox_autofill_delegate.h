@@ -51,7 +51,7 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   bool OnSearchSubmitted(const std::u16string& filter) override;
   bool IsSearching() const override;
   std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-  GetDriver() override;
+  GetDriver_DoNotUse() override;
   void OnSuggestionsShown(base::span<const Suggestion> suggestions) override;
   void OnSuggestionsHidden(SuggestionHidingReason reason) override;
   void DidSelectSuggestion(const Suggestion& suggestion) override;

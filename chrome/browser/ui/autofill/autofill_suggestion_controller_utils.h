@@ -49,12 +49,13 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
 // all non-footer suggestions and false for most footer suggestions.
 bool IsStandaloneSuggestionType(SuggestionType type);
 
-// Returns the RenderFrameHost` corresponding to an
+// Will be removed together with kAutofillSimplifyFocusCheck.
+// Returns the `RenderFrameHost` corresponding to an
 // `AutofillSuggestionDelegate`.
-content::RenderFrameHost* GetRenderFrameHost(
+content::RenderFrameHost* GetRenderFrameHost_DoNotUse(
     AutofillSuggestionDelegate& delegate);
 
-// Returns whether `descendendant` is a `descendant` of `ancestor`.
+// Returns true if `ancestor` is an `ancestor` of `descendant`.
 bool IsAncestorOf(content::RenderFrameHost* ancestor,
                   content::RenderFrameHost* descendant);
 

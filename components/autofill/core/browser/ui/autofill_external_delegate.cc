@@ -581,7 +581,7 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
 }
 
 std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-AutofillExternalDelegate::GetDriver() {
+AutofillExternalDelegate::GetDriver_DoNotUse() {
   return &manager_->driver();
 }
 
