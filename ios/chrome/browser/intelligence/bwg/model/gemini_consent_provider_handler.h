@@ -20,6 +20,9 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects the handler from the PrefService and stops observing.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_CONSENT_PROVIDER_HANDLER_H_

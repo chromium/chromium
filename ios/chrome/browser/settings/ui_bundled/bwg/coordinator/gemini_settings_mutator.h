@@ -23,6 +23,12 @@ class GURL;
 // Sets the Camera Permission pref value.
 - (void)setCameraPermissionPref:(BOOL)value;
 
+// Sets the Closed Captioning pref value.
+- (void)setClosedCaptioningPref:(BOOL)value;
+
+// Sets the Microphone Permission pref value.
+- (void)setMicrophonePref:(BOOL)value;
+
 // Sets the Page Content Sharing pref value.
 - (void)setPageContentSharingPref:(BOOL)value;
 

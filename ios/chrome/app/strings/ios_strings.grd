@@ -3451,6 +3451,24 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_SETTINGS_CAMERA_TITLE" desc="Title for settings within Gemini related to the camera. Used as a page title and a settings row title.">
         Camera
       </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_CAPTIONS_FOOTER_TEXT" desc="Footer text of the Closed Captioning toggle in Gemini settings.">
+        Show closed captions when using Gemini Live
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_CAPTIONS_TITLE" desc="Title of the Closed Captioning toggle in Gemini settings.">
+        Closed Captioning
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_MIC_FOOTER_TEXT" desc="Footer text of the Microphone toggle in Gemini settings.">
+        Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it's on). Your data is not used to improve generative AI models
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_MIC_TITLE" desc="Title of the Microphone toggle in Gemini settings.">
+        Microphone
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_PERMISSIONS_HEADER" desc="Header text for the Permissions section in Gemini settings.">
+        Permissions
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_PREFERENCES_HEADER" desc="Header text for the Preferences section in Gemini settings.">
+        Preferences
+      </message>
       <message name="IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR" desc="Snackbar message shown when the user tries to use Gemini but is not signed in.">
         You need to sign in to use Gemini
       </message>
