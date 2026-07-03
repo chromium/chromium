@@ -458,8 +458,14 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
   // (visibility, bounds, tucking) is owned by DocumentPipHost.
   widget_observation_.Observe(widget);
 
+  // Seed the origin/title now. This is safe before the widget is realized: it
+  // only sets label text and a ColorId-based security icon (whose color is
+  // resolved lazily). The content-setting icons are seeded later in
+  // AddedToWidget() instead, because refreshing an already-active icon (e.g.
+  // camera in use when entering auto-PiP) paints it via GetForegroundColor() ->
+  // GetColorProvider(), which is null until this view is attached to the
+  // Widget.
   UpdateOriginAndSecurity();
-  UpdateContentSettingsIcons();
 }
 
 DocumentPipFrameView::~DocumentPipFrameView() {
@@ -581,6 +587,14 @@ void DocumentPipFrameView::AddedToWidget() {
   // widget. Teardown is intentionally handled in OnWidgetDestroying rather
   // than in a symmetric RemovedFromWidget; see the comment there.
   window_event_observer_ = std::make_unique<WindowEventObserver>(this);
+
+  // Seed the content-setting icons now that the Widget (and thus a
+  // ColorProvider) exists. This is intentionally deferred from the ctor:
+  // refreshing an already-visible icon paints it through
+  // GetForegroundColor() -> GetColorProvider(), which is null before attach and
+  // would crash when an icon is active at creation time (e.g. camera in use
+  // when entering auto-PiP).
+  UpdateContentSettingsIcons();
 
   // If the auto-PiP overlay is set, post a task to show it rather than showing
   // it inline, mirroring PictureInPictureBrowserFrameView::AddedToWidget. The
