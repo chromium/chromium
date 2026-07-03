@@ -6,7 +6,9 @@
 
 #import <CoreImage/CoreImage.h>
 
-UIImage* GenerateQRCode(NSData* data, CGFloat imageLength) {
+UIImage* GenerateQRCode(NSData* data,
+                        CGFloat imageLength,
+                        CGFloat display_scale) {
   // Generate the QR Code with the given data.
   CIFilter* qrFilter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
   [qrFilter setValue:data forKey:@"inputMessage"];
@@ -14,12 +16,12 @@ UIImage* GenerateQRCode(NSData* data, CGFloat imageLength) {
   CIImage* ciImage = qrFilter.outputImage;
 
   // Scale the square image.
-  imageLength *= [[UIScreen mainScreen] scale];
+  imageLength *= display_scale;
   CGFloat scale = imageLength / ciImage.extent.size.width;
   ciImage = [ciImage
       imageByApplyingTransform:CGAffineTransformMakeScale(scale, scale)];
 
   return [UIImage imageWithCIImage:ciImage
-                             scale:[[UIScreen mainScreen] scale]
+                             scale:display_scale
                        orientation:UIImageOrientationUp];
 }

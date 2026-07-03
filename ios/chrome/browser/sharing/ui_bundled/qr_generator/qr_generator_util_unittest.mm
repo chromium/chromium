@@ -13,22 +13,15 @@ class QRGeneratorUtilTest : public PlatformTest {
   QRGeneratorUtilTest() {}
 
  protected:
-  void TearDown() override { [mainScreenPartialMock_ stopMocking]; }
-
   void RunValidSizeTest(CGFloat fakeScale) {
-    // Mock mainScreen scale.
-    mainScreenPartialMock_ = OCMPartialMock([UIScreen mainScreen]);
-    OCMStub([(UIScreen*)mainScreenPartialMock_ scale]).andReturn(fakeScale);
-
     NSData* qrData = [sampleUrl_ dataUsingEncoding:NSUTF8StringEncoding];
 
-    UIImage* qrImage = GenerateQRCode(qrData, imageSize_);
+    UIImage* qrImage = GenerateQRCode(qrData, imageSize_, fakeScale);
 
     EXPECT_EQ(imageSize_, qrImage.size.width);
     EXPECT_EQ(imageSize_, qrImage.size.height);
   }
 
-  id mainScreenPartialMock_;
   NSString* sampleUrl_ = @"https://google.com/";
   CGFloat imageSize_ = 200.0;
 };
@@ -38,7 +31,7 @@ class QRGeneratorUtilTest : public PlatformTest {
 TEST_F(QRGeneratorUtilTest, DISABLED_GenerateQRCode_ValidData) {
   NSData* qrData = [sampleUrl_ dataUsingEncoding:NSUTF8StringEncoding];
 
-  UIImage* qrImage = GenerateQRCode(qrData, imageSize_);
+  UIImage* qrImage = GenerateQRCode(qrData, imageSize_, 2);
 
   CIDetector* detector = [CIDetector detectorOfType:@"CIDetectorTypeQRCode"
                                             context:nil

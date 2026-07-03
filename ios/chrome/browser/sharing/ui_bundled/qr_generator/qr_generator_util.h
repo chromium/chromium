@@ -9,6 +9,8 @@
 
 // Generate a QR code image for `data` and scaling it to have its height and
 // width equal to `imageLength` in points.
-UIImage* GenerateQRCode(NSData* data, CGFloat imageLength);
+UIImage* GenerateQRCode(NSData* data,
+                        CGFloat imageLength,
+                        CGFloat display_scale);
 
 #endif  // IOS_CHROME_BROWSER_SHARING_UI_BUNDLED_QR_GENERATOR_QR_GENERATOR_UTIL_H_

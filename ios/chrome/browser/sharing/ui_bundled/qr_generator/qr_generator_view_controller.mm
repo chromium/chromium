@@ -199,7 +199,8 @@ constexpr CGFloat kSymbolSize = 22;
 - (UIImage*)createQRCodeImage {
   NSData* urlData =
       [[self.pageURL absoluteString] dataUsingEncoding:NSUTF8StringEncoding];
-  return GenerateQRCode(urlData, kQRCodeImageSize);
+  return GenerateQRCode(urlData, kQRCodeImageSize,
+                        self.traitCollection.displayScale);
 }
 
 // Helper to create the toolbar items.
