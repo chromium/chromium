@@ -5665,6 +5665,25 @@
             ]
         }
     ],
+    "ChromeRefreshTokenBindingUpgrade": [
+        {
+            "platforms": [
+                "windows",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledLiveLaunch",
+                    "params": {
+                        "upgrade-type": "live-launch"
+                    },
+                    "enable_features": [
+                        "EnableChromeRefreshTokenBindingUpgrade"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeWallpaperSearchGlobal": [
         {
             "platforms": [
