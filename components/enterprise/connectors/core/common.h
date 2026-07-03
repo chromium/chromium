@@ -395,7 +395,10 @@ enum class DeepScanAccessPoint {
   // A deep scan was initiated from copying text.
   COPY,
 
-  kMaxValue = COPY,
+  // A deep scan was initiated from a network request.
+  NETWORK_REQUEST,
+
+  kMaxValue = NETWORK_REQUEST,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:DeepScanAccessPoint)
 

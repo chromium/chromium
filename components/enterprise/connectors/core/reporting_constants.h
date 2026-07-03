@@ -84,6 +84,8 @@ inline constexpr char kPagePrintDataTransferEventTrigger[] = "PAGE_PRINT";
 inline constexpr char kUrlVisitedDataTransferEventTrigger[] = "URL_VISITED";
 inline constexpr char kClipboardCopyDataTransferEventTrigger[] =
     "CLIPBOARD_COPY";
+inline constexpr char kNetworkRequestDataTransferEventTrigger[] =
+    "NETWORK_REQUEST";
 inline constexpr char kFileTransferDataTransferEventTrigger[] = "FILE_TRANSFER";
 inline constexpr char kPageLoadDataTransferEventTrigger[] = "PAGE_LOAD";
 inline constexpr char kMutationDataTransferEventTrigger[] = "MUTATION";

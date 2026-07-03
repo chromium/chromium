@@ -614,6 +614,8 @@ DeepScanAccessPoint AccessPointFromRequest(
       return DeepScanAccessPoint::PRINT;
     case FILE_TRANSFER:
       return DeepScanAccessPoint::FILE_TRANSFER;
+    case NETWORK_REQUEST:
+      return DeepScanAccessPoint::NETWORK_REQUEST;
     case ANALYSIS_CONNECTOR_UNSPECIFIED:
       return DeepScanAccessPoint::UPLOAD;
   }

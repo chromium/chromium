@@ -119,6 +119,8 @@ const char* AnalysisConnectorPref(AnalysisConnector connector) {
       return kOnFileAttachedPref;
     case AnalysisConnector::PRINT:
       return kOnPrintPref;
+    case AnalysisConnector::NETWORK_REQUEST:
+      return kOnNetworkRequestPref;
     case AnalysisConnector::FILE_TRANSFER:
 #if BUILDFLAG(IS_CHROMEOS)
       return kOnFileTransferPref;
@@ -140,6 +142,8 @@ const char* AnalysisConnectorScopePref(AnalysisConnector connector) {
       return kOnFileAttachedScopePref;
     case AnalysisConnector::PRINT:
       return kOnPrintScopePref;
+    case AnalysisConnector::NETWORK_REQUEST:
+      return kOnNetworkRequestScopePref;
     case AnalysisConnector::FILE_TRANSFER:
 #if BUILDFLAG(IS_CHROMEOS)
       return kOnFileTransferScopePref;
@@ -473,6 +477,8 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
       return "Actor";
     case DeepScanAccessPoint::COPY:
       return "Copy";
+    case DeepScanAccessPoint::NETWORK_REQUEST:
+      return "NetworkRequest";
   }
   NOTREACHED();
 }

@@ -9,9 +9,10 @@
 namespace enterprise_connectors {
 
 TEST(EnterpriseConnectorsProtoTest, AnalysisConnectorEnum) {
-  EXPECT_EQ(enterprise_connectors::AnalysisConnector_ARRAYSIZE, 7);
+  EXPECT_EQ(enterprise_connectors::AnalysisConnector_ARRAYSIZE, 8);
+  // TODO(crbug.com/493906224): Add NETWORK_REQUEST to the SDK.
   EXPECT_EQ(enterprise_connectors::AnalysisConnector_ARRAYSIZE,
-            content_analysis::sdk::AnalysisConnector_ARRAYSIZE);
+            content_analysis::sdk::AnalysisConnector_ARRAYSIZE + 1);
 
   EXPECT_EQ((int)enterprise_connectors::ANALYSIS_CONNECTOR_UNSPECIFIED,
             (int)content_analysis::sdk::ANALYSIS_CONNECTOR_UNSPECIFIED);
@@ -27,6 +28,9 @@ TEST(EnterpriseConnectorsProtoTest, AnalysisConnectorEnum) {
             (int)content_analysis::sdk::FILE_TRANSFER);
   EXPECT_EQ((int)enterprise_connectors::DATA_COPIED,
             (int)content_analysis::sdk::DATA_COPIED);
+  // TODO(crbug.com/493906224): Add NETWORK_REQUEST to the SDK.
+  // EXPECT_EQ((int)enterprise_connectors::NETWORK_REQUEST,
+  //          (int)content_analysis::sdk::NETWORK_REQUEST);
 }
 
 using ChromiumResult = enterprise_connectors::ContentAnalysisResponse::Result;

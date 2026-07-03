@@ -598,6 +598,7 @@ enum DataTransferEventTrigger {
   PAGE_PRINT = 4;
   URL_VISITED = 6;
   CLIPBOARD_COPY = 7;
+  NETWORK_REQUEST = 11;
 
   // Trigger for file transfers on ChromeOS.
   FILE_TRANSFER = 5;

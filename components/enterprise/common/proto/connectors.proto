@@ -25,6 +25,7 @@ enum AnalysisConnector {
   PRINT = 4;
   FILE_TRANSFER = 5;
   DATA_COPIED = 6;
+  NETWORK_REQUEST = 7;
 }
 
 message ContentMetaData {

@@ -36,6 +36,9 @@ extern const char kOnPrintPref[];
 // Pref that maps to the "OnTextCopiedEnterpriseConnector" policy.
 extern const char kOnTextCopiedPref[];
 
+// Pref that maps to the "OnNetworkRequestEnterpriseConnector" policy.
+extern const char kOnNetworkRequestPref[];
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Pref that maps to the "OnFileTransferEnterpriseConnector" policy.
 extern const char kOnFileTransferPref[];
@@ -57,6 +60,7 @@ extern const char kOnFileDownloadedScopePref[];
 extern const char kOnBulkDataEntryScopePref[];
 extern const char kOnPrintScopePref[];
 extern const char kOnTextCopiedScopePref[];
+extern const char kOnNetworkRequestScopePref[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kOnFileTransferScopePref[];
 #endif

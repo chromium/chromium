@@ -38,6 +38,7 @@ AnalysisConnector AccessPointToEnterpriseConnector(
       return enterprise_connectors::FILE_DOWNLOADED;
     case DeepScanAccessPoint::COPY:
     case DeepScanAccessPoint::PRINT:
+    case DeepScanAccessPoint::NETWORK_REQUEST:
   }
   NOTREACHED();
 }

@@ -81,6 +81,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ClipboardCopy" summary="Content analysis of copied data."/>
   <variant name="File"
       summary="Content analysis of uploaded or downloaded files."/>
+  <variant name="NetworkRequest"
+      summary="Content analysis of network requests."/>
   <variant name="Print" summary="Content analysis of printed pages."/>
   <variant name="Text" summary="Content analysis of pasted text."/>
 </variants>
@@ -94,6 +96,7 @@ chromium-metrics-reviews@google.com.
       summary="Initiated from drag-and-dropping text or 1+ file(s)"/>
   <variant name="FileTransfer"
       summary="Initiated from transferring 1+ file(s) in ChromeOS"/>
+  <variant name="NetworkRequest" summary="Initiated from a network request"/>
   <variant name="Paste" summary="Initiated from pasting text"/>
   <variant name="Print" summary="Initiated from printing a page"/>
   <variant name="Upload" summary="Initiated from uploading 1+ file(s)"/>

@@ -185,6 +185,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadServiceBase {
         case AnalysisConnector::FILE_DOWNLOADED:
         case AnalysisConnector::FILE_TRANSFER:
         case AnalysisConnector::DATA_COPIED:
+        case AnalysisConnector::NETWORK_REQUEST:
           NOTREACHED();
       }
     }

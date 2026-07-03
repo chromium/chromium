@@ -38,6 +38,8 @@ const char kOnPrintPref[] = "enterprise_connectors.on_print";
 
 const char kOnTextCopiedPref[] = "enterprise_connectors.on_text_copied";
 
+const char kOnNetworkRequestPref[] = "enterprise_connectors.on_network_request";
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kOnFileTransferPref[] = "enterprise_connectors.on_file_transfer";
 #endif
@@ -53,6 +55,9 @@ const char kOnBulkDataEntryScopePref[] =
 const char kOnPrintScopePref[] = "enterprise_connectors.scope.on_print";
 const char kOnTextCopiedScopePref[] =
     "enterprise_connectors.scope.on_text_copied";
+const char kOnNetworkRequestScopePref[] =
+    "enterprise_connectors.scope.on_network_request";
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kOnFileTransferScopePref[] =
     "enterprise_connectors.scope.on_file_transfer";

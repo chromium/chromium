@@ -67,6 +67,8 @@ std::string RequestHandlerBase::access_point_string() const {
       return kFileUploadDataTransferEventTrigger;
     case DeepScanAccessPoint::DOWNLOAD:
       return kFileDownloadDataTransferEventTrigger;
+    case DeepScanAccessPoint::NETWORK_REQUEST:
+      return kNetworkRequestDataTransferEventTrigger;
     case DeepScanAccessPoint::COPY:
       return kClipboardCopyDataTransferEventTrigger;
     case DeepScanAccessPoint::PRINT:

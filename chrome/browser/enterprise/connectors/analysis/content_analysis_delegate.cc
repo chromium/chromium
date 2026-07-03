@@ -328,6 +328,8 @@ std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
     case DeepScanAccessPoint::COPY:
       id = IDS_DEEP_SCANNING_DIALOG_PASTE_BYPASS_JUSTIFICATION_LABEL;
       break;
+    case DeepScanAccessPoint::NETWORK_REQUEST:
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(id);
 }

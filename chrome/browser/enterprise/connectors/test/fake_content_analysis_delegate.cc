@@ -263,6 +263,7 @@ void FakeContentAnalysisDelegate::Response(
           GetDataForTesting().settings, result_, response));
       break;
     case AnalysisConnector::FILE_TRANSFER:
+    case AnalysisConnector::NETWORK_REQUEST:
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED();
   }

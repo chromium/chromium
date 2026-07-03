@@ -35,6 +35,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Download"/>
   <variant name="DragAndDrop"/>
   <variant name="FileTransfer"/>
+  <variant name="NetworkRequest"/>
   <variant name="Paste"/>
   <variant name="Print"/>
   <variant name="Upload"/>
