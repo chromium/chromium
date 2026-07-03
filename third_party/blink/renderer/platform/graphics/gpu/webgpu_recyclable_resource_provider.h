@@ -80,25 +80,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      CanvasResourceProviderDelegate* delegate = nullptr) {
-    return Create(size, format, alpha_type, color_space, gfx::HDRMetadata(),
-                  context_provider_wrapper, shared_image_usage_flags, delegate);
-  }
-
-  static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
-
   static std::unique_ptr<WebGpuRecyclableResourceProvider> CreateForWebGPU(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -107,46 +88,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       const gfx::HDRMetadata& hdr_metadata,
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<WebGpuRecyclableResourceProvider> CreateForWebGPU(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet shared_image_usage_flags = {},
-      CanvasResourceProviderDelegate* delegate = nullptr) {
-    return CreateForWebGPU(size, format, alpha_type, color_space,
-                           gfx::HDRMetadata(), shared_image_usage_flags,
-                           delegate);
-  }
-
-  static std::unique_ptr<WebGpuRecyclableResourceProvider>
-  CreateForSoftwareCompositor(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      CanvasResourceProviderDelegate* delegate = nullptr);
-  static std::unique_ptr<WebGpuRecyclableResourceProvider>
-  CreateForSoftwareCompositor(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      CanvasResourceProviderDelegate* delegate = nullptr) {
-    return CreateForSoftwareCompositor(
-        size, format, alpha_type, color_space, gfx::HDRMetadata(),
-        shared_image_interface_provider, delegate);
-  }
-
-  static std::unique_ptr<WebGpuRecyclableResourceProvider>
-  CreateForSoftwareCompositor(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider);
-
   WebGpuRecyclableResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,
@@ -156,13 +97,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProviderDelegate*);
-  WebGpuRecyclableResourceProvider(gfx::Size,
-                                   viz::SharedImageFormat,
-                                   SkAlphaType,
-                                   const gfx::ColorSpace&,
-                                   const gfx::HDRMetadata&,
-                                   WebGraphicsSharedImageInterfaceProvider*,
-                                   CanvasResourceProviderDelegate*);
   ~WebGpuRecyclableResourceProvider() override;
 
   void ClearUnusedResources();

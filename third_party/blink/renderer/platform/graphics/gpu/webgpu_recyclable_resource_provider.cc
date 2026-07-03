@@ -153,18 +153,6 @@ WebGpuRecyclableResourceProvider::Create(
 }
 
 std::unique_ptr<WebGpuRecyclableResourceProvider>
-WebGpuRecyclableResourceProvider::Create(
-    gfx::Size size,
-    const Canvas2DColorParams& color_params,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    gpu::SharedImageUsageSet shared_image_usage_flags) {
-  return Create(size, color_params.GetSharedImageFormat(),
-                color_params.GetAlphaType(), color_params.GetGfxColorSpace(),
-                color_params.GetGfxHdrMetadata(),
-                std::move(context_provider_wrapper), shared_image_usage_flags);
-}
-
-std::unique_ptr<WebGpuRecyclableResourceProvider>
 WebGpuRecyclableResourceProvider::CreateForWebGPU(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -190,38 +178,7 @@ WebGpuRecyclableResourceProvider::CreateForWebGPU(
       delegate);
 }
 
-std::unique_ptr<WebGpuRecyclableResourceProvider>
-WebGpuRecyclableResourceProvider::CreateForSoftwareCompositor(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    CanvasResourceProviderDelegate* delegate) {
-  if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    return nullptr;
-  }
 
-  CHECK(format == viz::SharedImageFormat::N32Format() ||
-        format == viz::SinglePlaneFormat::kRGBA_F16);
-
-  auto provider = std::make_unique<WebGpuRecyclableResourceProvider>(
-      size, format, alpha_type, color_space, hdr_metadata,
-      shared_image_interface_provider, delegate);
-  return provider->IsValid() ? std::move(provider) : nullptr;
-}
-
-std::unique_ptr<WebGpuRecyclableResourceProvider>
-WebGpuRecyclableResourceProvider::CreateForSoftwareCompositor(
-    gfx::Size size,
-    const Canvas2DColorParams& color_params,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider) {
-  return CreateForSoftwareCompositor(
-      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), color_params.GetGfxHdrMetadata(),
-      shared_image_interface_provider);
-}
 
 WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
     gfx::Size size,
@@ -321,44 +278,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
 
   if (resource_) {
     EnsureWriteAccess();
-  }
-}
-
-WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    CanvasResourceProviderDelegate* delegate)
-    : size_(size),
-      format_(format),
-      alpha_type_(alpha_type),
-      color_space_(color_space),
-      hdr_metadata_(hdr_metadata),
-      delegate_(delegate),
-      is_software_(true),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      recorder_for_external_draws_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)),
-      shared_image_interface_provider_(
-          shared_image_interface_provider
-              ? shared_image_interface_provider->GetWeakPtr()
-              : nullptr) {
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->AddGpuChannelLostObserver(this);
-    if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
-      gpu::ImageInfo image_info(
-          size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
-          kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
-          /*is_software=*/true);
-      image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii, "CanvasResourceSharedImage",
-          kMaxRecycledCanvasResources);
-    }
   }
 }
 
