@@ -711,6 +711,7 @@ struct ExtensionsClientOutputsValues {
   std::optional<bool> large_blob_supported;
   std::optional<Vector<uint8_t>> large_blob_data;
   std::optional<bool> large_blob_written;
+  std::optional<bool> cred_blob;
   std::optional<Vector<uint8_t>> get_cred_blob;
   std::optional<PRFEvalValues> prf_eval;
   std::optional<Vector<uint8_t>> cmtg_key_data;
@@ -744,6 +745,9 @@ AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
       large_blob->setWritten(*in.large_blob_written);
     }
     extensions->setLargeBlob(large_blob);
+  }
+  if (in.cred_blob) {
+    extensions->setCredBlob(*in.cred_blob);
   }
   if (in.get_cred_blob) {
     extensions->setGetCredBlob(DOMArrayBuffer::Create(*in.get_cred_blob));
@@ -839,6 +843,12 @@ void ExpectExtensionsJSONMatch(
     }
   } else {
     EXPECT_FALSE(extensions.hasLargeBlob());
+  }
+  if (values.cred_blob) {
+    ASSERT_TRUE(extensions.hasCredBlob());
+    EXPECT_EQ(extensions.credBlob(), *values.cred_blob);
+  } else {
+    EXPECT_FALSE(extensions.hasCredBlob());
   }
   if (values.get_cred_blob) {
     ASSERT_TRUE(extensions.hasGetCredBlob());
@@ -938,6 +948,8 @@ TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
       {.large_blob_supported = false},
       {.large_blob_supported = true, .large_blob_written = false},
       {.get_cred_blob = Vector<uint8_t>{'g', 'e', 't', 't', 'y'}},
+      {.cred_blob = true},
+      {.cred_blob = false},
       {.cross_device_fallback_url = true},
       {.cross_device_fallback_url = false},
       {.prf_eval =

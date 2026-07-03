@@ -279,7 +279,7 @@ AuthenticationExtensionsClientOutputsToJSON(
     json->setLargeBlob(builder.ToScriptObject());
   }
   if (in.hasCredBlob()) {
-    json->setCredBlob(in.getCredBlob());
+    json->setCredBlob(in.credBlob());
   }
   if (in.hasGetCredBlob()) {
     json->setGetCredBlob(WebAuthnBase64UrlEncode(in.getCredBlob()));
