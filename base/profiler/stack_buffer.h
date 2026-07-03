@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "build/build_config.h"
 
