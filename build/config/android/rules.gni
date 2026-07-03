@@ -2554,6 +2554,11 @@ if (!is_robolectric && enable_java_templates) {
         resource_ids_provider_dep = invoker.apk_under_test
 
         _link_against = invoker.apk_under_test
+
+        apk_under_test_rtxt =
+            get_label_info(invoker.apk_under_test, "target_gen_dir") + "/" +
+            get_label_info(invoker.apk_under_test, "name") +
+            "__compile_resources_R.txt"
       }
 
       if (_is_bundle_module || _optimize_resources) {

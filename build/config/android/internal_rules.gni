@@ -2383,6 +2383,13 @@ if (enable_java_templates) {
         invoker.arsc_package_name,
       ]
     }
+    if (defined(invoker.apk_under_test_rtxt)) {
+      _inputs += [ invoker.apk_under_test_rtxt ]
+      _args += [
+        "--apk-under-test-rtxt",
+        rebase_path(invoker.apk_under_test_rtxt, root_build_dir),
+      ]
+    }
 
     if (defined(invoker.proguard_file)) {
       _outputs += [ invoker.proguard_file ]

@@ -355,7 +355,6 @@ class _TransitiveValuesBuilder:
         _TransitiveValuesBuilder(apk_under_test_params).Build(),
         retain_processed_jars=self._params.get('proguard_enabled'),
         retain_unprocessed_jars=True,
-        retain_resource_zips=True,
         retain_android_manifests=True)
 
 

@@ -314,11 +314,14 @@ def _ParseTextSymbolsFile(path, fix_package_ids=False):
   """Given an R.txt file, returns a list of _TextSymbolEntry.
 
   Args:
-    path: Input file path.
-    fix_package_ids: if True, 0x00 and 0x02 package IDs read from the file
-      will be fixed to 0x7f.
+    path: Path to R.txt file.
+    fix_package_ids: If True, package IDs in the resources will be replaced
+      with 0x00. This is to make it easy to compare resources from different
+      split APKs which might have different package IDs assigned.
+
   Returns:
-    A list of _TextSymbolEntry instances.
+    A list of _TextSymbolEntry.
+
   Raises:
     Exception: An unexpected line was detected in the input.
   """
@@ -536,7 +539,8 @@ def CreateRJavaFiles(srcjar_dir,
                      srcjar_out,
                      custom_root_package_name=None,
                      grandparent_custom_package_name=None,
-                     ignore_mismatched_values=False):
+                     ignore_mismatched_values=False,
+                     apk_under_test_rtxt=None):
   """Create all R.java files for a set of packages and R.txt files.
 
   Args:
@@ -549,6 +553,7 @@ def CreateRJavaFiles(srcjar_dir,
     rjava_build_options: An RJavaBuildOptions instance that controls how
       exactly the R.java file is generated.
     srcjar_out: Path of desired output srcjar.
+    apk_under_test_rtxt: R.txt of the apk_under_test.
     custom_root_package_name: Custom package name for module root R.java file,
       (eg. vr for gen.vr package).
     grandparent_custom_package_name: Custom root package name for the root
@@ -574,24 +579,37 @@ def CreateRJavaFiles(srcjar_dir,
   # Map of (resource_type, name) -> Entry.
   # Contains the correct values for resources.
   all_resources = {}
-  all_resources_by_type = collections.defaultdict(list)
+  under_test_resources = set()
 
-  main_r_text_files = [main_r_txt_file]
-  for r_txt_file in main_r_text_files:
-    for entry in _ParseTextSymbolsFile(r_txt_file, fix_package_ids=True):
+  if apk_under_test_rtxt:
+    for entry in _ParseTextSymbolsFile(apk_under_test_rtxt,
+                                       fix_package_ids=True):
       entry_key = (entry.resource_type, entry.name)
-      if entry_key in all_resources:
-        if not ignore_mismatched_values:
-          assert entry == all_resources[entry_key], (
-              'Input R.txt %s provided a duplicate resource with a different '
-              'entry value. Got %s, expected %s.' %
-              (r_txt_file, entry, all_resources[entry_key]))
-      else:
-        all_resources[entry_key] = entry
-        all_resources_by_type[entry.resource_type].append(entry)
-        assert entry.resource_type in ALL_RESOURCE_TYPES, (
-            'Unknown resource type: %s, add to ALL_RESOURCE_TYPES!' %
-            entry.resource_type)
+      all_resources[entry_key] = entry
+      under_test_resources.add(entry_key)
+
+  for entry in _ParseTextSymbolsFile(main_r_txt_file, fix_package_ids=True):
+    entry_key = (entry.resource_type, entry.name)
+    if not all_resources.setdefault(entry_key, entry):
+      # Resource not seen yet.
+      continue
+    if entry_key in under_test_resources:
+      # Overwrite from apk_under_test is allowed.
+      all_resources[entry_key] = entry
+    else:
+      # Duplicate within main_r_txt_file.
+      if not ignore_mismatched_values:
+        assert entry == all_resources[entry_key], (
+            'Input R.txt %s provided a duplicate resource with a different '
+            'entry value. Got %s, expected %s.' %
+            (main_r_txt_file, entry, all_resources[entry_key]))
+
+  all_resources_by_type = collections.defaultdict(list)
+  for entry in all_resources.values():
+    all_resources_by_type[entry.resource_type].append(entry)
+    assert entry.resource_type in ALL_RESOURCE_TYPES, (
+        'Unknown resource type: %s, add to ALL_RESOURCE_TYPES!' %
+        entry.resource_type)
 
   if custom_root_package_name:
     # Custom package name is available, thus use it for root_r_java_package.
