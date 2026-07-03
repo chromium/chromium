@@ -86,14 +86,10 @@ class AtMemoryBottomSheetViewBinder {
             PropertyModel model, AtMemoryFlyoutView view, PropertyKey propertyKey) {
         if (propertyKey == FlyoutProperties.TITLE) {
             view.setTitle(model.get(FlyoutProperties.TITLE));
-        } else if (propertyKey == FlyoutProperties.SOURCE_TEXT) {
-            view.setSourceText(model.get(FlyoutProperties.SOURCE_TEXT));
         } else if (propertyKey == FlyoutProperties.SUGGESTIONS) {
             view.setSuggestions(model.get(FlyoutProperties.SUGGESTIONS));
         } else if (propertyKey == FlyoutProperties.ON_BACK_CLICKED) {
             view.setBackClickListener(model.get(FlyoutProperties.ON_BACK_CLICKED));
-        } else if (propertyKey == FlyoutProperties.ON_SOURCE_CLICKED) {
-            view.setSourceClickListener(model.get(FlyoutProperties.ON_SOURCE_CLICKED));
         } else if (propertyKey == FlyoutProperties.ON_MANAGE_CLICKED) {
             view.setManageClickListener(model.get(FlyoutProperties.ON_MANAGE_CLICKED));
         } else if (propertyKey == FlyoutProperties.ON_SUGGESTION_CLICKED) {

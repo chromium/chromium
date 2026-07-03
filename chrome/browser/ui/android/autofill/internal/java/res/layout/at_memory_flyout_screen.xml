@@ -17,7 +17,7 @@ found in the LICENSE file.
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/at_memory_flyout_header_padding"
+        android:paddingHorizontal="@dimen/at_memory_flyout_padding"
         android:layout_marginBottom="@dimen/at_memory_flyout_default_margin">
 
         <ImageView
@@ -28,7 +28,7 @@ found in the LICENSE file.
             android:contentDescription="@string/back"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_marginEnd=
-                    "@dimen/at_memory_flyout_header_padding" />
+                    "@dimen/at_memory_flyout_padding" />
 
         <TextView
             android:id="@+id/flyout_title"
@@ -43,7 +43,8 @@ found in the LICENSE file.
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp">
+        android:paddingVertical="@dimen/at_memory_flyout_padding"
+        android:layout_marginBottom="@dimen/at_memory_flyout_default_margin">
 
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/chips_flow"
@@ -66,32 +67,24 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/at_memory_flyout_buttons_bg">
+        android:layout_marginBottom="@dimen/at_memory_flyout_margin_bottom">
 
-        <TextView
-            android:id="@+id/flyout_source_button"
+    <TextView
+            android:id="@+id/flyout_source_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:padding="@dimen/at_memory_flyout_default_margin"
+            android:layout_marginBottom="@dimen/at_memory_flyout_margin_bottom"
+            android:text="@string/autofill_at_memory_suggestion_source_text"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:drawableStart="@drawable/ic_spark_24dp"
-            android:drawableTint="@macro/default_icon_color"
-            android:drawablePadding="@dimen/at_memory_flyout_default_margin"
             android:gravity="center_vertical" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/at_memory_bottom_sheet_divider_height"
-            android:background="@macro/default_bg_color" />
-
-        <TextView
+    <TextView
             android:id="@+id/flyout_manage_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="@dimen/at_memory_flyout_margin_bottom"
+            android:background="@drawable/at_memory_flyout_buttons_bg"
             android:padding="@dimen/at_memory_flyout_default_margin"
             android:text=
                 "@string/autofill_at_memory_manage_suggestion_main_text"

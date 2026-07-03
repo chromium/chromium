@@ -152,7 +152,6 @@ class AtMemoryBottomSheetMediator {
             mModel.set(VISIBLE, false);
             mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
             mFlyoutModel.set(FlyoutProperties.TITLE, "");
-            mFlyoutModel.set(FlyoutProperties.SOURCE_TEXT, "");
             mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, List.of());
             sheetItems.clear();
             return;
@@ -214,9 +213,7 @@ class AtMemoryBottomSheetMediator {
     }
 
     private void onFlyoutClicked(AutofillSuggestion suggestion, int position) {
-        // TODO(crbug.com/505255929): Retrieve the actual source text dynamically.
         mFlyoutModel.set(FlyoutProperties.TITLE, suggestion.getLabel());
-        mFlyoutModel.set(FlyoutProperties.SOURCE_TEXT, "Google");
         mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, suggestion.getChildren());
         mFlyoutModel.set(
                 FlyoutProperties.ON_SUGGESTION_CLICKED,
@@ -227,10 +224,6 @@ class AtMemoryBottomSheetMediator {
 
     private void onFlyoutBackClicked() {
         mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
-    }
-
-    private void onFlyoutSourceClicked() {
-        // TODO(crbug.com/505255929): Implement source clicked handler
     }
 
     private void onFlyoutManageClicked() {
@@ -291,10 +284,8 @@ class AtMemoryBottomSheetMediator {
     private PropertyModel createFlyoutModel() {
         return new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
                 .with(FlyoutProperties.TITLE, "")
-                .with(FlyoutProperties.SOURCE_TEXT, "")
                 .with(FlyoutProperties.SUGGESTIONS, List.of())
                 .with(FlyoutProperties.ON_BACK_CLICKED, this::onFlyoutBackClicked)
-                .with(FlyoutProperties.ON_SOURCE_CLICKED, this::onFlyoutSourceClicked)
                 .with(FlyoutProperties.ON_MANAGE_CLICKED, this::onFlyoutManageClicked)
                 .with(FlyoutProperties.ON_SUGGESTION_CLICKED, childPos -> {})
                 .build();

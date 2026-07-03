@@ -109,17 +109,11 @@ class AtMemoryBottomSheetProperties {
         // Title to be displayed on the flyout screen.
         static final WritableObjectPropertyKey<@Nullable String> TITLE =
                 new WritableObjectPropertyKey<>();
-        // Source attribution text to be displayed on the flyout screen.
-        static final WritableObjectPropertyKey<String> SOURCE_TEXT =
-                new WritableObjectPropertyKey<>();
         // List of autofill suggestions to be shown in the flyout screen.
         static final WritableObjectPropertyKey<List<AutofillSuggestion>> SUGGESTIONS =
                 new WritableObjectPropertyKey<>();
         // Invoked when the back button is clicked in the flyout screen.
         static final ReadableObjectPropertyKey<Runnable> ON_BACK_CLICKED =
-                new ReadableObjectPropertyKey<>();
-        // Invoked when the source link/button is clicked in the flyout screen.
-        static final ReadableObjectPropertyKey<Runnable> ON_SOURCE_CLICKED =
                 new ReadableObjectPropertyKey<>();
         // Invoked when the manage button is clicked in the flyout screen.
         static final ReadableObjectPropertyKey<Runnable> ON_MANAGE_CLICKED =
@@ -129,13 +123,7 @@ class AtMemoryBottomSheetProperties {
                 new WritableObjectPropertyKey<>();
 
         static final PropertyKey[] ALL_KEYS = {
-            TITLE,
-            SOURCE_TEXT,
-            SUGGESTIONS,
-            ON_BACK_CLICKED,
-            ON_SOURCE_CLICKED,
-            ON_MANAGE_CLICKED,
-            ON_SUGGESTION_CLICKED
+            TITLE, SUGGESTIONS, ON_BACK_CLICKED, ON_MANAGE_CLICKED, ON_SUGGESTION_CLICKED
         };
 
         private FlyoutProperties() {}

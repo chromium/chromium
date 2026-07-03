@@ -61,6 +61,7 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -92,8 +93,8 @@ public class AtMemoryBottomSheetViewRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
-                    .setDescription("Align flyout chip heights in the same row")
+                    .setRevision(5)
+                    .setDescription("Change the source text UI.")
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -353,7 +354,6 @@ public class AtMemoryBottomSheetViewRenderTest {
                     PropertyModel model =
                             new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
                                     .with(FlyoutProperties.TITLE, "Hotel Booking")
-                                    .with(FlyoutProperties.SOURCE_TEXT, "Google")
                                     .with(
                                             FlyoutProperties.SUGGESTIONS,
                                             List.of(
@@ -366,12 +366,10 @@ public class AtMemoryBottomSheetViewRenderTest {
                                                             "07-05-2032", "Expiration date"),
                                                     createAutofillSuggestion("USA", "")))
                                     .build();
-                    AtMemoryBottomSheetViewBinder.bindAtMemoryFlyoutView(
-                            model, mView.getFlyoutView(), FlyoutProperties.TITLE);
-                    AtMemoryBottomSheetViewBinder.bindAtMemoryFlyoutView(
-                            model, mView.getFlyoutView(), FlyoutProperties.SOURCE_TEXT);
-                    AtMemoryBottomSheetViewBinder.bindAtMemoryFlyoutView(
-                            model, mView.getFlyoutView(), FlyoutProperties.SUGGESTIONS);
+                    PropertyModelChangeProcessor.create(
+                            model,
+                            mView.getFlyoutView(),
+                            AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
 
                     mBottomSheetController.requestShowContent(content, false);
                 });

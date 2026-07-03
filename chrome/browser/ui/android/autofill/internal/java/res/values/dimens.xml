@@ -22,7 +22,8 @@ found in the LICENSE file.
 
   <dimen name="at_memory_bottom_sheet_divider_height">2dp</dimen>
   <dimen name="at_memory_flyout_default_margin">16dp</dimen>
-  <dimen name="at_memory_flyout_header_padding">8dp</dimen>
+  <dimen name="at_memory_flyout_margin_bottom">12dp</dimen>
+  <dimen name="at_memory_flyout_padding">8dp</dimen>
   <dimen name="at_memory_suggestion_default_margin">16dp</dimen>
   <dimen name="at_memory_suggestion_item_padding_vertical">12dp</dimen>
   <dimen name="at_memory_suggestion_icon_size">24dp</dimen>

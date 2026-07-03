@@ -52,7 +52,6 @@ public class AtMemoryBottomSheetViewTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mMockBackClickListener;
-    @Mock private Runnable mMockSourceClickListener;
     @Mock private Runnable mMockManageClickListener;
     @Mock private Callback<Integer> mMockSuggestionClickListener;
 
@@ -117,7 +116,6 @@ public class AtMemoryBottomSheetViewTest {
         PropertyModel model =
                 new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
                         .with(FlyoutProperties.TITLE, "Flyout Title")
-                        .with(FlyoutProperties.SOURCE_TEXT, "Google")
                         .with(FlyoutProperties.SUGGESTIONS, suggestions)
                         .build();
         PropertyModelChangeProcessor.create(
@@ -125,16 +123,13 @@ public class AtMemoryBottomSheetViewTest {
                 mView.getFlyoutView(),
                 AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
 
+        TextView titleText = mView.getContentView().findViewById(R.id.flyout_title);
+        assertEquals("Flyout Title", titleText.getText().toString());
+
+        TextView sourceText = mView.getContentView().findViewById(R.id.flyout_source_text);
         assertEquals(
-                "Flyout Title",
-                ((TextView) mView.getContentView().findViewById(R.id.flyout_title))
-                        .getText()
-                        .toString());
-        assertEquals(
-                "Google",
-                ((TextView) mView.getContentView().findViewById(R.id.flyout_source_button))
-                        .getText()
-                        .toString());
+                mContext.getString(R.string.autofill_at_memory_suggestion_source_text),
+                sourceText.getText().toString());
 
         ViewGroup chipsContainer = mView.getContentView().findViewById(R.id.flyout_chips_container);
         assertNotNull(chipsContainer);
@@ -215,23 +210,6 @@ public class AtMemoryBottomSheetViewTest {
         backButton.performClick();
 
         verify(mMockBackClickListener).run();
-    }
-
-    @Test
-    public void testFlyoutSourceClickNotifiesCallback() {
-        PropertyModel model =
-                new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
-                        .with(FlyoutProperties.ON_SOURCE_CLICKED, mMockSourceClickListener)
-                        .build();
-        PropertyModelChangeProcessor.create(
-                model,
-                mView.getFlyoutView(),
-                AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
-
-        View sourceButton = mView.getContentView().findViewById(R.id.flyout_source_button);
-        sourceButton.performClick();
-
-        verify(mMockSourceClickListener).run();
     }
 
     @Test

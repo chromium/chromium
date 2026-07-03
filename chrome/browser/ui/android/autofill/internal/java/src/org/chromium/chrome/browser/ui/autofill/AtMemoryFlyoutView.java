@@ -35,7 +35,6 @@ public class AtMemoryFlyoutView extends LinearLayout {
     private Flow mChipsFlow;
     private View mBackButton;
     private TextView mTitleView;
-    private TextView mSourceButton;
     private TextView mManageButton;
 
     private final List<ChipView> mActiveChips = new ArrayList<>();
@@ -57,17 +56,12 @@ public class AtMemoryFlyoutView extends LinearLayout {
         mChipsFlow = findViewById(R.id.chips_flow);
         mBackButton = findViewById(R.id.flyout_back_button);
         mTitleView = findViewById(R.id.flyout_title);
-        mSourceButton = findViewById(R.id.flyout_source_button);
         mManageButton = findViewById(R.id.flyout_manage_button);
         mChipsContainer.addOnLayoutChangeListener(mChipsLayoutListener);
     }
 
     public void setTitle(@Nullable String title) {
         mTitleView.setText(title);
-    }
-
-    public void setSourceText(@Nullable String sourceText) {
-        mSourceButton.setText(sourceText);
     }
 
     public void setSuggestions(List<AutofillSuggestion> suggestions) {
@@ -89,10 +83,6 @@ public class AtMemoryFlyoutView extends LinearLayout {
 
     public void setBackClickListener(Runnable onClickListener) {
         mBackButton.setOnClickListener(v -> onClickListener.run());
-    }
-
-    public void setSourceClickListener(Runnable onClickListener) {
-        mSourceButton.setOnClickListener(v -> onClickListener.run());
     }
 
     public void setManageClickListener(Runnable onClickListener) {

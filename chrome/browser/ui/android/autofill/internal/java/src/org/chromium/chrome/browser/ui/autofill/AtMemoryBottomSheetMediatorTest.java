@@ -136,7 +136,6 @@ public class AtMemoryBottomSheetMediatorTest {
 
         PropertyModel flyoutModel = mMediator.getFlyoutModel();
         assertEquals("Hotel Booking", flyoutModel.get(FlyoutProperties.TITLE));
-        assertEquals("Google", flyoutModel.get(FlyoutProperties.SOURCE_TEXT));
         assertEquals(List.of(childSuggestion), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
     }
 
@@ -184,7 +183,6 @@ public class AtMemoryBottomSheetMediatorTest {
 
         PropertyModel flyoutModel = mMediator.getFlyoutModel();
         flyoutModel.set(FlyoutProperties.TITLE, "Title");
-        flyoutModel.set(FlyoutProperties.SOURCE_TEXT, "Source");
 
         mMediator.onDismissed();
 
@@ -193,7 +191,6 @@ public class AtMemoryBottomSheetMediatorTest {
         assertEquals(ScreenId.HOME_SCREEN, mModel.get(CURRENT_SCREEN));
 
         assertEquals("", flyoutModel.get(FlyoutProperties.TITLE));
-        assertEquals("", flyoutModel.get(FlyoutProperties.SOURCE_TEXT));
         assertEquals(List.of(), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
 
         verify(mDelegate).onDismissed();
