@@ -59,7 +59,7 @@ using KeysFetchedCallback = base::OnceCallback<void(SharedKeyList, NSError*)>;
 // Callback to be called once keys are fetched, including user verification
 // completion status.
 using FetchKeysCallback =
-    base::OnceCallback<void(SharedKeyList, bool did_complete_uv, NSError*)>;
+    base::OnceCallback<void(SharedKeyList, bool did_complete_uv)>;
 
 }  // namespace webauthn
 

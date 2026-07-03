@@ -27,7 +27,7 @@ void FakeIOSPasskeyClient::FetchKeys(
     bool did_complete_uv =
         user_verification_status == PasskeyUserVerificationStatus::kCompleted;
     std::move(callback).Run({std::vector<uint8_t>(kKeyLength, 0)},
-                            did_complete_uv, nil);
+                            did_complete_uv);
   }
 }
 

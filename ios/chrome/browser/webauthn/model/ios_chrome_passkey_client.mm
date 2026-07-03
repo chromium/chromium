@@ -192,7 +192,7 @@ void IOSChromePasskeyClient::FetchKeys(
             [delegate userVerificationStatus] ==
             webauthn::PasskeyUserVerificationStatus::kCompleted;
         std::move(inner_callback)
-            .Run(std::move(trusted_vault_keys), did_complete_uv, error);
+            .Run(std::move(trusted_vault_keys), did_complete_uv);
         [handler dismissPasskeyWelcomeScreen];
       },
       command_handler_, delegate, std::move(callback)));

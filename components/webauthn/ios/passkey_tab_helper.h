@@ -171,8 +171,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void CompletePasskeyCreation(RegistrationRequestParams params,
                                std::string client_data_json,
                                SharedKeyList shared_key_list,
-                               bool did_complete_uv,
-                               NSError* error);
+                               bool did_complete_uv);
 
   // Callback which uses the provided passkey for assertion given the provided
   // shared keys list and params. The parameters required to resolve the
@@ -181,8 +180,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
                                 sync_pb::WebauthnCredentialSpecifics passkey,
                                 std::string client_data_json,
                                 SharedKeyList shared_key_list,
-                                bool did_complete_uv,
-                                NSError* error);
+                                bool did_complete_uv);
 
   // Starts remote validation for the given origin and RP ID. If validation
   // starts successfully, the loader is stored in `loaders_` with

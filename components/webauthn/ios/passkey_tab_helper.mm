@@ -793,12 +793,10 @@ PasskeyUserVerificationStatus PasskeyTabHelper::DetermineUserVerificationStatus(
   return PasskeyUserVerificationStatus::kNotRequired;
 }
 
-// TODO(crbug.com/460485614): Handle error here or in the passkey client.
 void PasskeyTabHelper::CompletePasskeyCreation(RegistrationRequestParams params,
                                                std::string client_data_json,
                                                SharedKeyList shared_key_list,
-                                               bool did_complete_uv,
-                                               NSError* error) {
+                                               bool did_complete_uv) {
   web::WebFrame* web_frame = GetWebFrame(params.FrameId());
   if (!web_frame) {
     return;
@@ -876,14 +874,12 @@ void PasskeyTabHelper::StartPasskeyAssertion(std::string request_id,
                      std::move(client_data_json)));
 }
 
-// TODO(crbug.com/460485614): Handle error here or in the passkey client.
 void PasskeyTabHelper::CompletePasskeyAssertion(
     AssertionRequestParams params,
     sync_pb::WebauthnCredentialSpecifics passkey,
     std::string client_data_json,
     SharedKeyList shared_key_list,
-    bool did_complete_uv,
-    NSError* error) {
+    bool did_complete_uv) {
   web::WebFrame* web_frame = GetWebFrame(params.FrameId());
   if (!web_frame) {
     return;
