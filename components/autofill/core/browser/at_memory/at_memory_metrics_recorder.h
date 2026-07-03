@@ -56,7 +56,9 @@ class AtMemoryMetricsRecorder {
   void OnQuerySubmitted(std::u16string query);
 
   // Records that a response for the pending query was received.
-  void OnQueryResponseReceived();
+  void OnQueryResponseReceived(
+      base::span<const accessibility_annotator::MemorySearchResult>
+          suggestions);
 
   // Records that a suggestion was accepted during this session.
   void OnSuggestionAccepted();

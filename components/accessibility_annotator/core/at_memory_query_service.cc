@@ -274,10 +274,12 @@ MemorySearchResult ConvertToMemorySearchResult(
 std::vector<MemorySearchResult> ExtractRemoteResults(
     const personal_context::proto::AtMemoryQueryResponse& response) {
   std::vector<MemorySearchResult> remote_results;
-  for (const personal_context::proto::AtMemorySearchResult& proto_result :
-       response.results()) {
+  for (int32_t i = 0; i < response.results_size(); ++i) {
+    const personal_context::proto::AtMemorySearchResult& proto_result =
+        response.results(i);
     MemorySearchResult pcontext_result =
         ConvertToMemorySearchResult(proto_result);
+    pcontext_result.remote_response_index = i;
     if (!pcontext_result.value.empty()) {
       remote_results.push_back(std::move(pcontext_result));
     }

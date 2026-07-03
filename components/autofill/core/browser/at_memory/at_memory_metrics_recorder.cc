@@ -117,7 +117,8 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted() {
   suggestion_accepted_ = true;
 }
 
-void AtMemoryMetricsRecorder::OnQueryResponseReceived() {
+void AtMemoryMetricsRecorder::OnQueryResponseReceived(
+    base::span<const accessibility_annotator::MemorySearchResult> suggestions) {
   if (!query_to_suggestions_shown_timer_) {
     return;
   }
@@ -136,6 +137,21 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived() {
                       ->mutable_quality();
   quality->set_query_submitted_to_suggestions_shown_ms(
       time_since_query_submitted.InMilliseconds());
+
+  for (const auto& suggestion : suggestions) {
+    auto* quality_suggestion = quality->add_suggestions();
+    bool has_autofill_source = std::ranges::contains(
+        suggestion.sources,
+        accessibility_annotator::MemoryEntrySourceType::kAutofill,
+        &accessibility_annotator::MemoryEntrySource::type);
+    quality_suggestion->set_source(
+        has_autofill_source
+            ? optimization_guide::proto::AT_MEMORY_SUGGESTION_SOURCE_AUTOFILL
+            : optimization_guide::proto::
+                  AT_MEMORY_SUGGESTION_SOURCE_CONTEXT_MEMORY_SERVICE);
+    quality_suggestion->set_response_results_index(
+        suggestion.remote_response_index.value_or(-1));
+  }
 }
 
 void AtMemoryMetricsRecorder::OnFetchPiiStarted() {

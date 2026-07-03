@@ -115,6 +115,10 @@ struct MemorySearchResult {
   // `MemoryDataType` does not support identifiers, it will be unset
   // (monostate).
   std::variant<std::monostate, std::string, int64_t> identifier;
+
+  // The index of the entry in the remote response. If the entry is not a remote
+  // result, it will be unset (nullopt).
+  std::optional<int32_t> remote_response_index;
 };
 
 std::ostream& operator<<(std::ostream& os, const MemorySearchResult& result);

@@ -821,7 +821,7 @@ void AtMemoryManager::OnSearchResultsReceived(
   }
 
   if (at_memory_metrics_recorder_) {
-    at_memory_metrics_recorder_->OnQueryResponseReceived();
+    at_memory_metrics_recorder_->OnQueryResponseReceived(result.entries);
   }
 
   // If there are results, just return the results as-is.

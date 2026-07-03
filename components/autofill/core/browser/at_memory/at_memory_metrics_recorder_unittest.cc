@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/signatures.h"
@@ -180,7 +181,18 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"test query");
     task_environment_.FastForwardBy(base::Milliseconds(100));
-    metrics.OnQueryResponseReceived();
+    accessibility_annotator::MemorySearchResult local_suggestion(
+        accessibility_annotator::MemoryDataType::kAddressFull, u"key 1",
+        u"value1");
+    local_suggestion.sources.push_back(
+        accessibility_annotator::MemoryEntrySource(
+            accessibility_annotator::MemoryEntrySourceType::kAutofill));
+    accessibility_annotator::MemorySearchResult remote_suggestion(
+        accessibility_annotator::MemoryDataType::kUnknown, u"key 2", u"value2");
+    remote_suggestion.remote_response_index = 0;
+    remote_suggestion.sources = {accessibility_annotator::MemoryEntrySource(
+        accessibility_annotator::MemoryEntrySourceType::kGmail)};
+    metrics.OnQueryResponseReceived({local_suggestion, remote_suggestion});
   }
 
   const auto& uploaded_logs = uploader_service.uploaded_logs();
@@ -194,6 +206,14 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
   EXPECT_EQ(quality.field_signature(), 456u);
   EXPECT_FALSE(quality.session_id().empty());
   EXPECT_EQ(quality.query_submitted_to_suggestions_shown_ms(), 100);
+  EXPECT_EQ(quality.suggestions_size(), 2);
+  EXPECT_EQ(quality.suggestions(0).source(),
+            optimization_guide::proto::AT_MEMORY_SUGGESTION_SOURCE_AUTOFILL);
+  EXPECT_EQ(quality.suggestions(0).response_results_index(), -1);
+  EXPECT_EQ(quality.suggestions(1).source(),
+            optimization_guide::proto::
+                AT_MEMORY_SUGGESTION_SOURCE_CONTEXT_MEMORY_SERVICE);
+  EXPECT_EQ(quality.suggestions(1).response_results_index(), 0);
 
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.Latency.Query", 1);
 }

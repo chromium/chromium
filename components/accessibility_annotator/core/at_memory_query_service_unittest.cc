@@ -215,6 +215,7 @@ TEST_F(AtMemoryQueryServiceTest, Query_NoLocalProviderButHasRemote) {
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
   ASSERT_EQ(result.entries.size(), 1u);
   EXPECT_EQ(result.entries[0].value, u"Alice");
+  EXPECT_EQ(result.entries[0].remote_response_index, 0);
 }
 
 // Tests that the query service fetches correct local data types based on the
@@ -530,7 +531,9 @@ TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
   ASSERT_EQ(result.entries.size(), 2u);
   EXPECT_EQ(result.entries[0].value, u"Local Name");
+  EXPECT_EQ(result.entries[0].remote_response_index, std::nullopt);
   EXPECT_EQ(result.entries[1].value, u"Remote Name");
+  EXPECT_EQ(result.entries[1].remote_response_index, 0);
 }
 
 // Tests that results with the most matching filter words are retained, ties for
