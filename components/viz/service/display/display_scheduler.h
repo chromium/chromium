@@ -102,9 +102,10 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   bool OnBeginFrame(const BeginFrameArgs& args);
   void OnBeginFrameContinuation(const BeginFrameArgs& args);
-  int MaxPendingSwapsForRefreshRate() const;
-  int MaxPendingSwapsForDeadline(const PossibleDeadline& deadline) const;
-  int MaxPendingSwaps() const;
+  int MaxPendingSwapsForRefreshRate(base::TimeDelta interval) const;
+  int MaxPendingSwapsForDeadline(const PossibleDeadline& deadline,
+                                 base::TimeDelta interval) const;
+  int MaxPendingSwaps(const BeginFrameArgs& args) const;
 
   base::TimeTicks current_frame_display_time(
       const BeginFrameArgs& begin_frame_args) const {
@@ -154,6 +155,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool ShouldDraw() const;
   bool CanDrawForPreviousFrame(const BeginFrameId& begin_frame_id) const;
   void ForceImmediateSwapForPreviousFrame();
+  int GetMaxAllowedBuffers(base::TimeDelta interval) const;
   void DidFinishFrame(BeginFrameId frame_id, DisplaySchedulerDrawResult result);
   // Updates |has_pending_surfaces_| and returns whether its value changed.
   bool UpdateHasPendingSurfaces();

@@ -24,9 +24,21 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   FrameDeadlineDecider(const FrameDeadlineDecider&) = delete;
   FrameDeadlineDecider& operator=(const FrameDeadlineDecider&) = delete;
 
-  // Called at the start of DrawAndSwap to select the best deadline.
-  // Returns the index of the selected deadline. Locks to target present delta
-  // at sequence start, and matches it on subsequent frames in the sequence.
+  // Queries the best deadline index for the given parameters without modifying
+  // any internal state of the decider. This is safe to call multiple times or
+  // from const methods.
+  size_t QueryDeadline(
+      const PossibleDeadlines& possible_deadlines,
+      base::TimeDelta vsync_interval,
+      int max_allowed_buffers,
+      base::TimeTicks frame_time,
+      std::optional<base::TimeTicks> earliest_input_time) const;
+
+  // Selects the best deadline index and updates the internal state of the
+  // decider to lock to the selected deadline for the current sequence.
+  // This should only be called once per frame when we are actually going to
+  // draw. It differs from QueryDeadline in that it has side effects on the
+  // internal sequence tracking state.
   size_t SelectDeadline(const PossibleDeadlines& possible_deadlines,
                         base::TimeDelta vsync_interval,
                         int max_allowed_buffers,
