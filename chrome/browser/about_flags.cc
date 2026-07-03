@@ -4302,6 +4302,20 @@ const FeatureEntry::FeatureVariation kCrossDeviceSigninVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const FeatureEntry::FeatureParam kCrossDeviceSigninFromDesktopDefaultUrl[] = {
+    {"url",
+     "https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1"},
+};
+
+const FeatureEntry::FeatureVariation kCrossDeviceSigninFromDesktopVariations[] =
+    {
+        {"Default URL "
+         "(https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1)",
+         kCrossDeviceSigninFromDesktopDefaultUrl, nullptr},
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kDefaultBrowserPromoEntryPointSettingsOnly[] =
     {{"show_app_menu_item", "false"}};
@@ -11502,7 +11516,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrossDeviceSigninFromDesktopName,
      flag_descriptions::kCrossDeviceSigninFromDesktopDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kCrossDeviceSigninFromDesktop)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCrossDeviceSigninFromDesktop,
+                                    kCrossDeviceSigninFromDesktopVariations,
+                                    "CrossDeviceSigninFromDesktop")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
