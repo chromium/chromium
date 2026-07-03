@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -226,7 +227,7 @@ class TurnSyncOnHelper {
 
   // Called when the new profile is created.
   void OnNewSignedInProfileCreated(
-      search_engines::ChoiceData search_engine_choice_data,
+      std::optional<search_engines::ChoiceData> search_engine_choice_data,
       Profile* new_profile);
 
   // Returns the SyncService, or nullptr if sync is not allowed.

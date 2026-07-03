@@ -214,6 +214,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Not seen, from Long-press"/>
 </enum>
 
+<!-- LINT.IfChange(CurrentDefaultPropagationOutcome) -->
+
+<enum name="CurrentDefaultPropagationOutcome">
+  <int value="0" label="PropagatedCurrentDefault"/>
+  <int value="1" label="SkippedDueToPolicies"/>
+  <int value="2" label="SkippedIsFallback"/>
+  <int value="3" label="SkippedIsExtension"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h:CurrentDefaultPropagationOutcome) -->
+
 <enum name="DonateResult">
   <int value="0" label="No favicons available"/>
   <int value="1" label="Failed"/>
