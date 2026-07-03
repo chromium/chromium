@@ -46,10 +46,4 @@ ImmutableString::ImmutableString(base::span<const std::string_view> parts)
                    ? StorageVariantType(StackString(parts))
                    : StorageVariantType(HeapString(parts))) {}
 
-ImmutableString::ImmutableString(const ImmutableString& other) = default;
-ImmutableString& ImmutableString::operator=(const ImmutableString& other) =
-    default;
-ImmutableString& ImmutableString::operator=(ImmutableString&&) noexcept =
-    default;
-
 }  // namespace base::i18n::internal

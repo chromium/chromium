@@ -109,10 +109,10 @@ class BASE_I18N_EXPORT ImmutableString {
                                      base::span<const std::string_view> parts)
       : storage_(StorageVariantType(StackString(parts))) {}
 
-  ImmutableString(const ImmutableString& other);
-  ImmutableString& operator=(const ImmutableString& other);
+  constexpr ImmutableString(const ImmutableString& other);
+  constexpr ImmutableString& operator=(const ImmutableString& other);
   constexpr ImmutableString(ImmutableString&& other) noexcept;
-  ImmutableString& operator=(ImmutableString&&) noexcept;
+  constexpr ImmutableString& operator=(ImmutableString&&) noexcept;
 
   // Returns the string as a std::string_view.
   constexpr std::string_view AsString() const {
@@ -131,6 +131,12 @@ constexpr ImmutableString::HeapString::HeapString(HeapString&& other) noexcept =
     default;
 constexpr ImmutableString::ImmutableString(ImmutableString&& other) noexcept =
     default;
+inline constexpr ImmutableString& ImmutableString::operator=(
+    ImmutableString&&) noexcept = default;
+constexpr ImmutableString::ImmutableString(const ImmutableString& other) =
+    default;
+inline constexpr ImmutableString& ImmutableString::operator=(
+    const ImmutableString& other) = default;
 
 }  // namespace base::i18n::internal
 

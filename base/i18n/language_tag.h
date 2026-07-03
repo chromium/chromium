@@ -40,24 +40,28 @@ class BASE_I18N_EXPORT LanguageTag {
  public:
   using ImmutableStringType = internal::ImmutableString;
 
-  LanguageTag(const LanguageTag&) = default;
-  constexpr LanguageTag(LanguageTag&& other) noexcept;
-  LanguageTag& operator=(const LanguageTag&) = default;
-  LanguageTag& operator=(LanguageTag&&) noexcept = default;
+  constexpr LanguageTag(const LanguageTag&) noexcept = default;
+  constexpr LanguageTag(LanguageTag&& other) noexcept = default;
+  constexpr LanguageTag& operator=(const LanguageTag&) noexcept = default;
+  constexpr LanguageTag& operator=(LanguageTag&&) noexcept = default;
 
-  inline constexpr ~LanguageTag() = default;
+  constexpr ~LanguageTag() = default;
 
-  friend bool operator==(const LanguageTag& lhs, const LanguageTag& rhs) {
+  constexpr friend bool operator==(const LanguageTag& lhs,
+                                   const LanguageTag& rhs) {
     return lhs.tag_string() == rhs.tag_string();
   }
-  friend bool operator<(const LanguageTag& lhs, const LanguageTag& rhs) {
+  constexpr friend bool operator<(const LanguageTag& lhs,
+                                  const LanguageTag& rhs) {
     return lhs.tag_string() < rhs.tag_string();
   }
-  friend std::ostream& operator<<(std::ostream& os, const LanguageTag& lt) {
+  constexpr friend std::ostream& operator<<(std::ostream& os,
+                                            const LanguageTag& lt) {
     return os << lt.tag_string();
   }
-  friend std::ostream& operator<<(std::ostream& os,
-                                  const std::optional<LanguageTag>& opt) {
+  constexpr friend std::ostream& operator<<(
+      std::ostream& os,
+      const std::optional<LanguageTag>& opt) {
     return opt ? os << *opt : os << "nullopt";
   }
 
@@ -134,9 +138,6 @@ class BASE_I18N_EXPORT LanguageTag {
   // Supports language, script, region, variants and extensions.
   ImmutableStringType tag_;
 };
-
-inline constexpr LanguageTag::LanguageTag(LanguageTag&& other) noexcept =
-    default;
 
 namespace internal {
 

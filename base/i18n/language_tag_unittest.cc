@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/i18n/tag_converters.h"
 #include "base/i18n/tags.h"
 #include "base/test/gmock_expected_support.h"
@@ -537,6 +538,16 @@ TEST(LanguageTagTest, LegacyLanguages) {
 
 TEST(LanguageTagTest, UndefinedLanguageTag) {
   EXPECT_EQ(GetKnownLanguageTag("und").tag_string(), "und");
+}
+
+TEST(LanguageTagTest, CanCreateFixedFlatSet) {
+  constexpr auto kLanguageTagsSet = base::MakeFixedFlatSet<LanguageTag>({
+      GetKnownLanguageTag("en-US"),
+      GetKnownLanguageTag("pt-BR"),
+  });
+
+  EXPECT_TRUE(kLanguageTagsSet.contains(GetKnownLanguageTag("en-US")));
+  EXPECT_TRUE(kLanguageTagsSet.contains(GetKnownLanguageTag("pt-BR")));
 }
 
 TEST(LanguageTagTest, GetLanguageSubtag) {
