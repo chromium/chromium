@@ -13,16 +13,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/proto/indigo_config.pb.h"
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -36,22 +33,12 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "base/enterprise_util.h"
-#elif BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#endif
-
 namespace indigo {
 
 class IndigoServiceTest : public testing::Test {
  public:
-  IndigoServiceTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIndigo);
-  }
-
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kIndigo);
     ::indigo::prefs::RegisterProfilePrefs(prefs_.registry());
     if (set_script_switch_in_setup_) {
       scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
@@ -80,18 +67,11 @@ class IndigoServiceTest : public testing::Test {
         base::Unretained(this)));
   }
 
-  void MakeAccountAvailableAndCapable(
-      std::string_view email = "test@non.managed.com",
-      std::string_view hosted_domain = "") {
+  void MakeAccountAvailableAndCapable() {
     AccountInfo info = identity_test_env_.MakePrimaryAccountAvailable(
-        std::string(email), signin::ConsentLevel::kSignin);
+        "test@example.com", signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&info);
     mutator.set_can_use_model_execution_features(true);
-    if (!hosted_domain.empty()) {
-      AccountInfo::Builder builder(info);
-      builder.SetHostedDomain(std::string(hosted_domain));
-      info = builder.Build();
-    }
     identity_test_env_.UpdateAccountInfoForAccount(info);
   }
 
@@ -170,7 +150,7 @@ TEST_F(IndigoServiceTest, CapabilitiesDisable) {
   CreateService();
 
   AccountInfo info = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@non.managed.com", signin::ConsentLevel::kSignin);
+      "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&info);
   mutator.set_can_use_model_execution_features(false);
   identity_test_env_.UpdateAccountInfoForAccount(info);
@@ -227,6 +207,54 @@ TEST_F(IndigoServiceTest, GlicRequirementEnabledAndDisabled) {
                            ->FindExtendedAccountInfoByAccountId(account_id);
     service_->OnExtendedAccountInfoUpdated(info);
   }
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+}
+
+TEST_F(IndigoServiceTest, PolicyDisabledFromConstruction) {
+  SetPolicySettings(prefs::Policy::kDisallowed);
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kDisabledByPolicy));
+}
+
+TEST_F(IndigoServiceTest, PolicyChangeTriggersUpdate) {
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  SetPolicySettings(prefs::Policy::kDisallowed);
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kDisabledByPolicy));
+}
+
+TEST_F(IndigoServiceTest, ManagedDomain) {
+  CreateService();
+
+  AccountInfo info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&info);
+  mutator.set_can_use_model_execution_features(true);
+
+  AccountInfo::Builder builder(info);
+  builder.SetHostedDomain("example.com");
+  AccountInfo updated_info = builder.Build();
+  identity_test_env_.UpdateAccountInfoForAccount(updated_info);
+
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kManagedDomain));
+}
+
+TEST_F(IndigoServiceTest, GoogleInternalAccountNotManaged) {
+  CreateService();
+
+  AccountInfo info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@google.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&info);
+  mutator.set_can_use_model_execution_features(true);
+
+  AccountInfo::Builder builder(info);
+  builder.SetHostedDomain("google.com");
+  AccountInfo updated_info = builder.Build();
+  identity_test_env_.UpdateAccountInfoForAccount(updated_info);
+
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
 }
 
@@ -505,137 +533,5 @@ TEST_F(IndigoServiceTest, LoadConfigFromCommandLine) {
   EXPECT_TRUE(service_->IsOriginAllowed(
       url::Origin::Create(GURL("https://allowed1.com"))));
 }
-
-class IndigoServiceManagementPolicyDefaultEnabledTest
-    : public IndigoServiceTest,
-      public testing::WithParamInterface<bool> {
- public:
-  IndigoServiceManagementPolicyDefaultEnabledTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIndigo,
-        {{features::kIndigoAllowForEnterprise.name,
-          IsIndigoAllowedForEnterprise() ? "true" : "false"}});
-  }
-
-  bool IsIndigoAllowedForEnterprise() const { return GetParam(); }
-};
-
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
-       PolicyDisabledFromConstruction) {
-  SetPolicySettings(prefs::Policy::kDisallowed);
-  CreateService();
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(&profile_),
-          policy::EnterpriseManagementAuthority::CLOUD);
-  MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
-}
-
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
-       PolicyChangeTriggersUpdate) {
-  CreateService();
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(&profile_),
-          policy::EnterpriseManagementAuthority::CLOUD);
-  MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
-
-  SetPolicySettings(prefs::Policy::kDisallowed);
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
-}
-
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest, ManagedDomain) {
-  CreateService();
-  MakeAccountAvailableAndCapable("test@example.com", "example.com");
-  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kManagedDomain));
-}
-
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
-       GoogleInternalAccountNotManaged) {
-  CreateService();
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(&profile_),
-          policy::EnterpriseManagementAuthority::CLOUD);
-  MakeAccountAvailableAndCapable("test@google.com", "google.com");
-
-  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
-}
-
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest, ManagedProfileCloud) {
-  CreateService();
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(&profile_),
-          policy::EnterpriseManagementAuthority::CLOUD);
-  MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
-}
-
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
-       ManagedProfileComputerLocal) {
-  CreateService();
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(&profile_),
-          policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
-  MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
-}
-
-#if BUILDFLAG(IS_WIN)
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest, EnterpriseDeviceWin) {
-  CreateService();
-  auto scoped_device_override = base::SetIsEnterpriseDeviceForTesting(true);
-  MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
-
-  SetPolicySettings(prefs::Policy::kDisallowed);
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
-       EnterpriseDeviceChromeOS) {
-  CreateService();
-  profile_.ScopedCrosSettingsTestHelper()->InstallAttributes()->SetCloudManaged(
-      "example.com", "device_id");
-  MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
-
-  SetPolicySettings(prefs::Policy::kDisallowed);
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
-}
-#endif
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    IndigoServiceManagementPolicyDefaultEnabledTest,
-    testing::Bool(),
-    [](const testing::TestParamInfo<bool>& info) {
-      return info.param ? "AllowedForEnterprise" : "DisallowedForEnterprise";
-    });
 
 }  // namespace indigo
