@@ -100,7 +100,8 @@ void DisplaySendToSelfSnackbar(id<SnackbarCommands> snackbar_handler,
 }
 
 void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler,
-                                      std::string_view device_name) {
+                                      std::string_view device_name,
+                                      NSString* email) {
   CHECK(base::FeatureList::IsEnabled(
       send_tab_to_self::kSendTabToSelfPostSendToast));
   // `snackbar_handler` can be nil if the command dispatcher was already
@@ -114,6 +115,9 @@ void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler,
       l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
                               base::UTF8ToUTF16(device_name));
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
+  if (email.length > 0) {
+    message.subtitle = email;
+  }
   [snackbar_handler showSnackbarMessage:message];
 }
 
@@ -170,6 +174,7 @@ void DisplaySendToSelfFailureSnackbar(id<SnackbarCommands> snackbar_handler) {
 // integrations like the native share sheet.
 void ShowPostSendSnackbar(id<SnackbarCommands> snackbar_handler,
                           std::string_view device_name,
+                          NSString* email,
                           send_tab_to_self::SendTabToSelfResult result) {
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfPostSendToast)) {
@@ -183,7 +188,7 @@ void ShowPostSendSnackbar(id<SnackbarCommands> snackbar_handler,
       web::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(&DisplaySendToSelfSuccessSnackbar, snackbar_handler,
-                         std::string(device_name)));
+                         std::string(device_name), email));
       break;
     }
     case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled: {
@@ -525,13 +530,18 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   __weak id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
 
+  id<SystemIdentity> account =
+      AuthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetPrimaryIdentity();
+  NSString* email = account ? account.userEmail : nil;
+
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
       ->SendEntry(self.url, base::SysNSStringToUTF8(self.title),
                   base::SysNSStringToUTF8(cacheGUID), pageContext,
                   send_tab_to_self::NavigationHistory(),
                   base::BindOnce(&ShowPostSendSnackbar, snackbarHandler,
-                                 base::SysNSStringToUTF8(deviceName)),
+                                 base::SysNSStringToUTF8(deviceName), email),
                   _entryPoint);
 
   // If the post-send toast is disabled, show the legacy snackbar message when

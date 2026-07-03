@@ -305,7 +305,8 @@ void DismissSnackbar() {
 - (void)testSendTabToSelfAndVerifySuccessSnackbar {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
@@ -336,7 +337,8 @@ void DismissSnackbar() {
                               base::SysNSStringToUTF16(kTargetDeviceName));
   id<GREYMatcher> snackbarMatcher = grey_allOf(
       chrome_test_util::SnackbarViewMatcher(),
-      grey_descendant(grey_accessibilityLabel(snackbarMessage)), nil);
+      grey_descendant(grey_accessibilityLabel(snackbarMessage)),
+      grey_descendant(grey_accessibilityLabel(fakeIdentity.userEmail)), nil);
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 }
 
