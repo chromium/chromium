@@ -20,6 +20,8 @@ interface CookieInfo {
   email: string;
   gaia_id: string;
   valid: string;
+  signed_in: string;
+  verified: string;
 }
 
 interface CookieAccountsInfo {
@@ -160,12 +162,16 @@ function getCookieInfoHtml(cookieAccountsInfo: CookieAccountsInfo) {
           <td>Email Address</td>
           <td>Gaia ID</td>
           <td>Validity</td>
+          <td>Sign-in status</td>
+          <td>Verification status</td>
         </tr>
         ${cookieAccountsInfo.cookie_info.map(item => html`
           <tr>
             <td>${item.email}</td>
             <td>${item.gaia_id}</td>
             <td>${item.valid}</td>
+            <td>${item.signed_in}</td>
+            <td>${item.verified}</td>
           </tr>
         `)}
       </table>

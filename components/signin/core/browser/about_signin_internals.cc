@@ -100,11 +100,15 @@ void AddSectionEntry(base::ListValue& section_list,
 void AddCookieEntry(base::ListValue& accounts_list,
                     const std::string& field_email,
                     const GaiaId& field_gaia_id,
-                    const std::string& field_valid) {
+                    const std::string& field_valid,
+                    const std::string& field_signed_in,
+                    const std::string& field_verified) {
   base::DictValue entry;
   entry.Set("email", field_email);
   entry.Set("gaia_id", field_gaia_id.ToString());
   entry.Set("valid", field_valid);
+  entry.Set("signed_in", field_signed_in);
+  entry.Set("verified", field_verified);
   accounts_list.Append(std::move(entry));
 }
 
@@ -536,17 +540,16 @@ void AboutSigninInternals::OnAccountsInCookieUpdated(
   }
 
   base::ListValue cookie_info;
-  for (const auto& signed_in_account :
-       accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
-    AddCookieEntry(cookie_info, signed_in_account.raw_email,
-                   signed_in_account.gaia_id,
-                   signed_in_account.valid ? "Valid" : "Invalid");
+  for (const auto& account : accounts_in_cookie_jar_info.GetAllAccounts()) {
+    AddCookieEntry(cookie_info, account.raw_email, account.gaia_id,
+                   account.valid ? "Valid" : "Invalid",
+                   account.signed_out ? "Signed out" : "Signed in",
+                   account.verified ? "Verified" : "Not verified");
   }
 
-  if (accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
-          .size() == 0) {
-    AddCookieEntry(cookie_info, "No Accounts Present.", GaiaId(),
-                   std::string());
+  if (accounts_in_cookie_jar_info.GetAllAccounts().empty()) {
+    AddCookieEntry(cookie_info, "No Accounts Present.", GaiaId(), std::string(),
+                   std::string(), std::string());
   }
 
   base::DictValue cookie_status_dict;
