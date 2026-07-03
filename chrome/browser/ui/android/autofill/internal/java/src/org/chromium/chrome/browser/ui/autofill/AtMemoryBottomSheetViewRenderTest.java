@@ -93,6 +93,7 @@ public class AtMemoryBottomSheetViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setRevision(4)
+                    .setDescription("Align flyout chip heights in the same row")
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 

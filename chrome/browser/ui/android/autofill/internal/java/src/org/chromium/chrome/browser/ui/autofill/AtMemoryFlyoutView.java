@@ -24,7 +24,9 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** View wrapper for the flyout screen of the @memory bottom sheet. */
 @NullMarked
@@ -39,6 +41,10 @@ public class AtMemoryFlyoutView extends LinearLayout {
     private final List<ChipView> mActiveChips = new ArrayList<>();
 
     private @Nullable Callback<Integer> mSuggestionClickListener;
+    private final View.OnLayoutChangeListener mChipsLayoutListener =
+            (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                alignFlyoutChipHeights(v, right - left, oldRight - oldLeft);
+            };
 
     public AtMemoryFlyoutView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -53,6 +59,7 @@ public class AtMemoryFlyoutView extends LinearLayout {
         mTitleView = findViewById(R.id.flyout_title);
         mSourceButton = findViewById(R.id.flyout_source_button);
         mManageButton = findViewById(R.id.flyout_manage_button);
+        mChipsContainer.addOnLayoutChangeListener(mChipsLayoutListener);
     }
 
     public void setTitle(@Nullable String title) {
@@ -129,8 +136,32 @@ public class AtMemoryFlyoutView extends LinearLayout {
         return chip;
     }
 
-    @SuppressWarnings("unused")
-    private void alignFlyoutChipHeights() {
-        // TODO(crbug.com/513146609): Implement the logic for the same height chips alignment.
+    private void alignFlyoutChipHeights(View container, int newWidth, int oldWidth) {
+        container.removeOnLayoutChangeListener(mChipsLayoutListener);
+        // If the Activity resizes horizontally (e.g., screen rotation or multi-window mode),
+        // reset all chip minimum heights to 0 so Flow can re-pack them naturally into new rows.
+        if (newWidth != oldWidth && oldWidth != 0) {
+            for (ChipView chip : mActiveChips) {
+                chip.setMinimumHeight(0);
+            }
+        } else {
+            // Once horizontal container dimensions stabilize, equalize chip heights per row.
+            Map<Integer, List<ChipView>> rows = new HashMap<>();
+            for (ChipView chip : mActiveChips) {
+                rows.computeIfAbsent(chip.getTop(), k -> new ArrayList<>()).add(chip);
+            }
+            for (List<ChipView> row : rows.values()) {
+                int maxHeight = 0;
+                for (ChipView chip : row) {
+                    maxHeight = Math.max(maxHeight, chip.getHeight());
+                }
+                for (ChipView chip : row) {
+                    if (chip.getMinimumHeight() != maxHeight) {
+                        chip.setMinimumHeight(maxHeight);
+                    }
+                }
+            }
+        }
+        container.addOnLayoutChangeListener(mChipsLayoutListener);
     }
 }
