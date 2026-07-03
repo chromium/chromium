@@ -307,6 +307,49 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
   }
 }
 
+namespace {
+
+// Resolves the schema and canonical name for a registry entry.
+//
+// Windows Registry keys/values are case-insensitive, but Chrome policy schema
+// lookups are case-sensitive. This function resolves registry entry names to
+// their canonical schema casings to ensure Chrome correctly recognizes them.
+void GetMatchingPropertiesAndCanonicalName(const std::string& entry_name,
+                                           const Schema& schema,
+                                           std::string& canonical_name,
+                                           SchemaList& matching_schemas) {
+  canonical_name = entry_name;
+  matching_schemas.clear();
+  if (!schema.valid()) {
+    return;
+  }
+
+  // Step 1: Try case-sensitive lookup on known properties first.
+  Schema known_property = schema.GetKnownProperty(entry_name);
+  if (known_property.valid()) {
+    matching_schemas = schema.GetMatchingProperties(entry_name);
+    return;
+  }
+
+  // Step 2: Fallback to case-insensitive lookup for known properties.
+  // This repairs incorrect casing configured by administrators in the registry.
+  std::optional<std::string> canonical_property_name =
+      schema.GetKnownPropertyKeyCaseInsensitive(entry_name);
+  if (canonical_property_name.has_value()) {
+    canonical_name = canonical_property_name.value();
+    // Retrieve all schemas using the resolved canonical name.
+    matching_schemas = schema.GetMatchingProperties(canonical_name);
+    return;
+  }
+
+  // Step 3: Unrecognized keys fallback.
+  // Query matching schemas (e.g. pattern properties or additional properties)
+  // using the original raw name.
+  matching_schemas = schema.GetMatchingProperties(entry_name);
+}
+
+}  // namespace
+
 std::optional<base::Value> RegistryDict::ConvertToJSON(
     const Schema& schema) const {
   base::Value::Type type =
@@ -316,9 +359,10 @@ std::optional<base::Value> RegistryDict::ConvertToJSON(
       base::DictValue result;
       for (RegistryDict::ValueMap::const_iterator entry(values_.begin());
            entry != values_.end(); ++entry) {
-        SchemaList matching_schemas =
-            schema.valid() ? schema.GetMatchingProperties(entry->first)
-                           : SchemaList();
+        std::string canonical_name;
+        SchemaList matching_schemas;
+        GetMatchingPropertiesAndCanonicalName(entry->first, schema,
+                                              canonical_name, matching_schemas);
         // Always try the empty schema if no other schemas exist.
         if (matching_schemas.empty())
           matching_schemas.push_back(Schema());
@@ -326,16 +370,17 @@ std::optional<base::Value> RegistryDict::ConvertToJSON(
           std::optional<base::Value> converted =
               ConvertRegistryValue(entry->second, subschema);
           if (converted.has_value()) {
-            result.Set(entry->first, std::move(converted.value()));
+            result.Set(canonical_name, std::move(converted.value()));
             break;
           }
         }
       }
       for (RegistryDict::KeyMap::const_iterator entry(keys_.begin());
            entry != keys_.end(); ++entry) {
-        SchemaList matching_schemas =
-            schema.valid() ? schema.GetMatchingProperties(entry->first)
-                           : SchemaList();
+        std::string canonical_name;
+        SchemaList matching_schemas;
+        GetMatchingPropertiesAndCanonicalName(entry->first, schema,
+                                              canonical_name, matching_schemas);
         // Always try the empty schema if no other schemas exist.
         if (matching_schemas.empty())
           matching_schemas.push_back(Schema());
@@ -343,7 +388,7 @@ std::optional<base::Value> RegistryDict::ConvertToJSON(
           std::optional<base::Value> converted =
               entry->second->ConvertToJSON(subschema);
           if (converted) {
-            result.Set(entry->first, std::move(*converted));
+            result.Set(canonical_name, std::move(*converted));
             break;
           }
         }

@@ -969,8 +969,27 @@ const internal::PropertyNode kPropertyNodes[] = {
 };
 
 const internal::PropertiesNode kProperties[] = {
-//  Begin    End  PatternEnd  RequiredBegin  RequiredEnd  Additional Properties
-  {     0,    16,    16,     0,          0,    -1 },  // root node
+//  Begin    End  PatternEnd  RequiredBegin  RequiredEnd  Additional CaseInsensitiveLookupBegin CaseInsensitiveLookupEnd
+  {     0,    16,    16,     0,          0,    -1,     0,    16 },  // root node
+};
+
+const int16_t kCaseInsensitiveLookup[] = {
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
 };
 
 const internal::SchemaData* GetChromeSchemaData() {
@@ -982,6 +1001,7 @@ const internal::SchemaData* GetChromeSchemaData() {
   nullptr,
   nullptr,
   nullptr,
+    kCaseInsensitiveLookup,
     -1,  // validation_schema root index
   };
 
@@ -1372,8 +1392,27 @@ const internal::PropertyNode kPropertyNodes[] = {
 };
 
 const internal::PropertiesNode kProperties[] = {
-//  Begin    End  PatternEnd  RequiredBegin  RequiredEnd  Additional Properties
-  {     0,    16,    16,     0,          0,    -1 },  // root node
+//  Begin    End  PatternEnd  RequiredBegin  RequiredEnd  Additional CaseInsensitiveLookupBegin CaseInsensitiveLookupEnd
+  {     0,    16,    16,     0,          0,    -1,     0,    16 },  // root node
+};
+
+const int16_t kCaseInsensitiveLookup[] = {
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
 };
 
 const internal::SchemaData* GetChromeSchemaData() {
@@ -1385,6 +1424,7 @@ const internal::SchemaData* GetChromeSchemaData() {
   nullptr,
   nullptr,
   nullptr,
+    kCaseInsensitiveLookup,
     -1,  // validation_schema root index
   };
 

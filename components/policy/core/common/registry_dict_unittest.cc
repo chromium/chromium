@@ -354,6 +354,49 @@ TEST(RegistryDictTest, PatternPropertySchema) {
 
   EXPECT_EQ(base::Value(std::move(expected)), *actual);
 }
+
+TEST(RegistryDictTest, CaseInsensitiveWithAdditionalProperties) {
+  RegistryDict test_dict;
+
+  base::Value string_value("fortytwo");
+  base::Value other_value("other");
+
+  std::unique_ptr<RegistryDict> policy_dict(new RegistryDict());
+  // This will be converted to lower-case string-policy.
+  policy_dict->SetValue("STRING-POLICY", string_value.Clone());
+  // This is unknown and should be kept as-is and caught by
+  // additionalProperties.
+  policy_dict->SetValue("UNKNOWN-KEY", other_value.Clone());
+  test_dict.SetKey("policy-dict", std::move(policy_dict));
+
+  const auto schema = Schema::Parse(
+      "{"
+      "  \"type\": \"object\","
+      "  \"properties\": {"
+      "    \"policy-dict\": {"
+      "      \"type\": \"object\","
+      "      \"properties\": {"
+      "        \"string-policy\": {"
+      "          \"type\": \"string\""
+      "        }"
+      "      },"
+      "      \"additionalProperties\": { \"type\": \"string\" }"
+      "    }"
+      "  }"
+      "}");
+  ASSERT_TRUE(schema.has_value()) << schema.error();
+
+  std::optional<base::Value> actual(test_dict.ConvertToJSON(*schema));
+  ASSERT_TRUE(actual);
+
+  base::DictValue expected;
+  base::DictValue expected_policy_dict;
+  expected_policy_dict.Set("string-policy", "fortytwo");
+  expected_policy_dict.Set("UNKNOWN-KEY", "other");
+  expected.Set("policy-dict", std::move(expected_policy_dict));
+
+  EXPECT_EQ(base::Value(std::move(expected)), *actual);
+}
 #endif
 
 TEST(RegistryDictTest, KeyValueNameClashes) {

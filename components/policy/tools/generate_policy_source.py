@@ -628,7 +628,8 @@ SchemaNode = namedtuple(
 PropertyNode = namedtuple('PropertyNode', 'key schema')
 PropertiesNode = namedtuple(
     'PropertiesNode',
-    'begin end pattern_end required_begin required_end additional name')
+    'begin end pattern_end required_begin required_end additional case_insensitive_lookup_begin case_insensitive_lookup_end name'
+)
 RestrictionNode = namedtuple('RestrictionNode', 'first second')
 
 # A mapping of the simple schema types to base::Value::Types.
@@ -672,6 +673,7 @@ class SchemaNodesGenerator:
     self.required_properties = []
     self.int_enums = []
     self.string_enums = []
+    self.case_insensitive_lookup = []
     self.ranges = {}
     self.id_map = {}
 
@@ -878,10 +880,17 @@ class SchemaNodesGenerator:
       for name in required_properties:
         assert name in properties
 
+      case_insensitive_lookup_begin = len(self.case_insensitive_lookup)
+      indices = list(range(begin, end))
+      indices.sort(key=lambda i: sorted_properties[i - begin][0].lower())
+      self.case_insensitive_lookup += indices
+      case_insensitive_lookup_end = len(self.case_insensitive_lookup)
+
       extra = len(self.properties_nodes)
       self.properties_nodes.append(
           PropertiesNode(begin, end, pattern_end, required_begin, required_end,
-                         additionalProperties, name))
+                         additionalProperties, case_insensitive_lookup_begin,
+                         case_insensitive_lookup_end, name))
 
       # Update index at |extra| now, since that was filled with a dummy value
       # when the schema node was created.
@@ -929,15 +938,16 @@ class SchemaNodesGenerator:
       f.write('};\n\n')
 
     if self.properties_nodes:
-      f.write('const internal::PropertiesNode kProperties[] = {\n'
-              '//  Begin    End  PatternEnd  RequiredBegin  RequiredEnd'
-              '  Additional Properties\n')
+      f.write(
+          'const internal::PropertiesNode kProperties[] = {\n'
+          '//  Begin    End  PatternEnd  RequiredBegin  RequiredEnd'
+          '  Additional CaseInsensitiveLookupBegin CaseInsensitiveLookupEnd\n')
       for properties_node in self.properties_nodes:
         for i in range(0, len(properties_node) - 1):
           assert (properties_node[i] >= MIN_INDEX and
                   properties_node[i] <= MAX_INDEX)
-        f.write(
-            '  { %5d, %5d, %5d, %5d, %10d, %5d },  // %s\n' % properties_node)
+        f.write('  { %5d, %5d, %5d, %5d, %10d, %5d, %5d, %5d },  // %s\n' %
+                properties_node)
       f.write('};\n\n')
 
     if self.restriction_nodes:
@@ -966,6 +976,12 @@ class SchemaNodesGenerator:
         f.write('  %s,\n' % self.GetString(possible_values))
       f.write('};\n\n')
 
+    if self.case_insensitive_lookup:
+      f.write('const int16_t kCaseInsensitiveLookup[] = {\n')
+      for index in self.case_insensitive_lookup:
+        f.write('  %d,\n' % index)
+      f.write('};\n\n')
+
     f.write('const internal::SchemaData* GetChromeSchemaData() {\n')
     f.write('  static const internal::SchemaData kChromeSchemaData = {\n'
             '    kSchemas,\n')
@@ -978,6 +994,8 @@ class SchemaNodesGenerator:
     f.write('    kIntegerEnumerations,\n' if self.int_enums else '  nullptr,\n')
     f.write(
         '    kStringEnumerations,\n' if self.string_enums else '  nullptr,\n')
+    f.write('    kCaseInsensitiveLookup,\n' if self.
+            case_insensitive_lookup else '  {},\n')
     f.write('    %d,  // validation_schema root index\n' %
             self.validation_schema_root_index)
     f.write('  };\n\n')
@@ -1009,7 +1027,7 @@ class SchemaNodesGenerator:
     self.property_nodes = list(
         map(partial(self.ResolveID, 1, PropertyNode), self.property_nodes))
     self.properties_nodes = list(
-        map(partial(self.ResolveID, 3, PropertiesNode), self.properties_nodes))
+        map(partial(self.ResolveID, 5, PropertiesNode), self.properties_nodes))
 
   def FindSensitiveChildren(self):
     """Wrapper function, which calls FindSensitiveChildrenRecursive().

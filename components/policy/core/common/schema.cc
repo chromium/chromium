@@ -27,6 +27,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -90,6 +91,7 @@ struct StorageSizes {
   size_t required_properties = 0;
   size_t int_enums = 0;
   size_t string_enums = 0;
+  size_t case_insensitive_lookup = 0;
 };
 
 // An invalid index, indicating that a node is not present; similar to a NULL
@@ -540,6 +542,12 @@ class Schema::InternalStorage
     return UNSAFE_TODO(schema_data_.string_enums + index);
   }
 
+  base::span<const int16_t> case_insensitive_lookup(int index,
+                                                    int count) const {
+    return schema_data_.case_insensitive_lookup.subspan(
+        static_cast<size_t>(index), static_cast<size_t>(count));
+  }
+
   // Compiles regular expression |pattern|. The result is cached and will be
   // returned directly next time.
   re2::RE2* CompileRegex(const std::string& pattern) const;
@@ -595,6 +603,8 @@ class Schema::InternalStorage
       const base::DictValue& schema,
       SchemaNode* schema_node);
 
+  void BuildCaseInsensitiveLookup(int extra);
+
   // Assigns the IDs in |id_map| to the pending references in the
   // |reference_list|. If an ID is missing then |error| is set and false is
   // returned; otherwise returns true.
@@ -613,7 +623,6 @@ class Schema::InternalStorage
   // CompileRegex() and return results directly next time.
   mutable std::map<std::string, std::unique_ptr<re2::RE2>> regex_cache_;
 
-  SchemaData schema_data_;
   std::vector<std::string> strings_;
   std::vector<SchemaNode> schema_nodes_;
   std::vector<PropertyNode> property_nodes_;
@@ -622,6 +631,8 @@ class Schema::InternalStorage
   std::vector<const char*> required_properties_;
   std::vector<int> int_enums_;
   std::vector<const char*> string_enums_;
+  std::vector<int16_t> case_insensitive_lookup_;
+  SchemaData schema_data_;
 };
 
 Schema::InternalStorage::InternalStorage() = default;
@@ -655,6 +666,7 @@ Schema::InternalStorage::ParseSchema(const base::DictValue& schema) {
   storage->required_properties_.reserve(sizes.required_properties);
   storage->int_enums_.reserve(sizes.int_enums);
   storage->string_enums_.reserve(sizes.string_enums);
+  storage->case_insensitive_lookup_.reserve(sizes.case_insensitive_lookup);
 
   int16_t root_index = kInvalid;
   ReferencesAndIDs references_and_ids;
@@ -675,7 +687,9 @@ Schema::InternalStorage::ParseSchema(const base::DictValue& schema) {
       sizes.restriction_nodes != storage->restriction_nodes_.size() ||
       sizes.required_properties != storage->required_properties_.size() ||
       sizes.int_enums != storage->int_enums_.size() ||
-      sizes.string_enums != storage->string_enums_.size()) {
+      sizes.string_enums != storage->string_enums_.size() ||
+      sizes.case_insensitive_lookup !=
+          storage->case_insensitive_lookup_.size()) {
     return base::unexpected(
         "Failed to parse the schema due to a Chrome bug. Please file a "
         "new issue at http://crbug.com");
@@ -696,6 +710,7 @@ Schema::InternalStorage::ParseSchema(const base::DictValue& schema) {
   data->required_properties = storage->required_properties_.data();
   data->int_enums = storage->int_enums_.data();
   data->string_enums = storage->string_enums_.data();
+  data->case_insensitive_lookup = base::span(storage->case_insensitive_lookup_);
   data->validation_schema_root_index = -1;
 
   return base::ok(std::move(storage));
@@ -753,6 +768,7 @@ void Schema::InternalStorage::DetermineStorageSizes(
         }
         sizes->strings++;
         sizes->property_nodes++;
+        sizes->case_insensitive_lookup++;
       }
     }
 
@@ -961,15 +977,43 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
   }
   properties_nodes_[extra].required_end = required_properties_.size();
 
+  BuildCaseInsensitiveLookup(extra);
+
   if (properties_nodes_[extra].begin == properties_nodes_[extra].pattern_end) {
     properties_nodes_[extra].begin = kInvalid;
     properties_nodes_[extra].end = kInvalid;
     properties_nodes_[extra].pattern_end = kInvalid;
     properties_nodes_[extra].required_begin = kInvalid;
     properties_nodes_[extra].required_end = kInvalid;
+    properties_nodes_[extra].case_insensitive_lookup_begin = kInvalid;
+    properties_nodes_[extra].case_insensitive_lookup_end = kInvalid;
   }
 
   return base::ok();
+}
+
+void Schema::InternalStorage::BuildCaseInsensitiveLookup(int extra) {
+  int case_insensitive_lookup_begin =
+      static_cast<int>(case_insensitive_lookup_.size());
+  int prop_begin = properties_nodes_[extra].begin;
+  int prop_end = properties_nodes_[extra].end;
+  std::vector<int16_t> indices;
+  indices.reserve(prop_end - prop_begin);
+  for (int i = prop_begin; i < prop_end; ++i) {
+    indices.push_back(static_cast<int16_t>(i));
+  }
+  auto compare = [this](int16_t a, int16_t b) {
+    return base::CompareCaseInsensitiveASCII(property_nodes_[a].key,
+                                             property_nodes_[b].key) < 0;
+  };
+  std::sort(indices.begin(), indices.end(), compare);
+  case_insensitive_lookup_.insert(case_insensitive_lookup_.end(),
+                                  indices.begin(), indices.end());
+
+  properties_nodes_[extra].case_insensitive_lookup_begin =
+      case_insensitive_lookup_begin;
+  properties_nodes_[extra].case_insensitive_lookup_end =
+      static_cast<int>(case_insensitive_lookup_.size());
 }
 
 base::expected<void, std::string> Schema::InternalStorage::ParseList(
@@ -1501,6 +1545,44 @@ Schema Schema::GetKnownProperty(const std::string& key) const {
     return Schema(storage_, storage_->schema(it->schema));
   }
   return Schema();
+}
+
+std::optional<std::string> Schema::GetKnownPropertyKeyCaseInsensitive(
+    const std::string& key) const {
+  CHECK(valid());
+  CHECK_EQ(base::Value::Type::DICT, type());
+
+  if (key.empty()) {
+    return std::nullopt;
+  }
+
+  const PropertiesNode* node = storage_->properties(node_->extra);
+  if (node->case_insensitive_lookup_begin == kInvalid ||
+      node->case_insensitive_lookup_end == kInvalid) {
+    return std::nullopt;
+  }
+
+  int count =
+      node->case_insensitive_lookup_end - node->case_insensitive_lookup_begin;
+  if (count <= 0) {
+    return std::nullopt;
+  }
+
+  base::span<const int16_t> lookup = storage_->case_insensitive_lookup(
+      node->case_insensitive_lookup_begin, count);
+
+  auto compare = [this](int16_t index, const std::string& target) {
+    return base::CompareCaseInsensitiveASCII(storage_->property(index)->key,
+                                             target) < 0;
+  };
+
+  auto it = std::lower_bound(lookup.begin(), lookup.end(), key, compare);
+  if (it != lookup.end() &&
+      base::EqualsCaseInsensitiveASCII(storage_->property(*it)->key, key)) {
+    return storage_->property(*it)->key;
+  }
+
+  return std::nullopt;
 }
 
 Schema Schema::GetAdditionalProperties() const {

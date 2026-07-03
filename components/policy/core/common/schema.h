@@ -215,6 +215,12 @@ class POLICY_EXPORT Schema {
   // property name then the returned Schema is not valid.
   Schema GetKnownProperty(const std::string& key) const;
 
+  // Returns the canonical name for |key| if a case-insensitive match is found
+  // in the known properties of this schema.
+  // This method should be called only if `Schema` type is `DICT`.
+  std::optional<std::string> GetKnownPropertyKeyCaseInsensitive(
+      const std::string& key) const;
+
   // Returns all Schemas from pattern properties that match |key|. May be empty.
   SchemaList GetPatternProperties(const std::string& key) const;
 

@@ -810,4 +810,19 @@ TEST_F(PolicyLoaderWinTest, LoadSzPoliciesWithEnvVar) {
   EXPECT_TRUE(Matches(expected));
 }
 
+TEST_F(PolicyLoaderWinTest, LoadPoliciesCaseInsensitively) {
+  RegKey hklm_key(HKEY_LOCAL_MACHINE, kTestPolicyKey, KEY_ALL_ACCESS);
+  ASSERT_TRUE(hklm_key.Valid());
+  std::string lowercase_key = base::ToLowerASCII(test_keys::kKeyString);
+  hklm_key.WriteValue(base::UTF8ToWide(lowercase_key).c_str(),
+                      base::UTF8ToWide("test_value").c_str());
+
+  PolicyBundle expected;
+  expected.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+      .Set(test_keys::kKeyString, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+           POLICY_SOURCE_PLATFORM, base::Value("test_value"), nullptr);
+
+  EXPECT_TRUE(Matches(expected));
+}
+
 }  // namespace policy

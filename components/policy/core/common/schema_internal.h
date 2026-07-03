@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
@@ -99,6 +100,14 @@ struct POLICY_EXPORT PropertiesNode {
   // structure of the values for those keys. Otherwise |additional| is -1 and
   // is invalid.
   int16_t additional;
+
+  // An offset into SchemaData::case_insensitive_lookup that indexes the first
+  // case-insensitively sorted property index of this map policy.
+  int16_t case_insensitive_lookup_begin;
+
+  // An offset into SchemaData::case_insensitive_lookup right beyond the last
+  // case-insensitively sorted property index of this map policy.
+  int16_t case_insensitive_lookup_end;
 };
 
 // Represents the restriction on Type::INTEGER or Type::STRING instance of
@@ -149,6 +158,7 @@ struct POLICY_EXPORT SchemaData {
   raw_ptr<const int, DanglingUntriaged | AllowPtrArithmetic> int_enums;
   raw_ptr<const char* const, DanglingUntriaged | AllowPtrArithmetic>
       string_enums;
+  base::raw_span<const int16_t> case_insensitive_lookup;
   int validation_schema_root_index;
 };
 

@@ -525,6 +525,47 @@ TEST(SchemaTest, Lookups) {
   }
 }
 
+TEST(SchemaTest, GetKnownPropertyKeyCaseInsensitive) {
+  {
+    const auto schema = Schema::Parse(R"({ "type": "object" })");
+    ASSERT_TRUE(schema.has_value()) << schema.error();
+    EXPECT_EQ(std::nullopt,
+              schema->GetKnownPropertyKeyCaseInsensitive("Boolean"));
+  }
+
+  {
+    const auto schema = Schema::Parse(R"({
+      "type": "object",
+      "properties": {
+        "Boolean": { "type": "boolean" },
+        "Integer": { "type": "integer" },
+        "URL": { "type": "string" }
+      }
+    })");
+    ASSERT_TRUE(schema.has_value()) << schema.error();
+
+    // Exact match
+    EXPECT_EQ("Boolean", schema->GetKnownPropertyKeyCaseInsensitive("Boolean"));
+    EXPECT_EQ("Integer", schema->GetKnownPropertyKeyCaseInsensitive("Integer"));
+    EXPECT_EQ("URL", schema->GetKnownPropertyKeyCaseInsensitive("URL"));
+
+    // Case-insensitive match (remapping)
+    EXPECT_EQ("Boolean", schema->GetKnownPropertyKeyCaseInsensitive("boolean"));
+    EXPECT_EQ("Boolean", schema->GetKnownPropertyKeyCaseInsensitive("BOOLEAN"));
+    EXPECT_EQ("Boolean", schema->GetKnownPropertyKeyCaseInsensitive("bOoLeAn"));
+    EXPECT_EQ("URL", schema->GetKnownPropertyKeyCaseInsensitive("url"));
+    EXPECT_EQ("URL", schema->GetKnownPropertyKeyCaseInsensitive("Url"));
+
+    // Non-existent properties
+    EXPECT_EQ(std::nullopt, schema->GetKnownPropertyKeyCaseInsensitive("xyz"));
+    EXPECT_EQ(std::nullopt, schema->GetKnownPropertyKeyCaseInsensitive(""));
+    EXPECT_EQ(std::nullopt,
+              schema->GetKnownPropertyKeyCaseInsensitive("1Boolean"));
+    EXPECT_EQ(std::nullopt,
+              schema->GetKnownPropertyKeyCaseInsensitive("_Boolean"));
+  }
+}
+
 TEST(SchemaTest, Wrap) {
   const internal::SchemaNode kSchemas[] = {
       {base::Value::Type::DICT, 0},      //  0: root node
@@ -559,13 +600,17 @@ TEST(SchemaTest, Wrap) {
   };
 
   const internal::PropertiesNode kProperties[] = {
-    // 0 to 10 (exclusive) are the known properties in kPropertyNodes, 9 is
-    // patternProperties and 6 is the additionalProperties node.
-    { 0, 10, 11, 0, 0, 6 },
-    // 11 to 13 (exclusive) are the known properties in kPropertyNodes. 0 to
-    // 1 (exclusive) are the required properties in kRequired. -1 indicates
-    // no additionalProperties.
-    { 11, 13, 13, 0, 1, -1 },
+      // 0 to 10 (exclusive) are the known properties in kPropertyNodes, 10 is
+      // patternProperties and 6 is the additionalProperties node.
+      {0, 10, 11, 0, 0, 6, 0, 10},
+      // 11 to 13 (exclusive) are the known properties in kPropertyNodes. 0 to
+      // 1 (exclusive) are the required properties in kRequired. -1 indicates
+      // no additionalProperties.
+      {11, 13, 13, 0, 1, -1, 10, 12},
+  };
+
+  const int16_t kCaseInsensitiveLookup[] = {
+      0, 1, 6, 2, 3, 4, 7, 8, 5, 9, 12, 11,
   };
 
   const internal::RestrictionNode kRestriction[] = {
@@ -588,7 +633,7 @@ TEST(SchemaTest, Wrap) {
 
   const internal::SchemaData kData = {
       kSchemas,  kPropertyNodes, kProperties,  kRestriction,
-      kRequired, kIntEnums,      kStringEnums,
+      kRequired, kIntEnums,      kStringEnums, kCaseInsensitiveLookup,
       -1  // validation_schema_root_index
   };
 
