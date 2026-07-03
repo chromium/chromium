@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -89,6 +90,8 @@ void AtMemoryMetricsRecorder::OnPopupShown(
 }
 
 void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string query) {
+  query_to_suggestions_shown_timer_.emplace();
+
   if (uploader_service_) {
     pending_log_entry_ =
         std::make_unique<optimization_guide::ModelQualityLogEntry>(
@@ -112,6 +115,27 @@ void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string query) {
 
 void AtMemoryMetricsRecorder::OnSuggestionAccepted() {
   suggestion_accepted_ = true;
+}
+
+void AtMemoryMetricsRecorder::OnQueryResponseReceived() {
+  if (!query_to_suggestions_shown_timer_) {
+    return;
+  }
+
+  base::TimeDelta time_since_query_submitted =
+      query_to_suggestions_shown_timer_->Elapsed();
+  base::UmaHistogramTimes("Autofill.AtMemory.Latency.Query",
+                          time_since_query_submitted);
+  query_to_suggestions_shown_timer_.reset();
+
+  if (!pending_log_entry_) {
+    return;
+  }
+  auto* quality = pending_log_entry_->log_ai_data_request()
+                      ->mutable_at_memory()
+                      ->mutable_quality();
+  quality->set_query_submitted_to_suggestions_shown_ms(
+      time_since_query_submitted.InMilliseconds());
 }
 
 void AtMemoryMetricsRecorder::OnFetchPiiStarted() {

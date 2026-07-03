@@ -892,6 +892,8 @@ TEST_F(AtMemoryManagerTest,
 TEST_F(
     AtMemoryManagerTest,
     OnSearchSubmitted_UnsupportedQuery_GlicEnabled_UnsupportedQuerySuggestion) {
+  base::HistogramTester histogram_tester;
+
   autofill_client().set_is_glic_enabled(true);
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -906,6 +908,10 @@ TEST_F(
 
   ASSERT_EQ(final_suggestions.size(), 1u);
   EXPECT_EQ(final_suggestions[0].type, SuggestionType::kOpenGemini);
+
+  // Verify that we still logged that some sort of suggestion was shown to the
+  // user despite it not being an AtMemory suggestion.
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Latency.Query", 1);
 }
 
 // Tests that when Glic is disabled and search returns `kUnsupportedQuery`,

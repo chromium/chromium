@@ -22,6 +22,8 @@ class AtMemoryMetricsRecorderTest : public testing::Test {
   AtMemoryMetricsRecorderTest() = default;
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
 };
 
@@ -143,15 +145,13 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
 
 // Tests that the unmasking duration metric is recorded correctly.
 TEST_F(AtMemoryMetricsRecorderTest, TimeToFetchUnmasked) {
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   {
     AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
                                     FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
     metrics.OnFetchPiiStarted();
-    task_environment.FastForwardBy(base::Seconds(2));
+    task_environment_.FastForwardBy(base::Seconds(2));
     metrics.OnFetchPiiCompleted();
     metrics.MarkFilled();
   }
@@ -163,6 +163,8 @@ TEST_F(AtMemoryMetricsRecorderTest, TimeToFetchUnmasked) {
 // Tests that the ModelQualityLogEntry is correctly filled and uploaded when the
 // uploader service is available and is flushed on destruction.
 TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
+  base::HistogramTester histogram_tester;
+
   TestingPrefServiceSimple local_state;
   optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
       local_state.registry());
@@ -177,6 +179,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
         FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"test query");
+    task_environment_.FastForwardBy(base::Milliseconds(100));
+    metrics.OnQueryResponseReceived();
   }
 
   const auto& uploaded_logs = uploader_service.uploaded_logs();
@@ -189,6 +193,9 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
   EXPECT_EQ(quality.form_signature(), 123u);
   EXPECT_EQ(quality.field_signature(), 456u);
   EXPECT_FALSE(quality.session_id().empty());
+  EXPECT_EQ(quality.query_submitted_to_suggestions_shown_ms(), 100);
+
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Latency.Query", 1);
 }
 
 // Tests that the ModelQualityLogEntry is correctly filled and uploaded when the

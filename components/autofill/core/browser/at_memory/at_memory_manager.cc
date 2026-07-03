@@ -820,6 +820,10 @@ void AtMemoryManager::OnSearchResultsReceived(
     CancelPendingQueries();
   }
 
+  if (at_memory_metrics_recorder_) {
+    at_memory_metrics_recorder_->OnQueryResponseReceived();
+  }
+
   // If there are results, just return the results as-is.
   if (!result.entries.empty()) {
     SendSuggestions(

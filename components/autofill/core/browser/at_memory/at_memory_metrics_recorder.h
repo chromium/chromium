@@ -5,16 +5,22 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_METRICS_RECORDER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_METRICS_RECORDER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/token.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/token.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/signatures.h"
 #include "url/gurl.h"
+
+namespace accessibility_annotator {
+struct MemorySearchResult;
+}  // namespace accessibility_annotator
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -49,6 +55,9 @@ class AtMemoryMetricsRecorder {
   // Records that a search query was submitted during this session.
   void OnQuerySubmitted(std::u16string query);
 
+  // Records that a response for the pending query was received.
+  void OnQueryResponseReceived();
+
   // Records that a suggestion was accepted during this session.
   void OnSuggestionAccepted();
 
@@ -72,6 +81,11 @@ class AtMemoryMetricsRecorder {
   bool query_submitted_ = false;
   // The pending log entry to be uploaded to MQLS for the query.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> pending_log_entry_;
+  // The timer that measures the time between the query being submitted and
+  // the suggestions being shown to the user. It is `std::nullopt` until
+  // `OnQuerySubmitted` is called and will be reset when the query response was
+  // received.
+  std::optional<base::ElapsedTimer> query_to_suggestions_shown_timer_;
   bool suggestion_accepted_ = false;
   bool was_filled_ = false;
   // The start time of the asynchronous fetch/unmask process.
