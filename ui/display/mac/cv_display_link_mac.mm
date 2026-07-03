@@ -298,7 +298,7 @@ base::TimeDelta CVDisplayLinkMac::GetRefreshInterval() const {
     }
   }
 
-  return display::GetNSScreenRefreshInterval(display_id_);
+  return base::Hertz(60);
 }
 
 void CVDisplayLinkMac::GetRefreshIntervalRange(
