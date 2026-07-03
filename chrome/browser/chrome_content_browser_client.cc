@@ -3844,13 +3844,22 @@ bool ChromeContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
     return false;
   }
 
-  // Prewarm page can be treated as a DSE. As we don't want to enable synthetic
-  // response on the prewarm page, manually exclude it.
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   CHECK(template_url_service);
-  if (IsPrewarmUrl(url,
-                   template_url_service->GetDefaultSearchProviderOrigin())) {
+  const url::Origin dse_origin =
+      template_url_service->GetDefaultSearchProviderOrigin();
+
+  // The synthetic registration is created for `url`'s origin. Restrict it to
+  // the default search provider's own origin so that alternate URLs on other
+  // origins don't get a synthetic registration.
+  if (!dse_origin.IsSameOriginWith(url)) {
+    return false;
+  }
+
+  // Prewarm page can be treated as a DSE. As we don't want to enable synthetic
+  // response on the prewarm page, manually exclude it.
+  if (IsPrewarmUrl(url, dse_origin)) {
     return false;
   }
 
