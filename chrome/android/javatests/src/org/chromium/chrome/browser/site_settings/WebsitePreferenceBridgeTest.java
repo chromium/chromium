@@ -12,7 +12,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,13 +31,13 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -50,8 +50,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class WebsitePreferenceBridgeTest {
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     /** Class to parameterize the params for {@link }. */
     public static class EmbargoedParams implements ParameterProvider {
         @Override
@@ -60,6 +58,11 @@ public class WebsitePreferenceBridgeTest {
                     new ParameterSet().value(true).name("Embargoed"),
                     new ParameterSet().value(false).name("Normal"));
         }
+    }
+
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
     }
 
     @After
