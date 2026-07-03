@@ -46,17 +46,16 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Tests for SendTabToSelf related notifications. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class SendTabToSelfNotificationTest {
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
@@ -71,6 +70,7 @@ public class SendTabToSelfNotificationTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         Intents.init();
         intending(anyIntent()).respondWith(new ActivityResult(Activity.RESULT_OK, null));
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
