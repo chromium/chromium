@@ -8,13 +8,19 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Implemented in the renderer (WebUI). Receives state updates pushed from the
 // browser process.
-interface Page {};
+interface Page {
+  // Notifies the WebUI page whether docking is in an error or degraded state.
+  SetErrorState(bool has_error);
+};
 
 // Implemented in the browser process. Drives the native Windows guided flow.
 interface PageHandler {
   // Sets the DOMRect bounds (in CSS pixels relative to WebUI viewport) of the
   // visual stage where the native Windows Settings app should be docked.
   SetAnchorRect(gfx.mojom.Rect rect);
+
+  // Opens the Windows Settings default apps page.
+  OpenSettings();
 };
 
 // Bootstraps the Page/PageHandler pipes. Bound to the WebUI controller.

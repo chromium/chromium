@@ -66,6 +66,8 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserVisualGuideOutcome)
 
+  using ErrorCallback = base::RepeatingCallback<void(bool)>;
+
   explicit VisualGuidedSetterControllerWin(views::Widget* parent_widget);
 
   VisualGuidedSetterControllerWin(const VisualGuidedSetterControllerWin&) =
@@ -81,6 +83,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   void SetTopmostPolicy(TopmostPolicy policy);
   void SetAnchorRectInWebUi(const gfx::Rect& rect);
   void SetWebContents(content::WebContents* web_contents);
+  void SetErrorCallback(ErrorCallback callback);
 
   bool is_running() const { return is_running_; }
   bool has_anchor_rect() const { return has_anchor_rect_; }
@@ -132,8 +135,14 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
 
   gfx::Rect GetAnchorRectScreenDip() const;
 
+  // Notifies error_callback_ of error status changes.
+  void NotifyErrorState(bool is_error);
+
   // Halts the controller, kills timers, and releases OS resources.
   void TearDownInternal();
+
+  ErrorCallback error_callback_;
+  std::optional<bool> last_reported_error_;
 
   raw_ptr<views::Widget> parent_widget_ = nullptr;
   raw_ptr<content::WebContents> web_contents_ = nullptr;

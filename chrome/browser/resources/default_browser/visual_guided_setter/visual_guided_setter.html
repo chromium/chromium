@@ -21,13 +21,22 @@ found in the LICENSE file.
     </header>
 
     <div id="content">
-      <div id="illustration-container" aria-hidden="true"></div>
+      <div id="illustration-container">
+        <div id="docking-placeholder">
+          <div id="resized-text">$i18n{resizedToFit}</div>
+          <div id="didnt-work-container">
+            <span id="didnt-work-text">$i18n{didntWork}</span>
+            <a href="#" id="open-settings-link">$i18n{openWindowsSettings}</a>
+          </div>
+        </div>
+      </div>
 
       <section id="instruction-container" aria-labelledby="content-title">
-        <h2 id="content-title">$i18n{contentTitle}</h2>
-        <p class="description">$i18n{contentDescription}</p>
+        <text id="content-title">$i18nRaw{contentTitle}</text>
+        </br>
+        <text id="content-description">$i18n{contentDescription}</text>
 
-        <ol class="instructions">
+        <ol id="instructions" class="instructions">
           <li id="setp-1">$i18nRaw{instructionStep1}</li>
           <li id="step-2">$i18nRaw{instructionStep2}</li>
         </ol>

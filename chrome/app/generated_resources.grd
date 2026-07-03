@@ -14956,6 +14956,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_1" desc="Instruction step 1 of the default browser visual guided setter.">
          Click <ph name="BEGIN_BOLD">&lt;strong&gt;</ph>Set Default<ph name="END_BOLD">&lt;/strong&gt;</ph> in your Windows settings.
         </message>
+        <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_RESIZED_TO_FIT" desc="Text explaining that Windows settings will be resized to fit in the default browser visual guided setter.">
+          Your Windows settings will be resized to fit here.
+        </message>
+        <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_DIDNT_WORK" desc="Text asking if setting default browser didn't work in the default browser visual guided setter.">
+          Didn't work?
+        </message>
+        <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_OPEN_WINDOWS_SETTINGS" desc="Button label to open Windows settings in the default browser visual guided setter.">
+          Open windows settings
+        </message>
       </if>
 
       <if expr="is_win">

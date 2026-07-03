@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/path_service.h"
+#include "chrome/installer/util/shell_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 
@@ -47,10 +50,26 @@ void VisualGuidedSetterPageHandler::SetAnchorRect(const gfx::Rect& rect) {
   if (!controller_) {
     controller_ = std::make_unique<VisualGuidedSetterControllerWin>(widget);
     controller_->SetWebContents(web_contents_);
+    controller_->SetErrorCallback(
+        base::BindRepeating(&VisualGuidedSetterPageHandler::OnErrorStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   controller_->SetAnchorRectInWebUi(rect);
   if (!controller_->is_running()) {
     controller_->Start();
+  }
+}
+
+void VisualGuidedSetterPageHandler::OpenSettings() {
+  base::FilePath chrome_exe;
+  if (base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
+    ShellUtil::ShowMakeChromeDefaultSystemUI(chrome_exe);
+  }
+}
+
+void VisualGuidedSetterPageHandler::OnErrorStateChanged(bool has_error) {
+  if (page_.is_bound()) {
+    page_->SetErrorState(has_error);
   }
 }

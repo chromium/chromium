@@ -32,13 +32,30 @@ function initialize() {
 
   // Hide the second step if the user cannot pin to taskbar.
   if (!loadTimeData.getBoolean('canPinToTaskbar')) {
-    const step2 = document.getElementById('step-2');
-    if (step2) {
-      step2.hidden = true;
+    const instructions = document.getElementById('instructions');
+    if (instructions) {
+      instructions.hidden = true;
     }
   }
 
+  const openSettingsLink = document.getElementById('open-settings-link');
+  if (openSettingsLink) {
+    openSettingsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (handler) {
+        handler.openSettings();
+      }
+    });
+  }
+
   callbackRouter = new PageCallbackRouter();
+  callbackRouter.setErrorState.addListener((hasError: boolean) => {
+    const container = document.getElementById('illustration-container');
+    if (container) {
+      container.classList.toggle('error', hasError);
+    }
+  });
+
   const handlerRemote = new PageHandlerRemote();
   handler = handlerRemote;
 

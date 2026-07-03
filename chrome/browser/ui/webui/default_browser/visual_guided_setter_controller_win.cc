@@ -94,6 +94,21 @@ void VisualGuidedSetterControllerWin::SetWebContents(
   }
 }
 
+void VisualGuidedSetterControllerWin::SetErrorCallback(ErrorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  error_callback_ = std::move(callback);
+}
+
+void VisualGuidedSetterControllerWin::NotifyErrorState(bool is_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (last_reported_error_ != is_error) {
+    last_reported_error_ = is_error;
+    if (error_callback_) {
+      error_callback_.Run(is_error);
+    }
+  }
+}
+
 void VisualGuidedSetterControllerWin::SetAnchorRectInWebUi(
     const gfx::Rect& rect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,6 +261,7 @@ void VisualGuidedSetterControllerWin::OnFindSettingsTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   find_settings_start_time_ = base::TimeTicks();
   outcome_ = Outcome::kSettingsWindowNotFound;
+  NotifyErrorState(true);
   TearDownInternal();
 }
 
@@ -326,6 +342,7 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
     outcome_ = std::nullopt;
     is_degraded_ = false;
   }
+  NotifyErrorState(false);
 
   HWND insert_after = HWND_TOPMOST;
   if (topmost_policy_ == TopmostPolicy::kRequiresFocus &&
@@ -378,6 +395,7 @@ void VisualGuidedSetterControllerWin::EnterDegradedFloating(Outcome reason) {
                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
   }
   is_degraded_ = true;
+  NotifyErrorState(true);
 }
 
 void VisualGuidedSetterControllerWin::ApplySettingsRectAndZOrder(
@@ -524,6 +542,10 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
   if (is_running_) {
     base::UmaHistogramEnumeration("DefaultBrowser.VisualGuide.Outcome",
                                   outcome_.value_or(Outcome::kSuccess));
+  }
+
+  if (outcome_.has_value() && outcome_.value() != Outcome::kSuccess) {
+    NotifyErrorState(true);
   }
 
   is_running_ = false;

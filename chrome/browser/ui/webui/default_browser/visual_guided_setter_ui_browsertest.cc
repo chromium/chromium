@@ -32,6 +32,8 @@ class MockPage : public visual_guided_setter::mojom::Page {
   MockPage() = default;
   ~MockPage() override = default;
 
+  void SetErrorState(bool has_error) override {}
+
   mojo::PendingRemote<visual_guided_setter::mojom::Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }

@@ -49,6 +49,13 @@ VisualGuidedSetterUI::VisualGuidedSetterUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "instructionStep2",
       IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_2);
+  source->AddLocalizedString(
+      "resizedToFit", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_RESIZED_TO_FIT);
+  source->AddLocalizedString(
+      "didntWork", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_DIDNT_WORK);
+  source->AddLocalizedString(
+      "openWindowsSettings",
+      IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_OPEN_WINDOWS_SETTINGS);
 
   source->AddBoolean("canPinToTaskbar", can_pin_to_taskbar);
 

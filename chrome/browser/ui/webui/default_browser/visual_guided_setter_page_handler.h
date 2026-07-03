@@ -37,14 +37,19 @@ class VisualGuidedSetterPageHandler
 
   // visual_guided_setter::mojom::PageHandler:
   void SetAnchorRect(const gfx::Rect& rect) override;
+  void OpenSettings() override;
 
  private:
+  void OnErrorStateChanged(bool has_error);
+
   raw_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<VisualGuidedSetterControllerWin> controller_;
 
   mojo::Receiver<visual_guided_setter::mojom::PageHandler> receiver_;
   mojo::Remote<visual_guided_setter::mojom::Page> page_;
+
+  base::WeakPtrFactory<VisualGuidedSetterPageHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_PAGE_HANDLER_H_

@@ -19,9 +19,6 @@ html {
 
 body {
   background-color: var(--color-sys-base-container);
-  background-position: top center;
-  background-repeat: no-repeat;
-  background-size: 277px 217px;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -74,20 +71,20 @@ h1 {
   align-items: flex-start;
   display: flex;
   flex-direction: row;
-  gap: 80px;
+  gap: 71px;
   justify-content: center;
   max-width: 1280px;
   padding: 80px;
   width: 100%;
 }
 
-/* This is the strict coordinate box the C++ layer depends on */
 #illustration-container {
   align-items: center;
   background-color: transparent;
   border-radius: 24px;
   box-shadow: none;
   display: flex;
+  flex-direction: column;
   flex-shrink: 0;
   height: 359px;
   justify-content: center;
@@ -95,6 +92,54 @@ h1 {
   width: 600px;
 }
 
+#docking-placeholder {
+  display: none;
+}
+
+#illustration-container.error {
+  background-color: var(--color-sys-surface, #fff);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  padding: 32px;
+}
+
+#illustration-container.error #docking-placeholder {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+#resized-text {
+  color: var(--color-sys-on-surface, #1f1f1f);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+#didnt-work-container {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+#didnt-work-text {
+  color: var(--color-sys-on-surface-subtle, #5f6368);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#open-settings-link {
+  color: var(--color-sys-primary, #1a73e8);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-decoration: underline;
+}
+
+#open-settings-link:hover {
+  color: var(--color-sys-primary-hover, #174ea6);
+}
 
 #instruction-container {
   display: flex;
@@ -114,21 +159,18 @@ h1 {
   transform: translateY(-50%);
 }
 
-
-
-h2 {
+#content-title {
   color: var(--color-sys-on-surface);
-  font-size: 32px;
+  font-size: 21px;
   font-style: normal;
-  font-weight: 500;
-  line-height: 44px;
+  line-height: 32px;
   margin: 0 0 12px 0;
 }
 
-.description {
+#content-description {
   color: var(--color-sys-on-surface-subtle);
-  font-size: 16px;
-  line-height: 26px;
+  font-size: 14px;
+  line-height: 24px;
   margin-bottom: 24px;
 }
 
