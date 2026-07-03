@@ -208,6 +208,7 @@ source_set("impl") {
     "//components/content_settings/core/common",
     "//components/favicon/core",
     "//components/lookalikes/core",
+    "//components/one_time_tokens/core/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_load_metrics/browser",
     "//components/password_manager/core/browser",

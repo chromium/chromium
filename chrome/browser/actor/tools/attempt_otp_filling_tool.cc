@@ -24,6 +24,7 @@
 #include "components/actor/core/shared_types.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/affiliations/core/browser/match_type.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -283,16 +284,18 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
   }
 }
 
-void AttemptOtpFillingTool::OnOtpRetrieved(ToolCallback callback,
-                                           std::string otp) {
+void AttemptOtpFillingTool::OnOtpRetrieved(
+    ToolCallback callback,
+    base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>
+        result) {
   journal().Log(
       JournalURL(), task_id(), "AttemptOtpFillingTool::OnOtpRetrieved",
-      JournalDetailsBuilder().Add("otp_received", !otp.empty()).Build());
+      JournalDetailsBuilder().Add("otp_received", result.has_value()).Build());
 
   // TODO(b/502907994): There might be other errors happening, not just a
   // timeout. If we want to treat them less generically, we need to change the
   // API of the service to also return more detailed error codes.
-  if (otp.empty()) {
+  if (!result.has_value()) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kToolTimeout,
                    /*requires_page_stabilization=*/false,
@@ -301,7 +304,7 @@ void AttemptOtpFillingTool::OnOtpRetrieved(ToolCallback callback,
   }
 
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-      GetTargetTab(), trigger_field_ids_, otp,
+      GetTargetTab(), trigger_field_ids_, result.value(),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

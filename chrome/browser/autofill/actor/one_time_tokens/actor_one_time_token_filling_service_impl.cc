@@ -44,6 +44,8 @@
 
 namespace autofill {
 
+using ::one_time_tokens::OneTimeTokenRetrievalError;
+
 namespace {
 
 // Retrieves the `AutofillManager` of the `tab`'s primary main frame.
@@ -137,10 +139,12 @@ ActorOneTimeTokenFillingServiceImpl::ConsumeLoginContext() {
 void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     const tabs::TabHandle tab_handle,
     const std::vector<FieldGlobalId>& trigger_field_ids,
-    base::OnceCallback<void(std::string)> callback) {
+    base::OnceCallback<void(
+        base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
-    std::move(callback).Run("");
+    std::move(callback).Run(
+        base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
     return;
   }
 
@@ -157,7 +161,8 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   one_time_tokens::OneTimeTokenService* service =
       OneTimeTokenServiceFactory::GetForProfile(profile_);
   if (!service) {
-    std::move(callback).Run("");
+    std::move(callback).Run(base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendApiNotAvailable));
     return;
   }
 
@@ -180,20 +185,22 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   if (most_recent_token) {
     subscription_ = {};
     // If there is a pending request, its callback is superseded. We run the
-    // previous callback with an empty string so the old caller can gracefully
+    // previous callback with a default error so the old caller can gracefully
     // time out rather than hanging indefinitely.
     if (retrieve_otp_callback_) {
-      std::move(retrieve_otp_callback_).Run("");
+      std::move(retrieve_otp_callback_)
+          .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
     }
     std::move(callback).Run(most_recent_token->value());
     return;
   }
 
   // If there is a pending request, its callback is superseded. We run the
-  // previous callback with an empty string so the old caller can gracefully
+  // previous callback with a default error so the old caller can gracefully
   // time out rather than hanging indefinitely.
   if (retrieve_otp_callback_) {
-    std::move(retrieve_otp_callback_).Run("");
+    std::move(retrieve_otp_callback_)
+        .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
   }
   retrieve_otp_callback_ = std::move(callback);
 
@@ -208,16 +215,19 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
 
 void ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived(
     one_time_tokens::OneTimeTokenSource source,
-    base::expected<one_time_tokens::OneTimeToken,
-                   one_time_tokens::OneTimeTokenRetrievalError> result) {
+    base::expected<one_time_tokens::OneTimeToken, OneTimeTokenRetrievalError>
+        result) {
   if (!retrieve_otp_callback_) {
     return;
   }
 
   subscription_ = {};
 
-  std::move(retrieve_otp_callback_)
-      .Run(result.has_value() ? result->value() : "");
+  if (result.has_value()) {
+    std::move(retrieve_otp_callback_).Run(result->value());
+  } else {
+    std::move(retrieve_otp_callback_).Run(base::unexpected(result.error()));
+  }
 }
 
 void ActorOneTimeTokenFillingServiceImpl::FillOtp(

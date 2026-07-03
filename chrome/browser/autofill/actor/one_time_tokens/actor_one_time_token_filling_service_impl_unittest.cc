@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -45,6 +46,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+using ::one_time_tokens::OneTimeTokenRetrievalError;
 
 namespace {
 
@@ -119,9 +122,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpFeatureSet) {
   EXPECT_CALL(otp_service(), GetCachedOneTimeTokens).Times(0);
   EXPECT_CALL(otp_service(), Subscribe).Times(0);
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
   service().RetrieveOtp(tab().GetHandle(), {}, future.GetCallback());
-  EXPECT_EQ(future.Get(), kMockOtp);
+  EXPECT_EQ(future.Get().value(), kMockOtp);
 }
 
 // Tests that `RetrieveOtp` correctly returns an available OTP from the
@@ -133,9 +138,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Success) {
           {one_time_tokens::OneTimeTokenType::kGmail, kOtp,
            base::TimeTicks::Now()}}));
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
   service().RetrieveOtp(tab().GetHandle(), {}, future.GetCallback());
-  EXPECT_EQ(future.Get(), kOtp);
+  EXPECT_EQ(future.Get().value(), kOtp);
 }
 
 // Tests that `RetrieveOtp` correctly selects the most recent Gmail OTP when
@@ -159,9 +166,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MultipleTokens) {
   EXPECT_CALL(otp_service(), GetCachedOneTimeTokens())
       .WillOnce(Return(cached_tokens));
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
   service().RetrieveOtp(tab().GetHandle(), {}, future.GetCallback());
-  EXPECT_EQ(future.Get(), kRecentGmailOtp);
+  EXPECT_EQ(future.Get().value(), kRecentGmailOtp);
 }
 
 // Tests that `RetrieveOtp` returns an empty string when no OTPs are available.
@@ -178,25 +187,28 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_NoTokens) {
             base::BindOnce(
                 [](one_time_tokens::OneTimeTokenService::Callback callback,
                    one_time_tokens::OneTimeTokenSource source) {
-                  callback.Run(source,
-                               base::unexpected(
-                                   one_time_tokens::OneTimeTokenRetrievalError::
-                                       kUnknown));
+                  callback.Run(
+                      source,
+                      base::unexpected(OneTimeTokenRetrievalError::kUnknown));
                 },
                 std::move(callback), source));
         return one_time_tokens::ExpiringSubscription();
       });
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
   service().RetrieveOtp(tab().GetHandle(), {}, future.GetCallback());
-  EXPECT_EQ(future.Get(), "");
+  EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kUnknown);
 }
 
 // Tests that `RetrieveOtp` fails gracefully when the tab is null.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
   service().RetrieveOtp(tabs::TabHandle(), {}, future.GetCallback());
-  EXPECT_EQ(future.Get(), "");
+  EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kGmailOtpUnknown);
 }
 
 // Tests that `RetrieveOtp` fails gracefully when the OTP service is null.
@@ -206,9 +218,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
                      [](content::BrowserContext* context)
                          -> std::unique_ptr<KeyedService> { return nullptr; }));
 
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
   service().RetrieveOtp(tab().GetHandle(), {}, future.GetCallback());
-  EXPECT_EQ(future.Get(), "");
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendApiNotAvailable);
 }
 
 // Tests that multiple sequential `RetrieveOtp` calls supersede previous ones,
@@ -217,13 +232,18 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Superseded) {
   EXPECT_CALL(otp_service(), GetCachedOneTimeTokens())
       .WillRepeatedly(Return(std::vector<one_time_tokens::OneTimeToken>{}));
 
-  base::test::TestFuture<std::string> future1;
-  base::test::TestFuture<std::string> future2;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future1;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future2;
 
   service().RetrieveOtp(tab().GetHandle(), {}, future1.GetCallback());
   service().RetrieveOtp(tab().GetHandle(), {}, future2.GetCallback());
 
-  EXPECT_EQ(future1.Get(), "");
+  EXPECT_EQ(future1.Get().error(),
+            OneTimeTokenRetrievalError::kGmailOtpUnknown);
 }
 
 // Tests that `FillOtp` fails gracefully when the tab is null.

@@ -13,8 +13,10 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/origin.h"
 
@@ -66,9 +68,13 @@ class ActorOneTimeTokenFillingService {
   //
   // The `callback` will be invoked with the retrieved OTP string, or an empty
   // string if retrieval fails or no OTP is available.
-  virtual void RetrieveOtp(tabs::TabHandle tab_handle,
-                           const std::vector<FieldGlobalId>& trigger_field_ids,
-                           base::OnceCallback<void(std::string)> callback) = 0;
+  virtual void RetrieveOtp(
+      tabs::TabHandle tab_handle,
+      const std::vector<FieldGlobalId>& trigger_field_ids,
+      base::OnceCallback<
+          void(base::expected<std::string,
+                              one_time_tokens::OneTimeTokenRetrievalError>)>
+          callback) = 0;
 
   // Asynchronously fills the `otp` into the field(s) identified by
   // `trigger_field_ids` for the given `tab`.

@@ -14,9 +14,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -49,9 +51,13 @@ class ActorOneTimeTokenFillingServiceImpl
       base::span<const int> global_frame_ids) override;
   void AbortLoginTracking() override;
   std::optional<ActorLoginContext> ConsumeLoginContext() override;
-  void RetrieveOtp(tabs::TabHandle tab_handle,
-                   const std::vector<FieldGlobalId>& trigger_field_ids,
-                   base::OnceCallback<void(std::string)> callback) override;
+  void RetrieveOtp(
+      tabs::TabHandle tab_handle,
+      const std::vector<FieldGlobalId>& trigger_field_ids,
+      base::OnceCallback<
+          void(base::expected<std::string,
+                              one_time_tokens::OneTimeTokenRetrievalError>)>
+          callback) override;
 
   void FillOtp(tabs::TabHandle tab_handle,
                const std::vector<FieldGlobalId>& trigger_field_ids,
@@ -74,7 +80,9 @@ class ActorOneTimeTokenFillingServiceImpl
   raw_ptr<Profile> profile_;
   std::optional<ActorLoginContext> active_login_context_;
   one_time_tokens::ExpiringSubscription subscription_;
-  base::OnceCallback<void(std::string)> retrieve_otp_callback_;
+  base::OnceCallback<void(
+      base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>)>
+      retrieve_otp_callback_;
   std::unique_ptr<ActorFillingObserver> filling_observer_;
 
   base::WeakPtrFactory<ActorOneTimeTokenFillingServiceImpl> weak_ptr_factory_{
