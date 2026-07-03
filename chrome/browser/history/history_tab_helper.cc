@@ -46,7 +46,6 @@
 #include "components/feed/core/v2/public/feed_service.h"  // nogncheck crbug.com/40147906
 #include "content/public/browser/web_contents.h"
 #else
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif

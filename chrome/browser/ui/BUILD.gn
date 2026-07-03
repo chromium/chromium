@@ -970,9 +970,6 @@ static_library("ui") {
   ]
 
   allow_circular_includes_from = [
-    # TODO(crbug.com/507421089): Remove this circular dependency.
-    "//chrome/browser/history:impl",
-
     # page_load_metrics's :impl includes headers from //chrome/browser/ui that
     # can't be split out yet.
     "//chrome/browser/page_load_metrics:impl",
