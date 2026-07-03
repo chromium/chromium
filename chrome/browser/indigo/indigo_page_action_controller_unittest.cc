@@ -200,7 +200,8 @@ class IndigoPageActionControllerTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kIndigo,
-          {{"indigo_onboarding_url", "https://example.com/onboard"}}},
+          {{"indigo_onboarding_url", "https://example.com/onboard"},
+           {features::kIndigoAllowForEnterprise.name, "true"}}},
          {features::kIndigoMetadataKeywordHeuristic, {}}},
         {});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(

@@ -275,7 +275,8 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kIndigo,
         {{features::kIndigoGenerateUrl.name, fake_api_.GetGenerateUrl().spec()},
-         {features::kIndigoDeleteUrl.name, fake_api_.GetDeleteUrl().spec()}});
+         {features::kIndigoDeleteUrl.name, fake_api_.GetDeleteUrl().spec()},
+         {features::kIndigoAllowForEnterprise.name, "true"}});
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     script_path_ = temp_dir_.GetPath().AppendASCII("test_script.js");
