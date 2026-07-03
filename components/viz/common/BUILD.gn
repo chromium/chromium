@@ -63,6 +63,7 @@ viz_component("common") {
   sources = [
     "constants.cc",
     "constants.h",
+    "display/display_scheduler_draw_result.h",
     "display/overlay_strategy.cc",
     "display/overlay_strategy.h",
     "display/renderer_settings.cc",

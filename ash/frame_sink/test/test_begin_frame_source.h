@@ -5,10 +5,10 @@
 #ifndef ASH_FRAME_SINK_TEST_TEST_BEGIN_FRAME_SOURCE_H_
 #define ASH_FRAME_SINK_TEST_TEST_BEGIN_FRAME_SOURCE_H_
 
+#include "base/memory/raw_ptr.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
-
-#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -36,7 +36,8 @@ class TestBeginFrameSource : public viz::BeginFrameSource {
   ~TestBeginFrameSource() override;
 
   // viz::BeginFrameSource:
-  void DidFinishFrame(viz::BeginFrameObserver* obs) override;
+  void DidFinishFrame(viz::BeginFrameObserver* obs,
+                      viz::DisplaySchedulerDrawResult result) override;
   void OnGpuNoLongerBusy() override;
 
   // Currently there can be only a single `BeginFrameObserver`.

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -136,9 +137,19 @@ void ExternalBeginFrameSourceMojo::DispatchFrameCallback(
 }
 
 void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
-    const BeginFrameAck& ack) {
+    const BeginFrameId& frame_id,
+    DisplaySchedulerDrawResult result) {
   if (!pending_frame_callback_)
     return;
+
+  if (result == DisplaySchedulerDrawResult::kDrawnLate ||
+      result == DisplaySchedulerDrawResult::kMayDrawLate) {
+    NOTREACHED();
+  }
+
+  bool has_damage = (result == DisplaySchedulerDrawResult::kDrawn);
+  BeginFrameAck ack(frame_id.source_id, frame_id.sequence_number, has_damage);
+
   if (!pending_frame_sinks_.empty()) {
     CHECK(!pending_ack_);
     pending_ack_ = ack;

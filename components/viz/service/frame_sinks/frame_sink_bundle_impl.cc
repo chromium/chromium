@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -174,7 +175,9 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
     }
   }
 
-  void DidFinishFrame() { source_->DidFinishFrame(this); }
+  void DidFinishFrame() {
+    source_->DidFinishFrame(this, DisplaySchedulerDrawResult::kUnknown);
+  }
 
  private:
   void UpdateBeginFrameObservation() {

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/features.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/begin_frame_source_test.h"
@@ -108,7 +109,7 @@ TEST_F(BackToBackBeginFrameSourceTest, AddObserverSendsBeginFrame) {
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1100,
                           1100 + kDeadline, kInterval);
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   task_runner_->RunUntilIdle();
 }
 
@@ -121,7 +122,7 @@ TEST_F(BackToBackBeginFrameSourceTest,
   task_runner_->RunUntilIdle();
 
   source_->RemoveObserver(obs_.get());
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
 
   // Verify no BeginFrame is sent to |obs_|. There is a pending task in the
   // task_runner_ as a BeginFrame was posted, but it gets aborted since |obs_|
@@ -139,7 +140,7 @@ TEST_F(BackToBackBeginFrameSourceTest,
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   source_->RemoveObserver(obs_.get());
 
   // Task gets cancelled so it doesn't count as a pending task.
@@ -162,7 +163,7 @@ TEST_F(BackToBackBeginFrameSourceTest,
   source_->AddObserver(obs_.get());
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(10));
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   // The begin frame is posted at the time when the observer was added,
@@ -182,7 +183,7 @@ TEST_F(BackToBackBeginFrameSourceTest,
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   source_->RemoveObserver(obs_.get());
@@ -204,7 +205,7 @@ TEST_F(BackToBackBeginFrameSourceTest, DidFinishFrameNoObserver) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
   source_->AddObserver(obs_.get());
   source_->RemoveObserver(obs_.get());
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   task_runner_->RunUntilIdle();
   EXPECT_FALSE(task_runner_->HasPendingTask());
 }
@@ -217,17 +218,17 @@ TEST_F(BackToBackBeginFrameSourceTest, DidFinishFrameMultipleCallsIdempotent) {
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(obs_.get());
-  source_->DidFinishFrame(obs_.get());
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1100,
                           1100 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(obs_.get());
-  source_->DidFinishFrame(obs_.get());
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 3, 1200,
                           1200 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
@@ -241,7 +242,7 @@ TEST_F(BackToBackBeginFrameSourceTest, DelayInPostedTaskProducesCorrectFrame) {
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   task_runner_->AdvanceMockTickClock(base::Microseconds(50));
   // Ticks at the time the last frame finished, so ignores the last change to
   // "now".
@@ -267,8 +268,8 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversSynchronized) {
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(&obs1);
-  source_->DidFinishFrame(&obs2);
+  source_->DidFinishFrame(&obs1, DisplaySchedulerDrawResult::kUnknown);
+  source_->DidFinishFrame(&obs2, DisplaySchedulerDrawResult::kUnknown);
   EXPECT_BEGIN_FRAME_USED(obs1, source_->source_id(), 2, 1100, 1100 + kDeadline,
                           kInterval);
   EXPECT_BEGIN_FRAME_USED(obs2, source_->source_id(), 2, 1100, 1100 + kDeadline,
@@ -276,8 +277,8 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversSynchronized) {
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(&obs1);
-  source_->DidFinishFrame(&obs2);
+  source_->DidFinishFrame(&obs1, DisplaySchedulerDrawResult::kUnknown);
+  source_->DidFinishFrame(&obs2, DisplaySchedulerDrawResult::kUnknown);
   EXPECT_TRUE(task_runner_->HasPendingTask());
   source_->RemoveObserver(&obs1);
   source_->RemoveObserver(&obs2);
@@ -301,12 +302,12 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversInterleaved) {
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(&obs1);
+  source_->DidFinishFrame(&obs1, DisplaySchedulerDrawResult::kUnknown);
   EXPECT_BEGIN_FRAME_USED(obs1, source_->source_id(), 3, 1200, 1200 + kDeadline,
                           kInterval);
   task_runner_->RunUntilIdle();
 
-  source_->DidFinishFrame(&obs1);
+  source_->DidFinishFrame(&obs1, DisplaySchedulerDrawResult::kUnknown);
   source_->RemoveObserver(&obs1);
   // Removing all finished observers should disable the time source.
   EXPECT_FALSE(delay_based_time_source_->Active());
@@ -315,12 +316,12 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversInterleaved) {
   task_runner_->RunUntilIdle();
 
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(&obs2);
+  source_->DidFinishFrame(&obs2, DisplaySchedulerDrawResult::kUnknown);
   EXPECT_BEGIN_FRAME_USED(obs2, source_->source_id(), 4, 1300, 1300 + kDeadline,
                           kInterval);
   task_runner_->RunUntilIdle();
 
-  source_->DidFinishFrame(&obs2);
+  source_->DidFinishFrame(&obs2, DisplaySchedulerDrawResult::kUnknown);
   source_->RemoveObserver(&obs2);
 }
 
@@ -339,11 +340,11 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversAtOnce) {
 
   // |obs1| finishes first.
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(&obs1);
+  source_->DidFinishFrame(&obs1, DisplaySchedulerDrawResult::kUnknown);
 
   // |obs2| finishes also, before getting to the newly posted begin frame.
   task_runner_->AdvanceMockTickClock(base::Microseconds(100));
-  source_->DidFinishFrame(&obs2);
+  source_->DidFinishFrame(&obs2, DisplaySchedulerDrawResult::kUnknown);
 
   // Because the begin frame source already ticked when |obs1| finished,
   // we see it as the frame time for both observers.
@@ -353,9 +354,9 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversAtOnce) {
                           kInterval);
   task_runner_->RunUntilIdle();
 
-  source_->DidFinishFrame(&obs1);
+  source_->DidFinishFrame(&obs1, DisplaySchedulerDrawResult::kUnknown);
   source_->RemoveObserver(&obs1);
-  source_->DidFinishFrame(&obs2);
+  source_->DidFinishFrame(&obs2, DisplaySchedulerDrawResult::kUnknown);
   source_->RemoveObserver(&obs2);
 }
 
@@ -380,7 +381,7 @@ TEST_F(BackToBackBeginFrameSourceTest, UnthrottledInterval) {
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1100,
                           1100 + throttled_interval.InMicroseconds(),
                           throttled_interval.InMicroseconds(), kInterval);
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   task_runner_->RunUntilIdle();
 
   EXPECT_EQ(obs_->last_begin_frame_args.interval, throttled_interval);
@@ -421,7 +422,7 @@ TEST_F(BackToBackBeginFrameSourceTest, OnGpuNoLongerBusyWithNoObservers) {
   task_runner_->RunUntilIdle();
 
   // Activate the timer so the second BeginFrame can be generated.
-  source_->DidFinishFrame(obs_.get());
+  source_->DidFinishFrame(obs_.get(), DisplaySchedulerDrawResult::kUnknown);
   task_runner_->RunUntilIdle();
 
   // Observer is unsubscribed from the source here.

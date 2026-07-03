@@ -30,6 +30,7 @@
 #include "cc/base/features.h"
 #include "components/input/utils.h"
 #include "components/viz/common/constants.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -674,7 +675,8 @@ bool CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   }
 
   if (begin_frame_source_) {
-    begin_frame_source_->DidFinishFrame(this);
+    begin_frame_source_->DidFinishFrame(
+        this, DisplaySchedulerDrawResult::kDidNotDraw);
     frame_sink_manager_->DidFinishFrame(frame_sink_id_, last_begin_frame_args_);
   }
   return true;
@@ -1003,7 +1005,8 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   }
 
   if (begin_frame_source_) {
-    begin_frame_source_->DidFinishFrame(this);
+    begin_frame_source_->DidFinishFrame(this,
+                                        DisplaySchedulerDrawResult::kUnknown);
     frame_sink_manager_->DidFinishFrame(frame_sink_id_, last_begin_frame_args_);
   }
 
@@ -1210,7 +1213,8 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
       frame_timing_details_.clear();
     }
   } else if (begin_frame_source_) {
-    begin_frame_source_->DidFinishFrame(this);
+    begin_frame_source_->DidFinishFrame(
+        this, DisplaySchedulerDrawResult::kDidNotDraw);
   }
 }
 

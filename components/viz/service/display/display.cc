@@ -1369,9 +1369,10 @@ void Display::AddChildWindowToBrowser(gpu::SurfaceHandle child_window) {
   }
 }
 
-void Display::DidFinishFrame(const BeginFrameAck& ack) {
+void Display::DidFinishFrame(const BeginFrameId& frame_id,
+                             DisplaySchedulerDrawResult result) {
   for (auto& observer : observers_)
-    observer.OnDisplayDidFinishFrame(ack);
+    observer.OnDisplayDidFinishFrame(frame_id, result);
 
   // Prevent a delegated ink trail from staying on the screen
   // for more than one frame by forcing a new frame to be produced.
@@ -1379,7 +1380,7 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
     scheduler_->SetNeedsOneBeginFrame(BeginFrameArgs(), /*needs_draw=*/true);
   }
 
-  frame_sequence_number_ = ack.frame_id.sequence_number;
+  frame_sequence_number_ = frame_id.sequence_number;
 }
 
 const SurfaceId& Display::CurrentSurfaceId() const {

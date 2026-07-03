@@ -212,8 +212,12 @@ void DisplayScheduler::ForceImmediateSwapIfPossible() {
   TRACE_EVENT0("viz", "DisplayScheduler::ForceImmediateSwapIfPossible");
   bool in_begin = inside_begin_frame_deadline_interval_;
   bool did_draw = AttemptDrawAndSwap(current_begin_frame_args_);
-  if (in_begin)
-    DidFinishFrame(current_begin_frame_args_.frame_id, did_draw);
+  if (in_begin) {
+    const DisplaySchedulerDrawResult result =
+        did_draw ? DisplaySchedulerDrawResult::kDrawn
+                 : DisplaySchedulerDrawResult::kDidNotDraw;
+    DidFinishFrame(current_begin_frame_args_.frame_id, result);
+  }
 }
 
 bool DisplayScheduler::UpdateHasPendingSurfaces() {
@@ -622,7 +626,10 @@ void DisplayScheduler::ForceImmediateSwapForPreviousFrame() {
   // and swap, so make a copy.
   auto begin_frame_args = *last_undrawn_begin_frame_args_;
   bool did_draw = AttemptDrawAndSwap(begin_frame_args);
-  DidFinishFrame(begin_frame_args.frame_id, did_draw);
+  const DisplaySchedulerDrawResult result =
+      did_draw ? DisplaySchedulerDrawResult::kDrawnLate
+               : DisplaySchedulerDrawResult::kDidNotDraw;
+  DidFinishFrame(begin_frame_args.frame_id, result);
 }
 
 // static
@@ -779,18 +786,30 @@ void DisplayScheduler::OnBeginFrameDeadline() {
   DCHECK(inside_begin_frame_deadline_interval_);
 
   bool did_draw = AttemptDrawAndSwap(current_begin_frame_args_);
-  if (!did_draw) {
-    last_undrawn_begin_frame_args_ = current_begin_frame_args_;
+  DisplaySchedulerDrawResult result;
+  if (did_draw) {
+    result = DisplaySchedulerDrawResult::kDrawn;
+  } else {
+    bool can_draw_late =
+        allow_multiple_swaps_per_vsync_ &&
+        current_begin_frame_args_.possible_deadlines.has_value();
+    if (can_draw_late) {
+      last_undrawn_begin_frame_args_ = current_begin_frame_args_;
+      result = DisplaySchedulerDrawResult::kMayDrawLate;
+    } else {
+      last_undrawn_begin_frame_args_ = std::nullopt;
+      result = DisplaySchedulerDrawResult::kDidNotDraw;
+    }
   }
-  DidFinishFrame(current_begin_frame_args_.frame_id, did_draw);
+  DidFinishFrame(current_begin_frame_args_.frame_id, result);
 }
 
-void DisplayScheduler::DidFinishFrame(BeginFrameId frame_id, bool did_draw) {
+void DisplayScheduler::DidFinishFrame(BeginFrameId frame_id,
+                                      DisplaySchedulerDrawResult result) {
   DCHECK(begin_frame_source_);
-  begin_frame_source_->DidFinishFrame(&begin_frame_observer_);
-  BeginFrameAck ack(frame_id.source_id, frame_id.sequence_number, did_draw);
+  begin_frame_source_->DidFinishFrame(&begin_frame_observer_, result);
   if (client_)
-    client_->DidFinishFrame(ack);
+    client_->DidFinishFrame(frame_id, result);
   damage_tracker_->DidFinishFrame();
 }
 

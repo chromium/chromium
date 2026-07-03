@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/display/display_damage_tracker.h"
 #include "components/viz/service/performance_hint/hint_session.h"
@@ -19,7 +20,6 @@
 
 namespace viz {
 
-struct BeginFrameAck;
 class DisplayDamageTracker;
 
 // |frame_time| is the the start of the VSync interval of this frame.
@@ -45,7 +45,8 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
   virtual ~DisplaySchedulerClient() = default;
 
   virtual bool DrawAndSwap(const DrawAndSwapParams& params) = 0;
-  virtual void DidFinishFrame(const BeginFrameAck& ack) = 0;
+  virtual void DidFinishFrame(const BeginFrameId& frame_id,
+                              DisplaySchedulerDrawResult result) = 0;
   virtual int GetCurrentAllocatedBuffers() const;
 };
 

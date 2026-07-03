@@ -70,7 +70,9 @@ void FakeExternalBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
     client_->OnRemoveObserver(obs);
 }
 
-void FakeExternalBeginFrameSource::DidFinishFrame(BeginFrameObserver* obs) {
+void FakeExternalBeginFrameSource::DidFinishFrame(
+    BeginFrameObserver* obs,
+    DisplaySchedulerDrawResult result) {
   pending_frames_[obs]--;
 }
 

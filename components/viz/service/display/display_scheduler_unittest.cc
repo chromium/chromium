@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/test/scheduler_test_common.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/surface_info.h"
@@ -27,6 +28,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/latency/latency_info.h"
 
@@ -99,8 +101,19 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
     return success;
   }
 
-  void DidFinishFrame(const BeginFrameAck& ack) override {
-    last_begin_frame_ack_ = ack;
+  struct DidFinishFrameCall {
+    BeginFrameId frame_id;
+    DisplaySchedulerDrawResult result;
+  };
+
+  void DidFinishFrame(const BeginFrameId& frame_id,
+                      DisplaySchedulerDrawResult result) override {
+    bool has_damage = (result == DisplaySchedulerDrawResult::kDrawn ||
+                       result == DisplaySchedulerDrawResult::kDrawnLate);
+    last_begin_frame_ack_ =
+        BeginFrameAck(frame_id.source_id, frame_id.sequence_number, has_damage);
+    last_result_ = result;
+    did_finish_frame_calls_.push_back({frame_id, result});
   }
 
   int GetCurrentAllocatedBuffers() const override {
@@ -114,12 +127,23 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
 
   const BeginFrameAck& last_begin_frame_ack() { return last_begin_frame_ack_; }
   const DrawAndSwapParams& last_params() const { return last_params_; }
+  DisplaySchedulerDrawResult last_result() const { return last_result_; }
+  const std::vector<DidFinishFrameCall>& did_finish_frame_calls() const {
+    return did_finish_frame_calls_;
+  }
+  std::vector<DidFinishFrameCall> GetAndClearDidFinishFrameCalls() {
+    auto calls = std::move(did_finish_frame_calls_);
+    did_finish_frame_calls_.clear();
+    return calls;
+  }
 
  protected:
   raw_ptr<TestDisplayDamageTracker> damage_tracker_ = nullptr;
   int draw_and_swap_count_;
   bool next_draw_and_swap_fails_;
   BeginFrameAck last_begin_frame_ack_;
+  DisplaySchedulerDrawResult last_result_;
+  std::vector<DidFinishFrameCall> did_finish_frame_calls_;
   DrawAndSwapParams last_params_;
   int current_allocated_buffers_ = 0;
 };
@@ -1449,6 +1473,50 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
   // Should NOT draw synchronously because we don't have possible deadlines.
   EXPECT_EQ(1, client_.draw_and_swap_count());
+}
+
+TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
+       DidFinishNotification_DrawnLate) {
+  scheduler_->SetVisible(true);
+
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+
+  damage_tracker_->SetNewRootSurface(root_surface_id);
+
+  // --- VSYNC 1 ---
+  // Send BF1.
+  AdvanceTimeAndBeginFrameForTest({root_surface_id}, CreatePossibleDeadlines());
+  scheduler_->BeginFrameDeadlineForTest();
+
+  // Verify BF1 finished as kDrawn.
+  EXPECT_THAT(client_.GetAndClearDidFinishFrameCalls(),
+              testing::ElementsAre(
+                  testing::FieldsAre(last_begin_frame_args_.frame_id,
+                                     DisplaySchedulerDrawResult::kDrawn)));
+
+  // --- VSYNC 2 ---
+  // Send BF2.
+  AdvanceTimeAndBeginFrameForTest({root_surface_id}, CreatePossibleDeadlines());
+
+  // Trigger deadline for BF2. No damage, so no draw.
+  scheduler_->BeginFrameDeadlineForTest();
+
+  EXPECT_THAT(client_.GetAndClearDidFinishFrameCalls(),
+              testing::ElementsAre(testing::FieldsAre(
+                  last_begin_frame_args_.frame_id,
+                  DisplaySchedulerDrawResult::kMayDrawLate)));
+
+  // Late damage for BF2 arrives (while idle).
+  BeginFrameAck bf2_ack(last_begin_frame_args_, true);
+  damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
+
+  // Verify it was resolved as kDrawnLate.
+  EXPECT_THAT(client_.GetAndClearDidFinishFrameCalls(),
+              testing::ElementsAre(
+                  testing::FieldsAre(last_begin_frame_args_.frame_id,
+                                     DisplaySchedulerDrawResult::kDrawnLate)));
 }
 
 TEST_P(DisplaySchedulerTest, NoSyncDrawForCurrentFrameWhenPendingSurfaces) {

@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -153,7 +154,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool ShouldDraw() const;
   bool CanDrawForPreviousFrame(const BeginFrameId& begin_frame_id) const;
   void ForceImmediateSwapForPreviousFrame();
-  void DidFinishFrame(BeginFrameId frame_id, bool did_draw);
+  void DidFinishFrame(BeginFrameId frame_id, DisplaySchedulerDrawResult result);
   // Updates |has_pending_surfaces_| and returns whether its value changed.
   bool UpdateHasPendingSurfaces();
   void MaybeCreateHintSessions(

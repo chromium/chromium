@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -71,7 +72,8 @@ class VIZ_SERVICE_EXPORT DisplayObserver : public base::CheckedObserver {
  public:
   ~DisplayObserver() override = default;
 
-  virtual void OnDisplayDidFinishFrame(const BeginFrameAck& ack) = 0;
+  virtual void OnDisplayDidFinishFrame(const BeginFrameId& frame_id,
+                                       DisplaySchedulerDrawResult result) = 0;
   virtual void OnDisplayDestroyed() = 0;
 };
 
@@ -150,7 +152,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   // DisplaySchedulerClient implementation.
   bool DrawAndSwap(const DrawAndSwapParams& params) override;
-  void DidFinishFrame(const BeginFrameAck& ack) override;
+  void DidFinishFrame(const BeginFrameId& frame_id,
+                      DisplaySchedulerDrawResult result) override;
   int GetCurrentAllocatedBuffers() const override;
 
   // OutputSurfaceClient implementation.

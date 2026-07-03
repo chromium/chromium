@@ -12,7 +12,9 @@ TestBeginFrameSource::TestBeginFrameSource()
     : viz::BeginFrameSource(kNotRestartableId) {}
 TestBeginFrameSource::~TestBeginFrameSource() = default;
 
-void TestBeginFrameSource::DidFinishFrame(viz::BeginFrameObserver* obs) {}
+void TestBeginFrameSource::DidFinishFrame(
+    viz::BeginFrameObserver* obs,
+    viz::DisplaySchedulerDrawResult result) {}
 
 void TestBeginFrameSource::AddObserver(viz::BeginFrameObserver* obs) {
   DCHECK(obs);

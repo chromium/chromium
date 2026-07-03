@@ -298,7 +298,15 @@ void BackToBackBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
   }
 }
 
-void BackToBackBeginFrameSource::DidFinishFrame(BeginFrameObserver* obs) {
+void BackToBackBeginFrameSource::DidFinishFrame(
+    BeginFrameObserver* obs,
+    DisplaySchedulerDrawResult result) {
+  if (result == DisplaySchedulerDrawResult::kDrawnLate ||
+      result == DisplaySchedulerDrawResult::kMayDrawLate) {
+    // BackToBackBeginFrameSource does not support multiple deadlines, so it
+    // should never receive late draw results.
+    NOTREACHED();
+  }
   if (observers_.contains(obs)) {
     pending_begin_frame_observers_.insert(obs);
     time_source_->SetActive(true);

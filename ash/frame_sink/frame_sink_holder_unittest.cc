@@ -40,7 +40,8 @@ class StubBeginFrameSource : public viz::BeginFrameSource {
  public:
   StubBeginFrameSource() : viz::BeginFrameSource(0u) {}
 
-  void DidFinishFrame(viz::BeginFrameObserver* obs) override {}
+  void DidFinishFrame(viz::BeginFrameObserver* obs,
+                      viz::DisplaySchedulerDrawResult result) override {}
   void AddObserver(viz::BeginFrameObserver* obs) override {}
   void RemoveObserver(viz::BeginFrameObserver* obs) override {}
   void OnGpuNoLongerBusy() override {}

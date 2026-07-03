@@ -31,6 +31,7 @@
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "cc/scheduler/slim_scheduler_state_machine.h"
 #include "cc/scheduler/webview_scheduler_state_machine.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
@@ -752,8 +753,10 @@ void Scheduler::FinishImplFrame() {
     client_->DidFinishImplFrame(last_activate_origin_frame_args());
   }
 
-  if (begin_frame_source_)
-    begin_frame_source_->DidFinishFrame(this);
+  if (begin_frame_source_) {
+    begin_frame_source_->DidFinishFrame(
+        this, viz::DisplaySchedulerDrawResult::kUnknown);
+  }
 }
 
 void Scheduler::SendDidNotProduceFrame(const viz::BeginFrameArgs& args,

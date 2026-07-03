@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display.h"
@@ -69,7 +70,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   void SetPreferredInterval(base::TimeDelta interval) override;
 
   // DisplayObserver overrides.
-  void OnDisplayDidFinishFrame(const BeginFrameAck& ack) override;
+  void OnDisplayDidFinishFrame(const BeginFrameId& frame_id,
+                               DisplaySchedulerDrawResult result) override;
   void OnDisplayDestroyed() override;
 
   // FrameSinkObserver overrides.
