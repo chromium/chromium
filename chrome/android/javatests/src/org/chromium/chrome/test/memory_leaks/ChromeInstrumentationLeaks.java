@@ -32,7 +32,6 @@ public class ChromeInstrumentationLeaks implements LeakCanaryConfigProvider {
 
     @Override
     public List<String> getJavaLocalLeaks() {
-        // crbug.com/465145691
-        return List.of("AsyncLayoutInflator");
+        return List.of();
     }
 }
