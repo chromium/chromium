@@ -442,6 +442,15 @@ net::ReferrerPolicy ReferrerPolicyForUrlRequest(
   NOTREACHED();
 }
 
+int GetAllowedLoadFlagsForUntrustedRequests() {
+  return net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
+         net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
+         net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH |
+         net::LOAD_IGNORE_LIMITS | net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY |
+         net::LOAD_SUPPORT_ASYNC_REVALIDATION |
+         net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
+}
+
 namespace debug {
 
 ScopedResourceRequestCrashKeys::ScopedResourceRequestCrashKeys(

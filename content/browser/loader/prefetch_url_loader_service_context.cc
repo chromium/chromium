@@ -68,6 +68,20 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     return;
   }
 
+  // The request originated in a renderer, but for cross-origin and recursive
+  // prefetches it is forwarded to a trusted network loader factory which does
+  // not validate `load_flags`. Apply the same allowlist that
+  // `CorsURLLoaderFactory::IsValidRequest()` applies to untrusted callers.
+  if (resource_request.load_flags &
+      ~network::GetAllowedLoadFlagsForUntrustedRequests()) {
+    loader_factory_receivers_->ReportBadMessage(
+        "Prefetch/CreatePrefetchLoaderAndStart: restricted load flag");
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+    return;
+  }
+
   if (resource_request.load_flags &
       net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     CHECK(!resource_request.recursive_prefetch_token);

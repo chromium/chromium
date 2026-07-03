@@ -314,6 +314,11 @@ COMPONENT_EXPORT(NETWORK_CPP_BASE)
 net::ReferrerPolicy ReferrerPolicyForUrlRequest(
     mojom::ReferrerPolicy referrer_policy);
 
+// Returns a bitmask of net::LOAD_* flags that are allowed for requests from
+// untrusted processes.
+COMPONENT_EXPORT(NETWORK_CPP_BASE)
+int GetAllowedLoadFlagsForUntrustedRequests();
+
 namespace debug {
 
 class COMPONENT_EXPORT(NETWORK_CPP_BASE) ScopedResourceRequestCrashKeys {

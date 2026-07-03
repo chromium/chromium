@@ -17,7 +17,11 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/loader/prefetch_browsertest_base.h"
+#include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_package/mock_signed_exchange_handler.h"
+#include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -29,14 +33,20 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/scoped_mutually_exclusive_feature_list.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_client.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -1131,6 +1141,150 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
   // Subsequent navigation to the target URL wouldn't hit the network for
   // the target URL. The target content should still be read correctly.
   NavigateToURLAndWaitTitle(target_url, "Prefetch Target");
+}
+
+class PrefetchLoadFlagsBrowserTest : public PrefetchBrowserTestBase {
+ public:
+  PrefetchLoadFlagsBrowserTest()
+      : cross_origin_server_(std::make_unique<net::EmbeddedTestServer>()) {}
+
+  void SetUpOnMainThread() override {
+    PrefetchBrowserTestBase::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+ protected:
+  // Binds a remote to the browser-side `SubresourceProxyingURLLoaderService`
+  // for the current main frame, mirroring the binding that the renderer would
+  // receive at navigation commit time.
+  mojo::Remote<network::mojom::URLLoaderFactory> BindFactoryForMainFrame() {
+    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame());
+    StoragePartitionImpl* partition =
+        static_cast<StoragePartitionImpl*>(rfh->GetStoragePartition());
+    mojo::Remote<network::mojom::URLLoaderFactory> remote;
+    partition->GetSubresourceProxyingURLLoaderService()->GetFactory(
+        remote.BindNewPipeAndPassReceiver(), rfh->GetFrameTreeNodeId(),
+        proxied_factory_.GetSafeWeakWrapper(), rfh->GetWeakPtr(),
+        /*prefetched_signed_exchange_cache=*/nullptr);
+    return remote;
+  }
+
+  network::ResourceRequest CreateCrossOriginPrefetchRequest(
+      const GURL& target_url) {
+    network::ResourceRequest request;
+    request.url = target_url;
+    request.load_flags =
+        net::LOAD_PREFETCH | net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
+    request.request_initiator = shell()
+                                    ->web_contents()
+                                    ->GetPrimaryMainFrame()
+                                    ->GetLastCommittedOrigin();
+    return request;
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
+  network::TestURLLoaderFactory proxied_factory_;
+};
+
+// Verifies that a cross-origin prefetch request from the renderer is rejected
+// if it carries load flags that are not permitted on requests originating from
+// an untrusted process. The request reaches the network service via a trusted
+// loader factory, so the browser must validate the flags before forwarding.
+IN_PROC_BROWSER_TEST_F(PrefetchLoadFlagsBrowserTest,
+                       CrossOriginPrefetchRejectsRestrictedLoadFlags) {
+  const char* prefetch_path = "/prefetch.html";
+  const char* target_path = "/target.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterResponse(target_path,
+                   ResponseEntry("<head><title>Target</title></head>",
+                                 /*content_types=*/""));
+  RegisterRequestHandler(embedded_test_server());
+  RegisterRequestHandler(cross_origin_server_.get());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(cross_origin_server_->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  const GURL target_url =
+      cross_origin_server_->GetURL("3p.example", target_path);
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+
+  for (int restricted_flag :
+       {net::LOAD_BYPASS_PROXY, net::LOAD_DISABLE_CERT_NETWORK_FETCHES}) {
+    SCOPED_TRACE(testing::Message() << "restricted_flag=" << restricted_flag);
+
+    network::ResourceRequest request =
+        CreateCrossOriginPrefetchRequest(target_url);
+    request.load_flags |= restricted_flag;
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    network::TestURLLoaderClient client;
+    mojo::Remote<network::mojom::URLLoader> loader;
+    factory->CreateLoaderAndStart(
+        loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+        network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilComplete();
+    EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client.completion_status().error_code);
+    EXPECT_EQ("Prefetch/CreatePrefetchLoaderAndStart: restricted load flag",
+              bad_message_observer.WaitForBadMessage());
+
+    // The receiver is removed when a bad message is reported, so rebind for
+    // the next iteration.
+    factory.reset();
+    factory = BindFactoryForMainFrame();
+  }
+}
+
+// Verifies that a cross-origin prefetch request carrying only load flags that
+// are permitted on requests from an untrusted process is forwarded to the
+// network service.
+IN_PROC_BROWSER_TEST_F(PrefetchLoadFlagsBrowserTest,
+                       CrossOriginPrefetchAllowsRendererLoadFlags) {
+  const char* prefetch_path = "/prefetch.html";
+  const char* target_path = "/target.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterResponse(target_path,
+                   ResponseEntry("<head><title>Target</title></head>",
+                                 /*content_types=*/""));
+  RegisterRequestHandler(embedded_test_server());
+
+  base::RunLoop prefetch_waiter;
+  auto request_counter = RequestCounter::CreateAndMonitor(
+      cross_origin_server_.get(), target_path, &prefetch_waiter);
+  RegisterRequestHandler(cross_origin_server_.get());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(cross_origin_server_->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  const GURL target_url =
+      cross_origin_server_->GetURL("3p.example", target_path);
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+
+  network::ResourceRequest request =
+      CreateCrossOriginPrefetchRequest(target_url);
+  request.load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
+
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+  prefetch_waiter.Run();
+  EXPECT_EQ(1, request_counter->GetRequestCount());
 }
 
 class FencedFramePrefetchTest : public PrefetchBrowserTestBase {
