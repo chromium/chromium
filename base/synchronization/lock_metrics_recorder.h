@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cstddef>
 #include <optional>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -53,7 +54,7 @@ class BASE_EXPORT LockMetricsRecorder {
   // overwrite the oldest samples.
   constexpr static size_t kMaxSamples = 256;
 
-  explicit LockMetricsRecorder(PassKey);
+  explicit LockMetricsRecorder(PassKey, std::string_view histogram_suffix);
   LockMetricsRecorder(const LockMetricsRecorder&) = delete;
   LockMetricsRecorder& operator=(const LockMetricsRecorder&) = delete;
   ~LockMetricsRecorder() = default;
@@ -63,7 +64,9 @@ class BASE_EXPORT LockMetricsRecorder {
   // thread.
   static LockMetricsRecorder* GetForCurrentThread();
 
-  static void EnableRecordingOnCurrentThread();
+  static void EnableRecordingOnCurrentThread(std::string_view histogram_suffix);
+
+  static void DisableRecordingOnCurrentThreadForTesting();
 
   bool ShouldRecordLockAcquisitionTime() const;
 

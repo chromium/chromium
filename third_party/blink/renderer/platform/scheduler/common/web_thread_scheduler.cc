@@ -42,7 +42,6 @@ WebThreadScheduler::CreateMainThreadScheduler(
   DCHECK(message_pump);
   auto settings = CreateSequenceManagerSettings()
                       .SetIsMainThread(true)
-                      .SetShouldReportLockMetrics(true)
                       .Build();
   auto sequence_manager =
       base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(

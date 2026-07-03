@@ -151,8 +151,6 @@ class BASE_EXPORT SequenceManager {
     // base::SingleThreadTaskRunner::GetMainThreadDefault().
     bool is_main_thread = false;
 
-    bool should_report_lock_metrics = false;
-
     // If true, tasks posted to this sequence manager should be delayed when a
     // Scoped(*)ExecutionFence covering the task type exists. For example
     // best-effort tasks would be delayed by ScopedBestEffortExecutionFence.
@@ -304,9 +302,6 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   Builder& SetPrioritySettings(PrioritySettings settings);
 
   Builder& SetIsMainThread(bool is_main_thread);
-
-  // Whether lock contention metrics should be reported to UMA.
-  Builder& SetShouldReportLockMetrics(bool enable);
 
   // Whether tasks posted to this sequence manager should be delayed when a
   // Scoped(*)ExecutionFence covering the task type exists.

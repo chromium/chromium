@@ -28,7 +28,7 @@ class LockMetricsRecorderTest : public testing::Test {
 
  protected:
   LockMetricsRecorder lock_metrics_recorder_{
-      base::PassKey<LockMetricsRecorderTest>()};
+      base::PassKey<LockMetricsRecorderTest>(), "LockMetricsRecorderTest"};
 
  private:
   MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
@@ -172,8 +172,7 @@ class IsolatedTestThread : public PlatformThread::Delegate {
       : thread_name_(thread_name), task_(std::move(task)) {}
 
   void ThreadMain() override {
-    PlatformThread::SetName(thread_name_);
-    LockMetricsRecorder::EnableRecordingOnCurrentThread();
+    LockMetricsRecorder::EnableRecordingOnCurrentThread(thread_name_);
     std::move(task_).Run();
   }
 
@@ -206,12 +205,16 @@ void MakeThreadsContendOnLock() {
 class BaseLockMetricsTest : public testing::Test {
  public:
   BaseLockMetricsTest() {
-    LockMetricsRecorder::EnableRecordingOnCurrentThread();
+    LockMetricsRecorder::EnableRecordingOnCurrentThread("BaseLockMetricsTest");
   }
 
   void SetUp() override {
     ASSERT_TRUE(LockMetricsRecorder::GetForCurrentThread()
                     ->ShouldRecordLockAcquisitionTime());
+  }
+
+  void TearDown() override {
+    LockMetricsRecorder::DisableRecordingOnCurrentThreadForTesting();
   }
 
  private:

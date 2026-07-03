@@ -65,7 +65,6 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
                       internal::CreateBrowserTaskPrioritySettings())
                   .SetIsMainThread(true)
                   .SetShouldSampleCPUTime(true)
-                  .SetShouldReportLockMetrics(true)
                   .SetShouldBlockOnScopedFences(true)
                   .Build())),
       task_queues_(BrowserThread::UI, owned_sequence_manager_.get()),

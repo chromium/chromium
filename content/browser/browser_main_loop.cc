@@ -36,6 +36,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/system_monitor.h"
 #include "base/task/current_thread.h"
@@ -644,6 +645,8 @@ void BrowserMainLoop::CreateMainMessageLoop() {
 void BrowserMainLoop::PostCreateMainMessageLoop() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateMainMessageLoop");
   mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("BrowserMain");
+  base::LockMetricsRecorder::EnableRecordingOnCurrentThread("CrBrowserMain");
+
   base::MessagePumpWakeupCounter::InitializeForCurrentThread("BrowserMain");
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce([]() {

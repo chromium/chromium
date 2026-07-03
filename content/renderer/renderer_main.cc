@@ -22,6 +22,7 @@
 #include "base/process/current_process.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/thread_pool.h"
@@ -311,6 +312,8 @@ int RendererMain(MainFunctionParams parameters) {
           uncovered_hang_watcher_time);
       base::HangWatcher::GetInstance()->Start();
     }
+
+    base::LockMetricsRecorder::EnableRecordingOnCurrentThread("CrRendererMain");
 
 #if BUILDFLAG(IS_ANDROID)
     base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(

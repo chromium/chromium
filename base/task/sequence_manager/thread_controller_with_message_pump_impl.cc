@@ -90,11 +90,7 @@ ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     : ThreadController(settings.clock),
       work_deduplicator_(associated_thread_),
       can_run_tasks_by_batches_(settings.can_run_tasks_by_batches),
-      is_main_thread_(settings.is_main_thread) {
-  if (settings.should_report_lock_metrics) {
-    LockMetricsRecorder::EnableRecordingOnCurrentThread();
-  }
-}
+      is_main_thread_(settings.is_main_thread) {}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,

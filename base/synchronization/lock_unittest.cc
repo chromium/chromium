@@ -599,7 +599,11 @@ TEST(LockTest, PriorityIsInherited) {
 class LockTrySpinTest : public testing::Test {
  public:
   void SetUp() override {
-    LockMetricsRecorder::EnableRecordingOnCurrentThread();
+    LockMetricsRecorder::EnableRecordingOnCurrentThread("LockTrySpinTest");
+  }
+
+  void TearDown() override {
+    LockMetricsRecorder::DisableRecordingOnCurrentThreadForTesting();
   }
 
  protected:

@@ -133,12 +133,6 @@ SequenceManager::Settings::Builder::SetIsMainThread(bool is_main_thread_val) {
 }
 
 SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetShouldReportLockMetrics(bool enable) {
-  settings_.should_report_lock_metrics = enable;
-  return *this;
-}
-
-SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetShouldBlockOnScopedFences(bool enable) {
   settings_.should_block_on_scoped_fences = enable;
   return *this;
