@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -72,6 +73,14 @@ class PasswordGenerationFrameHelper {
   // Adds `field_renderer_id` to `generation_enabled_fields_` set.
   virtual void AddManualGenerationEnabledField(
       autofill::FieldRendererId field_renderer_id);
+
+  // Returns password requirements spec based on provided input.
+  virtual autofill::PasswordRequirementsSpec GetPasswordRequirementsSpec(
+      const GURL& last_committed_url,
+      autofill::password_generation::PasswordGenerationType generation_type,
+      autofill::FormSignature form_signature,
+      autofill::FieldSignature field_signature,
+      uint64_t max_length);
 
   // Returns a randomly generated password that should (but is not guaranteed
   // to) match the requirements of the site.

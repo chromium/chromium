@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -1083,4 +1084,33 @@ TEST_F(ModelQualityLogsUploaderTest, DurationRecordedForVerifySubmission) {
                 .verify_submission()
                 .request_latency_ms(),
             5332);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, SetPasswordRequirementsSpec) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+
+  autofill::PasswordRequirementsSpec spec;
+  spec.set_priority(10);
+  spec.set_spec_version(1);
+  spec.set_min_length(8);
+  spec.set_max_length(16);
+  spec.mutable_lower_case()->set_min(1);
+  spec.mutable_lower_case()->set_max(10);
+  spec.mutable_lower_case()->set_character_set("abc");
+
+  logs_uploader.SetPasswordRequirementsSpec(spec);
+
+  const auto& proto_spec = logs_uploader.GetFinalLog()
+                               .password_change_submission()
+                               .quality()
+                               .password_requirements_spec();
+
+  EXPECT_EQ(proto_spec.priority(), 10u);
+  EXPECT_EQ(proto_spec.spec_version(), 1u);
+  EXPECT_EQ(proto_spec.min_length(), 8u);
+  EXPECT_EQ(proto_spec.max_length(), 16u);
+  EXPECT_EQ(proto_spec.lower_case().min(), 1u);
+  EXPECT_EQ(proto_spec.lower_case().max(), 10u);
+  EXPECT_EQ(proto_spec.lower_case().character_set(), "abc");
 }

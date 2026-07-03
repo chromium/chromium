@@ -443,4 +443,22 @@ TEST_F(PasswordGenerationFrameHelperTest, ShortCrowdsourcedPasswordLength) {
   EXPECT_EQ(generated_pwd.size(), autofill::kDefaultPasswordLength);
 }
 
+TEST_F(PasswordGenerationFrameHelperTest, GetPasswordRequirementsSpec) {
+  const GURL kTestOrigin("https://example.com");
+  constexpr FormSignature kTestFormSignature(123);
+  constexpr FieldSignature kTestFieldSignature(456);
+
+  PasswordRequirementsSpec input_spec;
+  constexpr size_t kShortLength = 12u;
+  input_spec.set_max_length(kShortLength);
+  client_->GetPasswordRequirementsService()->AddSpec(
+      kTestOrigin, kTestFormSignature, kTestFieldSignature, input_spec);
+
+  PasswordRequirementsSpec computed_spec =
+      GetGenerationHelper()->GetPasswordRequirementsSpec(
+          kTestOrigin, PasswordGenerationType::kAutomatic, kTestFormSignature,
+          kTestFieldSignature, /*max_length=*/0);
+  EXPECT_EQ(computed_spec.max_length(), kShortLength);
+}
+
 }  // namespace password_manager

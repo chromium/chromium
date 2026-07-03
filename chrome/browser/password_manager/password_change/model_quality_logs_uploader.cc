@@ -15,6 +15,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -276,6 +277,52 @@ ToProtoDiscardReason(FormDiscardReason reason) {
     case FormDiscardReason::kFormNotVisible:
       return optimization_guide::proto::
           PasswordChangeQuality_FormData_DiscardReason_FORM_NOT_VISIBLE;
+  }
+}
+
+void SetCharacterClass(
+    optimization_guide::proto::PasswordRequirementsSpec::CharacterClass& dest,
+    const autofill::PasswordRequirementsSpec::CharacterClass& src) {
+  if (src.has_character_set()) {
+    dest.set_character_set(src.character_set());
+  }
+  if (src.has_min()) {
+    dest.set_min(src.min());
+  }
+  if (src.has_max()) {
+    dest.set_max(src.max());
+  }
+}
+
+void SetPasswordRequirementsSpecProto(
+    optimization_guide::proto::PasswordRequirementsSpec& dest,
+    const autofill::PasswordRequirementsSpec& src) {
+  if (src.has_priority()) {
+    dest.set_priority(src.priority());
+  }
+  if (src.has_spec_version()) {
+    dest.set_spec_version(src.spec_version());
+  }
+  if (src.has_min_length()) {
+    dest.set_min_length(src.min_length());
+  }
+  if (src.has_max_length()) {
+    dest.set_max_length(src.max_length());
+  }
+  if (src.has_lower_case()) {
+    SetCharacterClass(*dest.mutable_lower_case(), src.lower_case());
+  }
+  if (src.has_upper_case()) {
+    SetCharacterClass(*dest.mutable_upper_case(), src.upper_case());
+  }
+  if (src.has_alphabetic()) {
+    SetCharacterClass(*dest.mutable_alphabetic(), src.alphabetic());
+  }
+  if (src.has_numeric()) {
+    SetCharacterClass(*dest.mutable_numeric(), src.numeric());
+  }
+  if (src.has_symbols()) {
+    SetCharacterClass(*dest.mutable_symbols(), src.symbols());
   }
 }
 
@@ -541,6 +588,14 @@ void ModelQualityLogsUploader::RecordDiscardedForm(
   FormData* form_data_proto = quality->add_discarded_forms_data();
   SetFormData(*form_data_proto, *password_form);
   form_data_proto->set_discard_reason(proto_discard_reason);
+}
+
+void ModelQualityLogsUploader::SetPasswordRequirementsSpec(
+    const autofill::PasswordRequirementsSpec& spec) {
+  optimization_guide::proto::PasswordChangeQuality* quality =
+      final_log_data_.mutable_password_change_submission()->mutable_quality();
+  SetPasswordRequirementsSpecProto(
+      *quality->mutable_password_requirements_spec(), spec);
 }
 
 void ModelQualityLogsUploader::SetStepDuration(FlowStep step,

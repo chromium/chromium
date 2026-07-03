@@ -12,6 +12,10 @@
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
 class Profile;
+namespace autofill {
+class PasswordRequirementsSpec;
+}  // namespace autofill
+
 namespace content {
 class WebContents;
 }
@@ -108,6 +112,10 @@ class ModelQualityLogsUploader {
   // Called when APC flow discards a parsed form.
   void RecordDiscardedForm(const password_manager::PasswordForm* password_form,
                            FormDiscardReason discard_reason);
+
+  // Called when generating a password. Logs password requirements spec.
+  void SetPasswordRequirementsSpec(
+      const autofill::PasswordRequirementsSpec& spec);
 
   void SetStepDuration(FlowStep step, base::TimeDelta duration);
 

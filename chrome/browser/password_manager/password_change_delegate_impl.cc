@@ -66,17 +66,29 @@ constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
 std::u16string GeneratePassword(
     const password_manager::PasswordForm& form,
-    password_manager::PasswordGenerationFrameHelper* generation_helper) {
+    password_manager::PasswordGenerationFrameHelper* generation_helper,
+    ModelQualityLogsUploader* logs_uploader) {
   auto iter = std::ranges::find(form.form_data.fields(),
                                 form.new_password_element_renderer_id,
                                 &autofill::FormFieldData::renderer_id);
   CHECK(iter != form.form_data.fields().end());
 
-  return generation_helper->GeneratePassword(
-      form.url,
-      autofill::password_generation::PasswordGenerationType::kAutomatic,
-      autofill::CalculateFormSignature(form.form_data),
-      autofill::CalculateFieldSignatureForField(*iter), iter->max_length());
+  autofill::FormSignature form_signature =
+      autofill::CalculateFormSignature(form.form_data);
+  autofill::FieldSignature field_signature =
+      autofill::CalculateFieldSignatureForField(*iter);
+
+  autofill::PasswordRequirementsSpec spec =
+      generation_helper->GetPasswordRequirementsSpec(
+          form.url,
+          autofill::password_generation::PasswordGenerationType::kAutomatic,
+          form_signature, field_signature, iter->max_length());
+
+  if (logs_uploader) {
+    logs_uploader->SetPasswordRequirementsSpec(spec);
+  }
+
+  return autofill::GeneratePassword(spec);
 }
 
 void NotifyPasswordChangeFinishedSuccessfully(
@@ -370,9 +382,10 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
   form_finder_.reset();
 
   CHECK(form_manager);
-  generated_password_ = GeneratePassword(
-      *form_manager->GetParsedObservedForm(),
-      form_manager->GetDriver()->GetPasswordGenerationHelper());
+  generated_password_ =
+      GeneratePassword(*form_manager->GetParsedObservedForm(),
+                       form_manager->GetDriver()->GetPasswordGenerationHelper(),
+                       logs_uploader_.get());
 
   CHECK(executor());
   CHECK(!form_submission_helper_);
