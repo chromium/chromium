@@ -52,6 +52,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -94,6 +95,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests the {@link SearchActivity}.
@@ -254,9 +256,12 @@ public class SearchActivityTest {
         startSearchActivity();
 
         // Wait for the Activity to fully load.
-        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
-        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
-        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
+        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
+        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
+        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
 
         // Monitor for ChromeTabbedActivity.
         waitForChromeTabbedActivityToStart(
@@ -291,7 +296,8 @@ public class SearchActivityTest {
                         eq(VoiceRecognitionIntentHandler.VoiceInteractionSource.SEARCH_WIDGET),
                         any());
 
-        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
+        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
         Assert.assertEquals(0, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
@@ -301,8 +307,10 @@ public class SearchActivityTest {
 
         Assert.assertEquals(
                 1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
-        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
-        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
+        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
+        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
 
         verify(mHandler)
                 .startVoiceRecognition(
@@ -316,8 +324,10 @@ public class SearchActivityTest {
         // Start the Activity.  It should pause and assume that a promo dialog has appeared.
         mTestDelegate.shouldDelayDeferredInitialization = true;
         startSearchActivity();
-        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
-        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
+        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
+        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
         Assert.assertNotNull(mTestDelegate.onSearchEngineFinalizedCallback);
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
         // Native initialization is finished, but we don't have a DSE elected yet.
@@ -336,7 +346,8 @@ public class SearchActivityTest {
         Assert.assertEquals(
                 1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
         Assert.assertEquals(1, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
-        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
+        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
 
         // Omnibox suggestions should be requested now.
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
@@ -352,9 +363,12 @@ public class SearchActivityTest {
     @DisabledTest(message = "crbug.com/525742395")
     public void testSetUrl_urlBarTextEmpty() throws Exception {
         final SearchActivity searchActivity = startSearchActivity();
-        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
-        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
-        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
+        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
+        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
+        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(
+                0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
 
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
