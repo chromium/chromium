@@ -483,10 +483,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   const base::TimeDelta resource_expiration_delay_;
   const bool disallow_non_exact_reuse_ = false;
   const int tracing_id_;
-  const std::string total_memory_track_name_;
-  const std::string in_use_memory_track_name_;
-  perfetto::CounterTrack total_memory_track_;
-  perfetto::CounterTrack in_use_memory_track_;
+  base::trace_event::TrackRegistration<perfetto::NamedTrack> tracing_track_;
 
   size_t next_resource_unique_id_ = 1;
   size_t max_memory_usage_bytes_ = 0;

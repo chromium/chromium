@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 #include "cc/base/container_util.h"
 #include "cc/base/features.h"
@@ -135,9 +136,6 @@ void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
 
 namespace {
 
-// Process-unique number for each resource pool.
-base::AtomicSequenceNumber g_next_tracing_id;
-
 bool ResourceMeetsSizeRequirements(const gfx::Size& requested_size,
                                    const gfx::Size& actual_size,
                                    bool disallow_non_exact_reuse) {
@@ -192,15 +190,9 @@ ResourcePool::ResourcePool(
       task_runner_(std::move(task_runner)),
       resource_expiration_delay_(expiration_delay),
       disallow_non_exact_reuse_(disallow_non_exact_reuse),
-      tracing_id_(g_next_tracing_id.GetNext()),
-      total_memory_track_name_(
-          base::StringPrintf("ResourcePoolTotalMemory_%d", tracing_id_)),
-      in_use_memory_track_name_(
-          base::StringPrintf("ResourcePoolInUseMemory_%d", tracing_id_)),
-      total_memory_track_(perfetto::DynamicString(total_memory_track_name_),
-                          perfetto::ProcessTrack::Current()),
-      in_use_memory_track_(perfetto::DynamicString(in_use_memory_track_name_),
-                           perfetto::ProcessTrack::Current()),
+      tracing_id_(base::trace_event::GetNextGlobalTraceId()),
+      tracing_track_(perfetto::NamedTrack("ResourcePool", tracing_id_)
+                         .disable_sibling_merge()),
       flush_evicted_resources_deadline_(base::TimeTicks::Max()),
       clock_(base::DefaultTickClock::GetInstance()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -441,8 +433,10 @@ void ResourcePool::OnBackingAllocated(PoolResource* resource) {
 }
 
 void ResourcePool::UpdateTracingCounters() {
-  TRACE_COUNTER("cc", total_memory_track_, total_memory_usage_bytes_);
-  TRACE_COUNTER("cc", in_use_memory_track_, memory_usage_bytes());
+  TRACE_COUNTER("cc", perfetto::CounterTrack("TotalMemory", *tracing_track_),
+                total_memory_usage_bytes_);
+  TRACE_COUNTER("cc", perfetto::CounterTrack("InUseMemory", *tracing_track_),
+                memory_usage_bytes());
 }
 
 void ResourcePool::OnResourceReleased(size_t unique_id,
