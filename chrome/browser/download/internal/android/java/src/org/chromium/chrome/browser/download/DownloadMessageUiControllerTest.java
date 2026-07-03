@@ -13,7 +13,6 @@ import androidx.test.filters.SmallTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,7 +24,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.messages.MessageDispatcher;
@@ -33,6 +31,7 @@ import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -46,8 +45,6 @@ import java.util.UUID;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class DownloadMessageUiControllerTest {
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     private static final String MESSAGE_DOWNLOADING_FILE = "Downloading file…";
     private static final String MESSAGE_DOWNLOADING_TWO_FILES = "Downloading 2 files…";
     private static final String MESSAGE_SINGLE_DOWNLOAD_COMPLETE = "File downloaded";
@@ -76,6 +73,7 @@ public class DownloadMessageUiControllerTest {
 
     @Before
     public void before() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestController = new TestDownloadMessageUiController();
