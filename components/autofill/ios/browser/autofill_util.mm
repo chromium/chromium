@@ -403,7 +403,10 @@ bool ExtractFormFieldData(const base::DictValue& field,
     field_data->set_autocomplete_attribute(*autocomplete_attribute);
   }
   if (std::optional<double> max_length = field.FindDouble("max_length")) {
-    field_data->set_max_length(((int)*max_length));
+    field_data->set_max_length(
+        *max_length >= 0 && *max_length <= FormFieldData::kDefaultMaxLength
+            ? static_cast<uint64_t>(*max_length)
+            : FormFieldData::kDefaultMaxLength);
   }
   field_data->set_parsed_autocomplete(
       ParseAutocompleteAttribute(field_data->autocomplete_attribute()));

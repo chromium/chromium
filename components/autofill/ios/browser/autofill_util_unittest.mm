@@ -4,9 +4,11 @@
 
 #import "components/autofill/ios/browser/autofill_util.h"
 
+#import <optional>
 #import <variant>
 
 #import "base/memory/scoped_refptr.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -136,6 +138,45 @@ TEST_F(AutofillUtilTest, ExtractFillingResults) {
   EXPECT_FALSE(ExtractFillingResults(invalid_results1, &extracted_results));
   NSString* invalid_results2 = @"{\"1\":\"username\"\"2\":100}";
   EXPECT_FALSE(ExtractFillingResults(invalid_results2, &extracted_results));
+}
+
+// Tests that out-of-range max_length values fall back to the default so that
+// the extracted value never exceeds FormFieldData::kDefaultMaxLength.
+TEST_F(AutofillUtilTest, ExtractFormFieldData_MaxLength) {
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
+  const struct {
+    std::optional<double> max_length;
+    uint64_t expected;
+  } kCases[] = {
+      {std::nullopt, autofill::FormFieldData::kDefaultMaxLength},
+      {-1.0, autofill::FormFieldData::kDefaultMaxLength},
+      {0.0, 0u},
+      {10.0, 10u},
+      {1e15, autofill::FormFieldData::kDefaultMaxLength},
+  };
+  for (const auto& test : kCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Testing max_length: "
+                 << (test.max_length ? base::NumberToString(*test.max_length)
+                                     : "std::nullopt"));
+
+    base::DictValue field;
+    // Set mandatory field attributes.
+    field.Set("name", base::Value("name"));
+    field.Set("form_control_type", base::Value("text"));
+    if (test.max_length) {
+      field.Set("max_length", base::Value(*test.max_length));
+    }
+
+    autofill::FormFieldData field_data;
+    ASSERT_TRUE(autofill::ExtractFormFieldData(field, *field_data_manager,
+                                               &field_data));
+    EXPECT_EQ(test.expected, field_data.max_length());
+    EXPECT_LE(field_data.max_length(),
+              autofill::FormFieldData::kDefaultMaxLength);
+  }
 }
 
 // Test that the properties mask is extracted from the form field data.
