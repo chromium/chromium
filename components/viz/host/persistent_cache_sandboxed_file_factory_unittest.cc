@@ -11,11 +11,18 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/types/expected.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
 
 namespace {
+
+using ::base::test::TestFuture;
 
 // RAII class to save and restore the current directory.
 class ScopedCurrentDirectory {
@@ -58,6 +65,25 @@ class TestFactory : public PersistentCacheSandboxedFileFactory {
   ~TestFactory() override = default;
 };
 
+class MockFactory : public PersistentCacheSandboxedFileFactory {
+ public:
+  MockFactory(const base::FilePath& cache_root_dir,
+              scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+      : PersistentCacheSandboxedFileFactory(cache_root_dir,
+                                            std::move(background_task_runner)) {
+  }
+
+  MOCK_METHOD((base::expected<persistent_cache::PendingBackend,
+                              persistent_cache::TransactionError>),
+              CreateFiles,
+              (const CacheIdString& cache_id, const std::string& product),
+              (override));
+
+ private:
+  friend class base::RefCountedThreadSafe<MockFactory>;
+  ~MockFactory() override = default;
+};
+
 }  // namespace
 
 class PersistentCacheSandboxedFileFactoryTest : public testing::Test {
@@ -91,9 +117,7 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, DeletesStaleFiles) {
   // Create old, stale cache files.
   auto factory_old = base::MakeRefCounted<TestFactory>(
       cache_root_path(), main_thread_task_runner());
-  auto files_old = factory_old->CreateFiles(kCacheId, kOldProduct);
-  ASSERT_TRUE(files_old);
-  files_old.reset();  // Close the files.
+  ASSERT_OK(factory_old->CreateFiles(kCacheId, kOldProduct));
 
   // There should be one version directory for the old product.
   ASSERT_EQ(1u, GetDirsInDir(cache_dir).size());
@@ -106,9 +130,7 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, DeletesStaleFiles) {
       cache_root_path().Append(kOtherCacheId);
   auto factory_other = base::MakeRefCounted<TestFactory>(
       cache_root_path(), main_thread_task_runner());
-  auto files_other = factory_other->CreateFiles(kOtherCacheId, kOldProduct);
-  ASSERT_TRUE(files_other);
-  files_other.reset();  // Close the file.
+  ASSERT_OK(factory_other->CreateFiles(kOtherCacheId, kOldProduct));
   ASSERT_EQ(1u, GetDirsInDir(other_cache_dir).size());
 
   // Wait for any async tasks to complete.
@@ -121,8 +143,8 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, DeletesStaleFiles) {
   // deletion of the stale files for kCacheId.
   auto factory_new = base::MakeRefCounted<TestFactory>(
       cache_root_path(), main_thread_task_runner());
-  auto files_new = factory_new->CreateFiles(kCacheId, kNewProduct);
-  ASSERT_TRUE(files_new);
+  ASSERT_OK_AND_ASSIGN(auto files_new,
+                       factory_new->CreateFiles(kCacheId, kNewProduct));
 
   // Wait for the async deletion task to complete.
   FlushMainThreadTasks();
@@ -144,9 +166,7 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, ClearFiles) {
   // Create cache files.
   auto factory = base::MakeRefCounted<TestFactory>(cache_root_path(),
                                                    main_thread_task_runner());
-  auto files = factory->CreateFiles(kCacheId, kProduct);
-  ASSERT_TRUE(files);
-  files.reset();  // Close the files.
+  ASSERT_OK(factory->CreateFiles(kCacheId, kProduct));
 
   // Verify a version directory exists.
   ASSERT_EQ(1u, GetDirsInDir(cache_dir).size());
@@ -164,9 +184,7 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, ClearFilesAsync) {
   // Create cache files.
   auto factory = base::MakeRefCounted<TestFactory>(cache_root_path(),
                                                    main_thread_task_runner());
-  auto files = factory->CreateFiles(kCacheId, kProduct);
-  ASSERT_TRUE(files);
-  files.reset();  // Close the files.
+  ASSERT_OK(factory->CreateFiles(kCacheId, kProduct));
 
   // Verify a version directory exists.
   ASSERT_EQ(1u, GetDirsInDir(cache_dir).size());
@@ -187,6 +205,99 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, ClearFilesAsync) {
 
   // Verify the version directory is gone.
   EXPECT_EQ(0u, GetDirsInDir(cache_dir).size());
+}
+
+// Tests for async retry logic.
+using PersistentCacheSandboxedFileFactoryAsyncTest =
+    PersistentCacheSandboxedFileFactoryTest;
+
+TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest, SuccessOnFirstTry) {
+  auto factory = base::MakeRefCounted<MockFactory>(
+      cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+      .WillOnce(testing::InvokeWithoutArgs([]() {
+        return base::expected<persistent_cache::PendingBackend,
+                              persistent_cache::TransactionError>(
+            persistent_cache::PendingBackend());
+      }));
+
+  TestFuture<std::optional<persistent_cache::PendingBackend>> future;
+  factory->CreateFilesAsync(
+      kCacheId, kProduct, future.GetCallback(),
+      /*extra_opts=*/{.retries = 3, .retry_delay = base::TimeDelta()});
+
+  EXPECT_NE(future.Get(), std::nullopt);
+}
+
+TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest, RetryOnTransientError) {
+  auto factory = base::MakeRefCounted<MockFactory>(
+      cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  // Expect 1 transient failure, then success.
+  testing::InSequence s;
+  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+      .WillOnce(testing::InvokeWithoutArgs([]() {
+        return base::expected<persistent_cache::PendingBackend,
+                              persistent_cache::TransactionError>(
+            base::unexpected(persistent_cache::TransactionError::kTransient));
+      }));
+  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+      .WillOnce(testing::InvokeWithoutArgs([]() {
+        return base::expected<persistent_cache::PendingBackend,
+                              persistent_cache::TransactionError>(
+            persistent_cache::PendingBackend());
+      }));
+
+  TestFuture<std::optional<persistent_cache::PendingBackend>> future;
+  factory->CreateFilesAsync(
+      kCacheId, kProduct, future.GetCallback(),
+      /*extra_opts=*/{.retries = 3, .retry_delay = base::TimeDelta()});
+
+  EXPECT_NE(future.Get(), std::nullopt);
+}
+
+TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest,
+       ExhaustRetriesOnTransientError) {
+  auto factory = base::MakeRefCounted<MockFactory>(
+      cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  // Expect 4 transient failures (1 initial + 3 retries).
+  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+      .Times(4)
+      .WillRepeatedly(testing::InvokeWithoutArgs([]() {
+        return base::expected<persistent_cache::PendingBackend,
+                              persistent_cache::TransactionError>(
+            base::unexpected(persistent_cache::TransactionError::kTransient));
+      }));
+
+  TestFuture<std::optional<persistent_cache::PendingBackend>> future;
+  factory->CreateFilesAsync(
+      kCacheId, kProduct, future.GetCallback(),
+      /*extra_opts=*/{.retries = 3, .retry_delay = base::TimeDelta()});
+
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest,
+       ImmediateFailureOnPermanentError) {
+  auto factory = base::MakeRefCounted<MockFactory>(
+      cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  // Expect 1 permanent failure, no retries.
+  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+      .WillOnce(testing::InvokeWithoutArgs([]() {
+        return base::expected<persistent_cache::PendingBackend,
+                              persistent_cache::TransactionError>(
+            base::unexpected(persistent_cache::TransactionError::kPermanent));
+      }));
+
+  TestFuture<std::optional<persistent_cache::PendingBackend>> future;
+  factory->CreateFilesAsync(
+      kCacheId, kProduct, future.GetCallback(),
+      /*extra_opts=*/{.retries = 3, .retry_delay = base::TimeDelta()});
+
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 }  // namespace viz

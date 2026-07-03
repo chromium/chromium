@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/base32/base32.h"
@@ -132,7 +133,8 @@ PersistentCacheSandboxedFileFactory::PersistentCacheSandboxedFileFactory(
 PersistentCacheSandboxedFileFactory::~PersistentCacheSandboxedFileFactory() =
     default;
 
-std::optional<persistent_cache::PendingBackend>
+base::expected<persistent_cache::PendingBackend,
+               persistent_cache::TransactionError>
 PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
                                                  const std::string& product) {
   background_task_runner_->PostTask(
@@ -148,27 +150,61 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
       base::FilePath(FILE_PATH_LITERAL("cache")), /*single_connection=*/true,
       /*journal_mode_wal=*/true);
   if (!backend.has_value()) {
-    // TODO(crbug.com/523884661): Retry after a delay in case of kTransient
-    // error.
     PLOG(ERROR) << "Failed to open persistent cache files in directory \""
                 << cache_dir
                 << "\", error: " << static_cast<int>(backend.error());
-    return std::nullopt;
   }
-
-  return *std::move(backend);
+  return backend;
 }
 
 void PersistentCacheSandboxedFileFactory::CreateFilesAsync(
     const CacheIdString& cache_id,
     const std::string& product,
     CreateFilesCallback callback) {
-  // The reply will be posted to the current SequencedTaskRunner.
-  background_task_runner_->PostTaskAndReplyWithResult(
+  CreateFilesAsync(cache_id, product, std::move(callback),
+                   CreateFilesAsyncOpts());
+}
+
+void PersistentCacheSandboxedFileFactory::CreateFilesAsync(
+    const CacheIdString& cache_id,
+    const std::string& product,
+    CreateFilesCallback callback,
+    CreateFilesAsyncOpts extra_opts) {
+  background_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&PersistentCacheSandboxedFileFactory::CreateFiles, this,
-                     cache_id, product),
-      std::move(callback));
+      base::BindOnce(
+          &PersistentCacheSandboxedFileFactory::CreateFilesAsyncAttempt, this,
+          cache_id, product,
+          base::BindPostTaskToCurrentDefault(std::move(callback)),
+          std::move(extra_opts)));
+}
+
+void PersistentCacheSandboxedFileFactory::CreateFilesAsyncAttempt(
+    const CacheIdString& cache_id,
+    const std::string& product,
+    CreateFilesCallback callback,
+    CreateFilesAsyncOpts extra_opts) {
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+
+  auto backend = CreateFiles(cache_id, product);
+
+  if (backend.has_value()) {
+    std::move(callback).Run(*std::move(backend));
+  } else if (backend.error() ==
+                 persistent_cache::TransactionError::kTransient &&
+             extra_opts.retries > 0) {
+    const base::TimeDelta delay = extra_opts.retry_delay;
+    --extra_opts.retries;
+
+    background_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &PersistentCacheSandboxedFileFactory::CreateFilesAsyncAttempt, this,
+            cache_id, product, std::move(callback), std::move(extra_opts)),
+        delay);
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 
 bool PersistentCacheSandboxedFileFactory::ClearFiles(

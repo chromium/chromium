@@ -13,7 +13,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/pending_backend.h"
+#include "components/persistent_cache/transaction_error.h"
 #include "components/viz/host/viz_host_export.h"
 
 namespace viz {
@@ -44,18 +47,31 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
   // `cache_id` is used to uniquely identify the cache type (e.g.,
   // 'dawngraphite'). `product` is used for versioning. Stale files from
   // different versions are automatically deleted.
-  std::optional<persistent_cache::PendingBackend> CreateFiles(
-      const CacheIdString& cache_id,
-      const std::string& product);
+  virtual base::expected<persistent_cache::PendingBackend,
+                         persistent_cache::TransactionError>
+  CreateFiles(const CacheIdString& cache_id, const std::string& product);
 
   using CreateFilesCallback =
       base::OnceCallback<void(std::optional<persistent_cache::PendingBackend>)>;
+
+  struct VIZ_HOST_EXPORT CreateFilesAsyncOpts {
+    // The number of retries to attempt on transient failures before giving up.
+    int retries = 0;
+    // The delay between retry attempts.
+    base::TimeDelta retry_delay = base::TimeDelta();
+  };
   // Similar to CreateFiles but will do asynchronously using
   // background_task_runner_. The `callback` will be triggered on the current
-  // thread's task runner once the deletion is completed.
+  // thread's task runner once the database is created.
   void CreateFilesAsync(const CacheIdString& cache_id,
                         const std::string& product,
                         CreateFilesCallback callback);
+
+  // Overload of CreateFilesAsync that accepts extra options for retries.
+  void CreateFilesAsync(const CacheIdString& cache_id,
+                        const std::string& product,
+                        CreateFilesCallback callback,
+                        CreateFilesAsyncOpts extra_opts);
 
   // Deletes the persistent cache files.
   // `cache_id` is the unique identifier for the cache type.
@@ -83,6 +99,11 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
 
  private:
   friend class base::RefCountedThreadSafe<PersistentCacheSandboxedFileFactory>;
+
+  void CreateFilesAsyncAttempt(const CacheIdString& cache_id,
+                               const std::string& product,
+                               CreateFilesCallback callback,
+                               CreateFilesAsyncOpts extra_opts);
 
   const base::FilePath cache_root_dir_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

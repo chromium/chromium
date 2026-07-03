@@ -514,7 +514,9 @@ void GpuHostImpl::InitPersistentCache() {
                 gpu_host->OnPersistentCacheFilesCreated(
                     handle, std::move(*pending_backend));
               },
-              weak_ptr_factory_.GetWeakPtr(), handle));
+              weak_ptr_factory_.GetWeakPtr(), handle),
+          /*extra_opts=*/
+          {.retries = 30, .retry_delay = base::Milliseconds(100)});
     };
 
     if (base::FeatureList::IsEnabled(features::kGpuPersistentCache)) {
