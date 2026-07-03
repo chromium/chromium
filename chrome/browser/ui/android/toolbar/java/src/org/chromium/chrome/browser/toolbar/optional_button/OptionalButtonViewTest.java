@@ -349,6 +349,26 @@ public class OptionalButtonViewTest {
     }
 
     @Test
+    public void testUpdateButtonWithAnimation_transitionDropped() {
+        ButtonData buttonData = getDataForReaderModeIconButton();
+
+        // This triggers the transition state machine, which clears the click listener
+        // and adds an OnPreDrawListener to detect if the transition is dropped.
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+
+        // Simulate the framework dropping the transition (onTransitionStart is NEVER called).
+        // Triggering pre-draw will execute our fallback listener.
+        mOptionalButtonView.getViewTreeObserver().dispatchOnPreDraw();
+
+        // The fallback listener posts a Runnable to the handler to call onTransitionEnd.
+        mShadowLooper.idle();
+
+        // The click listener should be restored since the state machine was forcefully completed.
+        mInnerButton.performClick();
+        verify(buttonData.getButtonSpec().getOnClickListener()).onClick(any());
+    }
+
+    @Test
     public void testSetIconDrawableWithAnimation_swapIcons() {
         ButtonData firstButtonData = getDataForReaderModeIconButton();
         ButtonData secondButtonData = getDataForStaticNewTabIconButton();
