@@ -64,6 +64,7 @@ namespace {
 const int kAvatarSize = 100;
 constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
 
+
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
                                    const std::string& account_domain_name) {
   DCHECK(entry);
@@ -103,13 +104,11 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
 #if !BUILDFLAG(IS_CHROMEOS)
       show_link_data_option_(create_param->show_link_data_option),
 #endif
-      email_((create_param->is_oidc_account ||
-              create_param->is_device_signals_disclaimer)
+      email_(create_param->is_oidc_account
                  ? std::u16string()
                  : base::UTF8ToUTF16(create_param->account_info.email)),
       domain_name_(
-          (create_param->is_oidc_account ||
-           create_param->is_device_signals_disclaimer)
+          create_param->is_oidc_account
               ? std::string()
               : gaia::ExtractDomainName(create_param->account_info.email)),
       account_id_(create_param->account_info.account_id),
@@ -138,12 +137,6 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
         std::move(std::get<signin::SigninChoiceCallback>(
             create_param->process_user_choice_callback)));
   }
-  if (std::holds_alternative<signin::DeviceSignalsDisclaimerCallback>(
-          create_param->process_user_choice_callback)) {
-    device_signals_disclaimer_callback_ =
-        std::move(std::get<signin::DeviceSignalsDisclaimerCallback>(
-            create_param->process_user_choice_callback));
-  }
   CHECK(
       browser_ ||
       (type_ !=
@@ -158,10 +151,7 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
 }
 
 ManagedUserProfileNoticeHandler::~ManagedUserProfileNoticeHandler() {
-  if (device_signals_disclaimer_callback_) {
-    std::move(device_signals_disclaimer_callback_)
-        .Run(signin::DeviceSignalsDisclaimerResult::kDismissed);
-  } else if (!canceling_) {
+  if (!canceling_) {
     HandleCancel(base::ListValue());
   }
 }
@@ -303,12 +293,6 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
     const base::ListValue& args) {
   CHECK_EQ(2u, args.size());
   AllowJavascript();
-  if (device_signals_disclaimer_callback_) {
-    DisallowJavascript();
-    std::move(device_signals_disclaimer_callback_)
-        .Run(signin::DeviceSignalsDisclaimerResult::kAccepted);
-    return;
-  }
   bool use_existing_profile = args[1].GetIfBool().value_or(false);
   auto result = use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
                                      : signin::SIGNIN_CHOICE_NEW_PROFILE;
@@ -393,10 +377,7 @@ void ManagedUserProfileNoticeHandler::HandleCancel(
   // by `process_user_choice_with_confirmation_callback_` since it may destroy
   // `this`.
   auto done_callback = std::move(done_callback_);
-  if (device_signals_disclaimer_callback_) {
-    std::move(device_signals_disclaimer_callback_)
-        .Run(signin::DeviceSignalsDisclaimerResult::kCanceled);
-  } else if (process_user_choice_with_confirmation_callback_) {
+  if (process_user_choice_with_confirmation_callback_) {
     std::move(process_user_choice_with_confirmation_callback_)
         .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing(),
              base::DoNothing());

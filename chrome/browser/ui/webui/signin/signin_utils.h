@@ -71,18 +71,9 @@ using SigninChoiceWithConfirmAndRetryCallback =
                             SigninChoiceOperationDoneCallback,
                             SigninChoiceOperationRetryCallback)>;
 using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
-enum class DeviceSignalsDisclaimerResult {
-  kAccepted,
-  kCanceled,
-  kDismissed,
-};
-using DeviceSignalsDisclaimerCallback =
-    base::OnceCallback<void(DeviceSignalsDisclaimerResult)>;
-
-using EnterpriseDisclaimerResultCallbackVariant =
+using SigninChoiceCallbackVariant =
     std::variant<SigninChoiceCallback,
-                 SigninChoiceWithConfirmAndRetryCallback,
-                 DeviceSignalsDisclaimerCallback>;
+                 signin::SigninChoiceWithConfirmAndRetryCallback>;
 
 class EnterpriseProfileCreationDialogParams {
  public:
@@ -92,7 +83,7 @@ class EnterpriseProfileCreationDialogParams {
       bool user_already_signed_in,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
-      EnterpriseDisclaimerResultCallbackVariant process_user_choice_callback,
+      SigninChoiceCallbackVariant process_user_choice_callback,
       base::OnceClosure done_callback,
       base::RepeatingClosure retry_callback = base::DoNothing());
   ~EnterpriseProfileCreationDialogParams();
@@ -104,7 +95,8 @@ class EnterpriseProfileCreationDialogParams {
   static std::unique_ptr<EnterpriseProfileCreationDialogParams>
   CreateForDeviceSignalsDisclaimer(
       AccountInfo account_info,
-      DeviceSignalsDisclaimerCallback process_user_choice_callback);
+      SigninChoiceCallbackVariant process_user_choice_callback,
+      base::OnceClosure done_callback = base::DoNothing());
 
   const AccountInfo account_info;
   const bool is_oidc_account = false;
@@ -116,7 +108,7 @@ class EnterpriseProfileCreationDialogParams {
   const bool profile_creation_required_by_policy = false;
   const bool show_link_data_option = false;
   const bool is_device_signals_disclaimer = false;
-  EnterpriseDisclaimerResultCallbackVariant process_user_choice_callback;
+  SigninChoiceCallbackVariant process_user_choice_callback;
   base::OnceClosure done_callback = base::DoNothing();
   base::RepeatingClosure retry_callback = base::DoNothing();
 
@@ -124,7 +116,8 @@ class EnterpriseProfileCreationDialogParams {
   // Used only for creating the params for the device disclaimer screen.
   EnterpriseProfileCreationDialogParams(
       AccountInfo account_info,
-      DeviceSignalsDisclaimerCallback process_user_choice_callback);
+      SigninChoiceCallbackVariant process_user_choice_callback,
+      base::OnceClosure done_callback);
 };
 
 // Gets a webview within an auth page that has the specified parent frame name
