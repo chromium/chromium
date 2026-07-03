@@ -62,6 +62,7 @@ extern NSString* const kReadingListSymbol;
 extern NSString* const kRecentTabsSymbol;
 extern NSString* const kLanguageSymbol;
 extern NSString* const kPassportSymbol;
+extern NSString* const kPassportSparkSymbol;
 extern NSString* const kPasswordSymbol;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kMulticolorPasswordSymbol;
@@ -96,6 +97,12 @@ extern NSString* const kLineThreeSparkSymbol;
 extern NSString* const kDocumentBadgeSpark;
 extern NSString* const kBagSparkSymbol;
 extern NSString* const kTruckBoxSparkSymbol;
+extern NSString* const kAirplaneUpSymbol;
+extern NSString* const kCarSparkSymbol;
+extern NSString* const kLocationSparkSymbol;
+extern NSString* const kPersonTextRectangle2Symbol;
+extern NSString* const kPersonTextRectangle2SparkSymbol;
+extern NSString* const kPersonTextRectangleSparkSymbol;
 extern NSString* const kDeepSearchSymbol;
 
 // Use custom symbol for camera because the default video icon in iOS should
@@ -160,8 +167,6 @@ extern NSString* const kSaveImageActionSymbol;
 extern NSString* const kOpenImageActionSymbol;
 extern NSString* const kQRCodeSymbol;
 extern NSString* const kPrinterSymbol;
-extern NSString* const kAirplaneSymbol;
-extern NSString* const kAirplaneUpRightSymbol API_AVAILABLE(ios(26.0));
 extern NSString* const kSuitcaseSymbol;
 extern NSString* const kCarSymbol;
 extern NSString* const kCreditCardSymbol;
@@ -212,7 +217,6 @@ extern NSString* const kExpandSymbol;
 extern NSString* const kBackSymbol;
 extern NSString* const kForwardSymbol;
 extern NSString* const kPersonFillSymbol;
-extern NSString* const kPersonFillCheckmarkSymbol;
 extern NSString* const kPersonTextRectangleSymbol;
 extern NSString* const kPersonBadgeKeyFillSymbol;
 extern NSString* const kPersonClockFillSymbol;

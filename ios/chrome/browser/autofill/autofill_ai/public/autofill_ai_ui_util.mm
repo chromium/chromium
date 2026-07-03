@@ -29,54 +29,55 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
                                             UIColor* tint_color) {
   // TODO(crbug.com/523320919): Return different icons when is_personal_context
   // is true.
+  // Identify if the symbol is custom (always true for personal context
+  // entities).
+  bool is_custom_symbol = is_personal_context;
   NSString* symbol_name = nil;
   UIColor* color = tint_color ?: [UIColor colorNamed:kTextPrimaryColor];
 
   switch (entity_type_name) {
     case EntityTypeName::kPassport:
-      return SymbolWithPalette(
-          CustomSymbolWithPointSize(kPassportSymbol, symbol_point_size),
-          @[ color ]);
+      symbol_name =
+          is_personal_context ? kPassportSparkSymbol : kPassportSymbol;
+      // Passport symbols are custom symbols.
+      is_custom_symbol = YES;
+      break;
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
-      symbol_name = kPersonTextRectangleSymbol;
+      symbol_name = is_personal_context ? kPersonTextRectangleSparkSymbol
+                                        : kPersonTextRectangleSymbol;
       break;
     case EntityTypeName::kVehicle:
-      symbol_name = kCarSymbol;
+      symbol_name = is_personal_context ? kCarSparkSymbol : kCarSymbol;
       break;
     case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
-      symbol_name = kPersonFillCheckmarkSymbol;
+      symbol_name = is_personal_context ? kPersonTextRectangle2SparkSymbol
+                                        : kPersonTextRectangle2Symbol;
+      // Known travel numbers and redress number symbols are custom symbols.
+      is_custom_symbol = YES;
       break;
     case EntityTypeName::kFlightReservation:
-      if (@available(iOS 26, *)) {
-        symbol_name = kAirplaneUpRightSymbol;
-      } else {
-        symbol_name = kAirplaneSymbol;
-      }
+      symbol_name = kAirplaneUpSymbol;
+      // The flight reservation symbol is a custom symbol.
+      is_custom_symbol = YES;
       break;
     case EntityTypeName::kShipment:
-      if (is_personal_context) {
-        return SymbolWithPalette(
-            CustomSymbolWithPointSize(kTruckBoxSparkSymbol, symbol_point_size),
-            @[ color ]);
-      }
-      symbol_name = kTruckBoxSymbol;
+      symbol_name =
+          is_personal_context ? kTruckBoxSparkSymbol : kTruckBoxSymbol;
       break;
     case EntityTypeName::kOrder:
-      if (is_personal_context) {
-        return SymbolWithPalette(
-            CustomSymbolWithPointSize(kBagSparkSymbol, symbol_point_size),
-            @[ color ]);
-      }
-      symbol_name = kBagSymbol;
+      symbol_name = is_personal_context ? kBagSparkSymbol : kBagSymbol;
       break;
     default:
       return nil;
   }
 
   return SymbolWithPalette(
-      DefaultSymbolWithPointSize(symbol_name, symbol_point_size), @[ color ]);
+      is_custom_symbol
+          ? CustomSymbolWithPointSize(symbol_name, symbol_point_size)
+          : DefaultSymbolWithPointSize(symbol_name, symbol_point_size),
+      @[ color ]);
 }
 
 NSString* DisplayNameForAutofillAiAttributeType(AttributeType attribute_type) {
