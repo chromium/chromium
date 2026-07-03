@@ -191,20 +191,14 @@ bool ChannelPosix::GetReadPlatformHandles(
     return false;
   }
 
-  return GetReadPlatformHandlesForIpcz(num_handles, *handles);
-}
-
-bool ChannelPosix::GetReadPlatformHandlesForIpcz(
-    size_t num_handles,
-    std::vector<PlatformHandle>& handles) {
   if (incoming_fds_.size() < num_handles) {
     return true;
   }
 
-  DCHECK(handles.empty());
-  handles.reserve(num_handles);
+  DCHECK(handles->empty());
+  handles->reserve(num_handles);
   while (num_handles--) {
-    handles.emplace_back(std::move(incoming_fds_.front()));
+    handles->emplace_back(std::move(incoming_fds_.front()));
     incoming_fds_.pop_front();
   }
   return true;
@@ -525,6 +519,13 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
       RejectPreIpczUpgradeOffer();
       return true;
     }
+    case Message::MessageType::UPGRADE_ACCEPT:
+    case Message::MessageType::UPGRADE_REJECT:
+      // A node that never offers channel upgrades should never receive
+      // these, but tolerate them like ChannelLinux did before the (ipcz-only)
+      // upgrade machinery was removed from this frozen copy.
+      LOG(ERROR) << "Ignoring unexpected channel upgrade response";
+      return true;
 #if BUILDFLAG(IS_IOS)
     case Message::MessageType::HANDLES_SENT: {
       if (payload_size == 0) {
@@ -608,21 +609,5 @@ scoped_refptr<Channel> Channel::Create(
                           io_task_runner);
 #endif
 }
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
-// static
-bool Channel::SupportsChannelUpgrade() {
-  return ChannelLinux::KernelSupportsUpgradeRequirements() &&
-         ChannelLinux::UpgradesEnabled();
-}
-
-void Channel::OfferChannelUpgrade() {
-  if (!SupportsChannelUpgrade()) {
-    return;
-  }
-  static_cast<ChannelLinux*>(this)->OfferSharedMemUpgrade();
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_ANDROID)
 
 }  // namespace mojo_legacy::core
