@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/channel.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/configuration.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/core.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/ipcz_driver/envelope.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/request_context.h"
 
 namespace mojo_legacy {
@@ -575,11 +574,9 @@ void NodeChannel::CreateAndBindLocalBrokerHost(
 #endif
 }
 
-void NodeChannel::OnChannelMessage(
-    const void* payload,
-    size_t payload_size,
-    std::vector<PlatformHandle> handles,
-    scoped_refptr<ipcz_driver::Envelope> envelope) {
+void NodeChannel::OnChannelMessage(const void* payload,
+                                   size_t payload_size,
+                                   std::vector<PlatformHandle> handles) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   RequestContext request_context(RequestContext::Source::SYSTEM);
@@ -886,11 +883,6 @@ void NodeChannel::WriteChannelMessage(Channel::MessagePtr message) {
   } else {
     channel_->Write(std::move(message));
   }
-}
-
-void NodeChannel::OfferChannelUpgrade() {
-  base::AutoLock lock(channel_lock_);
-  channel_->OfferChannelUpgrade();
 }
 
 uint64_t NodeChannel::RemoteCapabilities() const {

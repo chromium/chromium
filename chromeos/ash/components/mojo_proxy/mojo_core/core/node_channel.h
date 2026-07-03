@@ -181,8 +181,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT NodeChannel
                              Channel::MessagePtr message);
 #endif
 
-  void OfferChannelUpgrade();
-
  private:
   friend class base::RefCountedDeleteOnSequence<NodeChannel>;
   friend class base::DeleteHelper<NodeChannel>;
@@ -205,8 +203,7 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT NodeChannel
   // Channel::Delegate:
   void OnChannelMessage(const void* payload,
                         size_t payload_size,
-                        std::vector<PlatformHandle> handles,
-                        scoped_refptr<ipcz_driver::Envelope> envelope) override;
+                        std::vector<PlatformHandle> handles) override;
   void OnChannelError(Channel::Error error) override;
 
   void WriteChannelMessage(Channel::MessagePtr message);

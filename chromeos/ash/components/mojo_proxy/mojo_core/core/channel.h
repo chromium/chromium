@@ -13,27 +13,19 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/connection_params.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/platform_handle_in_transit.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_channel_endpoint.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_handle.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace mojo_legacy::core {
-
-namespace ipcz_driver {
-class Envelope;
-}
 
 const size_t kChannelMessageAlignment = 8;
 
@@ -50,8 +42,6 @@ constexpr bool IsAlignedForChannelMessage(size_t n) {
 class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
     : public base::RefCountedThreadSafe<Channel> {
  public:
-  static constexpr double kMetricSubsamplingProbability = 0.001;
-
   enum class HandlePolicy {
     // If a Channel is constructed in this mode, it will accept messages with
     // platform handle attachements.
@@ -145,84 +135,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
       char padding[6];
     };
 
-    // Header used for all messages when the Channel backs an ipcz transport.
-    //
-    // Note: This struct *must* be forward and backward compatible. Changes are
-    // append-only, must add a new "struct {} vx" member, and code must be able
-    // to deal with newer and older versions of this header.
-    struct IpczHeader {
-      // The size of this header in bytes. Used for versioning.
-      uint16_t size;
-
-      // Number of handles attached to the message, out-of-band from its data.
-      // Always zero on Windows, where handles are serialized as inlined data.
-      uint16_t num_handles;
-
-      // Total size of this message in bytes. This is the size of this header
-      // plus the size of any message data immediately following it.
-      uint32_t num_bytes;
-
-      struct {
-        // When this header was created, relative to the reference of
-        // base::TimeTicks().
-        int64_t creation_timeticks_us;
-      } v2;
-
-#if BUILDFLAG(IS_ANDROID) || \
-    (BUILDFLAG(IS_LINUX) && defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION))
-      // On Android for each pair of connected ipcz::Node instances both sides
-      // of the connection run the same version of code. Restricting this
-      // extension of IpczHeader to Android allows to iterate on the wire format
-      // without compatibility issues. Note: This is an exception from the
-      // previous Note.
-      // TODO(crbug.com/388531132#comment7): Clean up this wire format change
-      // after the experiment concludes on Android.
-      struct {
-        // MessageType is used for facilitating 'channel upgrades'. After an
-        // upgrade the channel can start receiving messages from multiple
-        // 'notifiers'.
-        MessageType message_type;
-
-        // Used for dispatching messages in the same order as they were sent.
-        // The initial message for the channel gets the sequence number equal to
-        // 1. This is needed when multiple notifiers can wake up the channel to
-        // provide a message. Two notifiers used in ChannelLinux are based on
-        // AF_UNIX socket and eventfd. They are not ordered with respect to each
-        // other.
-        uint32_t channel_sequence_number;
-      } experimental_v3;
-#endif
-    };
-
-    static constexpr size_t kMinIpczHeaderSize = offsetof(IpczHeader, v2);
-    static bool IsAtLeastV2(const IpczHeader& header) {
-      return header.size >= offsetof(IpczHeader, v2) + sizeof(header.v2);
-    }
-
-    // Whether the message holds its type and count. Used to support multiple
-    // notifiers.
-    static bool IsExperimentalV3(const IpczHeader& header);
-
-    // Extracts the channel sequence number from the experimental_v3 part of the
-    // message. Requires Channel::SupportsMultipleNotifiers().
-    static uint32_t ExtractChannelSequenceNumber(const IpczHeader& header);
-
-    // Sets the channel sequence number when multiple notifiers are supported,
-    // otherwise no-op.
-    static void SetChannelSequenceNumber(IpczHeader& header,
-                                         uint32_t channel_sequence_number);
-
-    // Extracts the message type from the experimental_v3 part of the message.
-    static MessageType ExtractType(const IpczHeader& header);
-
-    // Sets the message type when multiple notifiers are supported, otherwise
-    // no-op.
-    static void SetType(IpczHeader& header, MessageType message_type);
-
-    // True for messages used in 'channel upgrade' protocol: offering, accepting
-    // and rejecting channel upgrades.
-    static bool IsExperimentalControlMessage(const IpczHeader& header);
-
 #if BUILDFLAG(MOJO_LEGACY_USE_APPLE_CHANNEL)
     struct MachPortsEntry {
       // The PlatformHandle::Type.
@@ -272,12 +184,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
                                     size_t payload_size,
                                     MessageType message_type);
 
-    static MessagePtr CreateIpczMessage(
-        base::span<const uint8_t> data,
-        std::vector<PlatformHandle> handles,
-        Channel::Message::MessageType message_type,
-        uint32_t channel_sequence_number);
-
     // Extends the portion of the total message capacity which contains
     // meaningful payload data. Storage capacity which falls outside of this
     // range is not transmitted when the message is sent.
@@ -320,7 +226,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
 
     size_t num_handles() const;
 
-    // Overridden in IpczMessage and TrivialMessage.
     virtual bool has_handles() const;
 
     // Returns true iff the LegacyHeader is in use for this message.
@@ -329,9 +234,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
     LegacyHeader* legacy_header();
     const LegacyHeader* legacy_header() const;
 
-    // The header() methods are overridden as NOTREACHED() in IpczMessage and
-    // TrivialMessage to disallow other methods calling header() in those two
-    // subclasses.
     virtual Header* header();
     virtual const Header* header() const;
 
@@ -374,25 +276,15 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
    public:
     virtual ~Delegate() = default;
 
-    // Indicates whether the listener on this Channel is an ipcz transport.
-    virtual bool IsIpczTransport() const;
-
     // Notify of a received message. |payload| is not owned and must not be
     // retained; it will be null if |payload_size| is 0. |handles| are
     // transferred to the callee.
-    virtual void OnChannelMessage(
-        const void* payload,
-        size_t payload_size,
-        std::vector<PlatformHandle> handles,
-        scoped_refptr<ipcz_driver::Envelope> envelope) = 0;
+    virtual void OnChannelMessage(const void* payload,
+                                  size_t payload_size,
+                                  std::vector<PlatformHandle> handles) = 0;
 
     // Notify that an error has occured and the Channel will cease operation.
     virtual void OnChannelError(Error error) = 0;
-
-    // Notify that the Channel is about to be destroyed and will definitely not
-    // call into the Delegate again. Only called for Channels that back an ipcz
-    // transport.
-    virtual void OnChannelDestroyed();
   };
 
   // Creates a new Channel around a |platform_handle|, taking ownership of the
@@ -405,29 +297,8 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
       HandlePolicy handle_policy,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
-  // Creates a new Channel similar to above, but for use as a driver transport
-  // in the ipcz-based Mojo implementation. The main difference between these
-  // Channel instances and others is that these ones use a simplified message
-  // header, and the Channel is no longer responsible for encoding or decoding
-  // any metadata about transmitted PlatformHandles, since the ipcz driver takes
-  // care of that.
-  static scoped_refptr<Channel> CreateForIpczDriver(
-      Delegate* delegate,
-      PlatformChannelEndpoint endpoint,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
-
   Channel(const Channel&) = delete;
   Channel& operator=(const Channel&) = delete;
-
-  bool is_for_ipcz() const { return is_for_ipcz_; }
-
-  // SupportsChannelUpgrade will return true if this channel is capable of being
-  // upgraded.
-  static bool SupportsChannelUpgrade();
-
-  // OfferChannelUpgrade will inform this channel that it should offer an
-  // upgrade to the remote.
-  void OfferChannelUpgrade();
 
   // Allows the caller to change the Channel's HandlePolicy after construction.
   void set_handle_policy(HandlePolicy policy) { handle_policy_ = policy; }
@@ -462,28 +333,9 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
   // Delegate::OnChannelError.
   virtual void Write(MessagePtr message) = 0;
 
-  // A convenience wrapper around `Write()` for ipcz driver messages. This
-  // writes a new NORMAL message to the Channel.
-  void WriteNextIpczMessage(base::span<const uint8_t> data,
-                            std::vector<PlatformHandle> platform_handles);
-
   // Causes the platform handle to leak when this channel is shut down instead
   // of closing it.
   virtual void LeakHandle() = 0;
-
-  // Returns whether the experimental feature of multiple notifiers are
-  // supported by the channel.
-  static bool SupportsMultipleNotifiers();
-
-  // Returns the next channel sequence number when packing the message for
-  // sending. Always 0 for channels without support for multiple notifiers.
-  uint32_t IncrementLastSentChannelSequenceNumber() {
-    if (!SupportsMultipleNotifiers()) {
-      return 0;
-    }
-    return last_sent_sequence_number_.fetch_add(1, std::memory_order_relaxed) +
-           1;
-  }
 
  protected:
   // Constructor for implementations to call. |delegate| and |handle_policy|
@@ -520,7 +372,7 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
   // size for the next read done by the implementation. If `received_handles` is
   // not null, the provided handles are taken as handles which accompanied the
   // bytes in `buffer`. Otherwise the implementation must make handles available
-  // via GetReadPlatformHandles/ForIpcz() as needed.
+  // via GetReadPlatformHandles() as needed.
   enum class DispatchResult {
     // The message was dispatched and consumed. |size_hint| contains the size
     // of the message.
@@ -539,7 +391,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
   DispatchResult TryDispatchMessage(
       base::span<const char> buffer,
       std::optional<std::vector<PlatformHandle>> received_handles,
-      scoped_refptr<ipcz_driver::Envelope> envelope,
       size_t* size_hint);
 
   // Called by the implementation when something goes horribly wrong. It is NOT
@@ -564,15 +415,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
                                       size_t extra_header_size,
                                       std::vector<PlatformHandle>* handles) = 0;
 
-  // Consumes exactly `num_handles` received handles and appends them to
-  // `handles` before returning true. If the Channel doesn't have enough
-  // unconsumed handles ready to satisfy this request, `handles` is unmodified
-  // but this still returns true. If any kind of error condition is detected,
-  // this returns false.
-  virtual bool GetReadPlatformHandlesForIpcz(
-      size_t num_handles,
-      std::vector<PlatformHandle>& handles) = 0;
-
   // Handles a received control message. Returns |true| if the message is
   // accepted, or |false| otherwise.
   virtual bool OnControlMessage(Message::MessageType message_type,
@@ -580,81 +422,17 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT Channel
                                 size_t payload_size,
                                 std::vector<PlatformHandle> handles);
 
- protected:
-  void RecordSentMessageMetricsSubsampled(size_t payload_size);
-
-  void RecordReceivedMessageProcessTypeSubsampled();
-
-  // Take delayed messages with increasing message count one by one and dispatch
-  // them until there is a new gap.
-  bool DispatchDelayedMessages();
-
  private:
   friend class base::RefCountedThreadSafe<Channel>;
 
-  // Records histograms counting sent messages per process type. Must be
-  // subsampled.
-  static void RecordSentMessageProcessType();
-
-  // Records histograms counting received messages per process type. Must be
-  // subsampled.
-  static void RecordReceivedMessageProcessType();
-
-  // Used to store messaged for delayed dispatch. Such message reordering is
-  // only needed when SupportsMultipleNotifiers() is true.
-  struct DelayedMessage {
-    DelayedMessage();
-    ~DelayedMessage();
-    DelayedMessage(DelayedMessage&&);
-    DelayedMessage& operator=(DelayedMessage&&);
-
-    std::vector<char> data;
-    std::vector<PlatformHandle> handles;
-    scoped_refptr<ipcz_driver::Envelope> envelope;
-  };
-
-  // Put the message away until it can be dispatched according to
-  // |channel_sequence_number|.
-  //
-  // The v3 ipcz messages carry their auto-incremented "channel sequence
-  // number". If a message arrives with a sequence number larger than the next
-  // expected, it will be dispatched after all preceding sequence numbers
-  // arrive.
-  //
-  // Note: The message reordering logic does not need additional synchronization
-  // because messages are received on a single thread.
-  void DelayMessage(uint32_t channel_sequence_number,
-                    base::span<const char> data,
-                    std::vector<PlatformHandle> handles,
-                    scoped_refptr<ipcz_driver::Envelope> envelope);
-
-  // Number of dispatched messages after restoring the order. Always 0 when
-  // multiple notifiers are not supported.
-  uint32_t dispatched_message_count_{0};
-
-  // Maps channel_sequence_number received with the message to the message
-  // contents for delayed dispatch. The assumption is that out-of-order
-  // messages appear rarely, so most of the time this map is empty, and
-  // occasionally it contains only a handful of elements.
-  absl::flat_hash_map<uint32_t, DelayedMessage> delayed_messages_;
-
-  // Atomically incremented counter during Write, for restoring message order on
-  // the receiving side. The very first message sent for a channel gets the
-  // sequence number equal to 1.
-  std::atomic<uint32_t> last_sent_sequence_number_{0};
-
   class ReadBuffer;
 
-  const bool is_for_ipcz_;
   raw_ptr<Delegate, AcrossTasksDanglingUntriaged> delegate_;
   HandlePolicy handle_policy_;
   const std::unique_ptr<ReadBuffer> read_buffer_;
 
   // Handle to the process on the other end of this Channel, iff known.
   base::Process remote_process_;
-
-  FRIEND_TEST_ALL_PREFIXES(ChannelTest, IpczHeaderCompatibilityTest);
-  FRIEND_TEST_ALL_PREFIXES(ChannelTest, TryDispatchMessageWithEnvelope);
 };
 
 }  // namespace mojo_legacy::core

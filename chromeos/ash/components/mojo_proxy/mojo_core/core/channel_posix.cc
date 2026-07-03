@@ -20,12 +20,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/time/time.h"
 #include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/socket_utils_posix.h"
@@ -46,13 +44,10 @@ const size_t kMaxBatchReadCapacity = 256 * 1024;
 class MessageView {
  public:
   // Owns |message|. |offset| indexes the first unsent byte in the message.
-  MessageView(Channel::MessagePtr message,
-              size_t offset,
-              base::TimeTicks start_time = base::TimeTicks::Now())
+  MessageView(Channel::MessagePtr message, size_t offset)
       : message_(std::move(message)),
         offset_(offset),
-        handles_(message_->TakeHandles()),
-        start_time_(start_time) {
+        handles_(message_->TakeHandles()) {
     DCHECK(!message_->data_num_bytes() || message_->data_num_bytes() > offset_);
   }
 
@@ -62,17 +57,6 @@ class MessageView {
 
   MessageView(const MessageView&) = delete;
   MessageView& operator=(const MessageView&) = delete;
-
-  ~MessageView() {
-    if (message_ && base::ShouldRecordSubsampledMetric(
-                        Channel::kMetricSubsamplingProbability)) {
-      base::TimeDelta latency = base::TimeTicks::Now() - start_time_;
-      UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency", latency);
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Mojo.Channel.WriteLatencyUs",
-                                              latency, base::Microseconds(1),
-                                              base::Seconds(1), 100);
-    }
-  }
 
   const void* data() const {
     return UNSAFE_TODO(static_cast<const char*>(message_->data()) + offset_);
@@ -111,8 +95,6 @@ class MessageView {
   size_t offset_;
   std::vector<PlatformHandleInTransit> handles_;
   size_t num_handles_sent_ = 0;
-
-  base::TimeTicks start_time_;
 };
 
 ChannelPosix::ChannelPosix(
@@ -148,10 +130,6 @@ void ChannelPosix::ShutDownImpl() {
 }
 
 void ChannelPosix::Write(MessagePtr message) {
-  RecordSentMessageMetricsSubsampled(message->data_num_bytes());
-
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
   bool write_error = false;
   {
     base::AutoLock lock(write_lock_);
@@ -159,11 +137,11 @@ void ChannelPosix::Write(MessagePtr message) {
       return;
     }
     if (outgoing_messages_.empty()) {
-      if (!WriteNoLock(MessageView(std::move(message), 0, start_time))) {
+      if (!WriteNoLock(MessageView(std::move(message), 0))) {
         reject_writes_ = write_error = true;
       }
     } else {
-      outgoing_messages_.emplace_back(std::move(message), 0, start_time);
+      outgoing_messages_.emplace_back(std::move(message), 0);
     }
   }
   if (write_error) {
@@ -452,11 +430,6 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
 bool ChannelPosix::FlushOutgoingMessagesNoLock() {
   base::circular_deque<MessageView> messages;
   std::swap(outgoing_messages_, messages);
-
-  if (!messages.empty()) {
-    UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WriteQueuePendingMessages2",
-                              messages.size());
-  }
 
   while (!messages.empty()) {
     if (!WriteNoLock(std::move(messages.front()))) {

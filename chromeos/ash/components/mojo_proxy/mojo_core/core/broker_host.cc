@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/broker_messages.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/ipcz_driver/envelope.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/platform_handle_utils.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -159,11 +158,9 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
   channel_->Write(std::move(message));
 }
 
-void BrokerHost::OnChannelMessage(
-    const void* payload,
-    size_t payload_size,
-    std::vector<PlatformHandle> handles,
-    scoped_refptr<ipcz_driver::Envelope> envelope) {
+void BrokerHost::OnChannelMessage(const void* payload,
+                                  size_t payload_size,
+                                  std::vector<PlatformHandle> handles) {
   if (payload_size < sizeof(BrokerMessageHeader)) {
     return;
   }
