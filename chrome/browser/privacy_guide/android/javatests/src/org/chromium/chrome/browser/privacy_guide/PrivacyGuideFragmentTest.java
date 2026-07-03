@@ -73,9 +73,9 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
@@ -83,6 +83,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
@@ -104,7 +105,7 @@ public class PrivacyGuideFragmentTest {
     private static final int RENDER_TEST_REVISION = 2;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public SettingsActivityTestRule<PrivacyGuideFragment> mPrivacyGuideTestRule =
@@ -130,8 +131,9 @@ public class PrivacyGuideFragmentTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mAllFragments = PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER;
-        mChromeBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
         when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))

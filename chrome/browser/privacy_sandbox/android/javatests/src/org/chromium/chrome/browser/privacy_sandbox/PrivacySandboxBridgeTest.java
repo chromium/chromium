@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,8 +22,8 @@ import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.List;
 
@@ -36,14 +35,12 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 public class PrivacySandboxBridgeTest {
-    @ClassRule
-    public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
-
     private PrivacySandboxBridge mPrivacySandboxBridge;
     private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mPrivacySandboxBridge =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile()));
