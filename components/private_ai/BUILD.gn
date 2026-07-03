@@ -122,6 +122,10 @@ source_set("testing") {
     "testing/fake_token_manager.cc",
     "testing/fake_token_manager.h",
     "testing/mock_private_ai_client.h",
+    "testing/test_blind_sign_auth_factory.cc",
+    "testing/test_blind_sign_auth_factory.h",
+    "testing/test_private_ai_service.cc",
+    "testing/test_private_ai_service.h",
   ]
   deps = [ "//components/private_ai/common" ]
   public_deps = [
@@ -130,7 +134,9 @@ source_set("testing") {
     "//base",
     "//base/test:test_support",
     "//components/private_ai/phosphor",
+    "//components/private_ai/phosphor:test_support",
     "//services/cert_verifier/public/mojom",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gmock",
   ]

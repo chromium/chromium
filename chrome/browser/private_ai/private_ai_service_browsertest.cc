@@ -17,9 +17,11 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "components/private_ai/content/test_private_ai_service.h"
+#include "components/private_ai/content/private_ai_network_driver_content.h"
+#include "components/private_ai/content/private_ai_oak_session_driver_content.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
+#include "components/private_ai/testing/test_private_ai_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -51,7 +53,12 @@ class PrivateAiServiceBrowserTest : public PlatformBrowserTest {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess(),
               profile->GetDefaultStoragePartition()->GetNetworkContext(),
+              kPrivateAiUrl.Get(),
               PrivateAiService::GetApiKey(chrome::GetChannel()),
+              kPrivateAiProxyServerUrl.Get(),
+              base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation),
+              std::make_unique<PrivateAiNetworkDriverContent>(),
+              std::make_unique<PrivateAiOakSessionDriverContent>(),
               std::move(test_bsa_factory));
         }));
   }

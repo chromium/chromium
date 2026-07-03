@@ -70,7 +70,6 @@ source_set("browser_tests") {
     "//components/private_ai:testing",
     "//components/private_ai/common",
     "//components/private_ai/content",
-    "//components/private_ai/content:test_support",
     "//components/private_ai/crypto",
     "//components/private_ai/crypto:test_support",
     "//components/private_ai/phosphor:test_support",

@@ -21,6 +21,8 @@
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/testing/fake_private_ai_network_driver.h"
 #include "components/private_ai/testing/fake_private_ai_oak_session_driver.h"
+#include "components/private_ai/testing/test_blind_sign_auth_factory.h"
+#include "components/private_ai/testing/test_private_ai_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -57,62 +59,6 @@ quiche::BlindSignToken CreateBlindSignTokenForTesting(std::string token_value,
 
 constexpr char kTestEmail[] = "test@example.com";
 
-class TestBlindSignAuthFactory : public phosphor::BlindSignAuthFactory {
- public:
-  TestBlindSignAuthFactory() = default;
-  ~TestBlindSignAuthFactory() override = default;
-
-  std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-      std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory) override {
-    auto bsa = std::make_unique<phosphor::MockBlindSignAuth>();
-    bsa_ = bsa.get();
-    return bsa;
-  }
-
-  phosphor::MockBlindSignAuth* mock_bsa() { return bsa_; }
-
-  void ResetBsa() { bsa_ = nullptr; }
-
- private:
-  raw_ptr<phosphor::MockBlindSignAuth> bsa_ = nullptr;
-};
-
-class TestPrivateAiService : public PrivateAiService {
- public:
-  TestPrivateAiService(
-      signin::IdentityManager* identity_manager,
-      std::unique_ptr<TestBlindSignAuthFactory> test_bsa_factory,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::mojom::NetworkContext* network_context)
-      : PrivateAiService(
-            identity_manager,
-            test_bsa_factory.get(),
-            std::move(url_loader_factory),
-            std::make_unique<FakePrivateAiNetworkDriver>(),
-            std::make_unique<FakePrivateAiOakSessionDriver>(),
-            network_context,
-            "dummy.com",
-            PrivateAiService::GetApiKey(version_info::Channel::STABLE),
-            "dummy-proxy.com",
-            /*use_token_attestation=*/false),
-        test_bsa_factory_(std::move(test_bsa_factory)) {}
-
-  ~TestPrivateAiService() override = default;
-
-  void Shutdown() override {
-    test_bsa_factory_->ResetBsa();
-    PrivateAiService::Shutdown();
-  }
-
-  phosphor::MockBlindSignAuth* mock_bsa() {
-    return test_bsa_factory_->mock_bsa();
-  }
-
- private:
-  std::unique_ptr<TestBlindSignAuthFactory> test_bsa_factory_;
-};
-
 }  // namespace
 
 class PrivateAiServiceTest : public testing::Test {
@@ -127,8 +73,14 @@ class PrivateAiServiceTest : public testing::Test {
             &test_url_loader_factory_);
 
     private_ai_service_ = std::make_unique<TestPrivateAiService>(
-        identity_test_env_.identity_manager(), std::move(test_bsa_factory),
-        std::move(shared_url_loader_factory), &test_network_context_);
+        identity_test_env_.identity_manager(),
+        std::move(shared_url_loader_factory), &test_network_context_,
+        "dummy.com", PrivateAiService::GetApiKey(version_info::Channel::STABLE),
+        "dummy-proxy.com",
+        /*use_token_attestation=*/false,
+        std::make_unique<FakePrivateAiNetworkDriver>(),
+        std::make_unique<FakePrivateAiOakSessionDriver>(),
+        std::move(test_bsa_factory));
   }
 
   void TearDown() override {

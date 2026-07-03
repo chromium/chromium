@@ -33,21 +33,3 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test_private_ai_service.cc",
-    "test_private_ai_service.h",
-  ]
-  public_deps = [
-    "//components/private_ai",
-    "//components/private_ai/phosphor:test_support",
-  ]
-  deps = [
-    ":content",
-    "//components/private_ai/phosphor",
-    "//net/third_party/quiche:blind_sign_auth",
-    "//services/network/public/cpp",
-  ]
-}
