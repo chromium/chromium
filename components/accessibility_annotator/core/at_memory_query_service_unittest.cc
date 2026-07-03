@@ -1010,6 +1010,118 @@ TEST_F(AtMemoryQueryServiceTest, Query_SetsIsObfuscated) {
                 Field(&MemorySearchResult::is_obfuscated, true))));
 }
 
+// Tests that Autofill results are presented before remote results for
+// non-dynamic types, and Autofill results are sorted by ranking score
+// descending.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_Ranking_AutofillPrioritizedForNonDynamicTypes) {
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponseWithSchemafulKey(
+          personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL, "Remote Name");
+  response.mutable_autofill_fetch_plan()->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  MemorySearchResult local_b(MemoryDataType::kNameFull, u"Name",
+                             u"Local Name B", /*confidence_score=*/0.5);
+  MemorySearchResult local_a(MemoryDataType::kNameFull, u"Name",
+                             u"Local Name A", /*confidence_score=*/0.9);
+  fake_data_provider->SetResults({local_b, local_a});
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"what is my name", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const MemorySearchResults& result = future.Get();
+  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
+  EXPECT_THAT(
+      result.entries,
+      testing::ElementsAre(Field(&MemorySearchResult::value, u"Local Name A"),
+                           Field(&MemorySearchResult::value, u"Local Name B"),
+                           Field(&MemorySearchResult::value, u"Remote Name")));
+}
+
+// Tests that remote results are presented before Autofill results when all
+// results are dynamic transaction types.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_Ranking_RemotePrioritizedForDynamicTransactionTypes) {
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponseWithSchemafulKey(
+          personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER,
+          "Remote 1Z12345");
+  response.mutable_autofill_fetch_plan()->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  MemorySearchResult local_shipment(MemoryDataType::kShipmentTrackingNumber,
+                                    u"Tracking", u"Local 1Z67890",
+                                    /*confidence_score=*/0.8);
+  fake_data_provider->SetResults({local_shipment});
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"tracking number", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const MemorySearchResults& result = future.Get();
+  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
+  EXPECT_THAT(result.entries,
+              testing::ElementsAre(
+                  Field(&MemorySearchResult::value, u"Remote 1Z12345"),
+                  Field(&MemorySearchResult::value, u"Local 1Z67890")));
+}
+
+// Tests that Autofill results are prioritized when mixed types contain at
+// least one non-dynamic transaction type.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_Ranking_MixedTypesNotAllDynamic_AutofillPrioritized) {
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponseWithSchemafulKey(
+          personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER,
+          "Remote 1Z12345");
+  response.mutable_autofill_fetch_plan()->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+
+  StubFetchContextResponse(std::move(response));
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+
+  MemorySearchResult local_address(MemoryDataType::kAddressFull, u"Address",
+                                   u"123 Main St", /*confidence_score=*/0.7);
+  fake_data_provider->SetResults({local_address});
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::move(data_provider), &mock_service_, "en-US");
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"where is my package", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const MemorySearchResults& result = future.Get();
+  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
+  EXPECT_THAT(result.entries,
+              testing::ElementsAre(
+                  Field(&MemorySearchResult::value, u"123 Main St"),
+                  Field(&MemorySearchResult::value, u"Remote 1Z12345")));
+}
+
 }  // namespace
 
 }  // namespace accessibility_annotator

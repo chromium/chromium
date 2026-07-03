@@ -519,6 +519,48 @@ std::optional<MemoryDataType> GetParentMemoryDataType(
   }
 }
 
+// Returns true if `data_type` represents a dynamic transaction type (e.g.
+// Shipment or Order).
+bool IsDynamicTransactionType(MemoryDataType data_type) {
+  std::optional<MemoryDataType> parent = GetParentMemoryDataType(data_type);
+  MemoryDataType root_type = parent.value_or(data_type);
+  return root_type == MemoryDataType::kShipmentFull ||
+         root_type == MemoryDataType::kOrderFull;
+}
+
+// Ranks `local_results` and `remote_results` search results.
+// - Local and remote results are sorted by confidence score descending.
+// - If all results are dynamic transaction types, remote
+//   results are prioritized on top of local results.
+// - Otherwise, local results take priority over remote results.
+std::vector<MemorySearchResult> RankResults(
+    std::vector<MemorySearchResult> local_results,
+    std::vector<MemorySearchResult> remote_results) {
+  auto compare_confidence = [](const MemorySearchResult& a,
+                               const MemorySearchResult& b) {
+    return a.confidence_score > b.confidence_score;
+  };
+  std::ranges::stable_sort(local_results, compare_confidence);
+  std::ranges::stable_sort(remote_results, compare_confidence);
+
+  bool all_dynamic =
+      std::ranges::all_of(local_results, IsDynamicTransactionType,
+                          &MemorySearchResult::type) &&
+      std::ranges::all_of(remote_results, IsDynamicTransactionType,
+                          &MemorySearchResult::type);
+
+  std::vector<MemorySearchResult> ranked_results;
+  if (all_dynamic) {
+    ranked_results = std::move(remote_results);
+    base::Extend(ranked_results, std::move(local_results));
+  } else {
+    ranked_results = std::move(local_results);
+    base::Extend(ranked_results, std::move(remote_results));
+  }
+
+  return ranked_results;
+}
+
 // Rationalizes `data_types` returned in an `AutofillFetchPlan`.
 // Groups types and removes sub-types when the parent full type is present and
 // removes duplicate types while preserving original insertion order.
@@ -660,9 +702,11 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
   if (local_data_types.empty() || !data_provider_) {
     std::vector<MemorySearchResult> filtered_remote_results =
         FilterResults(remote_results, filter_words);
-    DeduplicateResults(filtered_remote_results);
+    std::vector<MemorySearchResult> ranked_results =
+        RankResults(/*local_results=*/{}, std::move(filtered_remote_results));
+    DeduplicateResults(ranked_results);
     callback.Run(MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
-                                     std::move(filtered_remote_results)));
+                                     std::move(ranked_results)));
     return;
   }
 
@@ -685,15 +729,12 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
 
   std::vector<MemorySearchResult> filtered_local_results =
       FilterResults(local_results, filter_words);
+  std::vector<MemorySearchResult> ranked_results =
+      RankResults(std::move(filtered_local_results), std::move(remote_results));
+  DeduplicateResults(ranked_results);
 
-  std::vector<MemorySearchResult> merged_results =
-      std::move(filtered_local_results);
-  base::Extend(merged_results, std::move(remote_results));
-  DeduplicateResults(merged_results);
-
-  // TODO(crbug.com/524713777): Implement ranking of the merged suggestions.
   callback.Run(MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
-                                   std::move(merged_results)));
+                                   std::move(ranked_results)));
 }
 
 }  // namespace accessibility_annotator
