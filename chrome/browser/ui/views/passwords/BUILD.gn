@@ -8,10 +8,29 @@ assert(toolkit_views)
 
 source_set("password_bubble_view_base") {
   public = [ "password_bubble_view_base.h" ]
-
   public_deps = [
     "//base",
     "//chrome/browser/ui/views/location_bar",
     "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "password_bubble_view_test_base.h" ]
+  sources = [ "password_bubble_view_test_base.cc" ]
+  public_deps = [
+    "//chrome/browser/signin:test_support",
+    "//chrome/browser/ui/passwords:test_support_ui",
+    "//chrome/test:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/passwords",
+    "//testing/gtest",
   ]
 }

@@ -6919,8 +6919,6 @@ test("unit_tests") {
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
       "../browser/ui/views/passwords/manage_passwords_view_unittest.cc",
       "../browser/ui/views/passwords/move_to_account_store_bubble_view_unittest.cc",
-      "../browser/ui/views/passwords/password_bubble_view_test_base.cc",
-      "../browser/ui/views/passwords/password_bubble_view_test_base.h",
       "../browser/ui/views/passwords/password_change/password_change_toast_unittest.cc",
       "../browser/ui/views/passwords/password_change/successful_password_change_view_unittest.cc",
       "../browser/ui/views/passwords/password_save_update_view_unittest.cc",
@@ -7087,6 +7085,7 @@ test("unit_tests") {
       # target directly while the webauthn unit tests still live here; they will
       # move to //chrome/browser/ui/views/webauthn test targets once that
       # directory's modularization is finished.
+      "//chrome/browser/ui/views/passwords:test_support",
       "//chrome/browser/ui/views/webauthn",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/views/webid:unit_tests",
