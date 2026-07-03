@@ -286,9 +286,17 @@ public class VerticalTabListCoordinator {
                         // up to the parent (recyclerView), causing
                         // recyclerView.setOnContextClickListener to be skipped.
                         if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
-                            handleContextMenuInteraction(
-                                    activity, recyclerView, e.getX(), e.getY());
-                            return true;
+                            View childView = recyclerView.findChildViewUnder(e.getX(), e.getY());
+
+                            if (childView != null) {
+                                handleContextMenuInteraction(
+                                        activity, recyclerView, e.getX(), e.getY());
+                                return true;
+                            }
+                            // For empty space context menus, we let
+                            // recyclerView.setOnContextClickListener call
+                            // #handleContextMenuInteraction instead of calling it here.
+                            return false;
                         }
 
                         // Feed all touch events to the detector. ACTION_DOWN schedules a long-press
