@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"

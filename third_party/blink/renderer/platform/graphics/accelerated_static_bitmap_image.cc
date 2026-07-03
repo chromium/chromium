@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -19,7 +20,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
