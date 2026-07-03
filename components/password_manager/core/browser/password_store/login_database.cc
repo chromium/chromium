@@ -1512,6 +1512,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   // TODO(crbug.com/40774419): It should be the responsibility of the caller to
   // set `password_issues` to empty.
   // Remove this once all `UpdateLogin` calls have been checked.
+  // TODO(crbug.com/530591026): Re-evaluate if the credential could be updated
+  // in a way that it has `password_issues` set when the password was changed.
   if (password_changed) {
     updated_cred.password_issues =
         base::flat_map<InsecureType, InsecurityMetadata>();

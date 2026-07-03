@@ -3133,6 +3133,39 @@ TEST_F(LoginDatabaseTest, UpdateLoginNoteRemoved) {
                   .empty());
 }
 
+// Test that updating a leaked password deletes the corresponding insecure
+// credential synchronously.
+TEST_F(LoginDatabaseTest, UpdateLoginPasswordChangedClearsInsecureCredentials) {
+  StoredCredential cred = GenerateExampleStoredCredential();
+  InsecureCredential credential1{
+      cred.signon_realm, cred.username_value,
+      base::Time(),      InsecureType::kLeaked,
+      IsMuted(false),    TriggerBackendNotification(false)};
+  cred.password_issues.insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(credential1.create_time, credential1.is_muted,
+                         credential1.trigger_notification_from_backend));
+
+  PasswordStoreChangeList change_list =
+      db().AddLogin(CloneStoredCredential(cred));
+  FormPrimaryKey primary_key = change_list[0].credential().primary_key.value();
+
+  ASSERT_THAT(
+      db().insecure_credentials_table().GetRows(FormPrimaryKey(primary_key)),
+      ElementsAre(credential1));
+
+  cred.password_value = u"new_password";
+  cred.password_issues.clear();
+
+  EXPECT_EQ(UpdateChangeForForm(cred, /*password_changed=*/true,
+                                /*insecure_changed=*/true),
+            db().UpdateLogin(cred, nullptr));
+
+  EXPECT_THAT(
+      db().insecure_credentials_table().GetRows(FormPrimaryKey(primary_key)),
+      IsEmpty());
+}
+
 TEST_F(LoginDatabaseTest, UpdateLoginInsecureCredentialsChanged) {
   StoredCredential cred = GenerateExampleStoredCredential();
   PasswordStoreChangeList change_list =
