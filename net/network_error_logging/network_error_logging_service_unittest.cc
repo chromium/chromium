@@ -705,6 +705,68 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportDowngraded) {
                    "dns.address_changed"))));
 }
 
+TEST_P(NetworkErrorLoggingServiceTest, FailureReportDowngradedOtherServerIp) {
+  service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeaderSuccessFraction1_);
+
+  // Make the rest of the test run synchronously.
+  FinishLoading(/*load_success=*/true);
+
+  // `server_ip` matches the policy's address, but the request also contacted
+  // a different address. The report should still be downgraded.
+  NetworkErrorLoggingService::RequestDetails details = MakeRequestDetails(
+      kNak_, kUrl_, ERR_CONNECTION_REFUSED, "GET", 0, kServerIP_);
+  details.other_server_ips = {kOtherServerIP_};
+  service()->OnRequest(std::move(details));
+
+  ASSERT_EQ(1u, reports().size());
+  EXPECT_EQ(kUrl_, reports()[0].url);
+  EXPECT_EQ(kNak_, reports()[0].network_anonymization_key);
+  EXPECT_EQ(kGroup_, reports()[0].group);
+  EXPECT_EQ(kType_, reports()[0].type);
+  EXPECT_EQ(0, reports()[0].depth);
+
+  EXPECT_THAT(
+      reports()[0].body,
+      Pointee(IsSupersetOfValue(
+          base::DictValue()
+              .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
+              .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
+              .Set(NetworkErrorLoggingService::kServerIpKey,
+                   kServerIP_.ToString())
+              .Set(NetworkErrorLoggingService::kProtocolKey, "")
+              .Set(NetworkErrorLoggingService::kMethodKey, "GET")
+              .Set(NetworkErrorLoggingService::kStatusCodeKey, 0)
+              .Set(NetworkErrorLoggingService::kElapsedTimeKey, 0)
+              .Set(NetworkErrorLoggingService::kPhaseKey, "dns")
+              .Set(NetworkErrorLoggingService::kTypeKey,
+                   "dns.address_changed"))));
+}
+
+TEST_P(NetworkErrorLoggingServiceTest,
+       FailureReportNotDowngradedSameOtherServerIp) {
+  service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeaderSuccessFraction1_);
+
+  // Make the rest of the test run synchronously.
+  FinishLoading(/*load_success=*/true);
+
+  // `server_ip` matches the policy's address, and the only other contacted
+  // address is the same. The report should not be downgraded.
+  NetworkErrorLoggingService::RequestDetails details = MakeRequestDetails(
+      kNak_, kUrl_, ERR_CONNECTION_REFUSED, "GET", 0, kServerIP_);
+  details.other_server_ips = {kServerIP_};
+  service()->OnRequest(std::move(details));
+
+  ASSERT_EQ(1u, reports().size());
+  EXPECT_THAT(
+      reports()[0].body,
+      Pointee(IsSupersetOfValue(
+          base::DictValue()
+              .Set(NetworkErrorLoggingService::kStatusCodeKey, 0)
+              .Set(NetworkErrorLoggingService::kElapsedTimeKey, 1000)
+              .Set(NetworkErrorLoggingService::kPhaseKey, "connection")
+              .Set(NetworkErrorLoggingService::kTypeKey, "tcp.refused"))));
+}
+
 TEST_P(NetworkErrorLoggingServiceTest, HttpErrorReportDowngraded) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeaderSuccessFraction1_);
 

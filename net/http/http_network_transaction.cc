@@ -1942,6 +1942,14 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
   } else {
     details.server_ip = IPAddress();
   }
+  // Also report any other addresses that were contacted, so that the downgrade
+  // step can take all of them into account when the resolved address list
+  // contained more than one address.
+  for (const auto& attempt : connection_attempts_) {
+    if (attempt.endpoint.address() != details.server_ip) {
+      details.other_server_ips.push_back(attempt.endpoint.address());
+    }
+  }
   // HttpResponseHeaders::response_code() returns 0 if response code couldn't
   // be parsed, which is also how NEL represents the same.
   if (response_.headers) {

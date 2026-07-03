@@ -24738,6 +24738,44 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
 }
 
 TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
+       CreateReportErrorAfterStartMultipleAddresses) {
+  const IPAddress kFirstAddress(1, 2, 3, 4);
+  const IPAddress kSecondAddress(5, 6, 7, 8);
+  session_deps_.host_resolver->rules()->AddRule(GURL(url_).GetHost(),
+                                                "1.2.3.4,5.6.7.8");
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+
+  StaticSocketDataProvider data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+  StaticSocketDataProvider data2;
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  TestCompletionCallback callback;
+
+  int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_CONNECTION_REFUSED));
+
+  trans.reset();
+
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  const NetworkErrorLoggingService::RequestDetails& error =
+      network_error_logging_service()->errors()[0];
+  EXPECT_EQ(0, error.status_code);
+  EXPECT_EQ(ERR_CONNECTION_REFUSED, error.type);
+  // Both resolved addresses were attempted, so both should be reported: one as
+  // `server_ip` and the other in `other_server_ips`.
+  std::vector<IPAddress> all_ips = error.other_server_ips;
+  all_ips.push_back(error.server_ip);
+  EXPECT_THAT(all_ips,
+              testing::UnorderedElementsAre(kFirstAddress, kSecondAddress));
+}
+
+TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
        CreateReportReadBodyError) {
   std::string extra_header_string = extra_headers_.ToString();
   MockWrite data_writes[] = {
