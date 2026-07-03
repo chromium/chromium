@@ -297,7 +297,7 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
   // Wait until the new tab is open and switch to that tab.
   [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey selectTabAtIndex:1U];
-  GREYAssert(WaitForDownloadButton(/*loading*/ false),
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
              @"Download button did not show up");
 
   // Proceed with download.
