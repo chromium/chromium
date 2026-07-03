@@ -451,6 +451,10 @@ std::string DiceHeaderHelper::BuildRequestHeader(
   }
 
   if (base::FeatureList::IsEnabled(switches::kDiceLinkedAccounts)) {
+    if (!primary_account_gaia_id.empty()) {
+      parts.push_back("primary_account_id=" +
+                      primary_account_gaia_id.ToString());
+    }
     parts.push_back("linked_accounts=1");
   }
 
