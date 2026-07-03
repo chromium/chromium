@@ -966,7 +966,8 @@ base::WeakPtr<PasskeyTabHelper> PasskeyTabHelper::AsWeakPtr() {
 
 void PasskeyTabHelper::MaybeShowInterstitialAndRegister(
     RegistrationRequestParams params) {
-  if (web_state_->GetBrowserState()->IsOffTheRecord()) {
+  if (params.Type() != PasskeyRequestParams::RequestType::kConditionalCreate &&
+      web_state_->GetBrowserState()->IsOffTheRecord()) {
     LogEvent(WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown);
     client_->ShowInterstitial(
         base::BindOnce(&PasskeyTabHelper::OnInterstitialDecision,
@@ -988,16 +989,38 @@ void PasskeyTabHelper::OnInterstitialDecision(RegistrationRequestParams params,
   HandleRegistration(std::move(params));
 }
 
+void PasskeyTabHelper::OnConditionalCreateInterstitialDecision(
+    const std::string& request_id,
+    bool proceed) {
+  auto it = registration_requests_.find(request_id);
+  if (it == registration_requests_.end()) {
+    return;
+  }
+  if (!proceed) {
+    web::WebFrame* web_frame = GetWebFrame(it->second.FrameId());
+    if (web_frame) {
+      RejectPasskeyRequest(web_frame, it->second.RequestId());
+    }
+    registration_requests_.erase(it);
+    return;
+  }
+  StartPasskeyCreation(request_id, /*did_complete_uv=*/false);
+}
+
 void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
     password_manager::LoginsResultOrError results_or_error) {
   is_querying_password_store_ = false;
 
+  if (!web_state_) {
+    return;
+  }
+
   std::vector<std::string> request_ids_to_process;
-  for (const auto& [id, params] : registration_requests_) {
+  for (const auto& [request_id, params] : registration_requests_) {
     if (params.Type() ==
         PasskeyRequestParams::RequestType::kConditionalCreate) {
-      request_ids_to_process.push_back(id);
+      request_ids_to_process.push_back(request_id);
     }
   }
 
@@ -1007,8 +1030,8 @@ void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
     results = &std::get<password_manager::LoginsResult>(results_or_error);
   }
 
-  for (const std::string& id : request_ids_to_process) {
-    auto it = registration_requests_.find(id);
+  for (const std::string& request_id : request_ids_to_process) {
+    auto it = registration_requests_.find(request_id);
     if (it == registration_requests_.end()) {
       continue;
     }
@@ -1016,7 +1039,15 @@ void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
     const RegistrationRequestParams& params = it->second;
 
     if (results && CanPerformAutomaticPasskeyUpgrade(params, *results)) {
-      StartPasskeyCreation(id, /*did_complete_uv=*/false);
+      if (web_state_->GetBrowserState()->IsOffTheRecord()) {
+        LogEvent(
+            WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown);
+        client_->ShowInterstitial(base::BindOnce(
+            &PasskeyTabHelper::OnConditionalCreateInterstitialDecision,
+            weak_factory_.GetWeakPtr(), request_id));
+      } else {
+        StartPasskeyCreation(request_id, /*did_complete_uv=*/false);
+      }
     } else {
       DeferToRenderer(params.RequestInfo(), params.Type());
       registration_requests_.erase(it);

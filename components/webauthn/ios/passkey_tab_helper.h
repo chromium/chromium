@@ -222,6 +222,11 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Callback handling the user's decision from the interstitial.
   void OnInterstitialDecision(RegistrationRequestParams params, bool proceed);
 
+  // Callback handling the user's decision from the interstitial for a
+  // conditional create request.
+  void OnConditionalCreateInterstitialDecision(const std::string& request_id,
+                                               bool proceed);
+
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.
   void AddNewPasskey(sync_pb::WebauthnCredentialSpecifics& passkey);
