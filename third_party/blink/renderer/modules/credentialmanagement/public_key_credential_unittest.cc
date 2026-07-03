@@ -6,15 +6,19 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs_js_on.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs_js_on.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
@@ -27,7 +31,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity_js_on.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/json.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -674,6 +678,162 @@ TEST(PublicKeyCredentialTest, ParseRequestOptionsFromJSON_InvalidBase64URL) {
     EXPECT_EQ(options, nullptr);
     ASSERT_TRUE(exception_state.HadException());
     EXPECT_EQ(exception_state.Message().Utf8(), t.expected_message);
+  }
+}
+
+struct ExtensionsClientOutputsValues {
+  std::optional<bool> appid;
+  std::optional<bool> hmac_create_secret;
+  std::optional<bool> cred_props_rk;
+  std::optional<bool> large_blob_supported;
+  std::optional<Vector<uint8_t>> large_blob_data;
+  std::optional<bool> large_blob_written;
+  std::optional<Vector<uint8_t>> get_cred_blob;
+  std::optional<bool> cross_device_fallback_url;
+};
+
+AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
+    const ExtensionsClientOutputsValues& in) {
+  auto* extensions = AuthenticationExtensionsClientOutputs::Create();
+  if (in.appid) {
+    extensions->setAppid(*in.appid);
+  }
+  if (in.hmac_create_secret) {
+    extensions->setHmacCreateSecret(*in.hmac_create_secret);
+  }
+  if (in.cred_props_rk) {
+    auto* cred_props = CredentialPropertiesOutput::Create();
+    cred_props->setRk(*in.cred_props_rk);
+    extensions->setCredProps(cred_props);
+  }
+  if (in.large_blob_supported || in.large_blob_data || in.large_blob_written) {
+    auto* large_blob = AuthenticationExtensionsLargeBlobOutputs::Create();
+    if (in.large_blob_supported) {
+      large_blob->setSupported(*in.large_blob_supported);
+    }
+    if (in.large_blob_data) {
+      large_blob->setBlob(DOMArrayBuffer::Create(*in.large_blob_data));
+    }
+    if (in.large_blob_written) {
+      large_blob->setWritten(*in.large_blob_written);
+    }
+    extensions->setLargeBlob(large_blob);
+  }
+  if (in.get_cred_blob) {
+    extensions->setGetCredBlob(DOMArrayBuffer::Create(*in.get_cred_blob));
+  }
+  if (in.cross_device_fallback_url) {
+    extensions->setCrossDeviceFallbackUrl(*in.cross_device_fallback_url);
+  }
+  return extensions;
+}
+
+void ExpectExtensionsJSONMatch(
+    ScriptState* script_state,
+    const AuthenticationExtensionsClientOutputsJSON& extensions,
+    const ExtensionsClientOutputsValues& values) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+
+  if (values.appid) {
+    ASSERT_TRUE(extensions.hasAppid());
+    EXPECT_EQ(extensions.appid(), *values.appid);
+  } else {
+    EXPECT_FALSE(extensions.hasAppid());
+  }
+  if (values.hmac_create_secret) {
+    ASSERT_TRUE(extensions.hasHmacCreateSecret());
+    EXPECT_EQ(extensions.hmacCreateSecret(), *values.hmac_create_secret);
+  } else {
+    EXPECT_FALSE(extensions.hasHmacCreateSecret());
+  }
+  if (values.cred_props_rk) {
+    ASSERT_TRUE(extensions.hasCredProps());
+    ASSERT_TRUE(extensions.credProps()->hasRk());
+    EXPECT_EQ(extensions.credProps()->rk(), *values.cred_props_rk);
+  } else {
+    EXPECT_FALSE(extensions.hasCredProps());
+  }
+  if (values.large_blob_supported || values.large_blob_data ||
+      values.large_blob_written) {
+    ASSERT_TRUE(extensions.hasLargeBlob());
+    v8::Local<v8::Object> large_blob_obj = extensions.largeBlob().V8Object();
+
+    if (values.large_blob_supported) {
+      v8::Local<v8::Value> supported_val;
+      ASSERT_TRUE(large_blob_obj->Get(context, V8String(isolate, "supported"))
+                      .ToLocal(&supported_val));
+      ASSERT_TRUE(supported_val->IsBoolean());
+      EXPECT_EQ(supported_val.As<v8::Boolean>()->Value(),
+                *values.large_blob_supported);
+    }
+    if (values.large_blob_data) {
+      v8::Local<v8::Value> blob_val;
+      ASSERT_TRUE(large_blob_obj->Get(context, V8String(isolate, "blob"))
+                      .ToLocal(&blob_val));
+      ASSERT_TRUE(blob_val->IsString());
+      EXPECT_EQ(ToCoreString(isolate, blob_val.As<v8::String>()),
+                WebAuthnBase64UrlEncode(
+                    DOMArrayBuffer::Create(*values.large_blob_data)));
+    }
+    if (values.large_blob_written) {
+      v8::Local<v8::Value> written_val;
+      ASSERT_TRUE(large_blob_obj->Get(context, V8String(isolate, "written"))
+                      .ToLocal(&written_val));
+      ASSERT_TRUE(written_val->IsBoolean());
+      EXPECT_EQ(written_val.As<v8::Boolean>()->Value(),
+                *values.large_blob_written);
+    }
+  } else {
+    EXPECT_FALSE(extensions.hasLargeBlob());
+  }
+  if (values.get_cred_blob) {
+    ASSERT_TRUE(extensions.hasGetCredBlob());
+    EXPECT_EQ(
+        extensions.getCredBlob(),
+        WebAuthnBase64UrlEncode(DOMArrayBuffer::Create(*values.get_cred_blob)));
+  } else {
+    EXPECT_FALSE(extensions.hasGetCredBlob());
+  }
+  if (values.cross_device_fallback_url) {
+    ASSERT_TRUE(extensions.hasCrossDeviceFallbackUrl());
+    EXPECT_EQ(extensions.crossDeviceFallbackUrl(),
+              *values.cross_device_fallback_url);
+  } else {
+    EXPECT_FALSE(extensions.hasCrossDeviceFallbackUrl());
+  }
+}
+
+TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
+  test::TaskEnvironment task_environment;
+  DummyPageHolder holder;
+  ScriptState* script_state = ToScriptStateForMainWorld(&holder.GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  // TODO(crbug.com/530457807): Fix credBlob serialization.
+  // TODO(crbug.com/530457808): Fix PRF serialization.
+  const ExtensionsClientOutputsValues kTestCases[] = {
+      {.appid = true},
+      {.appid = false},
+      {.hmac_create_secret = true},
+      {.hmac_create_secret = false},
+      {.cred_props_rk = true},
+      {.cred_props_rk = false},
+      {.large_blob_supported = true,
+       .large_blob_data = Vector<uint8_t>{'b', 'l', 'o', 'b', 'b', 'y'},
+       .large_blob_written = true},
+      {.large_blob_supported = false},
+      {.large_blob_supported = true, .large_blob_written = false},
+      {.get_cred_blob = Vector<uint8_t>{'g', 'e', 't', 't', 'y'}},
+      {.cross_device_fallback_url = true},
+      {.cross_device_fallback_url = false},
+  };
+
+  for (const auto& inputs : kTestCases) {
+    auto* extensions = MakeExtensionsOutputs(inputs);
+    auto* json_ext =
+        AuthenticationExtensionsClientOutputsToJSON(script_state, *extensions);
+    SUBTEST(ExpectExtensionsJSONMatch(script_state, *json_ext, inputs));
   }
 }
 

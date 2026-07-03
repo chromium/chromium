@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_JSON_H_
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -20,9 +21,9 @@ class ScriptState;
 
 // WebAuthn JSON-encodes binary-valued fields as Base64URL without trailing '='
 // padding characters.
-String WebAuthnBase64UrlEncode(DOMArrayPiece buffer);
+MODULES_EXPORT String WebAuthnBase64UrlEncode(DOMArrayPiece buffer);
 
-AuthenticationExtensionsClientOutputsJSON*
+MODULES_EXPORT AuthenticationExtensionsClientOutputsJSON*
 AuthenticationExtensionsClientOutputsToJSON(
     ScriptState* script_state,
     const AuthenticationExtensionsClientOutputs& extension_outputs);
