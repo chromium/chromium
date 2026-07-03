@@ -1304,15 +1304,27 @@ void ProfileMenuView::GetProfilesForOtherProfilesSection(
 void ProfileMenuView::BuildOtherProfilesSection(
     const std::vector<ProfileAttributesEntry*>& available_profiles) {
   for (ProfileAttributesEntry* profile_entry : available_profiles) {
-    AddAvailableProfile(
+    ui::ImageModel avatar_image =
         ui::ImageModel::FromImage(profile_entry->GetAvatarIcon(
             kOtherProfileImageSize,
             /*use_high_res_file=*/true,
             GetPlaceholderAvatarIconParamsVisibleAgainstColor(
                 BrowserWindow::FromBrowser(&browser())
                     ->GetColorProvider()
-                    ->GetColor(ui::kColorMenuBackground)))),
-        profile_entry->GetName(),
+                    ->GetColor(ui::kColorMenuBackground))));
+    if (base::FeatureList::IsEnabled(
+            features::kEnableAiSubscriptionAvatarRing) &&
+        profile_entry->GetAiSubscriptionTier() > 0) {
+      avatar_image = ui::ImageModel::FromImageSkia(AddAiRingToAvatar(
+          avatar_image,
+          *BrowserWindow::FromBrowser(&browser())->GetColorProvider(),
+          kOtherProfileImageSize));
+    } else {
+      avatar_image = ProfileMenuViewBase::GetCircularSizedImage(
+          avatar_image, kOtherProfileImageSize);
+    }
+    AddAvailableProfile(
+        avatar_image, profile_entry->GetName(),
         /*is_guest=*/false,
         base::BindRepeating(&ProfileMenuView::OnOtherProfileSelected,
                             base::Unretained(this), profile_entry->GetPath()));

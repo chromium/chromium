@@ -160,6 +160,14 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;
   ProfileMenuViewBase& operator=(const ProfileMenuViewBase&) = delete;
 
+  // Resizes and crops `image_model` to a circular shape.
+  // Note: if the image is backed by a vector icon, it is actually not cropped.
+  // Cropping it would require theme colors which are not necessarily available,
+  // and it is best to avoid cropping icons anyway -- icons naturally fitting in
+  // the circle should be used instead.
+  static ui::ImageModel GetCircularSizedImage(const ui::ImageModel& image_model,
+                                              int size);
+
   // This method is called once to add all menu items.
   virtual void BuildMenu() = 0;
 
@@ -171,10 +179,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                         const gfx::VectorIcon& icon,
                         float icon_to_image_ratio = 1.0f);
   void SetProfileManagementHeading(const std::u16string& heading);
+
+  // Does not resize the image.
   void AddAvailableProfile(const ui::ImageModel& image_model,
                            const std::u16string& name,
                            bool is_guest,
                            base::RepeatingClosure action);
+
   void AddProfileManagementFeaturesSeparator();
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
                                          const std::u16string& text,
@@ -232,7 +243,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   std::unique_ptr<HoverButton> CreateMenuRowButton(
       base::RepeatingClosure action,
       std::unique_ptr<views::View> icon_view,
-      const std::u16string& text);
+      const std::u16string& text,
+      int icon_offset);
 
   const raw_ref<Profile> profile_;
 

@@ -143,25 +143,6 @@ const gfx::ImageSkia ImageForMenu(const gfx::VectorIcon& icon,
   return gfx::CanvasImageSource::CreatePadded(sized_icon, gfx::Insets(padding));
 }
 
-// Resizes and crops `image_model` to a circular shape.
-// Note: if the image is backed by a vector icon, it is actually not cropped.
-// Cropping it would require theme colors which are not necessarily available,
-// and it is best to avoid cropping icons anyway -- icons naturally fitting in
-// the circle should be used instead.
-ui::ImageModel GetCircularSizedImage(const ui::ImageModel& image_model,
-                                     int size) {
-  // Resize.
-  ui::ImageModel resized =
-      profiles::GetSizedAvatarImageModel(image_model, size);
-  // It is assumed that vector icons are already fitting in a circle. Only crop
-  // images.
-  if (!resized.IsImage()) {
-    return resized;
-  }
-  return ui::ImageModel::FromImage(GetSizedAvatarIcon(
-      resized.GetImage(), size, size, profiles::AvatarShape::SHAPE_CIRCLE));
-}
-
 class FeatureButtonIconView : public views::ImageView {
   METADATA_HEADER(FeatureButtonIconView, views::ImageView)
 
@@ -249,7 +230,8 @@ class AvatarImageView : public views::ImageView {
       if (border_size_ > 0) {
         // Total image size is `image_size_ + 2 * border_size_`.
         ui::ImageModel sized_avatar_image_without_border =
-            GetCircularSizedImage(avatar_image_, image_size_);
+            ProfileMenuViewBase::GetCircularSizedImage(avatar_image_,
+                                                       image_size_);
         sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
             sized_avatar_image_without_border.Rasterize(color_provider),
             gfx::Insets(border_size_));
@@ -296,15 +278,19 @@ class MenuButtonRowView : public HoverButton {
  public:
   MenuButtonRowView(PressedCallback callback,
                     std::unique_ptr<views::View> icon_view,
-                    const std::u16string& title_text)
-      : HoverButton(std::move(callback),
-                    std::move(icon_view),
-                    title_text,
-                    /*subtitle=*/std::u16string(),
-                    /*secondary_view=*/nullptr,
-                    /*add_vertical_label_spacing=*/false) {
-    SetIconHorizontalMargins(kMenuItemLeftInternalPadding, /*right=*/0);
-
+                    const std::u16string& title_text,
+                    int icon_offset)
+      : HoverButton(std::move(callback), [&]() {
+          HoverButton::Params params;
+          params.icon_view = std::move(icon_view);
+          params.title = title_text;
+          params.add_vertical_label_spacing = false;
+          params.icon_vertical_offset = -icon_offset;
+          params.icon_label_spacing -= icon_offset;
+          return params;
+        }()) {
+    SetIconHorizontalMargins(kMenuItemLeftInternalPadding - icon_offset,
+                             /*right=*/0);
     // Instead of creating the highlight with an InkDrop, which paints a layer
     // over this, we paint the highlight directly to the background.
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
@@ -352,6 +338,21 @@ BEGIN_METADATA(MenuButtonRowView)
 END_METADATA
 
 }  // namespace
+
+ui::ImageModel ProfileMenuViewBase::GetCircularSizedImage(
+    const ui::ImageModel& image_model,
+    int size) {
+  // Resize.
+  ui::ImageModel resized =
+      profiles::GetSizedAvatarImageModel(image_model, size);
+  // It is assumed that vector icons are already fitting in a circle. Only crop
+  // images.
+  if (!resized.IsImage()) {
+    return resized;
+  }
+  return ui::ImageModel::FromImage(GetSizedAvatarIcon(
+      resized.GetImage(), size, size, profiles::AvatarShape::SHAPE_CIRCLE));
+}
 
 ProfileMenuViewBase::IdentitySectionParams::IdentitySectionParams() = default;
 ProfileMenuViewBase::IdentitySectionParams::~IdentitySectionParams() = default;
@@ -640,8 +641,8 @@ void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
 
   features_container_->AddChildView(CreateMenuRowButton(
       std::move(action),
-      std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio),
-      text));
+      std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio), text,
+      /*icon_offset=*/0));
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
@@ -693,12 +694,13 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
   }
 
   DCHECK(!image_model.IsEmpty());
-  ui::ImageModel sized_image =
-      GetCircularSizedImage(image_model, kOtherProfileImageSize);
+  const int icon_offset =
+      (image_model.Size().width() - kOtherProfileImageSize) / 2;
+
   views::Button* button =
       selectable_profiles_container_->AddChildView(CreateMenuRowButton(
-          std::move(action), std::make_unique<views::ImageView>(sized_image),
-          name));
+          std::move(action), std::make_unique<views::ImageView>(image_model),
+          name, icon_offset));
 
   if (!is_guest && !first_profile_button_) {
     first_profile_button_ = button;
@@ -725,8 +727,8 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
 
   auto icon_view =
       std::make_unique<FeatureButtonIconView>(icon, /*icon_to_image_ratio=*/1);
-  profile_mgmt_features_container_->AddChildView(
-      CreateMenuRowButton(std::move(action), std::move(icon_view), text));
+  profile_mgmt_features_container_->AddChildView(CreateMenuRowButton(
+      std::move(action), std::move(icon_view), text, /*icon_offset=*/0));
 }
 
 void ProfileMenuViewBase::AddBottomMargin() {
@@ -871,12 +873,13 @@ void ProfileMenuViewBase::CreateAXWidgetObserver(views::Widget* widget) {
 std::unique_ptr<HoverButton> ProfileMenuViewBase::CreateMenuRowButton(
     base::RepeatingClosure action,
     std::unique_ptr<views::View> icon_view,
-    const std::u16string& text) {
+    const std::u16string& text,
+    int icon_offset) {
   CHECK(icon_view);
   return std::make_unique<MenuButtonRowView>(
       base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                           base::Unretained(this), std::move(action)),
-      std::move(icon_view), text);
+      std::move(icon_view), text, icon_offset);
 }
 
 BEGIN_METADATA(ProfileMenuViewBase)
