@@ -794,6 +794,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/feed",
       "//chrome/browser/ntp_customization",
+      "//chrome/browser/readaloud",
       "//chrome/browser/tab",
       "//chrome/browser/ui/android",
       "//components/commerce/core:merchant_signal_db_proto",
