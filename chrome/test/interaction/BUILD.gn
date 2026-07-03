@@ -1,0 +1,54 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/views/features.gni")
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "interaction_test_util_browser_unittest.cc",
+      "webcontents_interaction_test_util_unittest.cc",
+    ]
+    deps = [
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views/controls",
+      "//chrome/test:test_support",
+      "//ui/views:test_support",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "interaction_test_util_browser_browsertest.cc",
+      "interactive_browser_test_browsertest.cc",
+      "webcontents_interaction_test_util_browsertest.cc",
+    ]
+    deps = [ "//chrome/test:test_support" ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "element_tracker_views_interactive_uitest.cc",
+      "interaction_sequence_interactive_uitest.cc",
+      "interaction_test_util_browser_interactive_uitest.cc",
+      "interaction_test_util_interactive_uitest.cc",
+      "interaction_test_util_mouse_interactive_uitest.cc",
+      "interactive_browser_test_interactive_uitest.cc",
+      "webcontents_interaction_test_util_interactive_uitest.cc",
+    ]
+    deps = [
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/views/bubble",
+      "//chrome/test:test_support",
+    ]
+  }
+}
