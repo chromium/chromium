@@ -850,6 +850,10 @@ id<GREYMatcher> CloseButton() {
 // Tests that the cobrowse input plate is hidden when the plus menu bottom sheet
 // is opened, and reshown after it is dismissed.
 - (void)testInputPlateHiddenOnPlusMenu {
+  if (!IsComposeboxPlusButtonBottomSheet()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxPlusButtonBottomSheet is disabled.");
+  }
   if ([ComposeboxAppInterface isServerSideStateEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped when kComposeboxServerSideState is enabled.");
