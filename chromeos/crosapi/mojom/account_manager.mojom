@@ -225,7 +225,12 @@ interface AccountManager {
 
   // ShowManageAccountsSettings@5 was removed.
 
-  // GetPersistentErrorForAccount@6 was removed.
+  // Returns a persistent error state for `account`. If `account` doesn't have
+  // a persistent error or AccountManager doesn't have such an account -
+  // `GoogleServiceAuthError` with `kNone` state will be returned.
+  [MinVersion = 5]
+  GetPersistentErrorForAccount@6(AccountKey account) =>
+      (GoogleServiceAuthError error);
 
   // Returns a remote to an interface to fetch an access token for
   // `account_key`, to be used by `oauth_consumer_name` OAuth2 client.

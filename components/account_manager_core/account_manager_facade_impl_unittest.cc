@@ -142,6 +142,21 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     observers_.Add(std::move(observer));
   }
 
+  void GetPersistentErrorForAccount(
+      crosapi::mojom::AccountKeyPtr mojo_account_key,
+      GetPersistentErrorForAccountCallback callback) override {
+    std::optional<AccountKey> account_key =
+        FromMojoAccountKey(mojo_account_key);
+    DCHECK(account_key.has_value());
+    auto it = persistent_errors_.find(account_key.value());
+    if (it != persistent_errors_.end()) {
+      std::move(callback).Run(ToMojoGoogleServiceAuthError(it->second));
+      return;
+    }
+    std::move(callback).Run(
+        ToMojoGoogleServiceAuthError(GoogleServiceAuthError::AuthErrorNone()));
+  }
+
   void ShowAddAccountDialog(crosapi::mojom::AccountAdditionOptionsPtr,
                             ShowAddAccountDialogCallback) override {
     NOTREACHED();
@@ -179,12 +194,18 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     accounts_ = accounts;
   }
 
+  void SetPersistentErrorForAccount(const AccountKey& account,
+                                    GoogleServiceAuthError error) {
+    persistent_errors_.emplace(account, error);
+  }
+
   void ClearReceivers() { receivers_.Clear(); }
 
   void ClearObservers() { observers_.Clear(); }
 
  private:
   std::vector<Account> accounts_;
+  std::map<AccountKey, GoogleServiceAuthError> persistent_errors_;
   std::unique_ptr<MockAccessTokenFetcher> access_token_fetcher_;
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
   mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
@@ -233,14 +254,6 @@ class AccountManagerFacadeImplTest : public testing::Test {
         real_account_manager(), future.GetCallback());
     EXPECT_TRUE(future.Wait());
     return result;
-  }
-
-  Account AddTestGaiaAccount(const std::string& email,
-                             const std::string& token) {
-    Account account = CreateTestGaiaAccount(email);
-    real_account_manager()->UpsertAccount(account.key, account.raw_email,
-                                          token);
-    return account;
   }
 
  private:
@@ -315,8 +328,12 @@ TEST_F(AccountManagerFacadeImplTest,
 TEST_F(AccountManagerFacadeImplTest, GetAccountsReturnsAccounts) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  Account account1 = AddTestGaiaAccount(kTestAccountEmail, "token1");
-  Account account2 = AddTestGaiaAccount(kAnotherTestAccountEmail, "token2");
+  Account account1 = CreateTestGaiaAccount(kTestAccountEmail);
+  Account account2 = CreateTestGaiaAccount(kAnotherTestAccountEmail);
+  real_account_manager()->UpsertAccount(account1.key, account1.raw_email,
+                                        "token1");
+  real_account_manager()->UpsertAccount(account2.key, account2.raw_email,
+                                        "token2");
 
   base::test::TestFuture<const std::vector<Account>&> future;
   account_manager_facade->GetAccounts(future.GetCallback());
@@ -327,7 +344,7 @@ TEST_F(AccountManagerFacadeImplTest, GetAccountsReturnsAccounts) {
 TEST_F(AccountManagerFacadeImplTest, GetPersistentErrorMarshalsAuthErrorNone) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  Account account = AddTestGaiaAccount(kTestAccountEmail, "valid-token");
+  Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
   base::test::TestFuture<const GoogleServiceAuthError&> future;
   account_manager_facade->GetPersistentErrorForAccount(account.key,
@@ -339,17 +356,17 @@ TEST_F(AccountManagerFacadeImplTest,
        GetPersistentErrorMarshalsCredentialsRejectedByClient) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  Account account =
-      AddTestGaiaAccount(kTestAccountEmail, AccountManager::kInvalidToken);
+  Account account = CreateTestGaiaAccount(kTestAccountEmail);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_CLIENT);
+  account_manager().SetPersistentErrorForAccount(account.key, error);
 
   base::test::TestFuture<const GoogleServiceAuthError&> future;
   account_manager_facade->GetPersistentErrorForAccount(account.key,
                                                        future.GetCallback());
-  GoogleServiceAuthError expected_error =
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_CLIENT);
-  EXPECT_THAT(future.Get(), Eq(expected_error));
+  EXPECT_THAT(future.Get(), Eq(error));
 }
 
 TEST_F(AccountManagerFacadeImplTest,
