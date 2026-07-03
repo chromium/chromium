@@ -571,6 +571,7 @@ TEST_F(BrowserViewControllerTest, didInsertOffTheRecordWebState) {
                                 })];
   InsertWebState(std::move(web_state));
   EXPECT_OCMOCK_VERIFY(container_view_mock);
+  [container_view_mock stopMocking];
 }
 
 // Tests that when a webstate is inserted, the correct view is used during
@@ -611,6 +612,7 @@ TEST_F(BrowserViewControllerTest, ViewOnInsert) {
                                 })];
   InsertWebState(std::move(ntp_web_state2));
   EXPECT_OCMOCK_VERIFY(container_view_mock);
+  [container_view_mock stopMocking];
 }
 
 // BrowserViewController needs to conform to
