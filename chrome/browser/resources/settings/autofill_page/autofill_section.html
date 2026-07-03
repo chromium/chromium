@@ -65,7 +65,8 @@
       <template is="dom-if" if="[[showGmailOtpFillingToggle_]]" restamp>
         <settings-toggle-button id="autofillOtpFillingToggle"
             label="$i18n{enableGmailOtpFillingTitle}"
-            sub-label="$i18n{enableGmailOtpFillingDescription}"
+            sub-label-with-link="$i18n{enableGmailOtpFillingDescription}"
+            on-sub-label-link-clicked="onGmailOtpFillingLinkClick_"
             pref="{{prefs.autofill.gmail_otp_filling.enabled}}">
         </settings-toggle-button>
       </template>

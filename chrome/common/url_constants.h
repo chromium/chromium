@@ -461,6 +461,11 @@ inline constexpr char16_t kAutofillAiLearnMoreURL[] =
 inline constexpr char16_t kCardBenefitsLearnMoreURL[] =
     u"https://support.google.com/googlepay?p=card_benefits_chrome";
 
+// "Learn more" URL for the Gmail OTP filling setting.
+inline constexpr char16_t kGmailOtpFillingLearnMoreURL[] =
+    // TODO(crbug.com/484907871): Update with final URL
+    u"https://support.google.com/chrome/";
+
 // "Learn more" URL for the performance intervention notification setting.
 inline constexpr const char16_t kPerformanceInterventionLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=performance_personalization";

@@ -630,6 +630,11 @@ export class SettingsAutofillSectionElement extends
         loadTimeData.getString('plusAddressManagementUrl'));
   }
 
+  private onGmailOtpFillingLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('gmailOtpFillingLearnMoreUrl'));
+  }
+
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
