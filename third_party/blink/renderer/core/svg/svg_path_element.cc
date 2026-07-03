@@ -30,9 +30,11 @@
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
+#include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
 
@@ -65,11 +67,26 @@ const SVGPathByteStream& SVGPathElement::PathByteStream() const {
 }
 
 Path SVGPathElement::AsPath() const {
-  return GetStylePath()->GetPath();
+  const Path& unzoomed_path = GetStylePath()->GetUnzoomedPath();
+  if (!RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
+    return unzoomed_path;
+  }
+
+  const ComputedStyle* style = GetComputedStyle();
+  if (!style || style->EffectiveZoom() == 1) {
+    return unzoomed_path;
+  }
+  return PathBuilder(unzoomed_path)
+      .Transform(AffineTransform::MakeScale(style->EffectiveZoom()))
+      .Finalize();
 }
 
 PathBuilder SVGPathElement::AsMutablePath() const {
   return PathBuilder(AsPath());
+}
+
+const Path& SVGPathElement::GetUnzoomedAsPath() const {
+  return GetStylePath()->GetUnzoomedPath();
 }
 
 float SVGPathElement::getTotalLength(ExceptionState& exception_state) {
@@ -178,7 +195,7 @@ void SVGPathElement::RemovedFrom(ContainerNode& root_parent) {
 
 gfx::RectF SVGPathElement::GetBBox() {
   // We want the exact bounds.
-  return SVGPathElement::AsPath().TightBoundingRect();
+  return GetStylePath()->GetUnzoomedPath().TightBoundingRect();
 }
 
 SVGAnimatedPropertyBase* SVGPathElement::PropertyFromAttribute(

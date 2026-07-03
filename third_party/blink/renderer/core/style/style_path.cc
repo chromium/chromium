@@ -22,7 +22,7 @@ const StylePath* StylePath::EmptyPath() {
   return empty_path.Get();
 }
 
-const Path& StylePath::GetPath() const {
+const Path& StylePath::GetUnzoomedPath() const {
   if (!path_) {
     path_ = BuildPathFromByteStream(byte_stream_, wind_rule_);
   }
@@ -31,13 +31,13 @@ const Path& StylePath::GetPath() const {
 
 float StylePath::length() const {
   if (std::isnan(path_length_)) {
-    path_length_ = GetPath().length();
+    path_length_ = GetUnzoomedPath().length();
   }
   return path_length_;
 }
 
 bool StylePath::IsClosed() const {
-  return GetPath().IsClosed();
+  return GetUnzoomedPath().IsClosed();
 }
 
 CSSValue* StylePath::ComputedCSSValue() const {
@@ -53,7 +53,7 @@ bool StylePath::IsEqualAssumingSameType(const BasicShape& o) const {
 Path StylePath::GetPath(const gfx::RectF& offset_rect,
                         float zoom,
                         float path_scale) const {
-  const Path& path = GetPath();
+  const Path& path = GetUnzoomedPath();
   const AffineTransform transform =
       AffineTransform::Translation(offset_rect.x(), offset_rect.y())
           .Scale(zoom * path_scale);

@@ -26,7 +26,7 @@ class StylePath final : public BasicShape {
 
   static const StylePath* EmptyPath();
 
-  const Path& GetPath() const;
+  const Path& GetUnzoomedPath() const;
   float length() const;
   bool IsClosed() const;
 

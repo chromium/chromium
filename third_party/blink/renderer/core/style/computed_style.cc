@@ -1607,8 +1607,8 @@ PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay(
 }
 
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnPath(
-    const Path& path) const {
-  float zoom = EffectiveZoom();
+    const Path& path,
+    float zoom) const {
   float path_length = path.length();
   float float_distance =
       FloatValueForLength(OffsetDistance(), path_length * zoom) / zoom;
@@ -1648,7 +1648,8 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     switch (basic_shape.GetType()) {
       case BasicShape::kStylePathType: {
         const StylePath& path = To<StylePath>(basic_shape);
-        path_position = CalculatePointAndTangentOnPath(path.GetPath());
+        path_position = CalculatePointAndTangentOnPath(path.GetUnzoomedPath(),
+                                                       EffectiveZoom());
         break;
       }
       case BasicShape::kStyleRayType: {
@@ -1740,7 +1741,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     } else {
       path = target->AsPath();
     }
-    path_position = CalculatePointAndTangentOnPath(path);
+    path_position = CalculatePointAndTangentOnPath(path, 1);
   }
 
   if (rotate.type == OffsetRotationType::kFixed) {

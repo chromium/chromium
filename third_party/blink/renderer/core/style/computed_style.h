@@ -2818,7 +2818,8 @@ class ComputedStyle final : public ComputedStyleBase {
       const LayoutBox* box,
       const gfx::PointF& starting_point,
       const gfx::SizeF& reference_box_size) const;
-  PointAndTangent CalculatePointAndTangentOnPath(const Path& path) const;
+  PointAndTangent CalculatePointAndTangentOnPath(const Path& path,
+                                                 float zoom) const;
 
   bool DiffNeedsReshape(const ComputedStyle& other, uint64_t field_diff) const;
   bool DiffNeedsFullLayoutAndPaintInvalidation(const ComputedStyle& other,

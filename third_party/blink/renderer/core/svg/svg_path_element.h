@@ -45,6 +45,8 @@ class SVGPathElement final : public SVGGeometryElement {
   Path AsPath() const override;
   PathBuilder AsMutablePath() const override;
 
+  const Path& GetUnzoomedAsPath() const;
+
   float getTotalLength(ExceptionState&) override;
   SVGPointTearOff* getPointAtLength(float distance, ExceptionState&) override;
 
