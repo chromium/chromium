@@ -48,6 +48,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -78,6 +79,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -191,6 +193,9 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     @VisibleForTesting static final String PREF_TIME_RANGE = "time_period_spinner";
 
     static final String PREF_SIGN_OUT_OF_CHROME_TEXT = "sign_out_of_chrome_text";
+
+    static final String PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE =
+            "manage_other_google_data_expandable";
 
     /** The "Clear" button preference. */
     @VisibleForTesting public static final String PREF_CLEAR_BUTTON = "clear_button";
@@ -451,25 +456,25 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                 fragmentArgs.getString(
                         ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, null);
 
+        List<Integer> options =
+                new ArrayList<>(
+                        Arrays.asList(
+                                DialogOption.CLEAR_HISTORY,
+                                DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
+                                DialogOption.CLEAR_CACHE,
+                                DialogOption.CLEAR_FORM_DATA,
+                                DialogOption.CLEAR_SITE_SETTINGS));
+
         // TODO(crbug.com/40255099): Remove the Tabs checkbox restriction once tab deletion works
         // properly when CBD is launched in SearchActivity.
         if (!TextUtils.equals(referrer, SearchActivity.class.getName())) {
-            return Arrays.asList(
-                    DialogOption.CLEAR_HISTORY,
-                    DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
-                    DialogOption.CLEAR_CACHE,
-                    DialogOption.CLEAR_TABS,
-                    DialogOption.CLEAR_PASSWORDS,
-                    DialogOption.CLEAR_FORM_DATA,
-                    DialogOption.CLEAR_SITE_SETTINGS);
+            options.add(DialogOption.CLEAR_TABS);
         }
-        return Arrays.asList(
-                DialogOption.CLEAR_HISTORY,
-                DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
-                DialogOption.CLEAR_CACHE,
-                DialogOption.CLEAR_PASSWORDS,
-                DialogOption.CLEAR_FORM_DATA,
-                DialogOption.CLEAR_SITE_SETTINGS);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)) {
+            options.add(DialogOption.CLEAR_PASSWORDS);
+        }
+
+        return options;
     }
 
     /**
@@ -684,6 +689,20 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         mSigninManager.addSignInStateObserver(this);
 
         setHasOptionsMenu(true);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)) {
+            setUpManageOtherGoogleDataSection();
+        } else {
+            getPreferenceScreen()
+                    .removePreference(findPreference(PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE));
+        }
+    }
+
+    private void setUpManageOtherGoogleDataSection() {
+        ClearBrowsingDataExpandablePreferenceCategory manageOtherGoogleDataSection =
+                findPreference(PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE);
+
+        manageOtherGoogleDataSection.setExpanded(true);
     }
 
     @Override

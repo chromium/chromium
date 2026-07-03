@@ -71,6 +71,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -897,6 +898,45 @@ public class ClearBrowsingDataFragmentTest {
                         ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_TABS));
 
         assertNull(checkboxPreference);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)
+    public void testManageOtherGoogleDataVisible_WhenPasswordRemovalAndroidEnabled() {
+        ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        Preference preference =
+                preferences.findPreference(
+                        ClearBrowsingDataFragment.PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE);
+
+        assertNotNull(preference);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)
+    public void testPasswordsCheckboxIsHidded_WhenPasswordRemovalAndroidEnabled() {
+        ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        CheckBoxPreference checkboxPreference =
+                preferences.findPreference(
+                        ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_PASSWORDS));
+
+        assertNull(checkboxPreference);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)
+    public void testPasswordsCheckboxIsVisible_WhenPasswordRemovalAndroidDisabled() {
+        ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        CheckBoxPreference checkboxPreference =
+                preferences.findPreference(
+                        ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_PASSWORDS));
+
+        assertNotNull(checkboxPreference);
     }
 
     /** Wait for the snackbar to show on the main activity post deletion. */
