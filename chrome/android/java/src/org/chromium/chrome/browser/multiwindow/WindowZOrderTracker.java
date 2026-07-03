@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import android.app.Activity;
 import android.util.SparseArray;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -15,29 +13,32 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Tracks the z-order of Chrome windows. This class listens to window focus changes and maintains a
- * map of windows ordered by their z-index per display.
+ * Tracks the z-order of Chrome windows. This class listens to window focus and activity state
+ * changes, maintaining a map of windows ordered by their z-index per display.
  *
- * <p>The tracker maintains a relationship between a {@link ActivityWindowAndroid} and its z-order.
- * This is necessary because focus changes from the Android framework are reported at the {@link
- * Activity} level. We map the Activity to its ActivityWindowAndroid, and then promote it to the top
- * of the z-order for the display it is on.
+ * <p>The tracker maintains a relationship between an {@link ActivityWindowAndroid} and its z-order.
+ * This is necessary because focus and state changes from the Android framework are reported at the
+ * {@link Activity} level. We map the Activity to its ActivityWindowAndroid, and then promote it to
+ * the top of the z-order for the display it is on.
  *
  * <p>Assumptions:
  *
  * <ul>
  *   <li>An {@link ActivityWindowAndroid} exists on exactly one display at a time.
- *   <li>When an Activity gains focus, its associated ActivityWindowAndroid is promoted to the top
- *       of the z-order for its display.
+ *   <li>When onActivityTopResumedChanged is called for an Activity, its associated
+ *       ActivityWindowAndroid is promoted to the top of the z-order for its display.
  * </ul>
  */
 @NullMarked
-class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListener {
+class WindowZOrderTracker {
     private static final String TAG = "WindowZOrderTracker";
     private static final boolean DEBUG_LOGGING = false;
     private static final String METRIC_NAMESPACE = "Android.MultiWindow.WindowZOrder.";
@@ -47,9 +48,14 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
     // Note: a window cannot be split between multiple displays and will exist in only one list.
     private final SparseArray<List<ActivityWindowAndroid>> mZOrder;
 
+    private final Map<ActivityWindowAndroid, WindowAndroid.ActivityStateObserver> mObservers;
+
     private final Runnable mZOrderChangedCallback;
 
-    private int mFocusChangedCount;
+    // Counts activity top resumed state transitions handled per metric interval.
+    private int mResumedCount;
+    // Counts actual deduplicated Z-order promotions performed per metric interval.
+    private int mPromotionCount;
 
     private final Runnable mEmitMetricsRunnable =
             new Runnable() {
@@ -57,7 +63,8 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
                 public void run() {
                     recordTrackedWindowStats();
                     recordDisplayStats();
-                    recordFocusChangedCount();
+                    recordResumedCount();
+                    recordPromotionCount();
 
                     PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this, METRIC_INTERVAL_MS);
                 }
@@ -68,6 +75,7 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
      */
     public WindowZOrderTracker(Runnable zOrderChangedCallback) {
         mZOrder = new SparseArray<>();
+        mObservers = new HashMap<>();
         mZOrderChangedCallback = zOrderChangedCallback;
 
         PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mEmitMetricsRunnable, METRIC_INTERVAL_MS);
@@ -85,10 +93,6 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
         ThreadUtils.assertOnUiThread();
         if (DEBUG_LOGGING) Log.i(TAG, "Tracking window: %s", windowAndroid);
 
-        if (mZOrder.size() == 0) {
-            ApplicationStatus.registerWindowFocusChangedListener(this);
-        }
-
         int displayId = windowAndroid.getDisplay().getDisplayId();
         List<ActivityWindowAndroid> windows = mZOrder.get(displayId);
         if (windows == null) {
@@ -97,6 +101,33 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
         }
         if (!windows.contains(windowAndroid)) {
             windows.add(0, windowAndroid);
+            WindowAndroid.ActivityStateObserver observer =
+                    new WindowAndroid.ActivityStateObserver() {
+                        @Override
+                        public void onActivityTopResumedChanged(boolean isTopResumedActivity) {
+                            if (DEBUG_LOGGING) {
+                                Log.i(
+                                        TAG,
+                                        "onTopResumedActivityChanged: window=%s, isTop=%b",
+                                        windowAndroid,
+                                        isTopResumedActivity);
+                            }
+                            if (isTopResumedActivity) {
+                                mResumedCount++;
+                                if (promoteToTopOfZOrder(windowAndroid)) {
+                                    mZOrderChangedCallback.run();
+                                }
+                            }
+                        }
+                    };
+            assert !mObservers.containsKey(windowAndroid);
+            mObservers.put(windowAndroid, observer);
+            windowAndroid.addActivityStateObserver(observer);
+            if (windowAndroid.isTopResumedActivity()) {
+                if (promoteToTopOfZOrder(windowAndroid)) {
+                    mZOrderChangedCallback.run();
+                }
+            }
         }
     }
 
@@ -116,13 +147,13 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
         List<ActivityWindowAndroid> windows = mZOrder.get(displayId);
         if (windows != null) {
             windows.remove(windowAndroid);
+            WindowAndroid.ActivityStateObserver observer = mObservers.remove(windowAndroid);
+            if (observer != null) {
+                windowAndroid.removeActivityStateObserver(observer);
+            }
             if (windows.isEmpty()) {
                 mZOrder.remove(displayId);
             }
-        }
-
-        if (mZOrder.size() == 0) {
-            ApplicationStatus.unregisterWindowFocusChangedListener(this);
         }
     }
 
@@ -139,28 +170,15 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
         return mZOrder;
     }
 
-    @Override
-    public void onWindowFocusChanged(Activity activity, boolean hasFocus) {
-        ThreadUtils.assertOnUiThread();
-        mFocusChangedCount++;
-        if (!hasFocus) {
-            return;
-        }
-
-        for (int i = 0; i < mZOrder.size(); i++) {
-            List<ActivityWindowAndroid> windows = mZOrder.valueAt(i);
-            for (ActivityWindowAndroid window : windows) {
-                if (window.getActivity().get() == activity) {
-                    promoteToTopOfZOrder(window);
-                    mZOrderChangedCallback.run();
-                    return;
-                }
-            }
-        }
-    }
-
-    private void promoteToTopOfZOrder(ActivityWindowAndroid window) {
+    private boolean promoteToTopOfZOrder(ActivityWindowAndroid window) {
         int currentDisplayId = window.getDisplay().getDisplayId();
+        List<ActivityWindowAndroid> currentDisplayZOrder = mZOrder.get(currentDisplayId);
+        if (currentDisplayZOrder == null) {
+            currentDisplayZOrder = new ArrayList<>();
+            mZOrder.put(currentDisplayId, currentDisplayZOrder);
+        } else if (isWindowAtTop(window, currentDisplayZOrder)) {
+            return false;
+        }
 
         if (DEBUG_LOGGING) {
             Log.i(
@@ -170,21 +188,23 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
                     currentDisplayId);
         }
 
-        List<ActivityWindowAndroid> currentDisplayZOrder = mZOrder.get(currentDisplayId);
-        if (currentDisplayZOrder == null) {
-            currentDisplayZOrder = new ArrayList<>();
-            mZOrder.put(currentDisplayId, currentDisplayZOrder);
-        }
-
         // Remove the window from its current position and add it to the top.
         // Note that when changing displays windows are destroyed and recreated so there is no need
         // to handle the case where the window is on a different display.
         currentDisplayZOrder.remove(window);
         currentDisplayZOrder.add(window);
+        mPromotionCount++;
 
         if (DEBUG_LOGGING) {
             logZOrder();
         }
+        return true;
+    }
+
+    private static boolean isWindowAtTop(
+            ActivityWindowAndroid window, List<ActivityWindowAndroid> currentDisplayZOrder) {
+        return !currentDisplayZOrder.isEmpty()
+                && currentDisplayZOrder.get(currentDisplayZOrder.size() - 1) == window;
     }
 
     private void logZOrder() {
@@ -213,10 +233,14 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
         RecordHistogram.recordCount100Histogram(getMetricName("DisplaysCount"), mZOrder.size());
     }
 
-    private void recordFocusChangedCount() {
-        RecordHistogram.recordCount100Histogram(
-                getMetricName("FocusChangedCount"), mFocusChangedCount);
-        mFocusChangedCount = 0;
+    private void recordResumedCount() {
+        RecordHistogram.recordCount100Histogram(getMetricName("ResumedCount"), mResumedCount);
+        mResumedCount = 0;
+    }
+
+    private void recordPromotionCount() {
+        RecordHistogram.recordCount100Histogram(getMetricName("PromotionCount"), mPromotionCount);
+        mPromotionCount = 0;
     }
 
     private static String getMetricName(String metricName) {

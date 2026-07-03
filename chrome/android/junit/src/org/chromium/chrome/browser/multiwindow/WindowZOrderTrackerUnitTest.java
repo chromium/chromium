@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -24,10 +27,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
 import java.lang.ref.WeakReference;
@@ -54,8 +57,6 @@ public class WindowZOrderTrackerUnitTest {
 
     @Before
     public void setUp() {
-        ApplicationStatus.onStateChangeForTesting(mActivity1, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(mActivity2, ActivityState.CREATED);
         mTracker = new WindowZOrderTracker(mCallback);
 
         when(mWindowAndroid1.getActivity()).thenReturn(new WeakReference<>(mActivity1));
@@ -67,6 +68,13 @@ public class WindowZOrderTrackerUnitTest {
         when(mWindowAndroid2.getDisplay()).thenReturn(mDisplay2);
         when(mWindowAndroid2.getActivityState()).thenReturn(ActivityState.RESUMED);
         when(mDisplay2.getDisplayId()).thenReturn(DISPLAY_ID_2);
+    }
+
+    private void simulateTopResumed(ActivityWindowAndroid window, boolean isTopResumed) {
+        ArgumentCaptor<WindowAndroid.ActivityStateObserver> captor =
+                ArgumentCaptor.forClass(WindowAndroid.ActivityStateObserver.class);
+        verify(window, atLeastOnce()).addActivityStateObserver(captor.capture());
+        captor.getValue().onActivityTopResumedChanged(isTopResumed);
     }
 
     @Test
@@ -91,17 +99,35 @@ public class WindowZOrderTrackerUnitTest {
     }
 
     @Test
-    public void testOnWindowFocusChangedRunsCallback() {
+    public void testOnTopResumedChangedRunsCallback() {
+        when(mWindowAndroid2.getDisplay()).thenReturn(mDisplay1);
         mTracker.track(mWindowAndroid1);
+        mTracker.track(mWindowAndroid2);
 
-        // Simulate callback from ApplicationStatus
-        mTracker.onWindowFocusChanged(mActivity1, true);
+        simulateTopResumed(mWindowAndroid2, true);
 
         SparseArray<List<ActivityWindowAndroid>> zOrder = mTracker.getWindowZOrder();
         assertEquals(1, zOrder.size());
         List<ActivityWindowAndroid> display1Windows = zOrder.get(DISPLAY_ID_1);
-        assertEquals(1, display1Windows.size());
-        assertEquals(mWindowAndroid1, display1Windows.get(0));
+        assertEquals(2, display1Windows.size());
+        assertEquals(mWindowAndroid2, display1Windows.get(1));
+
+        verify(mCallback).run();
+    }
+
+    @Test
+    public void testTrackAlreadyTopResumedWindowRunsCallback() {
+        when(mWindowAndroid2.getDisplay()).thenReturn(mDisplay1);
+        mTracker.track(mWindowAndroid1);
+
+        when(mWindowAndroid2.isTopResumedActivity()).thenReturn(true);
+        mTracker.track(mWindowAndroid2);
+
+        SparseArray<List<ActivityWindowAndroid>> zOrder = mTracker.getWindowZOrder();
+        assertEquals(1, zOrder.size());
+        List<ActivityWindowAndroid> display1Windows = zOrder.get(DISPLAY_ID_1);
+        assertEquals(2, display1Windows.size());
+        assertEquals(mWindowAndroid2, display1Windows.get(1));
 
         verify(mCallback).run();
     }
@@ -119,26 +145,38 @@ public class WindowZOrderTrackerUnitTest {
         assertEquals(mWindowAndroid2, zOrder.get(0));
         assertEquals(mWindowAndroid1, zOrder.get(1));
 
-        // Focus activity 1
-        mTracker.onWindowFocusChanged(mActivity1, true);
+        // Focus activity 1 (already at top, should be no-op)
+        simulateTopResumed(mWindowAndroid1, true);
         zOrder = mTracker.getWindowZOrder().get(DISPLAY_ID_1);
         assertEquals(2, zOrder.size());
         assertEquals(mWindowAndroid2, zOrder.get(0));
         assertEquals(mWindowAndroid1, zOrder.get(1));
 
         // Focus activity 2
-        mTracker.onWindowFocusChanged(mActivity2, true);
+        simulateTopResumed(mWindowAndroid2, true);
         zOrder = mTracker.getWindowZOrder().get(DISPLAY_ID_1);
         assertEquals(2, zOrder.size());
         assertEquals(mWindowAndroid1, zOrder.get(0));
         assertEquals(mWindowAndroid2, zOrder.get(1));
 
         // Focus activity 1 again
-        mTracker.onWindowFocusChanged(mActivity1, true);
+        simulateTopResumed(mWindowAndroid1, true);
         zOrder = mTracker.getWindowZOrder().get(DISPLAY_ID_1);
         assertEquals(2, zOrder.size());
         assertEquals(mWindowAndroid2, zOrder.get(0));
         assertEquals(mWindowAndroid1, zOrder.get(1));
+    }
+
+    @Test
+    public void testRedundantPromotionIgnored() {
+        when(mWindowAndroid2.getDisplay()).thenReturn(mDisplay1);
+        mTracker.track(mWindowAndroid1);
+        mTracker.track(mWindowAndroid2);
+
+        // window 1 is at the top (index 1). Calling top resumed on it should not run callback.
+        simulateTopResumed(mWindowAndroid1, true);
+
+        verify(mCallback, never()).run();
     }
 
     @Test
@@ -165,7 +203,7 @@ public class WindowZOrderTrackerUnitTest {
         mTracker.track(mWindowAndroid2);
 
         // Focus activity 1 so mWindowAndroid1 is on top (index 1)
-        mTracker.onWindowFocusChanged(mActivity1, true);
+        simulateTopResumed(mWindowAndroid1, true);
 
         // Verify active z-order
         List<ActivityWindowAndroid> zOrder = mTracker.getWindowZOrder().get(DISPLAY_ID_1);
@@ -222,8 +260,8 @@ public class WindowZOrderTrackerUnitTest {
         mTracker.track(mWindowAndroid1); // Display 1
         mTracker.track(mWindowAndroid2); // Display 2 (setup in setUp)
 
-        mTracker.onWindowFocusChanged(mActivity1, true);
-        mTracker.onWindowFocusChanged(mActivity2, true);
+        simulateTopResumed(mWindowAndroid1, true);
+        simulateTopResumed(mWindowAndroid2, true);
 
         List<ActivityWindowAndroid> zOrder1 = mTracker.getWindowZOrder().get(DISPLAY_ID_1);
         assertEquals(1, zOrder1.size());
@@ -235,9 +273,9 @@ public class WindowZOrderTrackerUnitTest {
     }
 
     @Test
-    public void testIgnoreFocusLost() {
+    public void testIgnoreTopResumedFalse() {
         mTracker.track(mWindowAndroid1);
-        mTracker.onWindowFocusChanged(mActivity1, false);
+        simulateTopResumed(mWindowAndroid1, false);
 
         // Should not have promoted or run callback (it's already in z-order
         // at index 0 due to tracking).
@@ -248,28 +286,33 @@ public class WindowZOrderTrackerUnitTest {
     }
 
     @Test
-    public void testOnWindowFocusChangedUntrackedActivity() {
-        mTracker.onWindowFocusChanged(mActivity1, true);
-
-        List<ActivityWindowAndroid> zOrder = mTracker.getWindowZOrder().get(DISPLAY_ID_1);
-        assertTrue(zOrder == null || zOrder.isEmpty());
-        verify(mCallback, never()).run();
-    }
-
-    @Test
     public void testPeriodicMetrics() {
+        Activity activity3 = mock(Activity.class);
+        ActivityWindowAndroid window3 = mock(ActivityWindowAndroid.class);
+        when(window3.getActivity()).thenReturn(new WeakReference<>(activity3));
+        when(window3.getDisplay()).thenReturn(mDisplay1);
+        when(window3.getActivityState()).thenReturn(ActivityState.RESUMED);
+
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.MultiWindow.WindowZOrder.TrackedWindowsCount", 2)
+                        .expectIntRecord("Android.MultiWindow.WindowZOrder.TrackedWindowsCount", 3)
                         .expectIntRecord("Android.MultiWindow.WindowZOrder.DisplaysCount", 2)
-                        .expectIntRecord("Android.MultiWindow.WindowZOrder.FocusChangedCount", 2)
+                        .expectIntRecord("Android.MultiWindow.WindowZOrder.PromotionCount", 2)
+                        .expectIntRecord("Android.MultiWindow.WindowZOrder.ResumedCount", 3)
                         .build();
 
-        mTracker.track(mWindowAndroid1);
-        mTracker.onWindowFocusChanged(mActivity1, true);
+        mTracker.track(mWindowAndroid1); // on display 1 (top)
+        mTracker.track(window3); // on display 1 (bottom)
+        simulateTopResumed(
+                window3, true); // promotes window3 (resumed count = 1, promotion count = 1)
+        simulateTopResumed(
+                mWindowAndroid1, true); // promotes window1 (resumed count = 2, promotion count = 2)
 
-        mTracker.track(mWindowAndroid2);
-        mTracker.onWindowFocusChanged(mActivity2, true);
+        mTracker.track(mWindowAndroid2); // on display 2
+        simulateTopResumed(
+                mWindowAndroid2,
+                true); // promotes window2 (resumed count = 3, promotion count = 2 ignored because
+        // it was already top)
 
         ShadowLooper.idleMainLooper(5, TimeUnit.MINUTES);
 
@@ -282,7 +325,8 @@ public class WindowZOrderTrackerUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Android.MultiWindow.WindowZOrder.TrackedWindowsCount", 0)
                         .expectIntRecord("Android.MultiWindow.WindowZOrder.DisplaysCount", 0)
-                        .expectIntRecord("Android.MultiWindow.WindowZOrder.FocusChangedCount", 0)
+                        .expectIntRecord("Android.MultiWindow.WindowZOrder.PromotionCount", 0)
+                        .expectIntRecord("Android.MultiWindow.WindowZOrder.ResumedCount", 0)
                         .build();
 
         ShadowLooper.idleMainLooper(5, TimeUnit.MINUTES);
