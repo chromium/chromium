@@ -117,6 +117,9 @@ class AtMemoryMetricsRecorder {
   // query submission.
   std::optional<bool> suggestion_accepted_;
 
+  // Counts the number of queries submitted during this session.
+  size_t query_count_ = 0;
+
   bool was_filled_ = false;
   // The start time of the asynchronous fetch/unmask process.
   std::optional<base::TimeTicks> fetch_pii_start_time_;

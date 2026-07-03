@@ -165,6 +165,54 @@ TEST_F(AtMemoryMetricsRecorderTest,
                                       false, 1);
 }
 
+// Tests that QueryCountBeforeAcceptance logs 1 if only one query was submitted
+// before acceptance.
+TEST_F(AtMemoryMetricsRecorderTest, QueryCountBeforeAcceptance_OneQuery) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnQuerySubmitted(u"query 1");
+    metrics.OnSuggestionAccepted();
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.QueryCountBeforeAcceptance", 1, 1);
+}
+
+// Tests that QueryCountBeforeAcceptance logs the correct count if multiple
+// queries were submitted before acceptance.
+TEST_F(AtMemoryMetricsRecorderTest,
+       QueryCountBeforeAcceptance_MultipleQueries) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnQuerySubmitted(u"query 1");
+    metrics.OnQuerySubmitted(u"query 2");
+    metrics.OnSuggestionAccepted();
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.QueryCountBeforeAcceptance", 2, 1);
+}
+
+// Tests that QueryCountBeforeAcceptance is not logged if no suggestion was
+// accepted.
+TEST_F(AtMemoryMetricsRecorderTest, QueryCountBeforeAcceptance_NoAcceptance) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnQuerySubmitted(u"query 1");
+    metrics.OnQuerySubmitted(u"query 2");
+    // No suggestion accepted.
+  }
+
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.AtMemory.QueryCountBeforeAcceptance", 0);
+}
+
 // Tests that `MarkFilled` correctly logs whether a suggestion was filled.
 TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
   {

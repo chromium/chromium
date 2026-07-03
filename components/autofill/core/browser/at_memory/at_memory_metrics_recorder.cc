@@ -66,6 +66,8 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
                               query_submitted_);
     MaybeLogSuggestionAccepted();
     if (suggestion_accepted_.value_or(false)) {
+      base::UmaHistogramCounts100(
+          "Autofill.AtMemory.QueryCountBeforeAcceptance", query_count_);
       // TODO(crbug.com/530438524): Fix and rename.
       base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionFilled",
                                 was_filled_);
@@ -120,6 +122,7 @@ void AtMemoryMetricsRecorder::OnPopupShown(
 void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string query) {
   MaybeLogSuggestionAccepted();
   suggestion_accepted_ = false;
+  ++query_count_;
 
   query_to_suggestions_shown_timer_.emplace();
 
