@@ -80,8 +80,8 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
   if (loading_notifier) {
     url_loading_observation_.Observe(loading_notifier);
   }
+  StartObserving(browser_);
   if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
-    web_state_list_observation_.Observe(browser_->GetWebStateList());
     if (web::WebState* web_state =
             browser_->GetWebStateList()->GetActiveWebState()) {
       web_state_observation_.Observe(web_state);
@@ -92,9 +92,12 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
   }
 }
 
-SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
+SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() {
+  StopObserving();
+}
 
 void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
+  StopObserving();
   url_loading_observation_.Reset();
   model_observation_.Reset();
   browser_observation_.Reset();
@@ -151,9 +154,6 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
       web_state_observation_.Observe(pending_web_state_.get());
     }
 
-    if (!web_state_list_observation_.IsObserving()) {
-      web_state_list_observation_.Observe(browser_->GetWebStateList());
-    }
 
     // Pick the most recent entry since only one Infobar can be shown at a time.
     // TODO(crbug.com/40619532): Create a function that returns the most
@@ -191,45 +191,43 @@ void SendTabToSelfBrowserAgent::DismissEntries(
   }
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - TabsDependencyInstaller
 
-void SendTabToSelfBrowserAgent::WebStateListDidChange(
-    WebStateList* web_state_list,
-    const WebStateListChange& change,
-    const WebStateListStatus& status) {
-  if (change.type() == WebStateListChange::Type::kDetach &&
-      base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
-    const WebStateListChangeDetach& detach_change =
-        static_cast<const WebStateListChangeDetach&>(change);
+void SendTabToSelfBrowserAgent::OnWebStateInserted(web::WebState* web_state) {}
+
+void SendTabToSelfBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {}
+
+void SendTabToSelfBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
+  if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
     // If the tab is being closed explicitly by the user (and not due to browser
     // shutdown, tab strip destruction, or tab dragging between windows), log
     // the abandonment metric.
-    if (detach_change.is_user_action() && detach_change.is_closing()) {
-      web::WebState* detached_web_state = detach_change.detached_web_state();
-      SendTabToSelfTabCardLabelData* label_data =
-          SendTabToSelfTabCardLabelData::FromWebState(detached_web_state);
-      if (label_data) {
-        label_data->WebStateClosedByUser(detached_web_state);
-      }
+    SendTabToSelfTabCardLabelData* label_data =
+        SendTabToSelfTabCardLabelData::FromWebState(web_state);
+    if (label_data) {
+      label_data->WebStateClosedByUser(web_state);
     }
   }
+}
 
-  // The active WebState can be null if the user close the last tab in the tab
-  // picker.
-  if (!status.active_web_state_change() || !status.new_active_web_state) {
+void SendTabToSelfBrowserAgent::OnActiveWebStateChanged(
+    web::WebState* old_active,
+    web::WebState* new_active) {
+  if (!new_active) {
     return;
   }
 
   if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
     web_state_observation_.Reset();
-    web_state_observation_.Observe(status.new_active_web_state);
+    web_state_observation_.Observe(new_active);
     CheckAndOpenPendingEntriesIfBrowserVisible();
     return;
   }
 
-  DCHECK(pending_entry_);
-  DisplayInfoBar(status.new_active_web_state, pending_entry_);
-  CleanUpObserversAndVariables();
+  if (pending_entry_) {
+    DisplayInfoBar(new_active, pending_entry_);
+    CleanUpObserversAndVariables();
+  }
 }
 
 #pragma mark - WebStateObserver
@@ -283,8 +281,6 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
 
 void SendTabToSelfBrowserAgent::CleanUpObserversAndVariables() {
   pending_entry_ = nullptr;
-
-  web_state_list_observation_.Reset();
 
   web_state_observation_.Reset();
   pending_web_state_ = nullptr;

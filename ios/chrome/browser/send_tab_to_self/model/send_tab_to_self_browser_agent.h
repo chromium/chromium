@@ -16,7 +16,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -38,7 +38,7 @@ class SendTabToSelfBrowserAgent
     : public BrowserUserData<SendTabToSelfBrowserAgent>,
       public send_tab_to_self::SendTabToSelfModelObserver,
       public send_tab_to_self::ReceivingUiHandler,
-      public WebStateListObserver,
+      public TabsDependencyInstaller,
       public web::WebStateObserver,
       public UrlLoadingObserver,
       public BrowserObserver {
@@ -61,10 +61,12 @@ class SendTabToSelfBrowserAgent
       override;
   void DismissEntries(base::span<const std::string> guids) override;
 
-  // WebStateListObserver::
-  void WebStateListDidChange(WebStateList* web_state_list,
-                             const WebStateListChange& change,
-                             const WebStateListStatus& status) override;
+  // TabsDependencyInstaller::
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
   // WebStateObserver::
   void WasShown(web::WebState* web_state) override;
@@ -108,9 +110,6 @@ class SendTabToSelfBrowserAgent
 
   base::ScopedObservation<UrlLoadingNotifierBrowserAgent, UrlLoadingObserver>
       url_loading_observation_{this};
-
-  base::ScopedObservation<WebStateList, WebStateListObserver>
-      web_state_list_observation_{this};
 
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
