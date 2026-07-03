@@ -26788,6 +26788,21 @@
             ]
         }
     ],
+    "WebViewDisableClassPreloading": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "WebViewAwClassPreloader"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewEarlyStartupTracing": [
         {
             "platforms": [
