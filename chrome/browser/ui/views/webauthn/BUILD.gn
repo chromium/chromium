@@ -147,3 +147,59 @@ source_set("webauthn") {
     frameworks = [ "LocalAuthenticationEmbeddedUI.framework" ]
   }
 }
+
+source_set("test_support") {
+  testonly = true
+  public = [ "authenticator_request_dialog_view_test_api.h" ]
+  sources = [ "authenticator_request_dialog_view_test_api.cc" ]
+  public_deps = [ ":webauthn" ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "passkey_deleted_confirmation_view_unittest.cc",
+    "passkey_not_accepted_bubble_view_unittest.cc",
+    "passkey_saved_confirmation_view_unittest.cc",
+    "passkey_updated_confirmation_view_unittest.cc",
+    "passkey_upgrade_bubble_view_unittest.cc",
+    "pin_textfield_unittest.cc",
+    "ring_progress_bar_unittest.cc",
+  ]
+
+  deps = [
+    ":webauthn",
+    "//base",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/passwords:test_support",
+    "//components/password_manager/core/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/accessibility",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "authenticator_dialog_view_browsertest.cc" ]
+  deps = [
+    ":test_support",
+    ":webauthn",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/test:dialog",
+    "//chrome/browser/ui/webauthn",
+    "//chrome/browser/webauthn",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+}

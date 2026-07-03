@@ -5807,12 +5807,6 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/ui/extensions:test_support",
       "//chrome/browser/ui/views/controls",
-
-      # TODO(crbug.com/353332589): Depend on the views/webauthn production
-      # target directly while the webauthn test API helper (test_api) still
-      # lives here; it will move to //chrome/browser/ui/views/webauthn test
-      # targets once that directory's modularization is finished.
-      "//chrome/browser/ui/views/webauthn",
       "//components/constrained_window",
       "//components/webauthn/content/browser",
       "//ui/views:test_support",
@@ -5826,8 +5820,6 @@ static_library("test_support") {
       "views/payments/test_secure_payment_confirmation_payment_request_delegate.h",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.cc",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h",
-      "views/webauthn/authenticator_request_dialog_view_test_api.cc",
-      "views/webauthn/authenticator_request_dialog_view_test_api.h",
     ]
     if (use_aura) {
       sources += [ "views/extensions/extension_action_test_helper_aura.cc" ]
