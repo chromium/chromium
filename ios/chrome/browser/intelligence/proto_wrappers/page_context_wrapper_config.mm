@@ -26,7 +26,8 @@ PageContextWrapperConfig::PageContextWrapperConfig(
     bool attempt_paid_content_json_fixing,
     bool extract_autofill,
     bool extract_autofill_credit_card_redactions,
-    bool include_sensitive_payments_for_redaction)
+    bool include_sensitive_payments_for_redaction,
+    bool block_unsafe_pages)
     : use_refactored_extractor_(use_refactored_extractor),
       graft_cross_origin_frame_content_(graft_cross_origin_frame_content),
       use_rich_extraction_(use_rich_extraction),
@@ -37,7 +38,8 @@ PageContextWrapperConfig::PageContextWrapperConfig(
       extract_autofill_credit_card_redactions_(
           extract_autofill_credit_card_redactions),
       include_sensitive_payments_for_redaction_(
-          include_sensitive_payments_for_redaction) {}
+          include_sensitive_payments_for_redaction),
+      block_unsafe_pages_(block_unsafe_pages) {}
 
 bool PageContextWrapperConfig::use_refactored_extractor() const {
   return use_refactored_extractor_;
@@ -93,6 +95,10 @@ bool PageContextWrapperConfig::include_sensitive_payments_for_redaction()
   return include_sensitive_payments_for_redaction_;
 }
 
+bool PageContextWrapperConfig::block_unsafe_pages() const {
+  return block_unsafe_pages_;
+}
+
 PageContextWrapperConfigBuilder::PageContextWrapperConfigBuilder() {
   use_refactored_extractor_ = IsPageContextExtractorRefactoredEnabled();
   graft_cross_origin_frame_content_ = false;
@@ -103,6 +109,7 @@ PageContextWrapperConfigBuilder::PageContextWrapperConfigBuilder() {
   extract_autofill_ = false;
   extract_autofill_credit_card_redactions_ = false;
   include_sensitive_payments_for_redaction_ = false;
+  block_unsafe_pages_ = true;
 }
 
 PageContextWrapperConfigBuilder::~PageContextWrapperConfigBuilder() = default;
@@ -171,11 +178,17 @@ PageContextWrapperConfigBuilder::SetIncludeSensitivePaymentsForRedaction(
   return *this;
 }
 
+PageContextWrapperConfigBuilder&
+PageContextWrapperConfigBuilder::SetBlockUnsafePages(bool block_unsafe_pages) {
+  block_unsafe_pages_ = block_unsafe_pages;
+  return *this;
+}
+
 PageContextWrapperConfig PageContextWrapperConfigBuilder::Build() const {
   return PageContextWrapperConfig(
       use_refactored_extractor_, graft_cross_origin_frame_content_,
       use_rich_extraction_, use_rich_extraction_with_actionable_,
       extract_paid_content_, attempt_paid_content_json_fixing_,
       extract_autofill_, extract_autofill_credit_card_redactions_,
-      include_sensitive_payments_for_redaction_);
+      include_sensitive_payments_for_redaction_, block_unsafe_pages_);
 }

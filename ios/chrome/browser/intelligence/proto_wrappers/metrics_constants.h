@@ -22,6 +22,7 @@ extern const char kPageContextHistogramFailureStatus[];
 extern const char kPageContextHistogramTimeoutStatus[];
 extern const char kPageContextHistogramPageProtectedStatus[];
 extern const char kPageContextHistogramNotExtractableStatus[];
+extern const char kPageContextHistogramPageUnsafeStatus[];
 
 extern const char kPageContextAPCConfigVariantInnerText[];
 extern const char kPageContextAPCConfigVariantRich[];

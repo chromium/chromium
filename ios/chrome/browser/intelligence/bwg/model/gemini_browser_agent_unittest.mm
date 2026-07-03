@@ -55,6 +55,7 @@
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -124,6 +125,8 @@ class GeminiBrowserAgentTest : public PlatformTest {
     web_state_ = web_state.get();
     web_state->SetBrowserState(profile_);
     web_state->SetCurrentURL(GURL("chrome://newtab/"));
+    web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
     GeminiTabHelper::CreateForWebState(web_state.get());
     WebViewProxyTabHelper::CreateForWebState(web_state.get());
     gemini_tab_helper_ = GeminiTabHelper::FromWebState(web_state.get());

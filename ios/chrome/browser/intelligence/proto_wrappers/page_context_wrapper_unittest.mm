@@ -53,6 +53,7 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
@@ -910,6 +911,41 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_NotExtractable) {
   ASSERT_FALSE(captured_response.has_value());
   EXPECT_EQ(captured_response.error(),
             PageContextWrapperError::kPageNotExtractableError);
+}
+
+// Tests that the wrapper correctly blocks extraction on unsafe pages when
+// `block_unsafe_pages` is enabled in config.
+TEST_P(PageContextWrapperTest, PopulatePageContext_UnsafePageBlocked) {
+  page_helper_->StartAllServers();
+  GURL dangerous_url = test_server_.GetURL("/dangerous.html");
+  web::test::LoadHtml(@"<html><body>Safe content</body></html>", dangerous_url,
+                      web_state());
+
+  SafeBrowsingUrlAllowList::CreateForWebState(web_state());
+  SafeBrowsingUrlAllowList::FromWebState(web_state())
+      ->AddPendingUnsafeNavigationDecision(
+          dangerous_url,
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRefactoredExtractor(IsRefactored())
+          .Build();
+
+  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
+  PageContextWrapper* wrapper =
+      [[PageContextWrapper alloc] initWithWebState:web_state()
+                                            config:config
+                                completionCallback:future.GetCallback()];
+  [wrapper setShouldGetAnnotatedPageContent:YES];
+  [wrapper populatePageContextFieldsAsync];
+
+  PageContextWrapperCallbackResponse captured_response = future.Take();
+
+  // Verify that the callback was called with a kPageUnsafeError error.
+  ASSERT_FALSE(captured_response.has_value());
+  EXPECT_EQ(captured_response.error(),
+            PageContextWrapperError::kPageUnsafeError);
 }
 
 // Tests that the wrapper correctly handles an unextractable page due to MIME

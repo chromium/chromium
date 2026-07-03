@@ -91,6 +91,8 @@ GeminiPageContextComputationStateFromPageContextWrapperError(
   switch (error) {
     case PageContextWrapperError::kForceDetachError:
       return ios::provider::GeminiPageContextComputationState::kProtected;
+    case PageContextWrapperError::kPageUnsafeError:
+      return ios::provider::GeminiPageContextComputationState::kBlocked;
     case PageContextWrapperError::kPageNotExtractableError:
       return ios::provider::GeminiPageContextComputationState::kError;
     default:

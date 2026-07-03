@@ -21,6 +21,7 @@ const char kPageContextHistogramFailureStatus[] = ".Failure";
 const char kPageContextHistogramTimeoutStatus[] = ".Timeout";
 const char kPageContextHistogramPageProtectedStatus[] = ".PageProtected";
 const char kPageContextHistogramNotExtractableStatus[] = ".NotExtractable";
+const char kPageContextHistogramPageUnsafeStatus[] = ".PageUnsafe";
 
 const char kPageContextAPCConfigVariantInnerText[] = ".InnerTextOnly";
 const char kPageContextAPCConfigVariantRich[] = ".Rich";

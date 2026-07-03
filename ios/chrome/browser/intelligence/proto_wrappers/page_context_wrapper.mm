@@ -35,6 +35,8 @@
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/security_state/core/security_state.h"
+#import "components/security_state/ios/security_state_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/annotated_page_content_extraction_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
@@ -224,6 +226,9 @@ result.links = linksArray;
 
   // Whether the PageContext is not extractable.
   BOOL _notExtractable;
+
+  // Whether the PageContext was blocked because it's an unsafe/insecure page.
+  BOOL _unsafePageBlocked;
 
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the PageContext proto to the callback's handler.
@@ -430,6 +435,14 @@ result.links = linksArray;
 
   if (!CanExtractPageContextForWebState(_webState.get())) {
     _notExtractable = YES;
+    [self asyncWorkCompletedForPageContext];
+    return;
+  }
+
+  if (_config->block_unsafe_pages() && _webState->GetNavigationManager() &&
+      security_state::GetSecurityLevelForWebState(_webState.get()) ==
+          security_state::SecurityLevel::DANGEROUS) {
+    _unsafePageBlocked = YES;
     [self asyncWorkCompletedForPageContext];
     return;
   }
@@ -825,6 +838,9 @@ result.links = linksArray;
     response =
         base::unexpected(PageContextWrapperError::kPageNotExtractableError);
     completionStatus = PageContextCompletionStatus::kNotExtractable;
+  } else if (_unsafePageBlocked) {
+    response = base::unexpected(PageContextWrapperError::kPageUnsafeError);
+    completionStatus = PageContextCompletionStatus::kPageUnsafe;
   } else if (_forceDetachPageContext) {
     response = base::unexpected(PageContextWrapperError::kForceDetachError);
     completionStatus = PageContextCompletionStatus::kProtected;

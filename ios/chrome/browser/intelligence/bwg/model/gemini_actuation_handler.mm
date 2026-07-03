@@ -79,6 +79,7 @@ TabObservationResultFromPageContextWrapperError(PageContextWrapperError error) {
     case PageContextWrapperError::kPDFDataError:
     case PageContextWrapperError::kForceDetachError:
     case PageContextWrapperError::kInnerTextError:
+    case PageContextWrapperError::kPageUnsafeError:
       return optimization_guide::proto::TabObservation::
           TAB_OBSERVATION_FETCH_ERROR;
 

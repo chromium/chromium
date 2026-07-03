@@ -159,6 +159,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Failure"/>
   <variant name="NotExtractable"/>
   <variant name="PageProtected"/>
+  <variant name="PageUnsafe"/>
   <variant name="Success"/>
   <variant name="Timeout"/>
 </variants>

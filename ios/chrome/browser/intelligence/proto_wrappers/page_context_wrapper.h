@@ -41,6 +41,8 @@ enum class PageContextWrapperError {
   kInnerTextError,
   // The Page Context is not extractable (e.g. unsupported MIME type or scheme).
   kPageNotExtractableError,
+  // The page was blocked because it is unsafe/insecure.
+  kPageUnsafeError,
 };
 
 using PageContextWrapperCallbackResponse =

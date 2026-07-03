@@ -55,6 +55,8 @@ const char* PageContextCompletionStatusToString(
       return kPageContextHistogramTimeoutStatus;
     case PageContextCompletionStatus::kNotExtractable:
       return kPageContextHistogramNotExtractableStatus;
+    case PageContextCompletionStatus::kPageUnsafe:
+      return kPageContextHistogramPageUnsafeStatus;
   }
 }
 

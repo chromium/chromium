@@ -39,6 +39,8 @@ enum class PageContextCompletionStatus {
   kTimeout,
   // PageContext is not extractable (e.g. unsupported MIME type or scheme).
   kNotExtractable,
+  // PageContext blocked because the page was unsafe.
+  kPageUnsafe,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:PageContextStatusVariants)
 

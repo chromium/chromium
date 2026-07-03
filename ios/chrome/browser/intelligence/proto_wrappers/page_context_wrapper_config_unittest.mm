@@ -24,6 +24,7 @@ TEST_F(PageContextWrapperConfigTest, BuilderDefaults_FlagsDisabled) {
   EXPECT_FALSE(config.graft_cross_origin_frame_content());
   EXPECT_FALSE(config.use_rich_extraction());
   EXPECT_FALSE(config.use_rich_extraction_with_actionable());
+  EXPECT_TRUE(config.block_unsafe_pages());
 }
 
 // Tests that when the refactored extractor flag is enabled, it's reflected in
