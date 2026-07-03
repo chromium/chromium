@@ -9,6 +9,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -76,6 +79,7 @@ public class SigninManagerImplTest {
 
     @Mock private ExternalAuthUtils mExternalAuthUtils;
     @Mock private SigninManager.SignInStateObserver mSignInStateObserver;
+    @Mock private SigninManagerImpl.Natives mNativeMock;
 
     private SigninManager mSigninManager;
     private IdentityManagerImpl mIdentityManager;
@@ -129,6 +133,23 @@ public class SigninManagerImplTest {
 
         // The primary account is now present and consented to sign in.
         assertNotNull(mSigninTestRule.getPrimaryAccount());
+    }
+
+    @Test
+    @MediumTest
+    public void testSetUninstallExtensionsOnAccountRemoved() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        SigninManagerImplJni.setInstanceForTesting(mNativeMock);
+
+        verify(mNativeMock, never())
+                .setUninstallAccountExtensionsOnSignout(anyLong(), anyBoolean());
+
+        // Removing the account from the device should trigger onAccountsChanged() which sets the
+        // configuration for extensions to be uninstalled.
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        verify(mNativeMock).setUninstallAccountExtensionsOnSignout(anyLong(), eq(true));
     }
 
     @Test

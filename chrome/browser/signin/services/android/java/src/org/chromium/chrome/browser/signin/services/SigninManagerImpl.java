@@ -175,6 +175,10 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             // Re-check whether there's still a primary account after the current operation.
             runAfterOperationInProgress(this::onAccountsChanged);
         } else {
+            // When the account is removed from the device, we should also uninstall its extensions.
+            SigninManagerImplJni.get()
+                    .setUninstallAccountExtensionsOnSignout(mNativeSigninManagerAndroid, true);
+
             // Sign out if the current primary account is no longer on the device.
             // {@link #signOut} will trigger the re-seeding in this case.
             signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
