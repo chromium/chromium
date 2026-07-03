@@ -86,15 +86,18 @@ void GapSegmentStateAggregator::UpdateGapStateFor(
     wtf_size_t track_index,
     const GridSpan& secondary_span,
     CellState cell_state) {
-  // Initialize the cell states for this track if not already present.
-  if (track_to_cell_states_.find(track_index) == track_to_cell_states_.end()) {
-    track_to_cell_states_.insert(track_index, CellStates(cell_count_, kEmpty));
+  // Look up the track's cell states with a single hash lookup, initializing
+  // them to empty only when this is a newly inserted entry. Reusing the
+  // returned reference also avoids re-looking-up the key on every iteration.
+  auto add_result = track_to_cell_states_.insert(track_index, CellStates());
+  CellStates& cell_states = add_result.stored_value->value;
+  if (add_result.is_new_entry) {
+    cell_states = CellStates(cell_count_, kEmpty);
   }
 
   for (wtf_size_t i = secondary_span.StartLine(); i < secondary_span.EndLine();
        ++i) {
-    auto cell_it = track_to_cell_states_.find(track_index);
-    cell_it->value[i] = cell_state;
+    cell_states[i] = cell_state;
   }
 }
 

@@ -920,8 +920,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
 
   for (auto& candidate : candidates) {
     const LayoutInline* inline_container = candidate.InlineContainer();
-    if (inline_container &&
-        !inline_container_fragments.Contains(inline_container)) {
+    if (inline_container) {
       InlineContainingBlockUtils::InlineContainingBlockGeometry
           inline_geometry = {};
       inline_container_fragments.insert(inline_container, inline_geometry);
@@ -974,9 +973,9 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
           descendant.InlineContainerInfo().RelativeOffset();
       auto it = inline_containing_blocks.find(containing_block);
       if (it != inline_containing_blocks.end()) {
-        if (!it->value.map.Contains(inline_container)) {
-          it->value.map.insert(inline_container, inline_geometry);
-        }
+        // insert() leaves any existing entry untouched, so the prior
+        // Contains() guard was a redundant second lookup.
+        it->value.map.insert(inline_container, inline_geometry);
         continue;
       }
       InlineContainingBlockUtils::InlineContainingBlockMap inline_container_map;

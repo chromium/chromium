@@ -49,9 +49,9 @@ void LayoutCustom::StyleDidChange(
 
     LayoutWorklet::DocumentDefinitionMap* document_definition_map =
         worklet->GetDocumentDefinitionMap();
-    if (document_definition_map->Contains(name)) {
-      DocumentLayoutDefinition* existing_document_definition =
-          document_definition_map->at(name);
+    auto it = document_definition_map->find(name);
+    if (it != document_definition_map->end()) {
+      DocumentLayoutDefinition* existing_document_definition = it->value;
       if (existing_document_definition->GetRegisteredDefinitionCount() ==
           LayoutWorklet::kNumGlobalScopes)
         state_ = kBlock;

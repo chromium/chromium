@@ -136,14 +136,14 @@ void LayoutWorkletGlobalScope::registerLayout(
   LayoutWorklet* layout_worklet = LayoutWorklet::From(*GetFrame()->DomWindow());
   LayoutWorklet::DocumentDefinitionMap* document_definition_map =
       layout_worklet->GetDocumentDefinitionMap();
-  if (document_definition_map->Contains(name)) {
-    DocumentLayoutDefinition* existing_document_definition =
-        document_definition_map->at(name);
+  auto it = document_definition_map->find(name);
+  if (it != document_definition_map->end()) {
+    DocumentLayoutDefinition* existing_document_definition = it->value;
     if (existing_document_definition == kInvalidDocumentLayoutDefinition)
       return;
     if (!existing_document_definition->RegisterAdditionalLayoutDefinition(
             *definition)) {
-      document_definition_map->Set(name, kInvalidDocumentLayoutDefinition);
+      it->value = kInvalidDocumentLayoutDefinition;
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           StrCat({"A class with name:'", name,
