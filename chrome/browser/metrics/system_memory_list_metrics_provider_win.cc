@@ -76,7 +76,9 @@ SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::
                                     base::TimeDelta recording_interval)
     : outer_(outer),
       sampling_interval_(sampling_interval),
-      recording_interval_(recording_interval) {}
+      recording_interval_(recording_interval) {
+  exit_signal_.declare_only_used_while_idle();
+}
 
 void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::
     SignalExit() {
