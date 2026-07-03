@@ -204,4 +204,4 @@ def GetDefaultJsonConfigPath():
 
 
 def GetR8Path():
-  return FromToolsSrcRoot('third_party', 'r8', 'lib', 'r8.jar')
+  return FromToolsSrcRoot('third_party', 'r8', 'cipd', 'lib', 'r8.jar')

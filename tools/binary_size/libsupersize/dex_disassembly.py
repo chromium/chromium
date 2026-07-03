@@ -52,10 +52,7 @@ class _CachedApkDisassembler:
           path_util.GetJavaExec(), '-cp', r8_path,
           'com.android.tools.r8.Disassemble', '--pg-map', mapping, tmp_file.name
       ]
-      try:
-        r8_output = subprocess.check_output(cmd, encoding='utf-8')
-      except subprocess.CalledProcessError:
-        logging.debug('Running R8 failed on APK: %s', apk_path)
+      r8_output = subprocess.check_output(cmd, encoding='utf-8')
 
     return r8_output
 
