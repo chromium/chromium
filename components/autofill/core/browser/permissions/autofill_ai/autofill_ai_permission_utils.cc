@@ -692,6 +692,18 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
         return false;
       }
       break;
+    case AutofillAiAction::kTypeSupportsAmbientAutofillData:
+      CHECK(entity_type) << "An entity type is required to check if an entity "
+                            "type supports ambient autofill data";
+      if (!supports_reauth &&
+          GetPersonalContextSpiiType(
+              *entity_type, EntityInstance::RecordType::kPersonalContext) ==
+              EntityInstance::PersonalContextSpiiType::kSpii &&
+          !base::FeatureList::IsEnabled(
+              features::debug::kAutofillAiDisableReauthRequirement)) {
+        return false;
+      }
+      break;
     case AutofillAiAction::kWalletDataSharingPromotion:
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
@@ -705,10 +717,8 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
-    // TODO(crbug.com/523168644): Check reauth availability.
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kShowAmbientAutofillInSettings:
-    case AutofillAiAction::kTypeSupportsAmbientAutofillData:
       break;
   }
 

@@ -200,6 +200,13 @@ void PrefetchAmbientAutofillContext(AutofillClient& client,
   if (PersonalContextAccessManager* access_manager =
           client.GetPersonalContextAccessManager()) {
     base::flat_set<EntityType> requested_types(std::from_range, relevant_types);
+    base::EraseIf(requested_types, [&](const EntityType& type) {
+      return !MayPerformAutofillAiAction(
+          client, AutofillAiAction::kTypeSupportsAmbientAutofillData, type);
+    });
+    if (requested_types.empty()) {
+      return;
+    }
     access_manager->PrefetchContext(requested_types);
   }
 }

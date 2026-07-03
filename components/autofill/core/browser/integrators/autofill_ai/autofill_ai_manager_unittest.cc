@@ -210,6 +210,9 @@ class AutofillAiManagerTest
         /*disabled_features=*/{});
     InitAutofillClient();
     CreateAutofillDriver();
+    autofill_client().set_sync_service(&sync_service_);
+    autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, true);
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             autofill_client().GetPrefs(),
@@ -220,10 +223,8 @@ class AutofillAiManagerTest
             /*strike_database=*/nullptr,
             /*variation_country_code=*/GeoIpCountryCode("US")));
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
-    autofill_client().set_sync_service(&sync_service_);
-    autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kPayments, true);
     autofill_client().set_personal_context_access_manager(&pcontext_manager_);
+    autofill_client().GetEntityDataManager()->SetReauthAvailability(true);
     manager_ = std::make_unique<AutofillAiManager>(&autofill_client(),
                                                    &strike_database_);
   }
@@ -364,6 +365,37 @@ TEST_F(AutofillAiManagerTest,
   test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
 
   EXPECT_CALL(pcontext_manager(), PrefetchContext).Times(0);
+  manager().OnAfterLoadedServerPredictions(autofill_manager());
+}
+
+// Tests that PrefetchContext only fetches non-SPII types if the client
+// doesn't support re-auth, and filters out SPII types.
+TEST_F(AutofillAiManagerTest,
+       OnAfterLoadedServerPredictions_NoReauth_FiltersOutSpiiKeepNonSpii) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kAutofillAmbientAutofill,
+        {{"ambient_autofill_eligible_tiers", "1"}}},
+       {features::debug::kAutofillAiForceOptIn, {}},
+       {features::kAutofillAiWithDataSchema, {}},
+       {features::kAutofillAiWalletFlightReservation, {}}},
+      /*disabled_features=*/{});
+  autofill_client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+  autofill_client().GetEntityDataManager()->SetReauthAvailability(false);
+
+  // PASSPORT_NUMBER is a SPII type.
+  // FLIGHT_RESERVATION_FLIGHT_NUMBER is a non-SPII type.
+  auto form_structure = std::make_unique<FormStructure>(test::GetFormData(
+      {.fields = {{.role = PASSPORT_NUMBER},
+                  {.role = FLIGHT_RESERVATION_FLIGHT_NUMBER}}}));
+  AddPredictionsToFormStructure(
+      *form_structure, {{PASSPORT_NUMBER}, {FLIGHT_RESERVATION_FLIGHT_NUMBER}});
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
+
+  EXPECT_CALL(pcontext_manager(), PrefetchContext(ElementsAre(EntityType(
+                                      EntityTypeName::kFlightReservation))));
   manager().OnAfterLoadedServerPredictions(autofill_manager());
 }
 

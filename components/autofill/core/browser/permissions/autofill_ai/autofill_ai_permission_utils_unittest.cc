@@ -578,6 +578,9 @@ TEST_P(AutofillAiMayPerformActionTest,
       !kForbiddenActions.contains(GetParam()));
 }
 TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAmbientAutofillData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::debug::kAutofillAiForceOptIn);
+
   client().set_personal_context_enablement_state(
       personal_context::PersonalContextEnablementState::kEnabled);
   for (const EntityTypeName type :
@@ -588,6 +591,23 @@ TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAmbientAutofillData) {
         EntityType(type)));
   }
   for (const EntityTypeName type : {kRedressNumber, kKnownTravelerNumber}) {
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(type)));
+  }
+
+  // Without device re-auth, SPII types (Passport, Driver's license, National ID
+  // card) are not supported, but non-SPII types (Flight reservation, Shipment,
+  // Order, Vehicle) are.
+  edm().SetReauthAvailability(false);
+  for (const EntityTypeName type :
+       {kFlightReservation, kShipment, kOrder, kVehicle}) {
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(type)));
+  }
+  for (const EntityTypeName type : {kPassport, kDriversLicense, kNationalIdCard,
+                                    kRedressNumber, kKnownTravelerNumber}) {
     EXPECT_FALSE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
         EntityType(type)));
