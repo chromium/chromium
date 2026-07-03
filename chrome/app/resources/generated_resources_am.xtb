@@ -1926,6 +1926,7 @@
 <translation id="2460150227008936698">{COUNT,plural, =0{ዛሬ ጊዜው ያበቃል}=1{ነገ ጊዜው ያበቃል}one{በ# ቀን ውስጥ ጊዜው ያበቃል}other{በ# ቀናት ውስጥ ጊዜው ያበቃል}}</translation>
 <translation id="2460482211073772897">በሌሎች አቃፊዎች ውስጥ</translation>
 <translation id="2460826998961521840">በGoogle መለያዎ ውስጥ የተቀመጡ የይለፍ ቁልፎችን ለመጠቀም</translation>
+<translation id="2461457574123041923">ከዚህ ጣቢያ ከወጡ ተግባርዎ ያበቃል። ሌሎች ጣቢያዎችን በሚጎበኙበት ጊዜ ተግባሩን እየቀጠለ ለማቆየት አዲስ ትር ይክፈቱ።</translation>
 <translation id="2461550163693930491">ጣቢያዎች የተጋሩ ትሮችን እንዲያሸበልሉ እና እንዲያጉሉ አይፍቀዱ</translation>
 <translation id="2461593638794842577">የይለፍ ቃላትዎን በዚህ መሣሪያ ላይ ብቻ ለማስቀመጥ ይህን ቅንብር ማጥፋት ይችላሉ።</translation>
 <translation id="2462550463312552298">ይህን ሰነድ አጠቃልል</translation>
@@ -2486,6 +2487,7 @@
 <translation id="2865057607286263192">የአጽንዖት ምልክቶች እና ልዩ ቁምፊዎችን ለማየት የቁልፍ ሰሌዳ ቁልፎችን ተጭነው ይያዙ። ይህ ለፊደል ቁልፎች የተደገመ የቁልፍ መጫንን ያጠፋል። የሚገኘው ለኢንግሊዝኛ (አሜሪካ) ብቻ ነው።</translation>
 <translation id="2865919525181940183">በአሁኑ ጊዜ በማያ ገጹ ላይ ያሉ የፕሮግራሞች ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="286643536820867504">ለሚደገፉ ቋንቋዎች መግለጫ ጽሁፎች በራስ-ሰር ይፈጥራል። ኦዲዮ ከመሣሪያዎ በጭራሽ አይወጣም።</translation>
+<translation id="2866504884233915828">ማከል የሚችሉት እስከ <ph name="COUNT" /> ፋይሎች ብቻ ነው</translation>
 <translation id="286674810810214575">የኃይል ምንጮች በመፈተሽ ላይ...</translation>
 <translation id="2867768963760577682">እንደተሰካ ትር ክፈት</translation>
 <translation id="2868746137289129307">ይህ ቅጥያ ጊዜው ያለፈበት እና በድርጅት መመሪያ የተሰናከለ ነው። ይበልጥ አዲስ የሆነ ስሪት ሲገኝ በራስ-ሰር ሊነቃ ይችላል።</translation>
@@ -2650,8 +2652,10 @@
 <translation id="2989805286512600854">በአዲስ ትር ክፈት</translation>
 <translation id="2990313168615879645">የGoogle መለያን አክል</translation>
 <translation id="2990375978470734995">ይህ ለውጥ እንዲተገበር የእርስዎን ውጫዊ መለዋወጫዎች እንደገና ያገናኙ።</translation>
+<translation id="2990500505358145117">የተሻሻለ ራስ-ሙላ አቋራጭን አርትዕ</translation>
 <translation id="2990583317361835189">ጣቢያዎች የእንቅስቃሴ ዳሳሾችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="2991182900092497283">እባክዎ ይህን ውሂብ የሚያወርዱበትን ምክንያት ያስገቡ፦</translation>
+<translation id="2992754757708650257">ከጣቢያው ወጥተው እና ተግባሩ ያብቃ?</translation>
 <translation id="2992931425024192067">ሁሉንም የማሳወቂያ ይዘቶች አሳይ</translation>
 <translation id="2993517869960930405">የመተግበሪያ መረጃ</translation>
 <translation id="2994804273850542871">Tier 4፦ ULTRA</translation>
@@ -2988,6 +2992,7 @@
 <translation id="3247649647204519958">ከዚህ፣ ላሉበት ጣቢያ የቅጥያ ፈቃዶችን ማየት እና ማስተዳደር ይችላሉ</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - የአውታረ መረብ ስህተት</translation>
 <translation id="3248902735035392926">ደህንነት ወሳኝ ነው። አሁን ጊዜ ወስደው <ph name="BEGIN_LINK" />ቅጥያዎችዎን ይፈትሹ<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">ለተሻሻለ ራስ-ሙላ ብጁ አቋራጭ</translation>
 <translation id="3249558306861350254">በWindows ቅንብሮችዎ ውስጥ <ph name="BEGIN_BOLD" />ነባሪ አድርግ<ph name="END_BOLD" /> ላይ ጠቅ ያድርጉ።</translation>
 <translation id="3250374026663843838">ክህሎትዎን ያስተዳድሩ</translation>
 <translation id="3251119461199395237">የፋይል ስምረት</translation>
@@ -3800,6 +3805,7 @@
 <translation id="3827548509471720579">የማሳያ ብሩህነት</translation>
 <translation id="3827774300009121996">&amp;በሙሉ ገፅ ማያ አሳይ</translation>
 <translation id="3828029223314399057">ዕልባቶች ፈልግ</translation>
+<translation id="3828454092958722155">የተሻሻለ ራስ-ሙላ አቋራጭን አጽዳ</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - ከፍተኛ የማህደረ ትውስታ አጠቃቀም - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB ፋይል ማጋራት</translation>
 <translation id="3830470485672984938">የተለየ የይለፍ ቁልፍ ይጠቀሙ</translation>
@@ -4370,6 +4376,7 @@
 <translation id="4281789858103154731">ፍጠር</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
 <translation id="4281849573951338030">የብዕር አዝራሮችን ያብጁ</translation>
+<translation id="4283635301190260296">አቀባዊ ትሮችን ሰብስብ</translation>
 <translation id="4284903252249997120">የChromeVox የማያ ገፅ አንባቢ እና ለመናገር ምረጥ</translation>
 <translation id="4285418559658561636">የይለፍ ቃልን ያዘምኑ</translation>
 <translation id="4285498937028063278">ይንቀሉ</translation>
@@ -5194,6 +5201,7 @@
 <translation id="4895799941222633551">አቋራጭ ይፍጠሩ...</translation>
 <translation id="4898913189644355814">አንድ ጣቢያ ተመራጭ ቋንቋዎን ወይም መግዛት የሚፈልጓቸውን ንጥሎች ሊያስቀምጥ ይችላል። ይህ መረጃ ለጣቢያው እና ለንዑስ ጎራዎቹ የሚገኝ ይሆናል።</translation>
 <translation id="4899052647152077033">ቀለማትን ገልብጥ</translation>
+<translation id="4899813415889597597">ከGoogle Drive መለያዎ ጋር ማገናኘት አልተቻለም</translation>
 <translation id="490031510406860025">በዚህ ጣቢያ ላይ የማይፈቀድ</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> ኸዝ - የተጠላለፈ</translation>
 <translation id="4900652253009739885">ለ«ምረጥ» የተመደበውን ብቸኛውን መቀየሪያ ማስወገድ አይቻልም። ለ<ph name="RESPONSE" /> ማንኛውንም ቁልፍ ይጫኑ።</translation>
@@ -5285,6 +5293,7 @@
 <translation id="4972129977812092092">ማተሚያን ያርትዑ</translation>
 <translation id="4972164225939028131">የተሳሳተ የይለፍ ቃል</translation>
 <translation id="4972737347717125191">ጣቢያዎች ምናባዊ የእውነታ መሣሪያዎችን እና ውሂብን ለመጠቀም መጠየቅ ይችላሉ</translation>
+<translation id="4973302523373219907">ብጁ አቋራጩ ካልተቀናበረ @@ በነባሪ ጥቅም ላይ ይውላል</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{ጣቢያ ላይ ድምጸ-ከል አድርግ}one{ጣቢያዎች ላይ ድምጸ-ከል ያድርጉ}other{ጣቢያዎች ላይ ድምጸ-ከል ያድርጉ}}</translation>
 <translation id="497403230787583386">የደህንነት ፍተሻዎች ተከናውነዋል። የእርስዎ ሰነድ ይታተማል።</translation>
 <translation id="4974442344472293753">ውጤትን አዘምን</translation>
@@ -7262,6 +7271,7 @@
 <translation id="6544134392255015460">የቁልፍ ሰሌዳ የጀርባ ብርሃን መቀያየሪያ</translation>
 <translation id="6545665334409411530">የድግግሞሽ ፍጥነት</translation>
 <translation id="6547354035488017500">ቢያንስ 512 ሜባ ባዶ ቦታ ያስለቅቁ ወይም የእርስዎ መሣሪያ ምላሽ የማይሰጥ ይሆናል። ቦታ ለማስለቀቅ ፋይሎችን ከመሣሪያ ማከማቻው ይሰርዙ።</translation>
+<translation id="6548240707386871455">የተሻሻለ ራስ-ሙላ አቋራጭ</translation>
 <translation id="654871471440386944">የጽሑፍ ጠቋሚ አሰሳ ይብራ?</translation>
 <translation id="6548945820758901244">የGoogle ፍለጋ የጎን ፓነልን ይክፈቱ</translation>
 <translation id="6549038875972762904">ማዋቀርን ድገም</translation>

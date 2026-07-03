@@ -3337,6 +3337,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3512465804715993309">Adaptiv ajratib belgilash</translation>
 <translation id="3513019849832307207">Qoʻshilish va ochish</translation>
 <translation id="3513563267917474897">Tuslar slayderi: <ph name="MIN_VALUE" /> — <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Yangi kengaytmalarni mahkamlash</translation>
 <translation id="3514647716686280777">Siz standart xavfsizlik himoyasiga ega boʻlasiz. Zararli saytlar, yuklamalar va kengaytmalardan himoyalanish uchun Chrome sozlamalarida Saytlarni kuchaytirilgan rejimda xavfsiz kezish funksiyasini yoqing.</translation>
 <translation id="3514681096978190000">Bu arxiv faylida zararli dasturlarni yashirishi mumkin boʻlgan boshqa fayllar bor</translation>
 <translation id="3515983984924808886">Sozlamalarni asliga qaytarishni tasdiqlash uchun elektron kalit tugmasini qayta bosing. Bunda elektron kalitdagi barcha maʼlumotlar, jumladan, PIN kodlar ham tozalab tashlanadi.</translation>
@@ -3863,6 +3864,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 ta varaq)}other{<ph name="GROUP_TITLE" /> (# ta varaq)}}</translation>
 <translation id="3871350334636688135">24 soatdan keyin qurilmangizga administrator tomonidan bir martalik yangilanish oʻrnatiladi va mahalliy maʼlumotlar tozalanadi. Kerakli maʼlumotlarni 24 soat ichida bulut omborlariga zaxiralab oling.</translation>
 <translation id="3872991219937722530">Diskda joy bo‘shatilmasa qurilma buzilib qolishi mumkin.</translation>
+<translation id="3873121930618553927">Kengaytmalarni yaratish uchun AI orqali kod yozish agentlaridan foydalanasizmi? Kodingiz agentiga eng oxirgi API yangilanishlari va eng yaxshi amaliyotlarni oʻrgatish uchun <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> va <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> oʻrnating.</translation>
 <translation id="3873423927483480833">PIN kodlar berkitilmasin</translation>
 <translation id="3874532133373654352">Tashkilotingiz bu funksiyalar orqali jamlangan axborotlar qanday ishlatilishini boshqaradi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Bu funksiya AI ishlatadi va hali tajriba-sinov jarayonida</translation>
@@ -4373,6 +4375,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4281789858103154731">Yaratish</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4281849573951338030">Pero tugmalarini moslash</translation>
+<translation id="4283635301190260296">Vertikal varaqlarni yigʻish</translation>
 <translation id="4284903252249997120">ChromeVox skrin rider va teginib tinglash</translation>
 <translation id="4285418559658561636">Parolni yangilash</translation>
 <translation id="4285498937028063278">Olib tashlash</translation>

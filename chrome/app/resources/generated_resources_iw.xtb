@@ -73,6 +73,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{סיסמה אחת יובאה אל <ph name="BRAND" /> במכשיר הזה}one{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}two{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}other{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}}</translation>
 <translation id="1046572983040892965">החלון הועבר למעלה ושמאלה</translation>
 <translation id="1047431265488717055">העתקת ט&amp;קסט קישור</translation>
+<translation id="1048350929895890054">אתרים שבהם התפריט הצף חסום</translation>
 <translation id="1048986595386481879">הקצאה דינמית</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{מתקבל <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}one{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}two{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}other{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
@@ -920,6 +921,7 @@
 <translation id="1695510246756136088">לא ניתן להתחבר לאינטרנט. אפשר לנסות שוב.</translation>
 <translation id="1696555181932908973">אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1696685050160038195">כדי לשמור על אבטחת המכשיר, מומלץ להפעיל ולהתקין תוכנות ממקורות וממפתחים מהימנים בלבד.</translation>
+<translation id="1696832149095851409">תפריט צף בטקסט שנבחר</translation>
 <translation id="1697122132646041614">בסימון דיסלייק, נפתח טופס לשליחת משוב מפורט על הסיבה לכך שלא אהבת את התוצאות האלה.</translation>
 <translation id="1697532407822776718">הכול מוכן!</translation>
 <translation id="1698796500103229697">אמצעי תשלום</translation>
@@ -2465,6 +2467,7 @@
 <translation id="2845276301195220700">‏פעולות נוספות ביומן Google</translation>
 <translation id="2845382757467349449">תמיד להציג את סרגל הסימניות</translation>
 <translation id="284581348330507117">חשוב ליצור סיסמאות ייחודיות</translation>
+<translation id="2846345106886298325">‏המשימה הושלמה והוחזרה אל Gemini Spark</translation>
 <translation id="284884486564166077">‏חיפוש תמונה כלשהי באמצעות Lens</translation>
 <translation id="2849035674501872372">יש להרים את המבט</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2651,6 +2654,7 @@
 <translation id="2989805286512600854">פתיחה בכרטיסייה חדשה</translation>
 <translation id="2990313168615879645">‏הוספת חשבון Google</translation>
 <translation id="2990375978470734995">כדי שהשינוי הזה ייכנס לתוקף, צריך לחבר מחדש את האביזרים החיצוניים.</translation>
+<translation id="2990500505358145117">עריכת מקשי הקיצור למילוי אוטומטי משופר</translation>
 <translation id="2990583317361835189">לא לאפשר לאתרים להשתמש בחיישני תנועה</translation>
 <translation id="2991182900092497283">עליך להזין סיבה להדבקת הנתונים האלה:</translation>
 <translation id="2992931425024192067">הצגת כל תוכן ההודעות</translation>
@@ -2958,6 +2962,7 @@
 <translation id="3223109931751684474">הפסקת השימוש במפתחות הגישה במכשיר הזה</translation>
 <translation id="3223531857777746191">כפתור איפוס</translation>
 <translation id="3225084153129302039">אווטאר ברירת מחדל סגול</translation>
+<translation id="3226249862705569834">חיישנים בשימוש</translation>
 <translation id="3226487301970807183">החלפת מצב לחלונית הצדדית משמאל</translation>
 <translation id="322708765617468434">תמיד אפשר להוסיף אדם נוסף למכשיר אחרי ההגדרה. כל משתמש יכול להתאים אישית את חוויית המשתמש שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
@@ -2988,6 +2993,7 @@
 <translation id="3247649647204519958">כאן אפשר לראות ולנהל את ההרשאות שיש לתוספים לגבי האתר הנוכחי</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - שגיאת רשת</translation>
 <translation id="3248902735035392926">חשוב להתנהל בצורה בטוחה. כדאי להקדיש כמה רגעים כדי <ph name="BEGIN_LINK" />לבדוק עכשיו את התוספים<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">מקשי קיצור בהתאמה אישית למילוי אוטומטי משופר</translation>
 <translation id="3249558306861350254">‏בהגדרות של Windows, צריך ללחוץ על <ph name="BEGIN_BOLD" />הגדרה כברירת מחדל<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">ניהול המיומנות</translation>
 <translation id="3251119461199395237">סנכרון קבצים</translation>
@@ -3800,6 +3806,7 @@
 <translation id="3827548509471720579">בהירות התצוגה</translation>
 <translation id="3827774300009121996">&amp;מסך מלא</translation>
 <translation id="3828029223314399057">חיפוש סימניות</translation>
+<translation id="3828454092958722155">מחיקת מקשי הקיצור למילוי אוטומטי משופר</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – שימוש בנפח גדול מהזיכרון – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">‏התקנת רשת לשיתוף קבצים ב-SMB</translation>
 <translation id="3830470485672984938">שימוש במפתח גישה אחר</translation>
@@ -4372,6 +4379,7 @@
 <translation id="4281789858103154731">יצירה</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4281849573951338030">התאמה אישית של כפתורי העט</translation>
+<translation id="4283635301190260296">כיווץ כרטיסיות אנכיות</translation>
 <translation id="4284903252249997120">‏הקראה וקורא המסך ChromeVox</translation>
 <translation id="4285418559658561636">עדכון סיסמה</translation>
 <translation id="4285498937028063278">ביטול ההצמדה</translation>
@@ -5288,6 +5296,7 @@
 <translation id="4972129977812092092">עריכת מדפסת</translation>
 <translation id="4972164225939028131">סיסמה שגויה</translation>
 <translation id="4972737347717125191">אתרים יכולים לבקש הרשאה להשתמש בנתונים ובמכשירים של מציאות מדומה</translation>
+<translation id="4973302523373219907">אם לא הגדרת מקשי קיצור משלך, הצירוף @@ ישמש כברירת המחדל</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{השתקת האודיו באתר}one{השתקת האודיו באתרים}two{השתקת האודיו באתרים}other{השתקת האודיו באתרים}}</translation>
 <translation id="497403230787583386">בדיקות האבטחה הסתיימו. המסמך יודפס.</translation>
 <translation id="4974442344472293753">תוצאת העדכון</translation>
@@ -6009,6 +6018,7 @@
 <translation id="5546865291508181392">חיפוש</translation>
 <translation id="5547868626772433490">‏יש לך שאלה ל-Gemini?</translation>
 <translation id="5548075230008247516">בוטלה הבחירה בכל הפריטים. יצאת ממצב הבחירה.</translation>
+<translation id="554810465530189549">לא להציג את התפריט הצף כשבוחרים טקסט</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ועוד כרטיסייה אחת}one{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}two{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}other{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">בחירת ההגדרה</translation>
@@ -6173,6 +6183,7 @@
 <translation id="5678955352098267522">קריאת הנתונים שלך באתר <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">להסיר את "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">הקובץ כבר נפתח</translation>
+<translation id="5682950763196110705">הצגת התפריט הצף כשבוחרים טקסט</translation>
 <translation id="5684110242705861346">התוסף <ph name="NAME" /> נוסף על ידי המדיניות של הארגון שלך והוא קובע את ההגדרה הזו. <ph name="BEGIN_LINK" />לפרטים<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">‏פרטי Wi-Fi</translation>
 <translation id="5687326903064479980">אזור זמן</translation>
@@ -7263,6 +7274,7 @@
 <translation id="6544134392255015460">מתג התאורה האחורית של המקלדת</translation>
 <translation id="6545665334409411530">שיעור חזרה</translation>
 <translation id="6547354035488017500">‏עליך לפנות ‎512MB לפחות מנפח האחסון במכשיר, אחרת הוא יפסיק להגיב. כדי לפנות נפח אחסון, יש למחוק קבצים מאחסון המכשיר.</translation>
+<translation id="6548240707386871455">מקשי הקיצור למילוי אוטומטי משופר</translation>
 <translation id="654871471440386944">להפעיל את הגלישה באמצעות סמן הטקסט?</translation>
 <translation id="6548945820758901244">‏פתיחת החלונית הצדדית של חיפוש Google</translation>
 <translation id="6549038875972762904">ביצוע ההגדרה מחדש</translation>
@@ -9874,6 +9886,7 @@
 <translation id="8505669004895429027">חיסכון של נפח קטן</translation>
 <translation id="8507052544157927817">קו תחתון באפשרויות הסגנון</translation>
 <translation id="8507227974644337342">רזולוציית מסך</translation>
+<translation id="8507443886219296894">הסתרה באתר הזה</translation>
 <translation id="850763987657366362">לא ניתן לייבא את האישור</translation>
 <translation id="8508532351844333131">‏האתר <ph name="WEBSITE_ORIGIN" /> רוצה לשמור מידע במכשיר ה-Android שלך</translation>
 <translation id="8509177919508253835">איפוס מפתחות האבטחה ויצירת קודי אימות</translation>
@@ -9934,6 +9947,7 @@
 <translation id="8552102814346875916">שמירה ברשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
 <translation id="8552947739661397736">‏השתלטות על המשימה, Gemini שולט כרגע</translation>
 <translation id="8553342806078037065">ניהול משתמשים אחרים</translation>
+<translation id="8554642222921881444">תפריט צף בטקסט שנבחר</translation>
 <translation id="8554899698005018844">לא הוגדרה שפה</translation>
 <translation id="8555444629041783356">שינוי אוטומטי של המראה לפי זמני זריחה ושקיעה</translation>
 <translation id="8557022314818157177">צריך להמשיך לגעת במפתח האבטחה עד לתיעוד טביעת האצבע</translation>
@@ -10220,6 +10234,7 @@
 <translation id="8757368836647541092">הסרת את <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="876161309768861172">לא היה ניתן להיכנס לחשבון. אפשר לנסות שוב</translation>
 <translation id="8761945298804995673">משתמש זה כבר קיים</translation>
+<translation id="876287961468788565">‏כשבוחרים טקסט באתר, Chrome יכול להציג תפריט צף עם פעולות.</translation>
 <translation id="8762886931014513155">צריך לעדכן את ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">‏התקן USB</translation>
 <translation id="8765940060470412555">ביטול ההצמדה של מצב הקריאה</translation>

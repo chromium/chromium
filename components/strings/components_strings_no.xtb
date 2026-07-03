@@ -893,6 +893,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2365382709349300355">1 fil er blokkert på grunn av regler</translation>
 <translation id="2365508935344991784">Utemøbler</translation>
 <translation id="2366689192918515749">Kjøtt og sjømat</translation>
+<translation id="2367025302166767427">Kunne ikke fylle ut informasjonen din</translation>
 <translation id="2367567093518048410">Nivå</translation>
 <translation id="23703388716193220">Golfutstyr</translation>
 <translation id="2370368710215137370">Opplasting av filer</translation>
@@ -1126,6 +1127,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="271663710482723385">Trykk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for å avslutte fullskjerm</translation>
 <translation id="2717336592027046789">Rull</translation>
 <translation id="2718207025093645426">Ingen regel er lastet inn for enheten eller den administrerte brukeren.</translation>
+<translation id="271850739643214113">Pix-kontoen er nå knyttet til Google Pay</translation>
 <translation id="2719233594187778789">Duplisert nettadresse ignoreres: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Forespørselen var vellykket</translation>
 <translation id="2722622039067384533">Stuemøbler</translation>
@@ -1214,6 +1216,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="290376772003165898">Er ikke siden på <ph name="LANGUAGE" />?</translation>
 <translation id="2904180982022726666">Organisasjonen din begrenser hva du kan dele</translation>
+<translation id="2905065304080706507">Når dette er på, deler Chrome relevante faner i dette vinduet for å hjelpe deg med å få mer relevante svar.</translation>
 <translation id="2905107382358353958">Varsel om ny betalingsinnstilling</translation>
 <translation id="2909946352844186028">En nettverksendring ble oppdaget.</translation>
 <translation id="2910062169995917863">Økten er tidsavbrutt</translation>
@@ -1416,6 +1419,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3194737229810486521"><ph name="URL" /> ber om å lagre data permanent på enheten din</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
+<translation id="3196902089458890316">Vil du alltid dele relevante faner for å få bedre svar?</translation>
 <translation id="3197136577151645743">Kan be om å få vite når du bruker denne enheten aktivt</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
 <translation id="3203025201812691413">Nettadressen kan ikke være tom</translation>
@@ -1565,6 +1569,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="343474037147570563">Filer du laster opp eller legger ved, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
 <translation id="3435557549311968410">Kontinuerlig (kort)</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
+<translation id="3436125638121079308">Vil du dele relevante faner automatisk for å få bedre svar i denne tråden?</translation>
 <translation id="3438509337461223476">Del relevante åpne faner i hver tråd automatisk</translation>
 <translation id="3440783957068352691">kvadratisk</translation>
 <translation id="3441653493275994384">Skjerm</translation>
@@ -1626,6 +1631,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Skjerm (med sider)</translation>
 <translation id="3541016556608204104">Mer om Chrome Enterprise Connectors</translation>
+<translation id="3542005451565251757">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS, og du har slått på Avansert beskyttelse i Android-innstillingene. <ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">Kortbilde</translation>
 <translation id="3542768452570884558">Åpne linken i et nytt vindu</translation>
 <translation id="3543597750097719865">X9.62 ECDSA-signatur med SHA-512</translation>
@@ -1785,6 +1791,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3761718714832595332">Skjul statusen</translation>
 <translation id="3763752038825281594">Du har tidligere ikke gitt dette nettstedet tillatelse til å bruke <ph name="PERMISSION" /></translation>
 <translation id="3765588406864124894">Postkasse 9</translation>
+<translation id="3766505784424699541">Få mer skreddersydde svar ved å automatisk dele relevante faner i dette vinduet hvis de er relatert til denne tråden.</translation>
 <translation id="3767485424735936570">Kopiering og innliming av dette innholdet i <ph name="VM_NAME" /> frarådes av en administratorregel</translation>
 <translation id="3769584711865378220"><ph name="URL" /> vil endre posisjonstilgangen fra omtrentlig til nøyaktig</translation>
 <translation id="3772211998634047851">Papir (obligasjon)</translation>
@@ -1870,6 +1877,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3901925938762663762">Kortet er utløpt</translation>
 <translation id="390391808978419508">Åpningen ble tidsavbrutt</translation>
 <translation id="3905894480064208252">{0,plural, =1{Filen er blokkert for overføring}other{<ph name="FILE_COUNT" /> filer er blokkert for overføring}}</translation>
+<translation id="3906022360148923497">Ikon for betalingsmåte</translation>
 <translation id="3906954721959377182">Nettbrett</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Finn ut mer om innebygd innhold</translation>
@@ -2091,6 +2099,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="422722221769396062">Hjemlevering fra restauranter</translation>
 <translation id="4230204356098880324">Kan be om å få bruke og bevege kameraet ditt</translation>
 <translation id="4231448684371260244">8 X 13 tommer</translation>
+<translation id="4234996384188431444">Betal med Pix uten å bytte app i Google Chrome</translation>
 <translation id="4239799716689808527">Etiketter</translation>
 <translation id="424063167283213501">Lagre known traveler-nummer</translation>
 <translation id="4241830393007970744">Angripere på nettstedet du prøvde å besøke, kan lure deg til å installere programvare eller oppgi ting som passord, telefonnumre eller kredittkortnumre.</translation>
@@ -2107,6 +2116,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4255487295905690262">Du får e-postvarsler hvis prisen settes ned på noe nettsted.</translation>
 <translation id="425582637250725228">Det kan hende endringene dine ikke er lagret.</translation>
 <translation id="4258748452823770588">Dårlig signatur</translation>
+<translation id="4258927999980634471">Vil du dele relevante faner automatisk for denne tråden?</translation>
 <translation id="4260407128682690669">For å få loggen din fra de andre enhetene dine, synkroniser loggen og fanene til <ph name="ACCOUNT_EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="4265635050210404830">Stamkundekortene dine</translation>
 <translation id="4265872034478892965">Tillatt av administratoren din</translation>
@@ -2174,6 +2184,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4340810192899866471">Importer fra JSON</translation>
 <translation id="4340982228985273705">Denne datamaskinen er ikke registrert som administrert av en bedrift, så regelen kan bare automatisk installere utvidelser som finnes på Chrome Nettmarked. Nettadressen for Chrome Nettmarked-oppdateringen er «<ph name="CWS_UPDATE_URL" />».</translation>
 <translation id="4342742994656318294">Fonøyelsesparker</translation>
+<translation id="4344194909635300809">Sidetitler og nettadresser sendes til Google og kan bli gjennomgått av mennesker</translation>
 <translation id="4346670990181948854">Reiseinformasjon · Kjøretøy</translation>
 <translation id="4348834659292907206">Tilkoblingen til <ph name="SITE" /> er ikke sikker</translation>
 <translation id="4349365535725594680">Kan ikke dele konfidensielt innhold</translation>
@@ -2181,6 +2192,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4350629523305688469">Flerfunksjonsskuff</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vil søke etter Bluetooth-enheter i nærheten. Fant disse enhetene:</translation>
 <translation id="4355383636893709732">ChromeOS-oppdatering for Android-apper</translation>
+<translation id="4357577888320640139">Vil du dele relevante faner automatisk i hver tråd?</translation>
 <translation id="4358059973562876591">Malene du har angitt, kan ikke tas i bruk på grunn av en feil med DnsOverHttpsMode-regelen.</translation>
 <translation id="4358461427845829800">Administrer betalingsmåter…</translation>
 <translation id="4359160567981085931">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome kan hjelpe deg. For å bytte passord og varsle Google om at kontoen din kanskje er i fare, klikk på Beskytt konto.</translation>
@@ -2216,6 +2228,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Passord kan slettes i innstillingene for administrering</translation>
 <translation id="4424024547088906515">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chrome. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
+<translation id="4425137053900958839">Det er som alltid praktisk og trygt å betale med Pix</translation>
 <translation id="4425750422187370446">Sportsklær</translation>
 <translation id="443121186588148776">Seriell port</translation>
 <translation id="4432688616882109544">Enten godtok ikke <ph name="HOST_NAME" /> påloggingssertifikatet ditt, eller så ble det ikke oppgitt.</translation>
@@ -2382,6 +2395,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4726672564094551039">Last inn reglene på nytt</translation>
 <translation id="4728558894243024398">Plattform</translation>
 <translation id="4729147136006144950">Veldedighet og filantropi</translation>
+<translation id="4730773064303503917">Send Pix til venner og bedrifter med Wallet</translation>
 <translation id="4730977633786878901">Anmeldelser</translation>
 <translation id="4731638775147756694">Dette programmet er blokkert av administratoren din</translation>
 <translation id="4732860731866514038">Laster ned språkpakke for <ph name="LANGUAGE" /> … <ph name="PERCENT" /> %</translation>
@@ -2666,6 +2680,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5157504274688344097">Storhusholdning og varehus</translation>
 <translation id="5158275234811857234">Omslag</translation>
 <translation id="5159010409087891077">Åpne siden i et nytt inkognitovindu (⇧ + ⌘ + N)</translation>
+<translation id="5160781056848005130">Du bidrar til å gjøre forbedret autofyll enda bedre ved å dele data med Google</translation>
 <translation id="5161334686036120870">Emne:</translation>
 <translation id="5161506081086828129">Hylle 9</translation>
 <translation id="5164537320435517152">Slett filer om <ph name="MINUTES" /> min</translation>
@@ -3407,6 +3422,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6302546952464230349">Vis detaljer om tillatelsen for <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Multimedieprogramvare</translation>
 <translation id="6305205051461490394"><ph name="URL" /> er ikke tilgjengelig.</translation>
+<translation id="6305834316918845109">Når du skriver inn en forespørsel om forbedret autofyll, logger Chrome hvordan du bruker funksjonen, for eksempel om du godtar, redigerer eller ignorerer autofyllforslag</translation>
 <translation id="6306713302480826305">Denne adressen slettes fra denne og de andre påloggede enhetene dine</translation>
 <translation id="6307968763353904914">Banken din tilbyr ikke virtuelle kort for denne betalingsmåten akkurat nå, men du kan fortsatt betale på nettet med <ph name="CARD_LABEL" />.</translation>
 <translation id="6311410654831092784">Papp</translation>
@@ -3544,7 +3560,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6494750904506170417">forgrunnsvinduer og viderekoblinger</translation>
 <translation id="6495664197699704593">Dette passordet er bare lagret på denne enheten. For å bruke det på andre enheter, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">For å bruke en annen autofylltjeneste i Chrome, velg en autofyllleverandør i Android-innstillingene</translation>
-<translation id="6496531801333278234">Funnet av personlig tilpasset intelligens. Du kan administrere informasjonen din i innstillingene.</translation>
 <translation id="6499038740797743453">Vil du tilbakestille passordet?</translation>
 <translation id="6502510275417601303">Varsel om ny betalingsinnstilling er lukket</translation>
 <translation id="6502991525169604759">Uten endringene dine</translation>
@@ -3658,6 +3673,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6689271823431384964">Chrome tilbyr å lagre kort i Google-kontoen din fordi du er logget på. Du kan endre dette i innstillingene. Kortinnehaverens navn kommer fra kontoen din.</translation>
 <translation id="6690688090329768424">«<ph name="PROXY_INVALID_DESTINATION" />» er ikke et gyldig destinasjonsmønster.</translation>
 <translation id="6691397311652656001">Frigjør mer enn <ph name="REQUIRED_FREE_DISK_SPACE" /> lagringsplass</translation>
+<translation id="6692006953064648573">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS, og du er underlagt Avansert beskyttelse-programmet fra Google.<ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å finne enheten din i Google-kontoen</translation>
 <translation id="6695428916538794739">Action- og eventyrfilmer</translation>
 <translation id="6696424331653607346">Reisebøker og reiseskildringer</translation>
@@ -4048,6 +4064,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7310392214323165548">Enheten startes på nytt veldig snart</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7313107491291103073">Organisasjonen din har flagget dette nettstedet fordi det kan være i strid med retningslinjer.</translation>
+<translation id="7313260329718515829">Forespørslene som sendes til Personlig tilpasset intelligens med Gemini, analyseres for å forbedre autofyll</translation>
 <translation id="7316521168101843192">Lagrer filen i Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Tilkoblingshjelp</translation>
@@ -4497,6 +4514,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7966803981046576691">Jobbkontotype</translation>
 <translation id="7967477318370169806">Aksjefond</translation>
 <translation id="7967636097426665267">Kommunikasjonsutstyr</translation>
+<translation id="7967973398323409409">Informasjonen du autofyller blir aldri sett av noen</translation>
 <translation id="79682505114836835">Verdien «<ph name="VALUE" />» er en ugyldig heksadesimal fargekode.</translation>
 <translation id="7968982339740310781">Se detaljer</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>

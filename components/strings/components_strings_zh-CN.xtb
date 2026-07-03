@@ -893,6 +893,7 @@
 <translation id="2365382709349300355">由于政策原因，1 个文件已被屏蔽</translation>
 <translation id="2365508935344991784">户外家具</translation>
 <translation id="2366689192918515749">肉类与海鲜</translation>
+<translation id="2367025302166767427">填写信息时遇到问题</translation>
 <translation id="2367567093518048410">级别</translation>
 <translation id="23703388716193220">高尔夫装备</translation>
 <translation id="2370368710215137370">文件上传</translation>
@@ -1126,6 +1127,7 @@
 <translation id="271663710482723385">按 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可退出全屏模式</translation>
 <translation id="2717336592027046789">纸卷</translation>
 <translation id="2718207025093645426">受管用户或设备未加载任何政策。</translation>
+<translation id="271850739643214113">您的 Pix 账号已成功与 Google Pay 关联</translation>
 <translation id="2719233594187778789">已忽略重复网址：<ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">请求成功</translation>
 <translation id="2722622039067384533">客厅家具</translation>
@@ -1214,6 +1216,7 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">网页的源语言不是<ph name="LANGUAGE" />？</translation>
 <translation id="2904180982022726666">您所在的组织限制了您可分享的内容</translation>
+<translation id="2905065304080706507">开启后，Chrome 会分享此窗口中的相关标签页，以便提供更贴合需求的回答。</translation>
 <translation id="2905107382358353958">关于新付款设置的提醒</translation>
 <translation id="2909946352844186028">检测到了网络变化。</translation>
 <translation id="2910062169995917863">会话超时</translation>
@@ -1414,6 +1417,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> 想在您的设备上永久存储数据</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956">“<ph name="SERVER_NAME" />”上的“<ph name="PRINTER_NAME" />”</translation>
+<translation id="3196902089458890316">要始终分享相关标签页，以便获得更优质的回答吗？</translation>
 <translation id="3197136577151645743">可以询问您何时在使用此设备</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="3203025201812691413">网址不能为空</translation>
@@ -1563,6 +1567,7 @@
 <translation id="343474037147570563">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="3435557549311968410">连续纸（短边）</translation>
 <translation id="3435738964857648380">安全</translation>
+<translation id="3436125638121079308">要自动分享相关标签页，以便在此对话串中获得更优质的回答吗？</translation>
 <translation id="3438509337461223476">在所有会话串中自动分享已打开的相关标签页</translation>
 <translation id="3440783957068352691">方形</translation>
 <translation id="3441653493275994384">屏幕</translation>
@@ -1623,6 +1628,7 @@
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">屏幕（分页）</translation>
 <translation id="3541016556608204104">详细了解 Chrome 企业版接口</translation>
+<translation id="3542005451565251757">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您已在 Android 设置中开启高级保护功能。<ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">虚拟卡图片</translation>
 <translation id="3542768452570884558">在新窗口中打开链接</translation>
 <translation id="3543597750097719865">采用 SHA-512 算法的 X9.62 ECDSA 签名</translation>
@@ -1781,6 +1787,7 @@
 <translation id="3761718714832595332">隐藏状态</translation>
 <translation id="3763752038825281594">您之前不允许此网站使用<ph name="PERMISSION" /></translation>
 <translation id="3765588406864124894">信箱 9</translation>
+<translation id="3766505784424699541">如果此窗口中的相关标签页与此对话串有关联，系统会自动分享这些标签页，从而提供更贴合需求的回答。</translation>
 <translation id="3767485424735936570">管理员政策不建议将此内容复制并粘贴到 <ph name="VM_NAME" /></translation>
 <translation id="3769584711865378220"><ph name="URL" /> 想要将位置信息访问权限从大致位置改为精确位置</translation>
 <translation id="3772211998634047851">纸（证券纸）</translation>
@@ -1866,6 +1873,7 @@
 <translation id="3901925938762663762">此信用卡已过期</translation>
 <translation id="390391808978419508">打开超时</translation>
 <translation id="3905894480064208252">{0,plural, =1{此文件已被禁止传输}other{<ph name="FILE_COUNT" /> 个文件已被禁止传输}}</translation>
+<translation id="3906022360148923497">支付方式图标</translation>
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">详细了解嵌入式内容</translation>
@@ -2087,6 +2095,7 @@
 <translation id="422722221769396062">餐馆外卖服务</translation>
 <translation id="4230204356098880324">可以询问能否使用和移动您的摄像头</translation>
 <translation id="4231448684371260244">8 x 13 英寸</translation>
+<translation id="4234996384188431444">在 Google Chrome 中使用 Pix 支付，无需切换应用</translation>
 <translation id="4239799716689808527">标签</translation>
 <translation id="424063167283213501">保存已知旅客编号</translation>
 <translation id="4241830393007970744">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。</translation>
@@ -2103,6 +2112,7 @@
 <translation id="4255487295905690262">当任一网站上的商品降价时，您会收到邮件提醒。</translation>
 <translation id="425582637250725228">系统可能不会保存您所做的更改。</translation>
 <translation id="4258748452823770588">签名无效</translation>
+<translation id="4258927999980634471">要在此对话串中自动分享相关标签页吗？</translation>
 <translation id="4260407128682690669">如需访问您在其他设备上的历史记录，请将历史记录和标签页同步到 <ph name="ACCOUNT_EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="4265635050210404830">会员卡</translation>
 <translation id="4265872034478892965">管理员允许</translation>
@@ -2170,6 +2180,7 @@
 <translation id="4340810192899866471">从 JSON 文件导入</translation>
 <translation id="4340982228985273705">系统检测到，此计算机不是由企业管理，因此政策只能自动安装 Chrome 应用商店中的扩展程序。对应的 Chrome 应用商店更新网址为“<ph name="CWS_UPDATE_URL" />”。</translation>
 <translation id="4342742994656318294">主题乐园</translation>
+<translation id="4344194909635300809">网页标题和网址会发送给 Google，且可能会经过人工审核</translation>
 <translation id="4346670990181948854">旅行信息 · 车辆</translation>
 <translation id="4348834659292907206">与 <ph name="SITE" /> 的连接不安全</translation>
 <translation id="4349365535725594680">无法共享机密内容</translation>
@@ -2177,6 +2188,7 @@
 <translation id="4350629523305688469">多功能纸匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 想搜索附近的蓝牙设备，并发现了以下设备：</translation>
 <translation id="4355383636893709732">有一项对 Android 应用有益的 ChromeOS 更新</translation>
+<translation id="4357577888320640139">要在所有对话串中自动分享相关标签页吗？</translation>
 <translation id="4358059973562876591">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策出错了。</translation>
 <translation id="4358461427845829800">管理付款方式…</translation>
 <translation id="4359160567981085931">您刚刚在一个诈骗网站中输入了密码。Chrome 可以为您提供帮助。若要更改密码并让 Google 知晓您的账号可能处于危险状态，请点击“保护账号”。</translation>
@@ -2212,6 +2224,7 @@
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">密码可在相应管理设置中删除</translation>
 <translation id="4424024547088906515">此服务器无法证明它是<ph name="DOMAIN" />；Chrome不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
+<translation id="4425137053900958839">获享 Pix 值得信赖的便利性和安全性</translation>
 <translation id="4425750422187370446">运动服装</translation>
 <translation id="443121186588148776">串行端口</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登录证书，或者您可能没有提供登录证书。</translation>
@@ -2378,6 +2391,7 @@
 <translation id="4726672564094551039">重新加载政策</translation>
 <translation id="4728558894243024398">平台</translation>
 <translation id="4729147136006144950">公益慈善</translation>
+<translation id="4730773064303503917">通过钱包使用 Pix 向好友和商家付款</translation>
 <translation id="4730977633786878901">评价</translation>
 <translation id="4731638775147756694">您的管理员已禁用此应用</translation>
 <translation id="4732860731866514038">正在下载<ph name="LANGUAGE" />语言包…<ph name="PERCENT" />%</translation>
@@ -2662,6 +2676,7 @@
 <translation id="5157504274688344097">大卖场与百货公司</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="5159010409087891077">在新的无痕式窗口中打开网页 (⇧⌘N)</translation>
+<translation id="5160781056848005130">您正在与 Google 分享数据，这有助于我们改进增强型自动填充功能</translation>
 <translation id="5161334686036120870">主题：</translation>
 <translation id="5161506081086828129">堆叠出纸器 9</translation>
 <translation id="5164537320435517152">在 <ph name="MINUTES" /> 分钟后删除文件</translation>
@@ -3402,6 +3417,7 @@
 <translation id="6302546952464230349">显示<ph name="PERMISSION_NAME" />权限详情</translation>
 <translation id="6304398603974202180">多媒体软件</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
+<translation id="6305834316918845109">当您输入增强型自动填充请求时，Chrome 会记录您对该功能的使用情况，例如您是接受、修改还是忽略了自动填充建议</translation>
 <translation id="6306713302480826305">系统将从这部设备以及您已登录的其他设备中删除此地址</translation>
 <translation id="6307968763353904914">您的银行目前无法提供适用于此支付方式的虚拟卡，但您仍可以使用 <ph name="CARD_LABEL" /> 卡在线支付。</translation>
 <translation id="6311410654831092784">卡纸</translation>
@@ -3539,7 +3555,6 @@
 <translation id="6494750904506170417">弹出式窗口和重定向</translation>
 <translation id="6495664197699704593">这个密码仅会保存到此设备上。若要在其他设备上使用它，请<ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="649611364763911650">如要在 Chrome 中使用其他自动填充服务，请在 Android 设置中选择自动填充服务提供商</translation>
-<translation id="6496531801333278234">个性化智能服务发现了此信息。您可以在设置中管理自己的信息。</translation>
 <translation id="6499038740797743453">重置密码？</translation>
 <translation id="6502510275417601303">关于新付款设置的提醒已关闭</translation>
 <translation id="6502991525169604759">不含您所做更改</translation>
@@ -3653,6 +3668,7 @@
 <translation id="6689271823431384964">Chrome 正在询问是否要将卡保存到您的 Google 账号中，因为您已登录。您可在“设置”中更改此行为。持卡人姓名来自您的账号。</translation>
 <translation id="6690688090329768424">“<ph name="PROXY_INVALID_DESTINATION" />”不是有效的目标模式。</translation>
 <translation id="6691397311652656001">释放 <ph name="REQUIRED_FREE_DISK_SPACE" /> 以上的空间</translation>
+<translation id="6692006953064648573">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您已加入 Google 的高级保护计划。<ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 账号中查找您的设备</translation>
 <translation id="6695428916538794739">动作片与冒险片</translation>
 <translation id="6696424331653607346">旅行指南与游记</translation>
@@ -4044,6 +4060,7 @@
 <translation id="7310392214323165548">设备很快就会重启</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7313107491291103073">您的组织已标记此网站，因为它可能违反了政策。</translation>
+<translation id="7313260329718515829">系统会对发送给 Gemini 中的个性化智能服务的请求进行分析，以改进自动填充功能</translation>
 <translation id="7316521168101843192">正在将文件保存到 Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">与连接相关的帮助</translation>
@@ -4493,6 +4510,7 @@
 <translation id="7966803981046576691">工作账号类型</translation>
 <translation id="7967477318370169806">共同基金</translation>
 <translation id="7967636097426665267">通信设备</translation>
+<translation id="7967973398323409409">您自动填充的信息不会向任何人显示</translation>
 <translation id="79682505114836835">值“<ph name="VALUE" />”是无效的十六进制颜色。</translation>
 <translation id="7968982339740310781">查看详情</translation>
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
@@ -4743,7 +4761,7 @@
 <translation id="8371889962595521444">自定义的根证书</translation>
 <translation id="8374636051559112948">视具体情况而定</translation>
 <translation id="837840316697671463">如果您在设备上找不到某个文件，请在“<ph name="CLOUD_PROVIDER" />”上查找。</translation>
-<translation id="8378714024927312812">由贵组织管理</translation>
+<translation id="8378714024927312812">由您的组织管理</translation>
 <translation id="8380941800586852976">危险</translation>
 <translation id="8381674639488873545">这些费用可能会一次性收取，也可能会周期性收取，而且可能不易察觉。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">自动全屏</translation>

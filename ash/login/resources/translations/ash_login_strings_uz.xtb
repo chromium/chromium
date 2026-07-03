@@ -95,6 +95,8 @@
 <translation id="2565214867520763227">Skrin-riderni yoqish</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> platformasi) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Yoʻq, nofaol ChromeVox bilan davom ettirish</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu qurilmada istalgan vaqtda Andorid joylashuvini ulashishni Sozlamalar &gt; Ilovalar &gt; Google Play Market &gt; Android sozlamalarini boshqarish &gt; Xavfsizlik va joylashuv &gt; Joylashuv menyusi orqali oʻzgartirishingiz mumkin. Shuningdek, ayni shu menyu orqali joylashuv axboroti uchun Wi-Fi va mobil tarmoqlardan foydalanish, sensorlarni ham faolsizlantirish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2687407218262674387">Google xizmat shartlari</translation>
 <translation id="2688196195245426394">Qurilmani server ro‘yxatidan o‘tkazishda xatolik: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Bu majmuadagi qurilma. Kiosk va Signage Upgrade bilan roʻyxatdan oʻtib boʻlmaydi.</translation>
@@ -103,10 +105,15 @@
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> sonli qoʻshimcha kontent</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2754825024506485820">Google Play Market orqali unumdorlikdan hordiqqacha kerakli ilovalarni toping. Ilovalarni istalgan vaqt oʻrnatish mumkin.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Joylashuv aniqligi yoqilganda simsiz signallar haqidagi axborot jamlanadi, jumladan, Wi-Fi ulanish nuqtalari, mobil tarmoq antennalari va hokazo. Shuningdek, funksiya akselerometr va giroskop kabi sensorlardan axborot olishi mumkin. Bunday maʼlumotlar geojoylashuv funksiyali ilova va xizmatlarga qurilma joylashuvini aniqroq aniqlashga yordam beradi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali atrofdagi qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google bu qurilmada jamlangan axborotlardan joylashuv aniqligi va joylashuv asosidagi xizmatlarni yaxshilash, umumiy tarzda Google xizmatlarini yaxshilash, taqdim etish hamda dastaklash maqsadlarida foydalanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlar tomonidan qonun doirasida qayta ishlanadi. Bu maʼlumotlardan faqat anonim tarzda foydalaniladi.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Joylashuv aniqligini istalgan vaqt faolsizlantirish mumkin. Buning uchun Sozlamalar &gt; Maxfiylik va xavfsizlik &gt; Maxfiylik sozlamalari &gt; Joylashuv axborotiga ruxsat &gt; Qoʻshimcha joylashuv sozlamalari ostidagi qurilmaning joylashuv sozlamalarini oching. Joylashuv aniqligi yoqilmasa, funksiya foydalanadigan hech qanday maʼlumotlar jamlanmaydi. Android ilovalari va xizmatlarida IP manzil axboroti mavjud boʻlsa, faqatgina qurilmaning joylashuvini aniqlash uchun ishlatiladi. Bunda joylashuv axboroti qurilmani topish va Google Xaritalar kabi ilova va xizmatlarda xato aniqlanishi yoki ishlamasligi mumkin.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Tayyor!</translation>
 <translation id="2832124733806557606">Farzandingiz PIN kod yordamida qurilma qulfini ochishi yoki hisobiga kirishi mumkin.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> tarmog‘idan foydalanish uchun, avval Internetga ulaning.</translation>
 <translation id="2849767214114481738">PIN kod kiritildi</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani va odatda qancha xotira ishlatilishi kabi maʼlumotlar kirishi mumkin.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda Chrome qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2893180576842394309">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin</translation>
 <translation id="2902265136119311513">Mehmon sifatida koʻrish</translation>
 <translation id="2904210161403910217">Hisobga oxirgi marta kirilganidan beri parolingiz oʻzgargan</translation>
@@ -183,6 +190,9 @@
 <translation id="4341905082470253054">TPM holati tekshirilmoqda...</translation>
 <translation id="4370975561335139969">Siz kiritgan e-pochta va parol mos kelmadi</translation>
 <translation id="4373418556073552953">Android telefonidan kiring</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani, odatda qancha xotira ishlatilishi, Android ilovasi diagnostika va foydalanish statistikasi kabi maʼlumotlar kirishi mumkin. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Google hisobingiz uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari Google hisobingizda saqlanadi. Maʼlumotlaringizni account.google.com orqali koʻrish, oʻchirib tashlash va oʻzgartirish mumkin.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4403266582403435904">Maʼlumotlarni osongina tiklang yoki istalgan vaqtda qurilmalarni almashtiring. Zaxiralar Google serverlariga yuklanadi va farzandingizning Google hisobi paroli bilan shifrlanadi.</translation>
 <translation id="4410545552906060960">Qurilma qulfini parol emas raqamli kod bilan ochish (PIN). PIN kodni Sozlamalar orqali keyinroq sozlash mumkin.</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> qurilmangiz xizmatga tayyor.</translation>
@@ -261,6 +271,9 @@
 <translation id="5539070192556911367">Googlega ulanmadi</translation>
 <translation id="557722062034137776">Qurilmani asl holatiga qaytarsangiz, bu Google hisoblari yoki ularga sinxronlangan ma’lumotlarga ta’sir qilmaydi. Ammo, qurilmada saqlangan barcha fayllar o‘chirib tashlanadi.</translation>
 <translation id="5626172233890210551">Paroldan foydalanish</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Xizmat sifatini oshirish uchun <ph name="DEVICE_OS" /> qurilmaga oid maʼlumotlarni jamlaydi va qanday yangilanishni taqdim qilishni aniqlashi uchun ularni Googlega yuboradi. Istasangiz, Googlega bu maʼlumotlardan boshqa maqsadlarda, masalan, <ph name="DEVICE_OS" /> ishlashi va xizmat sifatini oshirish<ph name="END_PARAGRAPH1" /> uchun foydalanishiga ruxsat berishingiz mumkin.
+        <ph name="BEGIN_PARAGRAPH2" />Bu qurilmaga kirishingiz va chrome://system sahifasidagi chromeosflex_ roʻyxatidagi maydonlarini ochib, yangilanishni filtrlash uchun Googlega yuborilgan maʼlumotlarni, shuningdek, Google bilan maʼlumotlarni almashishni tanlagan boshqa holatlarni koʻrishingiz mumkin.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> maʼlumotlarini Googlega ulashish va ulardan qanday maqsadlarda foydalanishi haqida batafsil axborot: g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">“<ph name="NETWORK_ID" />” tarmog‘iga ulanish uchun, bir necha soniyada avtomatik ochiladigan <ph name="LINK_START" />kirish sahifasiga o‘ting<ph name="LINK_END" />. Agar bu sodir bo‘lmasa, tarmoqdan foydalanish imkoniyati yo‘q.</translation>
 <translation id="5655296450510165335">Qurilmani roʻyxatdan oʻtkazish</translation>
 <translation id="5659964844710667266"><ph name="DEVICE_TYPE" /> uchun parol yaratish</translation>
@@ -310,6 +323,8 @@
 <translation id="636850387210749493">Korporativ domen ro‘yxatidan o‘tish</translation>
 <translation id="6380143666419481200">Qabul qilish va davom etish</translation>
 <translation id="640457954117263537">ChromeOS, Android ilovalari va xizmatlari uchun joylashuvdan foydalaning.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani va odatda qancha xotira ishlatilishi kabi maʼlumotlar kirishi mumkin.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda Chrome qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Jiddiy yangilanishni o‘rnating</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="6495266441917713704">Wi-Fi tarmoq uzatilmadi</translation>
@@ -326,11 +341,16 @@
 <translation id="6722744767592605627"><ph name="EMAIL" /> tiklanishi mumkin, lekin kompyuterdagi maʼlumotlar oʻchiriladi</translation>
 <translation id="6748980958975836188">Men <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome va ChromeOS qoʻshimcha xizmat shartlari<ph name="END_LINK2" /> bilan tanishdim va roziman.</translation>
 <translation id="6789834167207639931">Tiklashni yakunlash uchun keyingi ekranda Google hisobi parolini qayta kiriting</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani, odatda qancha xotira ishlatilishi, Android ilovasi diagnostika va foydalanish statistikasi kabi maʼlumotlar kirishi mumkin. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda farzandingizning ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Farzandingizning Google hisobi uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari uning Google hisobida saqlanadi. Bu parametr va uni sozlash haqidagi batafsil axborotni families.google.com sahifasidan olish mumkin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> qurilmangiz uchun top ilovalar</translation>
 <translation id="682971198310367122">Google maxfiylik siyosati</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> qurilmasini yangilash uchun Internetga ulaning.</translation>
 <translation id="6839916869147598086">Hisobga kirish usuli oʻzgardi</translation>
 <translation id="6883319974225028188">Tizim qurilma parametrlarini saqlay olmadi.</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Ilovalarga tegishli maʼlumotlar – bu (dasturchi oʻrnatgan sozlamalarga asoslanib) ilovalar tomonidan saqlangan har qanday maʼlumot, shuningdek, kontaktlar, xabarlar va suratlar boʻlishi mumkin. Zaxiralangan maʼlumotlar farzandingiz Google Drive omboridagi ajratilgan joyga taʼsir qilmaydi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu xizmatni Sozlamalar orqali oʻchirib qoʻyish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Sinxronizatsiyani yoqish</translation>
 <translation id="6918733588290914545">Android telefoni orqali tezkor sozlash</translation>
 <translation id="6920473853105515518"><ph name="DEVICE_TYPE" /> internetga ulanganini tekshiring va qayta urining. Yoki boshqa qurilma orqali play.google/play-terms sahifasini oching.</translation>
@@ -374,6 +394,8 @@
 <translation id="7630426712700473382">Bu qurilma <ph name="MANAGER" /> domenida boshqariladi va hisobga har safar qayta kirishni talab qiladi.</translation>
 <translation id="7639914187072011620">Serverdan kelgan URL yoʻnaltiruvi SAML protokoli orqali fetch qilinmadi</translation>
 <translation id="7643117827468520640">Shartlar bilan tanishing</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Ilovalarga tegishli maʼlumotlar – bu (dasturchi oʻrnatgan sozlamalarga asoslanib) ilovalar tomonidan saqlangan har qanday maʼlumot, shuningdek, kontaktlar, xabarlar va suratlar boʻlishi mumkin. Zaxiralangan maʼlumotlar Google Drive omboringizdan joy egallamaydi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu xizmatni Sozlamalar orqali oʻchirib qoʻyish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7659584679870740384">Bu qurilmadan foydalanishga ruxsatingiz yo‘q. Qurilma administratori bilan bog‘laning.</translation>
@@ -391,6 +413,8 @@
 <translation id="7870730066603611552">Sinxronizatsiya sozlamalari seans boshlangandan keyin tekshirilsin</translation>
 <translation id="7883792253546618164">Istalgan vaqt obunani bekor qilish mumkin.</translation>
 <translation id="7906440585529721295">Qurilmadagi axborotlar oʻchib ketadi</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani va odatda qancha xotira ishlatilishi kabi maʼlumotlar kirishi mumkin.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda farzandingizning ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7943311690198910993">Hisobga kirish usuli yangilandi</translation>
 <translation id="795240231873601803">Ishxona va maktab hisoblari uchun korporativ sifatida qayd qiling</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>
@@ -409,6 +433,8 @@
 <translation id="815491593104042026">Havfsizligi himoyalanmagan URL mazil (<ph name="BLOCKED_URL" />) topilganligi sababli, tasdiqlash tekshiruvini bajarib bo‘lmadi. Administrator bilan bog‘laning.</translation>
 <translation id="8157704005178149728">Nazorat sozlanmoqda</translation>
 <translation id="8174047975335711832">Qurilma haqida axborot</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google joylashuv xizmati Wi-Fi, mobil tarmoq va sensorlardan qurilmangiz joylashuvini aniqlashda foydalanadi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Qurilmangizda Android joylashuvini istalgan vaqtda Sozlamalar &gt; Ilovalar &gt; Google Play Market &gt; Android sozlamalarini boshqarish &gt; Xavfsizlik va joylashuv &gt; Joylashuv orqali oʻchirishingiz mumkin. Shuningdek, ayni shu menyu orqali joylashuv axboroti uchun Wi-Fi va mobil tarmoqlardan foydalanish, sensorlarni ham faolsizlantirish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> qurilmasi profilini yangilash uchun parolni qayta kiriting.</translation>
 <translation id="8239032431519548577">Korporativ domenda qayd qilindi</translation>
 <translation id="8241806945692107836">Qurilma sozlamalari aniqlanmoqda...</translation>
@@ -436,6 +462,9 @@
         <ph name="BR" />
         Yaqin-atrofdagi qurilmalarga <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> boʻlib chiqadi...</translation>
 <translation id="8655972064210167941">Hisobingizga kirish amalga oshmadi, chunki parolni tekshirib bo‘lmadi. Qaytadan urinib ko‘ring.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Joylashuv aniqligi yoqilganda simsiz signallar haqidagi axborot jamlanadi, jumladan, Wi-Fi ulanish nuqtalari, mobil tarmoq antennalari va hokazo. Shuningdek, funksiya akselerometr va giroskop kabi sensorlardan axborot olishi mumkin. Bunday maʼlumotlar geojoylashuv funksiyali ilova va xizmatlarga qurilma joylashuvini aniqroq aniqlashga yordam beradi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali atrofdagi qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google bu qurilmada jamlangan axborotlardan joylashuv aniqligi va joylashuv asosidagi xizmatlarni yaxshilash, umumiy tarzda Google xizmatlarini yaxshilash, taqdim etish hamda dastaklash maqsadlarida foydalanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlar tomonidan qonun doirasida qayta ishlanadi.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Joylashuv aniqligini istalgan vaqt faolsizlantirish mumkin. Buning uchun Sozlamalar &gt; Maxfiylik va xavfsizlik &gt; Maxfiylik sozlamalari &gt; Joylashuv axborotiga ruxsat &gt; Qoʻshimcha joylashuv sozlamalari ostidagi qurilmaning joylashuv sozlamalarini oching. Joylashuv aniqligi yoqilmasa, funksiya foydalanadigan hech qanday maʼlumotlar jamlanmaydi. Android ilovalari va xizmatlarida IP manzil axboroti mavjud boʻlsa, faqatgina qurilmaning joylashuvini aniqlash uchun ishlatiladi. Bunda joylashuv axboroti qurilmani topish va Google Xaritalar kabi ilova va xizmatlarda xato aniqlanishi yoki ishlamasligi mumkin.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Kompyuteringiz apparat identifikatori xato sozlangan. Buning natijasida ChromeOS xavfsizlikka oid eng oxirgi tuzatishlar bilan yangilanmaydi va kompyuteringiz <ph name="BEGIN_BOLD" />zararli hujumlardan himoyalanmasligi mumkin<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Sozlash tugaganidan keyin ota-ona nazoratini kiritish</translation>
 <translation id="8698269656364382265">Avvalgi ekranga qaytish uchun chap chekkadan suring.</translation>

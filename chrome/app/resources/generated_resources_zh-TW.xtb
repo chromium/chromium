@@ -1918,6 +1918,7 @@
 <translation id="2460150227008936698">{COUNT,plural, =0{今天到期}=1{明天到期}other{# 天後到期}}</translation>
 <translation id="2460482211073772897">在其他資料夾中</translation>
 <translation id="2460826998961521840">使用儲存在 Google 帳戶中的密碼金鑰</translation>
+<translation id="2461457574123041923">離開這個網站，工作就會結束。如要在造訪其他網站時繼續執行工作，請開啟新分頁。</translation>
 <translation id="2461550163693930491">不允許網站捲動及縮放已分享的分頁</translation>
 <translation id="2461593638794842577">你可以關閉這項設定，只將密碼儲存在這部裝置</translation>
 <translation id="2462550463312552298">製作這份文件的重點摘要</translation>
@@ -2478,6 +2479,7 @@
 <translation id="2865057607286263192">按住鍵盤按鍵可查看重音符號和特殊字元。這項設定會關閉字母按鍵的重複按鍵動作。目前僅支援英文 (美國)。</translation>
 <translation id="2865919525181940183">目前畫面上程式的螢幕截圖</translation>
 <translation id="286643536820867504">自動為支援語言產生字幕。音訊只會儲存在裝置上，不會傳送到他處。</translation>
+<translation id="2866504884233915828">最多只能新增 <ph name="COUNT" /> 個檔案</translation>
 <translation id="286674810810214575">正在檢查電源...</translation>
 <translation id="2867768963760577682">在固定分頁中開啟</translation>
 <translation id="2868746137289129307">這項過舊的擴充功能現已依企業政策停用。如有可用的新版本，則可能會自動重新啟用。</translation>
@@ -2642,8 +2644,10 @@
 <translation id="2989805286512600854">在新分頁中開啟</translation>
 <translation id="2990313168615879645">新增 Google 帳戶</translation>
 <translation id="2990375978470734995">請重新連接外部配件，這項變更才會生效。</translation>
+<translation id="2990500505358145117">編輯「強化版自動填入」快速鍵</translation>
 <translation id="2990583317361835189">禁止網站使用動作感應器</translation>
 <translation id="2991182900092497283">請提供貼上這項資料的原因：</translation>
+<translation id="2992754757708650257">要離開網站並結束工作嗎？</translation>
 <translation id="2992931425024192067">顯示所有通知內容</translation>
 <translation id="2993517869960930405">應用程式資訊</translation>
 <translation id="2994804273850542871">第 4 級：極高</translation>
@@ -2977,6 +2981,7 @@
 <translation id="3247649647204519958">你可以在這裡查看及管理擴充功能在目前網站上的權限</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網路錯誤</translation>
 <translation id="3248902735035392926">安全至上。現在就花點時間<ph name="BEGIN_LINK" />檢查擴充功能<ph name="END_LINK" />吧</translation>
+<translation id="3248957351402065497">「強化版自動填入」的自訂快速鍵</translation>
 <translation id="3249558306861350254">在 Windows 設定中，點選「設定預設值」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />。</translation>
 <translation id="3250374026663843838">管理技能</translation>
 <translation id="3251119461199395237">檔案同步處理</translation>
@@ -3789,6 +3794,7 @@
 <translation id="3827548509471720579">螢幕亮度</translation>
 <translation id="3827774300009121996">全螢幕(&amp;F)</translation>
 <translation id="3828029223314399057">搜尋書籤</translation>
+<translation id="3828454092958722155">清除「強化版自動填入」快速鍵</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - 高記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB 檔案共用區</translation>
 <translation id="3830470485672984938">使用其他密碼金鑰</translation>
@@ -4360,6 +4366,7 @@
 <translation id="4281789858103154731">建立</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4281849573951338030">自訂觸控筆按鈕</translation>
+<translation id="4283635301190260296">收合垂直分頁</translation>
 <translation id="4284903252249997120">ChromeVox 螢幕閱讀器和隨選朗讀</translation>
 <translation id="4285418559658561636">更新密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
@@ -5180,6 +5187,7 @@
 <translation id="4895799941222633551">建立捷徑(&amp;S)...</translation>
 <translation id="4898913189644355814">網站可能會儲存你偏好的語言或想購買的商品，而且該網站及其子網域都能存取這類資訊。</translation>
 <translation id="4899052647152077033">反轉顏色</translation>
+<translation id="4899813415889597597">無法連線至 Google 雲端硬碟帳戶</translation>
 <translation id="490031510406860025">不允許在這個網站執行</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - 交錯顯示</translation>
 <translation id="4900652253009739885">這是唯一指派為代表「選取」的切換工具，因此無法移除。按下任意鍵即可<ph name="RESPONSE" />。</translation>
@@ -5271,6 +5279,7 @@
 <translation id="4972129977812092092">編輯印表機資訊</translation>
 <translation id="4972164225939028131">密碼錯誤</translation>
 <translation id="4972737347717125191">網站可以要求使用虛擬實境裝置和資料</translation>
+<translation id="4973302523373219907">如未設定自訂快速鍵，系統預設會使用「@@」</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{關閉這個網站的音訊}other{關閉這些網站的音訊}}</translation>
 <translation id="497403230787583386">已完成安全性檢查，即將列印文件。</translation>
 <translation id="4974442344472293753">更新結果</translation>
@@ -7243,6 +7252,7 @@
 <translation id="6544134392255015460">切換鍵盤背光</translation>
 <translation id="6545665334409411530">重複頻率</translation>
 <translation id="6547354035488017500">請釋出至少 512 MB 的空間，否則裝置會無回應。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>
+<translation id="6548240707386871455">「強化版自動填入」快速鍵</translation>
 <translation id="654871471440386944">要開啟鍵盤瀏覽功能嗎？</translation>
 <translation id="6548945820758901244">開啟 Google 搜尋側邊面板</translation>
 <translation id="6549038875972762904">重做設定</translation>

@@ -95,6 +95,8 @@
 <translation id="2565214867520763227">Kveikja á skjálesara</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (kerfi <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Nei, halda áfram án ChromeVox</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Staðsetningarþjónusta Google notar heimildir eins og Wi-Fi, farsímakerfi og skynjara til að ákvarða staðsetningu þessa tækis.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur hvenær sem er slökkt á staðsetningu Android í þessu tæki með því að opna „Stillingar &gt; Forrit &gt; Google Play Store &gt; Hafa umsjón með stillingum Android &gt; Öryggi og staðsetning &gt; Staðsetning“. Einnig er hægt að slökkva á notkun Wi-Fi, farsímakerfa og skynjara fyrir staðsetningu Android með því að slökkva á „Staðsetningarnákvæmni Google“ á sömu valmynd.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2687407218262674387">Þjónustuskilmálar Google</translation>
 <translation id="2688196195245426394">Villa við að skrá tækið á þjóninum: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Þetta er pakkaleyfistæki og ekki er hægt að skrá það í sjálfsala- eða merkingauppfærslu.</translation>
@@ -103,10 +105,15 @@
 <translation id="2732134891301408122">Aukaefni <ph name="CURRENT_ELEMENT" /> af <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2754825024506485820">Öll forrit sem þú þarft á að halda til að auka afköst og til afþreyingar er að finna í Google Play Store. Þú getur sett upp forrit hvenær sem er.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Þegar kveikt er á staðsetningarnákvæmni eru upplýsingar um þráðlaus merki, t.d. Wi-Fi aðgangsstaði og farsímaturna, ásamt skynjaragögnum tækis, t.d. frá hraðamæli og snúðvísi, notuð til að meta nákvæmari staðsetningu tækisins sem forrit og þjónusta frá Android nota til að veita staðsetningarbundna eiginleika. Til að gera þetta safnar Google af og til upplýsingum um skynjara tækisins og þráðlaus merki nærri þessu tæki fyrir hópvistun á staðsetningum þráðlausra merkja.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google notar upplýsingarnar sem safnað er úr þessu tæki til að: bæta staðsetningarnákvæmni og staðsetningarbundna þjónustu og til að bæta, veita og viðhalda þjónustu Google almennt. Við vinnum úr þessum upplýsingum á grundvelli lögmætra hagsmuna Google og þriðju aðila er varða þarfir notenda. Þessar upplýsingar eru ekki notaðar til að auðkenna einstaklinga.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Þú getur slökkt á staðsetningarnákvæmni hvenær sem er í staðsetningarstillingum tækisins undir Stillingar &gt; Persónuvernd og öryggi &gt; Persónuverndarstillingar &gt; Aðgangur að staðsetningu &gt; Ítarlegar staðsetningarstillingar. Ef slökkt er á staðsetningarnákvæmni verður engum nákvæmum staðsetningargögnum safnað. Fyrir forrit og þjónustu frá Android er aðeins IP-talan notuð, ef hún er tiltæk, til að ákvarða staðsetningu þessa tækis, sem kann að hafa áhrif á framboð og nákvæmni staðsetninga fyrir forrit og þjónustu frá Android, s.s. Google-kort.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Allt til reiðu!</translation>
 <translation id="2832124733806557606">Barnið getur notað PIN-númer til að skrá sig inn í tækið eða taka það úr lás.</translation>
 <translation id="283669119850230892">Til að nota netið <ph name="NETWORK_ID" /> þarftu fyrst að ljúka við tenginguna við internetið hér fyrir neðan.</translation>
 <translation id="2849767214114481738">PIN-númerinu þínu var bætt við</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar voru notaðir og hversu mikið minni var yfirleitt notað.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum Chrome-tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2893180576842394309">Google notar hugsanlega ferilinn þinn til að sérsníða leitina og aðra þjónustu Google</translation>
 <translation id="2902265136119311513">Skoða sem gestur</translation>
 <translation id="2904210161403910217">Aðgangsorðið þitt hefur breyst síðan þú skráðir þig síðast inn</translation>
@@ -183,6 +190,9 @@
 <translation id="4341905082470253054">Athugar stöðu TPM...</translation>
 <translation id="4370975561335139969">Netfangið og aðgangsorðið sem þú slóst inn passa ekki saman</translation>
 <translation id="4373418556073552953">Skráðu þig inn með Android-símanum</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar eru notaðir, hversu mikið minni er yfirleitt notað sem og greiningar- og notkunargögn Android-forrita. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS-tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ef kveikt er á vef- og forritavirkni á Google-reikningnum þínum verða Android-gögnin þín hugsanlega vistuð á Google-reikningnum. Þú getur skoðað gögnin þín, eytt þeim og breytt reikningsstillingunum á account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4403266582403435904">Endurheimtu gögn eða skiptu um tæki hvenær sem er á einfaldan hátt. Öryggisafritum er hlaðið upp á Google og þau dulkóðuð með aðgangsorði Google reiknings barnsins þíns.</translation>
 <translation id="4410545552906060960">Notaðu PIN-númer í stað aðgangsorðs til að opna tækið. Til að stilla PIN-númer síðar ferðu í „Stillingar“.</translation>
 <translation id="4415213869328311284">Þú getur byrjað að nota <ph name="DEVICE_TYPE" />.</translation>
@@ -261,6 +271,9 @@
 <translation id="5539070192556911367">Ekki næst í Google</translation>
 <translation id="557722062034137776">Endurstilling tækisins hefur engin áhrif á Google reikningana þína eða gögn sem samstillt hafa verið við reikningana. Öllum skrám sem vistaðar hafa verið í tækinu verður hins vegar eytt.</translation>
 <translation id="5626172233890210551">Nota aðgangsorð í staðinn</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" /> <ph name="DEVICE_OS" /> safnar vélbúnaðargögnum um tæki og deilir þeim með Google til að ákvarða hvaða uppfærslur skuli sækja. Þetta er gert til að bjóða upp á bestu mögulegu upplifunina. Þú getur einnig leyft Google að nota þessi gögn í öðrum tilgangi eins og til að veita aðstoð og bæta upplifun og þjónustu <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur skráð þig inn á þetta tæki og skoðað svæði merkt sem chromeosflex_ í chrome://system til að skoða gögnin sem eru send Google til uppfærslusíunar auk annarra tilvika þegar þú kýst að deila gögnum með Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Frekari upplýsingar um gögn sem <ph name="DEVICE_OS" /> kann að deila með Google og um það hvernig gögnin eru notuð er að finna á g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Til að nota <ph name="NETWORK_ID" /> þarftu hugsanlega fyrst að <ph name="LINK_START" />fara á innskráningarsíðu netsins<ph name="LINK_END" /> sem opnast sjálfkrafa eftir nokkrar sekúndur. Ef þetta gerist ekki er ekki hægt að nota netið.</translation>
 <translation id="5655296450510165335">Skráning tækis</translation>
 <translation id="5659964844710667266">Búðu til aðgangsorð fyrir þessa <ph name="DEVICE_TYPE" /></translation>
@@ -310,6 +323,8 @@
 <translation id="636850387210749493">Fyrirtækjaskráning</translation>
 <translation id="6380143666419481200">Samþykkja og halda áfram</translation>
 <translation id="640457954117263537">Nota staðsetningu fyrir ChromeOS- og Android-forrit og -þjónustur.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar eru notaðir og hversu mikið minni er yfirleitt notað.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum Chrome-tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Setja upp mikilvæga uppfærslu</translation>
 <translation id="6480327114083866287">Stýrt af <ph name="MANAGER" /></translation>
 <translation id="6495266441917713704">Get ekki flutt Wi-Fi</translation>
@@ -326,11 +341,16 @@
 <translation id="6722744767592605627">Þú getur endurheimt <ph name="EMAIL" /> en staðbundnum gögnum verður eytt.</translation>
 <translation id="6748980958975836188">Ég hef lesið og samþykki <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6789834167207639931">Sláðu inn aðgangsorðið að Google-reikningnum þínum á næsta skjá til að ljúka endurheimt</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar voru notaðir, hversu mikið minni var yfirleitt notað sem og greiningar- og notkunargögn Android-forrita. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS-tækis barnsins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á vef- og forritavirkni á Google-reikningi barnsins verða gögn barnsins hugsanlega vistuð á Google-reikningi þess. Fáðu frekari upplýsingar um þessar stillingar og hvernig þær eru stilltar á families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Vinsælustu forritin fyrir <ph name="DEVICE_TYPE" /></translation>
 <translation id="682971198310367122">Persónuverndarstefna Google</translation>
 <translation id="6835762382653651563">Tengstu internetinu til að uppfæra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Innskráning hefur breyst</translation>
 <translation id="6883319974225028188">Úbbs!  Kerfið gat ekki vistað stillingu tækisins.</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Forritsgögn eru hvers kyns gögn sem forrit hefur vistað (í samræmi við stillingar þróunaraðila), þar á meðal gögn á borð við tengiliði, skilaboð og myndir. Gagnanotkun vegna öryggisafrita er ekki talin með í geymsluplássi barnsins á Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur slökkt á þessari þjónustu í stillingunum.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
 <translation id="6918733588290914545">Fljótleg uppsetning með Android-síma</translation>
 <translation id="6920473853105515518">Gakktu úr skugga um að <ph name="DEVICE_TYPE" /> sé nettengt og reyndu aftur. Þú getur einnig farið á play.google/play-terms í öðru tæki.</translation>
@@ -376,6 +396,8 @@
 <translation id="7630426712700473382"><ph name="MANAGER" /> hefur umsjón með þessu tæki og krefst þess að þú skráir þig inn í hvert sinn.</translation>
 <translation id="7639914187072011620">Ekki tókst að sækja framsendingarslóð SAML hjá þjóninum</translation>
 <translation id="7643117827468520640">Farðu yfir þessa skilmála</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Forritsgögn eru hvers kyns gögn sem forrit hefur vistað (í samræmi við stillingar þróunaraðila), þar á meðal gögn á borð við tengiliði, skilaboð og myndir. Gagnanotkun vegna öryggisafrita er ekki talin með í geymsluplássinu þínu á Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur slökkt á þessari þjónustu í stillingunum.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7659584679870740384">Þú hefur ekki leyfi til að nota þetta tæki. Hafðu samband við kerfisstjóra til að fá leyfi til að skrá þig inn.</translation>
@@ -393,6 +415,8 @@
 <translation id="7870730066603611552">Fara yfir samstillingarkosti eftir uppsetningu</translation>
 <translation id="7883792253546618164">Þú getur hætt áskrift hvenær sem er.</translation>
 <translation id="7906440585529721295">Staðbundnum gögnum verður eytt</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar voru notaðir og hversu mikið minni var yfirleitt notað.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS-tækis barnsins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7943311690198910993">Innskráningaraðferð uppfærð</translation>
 <translation id="795240231873601803">Notaðu fyrirtækjaskráningu fyrir vinnu- og skólareikninga</translation>
 <translation id="7968982339740310781">Skoða upplýsingar</translation>
@@ -411,6 +435,8 @@
 <translation id="815491593104042026">Úbbs! Auðkenning mistókst vegna þess að hún var stillt á að nota óörugga vefslóð (<ph name="BLOCKED_URL" />). Hafðu samband við stjórnanda.</translation>
 <translation id="8157704005178149728">Setja upp eftirlit</translation>
 <translation id="8174047975335711832">Upplýsingar um tæki</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Staðsetningarþjónusta Google notar heimildir eins og Wi-Fi, farsímakerfi og skynjara til að ákvarða staðsetningu tækisins.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þú getur hvenær sem er slökkt á staðsetningu Android í þessu tæki með því að opna „Stillingar &gt; Forrit &gt; Google Play Store &gt; Hafa umsjón með stillingum Android &gt; Öryggi og staðsetning &gt; Staðsetning“. Einnig er hægt að slökkva á notkun Wi-Fi, farsímakerfa og skynjara fyrir staðsetningu Android með því að slökkva á „Staðsetningarnákvæmni Google“ á sömu valmynd.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Sláðu aðgangsorðið inn aftur til að uppfæra <ph name="DEVICE_TYPE" /> sniðið þitt.</translation>
 <translation id="8239032431519548577">Fyrirtækjaskráningu lokið</translation>
 <translation id="8241806945692107836">Ákvarðar stillingar tækis...</translation>
@@ -438,6 +464,9 @@
         <ph name="BR" />
         Sýnilegt nálægt tækjum sem <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="8655972064210167941">Innskráning mistókst vegna þess að ekki tókst að staðfesta aðgangsorðið. Hafðu samband við kerfisstjóra eða reyndu aftur.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Þegar kveikt er á staðsetningarnákvæmni eru upplýsingar um þráðlaus merki, t.d. Wi-Fi aðgangsstaði og farsímaturna, ásamt skynjaragögnum tækis, t.d. frá hraðamæli og snúðvísi, notuð til að meta nákvæmari staðsetningu tækisins sem forrit og þjónusta frá Android nota til að veita staðsetningarbundna eiginleika. Til að gera þetta safnar Google af og til upplýsingum um skynjara tækisins og þráðlaus merki nærri þér fyrir hópvistun á staðsetningum þráðlausra merkja.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google notar þessar upplýsingar án þess að auðkenna þig til að: bæta staðsetningarnákvæmni og staðsetningarbundnar þjónustur og til að bæta, veita og viðhalda þjónustu Google almennt. Við vinnum úr þessum upplýsingum á grundvelli lögmætra hagsmuna Google og þriðju aðila er varða þarfir notenda.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Þú getur slökkt á staðsetningarnákvæmni hvenær sem er í staðsetningarstillingum tækisins undir Stillingar &gt; Persónuvernd og öryggi &gt; Persónuverndarstillingar &gt; Aðgangur að staðsetningu &gt; Ítarlegar staðsetningarstillingar. Ef slökkt er á staðsetningarnákvæmni verður engum nákvæmum staðsetningargögnum safnað. Fyrir forrit og þjónustur frá Android er aðeins IP-talan notuð, ef hún er tiltæk, til að ákvarða staðsetningu tækisins, sem kann að hafa áhrif á framboð og nákvæmni staðsetninga fyrir forrit og þjónustu frá Android, s.s. Google-kort.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Tölvan er því miður grunnstillt með gölluðu vélbúnaðarauðkenni. Það kemur í veg fyrir að ChromeOS geti uppfært í nýjustu öryggisúrræði og tölvan <ph name="BEGIN_BOLD" />kann að vera berskjölduð gagnvart árásum<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Bæta barnalæsingum við eftir uppsetningu</translation>
 <translation id="8698269656364382265">Strjúktu til hliðar frá vinstri til að fara aftur á síðasta skjá.</translation>

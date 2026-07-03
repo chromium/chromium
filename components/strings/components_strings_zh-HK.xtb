@@ -893,6 +893,7 @@
 <translation id="2365382709349300355">1 個檔案因政策而被封鎖</translation>
 <translation id="2365508935344991784">戶外傢俬</translation>
 <translation id="2366689192918515749">肉類和海鮮</translation>
+<translation id="2367025302166767427">無法填寫資料</translation>
 <translation id="2367567093518048410">級別</translation>
 <translation id="23703388716193220">高爾夫球用品</translation>
 <translation id="2370368710215137370">檔案上載</translation>
@@ -1126,6 +1127,7 @@
 <translation id="271663710482723385">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可結束全螢幕模式</translation>
 <translation id="2717336592027046789">卷</translation>
 <translation id="2718207025093645426">受管使用者或裝置未載入政策。</translation>
+<translation id="271850739643214113">你的 Pix 帳戶已成功連結至 Google Pay</translation>
 <translation id="2719233594187778789">已忽略非專屬網址：<ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2722622039067384533">客廳家具</translation>
@@ -1214,6 +1216,7 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">網頁的來源語言不是<ph name="LANGUAGE" />嗎？</translation>
 <translation id="2904180982022726666">你的機構對可分享的內容設有限制</translation>
+<translation id="2905065304080706507">開啟後，Chrome 會分享此視窗中的相關分頁，助你取得更貼題的答覆。</translation>
 <translation id="2905107382358353958">新付款設定嘅警示</translation>
 <translation id="2909946352844186028">系統偵測到網絡變更。</translation>
 <translation id="2910062169995917863">工作階段逾時</translation>
@@ -1416,6 +1419,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> 要求在您的裝置上永久儲存數據</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956">「<ph name="SERVER_NAME" />」上的 <ph name="PRINTER_NAME" /></translation>
+<translation id="3196902089458890316">要一律分享相關分頁，以獲得更貼題的答覆嗎？</translation>
 <translation id="3197136577151645743">可要求偵測您使用裝置的時間</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理同步邊啲資料</translation>
 <translation id="3203025201812691413">網址不可留空</translation>
@@ -1565,6 +1569,7 @@
 <translation id="343474037147570563">你上載或附加的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
+<translation id="3436125638121079308">要自動分享相關分頁，以在此訊息串中獲得更貼題的答覆嗎？</translation>
 <translation id="3438509337461223476">自動分享每個訊息串已開啟的相關分頁</translation>
 <translation id="3440783957068352691">正方形</translation>
 <translation id="3441653493275994384">螢幕</translation>
@@ -1625,6 +1630,7 @@
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">絲網印刷紙 (分頁)</translation>
 <translation id="3541016556608204104">進一步瞭解 Chrome Enterprise Connectors</translation>
+<translation id="3542005451565251757">此網站不支援 HTTPS，且你已在 Android 設定中啟用「進階保護功能」，因此系統顯示此警告訊息。<ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">虛擬卡圖片</translation>
 <translation id="3542768452570884558">在新視窗中開啟連結</translation>
 <translation id="3543597750097719865">使用 SHA-1 的 X9.62 ECDSA 簽名</translation>
@@ -1784,6 +1790,7 @@
 <translation id="3761718714832595332">隱藏狀態</translation>
 <translation id="3763752038825281594">你先前不允許此網站使用<ph name="PERMISSION" /></translation>
 <translation id="3765588406864124894">出紙槽 9</translation>
+<translation id="3766505784424699541">如果此視窗中的相關分頁與此對話串有關，便自動分享以獲得更貼題的答覆。</translation>
 <translation id="3767485424735936570">管理員政策不建議將此內容複製並貼到 <ph name="VM_NAME" /></translation>
 <translation id="3769584711865378220"><ph name="URL" /> 想將位置存取權從概略改為精確</translation>
 <translation id="3772211998634047851">紙 (證券紙)</translation>
@@ -1869,6 +1876,7 @@
 <translation id="3901925938762663762">卡片已過期</translation>
 <translation id="390391808978419508">開啟逾時</translation>
 <translation id="3905894480064208252">{0,plural, =1{禁止轉移檔案}other{禁止轉移 <ph name="FILE_COUNT" /> 個檔案}}</translation>
+<translation id="3906022360148923497">付款方式圖示</translation>
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">進一步瞭解已嵌入的內容</translation>
@@ -2090,6 +2098,7 @@
 <translation id="422722221769396062">餐廳外賣服務</translation>
 <translation id="4230204356098880324">可要求使用和移動攝錄機</translation>
 <translation id="4231448684371260244">8 x 13 吋</translation>
+<translation id="4234996384188431444">無需在 Google Chrome 切換應用程式也可透過 Pix 付款</translation>
 <translation id="4239799716689808527">標籤</translation>
 <translation id="424063167283213501">儲存已知的旅客編號</translation>
 <translation id="4241830393007970744">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。</translation>
@@ -2106,6 +2115,7 @@
 <translation id="4255487295905690262">如果產品在任何網站上降價，系統將會向您傳送電郵警示。</translation>
 <translation id="425582637250725228">系統可能不會儲存您的變更。</translation>
 <translation id="4258748452823770588">簽名有誤</translation>
+<translation id="4258927999980634471">要自動分享此訊息串的相關分頁嗎？</translation>
 <translation id="4260407128682690669">如要查看其他裝置上的記錄，請同步記錄和分頁至 <ph name="ACCOUNT_EMAIL" />。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4265635050210404830">你的會員卡</translation>
 <translation id="4265872034478892965">根據管理員的設定允許</translation>
@@ -2173,6 +2183,7 @@
 <translation id="4340810192899866471">從 JSON 匯入</translation>
 <translation id="4340982228985273705">系統偵測到此電腦並非由企業管理，因此政策只容許自動安裝來自「Chrome 網上應用程式商店」的擴充程式。「Chrome 網上應用程式商店」的更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4342742994656318294">主題公園</translation>
+<translation id="4344194909635300809">網頁標題和網址會傳送給 Google，並可能送交人手審查</translation>
 <translation id="4346670990181948854">旅遊資料 · 車輛</translation>
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
 <translation id="4349365535725594680">無法分享機密內容</translation>
@@ -2180,6 +2191,7 @@
 <translation id="4350629523305688469">多功能紙匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 要求掃瞄附近的藍牙裝置，並已找到以下裝置：</translation>
 <translation id="4355383636893709732">Android 應用程式的 ChromeOS 更新</translation>
+<translation id="4357577888320640139">要自動分享每個訊息串的相關分頁嗎？</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode 政策發生錯誤，因此系統無法套用您指定的範本。</translation>
 <translation id="4358461427845829800">管理付款方法…</translation>
 <translation id="4359160567981085931">您剛才在欺詐網站上輸入了密碼。Chrome 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
@@ -2215,6 +2227,7 @@
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">密碼可以在相應的管理設定中刪除</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="4425137053900958839">全面享受 Pix 便利又安全的服務</translation>
 <translation id="4425750422187370446">運動服裝</translation>
 <translation id="443121186588148776">序列連接埠</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登入憑證，或您尚未提供登入憑證。</translation>
@@ -2381,6 +2394,7 @@
 <translation id="4726672564094551039">重新載入政策</translation>
 <translation id="4728558894243024398">平台</translation>
 <translation id="4729147136006144950">慈善機構</translation>
+<translation id="4730773064303503917">透過「錢包」，使用 Pix 付款給親友和商家</translation>
 <translation id="4730977633786878901">查看評論</translation>
 <translation id="4731638775147756694">您的管理員已封鎖此應用程式</translation>
 <translation id="4732860731866514038">正在下載<ph name="LANGUAGE" />語言套件…<ph name="PERCENT" />%</translation>
@@ -2665,6 +2679,7 @@
 <translation id="5157504274688344097">大型零售商和百貨公司</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="5159010409087891077">在新無痕式視窗中開啟網頁 (⇧⌘N)</translation>
+<translation id="5160781056848005130">你透過與 Google 分享資料協助改善強化版自動填入功能</translation>
 <translation id="5161334686036120870">標題：</translation>
 <translation id="5161506081086828129">堆疊器 9</translation>
 <translation id="5164537320435517152"><ph name="MINUTES" /> 分鐘後刪除檔案</translation>
@@ -3406,6 +3421,7 @@
 <translation id="6302546952464230349">顯示<ph name="PERMISSION_NAME" />權限詳情</translation>
 <translation id="6304398603974202180">多媒體軟件</translation>
 <translation id="6305205051461490394">無法存取 <ph name="URL" />。</translation>
+<translation id="6305834316918845109">當你輸入強化版自動填入要求時，Chrome 會記錄你使用此功能的方式，例如你是否接受、編輯或忽略自動填入建議</translation>
 <translation id="6306713302480826305">此地址將從此裝置和其他已登入的裝置中刪除</translation>
 <translation id="6307968763353904914">你的銀行目前無法為此付款方法提供虛擬卡，但你仍可使用 <ph name="CARD_LABEL" /> 在網上付款。</translation>
 <translation id="6311410654831092784">卡片紙</translation>
@@ -3543,7 +3559,6 @@
 <translation id="6494750904506170417">彈出式視窗和重新導向</translation>
 <translation id="6495664197699704593">此密碼只會儲存至此裝置。如要在其他裝置上使用密碼，請<ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="649611364763911650">如要在 Chrome 中使用其他自動填入服務，請在 Android 設定中選擇所需的自動填入服務商</translation>
-<translation id="6496531801333278234">由「個人化智能」找到。你可以在設定中管理資料。</translation>
 <translation id="6499038740797743453">要重設密碼嗎？</translation>
 <translation id="6502510275417601303">閂咗新付款設定嘅警示</translation>
 <translation id="6502991525169604759">不包括您所作的變更</translation>
@@ -3657,6 +3672,7 @@
 <translation id="6689271823431384964">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可在設定中變更此行為。持卡人姓名來自您的帳戶。</translation>
 <translation id="6690688090329768424">「<ph name="PROXY_INVALID_DESTINATION" />」並非有效的終點模式。</translation>
 <translation id="6691397311652656001">騰出超過 <ph name="REQUIRED_FREE_DISK_SPACE" /> 的空間</translation>
+<translation id="6692006953064648573">此網站不支援 HTTPS，且你目前已加入 Google 的「進階保護計劃」，因此系統顯示此警告訊息。<ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以搵你登入 Google 帳戶嘅裝置</translation>
 <translation id="6695428916538794739">動作和冒險電影</translation>
 <translation id="6696424331653607346">旅遊指南和遊記</translation>
@@ -4048,6 +4064,7 @@
 <translation id="7310392214323165548">裝置即將重新啟動</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7313107491291103073">你的機構已將此網站標示為可能違反政策。</translation>
+<translation id="7313260329718515829">系統會分析傳送至 Gemini「個人化智能」的要求，以改善自動填入功能</translation>
 <translation id="7316521168101843192">正在儲存檔案至 Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">連線說明</translation>
@@ -4497,6 +4514,7 @@
 <translation id="7966803981046576691">工作帳戶類型</translation>
 <translation id="7967477318370169806">互惠基金</translation>
 <translation id="7967636097426665267">通訊設備</translation>
+<translation id="7967973398323409409">你自動填入的資料不會向任何人顯示</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進制顏色值。</translation>
 <translation id="7968982339740310781">檢視詳情</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>

@@ -484,6 +484,7 @@
 <translation id="2579713773888829241">共享云端硬盘</translation>
 <translation id="2580306219079937316">打开翻译设置</translation>
 <translation id="2583688836549072561">标签页分组“<ph name="GROUP_TITLE" />”，<ph name="TABS_NUMBER" /> 个标签页，有新活动。</translation>
+<translation id="2584994295315085351">离开 Chrome 4 小时后返回时打开新标签页</translation>
 <translation id="2593272815202181319">等宽</translation>
 <translation id="2601778637777010194">跟踪商品降价情况</translation>
 <translation id="2602372807870028932">此操作会删除保存在此设备上的所选信息</translation>
@@ -2211,7 +2212,7 @@
 <translation id="8370406443343902172">前往“设置”…</translation>
 <translation id="8370929854657845191">展开为中等高度</translation>
 <translation id="8372471489238799313">{count,plural, =1{删除地址}other{删除地址}}</translation>
-<translation id="8378714024927312812">由贵组织管理</translation>
+<translation id="8378714024927312812">由您的组织管理</translation>
 <translation id="8385363453480067273">使用 Google 智能镜头搜索您看到的内容</translation>
 <translation id="8386068868580335421">重置</translation>
 <translation id="8393700583063109961">发送消息</translation>

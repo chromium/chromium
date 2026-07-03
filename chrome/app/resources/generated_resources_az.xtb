@@ -1921,6 +1921,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2460150227008936698">{COUNT,plural, =0{Bu gün vaxtı bitir}=1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
 <translation id="2460482211073772897">Digər qovluqlarda</translation>
 <translation id="2460826998961521840">Google Hesabında yadda saxlanmış giriş açarlarından istifadə etmək üçün</translation>
+<translation id="2461457574123041923">Bu saytdan çıxsanız, tapşırığınız sonlandırılacaq. Digər saytlara daxil olarkən tapşırığı davam etdirmək üçün yeni tab açın.</translation>
 <translation id="2461550163693930491">Saytlara paylaşılan tabları sürüşdürüb zumlamaq icazəsi verməyin</translation>
 <translation id="2461593638794842577">Parolları yalnız bu cihazda yadda saxlamaq üçün bu ayarı söndürə bilərsiniz</translation>
 <translation id="2462550463312552298">Sənədi ümumiləşdir</translation>
@@ -2481,6 +2482,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2865057607286263192">Vurğu işarəsi və xüsusi simvolları görmək üçün klaviatura düymələrini basıb saxlayın. Bununla əlifba düymələri üçün düyməyə təkrar basılması deaktiv edilir. Yalnız ingilis dili (ABŞ) üçün əlçatandır.</translation>
 <translation id="2865919525181940183">Hazırda ekranda olan proqramların ekran şəkli</translation>
 <translation id="286643536820867504">Dəstəklənən dillər üçün avtomatik olaraq subtitrlər yaradır. Audio cihazdan ötürülmür.</translation>
+<translation id="2866504884233915828">Maksimum <ph name="COUNT" /> fayl əlavə edə bilərsiniz</translation>
 <translation id="286674810810214575">Enerji mənbələri yoxlanılır...</translation>
 <translation id="2867768963760577682">VACİB Tab Açıq</translation>
 <translation id="2868746137289129307">Bu artırma köhnədir və müəssisə siyasəti tərəfindən deaktiv edildi. Yeni versiya əlçatan olanda avtomatik aktiv edilə bilər.</translation>
@@ -2648,6 +2650,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2990500505358145117">Təkmil avtodoldurma qısayolunu redaktə edin</translation>
 <translation id="2990583317361835189">Saytlara hərəkət sensorlarından istifadə etmək icazəsi verməyin</translation>
 <translation id="2991182900092497283">Bu datanı əlavə etmə səbəbini daxil edin:</translation>
+<translation id="2992754757708650257">Saytdan çıxılsın və tapşırıq sonlandırılsın?</translation>
 <translation id="2992931425024192067">Bütün bildirişlər göstərilsin</translation>
 <translation id="2993517869960930405">Tətbiq haqqında</translation>
 <translation id="2994804273850542871">Səviyyə 4: ULTRA</translation>
@@ -4368,6 +4371,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4281789858103154731">Yaradın</translation>
 <translation id="4281844954008187215">Xidmət Şərtləri</translation>
 <translation id="4281849573951338030">Qələm düymələrini fərdiləşdirin</translation>
+<translation id="4283635301190260296">Şaquli tabları yığcamlaşdırın</translation>
 <translation id="4284903252249997120">ChromeVox ekran oxucusu və basıb dinləmə funksiyası</translation>
 <translation id="4285418559658561636">Parolu Yeniləyin</translation>
 <translation id="4285498937028063278">Çıxarın</translation>
@@ -5192,6 +5196,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4895799941222633551">Qısayol yaradın...</translation>
 <translation id="4898913189644355814">Sayt tərcih edilən dil və ya almaq istədiyiniz məhsulları yadda saxlaya bilər. Bu məlumat sayt və onun altdomenləri üçün əlçatandır.</translation>
 <translation id="4899052647152077033">Rəngləri çevirin</translation>
+<translation id="4899813415889597597">Google Disk hesabınıza qoşulmaq mümkün olmadı</translation>
 <translation id="490031510406860025">Bu saytda icazə verilməyib</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hs - iç-içə keçmiş</translation>
 <translation id="4900652253009739885">"Seçin" əməliyyatına təyin edilmiş yeganə keçiricini ləğv etmək mümkün deyil. <ph name="RESPONSE" /> istənilən düyməni basın.</translation>

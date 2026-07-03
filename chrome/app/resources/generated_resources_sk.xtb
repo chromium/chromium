@@ -1918,6 +1918,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2460150227008936698">{COUNT,plural, =0{Vyprší dnes}=1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="2460482211073772897">V iných priečinkoch</translation>
 <translation id="2460826998961521840">Ak chcete používať prístupové kľúče uložené v účte Google</translation>
+<translation id="2461457574123041923">Ak opustíte tento web, vaša úloha sa ukončí. Ak chcete úlohu ponechať aktívnu počas návštevy iných webov, otvorte novú kartu.</translation>
 <translation id="2461550163693930491">Nepovoliť webom posúvať a približovať zdieľané karty</translation>
 <translation id="2461593638794842577">Toto nastavenie môžete vypnúť, aby sa vaše heslá ukladali iba do tohto zariadenia</translation>
 <translation id="2462550463312552298">Vytvor zhrnutie tohto dokumentu</translation>
@@ -2478,6 +2479,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2865057607286263192">Pridržaním klávesov na klávesnici zobrazíte diakritické znamienka a špeciálne znaky. Vypne sa tým opakované stláčanie klávesov s písmenami abecedy. K dispozícii iba pre angličtinu (USA).</translation>
 <translation id="2865919525181940183">Snímky programov, ktoré sú momentálne na obrazovke</translation>
 <translation id="286643536820867504">Automaticky vytvára titulky pre podporované jazyky. Zvuk nikdy neopustí vaše zariadenie.</translation>
+<translation id="2866504884233915828">Môžete pridať maximálne tento počet súborov: <ph name="COUNT" /></translation>
 <translation id="286674810810214575">Kontrolujú sa zdroje napájania…</translation>
 <translation id="2867768963760577682">Otvoriť ako pevnú kartu</translation>
 <translation id="2868746137289129307">Toto rozšírenie je zastarané a je zakázané podnikovým pravidlom. Možno bude opäť automaticky povolené, keď bude k dispozícii novšia verzia.</translation>
@@ -2642,8 +2644,10 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2989805286512600854">Otvoriť na novej karte</translation>
 <translation id="2990313168615879645">Pridať účet Google</translation>
 <translation id="2990375978470734995">Externé príslušenstvo odpojte a pripojte, aby sa táto zmena prejavila.</translation>
+<translation id="2990500505358145117">Upraviť skratku vylepšeného automatického dopĺňania</translation>
 <translation id="2990583317361835189">Nepovoliť webom používať senzory pohybu</translation>
 <translation id="2991182900092497283">Zadajte dôvod prilepenia týchto údajov:</translation>
+<translation id="2992754757708650257">Chcete opustiť web a ukončiť úlohu?</translation>
 <translation id="2992931425024192067">Zobrazovať všetok obsah upozornení</translation>
 <translation id="2993517869960930405">Informácie o aplikácii</translation>
 <translation id="2994804273850542871">4. úroveň: ULTRA</translation>
@@ -2980,6 +2984,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3247649647204519958">Tu môžete zobraziť a spravovať povolenia rozšírenia pre web, na ktorom sa nachádzate</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Chyba siete</translation>
 <translation id="3248902735035392926">Na bezpečnosti záleží. Strávte chvíľu <ph name="BEGIN_LINK" />kontrolou rozšírení<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Vlastná skratka vylepšeného automatického dopĺňania</translation>
 <translation id="3249558306861350254">V nastaveniach systému Windows kliknite na <ph name="BEGIN_BOLD" />Nastaviť ako predvolené<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Spravovať zručnosť</translation>
 <translation id="3251119461199395237">Synchronizácia súborov</translation>
@@ -3792,6 +3797,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3827548509471720579">Jas obrazovky</translation>
 <translation id="3827774300009121996">&amp;Celá obrazovka</translation>
 <translation id="3828029223314399057">Hľadať v záložkách</translation>
+<translation id="3828454092958722155">Vymazať skratku vylepšeného automatického dopĺňania</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Vysoké využitie pamäte – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Zdieľané úložisko SMB</translation>
 <translation id="3830470485672984938">Použiť iný prístupový kľúč</translation>
@@ -4364,6 +4370,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4281789858103154731">Vytvoriť</translation>
 <translation id="4281844954008187215">Zmluvné podmienky</translation>
 <translation id="4281849573951338030">Prispôsobiť tlačidlá pera</translation>
+<translation id="4283635301190260296">Zbaliť zvislé karty</translation>
 <translation id="4284903252249997120">Čítačka obrazovky ChromeVox a počúvanie vybraného textu</translation>
 <translation id="4285418559658561636">Aktualizovať heslo</translation>
 <translation id="4285498937028063278">Odopnúť</translation>
@@ -5187,6 +5194,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4895799941222633551">Vytvoriť odkaz…</translation>
 <translation id="4898913189644355814">Web môže uložiť váš preferovaný jazyk alebo položky, ktoré si chcete kúpiť. Tieto informácie má k dispozícii tento web aj jeho subdomény.</translation>
 <translation id="4899052647152077033">Invertovať farby</translation>
+<translation id="4899813415889597597">K vášmu účtu Disk Google sa nepodarilo pripojiť</translation>
 <translation id="490031510406860025">Nepovolené na tomto webe</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz –prekladané</translation>
 <translation id="4900652253009739885">Jediný prepínač pridelený k akcii Vybrať sa nedá odstrániť. Ak chcete <ph name="RESPONSE" />, stlačte ľubovoľný kláves.</translation>
@@ -5278,6 +5286,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4972129977812092092">Úprava tlačiarne</translation>
 <translation id="4972164225939028131">Nesprávne heslo</translation>
 <translation id="4972737347717125191">Weby môžu žiadať o použitie zariadení virtuálnej reality a súvisiacich údajov</translation>
+<translation id="4973302523373219907">Ak nie je nastavená vlastná skratka, predvolene sa používa @@</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Vypnúť zvuk webu}few{Vypnúť zvuk webov}many{Vypnúť zvuk webov}other{Vypnúť zvuk webov}}</translation>
 <translation id="497403230787583386">Kontroly boli dokončené. Dokument sa vytlačí.</translation>
 <translation id="4974442344472293753">Výsledok aktualizácie</translation>
@@ -7254,6 +7263,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6544134392255015460">prepínač podsvietenia klávesnice</translation>
 <translation id="6545665334409411530">Rýchlosť opakovania</translation>
 <translation id="6547354035488017500">Uvoľnite aspoň 512 MB miesta, inak vaše zariadenie prestane reagovať. Miesto uvoľníte odstránením súborov z úložiska zariadenia.</translation>
+<translation id="6548240707386871455">Skratka vylepšeného automatického dopĺňania</translation>
 <translation id="654871471440386944">Chcete zapnúť prehliadanie Caret?</translation>
 <translation id="6548945820758901244">Otvorte bočný panel Vyhľadávania Google</translation>
 <translation id="6549038875972762904">Znova nastaviť</translation>

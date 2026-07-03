@@ -2645,6 +2645,7 @@ Quer pará-lo?</translation>
 <translation id="2989805286512600854">Abrir num Novo Separador</translation>
 <translation id="2990313168615879645">Adicionar Conta Google</translation>
 <translation id="2990375978470734995">Para que esta alteração seja aplicada, volte a ligar os seus acessórios externos.</translation>
+<translation id="2990500505358145117">Editar atalho de preenchimento automático melhorado</translation>
 <translation id="2990583317361835189">Não permitir que os sites utilizem sensores de movimentos</translation>
 <translation id="2991182900092497283">Introduza um motivo para a colagem destes dados:</translation>
 <translation id="2992754757708650257">Sair do site e terminar a tarefa?</translation>
@@ -2984,6 +2985,7 @@ Quer pará-lo?</translation>
 <translation id="3247649647204519958">A partir daqui, pode ver e gerir as autorizações de extensões para o site que está a visitar</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – erro de rede</translation>
 <translation id="3248902735035392926">A segurança é importante. Dedique algum tempo a <ph name="BEGIN_LINK" />verificar as extensões agora<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Atalho personalizado para o preenchimento automático melhorado</translation>
 <translation id="3249558306861350254">Clique em <ph name="BEGIN_BOLD" />Predefinir<ph name="END_BOLD" /> nas definições do Windows.</translation>
 <translation id="3250374026663843838">Gerir a sua competência</translation>
 <translation id="3251119461199395237">Sincronização de ficheiros</translation>
@@ -3796,6 +3798,7 @@ Quer pará-lo?</translation>
 <translation id="3827548509471720579">Brilho do ecrã</translation>
 <translation id="3827774300009121996">&amp;Ecrã inteiro</translation>
 <translation id="3828029223314399057">Pesquisar marcadores</translation>
+<translation id="3828454092958722155">Limpar atalho de preenchimento automático melhorado</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Utilização elevada de memória – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Partilha de ficheiros SMB</translation>
 <translation id="3830470485672984938">Usar uma chave de acesso diferente</translation>
@@ -3858,6 +3861,7 @@ Quer pará-lo?</translation>
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 separador)}other{<ph name="GROUP_TITLE" /> (# separadores)}}</translation>
 <translation id="3871350334636688135">Após 24 horas, o administrador irá efetuar uma atualização única que vai eliminar os seus dados locais quando reiniciar o dispositivo. Tem 24 horas para guardar todos os dados locais de que necessita no armazenamento na nuvem.</translation>
 <translation id="3872991219937722530">Liberte espaço em disco ou o dispositivo deixará de responder.</translation>
+<translation id="3873121930618553927">Usar agentes de programação de IA para criar extensões? Instale o <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> e o <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> para ensinar ao seu agente de programação as atualizações mais recentes da API e as práticas recomendadas.</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
 <translation id="3874532133373654352">A sua organização gere a forma como os dados recolhidos por estas funcionalidades podem ser usados. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Esta funcionalidade usa IA e é experimental</translation>
@@ -4368,6 +4372,7 @@ Quer pará-lo?</translation>
 <translation id="4281789858103154731">Criar</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4281849573951338030">Personalizar botões da caneta</translation>
+<translation id="4283635301190260296">Reduzir separadores verticais</translation>
 <translation id="4284903252249997120">Leitor de ecrã ChromeVox e Selecionar para falar</translation>
 <translation id="4285418559658561636">Atualizar palavra-passe</translation>
 <translation id="4285498937028063278">Desafixar</translation>
@@ -5284,6 +5289,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4972129977812092092">Editar impressora</translation>
 <translation id="4972164225939028131">Palavra-passe incorreta.</translation>
 <translation id="4972737347717125191">Os sites podem solicitar a utilização de dados e dispositivos de realidade virtual</translation>
+<translation id="4973302523373219907">Se o atalho personalizado não estiver definido, é usado @@ por predefinição</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Desativar som do site}other{Desativar som dos sites}}</translation>
 <translation id="497403230787583386">As verificações de segurança estão concluídas. O documento vai ser impresso.</translation>
 <translation id="4974442344472293753">Resultado da atualização</translation>
@@ -7262,6 +7268,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6544134392255015460">botão de retroiluminação do teclado</translation>
 <translation id="6545665334409411530">Taxa de repetição</translation>
 <translation id="6547354035488017500">Liberte, pelo menos, 512 MB de espaço ou o seu dispositivo deixa de responder. Para libertar espaço, elimine ficheiros do armazenamento do dispositivo.</translation>
+<translation id="6548240707386871455">Atalho do preenchimento automático melhorado</translation>
 <translation id="654871471440386944">Ativar a navegação por cursor?</translation>
 <translation id="6548945820758901244">Abrir painel lateral da Pesquisa Google</translation>
 <translation id="6549038875972762904">Refazer configuração</translation>

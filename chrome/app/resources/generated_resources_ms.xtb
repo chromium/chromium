@@ -3347,6 +3347,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3512465804715993309">Serlahan boleh suai</translation>
 <translation id="3513019849832307207">Sertai dan buka</translation>
 <translation id="3513563267917474897">Peluncur rona daripada <ph name="MIN_VALUE" /> hingga <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Sematkan sambungan baharu</translation>
 <translation id="3514647716686280777">Anda mendapat perlindungan keselamatan standard. Untuk mendapatkan lebih perlindungan daripada laman web, muat turun dan sambungan berbahaya, hidupkan Penyemakan Imbas Selamat Dipertingkat dalam tetapan Chrome.</translation>
 <translation id="3514681096978190000">Fail arkib ini merangkumi fail lain yang mungkin menyembunyikan perisian hasad</translation>
 <translation id="3515983984924808886">Sentuh kunci keselamatan anda sekali lagi untuk mengesahkan penetapan semula. Semua maklumat yang disimpan pada kunci keselamatan, termasuk PIN kunci keselamatan akan dipadamkan.</translation>
@@ -3873,6 +3874,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 Tab)}other{<ph name="GROUP_TITLE" /> (# Tab)}}</translation>
 <translation id="3871350334636688135">Selepas 24 jam, pentadbir anda akan melakukan kemas kini sekali yang akan memadamkan data setempat anda apabila anda memulakan semula peranti. Simpan sebarang data setempat yang anda perlukan ke storan awan dalam masa 24 jam.</translation>
 <translation id="3872991219937722530">Kosongkan ruang cakera, jika tidak peranti akan menjadi tidak responsif.</translation>
+<translation id="3873121930618553927">Menggunakan ejen pengekodan AI untuk membina sambungan? Pasang <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> dan <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> untuk mengajar ejen pengekodan anda tentang kemaskinian API terkini dan amalan terbaik.</translation>
 <translation id="3873423927483480833">Tunjukkan PIN</translation>
 <translation id="3874532133373654352">Organisasi anda mengurus cara data yang dikumpulkan oleh ciri ini mungkin digunakan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ciri ini menggunakan AI dan merupakan ciri percubaan</translation>
@@ -4383,6 +4385,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4281789858103154731">Buat</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
 <translation id="4281849573951338030">Sesuaikan butang pen</translation>
+<translation id="4283635301190260296">Kuncupkan Tab Menegak</translation>
 <translation id="4284903252249997120">Pembaca skrin ChromeVox dan pilih untuk bercakap</translation>
 <translation id="4285418559658561636">Kemas kini Kata laluan</translation>
 <translation id="4285498937028063278">Menyahpin</translation>

@@ -1932,6 +1932,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2460150227008936698">{COUNT,plural, =0{Udløber i dag}=1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
 <translation id="2460482211073772897">I andre mapper</translation>
 <translation id="2460826998961521840">Sådan bruger du adgangsnøgler, der er gemt på din Google-konto</translation>
+<translation id="2461457574123041923">Hvis du forlader dette website, afsluttes din opgave. Åbn en ny fane for at fortsætte opgaven, mens du besøger andre websites.</translation>
 <translation id="2461550163693930491">Tillad ikke, at websites kan rulle i og zoome ind på delte faner</translation>
 <translation id="2461593638794842577">Du kan deaktivere denne indstilling, hvis du kun vil gemme dine adgangskoder på denne enhed</translation>
 <translation id="2462550463312552298">Opsummer dette dokument</translation>
@@ -2492,6 +2493,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2865057607286263192">Hold tastaturtasterne nede for at se accenttegn og specialtegn. Dette deaktiverer gentagelse af tastens tegn, når du holder den nede, for alfanumeriske taster. Kun tilgængeligt på engelsk (USA).</translation>
 <translation id="2865919525181940183">Screenshot af de programmer, der lige nu er på skærmen</translation>
 <translation id="286643536820867504">Opretter automatisk undertekster for understøttede sprog. Lyden forlader aldrig din enhed.</translation>
+<translation id="2866504884233915828">Du kan kun tilføje op til <ph name="COUNT" /> filer</translation>
 <translation id="286674810810214575">Tjekker strømkilder...</translation>
 <translation id="2867768963760577682">Åbn som fastgjort fane</translation>
 <translation id="2868746137289129307">Denne udvidelse er forældet og deaktiveret af virksomhedspolitikken. Den kan aktiveres automatisk, når en nyere version er tilgængelig.</translation>
@@ -2656,8 +2658,10 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2989805286512600854">Åbn på ny fane</translation>
 <translation id="2990313168615879645">Tilføj Google-konto</translation>
 <translation id="2990375978470734995">Tilslut dit eksterne tilbehør igen, så ændringerne kan træde i kraft.</translation>
+<translation id="2990500505358145117">Rediger genvej til forbedret autofyld</translation>
 <translation id="2990583317361835189">Tillad ikke, at websites anvender bevægelsessensorer</translation>
 <translation id="2991182900092497283">Angiv en årsag til, at du vil indsætte disse data:</translation>
+<translation id="2992754757708650257">Vil du forlade websitet og afslutte opgaven?</translation>
 <translation id="2992931425024192067">Vis alt indhold i notifikationer</translation>
 <translation id="2993517869960930405">Appinfo</translation>
 <translation id="2994804273850542871">Niveau 4: ULTRA</translation>
@@ -2994,6 +2998,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3247649647204519958">Her kan du se og administrere udvidelsestilladelser for det website, du besøger</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – netværksfejl</translation>
 <translation id="3248902735035392926">Sikkerhed er vigtigt. Brug et øjeblik på at <ph name="BEGIN_LINK" />tjekke dine udvidelser<ph name="END_LINK" /> nu</translation>
+<translation id="3248957351402065497">Tilpasset genvej til forbedret autofyld</translation>
 <translation id="3249558306861350254">Klik på <ph name="BEGIN_BOLD" />Angiv som standard<ph name="END_BOLD" /> i dine Windows-indstillinger.</translation>
 <translation id="3250374026663843838">Administrer din færdighed</translation>
 <translation id="3251119461199395237">Filsynkronisering</translation>
@@ -3806,6 +3811,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3827548509471720579">Skærmens lysstyrke</translation>
 <translation id="3827774300009121996">&amp;Fuld skærm</translation>
 <translation id="3828029223314399057">Søg i bogmærker</translation>
+<translation id="3828454092958722155">Genvej til at rydde forbedret autofyld</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Højt hukommelsesforbrug –<ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-fildeling</translation>
 <translation id="3830470485672984938">Brug en anden adgangsnøgle</translation>
@@ -4378,6 +4384,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4281789858103154731">Opret</translation>
 <translation id="4281844954008187215">Servicevilkår</translation>
 <translation id="4281849573951338030">Tilpas penneknapper</translation>
+<translation id="4283635301190260296">Skjul lodrette faner</translation>
 <translation id="4284903252249997120">ChromeVox-skærmlæser og Tekstoplæsning</translation>
 <translation id="4285418559658561636">Opdater adgangskode</translation>
 <translation id="4285498937028063278">Frigør</translation>
@@ -5202,6 +5209,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4895799941222633551">Opret genvej...</translation>
 <translation id="4898913189644355814">Et website gemmer muligvis dit foretrukne sprog eller de varer, du vil købe. Disse oplysninger er tilgængelige for websitet og dets underdomæner.</translation>
 <translation id="4899052647152077033">Ombyt farver</translation>
+<translation id="4899813415889597597">Der kunne ikke oprettes tilknytning til din Google Drev-konto</translation>
 <translation id="490031510406860025">Ikke tilladt på dette website</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – sammenflettet</translation>
 <translation id="4900652253009739885">Dette er den sidste kontakt, der er tildelt handlingen "Vælg", og den kan derfor ikke fjernes. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
@@ -5293,6 +5301,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4972129977812092092">Rediger printer</translation>
 <translation id="4972164225939028131">Forkert adgangskode</translation>
 <translation id="4972737347717125191">Websites kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
+<translation id="4973302523373219907">Hvis den tilpassede genvej ikke er angivet, bruges @@ som standard</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Slå lyden fra på dette website}one{Slå lyden fra på dette website}other{Slå lyden fra på disse websites}}</translation>
 <translation id="497403230787583386">Sikkerhedstjekkene blev gennemført. Dit dokument udskrives.</translation>
 <translation id="4974442344472293753">Opdateringsresultat</translation>
@@ -7270,6 +7279,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6544134392255015460">slå tastaturets baggrundslys til/fra</translation>
 <translation id="6545665334409411530">Gentagelseshastighed</translation>
 <translation id="6547354035488017500">Din enhed holder op med at svare, hvis du ikke frigør mindst 512 MB. Slet filer fra lageret på enheden for at frigøre plads.</translation>
+<translation id="6548240707386871455">Genvej til forbedret autofyld</translation>
 <translation id="654871471440386944">Vil du aktivere tastenavigation?</translation>
 <translation id="6548945820758901244">Åbn Google Søgning-sidepanelet</translation>
 <translation id="6549038875972762904">Fortryd konfiguration</translation>

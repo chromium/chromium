@@ -1916,6 +1916,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2460150227008936698">{COUNT,plural, =0{Wygasa dzisiaj}=1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
 <translation id="2460482211073772897">W innych folderach</translation>
 <translation id="2460826998961521840">Aby używać kluczy dostępu z konta Google</translation>
+<translation id="2461457574123041923">Jeśli opuścisz tę witrynę, zadanie zostanie zakończone. Aby zachować zadanie podczas odwiedzania innych witryn, otwórz nową kartę.</translation>
 <translation id="2461550163693930491">Nie zezwalaj witrynom na przewijanie ani powiększanie udostępnionych kart</translation>
 <translation id="2461593638794842577">Możesz wyłączyć to ustawienie, aby zapisywać hasła tylko na tym urządzeniu</translation>
 <translation id="2462550463312552298">Podsumuj ten dokument</translation>
@@ -2472,6 +2473,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2865057607286263192">Naciśnij i przytrzymaj klawisze klawiatury, aby wyświetlić znaki akcentu i znaki specjalne To spowoduje wyłączenie powtarzania klawiszy alfabetycznych przy naciśnięciu. Dostępne tylko w języku angielskim (USA).</translation>
 <translation id="2865919525181940183">Zrzut ekranu z widocznymi na nim teraz programami</translation>
 <translation id="286643536820867504">Automatycznie tworzy napisy w obsługiwanych językach. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
+<translation id="2866504884233915828">Maksymalna liczba plików, które możesz dodać: <ph name="COUNT" /></translation>
 <translation id="286674810810214575">Sprawdzam źródła zasilania...</translation>
 <translation id="2867768963760577682">Otwórz jako przypiętą kartę</translation>
 <translation id="2868746137289129307">To rozszerzenie jest nieaktualne i zostało wyłączone zgodnie z polityką firmy. Może zostać włączone automatycznie, gdy dostępna będzie nowa wersja.</translation>
@@ -2639,6 +2641,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2990500505358145117">Edytuj skrót do ulepszonego autouzupełniania</translation>
 <translation id="2990583317361835189">Nie zezwalaj witrynom na używanie czujników ruchu</translation>
 <translation id="2991182900092497283">Wpisz uzasadnienie wklejenia tych danych:</translation>
+<translation id="2992754757708650257">Opuścić witrynę i zakończyć zadanie?</translation>
 <translation id="2992931425024192067">Pokazuj wszystkie powiadomienia</translation>
 <translation id="2993517869960930405">Informacje o aplikacji</translation>
 <translation id="2994804273850542871">Poziom 4: ULTRA</translation>
@@ -3845,6 +3848,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 karta)}few{<ph name="GROUP_TITLE" /> (# karty)}many{<ph name="GROUP_TITLE" /> (# kart)}other{<ph name="GROUP_TITLE" /> (# karty)}}</translation>
 <translation id="3871350334636688135">Za 24 godziny administrator wykona jednorazową aktualizację, która usunie Twoje dane lokalne po ponownym uruchomieniu urządzenia. Zapisz w chmurze wszystkie potrzebne dane lokalne przed upływem 24 godzin.</translation>
 <translation id="3872991219937722530">Zwolnij miejsce na dysku, ponieważ w przeciwnym razie urządzenie przestanie odpowiadać.</translation>
+<translation id="3873121930618553927">Używasz agentów kodowania AI do tworzenia rozszerzeń? Zainstaluj <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> i <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, aby nauczyć agenta kodowania najnowszych aktualizacji interfejsu API i sprawdzonych metod.</translation>
 <translation id="3873423927483480833">Pokaż kody PIN</translation>
 <translation id="3874532133373654352">Twoja organizacja określa, jak mogą być używane dane zbierane przez te funkcje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ta funkcja korzysta z AI i jest eksperymentalna</translation>
@@ -4355,6 +4359,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4281789858103154731">Utwórz</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="4281849573951338030">Dostosuj przyciski pióra</translation>
+<translation id="4283635301190260296">Zwiń karty pionowe</translation>
 <translation id="4284903252249997120">Czytnik ekranu ChromeVox i funkcja Przeczytaj na głos</translation>
 <translation id="4285418559658561636">Aktualizuj hasło</translation>
 <translation id="4285498937028063278">Odepnij</translation>
@@ -5178,6 +5183,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4895799941222633551">Utwórz &amp;skrót…</translation>
 <translation id="4898913189644355814">Witryna może zapisać preferowany język lub produkty, które chcesz kupić. Te informacje są dostępne w witrynie i jej subdomenach.</translation>
 <translation id="4899052647152077033">Odwrócenie kolorów</translation>
+<translation id="4899813415889597597">Nie udało się połączyć z kontem na Dysku Google</translation>
 <translation id="490031510406860025">Niedozwolone w tej witrynie</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – z przeplotem</translation>
 <translation id="4900652253009739885">Nie można usunąć jedynego przełącznika przypisanego do czynności „Wybierz”. Aby <ph name="RESPONSE" />, naciśnij dowolny klawisz.</translation>

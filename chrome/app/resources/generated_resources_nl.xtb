@@ -1918,6 +1918,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2460150227008936698">{COUNT,plural, =0{Verloopt vandaag}=1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
 <translation id="2460482211073772897">In andere mappen</translation>
 <translation id="2460826998961521840">Om toegangssleutels te gebruiken die zijn opgeslagen in je Google-account</translation>
+<translation id="2461457574123041923">Als je deze site verlaat, wordt je taak beëindigd. Open een nieuw tabblad om de taak te behouden terwijl je andere sites bezoekt.</translation>
 <translation id="2461550163693930491">Niet toestaan dat sites scrollen en zoomen op gedeelde tabbladen</translation>
 <translation id="2461593638794842577">Je kunt deze instelling uitzetten om je wachtwoorden alleen op dit apparaat op te slaan</translation>
 <translation id="2462550463312552298">Dit document samenvatten</translation>
@@ -2478,6 +2479,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2865057607286263192">Houd de toetsenbordtoetsen ingedrukt om accenttekens en speciale tekens te bekijken. Zo wordt herhaalde toetsaanslag voor alfabettoetsen uitgezet. Alleen beschikbaar voor het Engels (VS).</translation>
 <translation id="2865919525181940183">Screenshot van programma's die momenteel op het scherm staan</translation>
 <translation id="286643536820867504">Maakt automatisch ondertiteling voor ondersteunde talen. De audio verlaat je apparaat nooit.</translation>
+<translation id="2866504884233915828">Je kunt maximaal <ph name="COUNT" /> bestanden toevoegen</translation>
 <translation id="286674810810214575">Voedingsbronnen controleren…</translation>
 <translation id="2867768963760577682">Openen als vastgezet tabblad</translation>
 <translation id="2868746137289129307">Deze extensie is verouderd en uitgezet op basis van bedrijfsbeleid. De extensie kan automatisch worden aangezet wanneer er een nieuwere versie beschikbaar komt.</translation>
@@ -2642,8 +2644,10 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2989805286512600854">Openen op nieuw tabblad</translation>
 <translation id="2990313168615879645">Google-account toevoegen</translation>
 <translation id="2990375978470734995">Sluit je externe accessoires weer aan om deze wijziging door te voeren.</translation>
+<translation id="2990500505358145117">Snelkoppeling voor verbeterd automatisch invullen bewerken</translation>
 <translation id="2990583317361835189">Niet toestaan dat sites bewegingssensoren gebruiken</translation>
 <translation id="2991182900092497283">Voer een reden in waarom je deze gegevens plakt:</translation>
+<translation id="2992754757708650257">Site verlaten en taak beëindigen?</translation>
 <translation id="2992931425024192067">Content van alle meldingen bekijken</translation>
 <translation id="2993517869960930405">App-informatie</translation>
 <translation id="2994804273850542871">Niveau 4: ULTRA</translation>
@@ -2978,6 +2982,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3247649647204519958">Hier kun je extensierechten bekijken en beheren voor de site die je bezoekt</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: netwerkfout</translation>
 <translation id="3248902735035392926">Veiligheid is belangrijk. Neem nu even de tijd om <ph name="BEGIN_LINK" />je extensies te controleren<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Aangepaste snelkoppeling voor verbeterd automatisch invullen</translation>
 <translation id="3249558306861350254">Klik op <ph name="BEGIN_BOLD" />Standaard instellen<ph name="END_BOLD" /> in je Windows-instellingen.</translation>
 <translation id="3250374026663843838">Je vaardigheid beheren</translation>
 <translation id="3251119461199395237">Bestandssynchronisatie</translation>
@@ -3790,6 +3795,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3827548509471720579">Helderheid van het scherm</translation>
 <translation id="3827774300009121996">&amp;Volledig scherm</translation>
 <translation id="3828029223314399057">Zoeken in bookmarks</translation>
+<translation id="3828454092958722155">Sneltoets voor verbeterd automatisch invullen wissen</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Intensief geheugengebruik - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-fileshare</translation>
 <translation id="3830470485672984938">Een andere toegangssleutel gebruiken</translation>
@@ -4361,6 +4367,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4281789858103154731">Maken</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="4281849573951338030">Penknoppen aanpassen</translation>
+<translation id="4283635301190260296">Verticale tabbladen samenvouwen</translation>
 <translation id="4284903252249997120">ChromeVox-schermlezer en Selecteer om voor te lezen</translation>
 <translation id="4285418559658561636">Wachtwoord updaten</translation>
 <translation id="4285498937028063278">Losmaken</translation>
@@ -5184,6 +5191,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4895799941222633551">&amp;Snelkoppeling maken...</translation>
 <translation id="4898913189644355814">Een site slaat misschien je voorkeurstaal of items die je wilt kopen op. Deze informatie is beschikbaar voor de site en de subdomeinen.</translation>
 <translation id="4899052647152077033">Kleuren omkeren</translation>
+<translation id="4899813415889597597">Kan geen verbinding maken met je Google Drive-account</translation>
 <translation id="490031510406860025">Niet toegestaan op deze site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - geïnterlinieerd</translation>
 <translation id="4900652253009739885">Kan niet de enige schakelaar verwijderen die is toegewezen aan de actie Selecteren. Druk op een toets om te <ph name="RESPONSE" />.</translation>
@@ -5275,6 +5283,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4972129977812092092">Printer bewerken</translation>
 <translation id="4972164225939028131">Onjuist wachtwoord</translation>
 <translation id="4972737347717125191">Sites kunnen vragen of ze apparaten en gegevens voor virtual reality mogen gebruiken</translation>
+<translation id="4973302523373219907">Als de aangepaste sneltoets niet is ingesteld, wordt @@ standaard gebruikt</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Geluid van site uitzetten}other{Geluid van sites uitzetten}}</translation>
 <translation id="497403230787583386">Beveiligingscontroles zijn uitgevoerd. Je document wordt afgedrukt.</translation>
 <translation id="4974442344472293753">Resultaat van update</translation>
@@ -7248,6 +7257,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6544134392255015460">schakelaar voor achtergrondverlichting toetsenbord</translation>
 <translation id="6545665334409411530">Herhalingssnelheid</translation>
 <translation id="6547354035488017500">Je moet minimaal 512 MB aan ruimte vrijmaken om ervoor te zorgen dat het apparaat blijft reageren. Verwijder bestanden uit de opslag van het apparaat om ruimte vrij te maken.</translation>
+<translation id="6548240707386871455">Snelkoppeling voor verbeterd automatisch invullen</translation>
 <translation id="654871471440386944">Browsen met navigatietoetsen aanzetten?</translation>
 <translation id="6548945820758901244">Zijvenster van Google Zoeken openen</translation>
 <translation id="6549038875972762904">Opnieuw instellen</translation>

@@ -1918,6 +1918,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2460150227008936698">{COUNT,plural, =0{Süresi bugün dolacak}=1{Süresi yarın dolacak}other{Süresi # içinde dolacak}}</translation>
 <translation id="2460482211073772897">Diğer klasörlerde</translation>
 <translation id="2460826998961521840">Google Hesabınızda kayıtlı geçiş anahtarlarını kullanmak için</translation>
+<translation id="2461457574123041923">Bu siteden ayrılırsanız göreviniz sonlandırılır. Diğer siteleri ziyaret ederken görevi sürdürmek için yeni bir sekme açın.</translation>
 <translation id="2461550163693930491">Sitelerin paylaşılan sekmeleri kaydırmasına ve yakınlaştırmasına izin verme</translation>
 <translation id="2461593638794842577">Şifrelerinizi yalnızca bu cihaza kaydetmek için bu ayarı kapatabilirsiniz</translation>
 <translation id="2462550463312552298">Bu belgeyi özetle</translation>
@@ -2478,6 +2479,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2865057607286263192">Aksan işaretlerini ve özel karakterleri görmek için klavye tuşlarını basılı tutun. Bu ayar, alfabe tuşları için basılan tuşu tekrarlama özelliğini devre dışı bırakır. Yalnızca İngilizce (ABD) olarak kullanılabilir.</translation>
 <translation id="2865919525181940183">Şu anda ekrandaki programların ekran görüntüsü</translation>
 <translation id="286643536820867504">Desteklenen diller için otomatik olarak altyazı oluşturur. Cihazınızdan hiç ses aktarılmaz.</translation>
+<translation id="2866504884233915828">En fazla <ph name="COUNT" /> dosya ekleyebilirsiniz</translation>
 <translation id="286674810810214575">Güç kaynakları kontrol ediliyor...</translation>
 <translation id="2867768963760577682">İğnelenmiş Sekme Olarak Aç</translation>
 <translation id="2868746137289129307">Bu uzantı, eski ve kurumsal politika tarafından devre dışı bırakıldı. Yeni bir sürüm kullanılabilir durumda olduğunda otomatik olarak etkin hale gelebilir.</translation>
@@ -2642,8 +2644,10 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2989805286512600854">Yeni Sekmede Aç</translation>
 <translation id="2990313168615879645">Google Hesabı ekle</translation>
 <translation id="2990375978470734995">Bu değişikliğin geçerli olması için harici aksesuarlarınızı yeniden bağlayın.</translation>
+<translation id="2990500505358145117">Gelişmiş otomatik doldurma kısayolunu düzenle</translation>
 <translation id="2990583317361835189">Sitelerin hareket sensörlerini kullanmasına izin verme</translation>
 <translation id="2991182900092497283">Lütfen bu verileri yapıştırma nedeninizi girin:</translation>
+<translation id="2992754757708650257">Siteden çıkılıp görev sonlandırılsın mı?</translation>
 <translation id="2992931425024192067">Tüm bildirim içeriğini göster</translation>
 <translation id="2993517869960930405">Uygulama Bilgisi</translation>
 <translation id="2994804273850542871">4. Katman: ULTRA</translation>
@@ -2978,6 +2982,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3247649647204519958">Buradan, açtığınız sitenin uzantı izinlerini görebilir ve yönetebilirsiniz</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Ağ hatası</translation>
 <translation id="3248902735035392926">Güvenlik önemlidir. Bir dakikanızı ayırıp <ph name="BEGIN_LINK" />uzantılarınızı şimdi kontrol edin<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Gelişmiş otomatik doldurma için özel kısayol</translation>
 <translation id="3249558306861350254">Windows ayarlarınızda <ph name="BEGIN_BOLD" />Varsayılan Olarak Ayarla<ph name="END_BOLD" />'yı tıklayın.</translation>
 <translation id="3250374026663843838">Becerileri yönet</translation>
 <translation id="3251119461199395237">Dosya senkronizasyonu</translation>
@@ -3790,6 +3795,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3827548509471720579">Ekran parlaklığı</translation>
 <translation id="3827774300009121996">&amp;Tam Ekran</translation>
 <translation id="3828029223314399057">Yer işaretlerinde arayın</translation>
+<translation id="3828454092958722155">Gelişmiş otomatik doldurma kısayolunu temizle</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Yüksek bellek kullanımı - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB dosya paylaşımı</translation>
 <translation id="3830470485672984938">Farklı bir geçiş anahtarı kullanın</translation>
@@ -4362,6 +4368,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4281789858103154731">Oluştur</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
 <translation id="4281849573951338030">Kalem düğmelerini özelleştir</translation>
+<translation id="4283635301190260296">Dikey Sekmeleri Daralt</translation>
 <translation id="4284903252249997120">ChromeVox ekran okuyucu ile Seç ve Dinle özelliği</translation>
 <translation id="4285418559658561636">Şifreyi Güncelle</translation>
 <translation id="4285498937028063278">Sabitlemeyi kaldır</translation>
@@ -5186,6 +5193,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4895799941222633551">&amp;Kısayol oluştur...</translation>
 <translation id="4898913189644355814">Bir site, tercih ettiğiniz dili veya satın almak istediğiniz öğeleri kaydedebilir. Bu bilgilere ilgili site ve sitenin alt alan adları erişebilir.</translation>
 <translation id="4899052647152077033">Renkleri çevir</translation>
+<translation id="4899813415889597597">Google Drive hesabınıza bağlanılamadı</translation>
 <translation id="490031510406860025">Bu sitede izin verilmiyor</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - birbirine geçmiş</translation>
 <translation id="4900652253009739885">"Seç"e atanmış tek anahtar kaldırılamaz. <ph name="RESPONSE" /> için herhangi bir tuşa basın.</translation>
@@ -5277,6 +5285,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4972129977812092092">Yazıcı bilgilerini düzenleyin</translation>
 <translation id="4972164225939028131">Yanlış şifre</translation>
 <translation id="4972737347717125191">Siteler sanal gerçeklik cihazlarını ve verilerini kullanmak isteyebilir</translation>
+<translation id="4973302523373219907">Özel kısayol ayarlanmazsa varsayılan olarak @@ kullanılır</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Sitenin sesini kapat}other{Sitelerin sesini kapat}}</translation>
 <translation id="497403230787583386">Güvenlik kontrolleri tamamlandı. Dokümanınız yazdırılacak.</translation>
 <translation id="4974442344472293753">Güncelleme Sonucu</translation>
@@ -7254,6 +7263,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6544134392255015460">klavye arka ışığını açma/kapatma</translation>
 <translation id="6545665334409411530">Yineleme hızı</translation>
 <translation id="6547354035488017500">En az 512 MB alan boşaltmazsanız cihazınız yanıt vermemeye başlayacaktır. Yer açmak için cihazın depolama alanındaki dosyaları silin.</translation>
+<translation id="6548240707386871455">Gelişmiş otomatik doldurma kısayolu</translation>
 <translation id="654871471440386944">Klavyeyle göz atma açılsın mı?</translation>
 <translation id="6548945820758901244">Google Arama yan panelini açın</translation>
 <translation id="6549038875972762904">Kurulumu yeniden yap</translation>

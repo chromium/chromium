@@ -893,6 +893,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2365382709349300355">1 fajl je blokiran zbog smernica</translation>
 <translation id="2365508935344991784">Baštenski nameštaj</translation>
 <translation id="2366689192918515749">Meso i plodovi mora</translation>
+<translation id="2367025302166767427">Problem pri popunjavanju informacija</translation>
 <translation id="2367567093518048410">Nivo</translation>
 <translation id="23703388716193220">Oprema za golf</translation>
 <translation id="2370368710215137370">Učitavanje fajlova</translation>
@@ -1126,6 +1127,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="271663710482723385">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da biste izašli iz režima celog ekrana</translation>
 <translation id="2717336592027046789">Kotur</translation>
 <translation id="2718207025093645426">Korisnik ili uređaj kojim se upravlja nema učitanih smernica.</translation>
+<translation id="271850739643214113">Pix nalog je povezan sa Google Pay-om</translation>
 <translation id="2719233594187778789">Zanemaren nejedinstveni URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Zahtev je uspeo</translation>
 <translation id="2722622039067384533">Nameštaj za dnevnu sobu</translation>
@@ -1214,6 +1216,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Ova stranica nije na jeziku <ph name="LANGUAGE" />?</translation>
 <translation id="2904180982022726666">Vaša organizacija ograničava sadržaj koji možete da delite</translation>
+<translation id="2905065304080706507">Kada je ovo podešavanje uključeno, Chrome deli relevantne kartice u ovom prozoru da bi vam pomogao da dobijete relevantnije odgovore.</translation>
 <translation id="2905107382358353958">Obaveštenje o novom podešavanju plaćanja</translation>
 <translation id="2909946352844186028">Otkrivena je promena na mreži.</translation>
 <translation id="2910062169995917863">Sesija je istekla</translation>
@@ -1416,6 +1419,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3194737229810486521"><ph name="URL" /> želi da trajno skladišti podatke na uređaju</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na: <ph name="SERVER_NAME" /></translation>
+<translation id="3196902089458890316">Želite uvek da delite relevantne kartice da biste dobijali bolje odgovore?</translation>
 <translation id="3197136577151645743">Može da traži da zna kada aktivno koristite uređaj</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali time koje informacije sinhronizujete u podešavanjima Chrome-a</translation>
 <translation id="3203025201812691413">URL ne može da bude prazan</translation>
@@ -1565,6 +1569,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="343474037147570563">Fajlovi koje otpremite ili priložite se šalju u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skenirani u potrazi za osetljivim podacima ili malverom i mogu da budu sačuvani na osnovu smernica preduzeća i vidljivi su administratoru.</translation>
 <translation id="3435557549311968410">Neprekidno (kratko)</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
+<translation id="3436125638121079308">Želite automatski da delite relevantne kartice da biste dobijali bolje odgovore u ovoj konverzaciji?</translation>
 <translation id="3438509337461223476">Automatski delite relevantne otvorene kartice u svakoj konverzaciji</translation>
 <translation id="3440783957068352691">kvadratna</translation>
 <translation id="3441653493275994384">Ekran</translation>
@@ -1626,6 +1631,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Ekran (stranica)</translation>
 <translation id="3541016556608204104">Više o Chrome Enterprise Connectors-ima</translation>
+<translation id="3542005451565251757">Ovo upozorenje vam se prikazuje jer ovaj sajt ne podržava HTTPS, a vi ste uključili Naprednu zaštitu u podešavanjima Android-a. <ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">Slika kartice</translation>
 <translation id="3542768452570884558">Otvori link u novom prozoru</translation>
 <translation id="3543597750097719865">Potpis X9.62 ECDSA putem SHA-512</translation>
@@ -1785,6 +1791,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3761718714832595332">Sakrij status</translation>
 <translation id="3763752038825281594">Ranije niste dozvolili stavku <ph name="PERMISSION" /> za ovaj sajt</translation>
 <translation id="3765588406864124894">9. poštansko sanduče</translation>
+<translation id="3766505784424699541">Automatski delite relevantne kartice u ovom prozoru ako su povezane sa ovom konverzacijom da biste dobijali prilagođenije odgovore.</translation>
 <translation id="3767485424735936570">Smernice administratora ne preporučuju kopiranje i lepljenje ovog sadržaja u <ph name="VM_NAME" /></translation>
 <translation id="3769584711865378220"><ph name="URL" /> želi da promeni pristup lokaciji sa približne na preciznu</translation>
 <translation id="3772211998634047851">Papir (izdržljiv)</translation>
@@ -1870,6 +1877,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3901925938762663762">Kartica je istekla</translation>
 <translation id="390391808978419508">Vreme za otvaranje je isteklo</translation>
 <translation id="3905894480064208252">{0,plural, =1{Prenos fajla je blokiran}one{Prenos <ph name="FILE_COUNT" /> fajla je blokiran}few{Prenos <ph name="FILE_COUNT" /> fajla je blokiran}other{Prenos <ph name="FILE_COUNT" /> fajlova je blokiran}}</translation>
+<translation id="3906022360148923497">Ikona načina plaćanja</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saznajte više o ugrađenom sadržaju</translation>
@@ -2091,6 +2099,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="422722221769396062">Usluge dostave hrane iz restorana</translation>
 <translation id="4230204356098880324">Može da traži da koristi i pomera kameru</translation>
 <translation id="4231448684371260244">8×13 in</translation>
+<translation id="4234996384188431444">Plaćajte pomoću Pix-a bez prebacivanja iz aplikacije u aplikaciju u Google Chrome-u</translation>
 <translation id="4239799716689808527">Nalepnice</translation>
 <translation id="424063167283213501">Sačuvajte broj registrovanog putnika</translation>
 <translation id="4241830393007970744">Napadači na sajtu koji ste probali da posetite mogu da vas prevare da instalirate softver ili otkrijete stvari poput lozinki, telefona ili brojeva kreditnih kartica.</translation>
@@ -2107,6 +2116,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4255487295905690262">Dobijaćete obaveštenja imejlom ako se cena snizi na bilo kom sajtu.</translation>
 <translation id="425582637250725228">Promene koje ste uneli možda neće biti sačuvane.</translation>
 <translation id="4258748452823770588">Neispravan potpis</translation>
+<translation id="4258927999980634471">Želite automatski da delite relevantne kartice u ovoj konverzaciji?</translation>
 <translation id="4260407128682690669">Da biste preuzeli istoriju sa drugih uređaja, sinhronizujte istoriju i kartice sa <ph name="ACCOUNT_EMAIL" />. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="4265635050210404830">Kartice lojalnosti</translation>
 <translation id="4265872034478892965">Dozvoljava administrator</translation>
@@ -2174,6 +2184,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4340810192899866471">Uvezi iz JSON-a</translation>
 <translation id="4340982228985273705">Otkriveno je da ovim računarom ne upravlja preduzeće, pa smernice mogu automatski da instaliraju samo dodatke koji se hostuju u Chrome veb-prodavnici. URL ažuriranja u Chrome veb-prodavnici je „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4342742994656318294">Tematski parkovi</translation>
+<translation id="4344194909635300809">Naslovi i URL-ovi stranica šalju se Google-u i mogu da ih pregledaju ljudi</translation>
 <translation id="4346670990181948854">Informacije o putovanju · Vozila</translation>
 <translation id="4348834659292907206">Veza sa sajtom <ph name="SITE" /> nije bezbedna</translation>
 <translation id="4349365535725594680">Deljenje poverljivog sadržaja nije uspelo</translation>
@@ -2181,6 +2192,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4350629523305688469">Višenamenska fioka</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> želi da traži Bluetooth uređaje u blizini. Pronađeni su sledeći uređaji:</translation>
 <translation id="4355383636893709732">Ažuriranje ChromeOS-a za Android aplikacije</translation>
+<translation id="4357577888320640139">Želite automatski da delite relevantne kartice u svakoj konverzaciji?</translation>
 <translation id="4358059973562876591">Nije moguće primeniti šablone koje ste naveli zbog greške u DnsOverHttpsMode smernicama.</translation>
 <translation id="4358461427845829800">Upravljajte načinima plaćanja...</translation>
 <translation id="4359160567981085931">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome može da vam pomogne. Da biste promenili lozinku i obavestili Google da je nalog možda ugrožen, kliknite na Zaštiti nalog.</translation>
@@ -2216,6 +2228,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Lozinke mogu da se brišu u podešavanjima upravljanja</translation>
 <translation id="4424024547088906515">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; Chrome nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
+<translation id="4425137053900958839">Uživajte u pogodnostima i bezbednosti na koje možete da računate u Pix-u</translation>
 <translation id="4425750422187370446">Odeća za sport</translation>
 <translation id="443121186588148776">Serijski port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nije prihvatio sertifikat za prijavljivanje ili sertifikat za prijavljivanje nije priložen.</translation>
@@ -2382,6 +2395,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4726672564094551039">Ponovo učitaj smernice</translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4729147136006144950">Dobrotvorni rad i filantropija</translation>
+<translation id="4730773064303503917">Pošaljite Pix prijateljima i preduzećima pomoću Novčanika</translation>
 <translation id="4730977633786878901">Recenzije</translation>
 <translation id="4731638775147756694">Administrator je blokirao ovu aplikaciju</translation>
 <translation id="4732860731866514038">Preuzima se jezički paket za jezik <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
@@ -2666,6 +2680,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5157504274688344097">Veletrgovine i robne kuće</translation>
 <translation id="5158275234811857234">Korice</translation>
 <translation id="5159010409087891077">Otvorite stranicu u novom prozoru bez arhiviranja (⇧⌘N)</translation>
+<translation id="5160781056848005130">Deljenjem podataka sa Google-om pomažete nam da unapredimo poboljšano automatsko popunjavanje</translation>
 <translation id="5161334686036120870">Tema:</translation>
 <translation id="5161506081086828129">9. pregrada za slaganje</translation>
 <translation id="5164537320435517152">Izbriši fajlove za <ph name="MINUTES" /> min</translation>
@@ -3406,6 +3421,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6302546952464230349">Prikaži detalje dozvole <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Multimedijalni softver</translation>
 <translation id="6305205051461490394">URL <ph name="URL" /> nije dostupan.</translation>
+<translation id="6305834316918845109">Kada unesete zahtev za poboljšano automatsko popunjavanje, Chrome evidentira kako koristite tu funkciju, na primer, da li prihvatate, menjate ili ignorišete predloge za automatsko popunjavanje</translation>
 <translation id="6306713302480826305">Ova adresa će biti izbrisana sa ovog i drugih uređaja na kojima ste prijavljeni</translation>
 <translation id="6307968763353904914">Banka trenutno ne nudi virtuelne kartice za ovaj način plaćanja, ali i dalje možete da koristite <ph name="CARD_LABEL" /> za plaćanje onlajn.</translation>
 <translation id="6311410654831092784">Tvrdi papir</translation>
@@ -3543,7 +3559,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6494750904506170417">iskačući prozori i preusmeravanja</translation>
 <translation id="6495664197699704593">Ova lozinka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Da biste koristili drugu uslugu automatskog popunjavanja u Chrome-u, odaberite dobavljača automatskog popunjavanja u Android podešavanjima</translation>
-<translation id="6496531801333278234">Pronašla Personalizovana inteligencija. Informacijama možete da upravljate u podešavanjima.</translation>
 <translation id="6499038740797743453">Želite li da resetujete lozinku?</translation>
 <translation id="6502510275417601303">Obaveštenje o novom podešavanju plaćanja je zatvoreno</translation>
 <translation id="6502991525169604759">Bez vaših promena</translation>
@@ -3657,6 +3672,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6689271823431384964">Chrome vam nudi čuvanje kartica na Google nalogu zato što ste prijavljeni. To možete da promenite u podešavanjima. Ime vlasnika kartice smo uzeli sa naloga.</translation>
 <translation id="6690688090329768424">„<ph name="PROXY_INVALID_DESTINATION" />“ nije važeći obrazac odredišta.</translation>
 <translation id="6691397311652656001">Oslobodite više od <ph name="REQUIRED_FREE_DISK_SPACE" /> prostora</translation>
+<translation id="6692006953064648573">Ovo upozorenje vam se prikazuje jer ovaj sajt ne podržava HTTPS i deo je Google programa napredne zaštite. <ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste otvorili opciju za traženje uređaja na Google nalogu</translation>
 <translation id="6695428916538794739">Akcije i avanture</translation>
 <translation id="6696424331653607346">Turistički vodiči i katalozi</translation>
@@ -4048,6 +4064,7 @@ Dodatni detalji:
 <translation id="7310392214323165548">Uređaj će se restartovati veoma brzo</translation>
 <translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7313107491291103073">Vaša organizacija je označila ovaj sajt jer možda krši smernice.</translation>
+<translation id="7313260329718515829">Zahtevi poslati Personalizovanoj inteligenciji sa Gemini-jem analiziraju se radi poboljšanja automatskog popunjavanja</translation>
 <translation id="7316521168101843192">Fajl se čuva na Microsoft OneDrive-u</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoć pri povezivanju</translation>
@@ -4497,6 +4514,7 @@ Dodatni detalji:
 <translation id="7966803981046576691">Tip naloga zadatka</translation>
 <translation id="7967477318370169806">Investicioni fondovi</translation>
 <translation id="7967636097426665267">Komunikaciona oprema</translation>
+<translation id="7967973398323409409">Informacije koje automatski popunjavate niko ne vidi</translation>
 <translation id="79682505114836835">Vrednost <ph name="VALUE" /> je nevažeća heksadecimalna boja.</translation>
 <translation id="7968982339740310781">Prikaži detalje</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 sa RSA šifrovanjem</translation>

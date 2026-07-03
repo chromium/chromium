@@ -150,7 +150,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2572494885440352020">Chromium Жардамчы</translation>
 <translation id="2575822587468774919">Сүрөт издөө функциясы менен издөө үчүн каалаган нерсени тандаңыз</translation>
 <translation id="2576118232315942160">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн Chromium'га кириңиз</translation>
-<translation id="2587622539943955767">Chromium'ду жүктөп алып, Google аккаунтуңузга кирүү үчүн телефонуңуз менен QR кодун скандаңыз.</translation>
+<translation id="2587622539943955767">Chromium'ду жүктөп алып, Google аккаунтуңузга кирүү үчүн телефонуңуз менен QR кодду скандаңыз.</translation>
 <translation id="2592940277904433508">Chromium'ду колдоно берүү</translation>
 <translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -549,7 +549,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
 <translation id="6877155553248388166">издөө аймагынын төмөнкү оң бурчу: оң жагы <ph name="RIGHT" />%, төмөн жагы <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
-<translation id="6898028264630240901">Серептеп жатканда суроолорду оңой берүү үчүн Контексттик тапшырмаларды кадап койсоңуз болот</translation>
+<translation id="6898028264630240901">Сайттарды кыдырып жатып, суроолорду берүү үчүн контексттик тапшырмаларды кадап койсоңуз болот</translation>
 <translation id="6901631050894301805">Chromium'ду демейки серепчиңиз катары тууралап, аны тапшырмалар панелине кадап коюңуз</translation>
 <translation id="6909503629704372277">&amp;Chromium профилдерин тескөө</translation>
 <translation id="6919942714452658456">Бул аракет:
@@ -578,7 +578,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="705851970750939768">Chromium'ду жаңыртуу</translation>
 <translation id="7067091210845072982">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт.</translation>
 <translation id="7074836723476134809"><ph name="DEVICE_TYPE" /> түзмөгүңүздөгү Chromium колдонмосу менен ЖИнин мүмкүнчүлүктөрүн пайдаланыңыз</translation>
-<translation id="7134687062119989071">Телефонуңуздагы Chromium колдонмосу менен сырсөздөрүңүздү, өтмөктөрүңүздү жана башка маалыматтарды жолдо жүргөндө да колдонуңуз</translation>
+<translation id="7134687062119989071">Телефонуңуздагы Chromium колдонмосунда сырсөздөрүңүз, өтмөктөрүңүз жана башка нерселер ар дайым кол астында болот</translation>
 <translation id="7141270731789036260">Chrome for Testing'ди тууралоо</translation>
 <translation id="7147227333672430807">Эми билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду Chromium'да ача аласыз.</translation>
 <translation id="7163519456498498587"><ph name="EXTENSION_NAME" /> кеңейтүүсүн Chromium'дан чыгарып салуу</translation>
@@ -674,7 +674,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium'га бул сайтта жайгашкан жерди колдонууга уруксат бериңиз</translation>
 <translation id="8107060931443639922">Кийинки жолу <ph name="DEVICE_TYPE" /> түзмөгүңүздө Chromium'ду ачканыңызда бааларга көз салуу эскертүүлөрүн иштетүү сунушталат.</translation>
-<translation id="8117908349476699973">Телефонуңуздагы Chromium колдонмосу менен сизди кызыктырган нерселердин баасы арзандаганда билдирмелерди алыңыз</translation>
+<translation id="8117908349476699973">Телефонуңуздагы Chromium колдонмосунан кызыккан нерселердин арзандаганын билип турасыз</translation>
 <translation id="8118331347066725040">Lens менен издөө үчүн пикир билдирүү</translation>
 <translation id="8130609355518033382">Chromium'ду ыңгайлаштырыңыз</translation>
 <translation id="8133124826068723441">Сиздин домениңизде шайкештештирүү мүмкүнчүлүгү жок болгондуктан, ChromiumOS дайын-даректериңизди шайкештештире алган жок.</translation>

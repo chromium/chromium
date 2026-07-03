@@ -1930,6 +1930,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2460150227008936698">{COUNT,plural, =0{Poteče danes}=1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="2460482211073772897">V drugih mapah</translation>
 <translation id="2460826998961521840">Za uporabo ključev za dostop, shranjenih v računu Google</translation>
+<translation id="2461457574123041923">Če zapustite to spletno mesto, se bo opravilo končalo. Če želite, da se opravilo nadaljuje, medtem ko ste na drugih spletnih mestih, odprite nov zavihek.</translation>
 <translation id="2461550163693930491">Spletnim mestom nista dovoljena pomikanje po deljenih zavihkih in njihova povečava/pomanjšava</translation>
 <translation id="2461593638794842577">To nastavitev lahko izklopite, če želite, da se gesla shranjujejo samo v tej napravi</translation>
 <translation id="2462550463312552298">Povzemi ta dokument</translation>
@@ -2490,6 +2491,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2865057607286263192">Pridržite tipke na tipkovnici, če si želite ogledati naglasna znamenja in posebne znake. S tem izklopite večkratni pritisk tipke za abecedne tipke. Na voljo samo za angleščino (Združene države).</translation>
 <translation id="2865919525181940183">Posnetek zaslona s programi, ki so trenutno na zaslon</translation>
 <translation id="286643536820867504">Samodejno ustvari podnapise za podprte jezike. Zvok nikoli ne zapusti naprave.</translation>
+<translation id="2866504884233915828">Dodate lahko največ toliko datotek: <ph name="COUNT" /></translation>
 <translation id="286674810810214575">Preverjanje virov napajanja ...</translation>
 <translation id="2867768963760577682">Odpri v pripetem zavihku</translation>
 <translation id="2868746137289129307">Ta razširitev je zastarela in jo je onemogočil pravilnik podjetja. Ko bo na voljo novejša različica, bo morda samodejno omogočena.</translation>
@@ -2654,8 +2656,10 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2989805286512600854">Odpri v novem zavihku</translation>
 <translation id="2990313168615879645">Dodaj račun Google</translation>
 <translation id="2990375978470734995">Če želite, da začne ta sprememba veljati, znova povežite zunanjo dodatno opremo.</translation>
+<translation id="2990500505358145117">Urejanje bližnjice za izboljšano samodejno izpolnjevanje</translation>
 <translation id="2990583317361835189">Spletnim mestom ni dovoljena uporaba tipal gibanja.</translation>
 <translation id="2991182900092497283">Navedite razlog za lepljenje teh podatkov:</translation>
+<translation id="2992754757708650257">Želite zapustiti spletno mesto in končati opravilo?</translation>
 <translation id="2992931425024192067">Pokaži vso vsebino obvestil</translation>
 <translation id="2993517869960930405">Podatki o aplikaciji</translation>
 <translation id="2994804273850542871">Stopnja 4: ULTRA</translation>
@@ -2992,6 +2996,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3247649647204519958">Tukaj si lahko ogledate in upravljate dovoljenja za razširitve za spletno mesto, na katerem ste</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – napaka omrežja</translation>
 <translation id="3248902735035392926">Varnost je pomembna. Vzemite si trenutek in <ph name="BEGIN_LINK" />preverite razširitve<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Bližnjica po meri za izboljšano samodejno izpolnjevanje</translation>
 <translation id="3249558306861350254">V nastavitvah sistema Windows kliknite <ph name="BEGIN_BOLD" />Nastavi privzeto<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Upravljanje veščine</translation>
 <translation id="3251119461199395237">Sinhronizacija datotek</translation>
@@ -3804,6 +3809,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3827548509471720579">Svetlost zaslona</translation>
 <translation id="3827774300009121996">&amp;Celozaslonsko</translation>
 <translation id="3828029223314399057">Išči po zaznamkih</translation>
+<translation id="3828454092958722155">Brisanje bližnjice za izboljšano samodejno izpolnjevanje</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Visoka uporaba pomnilnika – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Datotečno sredstvo v skupni rabi za SMB</translation>
 <translation id="3830470485672984938">Uporabi drug ključ za dostop</translation>
@@ -4376,6 +4382,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4281789858103154731">Ustvari</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
 <translation id="4281849573951338030">Prilagajanje gumbov pisala</translation>
+<translation id="4283635301190260296">Strni navpične zavihke</translation>
 <translation id="4284903252249997120">Bralnik zaslona ChromeVox in funkcija Izberite in poslušajte</translation>
 <translation id="4285418559658561636">Posodobi geslo</translation>
 <translation id="4285498937028063278">Odpni</translation>
@@ -5200,6 +5207,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4895799941222633551">Ustvari &amp;bližnjico ...</translation>
 <translation id="4898913189644355814">Spletno mesto morda shrani vaš prednostni jezik ali izdelke, ki jih želite kupiti. Ti podatki so na voljo na spletnem mestu in v njegovih poddomenah.</translation>
 <translation id="4899052647152077033">Obrnitev barv</translation>
+<translation id="4899813415889597597">Povezave z računom za Google Drive ni bilo mogoče vzpostaviti</translation>
 <translation id="490031510406860025">Ni dovoljeno na tem spletnem mestu</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – prepleteno</translation>
 <translation id="4900652253009739885">Edinega stikala, dodeljenega dejanju »Izberi«, ni mogoče odstraniti. Pritisnite poljubno tipko, če želite narediti to: <ph name="RESPONSE" />.</translation>
@@ -5291,6 +5299,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4972129977812092092">Urejanje tiskalnika</translation>
 <translation id="4972164225939028131">Napačno geslo</translation>
 <translation id="4972737347717125191">Spletna mesta lahko zahtevajo uporabo naprav in podatkov za navidezno resničnost</translation>
+<translation id="4973302523373219907">Če bližnjica po meri ni nastavljena, se privzeto uporabi @@</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Izklopi zvok spletnega mesta}one{Izklopi zvok spletnih mest}two{Izklopi zvok spletnih mest}few{Izklopi zvok spletnih mest}other{Izklopi zvok spletnih mest}}</translation>
 <translation id="497403230787583386">Varnostni pregledi so opravljeni. Vaš dokument bo natisnjen.</translation>
 <translation id="4974442344472293753">Izid posodobitve</translation>
@@ -7269,6 +7278,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6544134392255015460">preklop osvetlitve tipkovnice</translation>
 <translation id="6545665334409411530">Hitrost ponavljanja</translation>
 <translation id="6547354035488017500">Sprostite najmanj 512 MB prostora, sicer bo postala naprava neodzivna. Če želite sprostiti prostor, izbrišite datoteke iz shrambe v napravi.</translation>
+<translation id="6548240707386871455">Bližnjica za izboljšano samodejno izpolnjevanje</translation>
 <translation id="654871471440386944">Želite vklopiti brskanje s kazalko?</translation>
 <translation id="6548945820758901244">Odpiranje stranskega podokna Iskanja Google</translation>
 <translation id="6549038875972762904">Znova opravi nastavitev</translation>

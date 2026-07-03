@@ -1917,6 +1917,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2460150227008936698">{COUNT,plural, =0{Gaur iraungiko da}=1{Bihar iraungiko da}other{# egun barru iraungiko da}}</translation>
 <translation id="2460482211073772897">Beste karpeta batzuetan</translation>
 <translation id="2460826998961521840">Google-ko kontuan gordetako sarbide-gakoak erabiltzeko</translation>
+<translation id="2461457574123041923">Webgune honetatik irteten bazara, zeregina amaituko da. Beste webgune batzuk bisitatzean zeregina abian mantentzeko, ireki beste fitxa bat.</translation>
 <translation id="2461550163693930491">Ez eman fitxa partekatuetan gora/behera egiteko eta zooma erabiltzeko baimena webguneei</translation>
 <translation id="2461593638794842577">Pasahitzak gailu honetan soilik gordetzeko, desaktibatu ezarpena</translation>
 <translation id="2462550463312552298">Egin dokumentu honen laburpena</translation>
@@ -2477,6 +2478,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2865057607286263192">Eduki sakatuta teklatuko teklak azentuak eta karaktere bereziak ikusteko. Alfabetoko teklen sakatzeen errepikapena desaktibatuko da. AEBko ingelesez soilik dago erabilgarri.</translation>
 <translation id="2865919525181940183">Pantailan dauden programen pantaila-argazkia</translation>
 <translation id="286643536820867504">Onartzen diren hizkuntzetan azpitituluak sortzen ditu automatikoki. Audioa ez da inoiz irtengo gailutik.</translation>
+<translation id="2866504884233915828">Gehienez ere <ph name="COUNT" /> fitxategi gehi ditzakezu</translation>
 <translation id="286674810810214575">Energia-iturriak egiaztatzen…</translation>
 <translation id="2867768963760577682">Ireki fitxa ainguratu gisa</translation>
 <translation id="2868746137289129307">Enpresaren gidalerroak zaharkituta eta desgaituta utzi du luzapena. Automatikoki gai liteke bertsio berria eskuragarri egotean.</translation>
@@ -2641,8 +2643,10 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2989805286512600854">Ireki fitxa berri batean</translation>
 <translation id="2990313168615879645">Gehitu Google-ko kontu bat</translation>
 <translation id="2990375978470734995">Aldaketak eragina izan dezan, konektatu berriro kanpoko osagarriak.</translation>
+<translation id="2990500505358145117">Editatu betetze automatiko hobetuaren lasterbidea</translation>
 <translation id="2990583317361835189">Ez eman mugimendu-sentsoreak erabiltzeko baimena webguneei</translation>
 <translation id="2991182900092497283">Idatzi datu hauek itsasteko arrazoi bat:</translation>
+<translation id="2992754757708650257">Webgunetik irten eta zeregina amaitu nahi duzu?</translation>
 <translation id="2992931425024192067">Erakutsi jakinarazpenen eduki guztia</translation>
 <translation id="2993517869960930405">Aplikazioari buruzko informazioa</translation>
 <translation id="2994804273850542871">4. maila: ULTRA</translation>
@@ -2977,6 +2981,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3247649647204519958">Bisitatzen ari zaren webguneko luzapenen baimenak ikusi eta kudea ditzakezu hemen</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Sareko errorea</translation>
 <translation id="3248902735035392926">Segurtasuna garrantzitsua da. Hartu unetxo bat eta <ph name="BEGIN_LINK" />begiratu zer luzapen dituzun<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Betetze automatiko hobetuaren lasterbide pertsonalizatua</translation>
 <translation id="3249558306861350254">Sakatu <ph name="BEGIN_BOLD" />Ezarri lehenetsi gisa<ph name="END_BOLD" /> Windows-en ezarpenetan.</translation>
 <translation id="3250374026663843838">Kudeatu gaitasuna</translation>
 <translation id="3251119461199395237">Fitxategiak sinkronizatzea</translation>
@@ -3789,6 +3794,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3827548509471720579">Pantailaren argitasuna</translation>
 <translation id="3827774300009121996">&amp;Pantaila osoa</translation>
 <translation id="3828029223314399057">Bilatu laster-markak</translation>
+<translation id="3828454092958722155">Garbitu betetze automatiko hobetuaren lasterbidea</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Memoriaren erabilera handia - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB bidez fitxategiak partekatzeko biltegia</translation>
 <translation id="3830470485672984938">Erabili beste sarbide-gako bat</translation>
@@ -4361,6 +4367,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4281789858103154731">Sortu</translation>
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
 <translation id="4281849573951338030">Pertsonalizatu arkatzaren botoiak</translation>
+<translation id="4283635301190260296">Tolestu fitxa bertikalak</translation>
 <translation id="4284903252249997120">ChromeVox pantaila-irakurgailua eta Hautatu ozen irakurtzeko</translation>
 <translation id="4285418559658561636">Eguneratu pasahitza</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
@@ -5184,6 +5191,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4895799941222633551">Sortu lasterbide bat…</translation>
 <translation id="4898913189644355814">Baliteke webguneek hobesten duzun hizkuntza edo erosi nahi dituzun elementuak gordetzea. Informazio hori webguneak eta haren azpidomeinuek daukate erabilgarri.</translation>
 <translation id="4899052647152077033">Koloreak alderantzikatzeko eginbidea</translation>
+<translation id="4899813415889597597">Ezin izan da konektatu Google Drive-ko kontura</translation>
 <translation id="490031510406860025">Ezin da erabili webgune honetan</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - gurutzatuta</translation>
 <translation id="4900652253009739885">Ezin da kendu "Hautatu" ekintzak esleituta daukan erabilerraztasun-etengailu bakarra. Sakatu edozein tekla <ph name="RESPONSE" />.</translation>
@@ -5275,6 +5283,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4972129977812092092">Editatu inprimagailua</translation>
 <translation id="4972164225939028131">Pasahitza ez da zuzena</translation>
 <translation id="4972737347717125191">Webguneek errealitate birtualeko gailuak eta datuak erabiltzea eska dezakete</translation>
+<translation id="4973302523373219907">Lasterbide pertsonalizatua ezarri ez bada, @@ erabiltzen da modu lehenetsian</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Desaktibatu webguneko audioa}other{Desaktibatu webguneetako audioa}}</translation>
 <translation id="497403230787583386">Amaitu dira segurtasun-egiaztapenak. Dokumentua inprimatu egingo da.</translation>
 <translation id="4974442344472293753">Eguneratzearen emaitza</translation>
@@ -7248,6 +7257,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6544134392255015460">teklatuaren atzeko argiztapenaren etengailua</translation>
 <translation id="6545665334409411530">Errepikapen-abiadura</translation>
 <translation id="6547354035488017500">Libratu gutxienez 512 MB; bestela, gailuak ez du erantzungo. Tokia egiteko, ezabatu fitxategiak gailuaren memoriatik.</translation>
+<translation id="6548240707386871455">Betetze automatiko hobetuaren lasterbidea</translation>
 <translation id="654871471440386944">Testu-kurtsorearen bidez arakatzeko eginbidea aktibatu nahi duzu?</translation>
 <translation id="6548945820758901244">Ireki Google Bilaketa zerbitzuaren alboko panela</translation>
 <translation id="6549038875972762904">Konfiguratu berriro</translation>

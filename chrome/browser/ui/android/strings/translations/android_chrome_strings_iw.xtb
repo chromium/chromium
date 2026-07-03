@@ -331,6 +331,7 @@
 <translation id="2411239243988279592">‫<ph name="TAB_TITLE" />, כרטיסייה שנבחרה ומכילה תוכן שאפשר לשמוע</translation>
 <translation id="2413014528833954543">לא ניתן לבדוק את הסיסמאות במכשיר הזה</translation>
 <translation id="2414886740292270097">כהה</translation>
+<translation id="2415037988255164008">לשחזר את החלונות?</translation>
 <translation id="2421705177906985956">אין כרגע אתרים שאפשר להציג</translation>
 <translation id="2426805022920575512">בחירת חשבון אחר</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{סרטונים, סרטון אחד ברשימה}one{סרטונים, # סרטונים ברשימה}two{סרטונים, # סרטונים ברשימה}other{סרטונים, # סרטונים ברשימה}}</translation>
@@ -1341,6 +1342,7 @@
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
+<translation id="6565781844089373403">שחזור החלונות</translation>
 <translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="657177046675873214">כדי שהסימניות יופיעו בכל המכשירים, צריך להפעיל את האפשרות "סימניות" בהגדרות</translation>
 <translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>

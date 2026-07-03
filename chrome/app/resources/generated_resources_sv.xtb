@@ -2657,6 +2657,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2989805286512600854">Öppna i ny flik</translation>
 <translation id="2990313168615879645">Lägg till Google-konto</translation>
 <translation id="2990375978470734995">Anslut de externa tillbehören igen för att ändringen ska träda i kraft.</translation>
+<translation id="2990500505358145117">Redigera kortkommando för förbättrad autofyll</translation>
 <translation id="2990583317361835189">Tillåt inte att webbplatser använder rörelsesensorer</translation>
 <translation id="2991182900092497283">Ange en anledning till att du klistrar in datan:</translation>
 <translation id="2992754757708650257">Vill du lämna webbplatsen och avsluta uppgiften?</translation>
@@ -2996,6 +2997,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3247649647204519958">Härifrån kan du se och hantera tilläggsbehörigheter för webbplatsen som du besöker</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – nätverksfel</translation>
 <translation id="3248902735035392926">Säkerheten har betydelse. Ta dig tid att <ph name="BEGIN_LINK" />kolla igenom dina tillägg nu<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Anpassat kortkommando för förbättrad autofyll</translation>
 <translation id="3249558306861350254">Klicka på <ph name="BEGIN_BOLD" />Ange som standard<ph name="END_BOLD" /> i Windows-inställningarna.</translation>
 <translation id="3250374026663843838">Hantera din färdighet</translation>
 <translation id="3251119461199395237">Filsynkronisering</translation>
@@ -3345,6 +3347,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3512465804715993309">Anpassad markering</translation>
 <translation id="3513019849832307207">Gå med och öppna</translation>
 <translation id="3513563267917474897">Nyansreglage från <ph name="MIN_VALUE" /> till <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Fäst nya tillägg</translation>
 <translation id="3514647716686280777">Du har nu standardsäkerhetsskydd. Aktivera Förbättrad säker webbsökning i Chrome-inställningarna om du vill få ett bättre skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="3514681096978190000">Den här arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="3515983984924808886">Tryck på säkerhetsnyckeln igen för att bekräfta återställningen. All information som lagras på säkerhetsnyckeln, inklusive dess pinkod, raderas.</translation>
@@ -3808,6 +3811,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3827548509471720579">Skärmens ljusstyrka</translation>
 <translation id="3827774300009121996">&amp;Helskärm</translation>
 <translation id="3828029223314399057">Sök bland bokmärken</translation>
+<translation id="3828454092958722155">Rensa kortkommandot för förbättrad autofyll</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Hög minnesanvändning – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-filresurs</translation>
 <translation id="3830470485672984938">Använd en annan nyckel</translation>
@@ -3870,6 +3874,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 flik)}other{<ph name="GROUP_TITLE" /> (# flikar)}}</translation>
 <translation id="3871350334636688135">Efter 24 timmar genomför administratören en engångsuppdatering som raderar din lokala data när du startar om enheten. Spara den lokala data du behöver i molnet inom 24 timmar.</translation>
 <translation id="3872991219937722530">Frigör diskutrymme för att enheten ska fortsätta svara.</translation>
+<translation id="3873121930618553927">Använder du AI-kodningsagenter för att skapa tillägg? Installera <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> och <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> för att lära din kodningsagent de senaste API-uppdateringarna och bästa praxis.</translation>
 <translation id="3873423927483480833">Visa pinkoder</translation>
 <translation id="3874532133373654352">Organisationen hanterar hur data som samlas in av dessa funktioner får användas. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Den här funktionen använder AI och är experimentell</translation>
@@ -4380,6 +4385,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4281789858103154731">Skapa</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4281849573951338030">Anpassa pennknappar</translation>
+<translation id="4283635301190260296">Komprimera vertikala flikar</translation>
 <translation id="4284903252249997120">ChromeVox-skärmläsare och textuppläsning</translation>
 <translation id="4285418559658561636">Uppdatera lösenordet</translation>
 <translation id="4285498937028063278">Lossa</translation>
@@ -5296,6 +5302,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4972129977812092092">Redigera skrivare</translation>
 <translation id="4972164225939028131">Fel lösenord</translation>
 <translation id="4972737347717125191">Webbplatser får begära tillstånd att använda VR-enheter och VR-data</translation>
+<translation id="4973302523373219907">Om det anpassade kortkommandot inte har angetts används @@ som standard</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Stäng av webbplatsens ljud}other{Stäng av webbplatsernas ljud}}</translation>
 <translation id="497403230787583386">Säkerhetskontrollen är klar. Dokumentet skrivs ut.</translation>
 <translation id="4974442344472293753">Uppdateringsresultat</translation>
@@ -7273,6 +7280,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6544134392255015460">aktivera och inaktivera tangentbordets bakgrundsbelysning</translation>
 <translation id="6545665334409411530">Upprepningsintervall</translation>
 <translation id="6547354035488017500">Frigör åtminstone 512 MB utrymme för att enheten ska fortsätta att svara. Frigör utrymme genom att radera filer från lagringsutrymmet på enheten.</translation>
+<translation id="6548240707386871455">Kortkommando för förbättrad autofyll</translation>
 <translation id="654871471440386944">Vill du aktivera textmarkörläge?</translation>
 <translation id="6548945820758901244">Öppna sidopanelen i Google Sök</translation>
 <translation id="6549038875972762904">Gör om konfigurationen</translation>

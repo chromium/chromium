@@ -893,6 +893,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2365382709349300355">1 fil blockerades på grund av policy</translation>
 <translation id="2365508935344991784">Utemöbler</translation>
 <translation id="2366689192918515749">Kött och fisk</translation>
+<translation id="2367025302166767427">Det gick inte att fylla i dina uppgifter</translation>
 <translation id="2367567093518048410">Nivå</translation>
 <translation id="23703388716193220">Golfutrustning</translation>
 <translation id="2370368710215137370">Uppladdning av filer</translation>
@@ -3351,6 +3352,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
     <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Åsidosätt vissa tangenter på tangentbordet, till exempel Esc</translation>
 <translation id="6194209731893739467">Se alla bevakade produkter här</translation>
+<translation id="6194245113389143644">Kommentar</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Hemelektronik</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
@@ -3559,7 +3561,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6494750904506170417">popup-fönster och omdirigeringar</translation>
 <translation id="6495664197699704593">Lösenordet sparas endast på den här enheten. <ph name="GOOGLE_PASSWORD_MANAGER" /> om du vill använda det på dina andra enheter.</translation>
 <translation id="649611364763911650">Om du vill använda en annan autofylltjänst i Chrome väljer du autofylltjänsten i Android-inställningarna</translation>
-<translation id="6496531801333278234">Hittades av Personlig intelligens. Du kan hantera dina uppgifter i inställningarna.</translation>
 <translation id="6499038740797743453">Vill du återställa lösenordet?</translation>
 <translation id="6502510275417601303">Varning om ny betalningsinställning har stängts</translation>
 <translation id="6502991525169604759">Utan dina ändringar</translation>

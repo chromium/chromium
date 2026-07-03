@@ -2657,6 +2657,7 @@
 <translation id="2989805286512600854">नवीन टॅबमध्ये उघडा</translation>
 <translation id="2990313168615879645">Google खाते जोडा</translation>
 <translation id="2990375978470734995">हा बदल लागू होण्यासाठी, तुमच्या बाह्य अ‍ॅक्सेसरी पुन्हा कनेक्ट करा.</translation>
+<translation id="2990500505358145117">वर्धित ऑटोफिल शॉर्टकट संपादित करा</translation>
 <translation id="2990583317361835189">साइटना मोशन सेन्सर वापरण्याची अनुमती देऊ नका</translation>
 <translation id="2991182900092497283">कृपया हा डेटा पेस्ट करण्याचे कारण एंटर करा:</translation>
 <translation id="2992754757708650257">साइट सोडून टास्क संपवायची आहे का?</translation>
@@ -2996,6 +2997,7 @@
 <translation id="3247649647204519958">येथून, तुम्ही ज्या साइटवर आहात तिच्या एक्स्टेंशनशी संबंधित परवानग्या पाहू आणि व्यवस्थापित करू शकता</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क एरर</translation>
 <translation id="3248902735035392926">सुरक्षा महत्त्वाची आहे. थोडा वेळ काढा आणि <ph name="BEGIN_LINK" />आता तुमची एक्स्टेंशन तपासा<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">वर्धित ऑटोफिलसाठी कस्टम शॉर्टकट</translation>
 <translation id="3249558306861350254">तुमच्या Windows सेटिंग्जमध्ये <ph name="BEGIN_BOLD" />डीफॉल्ट म्हणून सेट करा<ph name="END_BOLD" /> वर क्लिक करा.</translation>
 <translation id="3250374026663843838">तुमचे कौशल्य व्यवस्थापित करा</translation>
 <translation id="3251119461199395237">फाइल सिंक करणे</translation>
@@ -3808,6 +3810,7 @@
 <translation id="3827548509471720579">डिस्प्लेचा ब्राइटनेस</translation>
 <translation id="3827774300009121996">&amp;पूर्ण स्क्रीन</translation>
 <translation id="3828029223314399057">बुकमार्क शोधणे</translation>
+<translation id="3828454092958722155">वर्धित ऑटोफिल शॉर्टकट साफ करा</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - उच्च मेमरी वापर - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB फाइल शेअर</translation>
 <translation id="3830470485672984938">दुसरी पासकी वापरा</translation>
@@ -3870,6 +3873,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (१ टॅब)}other{<ph name="GROUP_TITLE" /> (# टॅब)}}</translation>
 <translation id="3871350334636688135">२४ तासानंतर, तुमचा अ‍ॅडमिनिस्ट्रेटर एक वेळ अपडेट करेल जो तुम्ही तुमचे डिव्हाइस रीस्टार्ट कराल तेव्हा तुमचा स्थानिक डेटा हटवेल. तुम्हाला क्लाउड स्टोरेजसाठी आवश्यक असलेला कोणताही स्थानिक डेटा २४ तासांच्या आत सेव्ह करा.</translation>
 <translation id="3872991219937722530">डिस्क स्थान मोकळे करा अन्यथा डिव्हाइस अप्रतिसादात्मक बनेल.</translation>
+<translation id="3873121930618553927">एक्स्टेंशन बनवण्यासाठी AI कोडिंग एजंट वापरत आहात का? तुमच्या कोडिंग एजंटला नवीनतम API अपडेट आणि सर्वोत्तम पद्धती शिकवण्यासाठी <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> व <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> इंस्टॉल करा.</translation>
 <translation id="3873423927483480833">पिन दाखवा</translation>
 <translation id="3874532133373654352">या वैशिष्ट्यांद्वारे गोळा केलेला डेटा कसा वापरला जाऊ शकतो हे तुमची संस्था व्यवस्थापित करते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">हे वैशिष्ट्य AI वापरते आणि प्रायोगिक आहे</translation>
@@ -4378,6 +4382,7 @@
 <translation id="4281789858103154731">तयार करा</translation>
 <translation id="4281844954008187215">सेवा अटी</translation>
 <translation id="4281849573951338030">पेन बटणे कस्टमाइझ करा</translation>
+<translation id="4283635301190260296">व्हर्टिकल टॅब कोलॅप्स करा</translation>
 <translation id="4284903252249997120">ChromeVox स्क्रीन रीडर आणि बोलण्यासाठी निवडा</translation>
 <translation id="4285418559658561636">पासवर्ड अपडेट करा</translation>
 <translation id="4285498937028063278">अनपिन</translation>
@@ -5294,6 +5299,7 @@
 <translation id="4972129977812092092">प्रिंटर संपादित करा</translation>
 <translation id="4972164225939028131">चुकीचा पासवर्ड</translation>
 <translation id="4972737347717125191">साइट आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्यासाठी विचारू शकतात</translation>
+<translation id="4973302523373219907">कस्टम शॉर्टकट सेट केलेला नसल्यास, बाय डीफॉल्ट @@ वापरले जाते</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{साइट म्यूट करा}other{साइट म्यूट करा}}</translation>
 <translation id="497403230787583386">सुरक्षा तपासण्या पूर्ण झाल्या. तुमचा दस्तऐवज प्रिंट केला जाईल.</translation>
 <translation id="4974442344472293753">अपडेटचा परिणाम</translation>
@@ -7273,6 +7279,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6544134392255015460">कीबोर्ड बॅकलाइट टॉगल करा</translation>
 <translation id="6545665334409411530">पुनरावृत्ती दर</translation>
 <translation id="6547354035488017500">किमान ५१२ MB स्थान मोकळे करा किंवा तुमचे डिव्हाइस अप्रतिसादात्मक बनेल. स्थान मोकळे करण्‍यासाठी, डिव्हाइस स्टोरेजमधून फाइल हटवा.</translation>
+<translation id="6548240707386871455">वर्धित ऑटोफिल शॉर्टकट</translation>
 <translation id="654871471440386944">कॅरेट ब्राउझिंग सुरू करायचे आहे का?</translation>
 <translation id="6548945820758901244">Google Search साइड पॅनल उघडा</translation>
 <translation id="6549038875972762904">सेटअप पुन्हा करा</translation>

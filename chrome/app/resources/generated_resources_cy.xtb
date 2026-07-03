@@ -3873,6 +3873,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 Tab)}zero{<ph name="GROUP_TITLE" /> (# Tab)}two{<ph name="GROUP_TITLE" /> (# Dab)}few{<ph name="GROUP_TITLE" /> (# Tab)}many{<ph name="GROUP_TITLE" /> (# Tab)}other{<ph name="GROUP_TITLE" /> (# Tab)}}</translation>
 <translation id="3871350334636688135">Ar ôl 24 awr, bydd eich gweinyddwr yn cynnal diweddariad untro fydd yn dileu eich data lleol ar ôl ailddechrau eich dyfais. Cadwch unrhyw ddata lleol sydd eu hangen arnoch i storfa cwmwl o fewn 24 awr.</translation>
 <translation id="3872991219937722530">Crëwch ragor o le ar y disg neu bydd y ddyfais yn dod yn anymatebol.</translation>
+<translation id="3873121930618553927">Defnyddio asiantau codio AI i adeiladu estyniadau? Gosodwch y <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> a'r <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> i ddysgu'ch asiant codio am y diweddariadau API diweddaraf ac arferion gorau.</translation>
 <translation id="3873423927483480833">Dangos PIN</translation>
 <translation id="3874532133373654352">Eich sefydliad sy'n rheoli sut y gellir defnyddio data a gesglir gan y nodweddion hyn. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Mae'r nodwedd hon yn defnyddio AI ac mae'n arbrofol</translation>
@@ -4383,6 +4384,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4281789858103154731">Creu</translation>
 <translation id="4281844954008187215">Telerau Gwasanaeth</translation>
 <translation id="4281849573951338030">Addasu botymau'r pin ysgrifennu</translation>
+<translation id="4283635301190260296">Crebachu Tabiau Fertigol</translation>
 <translation id="4284903252249997120">Darllenydd sgrîn ChromeVox a dewis-i-siarad</translation>
 <translation id="4285418559658561636">Diweddaru'r Cyfrinair</translation>
 <translation id="4285498937028063278">Dad-binio</translation>

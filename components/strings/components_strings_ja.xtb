@@ -893,6 +893,7 @@
 <translation id="2365382709349300355">ポリシーにより 1 個のファイルがブロックされました</translation>
 <translation id="2365508935344991784">屋外家具</translation>
 <translation id="2366689192918515749">肉、魚介類</translation>
+<translation id="2367025302166767427">情報を入力できません</translation>
 <translation id="2367567093518048410">レベル</translation>
 <translation id="23703388716193220">ゴルフ用品</translation>
 <translation id="2370368710215137370">ファイルのアップロード</translation>
@@ -1126,6 +1127,7 @@
 <translation id="271663710482723385">全画面表示を終了するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
 <translation id="2717336592027046789">ロール紙</translation>
 <translation id="2718207025093645426">管理対象のユーザーまたはデバイスにポリシーが読み込まれていません。</translation>
+<translation id="271850739643214113">Pix のアカウントが Google Pay と正常にリンクされました</translation>
 <translation id="2719233594187778789">無視された一意でない URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">リクエストを正常に送信しました</translation>
 <translation id="2722622039067384533">リビングルーム用家具</translation>
@@ -1214,6 +1216,7 @@
 <translation id="2903493209154104877">住所</translation>
 <translation id="290376772003165898"><ph name="LANGUAGE" />のページではない場合</translation>
 <translation id="2904180982022726666">同期できるデータは組織によって制限されています。</translation>
+<translation id="2905065304080706507">オンにすると、より関連性の高い回答が得られるよう、このウィンドウの関連タブを共有します。</translation>
 <translation id="2905107382358353958">新しいお支払い設定に関するアラート</translation>
 <translation id="2909946352844186028">ネットワークの変更が検出されました。</translation>
 <translation id="2910062169995917863">セッションがタイムアウトしました</translation>
@@ -1416,6 +1419,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
+<translation id="3196902089458890316">関連タブを常に共有して、関連性の高い回答を取得できるようにしますか？</translation>
 <translation id="3197136577151645743">このデバイスのアクティブ状態の検出を要求できる</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="3203025201812691413">URL を空白にすることはできません</translation>
@@ -1565,6 +1569,7 @@
 <translation id="343474037147570563">アップロードまたは添付したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
 <translation id="3435557549311968410">連続（短尺）</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
+<translation id="3436125638121079308">関連タブを自動的に共有して、このスレッドで関連性の高い回答を取得できるようにしますか？</translation>
 <translation id="3438509337461223476">すべてのスレッドで開いている関連タブを自動的に共有</translation>
 <translation id="3440783957068352691">スクエア</translation>
 <translation id="3441653493275994384">画面</translation>
@@ -1626,6 +1631,7 @@
 <translation id="3537165859691846083">レター プラス</translation>
 <translation id="353816159217417898">画面（ページ）</translation>
 <translation id="3541016556608204104">Chrome Enterprise Connectors の詳細</translation>
+<translation id="3542005451565251757">この警告は、このサイトが HTTPS に対応していないことを示すもので、Android の設定で高度な保護機能を有効にしている場合に表示されます。<ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">カードの画像</translation>
 <translation id="3542768452570884558">新しいウィンドウでリンクを開く</translation>
 <translation id="3543597750097719865">X9.62 ECDSA 署名（SHA-512）</translation>
@@ -1785,6 +1791,7 @@
 <translation id="3761718714832595332">ステータスを表示しない</translation>
 <translation id="3763752038825281594">このサイトの <ph name="PERMISSION" /> の使用はこれまで許可していませんでした</translation>
 <translation id="3765588406864124894">用紙受け 9</translation>
+<translation id="3766505784424699541">このスレッドに関連するタブをこのウィンドウで自動的に共有することで、よりパーソナライズされた回答を得られます。</translation>
 <translation id="3767485424735936570">このコンテンツの <ph name="VM_NAME" /> へのコピーと貼り付けは、管理者のポリシーで推奨されていません</translation>
 <translation id="3769584711865378220"><ph name="URL" /> が位置情報へのアクセスを「おおよそ」から「正確」に変更しようとしています</translation>
 <translation id="3772211998634047851">紙（ボンド）</translation>
@@ -1870,6 +1877,7 @@
 <translation id="3901925938762663762">カードの有効期限が切れています</translation>
 <translation id="390391808978419508">開く処理がタイムアウトしました</translation>
 <translation id="3905894480064208252">{0,plural, =1{ファイルの転送がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの転送がブロックされています}}</translation>
+<translation id="3906022360148923497">お支払い方法のアイコン</translation>
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">埋め込みコンテンツの詳細</translation>
@@ -2091,6 +2099,7 @@
 <translation id="422722221769396062">出前、デリバリー サービス</translation>
 <translation id="4230204356098880324">カメラの使用と移動を要求できる</translation>
 <translation id="4231448684371260244">8x13 インチ</translation>
+<translation id="4234996384188431444">Google Chrome でアプリを切り替えずに Pix でお支払い</translation>
 <translation id="4239799716689808527">ラベル</translation>
 <translation id="424063167283213501">Known Traveler 番号を保存</translation>
 <translation id="4241830393007970744">アクセスしようとしたサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。</translation>
@@ -2107,6 +2116,7 @@
 <translation id="4255487295905690262">値下げしたサイトがある場合、メールで通知します。</translation>
 <translation id="425582637250725228">行った変更が保存されない可能性があります。</translation>
 <translation id="4258748452823770588">署名が不適切です</translation>
+<translation id="4258927999980634471">このスレッドで関連タブを自動的に共有しますか？</translation>
 <translation id="4260407128682690669">お使いの他のデバイスからも履歴にアクセスできるようにするには、履歴とタブを <ph name="ACCOUNT_EMAIL" /> に同期します。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="4265635050210404830">ポイントカード</translation>
 <translation id="4265872034478892965">管理者によって許可されています</translation>
@@ -2174,6 +2184,7 @@
 <translation id="4340810192899866471">JSON からインポート</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
 <translation id="4342742994656318294">テーマパーク</translation>
+<translation id="4344194909635300809">ページのタイトルと URL は Google に送信され、人間のレビュアーによる確認が行われる場合があります</translation>
 <translation id="4346670990181948854">旅行情報 · 車両情報</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> への接続は安全ではありません</translation>
 <translation id="4349365535725594680">機密コンテンツは共有できません</translation>
@@ -2181,6 +2192,7 @@
 <translation id="4350629523305688469">多機能トレイ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>
 <translation id="4355383636893709732">Android アプリ向け ChromeOS の更新</translation>
+<translation id="4357577888320640139">すべてのスレッドで関連タブを自動的に共有しますか？</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode ポリシーに問題があるため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="4358461427845829800">お支払い方法を管理...</translation>
 <translation id="4359160567981085931">偽のサイトでパスワードを入力しました。Chrome を使って不正利用への対策ができます。パスワードを変更し、Google にアカウントの状況を通知するには、[アカウントを保護] をクリックしてください。</translation>
@@ -2216,6 +2228,7 @@
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">パスワードは管理設定で削除できます</translation>
 <translation id="4424024547088906515">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は Chrome によって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
+<translation id="4425137053900958839">Pix ならではの便利さとセキュリティを、すべてご利用いただけます</translation>
 <translation id="4425750422187370446">スポーツ衣料</translation>
 <translation id="443121186588148776">シリアルポート</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> でログイン証明書が承認されなかったか、ログイン証明書が提示されていない可能性があります。</translation>
@@ -2382,6 +2395,7 @@
 <translation id="4726672564094551039">ポリシーを再読み込み</translation>
 <translation id="4728558894243024398">プラットフォーム</translation>
 <translation id="4729147136006144950">チャリティ、慈善活動</translation>
+<translation id="4730773064303503917">ウォレットを使用して友人やビジネスに Pix を送信できるようになりました</translation>
 <translation id="4730977633786878901">レビュー</translation>
 <translation id="4731638775147756694">このアプリケーションは管理者によってブロックされています</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
@@ -2666,6 +2680,7 @@
 <translation id="5157504274688344097">量販店、デパート</translation>
 <translation id="5158275234811857234">表紙</translation>
 <translation id="5159010409087891077">ページを新しいシークレット ウィンドウで開く（⇧⌘N）</translation>
+<translation id="5160781056848005130">高精度の自動入力機能の改善のため、Google とデータを共有しています</translation>
 <translation id="5161334686036120870">主題:</translation>
 <translation id="5161506081086828129">スタッカー 9</translation>
 <translation id="5164537320435517152"><ph name="MINUTES" /> 分後にファイルを削除</translation>
@@ -3407,6 +3422,7 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> の権限の詳細を表示</translation>
 <translation id="6304398603974202180">マルチメディア ソフトウェア</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>
+<translation id="6305834316918845109">高精度の自動入力の対象となるリクエストを入力したとき、Chrome では、この機能をどのように使用したか（自動入力の候補の承認、編集、無視など）が記録されます</translation>
 <translation id="6306713302480826305">この住所は、このデバイスとログインしている他のデバイスから削除されます</translation>
 <translation id="6307968763353904914">ご利用の銀行では、現在このお支払い方法のための仮想カードを提供できません。<ph name="CARD_LABEL" /> を使用したオンライン決済は可能です。</translation>
 <translation id="6311410654831092784">カード用紙</translation>
@@ -3544,7 +3560,6 @@
 <translation id="6494750904506170417">ポップアップとリダイレクト</translation>
 <translation id="6495664197699704593">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、<ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="649611364763911650">Chrome で別の自動入力サービスを使用するには、Android 設定で自動入力プロバイダを選択します</translation>
-<translation id="6496531801333278234">パーソナル インテリジェンスによって検出されました。設定で情報を管理できます。</translation>
 <translation id="6499038740797743453">パスワードを再設定しますか？</translation>
 <translation id="6502510275417601303">新しいお支払い設定に関するアラートが閉じています</translation>
 <translation id="6502991525169604759">変更前のバージョン</translation>
@@ -3658,6 +3673,7 @@
 <translation id="6689271823431384964">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。カード名義人はアカウントから取得されます。</translation>
 <translation id="6690688090329768424">「<ph name="PROXY_INVALID_DESTINATION" />」は有効な接続先パターンではありません。</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> 以上の空き容量を確保してください</translation>
+<translation id="6692006953064648573">この警告は、このサイトが HTTPS に対応していないことを示すもので、Google の高度な保護機能プログラムを使用している場合に表示されます。<ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Google アカウントでデバイスを探します</translation>
 <translation id="6695428916538794739">アクション映画、アドベンチャー映画</translation>
 <translation id="6696424331653607346">旅行ガイド、旅行記</translation>
@@ -4049,6 +4065,7 @@
 <translation id="7310392214323165548">間もなくデバイスが再起動します</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7313107491291103073">あなたの組織ではこのサイトはポリシーに違反している可能性があるものとして報告されています。</translation>
+<translation id="7313260329718515829">Gemini のパーソナル インテリジェンスに送信されたリクエストは、自動入力の改善のために分析されます</translation>
 <translation id="7316521168101843192">ファイルを Microsoft OneDrive に保存しています</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">接続に関するヘルプ</translation>
@@ -4498,6 +4515,7 @@
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
 <translation id="7967477318370169806">投資信託</translation>
 <translation id="7967636097426665267">通信機器</translation>
+<translation id="7967973398323409409">自動入力された情報は誰にも閲覧されません</translation>
 <translation id="79682505114836835">値「<ph name="VALUE" />」は無効な 16 進数色コードです。</translation>
 <translation id="7968982339740310781">詳細を表示</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 with RSA 暗号化</translation>

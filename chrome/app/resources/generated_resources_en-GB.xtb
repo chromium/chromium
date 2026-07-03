@@ -1931,6 +1931,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2460150227008936698">{COUNT,plural, =0{Expires today}=1{Expires tomorrow}other{Expires in # days}}</translation>
 <translation id="2460482211073772897">In other folders</translation>
 <translation id="2460826998961521840">To use passkeys saved in your Google Account</translation>
+<translation id="2461457574123041923">If you leave this site, your task will end. To keep the task going while you visit other sites, open a new tab.</translation>
 <translation id="2461550163693930491">Don't allow sites to scroll and zoom shared tabs</translation>
 <translation id="2461593638794842577">You can turn off this setting to save your passwords only on this device</translation>
 <translation id="2462550463312552298">Summarise this document</translation>
@@ -2491,6 +2492,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2865057607286263192">Press and hold keyboard keys to see accent marks and special characters. This turns off the repeat key press for alphabet keys. Only available for English (US).</translation>
 <translation id="2865919525181940183">Screenshot of programs that are currently on the screen</translation>
 <translation id="286643536820867504">Automatically creates captions for supported languages. Audio never leaves your device.</translation>
+<translation id="2866504884233915828">You can only add up to <ph name="COUNT" /> files</translation>
 <translation id="286674810810214575">Checking power sources…</translation>
 <translation id="2867768963760577682">Open as Pinned Tab</translation>
 <translation id="2868746137289129307">This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.</translation>
@@ -2655,8 +2657,10 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2989805286512600854">Open in new tab</translation>
 <translation id="2990313168615879645">Add Google Account</translation>
 <translation id="2990375978470734995">For this change to take effect, reconnect your external accessories.</translation>
+<translation id="2990500505358145117">Edit enhanced autofill shortcut</translation>
 <translation id="2990583317361835189">Don't allow sites to use motion sensors</translation>
 <translation id="2991182900092497283">Please enter a reason for pasting this data:</translation>
+<translation id="2992754757708650257">Leave site and end task?</translation>
 <translation id="2992931425024192067">Show all notification content</translation>
 <translation id="2993517869960930405">App Info</translation>
 <translation id="2994804273850542871">Tier 4: ULTRA</translation>
@@ -2993,6 +2997,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3247649647204519958">From here, you can see and manage extension permissions for the site you're on</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
 <translation id="3248902735035392926">Safety matters. Take a moment and <ph name="BEGIN_LINK" />check your extensions now<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Custom shortcut for enhanced autofill</translation>
 <translation id="3249558306861350254">Click <ph name="BEGIN_BOLD" />Set default<ph name="END_BOLD" /> in your Windows settings.</translation>
 <translation id="3250374026663843838">Manage your skill</translation>
 <translation id="3251119461199395237">File sync</translation>
@@ -3805,6 +3810,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3827548509471720579">Display brightness</translation>
 <translation id="3827774300009121996">&amp;Full Screen</translation>
 <translation id="3828029223314399057">Search bookmarks</translation>
+<translation id="3828454092958722155">Clear enhanced autofill shortcut</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - High memory usage - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB file share</translation>
 <translation id="3830470485672984938">Use a different passkey</translation>
@@ -4377,6 +4383,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4281789858103154731">Create</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4281849573951338030">Customise pen buttons</translation>
+<translation id="4283635301190260296">Collapse vertical tabs</translation>
 <translation id="4284903252249997120">ChromeVox screen reader and select-to-speak</translation>
 <translation id="4285418559658561636">Update Password</translation>
 <translation id="4285498937028063278">Unpin</translation>
@@ -5201,6 +5208,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4895799941222633551">Create &amp;shortcut...</translation>
 <translation id="4898913189644355814">A site may save your preferred language or items that you want to buy. This info is available to the site and its subdomains.</translation>
 <translation id="4899052647152077033">Invert colours</translation>
+<translation id="4899813415889597597">Couldn't connect to your Google Drive account</translation>
 <translation id="490031510406860025">Not allowed on this site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – interlaced</translation>
 <translation id="4900652253009739885">Can’t remove the only switch assigned to 'Select'. Press any key to <ph name="RESPONSE" />.</translation>
@@ -5292,6 +5300,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4972129977812092092">Edit printer</translation>
 <translation id="4972164225939028131">Wrong password</translation>
 <translation id="4972737347717125191">Sites can ask to use virtual reality devices and data</translation>
+<translation id="4973302523373219907">If the custom shortcut is not set, @@ is used by default</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Mute site}other{Mute sites}}</translation>
 <translation id="497403230787583386">Security checks are complete. Your document will be printed.</translation>
 <translation id="4974442344472293753">Update outcome</translation>
@@ -7269,6 +7278,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6544134392255015460">Keyboard backlight toggle</translation>
 <translation id="6545665334409411530">Repeat rate</translation>
 <translation id="6547354035488017500">Free up at least 512 MB of space or your device will become unresponsive. To free up space, delete files from device storage.</translation>
+<translation id="6548240707386871455">Enhanced autofill shortcut</translation>
 <translation id="654871471440386944">Turn on caret browsing?</translation>
 <translation id="6548945820758901244">Open Google Search side panel</translation>
 <translation id="6549038875972762904">Redo setup</translation>

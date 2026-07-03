@@ -893,6 +893,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2365382709349300355">1 arquivo foi bloqueado devido à política</translation>
 <translation id="2365508935344991784">Mobília para ambientes externos</translation>
 <translation id="2366689192918515749">Carnes e frutos do mar</translation>
+<translation id="2367025302166767427">Erro ao preencher suas informações</translation>
 <translation id="2367567093518048410">Nível</translation>
 <translation id="23703388716193220">Equipamentos de golfe</translation>
 <translation id="2370368710215137370">Upload de arquivos</translation>
@@ -3560,7 +3561,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6494750904506170417">pop-ups e redirecionamentos</translation>
 <translation id="6495664197699704593">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Para usar outro serviço de preenchimento automático no Chrome, escolha seu provedor nas configurações do Android</translation>
-<translation id="6496531801333278234">Encontrado pela Inteligência Personalizada. Você pode gerenciar suas informações nas configurações.</translation>
 <translation id="6499038740797743453">Redefinir senha?</translation>
 <translation id="6502510275417601303">O alerta sobre a nova configuração de pagamento está fechado</translation>
 <translation id="6502991525169604759">Sem suas modificações</translation>

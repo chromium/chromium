@@ -1928,6 +1928,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2460150227008936698">{COUNT,plural, =0{Utløper i dag}=1{Utløper i morgen}other{Utløper om # dager}}</translation>
 <translation id="2460482211073772897">I andre mapper</translation>
 <translation id="2460826998961521840">for å bruke passnøkler som er lagret i Google-kontoen din</translation>
+<translation id="2461457574123041923">Hvis du forlater dette nettstedet, avsluttes oppgaven. Åpne en ny fane hvis du vil holde oppgaven i gang mens du besøker andre nettsteder.</translation>
 <translation id="2461550163693930491">Ikke la nettsteder rulle og zoome på delte faner</translation>
 <translation id="2461593638794842577">Du kan slå av denne innstillingen for å lagre passordene dine kun på denne enheten</translation>
 <translation id="2462550463312552298">Oppsummer dette dokumentet</translation>
@@ -2488,6 +2489,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2865057607286263192">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn. Dette medfører at gjentakende tastetrykk blir slått av for alfabettaster. Bare tilgjengelig på engelsk (USA).</translation>
 <translation id="2865919525181940183">Skjermbilde av programmene som er på skjermen</translation>
 <translation id="286643536820867504">Lager automatisk teksting for støttede språk. Lyden forlater aldri enheten.</translation>
+<translation id="2866504884233915828">Du kan maksimalt legge til <ph name="COUNT" /> filer</translation>
 <translation id="286674810810214575">Sjekker strømkilder …</translation>
 <translation id="2867768963760577682">Åpne som festet fane</translation>
 <translation id="2868746137289129307">Denne utvidelsen er utdatert og avslått av bedriftsretningslinjene. Den kan slås på automatisk når en nyere versjon er tilgjengelig.</translation>
@@ -2652,8 +2654,10 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2989805286512600854">Åpne i ny fane</translation>
 <translation id="2990313168615879645">Legg til Google-konto</translation>
 <translation id="2990375978470734995">For at denne endringen skal tre i kraft, må du koble til det eksterne tilbehøret på nytt.</translation>
+<translation id="2990500505358145117">Endre hurtigtasten for forbedret autofyll</translation>
 <translation id="2990583317361835189">Ikke la nettsteder bruke bevegelsessensorer</translation>
 <translation id="2991182900092497283">Oppgi en årsak til at du laster ned disse dataene:</translation>
+<translation id="2992754757708650257">Vil du forlate nettstedet og avslutte oppgaven?</translation>
 <translation id="2992931425024192067">Vis alt innhold i varsler</translation>
 <translation id="2993517869960930405">Appinformasjon</translation>
 <translation id="2994804273850542871">Nivå 4: ULTRA</translation>
@@ -2990,6 +2994,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3247649647204519958">Her kan du se og administrere utvidelsestillatelser for nettstedet du er på</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – nettverksfeil</translation>
 <translation id="3248902735035392926">Sikkerhet er viktig. Bruk et øyeblikk på å <ph name="BEGIN_LINK" />sjekke utvidelsene dine nå<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Egendefinert snarvei for forbedret autofyll</translation>
 <translation id="3249558306861350254">Klikk på <ph name="BEGIN_BOLD" />Angi som standard<ph name="END_BOLD" /> i Windows-innstillingene.</translation>
 <translation id="3250374026663843838">Administrer ferdigheten din</translation>
 <translation id="3251119461199395237">Filsynkronisering</translation>
@@ -3802,6 +3807,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3827548509471720579">Skjermlysstyrke</translation>
 <translation id="3827774300009121996">&amp;Full skjerm</translation>
 <translation id="3828029223314399057">Søk i bokmerker</translation>
+<translation id="3828454092958722155">Fjern snarveien for forbedret autofyll</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – høy minnebruk – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-fildeling</translation>
 <translation id="3830470485672984938">Bruk en annen passnøkkel</translation>
@@ -4372,6 +4378,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4281789858103154731">Opprett</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4281849573951338030">Tilpass pennknapper</translation>
+<translation id="4283635301190260296">Skjul vertikale faner</translation>
 <translation id="4284903252249997120">ChromeVox-skjermleser og tekstopplesing</translation>
 <translation id="4285418559658561636">Oppdater passord</translation>
 <translation id="4285498937028063278">Løsne</translation>
@@ -5195,6 +5202,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4895799941222633551">Opprett &amp;snarvei…</translation>
 <translation id="4898913189644355814">Nettsteder kan lagre hvilket språk du foretrekker, eller varene du vil kjøpe. Denne informasjonen er tilgjengelig på nettstedet og dets underdomener.</translation>
 <translation id="4899052647152077033">Inverter farger</translation>
+<translation id="4899813415889597597">Kunne ikke koble til Google Disk-kontoen</translation>
 <translation id="490031510406860025">Ikke tillatt på dette nettstedet</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – linjefletting</translation>
 <translation id="4900652253009739885">Kan ikke fjerne den eneste bryteren som er tilordnet «Velg». Trykk på en valgfri tast for å <ph name="RESPONSE" />.</translation>
@@ -5286,6 +5294,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4972129977812092092">Endre skriveren</translation>
 <translation id="4972164225939028131">Feil passord</translation>
 <translation id="4972737347717125191">Nettsteder kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
+<translation id="4973302523373219907">Hvis den egendefinerte hurtigtasten ikke er angitt, brukes @@ som standard</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Demp lyden for nettstedet}other{Demp lyden for nettstedene}}</translation>
 <translation id="497403230787583386">Sikkerhetssjekkene er fullført. Dokumentet blir skrevet ut.</translation>
 <translation id="4974442344472293753">Oppdateringsresultat</translation>
@@ -7261,6 +7270,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6544134392255015460">slå av/på tastaturets bakgrunnsbelysning</translation>
 <translation id="6545665334409411530">Gjentakelsesfrekvens</translation>
 <translation id="6547354035488017500">Frigjør minst 512 MB lagringsplass for å unngå at enheten slutter å reagere. For å frigjøre plass, slett filer fra enhetslagringen.</translation>
+<translation id="6548240707386871455">Snarvei for forbedret autofyll</translation>
 <translation id="654871471440386944">Vil du slå på markørsurfing?</translation>
 <translation id="6548945820758901244">Åpne sidepanelet for Google Søk</translation>
 <translation id="6549038875972762904">Gjør om konfigurering</translation>

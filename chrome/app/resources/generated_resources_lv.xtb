@@ -1918,6 +1918,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2460150227008936698">{COUNT,plural, =0{Derīguma termiņš beigsies šodien}=1{Derīguma termiņš beigsies rīt}zero{Derīguma termiņš beigsies pēc # dienām}one{Derīguma termiņš beigsies pēc # dienas}other{Derīguma termiņš beigsies pēc # dienām}}</translation>
 <translation id="2460482211073772897">Citās mapēs</translation>
 <translation id="2460826998961521840">Lai izmantotu piekļuves atslēgas, kas saglabātas jūsu Google kontā</translation>
+<translation id="2461457574123041923">Ja pametīsiet šo vietni, uzdevuma izpilde tiks pārtraukta. Lai turpinātu uzdevuma izpildi, kamēr apmeklējat citas vietnes, atveriet jaunu cilni.</translation>
 <translation id="2461550163693930491">Neatļaut vietnēm ritināšanu un tālummaiņu kopīgotajās cilnēs</translation>
 <translation id="2461593638794842577">Varat izslēgt šo iestatījumu, lai saglabātu savas paroles tikai šajā ierīcē.</translation>
 <translation id="2462550463312552298">Izveidot šī dokumenta kopsavilkumu</translation>
@@ -2478,6 +2479,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2865057607286263192">Lai skatītu uzsvara zīmes un speciālās rakstzīmes, nospiediet un turiet tastatūras taustiņus. Ja šis iestatījums ir ieslēgts, tiek atspējota ievades atkārtošana alfabēta burtu taustiņiem. Šis iestatījums ir pieejams tikai angļu valodai (ASV).</translation>
 <translation id="2865919525181940183">Ekrānā pašlaik redzamo programmu ekrānuzņēmums</translation>
 <translation id="286643536820867504">Automātiski tiek veidoti subtitri atbalstītajās valodās. Audio vienmēr atrodas tikai jūsu ierīcē.</translation>
+<translation id="2866504884233915828">Varat pievienot ne vairāk kā <ph name="COUNT" /> failus.</translation>
 <translation id="286674810810214575">Notiek barošanas avotu pārbaude...</translation>
 <translation id="2867768963760577682">Atvērt kā piespraustu cilni</translation>
 <translation id="2868746137289129307">Šis paplašinājums ir novecojis, un uzņēmuma politika to ir atspējojusi. Kad būs pieejama jaunāka versija, iespējams, paplašinājums tiks automātiski iespējots.</translation>
@@ -2642,8 +2644,10 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="2989805286512600854">Atvērt jaunā cilnē</translation>
 <translation id="2990313168615879645">Pievienot Google kontu</translation>
 <translation id="2990375978470734995">Lai šīs izmaiņas stātos spēkā, atkārtoti pievienojiet ārējos piederumus.</translation>
+<translation id="2990500505358145117">Rediģēt uzlabotās automātiskās aizpildes īsinājumtaustiņu</translation>
 <translation id="2990583317361835189">Neļaut vietnēm izmantot kustību sensorus</translation>
 <translation id="2991182900092497283">Lūdzu, norādiet iemeslu šo datu ielīmēšanai:</translation>
+<translation id="2992754757708650257">Vai pamest vietni un beigt uzdevumu?</translation>
 <translation id="2992931425024192067">Rādīt visu paziņojumu saturu</translation>
 <translation id="2993517869960930405">Informācija par lietotni</translation>
 <translation id="2994804273850542871">4. līmenis: ULTRA</translation>
@@ -2978,6 +2982,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3247649647204519958">Šeit varat skatīt un pārvaldīt pašlaik atvērtās vietnes paplašinājumu atļaujas.</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> — tīkla kļūda</translation>
 <translation id="3248902735035392926">Drošība ir svarīga. Atvēliet mirkli laika un <ph name="BEGIN_LINK" />pārbaudiet paplašinājumus tūlīt<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Pielāgots īsinājumtaustiņš uzlabotajai automātiskajai aizpildei</translation>
 <translation id="3249558306861350254">Windows iestatījumos noklikšķiniet uz <ph name="BEGIN_BOLD" />Iestatīt kā noklusējumu<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Pārvaldīt prasmi</translation>
 <translation id="3251119461199395237">Failu sinhronizācija</translation>
@@ -3790,6 +3795,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3827548509471720579">Displeja spilgtums</translation>
 <translation id="3827774300009121996">Pil&amp;nekrāna režīms</translation>
 <translation id="3828029223314399057">Meklēt grāmatzīmes</translation>
+<translation id="3828454092958722155">Notīrīt uzlabotās automātiskās aizpildes īsinājumtaustiņu</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> — liels atmiņas lietojums: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB failu kopīgošana</translation>
 <translation id="3830470485672984938">Izmantot citu piekļuves atslēgu</translation>
@@ -4362,6 +4368,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4281789858103154731">Izveidot</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
 <translation id="4281849573951338030">Pildspalvas pogu pielāgošana</translation>
+<translation id="4283635301190260296">Sakļaut vertikālās cilnes</translation>
 <translation id="4284903252249997120">ChromeVox ekrāna lasītājs un funkcija “Atlasīt, lai izrunātu”</translation>
 <translation id="4285418559658561636">Atjaunināt paroli</translation>
 <translation id="4285498937028063278">Atspraust</translation>
@@ -5186,6 +5193,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4895799941222633551">Izveidot &amp;saīsni…</translation>
 <translation id="4898913189644355814">Vietnē var tikt saglabāta jūsu vēlamā valoda vai vienumi, ko vēlaties iegādāties. Šī informācija ir pieejama attiecīgajai vietnei un tās apakšdomēniem.</translation>
 <translation id="4899052647152077033">Krāsu invertēšana</translation>
+<translation id="4899813415889597597">Nevarēja izveidot savienojumu ar jūsu Google diska kontu</translation>
 <translation id="490031510406860025">Nav atļauts šajā vietnē</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz — rindpārlēces izvērse</translation>
 <translation id="4900652253009739885">Nevar noņemt vienīgo slēdzi, kas ir piešķirts darbībai “Atlasīt”. Nospiediet jebkuru taustiņu, lai veiktu darbību <ph name="RESPONSE" />.</translation>
@@ -5277,6 +5285,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4972129977812092092">Printera rediģēšana</translation>
 <translation id="4972164225939028131">Nepareiza parole</translation>
 <translation id="4972737347717125191">Atļaut vietnēm pieprasīt atļauju izmantot virtuālās realitātes ierīces un datus</translation>
+<translation id="4973302523373219907">Ja pielāgotais īsinājumtaustiņš nav iestatīts, pēc noklusējuma tiek izmantoti simboli @@.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Izslēgt skaņu vietnē}zero{Izslēgt skaņu vietnēs}one{Izslēgt skaņu vietnēs}other{Izslēgt skaņu vietnēs}}</translation>
 <translation id="497403230787583386">Drošības pārbaudes ir pabeigtas. Dokuments tiks izdrukāts.</translation>
 <translation id="4974442344472293753">Atjaunināšanas rezultāts</translation>
@@ -7250,6 +7259,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6544134392255015460">tastatūras fona apgaismojuma pārslēgšana</translation>
 <translation id="6545665334409411530">Atkārtošanas ātrums</translation>
 <translation id="6547354035488017500">Atbrīvojiet vismaz 512 MB vietas ierīcē, pretējā gadījumā tā nereaģēs. Lai atbrīvotu vietu, izdzēsiet failus no ierīces krātuves.</translation>
+<translation id="6548240707386871455">Uzlabotās automātiskās aizpildes īsinājumtaustiņš</translation>
 <translation id="654871471440386944">Vai ieslēgt taustiņpārlūkošanu?</translation>
 <translation id="6548945820758901244">Atvērt Google meklēšanas sānu paneli</translation>
 <translation id="6549038875972762904">Atkārtoti veikt iestatīšanu</translation>
@@ -7695,7 +7705,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6863496016067551393">Atļauts izmantot visus paplašinājumus</translation>
 <translation id="686366188661646310">Vai dzēst paroli?</translation>
 <translation id="6863925886424789941">Kolizejs</translation>
-<translation id="6865313869410766144">Automātiskās aizpildes veidlapas dati</translation>
+<translation id="6865313869410766144">Veidlapu automātiskās aizpildes dati</translation>
 <translation id="6865708901122695652">WebRTC notikumu žurnāli (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Klusi</translation>
 <translation id="686664946474413495">Krāsu temperatūra</translation>

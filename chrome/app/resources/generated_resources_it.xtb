@@ -1917,6 +1917,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2460150227008936698">{COUNT,plural, =0{Scade oggi}=1{Scade domani}other{Scade tra # giorni}}</translation>
 <translation id="2460482211073772897">In altre cartelle</translation>
 <translation id="2460826998961521840">Per usare le passkey salvate nel tuo Account Google</translation>
+<translation id="2461457574123041923">Se esci da questo sito l'attività terminerà. Per non interrompere l'attività mentre visiti altri siti, apri una nuova scheda.</translation>
 <translation id="2461550163693930491">Non consentire ai siti di scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="2461593638794842577">Puoi disattivare questa impostazione per salvare le password solo su questo dispositivo</translation>
 <translation id="2462550463312552298">Riassumi questo documento</translation>
@@ -2477,6 +2478,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2865057607286263192">Tieni premuti i tasti della tastiera per vedere accenti e caratteri speciali. Verrà disattivata la ripetizione automatica del carattere quando tieni premuto un tasto alfabetico. Disponibile solo per l'inglese (USA).</translation>
 <translation id="2865919525181940183">Screenshot dei programmi attualmente sullo schermo</translation>
 <translation id="286643536820867504">Crea automaticamente i sottotitoli codificati per le lingue supportate. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
+<translation id="2866504884233915828">Puoi aggiungere fino a <ph name="COUNT" /> file.</translation>
 <translation id="286674810810214575">Controllo delle fonti di alimentazione…</translation>
 <translation id="2867768963760577682">Apri in una scheda fissata</translation>
 <translation id="2868746137289129307">Questa estensione è obsoleta e disattivata in base alle policy aziendali. Potrebbe essere attivata automaticamente quando sarà disponibile una nuova versione.</translation>
@@ -2641,8 +2643,10 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2989805286512600854">Apri in un'altra scheda</translation>
 <translation id="2990313168615879645">Aggiungi Account Google</translation>
 <translation id="2990375978470734995">Per applicare questa modifica, ricollega gli accessori esterni.</translation>
+<translation id="2990500505358145117">Modifica la scorciatoia per la compilazione automatica avanzata</translation>
 <translation id="2990583317361835189">Non consentire ai siti di usare i sensori di movimento</translation>
 <translation id="2991182900092497283">Inserisci un motivo per voler incollare questi dati:</translation>
+<translation id="2992754757708650257">Uscire dal sito e terminare l'attività?</translation>
 <translation id="2992931425024192067">Mostra tutti i contenuti delle notifiche</translation>
 <translation id="2993517869960930405">Informazioni app</translation>
 <translation id="2994804273850542871">Livello 4: ULTRA</translation>
@@ -2979,6 +2983,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3247649647204519958">Qui puoi visualizzare e gestire le autorizzazioni delle estensioni per il sito in cui ti trovi</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Errore di rete</translation>
 <translation id="3248902735035392926">La sicurezza è importante. Prenditi un attimo per <ph name="BEGIN_LINK" />controllare ora le tue estensioni<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Scorciatoia personalizzata per la compilazione automatica avanzata</translation>
 <translation id="3249558306861350254">Fai clic su <ph name="BEGIN_BOLD" />Imposta come predefinito<ph name="END_BOLD" /> nelle impostazioni di Windows.</translation>
 <translation id="3250374026663843838">Gestisci la competenza</translation>
 <translation id="3251119461199395237">Sincronizzazione dei file</translation>
@@ -3791,6 +3796,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3827548509471720579">Luminosità del display</translation>
 <translation id="3827774300009121996">&amp;Schermo intero</translation>
 <translation id="3828029223314399057">Cerca tra i preferiti</translation>
+<translation id="3828454092958722155">Cancella scorciatoia per la compilazione automatica avanzata</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Memoria utilizzata elevata - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Condivisione file SMB</translation>
 <translation id="3830470485672984938">Usa una passkey diversa</translation>
@@ -4363,6 +4369,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4281789858103154731">Crea</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4281849573951338030">Personalizza i pulsanti della penna</translation>
+<translation id="4283635301190260296">Comprimi schede verticali</translation>
 <translation id="4284903252249997120">Screen reader ChromeVox e Seleziona per ascoltare</translation>
 <translation id="4285418559658561636">Aggiorna password</translation>
 <translation id="4285498937028063278">Stacca</translation>
@@ -5186,6 +5193,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4895799941222633551">Crea &amp;scorciatoia…</translation>
 <translation id="4898913189644355814">Un sito potrebbe salvare la tua lingua preferita o gli articoli che vuoi acquistare. Queste informazioni sono disponibili per il sito e i relativi sottodomini.</translation>
 <translation id="4899052647152077033">Inverti i colori</translation>
+<translation id="4899813415889597597">Impossibile connettersi al tuo account Google Drive</translation>
 <translation id="490031510406860025">Non consentito su questo sito</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - interlacciata</translation>
 <translation id="4900652253009739885">Impossibile rimuovere l'unico sensore assegnato a "Seleziona". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
@@ -5277,6 +5285,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4972129977812092092">Modifica stampante</translation>
 <translation id="4972164225939028131">Password errata</translation>
 <translation id="4972737347717125191">I siti possono chiedere di usare dati e dispositivi per realtà virtuale</translation>
+<translation id="4973302523373219907">Se non viene configurata una scorciatoia personalizzata, @@ verrà utilizzata per impostazione predefinita</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Disattiva l'audio del sito}other{Disattiva l'audio dei siti}}</translation>
 <translation id="497403230787583386">Controlli di sicurezza effettuati. Il documento sarà stampato.</translation>
 <translation id="4974442344472293753">Esito aggiornamento</translation>
@@ -7251,6 +7260,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6544134392255015460">pulsante di attivazione della retroilluminazione della tastiera</translation>
 <translation id="6545665334409411530">Frequenza ripetizione</translation>
 <translation id="6547354035488017500">Libera almeno 512 MB di spazio, altrimenti il tuo dispositivo non risponderà più ai comandi. Per liberare spazio, elimina i file dallo spazio di archiviazione.</translation>
+<translation id="6548240707386871455">Scorciatoia per la compilazione automatica avanzata</translation>
 <translation id="654871471440386944">Attivare navigazione con cursore?</translation>
 <translation id="6548945820758901244">Apri il riquadro laterale della Ricerca Google</translation>
 <translation id="6549038875972762904">Ripeti configurazione</translation>

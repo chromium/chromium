@@ -1918,6 +1918,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2460150227008936698">{COUNT,plural, =0{Caduca hoxe}=1{Caduca mañá}other{Caduca dentro de # días}}</translation>
 <translation id="2460482211073772897">Noutros cartafoles</translation>
 <translation id="2460826998961521840">Para usar as claves de acceso gardadas na túa Conta de Google</translation>
+<translation id="2461457574123041923">Se saes deste sitio finalizará a tarefa. Para mantela mentres visitas outros sitios, abre unha pestana nova.</translation>
 <translation id="2461550163693930491">Non permitir que os sitios se despracen nin fagan zoom polas pestanas compartidas</translation>
 <translation id="2461593638794842577">Podes desactivar esta opción de configuración para gardar os contrasinais só neste dispositivo</translation>
 <translation id="2462550463312552298">Resume este documento</translation>
@@ -2478,6 +2479,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2865057607286263192">Mantén premidas as teclas para ver os acentos e outros caracteres especiais. Esta opción desactiva a repetición de tecla premida no caso das letras do alfabeto. Só está dispoñible en inglés (EUA).</translation>
 <translation id="2865919525181940183">Captura de pantalla dos programas que se atopan actualmente na pantalla</translation>
 <translation id="286643536820867504">Xeraranse automaticamente subtítulos nos idiomas nos que se ofreza esta función. O audio non sairá do dispositivo.</translation>
+<translation id="2866504884233915828">Só podes engadir un máximo de <ph name="COUNT" /> ligazóns</translation>
 <translation id="286674810810214575">Comprobando fontes de alimentación…</translation>
 <translation id="2867768963760577682">Abrir como pestana fixada</translation>
 <translation id="2868746137289129307">Esta extensión é obsoleta e está desactivada pola política da empresa. Quizais se active automaticamente cando estea dispoñible unha nova versión.</translation>
@@ -2645,6 +2647,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2990500505358145117">Editar o atallo da función de autocompletar mellorada</translation>
 <translation id="2990583317361835189">Non permitir que os sitios utilicen sensores de movemento</translation>
 <translation id="2991182900092497283">Indica un motivo para pegar estes datos:</translation>
+<translation id="2992754757708650257">Queres saír do sitio e finalizar a tarefa?</translation>
 <translation id="2992931425024192067">Mostrar todo o contido das notificacións</translation>
 <translation id="2993517869960930405">Información da aplicación</translation>
 <translation id="2994804273850542871">Nivel 4: ULTRA</translation>
@@ -4370,6 +4373,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4281789858103154731">Crear</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="4281849573951338030">Personalizar botóns do lapis</translation>
+<translation id="4283635301190260296">Contraer as pestanas verticais</translation>
 <translation id="4284903252249997120">Lector de pantalla de ChromeVox e Escoitar selección</translation>
 <translation id="4285418559658561636">Actualizar contrasinal</translation>
 <translation id="4285498937028063278">Deixar de fixar</translation>
@@ -5194,6 +5198,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4895799941222633551">Crear &amp;atallo...</translation>
 <translation id="4898913189644355814">Os sitios poderían gardar o teu idioma preferido ou os produtos que queiras comprar. Esta información estará dispoñible no sitio e nos seus subdominios.</translation>
 <translation id="4899052647152077033">Inverter cores</translation>
+<translation id="4899813415889597597">Non se puido conectar coa túa conta de Google Drive</translation>
 <translation id="490031510406860025">Non se permite neste sitio</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz: liñas entrelazadas</translation>
 <translation id="4900652253009739885">Non se pode quitar o único interruptor que ten asignada a acción Seleccionar. Preme calquera tecla para <ph name="RESPONSE" />.</translation>

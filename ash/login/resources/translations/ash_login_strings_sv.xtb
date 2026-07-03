@@ -95,6 +95,8 @@
 <translation id="2565214867520763227">Aktivera skärmläsaren</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plattform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Nej, fortsätt utan ChromeVox</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Med Googles platstjänst används källor som wifi, mobila nätverk och sensorer för att avgöra enhetens plats.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera plats för den här Android-enheten när du vill via Inställningar &gt; Appar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Säkerhet och plats &gt; Plats. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för platstjänsten genom att inaktivera Platsangivelsens exakthet i samma meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2687407218262674387">Googles användarvillkor</translation>
 <translation id="2688196195245426394">Det uppstod ett fel när enheten registrerades med servern: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Det här är en paketerad enhet som inte kan registreras för kiosk- och skyltuppgraderingar.</translation>
@@ -103,10 +105,15 @@
 <translation id="2732134891301408122">Extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2754825024506485820">Google Play Butik har alla appar du behöver – från produktivitet till underhållning. Du kan installera appar när som helst.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />När Platsangivelsens exakthet är aktiverad används information om trådlösa signaler, som wifi-åtkomstpunkter och mobilnätverksmaster, tillsammans med enheters sensordata, som accelerometer och gyroskop, för att uppskatta mer exakta enhetsplatser som appar och tjänster använder för att tillhandahålla platsbaserade funktioner. För att göra detta samlar Google med jämna mellanrum in information om enhetssensorer och trådlösa signaler i närheten av enheten för att bidra till identifiering av platser för trådlösa signaler som fastställs med hjälp av massinsamling.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google använder informationen som samlas in från enheten för att förbättra platsangivelsens exakthet och platsbaserade tjänster samt i allmänhet förbättra, tillhandahålla och underhålla Googles tjänster. Vi behandlar informationen utifrån Googles och tredje parts berättigade intresse för att tillgodose användarnas behov. Informationen används inte för att identifiera någon person.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Du kan när som helst inaktivera platsangivelsens exakthet i platsinställningarna på den här enheten under Inställningar &gt; Integritet och säkerhet &gt; Integritetsinställningar &gt; Platsåtkomst &gt; Avancerade platsinställningar. Om platsangivelsens exakthet har inaktiverats samlas ingen data in. För Android-appar och Android-tjänster används endast IP-adress, om en sådan är tillgänglig, för att fastställa enhetens plats. Det kan påverka tillgängligheten och exaktheten för platser för Android-appar och Android-tjänster som Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Nu är det klart.</translation>
 <translation id="2832124733806557606">Ditt barn kan logga in på enheten eller låsa upp den med en pinkod.</translation>
 <translation id="283669119850230892">För att kunna använda nätverket <ph name="NETWORK_ID" /> måste du först ansluta till Internet nedan.</translation>
 <translation id="2849767214114481738">Pinkoden har lagts till</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner som använts och hur mycket minne som brukar användas.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2893180576842394309">Google kan anpassa Sök och andra Google-tjänster utifrån historiken</translation>
 <translation id="2902265136119311513">Använd som gäst</translation>
 <translation id="2904210161403910217">Ditt lösenord har ändrats sedan du sist loggade in</translation>
@@ -183,6 +190,9 @@
 <translation id="4341905082470253054">TPM-statusen kontrolleras …</translation>
 <translation id="4370975561335139969">E-postadressen och lösenordet matchar inte</translation>
 <translation id="4373418556073552953">Logga in med Android-telefonen</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner du använder, hur mycket minne som du brukar använda, diagnostikdata om Android-appar och data om användning. Viss samlad data används även till att förbättra appar från Google och produkter från Googles partner, till exempel Android-utvecklare.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på ChromeOS-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Om inställningen Webb- och appaktivitet har aktiverats för ditt Google-konto kan Android-datan sparas i Google-kontot. Du kan visa din data, radera den och ändra inställningarna på account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4403266582403435904">Återställ data eller byt enhet enkelt, när du vill. Säkerhetskopiorna krypteras med hjälp av lösenordet till barnets Google-konto och laddas upp på Google.</translation>
 <translation id="4410545552906060960">Lås upp enheten med en sifferkod (pinkod) i stället för ett lösenord. Du kan ange en pinkod senare i inställningarna.</translation>
 <translation id="4415213869328311284">Nu kan du börja använda <ph name="DEVICE_TYPE" />.</translation>
@@ -261,6 +271,9 @@
 <translation id="5539070192556911367">Det går inte att nå Google</translation>
 <translation id="557722062034137776">Dina Google-konton eller data som synkroniserats med dessa konton påverkas inte när du återställer enheten. Alla filer som sparas lokalt på enheten kommer dock att tas bort.</translation>
 <translation id="5626172233890210551">Använd lösenord i stället</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />För att ge dig den bästa upplevelsen samlar <ph name="DEVICE_OS" /> hårdvarudata om enheter och delar den med Google för att avgöra vilka uppdateringar som bör tillhandahållas. Du kan välja att ge Google tillåtelse att använda denna data för ytterligare syften, som support och förbättringar kring upplevelsen och tjänsten relaterade till <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan logga in på den här enheten och visa fält som anges som chromeosflex_ i chrome://system för att se data som skickas till Google för uppdateringsfiltrering och alla andra situationer där du väljer att dela data med Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Om du vill läsa mer om vilken data som <ph name="DEVICE_OS" /> kan dela med Google och hur den delas besöker du g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Om du vill använda <ph name="NETWORK_ID" /> kanske du först måste <ph name="LINK_START" />besöka nätverkets inloggningssida<ph name="LINK_END" />, som öppnas automatiskt om några sekunder. Om den inte öppnas går det inte att använda nätverket.</translation>
 <translation id="5655296450510165335">Enhetsregistrering</translation>
 <translation id="5659964844710667266">Skapa lösenord för denna <ph name="DEVICE_TYPE" /></translation>
@@ -310,6 +323,8 @@
 <translation id="636850387210749493">Företagsregistrering</translation>
 <translation id="6380143666419481200">Godkänn och fortsätt</translation>
 <translation id="640457954117263537">Använd plats för appar och tjänster för ChromeOS och Android.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner du använder och hur mycket minne du brukar använda.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Installera viktig uppdatering</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
 <translation id="6495266441917713704">Det går inte att överföra wifi</translation>
@@ -326,11 +341,16 @@
 <translation id="6722744767592605627">Du kan återställa <ph name="EMAIL" />, men lokala uppgifter raderas.</translation>
 <translation id="6748980958975836188">Jag har läst och godkänner <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6789834167207639931">Ange lösenordet till Google-kontot igen på nästa skärm för att slutföra återställningen</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner som använts, hur mycket minne som brukar användas, diagnostikdata om Android-appar och data om användning. Viss samlad data används även till att förbättra appar från Google och produkter från Googles partner, till exempel Android-utvecklare.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna för barnets ChromeOS-enhet. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Om inställningen webb- och appaktivitet har aktiverats för ditt barns Google-konto kan barnets data sparas i Google-kontot. Läs mer om inställningarna och hur du ändrar dem på families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Populära appar för din <ph name="DEVICE_TYPE" /></translation>
 <translation id="682971198310367122">Googles integritetspolicy</translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Inloggning fungerar annorlunda</translation>
 <translation id="6883319974225028188">Det gick inte att spara enhetskonfigurationen.</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Appdata är all data som har sparats i en app (utifrån utvecklarens inställningar), bland annat data som kontakter, meddelanden och foton. Säkerhetskopierad data tar inte upp barnets lagringsutrymme i Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera den här tjänsten i Inställningar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
 <translation id="6918733588290914545">Snabb konfigurering med Android-telefon</translation>
 <translation id="6920473853105515518">Se till att <ph name="DEVICE_TYPE" /> är ansluten till internet och försök igen. Du kan även besöka play.google/play-terms på en annan enhet.</translation>
@@ -377,6 +397,8 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="7630426712700473382">Den här enheten hanteras av <ph name="MANAGER" /> och du måste logga in varje gång.</translation>
 <translation id="7639914187072011620">Det gick inte att hämta SAML-omdirigeringsadressen från servern</translation>
 <translation id="7643117827468520640">Granska dessa villkor</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Appdata är all data som har sparats i en app (utifrån utvecklarens inställningar), bland annat data som kontakter, meddelanden och foton. Säkerhetskopierad data tar inte upp lagringsutrymme i Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera den här tjänsten i Inställningar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659584679870740384">Du har inte behörighet att använda den här enheten. Kontakta administratören om du vill ha behörighet att logga in.</translation>
@@ -394,6 +416,8 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="7870730066603611552">Granska synkroniseringsalternativen efter konfigureringen</translation>
 <translation id="7883792253546618164">Du kan avsluta prenumerationen när du vill.</translation>
 <translation id="7906440585529721295">Lokal data raderas</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner som använts och hur mycket minne som brukar användas.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna för barnets ChromeOS-enhet. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7943311690198910993">Inloggningsmetoden har uppdaterats</translation>
 <translation id="795240231873601803">Använd företagsregistrering för jobb- och skolkonton</translation>
 <translation id="7968982339740310781">Visa information</translation>
@@ -412,6 +436,8 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="815491593104042026">Hoppsan! Autentiseringen misslyckades eftersom den har konfigurerats att använda en webbadress som inte är säker (<ph name="BLOCKED_URL" />). Kontakta administratören.</translation>
 <translation id="8157704005178149728">Konfigurerar kontroll</translation>
 <translation id="8174047975335711832">Enhetsinformation</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Med Googles platstjänst används källor som wifi, mobila nätverk och sensorer för att avgöra enhetens plats.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera plats för Android-enheten när du vill via Inställningar &gt; Appar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Säkerhet och plats &gt; Plats. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för platstjänsten genom att inaktivera Platsangivelsens exakthet i samma meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Ange lösenordet på nytt om du vill uppdatera din profil på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8239032431519548577">Företagsregistreringen är klar</translation>
 <translation id="8241806945692107836">Kontrollerar enhetskonfigurationen …</translation>
@@ -439,6 +465,9 @@ proxyservern fungerar. Om du inte tror att du bör använda en
         <ph name="BR" />
         Synlig för enheter i närheten som <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> …</translation>
 <translation id="8655972064210167941">Inloggningen misslyckades eftersom ditt lösenord inte kunde verifieras. Kontakta administratören eller försök igen.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />När Platsangivelsens exakthet är aktiverad används information om trådlösa signaler, som wifi-åtkomstpunkter och mobilnätverksmaster, tillsammans med enheters sensordata, som accelerometer och gyroskop, för att uppskatta mer exakta enhetsplatser som appar och tjänster använder för att tillhandahålla platsbaserade funktioner. För att göra detta samlar Google med jämna mellanrum in information om enhetssensorer och trådlösa signaler i närheten av dig för att bidra till identifiering av platser för trådlösa signaler som fastställs med hjälp av massinsamling.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google använder uppgifterna utan att identifiera dig i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster samt för att i allmänhet förbättra, tillhandahålla och underhålla Googles tjänster. Vi behandlar informationen utifrån Googles och tredje parts berättigade intresse för att tillgodose användarnas behov.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Du kan när som helst inaktivera platsangivelsens exakthet i platsinställningarna på enheten under Inställningar &gt; Integritet och säkerhet &gt; Integritetsinställningar &gt; Platsåtkomst &gt; Avancerade platsinställningar. Om platsangivelsens exakthet har inaktiverats samlas ingen data in. För Android-appar och Android-tjänster används endast IP-adress, om en sådan är tillgänglig, för att fastställa enhetens plats. Det kan påverka tillgängligheten och exaktheten för platser för Android-appar och Android-tjänster som Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Tyvärr är din dator konfigurerad med ett felaktigt hårdvaru-ID. Detta förhindrar att ChromeOS uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara utsatt för skadlig kod<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Lägg till föräldrakontroller efter konfigureringen</translation>
 <translation id="8698269656364382265">Återgå till föregående skärm genom att svepa från skärmens vänsterkant.</translation>

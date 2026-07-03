@@ -95,6 +95,8 @@
 <translation id="2565214867520763227">Hidupkan pembaca skrin</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Tidak, teruskan tanpa ChromeVox</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti ini.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan lokasi Android pada peranti ini pada bila-bila masa dengan mengakses Tetapan &gt; Apl &gt; Google Play Store &gt; Urus pilihan Android &gt; Keselamatan &amp; lokasi &gt; Lokasi. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi Android dengan mematikan “Ketepatan Lokasi Google” dalam menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2687407218262674387">Syarat perkhidmatan Google</translation>
 <translation id="2688196195245426394">Ralat semasa mendaftarkan peranti dengan pelayan: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Ini ialah peranti yang dihimpunkan dan tidak boleh didaftarkan dengan Peningkatan Kios dan Papan Tanda.</translation>
@@ -103,10 +105,15 @@
 <translation id="2732134891301408122">Kandungan tambahan <ph name="CURRENT_ELEMENT" /> daripada <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2754825024506485820">Cari apl yang anda perlukan, daripada produktiviti kepada hiburan di Google Play Store. Anda boleh memasang apl pada bila-bila masa.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Apabila Ketepatan Lokasi dihidupkan, maklumat tentang isyarat wayarles, seperti titik akses Wi-Fi dan menara rangkaian selular, bersama dengan data penderia peranti, seperti akselerometer dan giroskop, digunakan untuk menganggarkan lokasi peranti yang lebih tepat, yang digunakan oleh apl dan perkhidmatan Android untuk menyediakan ciri berasaskan lokasi. Untuk berbuat demikian, Google mengumpulkan maklumat secara berkala tentang penderia peranti dan isyarat wayarles berdekatan peranti ini secara berkala untuk menyumbang kepada lokasi isyarat wayarles sumber khalayak.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google menggunakan maklumat yang dikumpulkan daripada peranti ini untuk: meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi; dan secara amnya meningkatkan, menyediakan dan mengekalkan perkhidmatan Google. Kami memproses maklumat ini berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna. Maklumat ini tidak digunakan untuk mengenal pasti mana-mana individu.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Anda boleh mematikan Ketepatan Lokasi pada bila-bila masa dalam tetapan lokasi peranti ini dalam bahagian Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi &gt; Tetapan lokasi lanjutan. Jika Ketepatan Lokasi dimatikan, tiada data Ketepatan Lokasi akan dikumpulkan. Untuk apl dan perkhidmatan Android, hanya alamat IP digunakan, jika tersedia, untuk menentukan lokasi peranti ini yang mungkin memberikan kesan kepada ketersediaan dan ketepatan lokasi untuk apl dan perkhidmatan Android seperti Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Anda sudah bersedia!</translation>
 <translation id="2832124733806557606">Anak anda boleh menggunakan PIN untuk log masuk atau membuka kunci peranti.</translation>
 <translation id="283669119850230892">Untuk menggunakan rangkaian <ph name="NETWORK_ID" />, mula-mula lengkapkan sambungan anda ke Internet di bawah.</translation>
 <translation id="2849767214114481738">PIN anda telah ditambah</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan ditingkatkan pada ChromeOS. Laporan ini boleh mengandungi maklumat seperti waktu ranap sistem ChromeOS, ciri yang digunakan dan jumlah memori yang biasanya digunakan.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti Chrome anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2893180576842394309">Google boleh menggunakan sejarah anda untuk memperibadikan Carian dan perkhidmatan Google yang lain</translation>
 <translation id="2902265136119311513">Semak imbas sebagai Tetamu</translation>
 <translation id="2904210161403910217">Kata laluan anda telah berubah sejak kali terakhir anda log masuk</translation>
@@ -183,6 +190,9 @@
 <translation id="4341905082470253054">Menyemak status TPM...</translation>
 <translation id="4370975561335139969">E-mel dan kata laluan yang anda masukkan tidak padan</translation>
 <translation id="4373418556073552953">Log masuk dengan telefon Android anda</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS anda menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan ditingkatkan pada ChromeOS. Laporan ini boleh merangkumi perkara seperti waktu ranap sistem ChromeOS, ciri yang anda gunakan, jumlah memori yang biasa anda gunakan serta data diagnostik dan penggunaan apl Android. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti ChromeOS anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Jika tetapan Aktiviti Web &amp; Apl dihidupkan untuk Google Account anda, data Android anda mungkin disimpan pada Google Account anda. Anda boleh melihat data anda, memadamkan data itu dan menukar tetapan akaun anda melalui account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4403266582403435904">Pulihkan data atau tukar peranti dengan mudah pada bila-bila masa. Sandaran dimuat naik pada Google dan disulitkan dengan menggunakan kata laluan Google Account anak anda.</translation>
 <translation id="4410545552906060960">Gunakan nombor (PIN) dan bukannya kata laluan untuk membuka kunci peranti anda. Pergi ke Tetapan untuk menetapkan PIN anda kemudian.</translation>
 <translation id="4415213869328311284">Anda sudah bersedia untuk menggunakan <ph name="DEVICE_TYPE" /> anda.</translation>
@@ -261,6 +271,9 @@
 <translation id="5539070192556911367">Tidak dapat menghubungi Google</translation>
 <translation id="557722062034137776">Penetapan semula peranti anda tidak akan menjejaskan Google Account anda atau sebarang data yang disegerakkan ke akaun ini. Walau bagaimanapun, semua fail yang disimpan secara setempat pada peranti anda akan dipadamkan.</translation>
 <translation id="5626172233890210551">Gunakan kata laluan</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Untuk memberikan pengalaman terbaik, <ph name="DEVICE_OS" /> mengumpulkan data perkakasan tentang peranti dan berkongsi data tersebut dengan Google untuk menentukan kemaskinian yang seharusnya dihantar. Secara pilihan, anda boleh membenarkan Google menggunakan data ini untuk tujuan tambahan seperti sokongan dan peningkatan pada pengalaman dan perkhidmatan <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh log masuk pada peranti ini dan melihat medan yang disenaraikan sebagai chromeosflex_ dalam chrome://system untuk melihat data yang dihantar kepada Google untuk penapisan kemaskinian serta sebarang keadaan lain yang anda pilih untuk berkongsi data dengan Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Untuk mendapatkan butiran lanjut tentang data yang boleh dikongsi oleh <ph name="DEVICE_OS" /> dengan Google dan cara data itu digunakan, lawati g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" /> anda mungkin perlu <ph name="LINK_START" />melawat halaman log masuk rangkaian<ph name="LINK_END" /> terlebih dahulu, yang akan terbuka secara automatik dalam beberapa saat. Jika ini tidak berlaku, rangkaian tersebut tidak boleh digunakan.</translation>
 <translation id="5655296450510165335">Pendaftaran peranti</translation>
 <translation id="5659964844710667266">Buat kata laluan untuk <ph name="DEVICE_TYPE" /> ini</translation>
@@ -310,6 +323,8 @@
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6380143666419481200">Terima dan teruskan</translation>
 <translation id="640457954117263537">Gunakan lokasi untuk apl dan perkhidmatan ChromeOS serta Android.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS anda menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan ditingkatkan pada ChromeOS. Laporan ini boleh merangkumi perkara seperti waktu ranap sistem ChromeOS, ciri yang anda gunakan dan jumlah memori yang biasa anda digunakan.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti Chrome anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Pasang kemas kini genting</translation>
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6495266441917713704">Tidak dapat memindahkan Wi-Fi</translation>
@@ -326,11 +341,16 @@
 <translation id="6722744767592605627">Anda boleh memulihkan <ph name="EMAIL" /> tetapi data setempat akan dipadamkan.</translation>
 <translation id="6748980958975836188">Saya telah membaca dan bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Chrome dan OS Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6789834167207639931">Masukkan kata laluan Google Account anda sekali lagi pada skrin seterusnya untuk menyelesaikan pemulihan</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan ditingkatkan pada ChromeOS. Laporan ini boleh mengandungi maklumat seperti waktu ranap ChromeOS, ciri yang digunakan, jumlah memori yang biasanya digunakan dan data diagnostik dan penggunaan apl Android. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti ChromeOS anak anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Jika tetapan Aktiviti Web &amp; Apl dihidupkan untuk Google Account anak anda, data anak anda mungkin disimpan pada Google Account mereka. Ketahui perihal tetapan ini dan cara melaraskan tetapan ini dengan lebih lanjut melalui families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Apl popular untuk <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="682971198310367122">Dasar privasi Google</translation>
 <translation id="6835762382653651563">Sila sambung ke Internet untuk mengemaskinikan <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="6839916869147598086">Log masuk telah berubah</translation>
 <translation id="6883319974225028188">Op!  Sistem gagal menyimpan konfigurasi peranti.</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Data apl boleh terdiri daripada sebarang data yang telah disimpan oleh apl (berdasarkan tetapan pembangun), termasuk data seperti kenalan, mesej dan foto. Data sandaran tidak dikira dalam kuota storan Drive anak anda.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan perkhidmatan ini dalam Tetapan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Hidupkan penyegerakan</translation>
 <translation id="6918733588290914545">Persediaan pantas dengan telefon Android</translation>
 <translation id="6920473853105515518">Pastikan <ph name="DEVICE_TYPE" /> anda disambungkan kepada Internet dan cuba lagi. Anda boleh melawati play.google/play-terms pada peranti lain.</translation>
@@ -377,6 +397,8 @@
 <translation id="7630426712700473382">Peranti ini diurus oleh <ph name="MANAGER" /> dan menghendaki anda log masuk setiap kali.</translation>
 <translation id="7639914187072011620">Gagal mengambil URL ubah hala SAML daripada pelayan</translation>
 <translation id="7643117827468520640">Semak syarat ini</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Data apl boleh terdiri daripada sebarang data yang telah disimpan oleh apl (berdasarkan tetapan pembangun), termasuk data seperti kenalan, mesej dan foto. Data apl yang disandarkan tidak akan dikira dalam kuota storan Drive anda.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan perkhidmatan ini dalam Tetapan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659584679870740384">Anda tiada kebenaran untuk menggunakan peranti ini. Sila hubungi pentadbir untuk mendapatkan kebenaran log masuk.</translation>
@@ -394,6 +416,8 @@
 <translation id="7870730066603611552">Semak pilihan penyegerakan selepas persediaan</translation>
 <translation id="7883792253546618164">Hentikan langganan pada bila-bila masa.</translation>
 <translation id="7906440585529721295">Data setempat akan dipadamkan</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan ditingkatkan pada ChromeOS. Laporan ini boleh mengandungi maklumat seperti waktu ranap sistem ChromeOS, ciri yang digunakan dan jumlah memori yang biasanya digunakan.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti ChromeOS anak anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7943311690198910993">Kaedah log masuk dikemaskinikan</translation>
 <translation id="795240231873601803">Gunakan pendaftaran perusahaan untuk akaun kerja dan sekolah</translation>
 <translation id="7968982339740310781">Lihat butiran</translation>
@@ -412,6 +436,8 @@
 <translation id="815491593104042026">Op! Pengesahan gagal kerana telah dikonfigurasikan untuk menggunakan URL tidak selamat (<ph name="BLOCKED_URL" />). Sila hubungi pentadbir anda.</translation>
 <translation id="8157704005178149728">Menyediakan pengawasan</translation>
 <translation id="8174047975335711832">Maklumat peranti</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti anda.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan lokasi Android pada peranti anda pada bila-bila masa dengan mengakses Tetapan &gt; Apl &gt; Google Play Store &gt; Urus pilihan Android &gt; Keselamatan &amp; lokasi &gt; Lokasi. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi Android dengan mematikan “Ketepatan Lokasi Google” dalam menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Sila masukkan semula kata laluan untuk mengemaskinikan profil <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="8239032431519548577">Pendaftaran perusahaan selesai</translation>
 <translation id="8241806945692107836">Menentukan konfigurasi peranti...</translation>
@@ -439,6 +465,9 @@
         <ph name="BR" />
         Boleh dilihat oleh peranti berdekatan sebagai <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="8655972064210167941">Log masuk gagal kerana kata laluan anda tidak dapat disahkan. Sila hubungi pentadbir anda atau cuba lagi.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Apabila Ketepatan Lokasi dihidupkan, maklumat tentang isyarat wayarles, seperti titik akses Wi-Fi dan menara rangkaian selular, bersama dengan data penderia peranti, seperti akselerometer dan giroskop, digunakan untuk menganggarkan lokasi peranti yang lebih tepat, yang digunakan oleh apl dan perkhidmatan Android untuk menyediakan ciri berasaskan lokasi. Untuk berbuat demikian, Google mengumpulkan maklumat secara berkala tentang penderia peranti dan isyarat wayarles berdekatan anda secara berkala untuk menyumbang kepada lokasi isyarat wayarles sumber khalayak.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google menggunakan maklumat ini tanpa mengenal pasti identiti anda untuk: meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi; dan secara amnya meningkatkan, menyediakan dan mengekalkan perkhidmatan Google. Kami memproses maklumat ini berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Anda boleh mematikan Ketepatan Lokasi pada bila-bila masa dalam tetapan lokasi peranti anda dalam bahagian Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi &gt; Tetapan lokasi lanjutan. Jika Ketepatan Lokasi dimatikan, tiada data Ketepatan Lokasi akan dikumpulkan. Untuk apl dan perkhidmatan Android, hanya alamat IP digunakan, jika tersedia, untuk menentukan lokasi peranti anda yang mungkin memberikan kesan kepada ketersediaan dan ketepatan lokasi untuk apl dan perkhidmatan Android seperti Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Malangnya, komputer anda dikonfigurasi dengan ID perkakasan tidak sempurna. Hal ini menghalang Chrome OS daripada mengemas kini kepada pembetulan keselamatan terbaharu dan komputer anda <ph name="BEGIN_BOLD" />mungkin terdedah kepada serangan hasad<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Tambah kawalan ibu bapa selepas persediaan</translation>
 <translation id="8698269656364382265">Untuk kembali ke skrin sebelumnya, leret dari sebelah kiri.</translation>

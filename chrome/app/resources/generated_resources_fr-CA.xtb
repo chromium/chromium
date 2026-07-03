@@ -1918,6 +1918,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2460150227008936698">{COUNT,plural, =0{Expire aujourd'hui}=1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="2460482211073772897">Dans d'autres dossiers</translation>
 <translation id="2460826998961521840">Pour user des clés d'accès dans votre compte</translation>
+<translation id="2461457574123041923">Si vous quittez ce site, votre tâche prendra fin. Pour continuer la tâche pendant que vous visitez d'autres sites, ouvrez un nouvel onglet.</translation>
 <translation id="2461550163693930491">Ne pas autoriser les sites à faire défiler et à zoomer les onglets partagés</translation>
 <translation id="2461593638794842577">Vous pouvez désactiver ce paramètre pour enregistrer vos mots de passe uniquement sur cet appareil</translation>
 <translation id="2462550463312552298">Résume ce document</translation>
@@ -2480,6 +2481,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2865057607286263192">Maintenez le doigt sur les touches du clavier pour voir les accents et les caractères spéciaux. Cela désactive l'appui répété sur les touches alphabétiques. Uniquement disponible pour l'anglais (États-Unis).</translation>
 <translation id="2865919525181940183">Capture d'écran des programmes qui sont présentement à l'écran</translation>
 <translation id="286643536820867504">Crée automatiquement des sous-titres pour les langues prises en charge. Les données audio ne quittent jamais votre appareil.</translation>
+<translation id="2866504884233915828">Vous ne pouvez ajouter que <ph name="COUNT" /> fichiers.</translation>
 <translation id="286674810810214575">Vérification des sources d'alimentation en cours…</translation>
 <translation id="2867768963760577682">Ouvrir dans un onglet épinglé</translation>
 <translation id="2868746137289129307">Cette extension est obsolète et désactivée par la politique de l'entreprise. Il est possible qu’elle s’active automatiquement lorsqu’une nouvelle version sera disponible.</translation>
@@ -2644,8 +2646,10 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="2990313168615879645">Ajouter un compte Google</translation>
 <translation id="2990375978470734995">Pour que ce changement entre en vigueur, reconnectez vos accessoires externes.</translation>
+<translation id="2990500505358145117">Modifier le raccourci de remplissage automatique amélioré</translation>
 <translation id="2990583317361835189">Ne pas autoriser les sites à utiliser les capteurs de mouvement</translation>
 <translation id="2991182900092497283">Veuillez entrer la raison pour laquelle vous collez ces données :</translation>
+<translation id="2992754757708650257">Quitter le site et terminer la tâche?</translation>
 <translation id="2992931425024192067">Afficher l'intégralité du contenu des notifications</translation>
 <translation id="2993517869960930405">Détails de l'appli</translation>
 <translation id="2994804273850542871">Niveau 4 : ULTRA</translation>
@@ -2982,6 +2986,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3247649647204519958">À partir d'ici, vous pouvez voir et gérer les autorisations d'extensions pour le site sur lequel vous vous trouvez</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Erreur réseau</translation>
 <translation id="3248902735035392926">La sécurité, c'est important. Prenez quelques instants pour <ph name="BEGIN_LINK" />vérifier vos extensions maintenant<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Raccourci personnalisé pour le remplissage automatique amélioré</translation>
 <translation id="3249558306861350254">Cliquez sur <ph name="BEGIN_BOLD" />Définir par défaut<ph name="END_BOLD" /> dans vos paramètres Windows.</translation>
 <translation id="3250374026663843838">Gérer votre compétence</translation>
 <translation id="3251119461199395237">Synchronisation des fichiers</translation>
@@ -3794,6 +3799,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3827548509471720579">Luminosité de l'écran</translation>
 <translation id="3827774300009121996">&amp;Plein écran</translation>
 <translation id="3828029223314399057">Rechercher dans les favoris</translation>
+<translation id="3828454092958722155">Effacer le raccourci de remplissage automatique amélioré</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Utilisation élevée de la mémoire – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Partage de fichiers SMB</translation>
 <translation id="3830470485672984938">Utiliser une autre clé d'accès</translation>
@@ -4366,6 +4372,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4281789858103154731">Créer</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4281849573951338030">Personnaliser les boutons du stylet</translation>
+<translation id="4283635301190260296">Réduire les onglets verticaux</translation>
 <translation id="4284903252249997120">Lecteur d'écran ChromeVox et Sélectionner pour énoncer</translation>
 <translation id="4285418559658561636">Mettre à jour le mot de passe</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
@@ -5189,6 +5196,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4895799941222633551">Créer un raccourci...</translation>
 <translation id="4898913189644355814">Un site peut enregistrer votre langue préférée ou les articles que vous souhaitez acheter. Ces renseignements sont accessibles sur le site et ses sous-domaines.</translation>
 <translation id="4899052647152077033">Inverser les couleurs</translation>
+<translation id="4899813415889597597">Impossible de se connecter à votre compte Google Disque</translation>
 <translation id="490031510406860025">Non autorisé sur ce site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelacé)</translation>
 <translation id="4900652253009739885">Impossible de retirer le commutateur attribué à l'action « Sélectionner ». Appuyez sur n'importe quelle touche pour <ph name="RESPONSE" />.</translation>
@@ -5280,6 +5288,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4972129977812092092">Modifier l'imprimante</translation>
 <translation id="4972164225939028131">Mot de passe incorrect</translation>
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
+<translation id="4973302523373219907">Si le raccourci personnalisé n'est pas défini, @@ est utilisé par défaut</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Désactiver le son sur le site}one{Désactiver le son sur le site}other{Désactiver le son sur les sites}}</translation>
 <translation id="497403230787583386">La vérification de sécurité est terminée. Votre document sera imprimé.</translation>
 <translation id="4974442344472293753">Résultat de la mise à jour</translation>
@@ -7256,6 +7265,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6544134392255015460">basculer le rétroéclairage du clavier</translation>
 <translation id="6545665334409411530">Fréquence de répétition</translation>
 <translation id="6547354035488017500">Libérez au moins 512 Mo d'espace de stockage ou votre appareil ne répondra plus. Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de votre appareil.</translation>
+<translation id="6548240707386871455">Raccourci du remplissage automatique amélioré</translation>
 <translation id="654871471440386944">Activer la navigation au clavier?</translation>
 <translation id="6548945820758901244">Ouvrir le panneau latéral de la recherche Google</translation>
 <translation id="6549038875972762904">Rétablir la configuration</translation>

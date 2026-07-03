@@ -1929,6 +1929,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2460150227008936698">{COUNT,plural, =0{Ma jár le}=1{Holnap jár le}other{# napon belül lejár}}</translation>
 <translation id="2460482211073772897">Más mappákban</translation>
 <translation id="2460826998961521840">A Google-fiókjába mentett azonosítókulcsok használatához</translation>
+<translation id="2461457574123041923">Ha elhagyja ezt a webhelyet, a feladat befejeződik. Ha meg szeretné tartani a feladatot, miközben más webhelyeket keres fel, nyisson meg egy új lapot.</translation>
 <translation id="2461550163693930491">A webhelyek nem görgethetnek és nagyíthatnak a megosztott lapokon</translation>
 <translation id="2461593638794842577">Kikapcsolhatja ezt a beállítást, ha csak ezen az eszközön szeretné menteni a jelszavait.</translation>
 <translation id="2462550463312552298">Foglald össze ezt a dokumentumot</translation>
@@ -2489,6 +2490,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2865057607286263192">Az ékezetek és a speciális karakterek megjelenítéséhez tartsa lenyomva a vonatkozó billentyűket. Ezzel kikapcsolja az ismétlődő billentyűlenyomást az ábécé billentyűi esetén. Csak angol (amerikai) nyelven áll rendelkezésre.</translation>
 <translation id="2865919525181940183">A jelenleg a képernyőn lévő programok képernyőképe</translation>
 <translation id="286643536820867504">Automatikus feliratkészítés a támogatott nyelvekhez. A hanganyag sosem kerül ki az eszközről.</translation>
+<translation id="2866504884233915828">Legfeljebb <ph name="COUNT" /> fájlt adhat hozzá.</translation>
 <translation id="286674810810214575">Erőforrások ellenőrzése…</translation>
 <translation id="2867768963760577682">Megnyitás rögzített lapként</translation>
 <translation id="2868746137289129307">Ez a bővítmény elavult, így a vállalati házirend letiltotta. A bővítményt automatikusan ismét engedélyezheti a rendszer akkor, amikor egy újabb verzió elérhetővé válik.</translation>
@@ -2653,8 +2655,10 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2989805286512600854">Megnyitás új lapon</translation>
 <translation id="2990313168615879645">Google-fiók felvétele</translation>
 <translation id="2990375978470734995">A módosítás életbe léptetéséhez csatlakoztassa újra a külső tartozékokat.</translation>
+<translation id="2990500505358145117">A továbbfejlesztett automatikus kitöltés billentyűparancsának szerkesztése</translation>
 <translation id="2990583317361835189">A webhelyek nem használhatnak mozgásérzékelőket</translation>
 <translation id="2991182900092497283">Adja meg az adat beillesztésének okát:</translation>
+<translation id="2992754757708650257">Elhagyja a webhelyet és befejezi a feladatot?</translation>
 <translation id="2992931425024192067">Az értesítések teljes tartalma jelenjen meg</translation>
 <translation id="2993517869960930405">Alkalmazásadatok</translation>
 <translation id="2994804273850542871">4. szint: ULTRA</translation>
@@ -2991,6 +2995,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3247649647204519958">Itt tekintheti meg és kezelheti a bővítmények engedélyeit az aktuális webhelyre vonatkozóan</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Hálózati hiba</translation>
 <translation id="3248902735035392926">A biztonság fontos. Szánjon egy pillanatot <ph name="BEGIN_LINK" />bővítményeinek ellenőrzésére<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Egyéni billentyűparancs a továbbfejlesztett automatikus kitöltéshez</translation>
 <translation id="3249558306861350254">Kattintson a <ph name="BEGIN_BOLD" />Beállítás alapértelmezettként<ph name="END_BOLD" /> lehetőségre a Windows beállításaiban.</translation>
 <translation id="3250374026663843838">Készség kezelése</translation>
 <translation id="3251119461199395237">Fájlszinkronizálás</translation>
@@ -3803,6 +3808,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3827548509471720579">A kijelző fényereje</translation>
 <translation id="3827774300009121996">&amp;Teljes képernyő</translation>
 <translation id="3828029223314399057">Könyvjelzők keresése</translation>
+<translation id="3828454092958722155">A továbbfejlesztett automatikus kitöltés billentyűparancsának törlése</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Nagy memóriahasználat – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-fájlmegosztás</translation>
 <translation id="3830470485672984938">Másik azonosítókulcs használata</translation>
@@ -4374,6 +4380,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4281789858103154731">Létrehozás</translation>
 <translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
 <translation id="4281849573951338030">Tollgombok személyre szabása</translation>
+<translation id="4283635301190260296">Függőleges lapok összecsukása</translation>
 <translation id="4284903252249997120">ChromeVox képernyőolvasó és Felolvasás</translation>
 <translation id="4285418559658561636">Jelszó frissítése</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
@@ -5198,6 +5205,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4895799941222633551">Paranc&amp;sikon létrehozása…</translation>
 <translation id="4898913189644355814">Előfordulhat, hogy a webhely menti az előnyben részesített nyelvet vagy a megvásárolni kívánt tételeket. Ez az információ hozzáférhető a webhelyen és annak aldomainjein.</translation>
 <translation id="4899052647152077033">Színek invertálása</translation>
+<translation id="4899813415889597597">Nem sikerült csatlakozni a Google Drive-fiókjához</translation>
 <translation id="490031510406860025">Nem engedélyezett ezen a webhelyen</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – váltottsoros</translation>
 <translation id="4900652253009739885">A „Kiválasztás” művelethez hozzárendelt egyetlen kapcsoló eltávolítása nem lehetséges. Nyomja le bármelyik billentyűt a következőhöz: <ph name="RESPONSE" />.</translation>
@@ -5289,6 +5297,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4972129977812092092">Nyomtató szerkesztése</translation>
 <translation id="4972164225939028131">Helytelen jelszó</translation>
 <translation id="4972737347717125191">A webhelyek hozzáférést kérhetnek a virtuálisvalóság-eszközökhöz és -adatokhoz</translation>
+<translation id="4973302523373219907">Ha nincs beállítva egyéni billentyűparancs, a rendszer alapértelmezés szerint a következőt használja: @@</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Webhely némítása}other{Webhelyek némítása}}</translation>
 <translation id="497403230787583386">Biztonsági ellenőrzések sikeresen végrehajtva. Dokumentumát rövidesen kinyomtatja a rendszer.</translation>
 <translation id="4974442344472293753">Frissítés eredménye</translation>
@@ -7267,6 +7276,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6544134392255015460">billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="6545665334409411530">Ismétlési sebesség</translation>
 <translation id="6547354035488017500">Szabadítson fel legalább 512 MB tárhelyet, máskülönben eszköze lefagy. Tárhely felszabadításához töröljön fájlokat az eszköz tárhelyéről.</translation>
+<translation id="6548240707386871455">A továbbfejlesztett automatikus kitöltés billentyűparancsa</translation>
 <translation id="654871471440386944">Bekapcsolja a billentyűzettel böngészést?</translation>
 <translation id="6548945820758901244">A Google Kereső oldalsó paneljének megnyitása</translation>
 <translation id="6549038875972762904">Újbóli beállítás</translation>

@@ -1918,6 +1918,7 @@
 <translation id="2460150227008936698">{COUNT,plural, =0{今天过期}=1{明天过期}other{# 天后过期}}</translation>
 <translation id="2460482211073772897">在其他文件夹中</translation>
 <translation id="2460826998961521840">使用您 Google 账号中保存的通行密钥</translation>
+<translation id="2461457574123041923">如果离开此网站，任务将会结束。如要在访问其他网站时继续执行任务，请打开新标签页。</translation>
 <translation id="2461550163693930491">不允许网站滚动和缩放分享的标签页</translation>
 <translation id="2461593638794842577">您可以关闭此设置，以便仅将密码保存在此设备上</translation>
 <translation id="2462550463312552298">总结此文档</translation>
@@ -2477,6 +2478,7 @@
 <translation id="2865057607286263192">按住键盘按键即可查看重音符号和特殊字符。此操作会关闭字母键的重复按键操作。仅提供英语（美国）版本。</translation>
 <translation id="2865919525181940183">当前屏幕所含程序的屏幕截图</translation>
 <translation id="286643536820867504">自动为支持的语言创建字幕。音频只会留存在您的设备上。</translation>
+<translation id="2866504884233915828">最多只能添加 <ph name="COUNT" /> 个文件。</translation>
 <translation id="286674810810214575">正在检查电源…</translation>
 <translation id="2867768963760577682">在固定标签页中打开</translation>
 <translation id="2868746137289129307">此扩展程序已过期并已根据企业政策停用。当有新版本时，它可能会自动启用。</translation>
@@ -2641,8 +2643,10 @@
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="2990313168615879645">添加 Google 账号</translation>
 <translation id="2990375978470734995">若要让此更改生效，请重新连接外部配件。</translation>
+<translation id="2990500505358145117">修改增强型自动填充功能的快捷键</translation>
 <translation id="2990583317361835189">不允许网站使用移动传感器</translation>
 <translation id="2991182900092497283">请输入粘贴此数据的原因：</translation>
+<translation id="2992754757708650257">要离开此网站并结束任务吗？</translation>
 <translation id="2992931425024192067">显示所有通知内容</translation>
 <translation id="2993517869960930405">应用信息</translation>
 <translation id="2994804273850542871">第 4 层级：Ultra</translation>
@@ -2977,6 +2981,7 @@
 <translation id="3247649647204519958">在此处，您可以查看和管理针对您所在网站的扩展程序权限</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 网络错误</translation>
 <translation id="3248902735035392926">安全至上。请花点时间<ph name="BEGIN_LINK" />立即检查一下您的扩展程序<ph name="END_LINK" />吧</translation>
+<translation id="3248957351402065497">增强型自动填充功能的自定义快捷键</translation>
 <translation id="3249558306861350254">在 Windows 设置中点击<ph name="BEGIN_BOLD" />设为默认<ph name="END_BOLD" />。</translation>
 <translation id="3250374026663843838">管理技能</translation>
 <translation id="3251119461199395237">文件同步</translation>
@@ -3789,6 +3794,7 @@
 <translation id="3827548509471720579">显示屏亮度</translation>
 <translation id="3827774300009121996">全屏幕(&amp;F)</translation>
 <translation id="3828029223314399057">搜索书签</translation>
+<translation id="3828454092958722155">清除增强型自动填充功能的快捷键</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - 内存用量高 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB 文件共享</translation>
 <translation id="3830470485672984938">换个通行密钥</translation>
@@ -4360,6 +4366,7 @@
 <translation id="4281789858103154731">创建</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4281849573951338030">自定义画笔按键</translation>
+<translation id="4283635301190260296">收起垂直标签页栏</translation>
 <translation id="4284903252249997120">ChromeVox 屏幕阅读器和随选朗读功能</translation>
 <translation id="4285418559658561636">更新密码</translation>
 <translation id="4285498937028063278">取消固定</translation>
@@ -5183,6 +5190,7 @@
 <translation id="4895799941222633551">创建快捷方式(&amp;S)…</translation>
 <translation id="4898913189644355814">网站可能会保存您的首选语言或您想购买的商品。这些信息可供该网站及其子网域使用。</translation>
 <translation id="4899052647152077033">反色</translation>
+<translation id="4899813415889597597">无法连接到您的 Google 云端硬盘账号</translation>
 <translation id="490031510406860025">不允许在此网站上使用</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> 赫兹 - 隔行扫描</translation>
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
@@ -5274,6 +5282,7 @@
 <translation id="4972129977812092092">修改打印机</translation>
 <translation id="4972164225939028131">密码错误</translation>
 <translation id="4972737347717125191">网站可以请求使用虚拟现实设备和数据</translation>
+<translation id="4973302523373219907">如果未设置自定义快捷键，则默认使用 @@</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
 <translation id="497403230787583386">已完成安全检查。即将打印您的文档。</translation>
 <translation id="4974442344472293753">更新结果</translation>
@@ -7247,6 +7256,7 @@
 <translation id="6544134392255015460">键盘背光切换开关</translation>
 <translation id="6545665334409411530">重复速度</translation>
 <translation id="6547354035488017500">请至少释放 512 MB 的空间，否则您的设备将无响应。要释放空间，请将文件从设备存储空间中删除。</translation>
+<translation id="6548240707386871455">增强型自动填充功能的快捷键</translation>
 <translation id="654871471440386944">要开启光标浏览模式吗？</translation>
 <translation id="6548945820758901244">打开 Google 搜索侧边栏</translation>
 <translation id="6549038875972762904">重新设置</translation>
@@ -9694,7 +9704,7 @@
 <translation id="8376812682111060348">性能问题提醒</translation>
 <translation id="8377625247046155446">这个通行密钥只会保存在此设备上。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="837790003026572432">此设备不支持投放标签页中的音频</translation>
-<translation id="8378714024927312812">由贵组织管理</translation>
+<translation id="8378714024927312812">由您的组织管理</translation>
 <translation id="8379988659465232385">名称不能为空</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
 <translation id="8380266723152870797">窗口名称</translation>

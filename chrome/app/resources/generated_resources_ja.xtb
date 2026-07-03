@@ -1916,6 +1916,7 @@
 <translation id="2460150227008936698">{COUNT,plural, =0{今日で期限切れ}=1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="2460482211073772897">他のフォルダ</translation>
 <translation id="2460826998961521840">Google アカウントに保存されているパスキーを使用するには</translation>
+<translation id="2461457574123041923">このサイトから移動すると、タスクは終了します。他のサイトにアクセスしている間もタスクを続行するには、新しいタブを開きます。</translation>
 <translation id="2461550163693930491">共有タブのスクロールとズームをサイトに許可しない</translation>
 <translation id="2461593638794842577">この設定をオフにすると、パスワードをこのデバイスにのみ保存できます</translation>
 <translation id="2462550463312552298">このドキュメントを要約して</translation>
@@ -2475,6 +2476,7 @@
 <translation id="2865057607286263192">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されますアルファベット キーのキー入力の繰り返しはオフになります。英語（米国）でのみご利用いただけます。</translation>
 <translation id="2865919525181940183">現在画面に表示されているプログラムのスクリーンショット</translation>
 <translation id="286643536820867504">対応している言語の字幕を自動的に作成します。音声がデバイスの外部に送信されることはありません。</translation>
+<translation id="2866504884233915828">追加できるファイルは <ph name="COUNT" /> 個までです</translation>
 <translation id="286674810810214575">電源を確認しています...</translation>
 <translation id="2867768963760577682">固定されたタブとして開く</translation>
 <translation id="2868746137289129307">この拡張機能は古く、企業のポリシーによって無効にされました。新しいバージョンが利用可能になったときに自動的に有効になる可能性があります。</translation>
@@ -2639,8 +2641,10 @@
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="2990313168615879645">Google アカウントを追加</translation>
 <translation id="2990375978470734995">この変更を有効にするには、外付けのアクセサリーをもう一度接続してください。</translation>
+<translation id="2990500505358145117">高精度の自動入力のショートカットを編集</translation>
 <translation id="2990583317361835189">サイトにモーション センサーの使用を許可しない</translation>
 <translation id="2991182900092497283">このデータを貼り付ける理由を入力してください。</translation>
+<translation id="2992754757708650257">サイトから移動してタスクを終了しますか？</translation>
 <translation id="2992931425024192067">すべての通知内容を表示する</translation>
 <translation id="2993517869960930405">アプリ情報</translation>
 <translation id="2994804273850542871">ティア 4: ULTRA</translation>
@@ -2975,6 +2979,7 @@
 <translation id="3247649647204519958">ここでは、表示しているサイトに対する拡張機能の権限を確認、管理できます</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
 <translation id="3248902735035392926">安全性に問題がないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう</translation>
+<translation id="3248957351402065497">高精度の自動入力のカスタム ショートカット</translation>
 <translation id="3249558306861350254">Windows の設定で [<ph name="BEGIN_BOLD" />デフォルトに設定<ph name="END_BOLD" />] をクリックします。</translation>
 <translation id="3250374026663843838">スキルを管理</translation>
 <translation id="3251119461199395237">ファイルの同期</translation>
@@ -3787,6 +3792,7 @@
 <translation id="3827548509471720579">ディスプレイの明るさ</translation>
 <translation id="3827774300009121996">全画面表示(&amp;F)</translation>
 <translation id="3828029223314399057">ブックマークを検索</translation>
+<translation id="3828454092958722155">高精度の自動入力のショートカットを消去</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - メモリを大量に使用 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB ファイル共有</translation>
 <translation id="3830470485672984938">別のパスキーを使用する</translation>
@@ -4359,6 +4365,7 @@
 <translation id="4281789858103154731">作成</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4281849573951338030">ペンボタンをカスタマイズ</translation>
+<translation id="4283635301190260296">垂直タブを閉じる</translation>
 <translation id="4284903252249997120">ChromeVox スクリーン リーダーと「選択して読み上げ」</translation>
 <translation id="4285418559658561636">パスワードを更新</translation>
 <translation id="4285498937028063278">固定を解除</translation>
@@ -5182,6 +5189,7 @@
 <translation id="4895799941222633551">ショートカットを作成(&amp;S)...</translation>
 <translation id="4898913189644355814">サイトが、あなたの使用言語や購入しようとしている商品を保存する場合があります。この情報は、該当のサイトとそのサブドメインで使用されます。</translation>
 <translation id="4899052647152077033">色を反転</translation>
+<translation id="4899813415889597597">Google ドライブ アカウントに接続できませんでした</translation>
 <translation id="490031510406860025">このサイトでは許可されていません</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - インターレース</translation>
 <translation id="4900652253009739885">「選択」に割り当てられているスイッチが 1 つしかないため、削除できません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
@@ -5273,6 +5281,7 @@
 <translation id="4972129977812092092">プリンタの編集</translation>
 <translation id="4972164225939028131">パスワードが違います</translation>
 <translation id="4972737347717125191">サイトがバーチャル リアリティ デバイスとデータの使用を要求できるようにする</translation>
+<translation id="4973302523373219907">カスタム ショートカットが設定されていない場合、デフォルトで @@ が使用されます</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{サイトをミュート}other{サイトをミュート}}</translation>
 <translation id="497403230787583386">セキュリティ チェックが完了しました。ドキュメントが印刷されます。</translation>
 <translation id="4974442344472293753">更新の結果</translation>
@@ -7247,6 +7256,7 @@
 <translation id="6544134392255015460">キーボード バックライトの切り替え</translation>
 <translation id="6545665334409411530">リピート回数 / 秒</translation>
 <translation id="6547354035488017500">デバイスの空き領域を 512 MB 以上確保してください。空き領域がこれより少なくなると、デバイスは応答しなくなります。空き領域を確保するために、デバイスのストレージからファイルを削除してください。</translation>
+<translation id="6548240707386871455">高精度の自動入力のショートカット</translation>
 <translation id="654871471440386944">カーソル ブラウジングをオンにしますか？</translation>
 <translation id="6548945820758901244">Google 検索のサイドパネルを開く</translation>
 <translation id="6549038875972762904">設定をやり直す</translation>

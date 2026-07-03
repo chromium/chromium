@@ -1928,6 +1928,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2460150227008936698">{COUNT,plural, =0{Ističe danas}=1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="2460482211073772897">U drugim folderima</translation>
 <translation id="2460826998961521840">Da koristite pristupne ključeve sačuvane na Google računu</translation>
+<translation id="2461457574123041923">Ako napustite ovu web lokaciju, zadatak će se završiti. Da zadržite zadatak dok posjećujete druge web lokacije, otvorite novu karticu.</translation>
 <translation id="2461550163693930491">Nemoj dozvoliti web lokacijama klizanje na dijeljenim karticama niti njihovo zumiranje</translation>
 <translation id="2461593638794842577">Možete isključiti ovu postavku da sačuvate lozinke samo na ovaj uređaj</translation>
 <translation id="2462550463312552298">Sažmi ovaj dokument</translation>
@@ -2488,6 +2489,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2865057607286263192">Pritisnite i zadržite tipke tastature da vidite oznake akcenata i posebne znakove. Ovo isključuje ponavljanje pritiska tipke za tipke slova. Dostupno je samo za engleski (SAD).</translation>
 <translation id="2865919525181940183">Snimak ekrana programa koji su trenutno na ekranu.</translation>
 <translation id="286643536820867504">Automatski kreira titlove za podržane jezike. Zvuk ne napušta vaš uređaj.</translation>
+<translation id="2866504884233915828">Maksimalni broj fajlova koje možete dodati je <ph name="COUNT" /></translation>
 <translation id="286674810810214575">Provjeravanje izvora napajanja...</translation>
 <translation id="2867768963760577682">Otvori kao zakačenu karticu</translation>
 <translation id="2868746137289129307">Ova ekstenzija je zastarjela i onemogućena je pravilom preduzeća. Može se omogućiti automatski kada nova verzija postane dostupna.</translation>
@@ -2652,8 +2654,10 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2989805286512600854">Otvori u novoj kartici</translation>
 <translation id="2990313168615879645">Dodaj Google račun</translation>
 <translation id="2990375978470734995">Da se promjena primijeni, ponovo povežite vanjske dodatke.</translation>
+<translation id="2990500505358145117">Uredite prečicu za poboljšano automatsko popunjavanje</translation>
 <translation id="2990583317361835189">Nemoj dozvoliti web lokacijama korištenje senzora kretanja</translation>
 <translation id="2991182900092497283">Unesite razlog lijepljenja ovih podataka:</translation>
+<translation id="2992754757708650257">Napustiti web lokaciju i završiti zadatak?</translation>
 <translation id="2992931425024192067">Prikaži sav sadržaj obavještenja</translation>
 <translation id="2993517869960930405">Informacije o aplikaciji</translation>
 <translation id="2994804273850542871">4. nivo: ULTRA</translation>
@@ -2990,6 +2994,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3247649647204519958">Ovdje možete pregledati odobrenja za ekstenzije i upravljati njima za web lokaciju na kojoj se nalazite</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – greška na mreži</translation>
 <translation id="3248902735035392926">Sigurnost je važna. Odvojite malo vremena da <ph name="BEGIN_LINK" />sada provjerite ekstenzije<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Prilagođena prečica za poboljšano automatsko popunjavanje</translation>
 <translation id="3249558306861350254">Kliknite na <ph name="BEGIN_BOLD" />Postavi zadano<ph name="END_BOLD" /> u postavkama Windowsa.</translation>
 <translation id="3250374026663843838">Upravljanje vještinom</translation>
 <translation id="3251119461199395237">Sinhronizacija fajlova</translation>
@@ -3802,6 +3807,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3827548509471720579">Osvjetljenje ekrana</translation>
 <translation id="3827774300009121996">&amp;Cijeli ekran</translation>
 <translation id="3828029223314399057">Pretraži oznake</translation>
+<translation id="3828454092958722155">Izbrišite prečicu za poboljšano automatsko popunjavanje</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – veliko korištenje memorije – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB dijeljenje fajlova</translation>
 <translation id="3830470485672984938">Koristite drugi pristupni ključ</translation>
@@ -4374,6 +4380,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4281789858103154731">Kreiraj</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
 <translation id="4281849573951338030">Prilagodite dugmad olovke</translation>
+<translation id="4283635301190260296">Sužavanje uspravnih kartica</translation>
 <translation id="4284903252249997120">Čitač ekrana ChromeVox i Odaberite za govor</translation>
 <translation id="4285418559658561636">Ažuriraj lozinku</translation>
 <translation id="4285498937028063278">Otkači</translation>
@@ -5198,6 +5205,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4895799941222633551">Kreiranje &amp;prečice…</translation>
 <translation id="4898913189644355814">Web lokacija može sačuvati vaš željeni jezik ili artikle koje želite kupiti. Te informacije su dostupne web lokaciji i njenim poddomenama.</translation>
 <translation id="4899052647152077033">Inverzija boja</translation>
+<translation id="4899813415889597597">Povezivanje s računom za Google Disk nije uspjelo</translation>
 <translation id="490031510406860025">Nije dozvoljeno na ovoj web lokaciji</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – skeniranje s preplitanjem</translation>
 <translation id="4900652253009739885">Nije moguće ukloniti jedini prekidač dodijeljen radnji "Odaberi". Pritisnite bilo koju tipku da: <ph name="RESPONSE" />.</translation>
@@ -5289,6 +5297,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4972129977812092092">Uredi štampač</translation>
 <translation id="4972164225939028131">Pogrešna lozinka</translation>
 <translation id="4972737347717125191">Web lokacije mogu tražiti da koriste uređaje i podatke virtuelne realnosti</translation>
+<translation id="4973302523373219907">Ako prilagođena prečica nije postavljena, @@ se koristi prema zadanim postavkama</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Isključi zvuk web lokacije}one{Isključi zvuk web lokacija}few{Isključi zvuk web lokacija}other{Isključi zvuk web lokacija}}</translation>
 <translation id="497403230787583386">Sigurnosne provjere su izvršene. Vaš dokument će se odštampati.</translation>
 <translation id="4974442344472293753">Ishod ažuriranja</translation>
@@ -7266,6 +7275,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6544134392255015460">prekidač za pozadinsko osvjetljenje tastature</translation>
 <translation id="6545665334409411530">Brzina ponavljanja</translation>
 <translation id="6547354035488017500">Oslobodite najmanje 512 MB prostora ili će vaš uređaj prestati raditi. Da oslobodite prostor, izbrišite fajlove iz pohrane na uređaju.</translation>
+<translation id="6548240707386871455">Prečica za poboljšano automatsko popunjavanje</translation>
 <translation id="654871471440386944">Uključiti navigaciju kursorom?</translation>
 <translation id="6548945820758901244">Otvorite bočnu ploču Google Pretraživanja</translation>
 <translation id="6549038875972762904">Ponovi postavljanje</translation>

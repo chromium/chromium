@@ -1918,6 +1918,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2460150227008936698">{COUNT,plural, =0{Expiră astăzi}=1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
 <translation id="2460482211073772897">În alte dosare</translation>
 <translation id="2460826998961521840">Pentru a folosi cheile de acces salvate în Contul Google</translation>
+<translation id="2461457574123041923">Dacă părăsești site-ul, activitatea se va încheia. Pentru a continua activitatea în timp ce accesezi alte site-uri, deschide o filă nouă.</translation>
 <translation id="2461550163693930491">Nu permite site-urilor să deruleze și să facă zoom în filele la care s-a permis accesul</translation>
 <translation id="2461593638794842577">Poți dezactiva această setare pentru a salva parolele numai pe acest dispozitiv</translation>
 <translation id="2462550463312552298">Rezumă acest document</translation>
@@ -2478,6 +2479,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2865057607286263192">Apasă lung pe tastele de pe tastatură pentru a vedea semnele de evidențiere și caracterele speciale. Astfel, se dezactivează apăsarea repetată a tastelor alfabetice. Opțiune disponibilă numai pentru limba engleză (S.U.A.).</translation>
 <translation id="2865919525181940183">Captură de ecran a programelor afișate pe ecran</translation>
 <translation id="286643536820867504">Creează automat subtitrări pentru limbile acceptate. Conținutul audio nu părăsește niciodată dispozitivul.</translation>
+<translation id="2866504884233915828">Poți adăuga maximum <ph name="COUNT" /> fișiere</translation>
 <translation id="286674810810214575">Se verifică sursele de alimentare…</translation>
 <translation id="2867768963760577682">Deschideți ca filă fixată</translation>
 <translation id="2868746137289129307">Această extensie este învechită și a fost dezactivată de o politică de companie. Dacă este disponibilă o nouă versiune, extensia ar putea fi activată automat.</translation>
@@ -2642,8 +2644,10 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2989805286512600854">Deschide într-o filă nouă</translation>
 <translation id="2990313168615879645">Adaugă Contul Google</translation>
 <translation id="2990375978470734995">Pentru ca modificarea să se aplice, reconectează accesoriile externe.</translation>
+<translation id="2990500505358145117">Editează comanda rapidă pentru completarea automată îmbunătățită</translation>
 <translation id="2990583317361835189">Nu permite site-urilor să folosească senzori de mișcare</translation>
 <translation id="2991182900092497283">Introdu un motiv pentru inserarea acestor date:</translation>
+<translation id="2992754757708650257">Părăsești site-ul și închei activitatea?</translation>
 <translation id="2992931425024192067">Afișează integral conținutul notificărilor</translation>
 <translation id="2993517869960930405">Informații despre aplicație</translation>
 <translation id="2994804273850542871">Nivelul 4: ULTRA</translation>
@@ -2979,6 +2983,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3247649647204519958">De aici, poți să vezi și să gestionezi permisiunile pentru extensii ale site-ului pe care l-ai accesat</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – eroare de rețea</translation>
 <translation id="3248902735035392926">Siguranța contează. <ph name="BEGIN_LINK" />Verifică-ți extensiile acum<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Comandă rapidă personalizată pentru completarea automată îmbunătățită</translation>
 <translation id="3249558306861350254">Dă clic pe <ph name="BEGIN_BOLD" />Setează ca prestabilit<ph name="END_BOLD" /> în setările Windows.</translation>
 <translation id="3250374026663843838">Gestionează-ți abilitatea</translation>
 <translation id="3251119461199395237">Sincronizarea fișierelor</translation>
@@ -3791,6 +3796,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3827548509471720579">Luminozitatea ecranului</translation>
 <translation id="3827774300009121996">&amp;Ecran complet</translation>
 <translation id="3828029223314399057">Căutați în marcaje</translation>
+<translation id="3828454092958722155">Șterge comanda rapidă pentru completarea automată îmbunătățită</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Utilizare intensă a memoriei – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Spații comune de stocare fișiere IMM</translation>
 <translation id="3830470485672984938">Folosește altă cheie de acces</translation>
@@ -4363,6 +4369,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4281789858103154731">Creează</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4281849573951338030">Personalizează butoanele creionului</translation>
+<translation id="4283635301190260296">Restrânge filele verticale</translation>
 <translation id="4284903252249997120">Cititorul de ecran ChromeVox și funcția Selectați și ascultați</translation>
 <translation id="4285418559658561636">Actualizează parola</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
@@ -5186,6 +5193,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4895799941222633551">Creează o &amp;comandă rapidă...</translation>
 <translation id="4898913189644355814">Este posibil ca un site să-ți salveze limba preferată sau articolele pe care vrei să le cumperi. Aceste informații sunt disponibile pe site și pe subdomeniile acestuia.</translation>
 <translation id="4899052647152077033">Inversează culorile</translation>
+<translation id="4899813415889597597">Nu s-a putut conecta la contul Google Drive</translation>
 <translation id="490031510406860025">Nepermisă pe acest site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – intercalat</translation>
 <translation id="4900652253009739885">Nu se poate elimina singurul comutator atribuit acțiunii Selectează. Apasă orice tastă pentru acțiunea <ph name="RESPONSE" />.</translation>
@@ -5277,6 +5285,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4972129977812092092">Editează imprimanta</translation>
 <translation id="4972164225939028131">Parolă greșită</translation>
 <translation id="4972737347717125191">Site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală și date conexe</translation>
+<translation id="4973302523373219907">În cazul în care comanda rapidă personalizată nu este setată, se folosește @@ în mod prestabilit</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Dezactivează sunetul pentru site}few{Dezactivează sunetul pentru site-uri}other{Dezactivează sunetul pentru site-uri}}</translation>
 <translation id="497403230787583386">S-au finalizat verificările de securitate. Documentul va fi printat.</translation>
 <translation id="4974442344472293753">Actualizează rezultatul</translation>
@@ -7253,6 +7262,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6544134392255015460">comutator pentru retroiluminarea tastaturii</translation>
 <translation id="6545665334409411530">Frecvența de repetare</translation>
 <translation id="6547354035488017500">Eliberează un spațiu de cel puțin 512 MB sau dispozitivul nu va mai răspunde la comenzi. Pentru a elibera spațiu, șterge fișiere din stocarea dispozitivului.</translation>
+<translation id="6548240707386871455">Comandă rapidă pentru completarea automată îmbunătățită</translation>
 <translation id="654871471440386944">Activezi navigarea cu tastatura?</translation>
 <translation id="6548945820758901244">Deschide panoul lateral Căutare Google</translation>
 <translation id="6549038875972762904">Repetă configurarea</translation>

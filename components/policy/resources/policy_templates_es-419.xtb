@@ -13007,6 +13007,27 @@ Para obtener más información, consulta https://support.google.com/chrome/a/ans
 <translation id="8931555638815157255">Si habilitas la política o no la estableces, los dispositivos inscritos informarán de forma periódica su versión de SO y firmware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la versión.</translation>
+<translation id="8931984670731745012">Si estableces esta política, podrás especificar qué tipos de datos de Autocompletar se bloquean en patrones de URL específicos.
+
+La política se estructura como una lista de diccionarios. Cada diccionario debe contener lo siguiente:
+* "url_pattern": Un patrón de URL de configuración de contenido (p. ej., "https://[*.]example.com").
+* "blocked_types": Una lista de cadenas que representan las categorías de datos de Autocompletar que se bloquearán.
+
+Los valores admitidos para "blocked_types" son los siguientes:
+* "contact_info": Bloquea el guardado y la completación de la información de contacto.
+* "payments": Bloquea el guardado y la completación de tarjetas de crédito y formas de pago.
+* "identity_docs": Bloquea el guardado y la completación de documentos de identidad (p. ej., pasaporte, licencia de conducir, documento nacional de identidad).
+* "travel": Bloquea el guardado y la completación de información de viajes (p. ej., reservas de vuelos, registro de vehículos).
+* "shopping": Bloquea el guardado y la completación de información de compras (p. ej., pedidos en línea, envíos).
+
+Si se bloquea un tipo de datos para un sitio, se inhabilitan tanto la generación de sugerencias como la instrucción para guardar o importar datos nuevos de ese tipo en el sitio.
+
+Si una URL coincide con varias entradas de patrones en la lista, se combinan los tipos bloqueados de todas las entradas coincidentes (unión combinada). Se ignorarán los patrones de URL no válidos de la lista.
+
+Si no estableces esta política, no se bloqueará ningún tipo de datos de Autocompletar por dominio.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta:
+https://chromeenterprise.google/policies/url-patterns. Se admite el comodín *, este patrón busca coincidencias entre una URL y cualquier esquema, puerto y ruta de acceso.</translation>
 <translation id="8934296213794658971">Configuración de la integración con Gemini</translation>
 <translation id="8937282917198525844"> A partir de la versión M81, se actualizaron la apariencia y el estilo de los elementos estándar de los controles de formulario (p. ej., &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con mejoras en la accesibilidad y la uniformidad de la plataforma. Esta política restablece los elementos antiguos de los controles de formulario "heredados" hasta la versión M84.
 

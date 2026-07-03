@@ -1918,6 +1918,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2460150227008936698">{COUNT,plural, =0{Expire aujourd'hui}=1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="2460482211073772897">Dans d'autres dossiers</translation>
 <translation id="2460826998961521840">Pour utiliser les clés d'accès enregistrées dans votre compte Google</translation>
+<translation id="2461457574123041923">Si vous quittez ce site, votre tâche prendra fin. Ouvrez un nouvel onglet pour conserver la tâche pendant que vous consultez d'autres sites.</translation>
 <translation id="2461550163693930491">Ne pas autoriser les sites à faire défiler les onglets partagés ni à zoomer dessus</translation>
 <translation id="2461593638794842577">Vous pouvez désactiver ce paramètre pour enregistrer vos mots de passe uniquement sur cet appareil</translation>
 <translation id="2462550463312552298">Résume ce document</translation>
@@ -2478,6 +2479,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2865057607286263192">Appuyez de manière prolongée sur les touches du clavier pour afficher les accents et les caractères spéciaux. Cette option désactive la répétition des touches alphabétiques. Disponible uniquement en anglais (États-Unis).</translation>
 <translation id="2865919525181940183">Captures d'écran des programmes actuellement à l'écran</translation>
 <translation id="286643536820867504">Crée automatiquement des sous-titres pour les langues prises en charge. L'audio ne quitte jamais votre appareil.</translation>
+<translation id="2866504884233915828">Vous ne pouvez pas ajouter plus de <ph name="COUNT" /> fichiers</translation>
 <translation id="286674810810214575">Vérification des sources d'alimentation…</translation>
 <translation id="2867768963760577682">Ouvrir dans un onglet épinglé</translation>
 <translation id="2868746137289129307">Cette extension est obsolète et désactivée par une stratégie d'entreprise. Il se peut qu'elle soit activée automatiquement lors de la publication d'une version plus récente.</translation>
@@ -2642,8 +2644,10 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="2990313168615879645">Ajouter un compte Google</translation>
 <translation id="2990375978470734995">Pour que cette modification soit prise en compte, reconnectez vos accessoires externes.</translation>
+<translation id="2990500505358145117">Modifier le raccourci de saisie automatique améliorée</translation>
 <translation id="2990583317361835189">Ne pas autoriser les sites à utiliser les capteurs de mouvement</translation>
 <translation id="2991182900092497283">Veuillez indiquer la raison pour laquelle vous collez ces données :</translation>
+<translation id="2992754757708650257">Quitter le site et arrêter la tâche ?</translation>
 <translation id="2992931425024192067">Afficher tout le contenu des notifications</translation>
 <translation id="2993517869960930405">Infos sur l'appli</translation>
 <translation id="2994804273850542871">Niveau 4 : ULTRA</translation>
@@ -2978,6 +2982,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3247649647204519958">Vous pouvez voir et gérer ici les autorisations des extensions pour le site que vous consultez</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Erreur réseau</translation>
 <translation id="3248902735035392926">La sécurité est essentielle. Prenez quelques instants pour <ph name="BEGIN_LINK" />vérifier vos extensions dès maintenant<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Raccourci personnalisé pour la saisie automatique améliorée</translation>
 <translation id="3249558306861350254">Cliquez sur <ph name="BEGIN_BOLD" />Définir par défaut<ph name="END_BOLD" /> dans les paramètres Windows.</translation>
 <translation id="3250374026663843838">Gérer votre compétence</translation>
 <translation id="3251119461199395237">Synchronisation des fichiers</translation>
@@ -3790,6 +3795,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3827548509471720579">Luminosité de l'écran</translation>
 <translation id="3827774300009121996">&amp;Plein écran</translation>
 <translation id="3828029223314399057">Rechercher dans les favoris</translation>
+<translation id="3828454092958722155">Effacer le raccourci de saisie automatique améliorée</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Utilisation élevée de la mémoire - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Partage de fichiers SMB</translation>
 <translation id="3830470485672984938">Utiliser une autre clé d'accès</translation>
@@ -4362,6 +4368,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4281789858103154731">Créer</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4281849573951338030">Personnaliser les boutons du stylet</translation>
+<translation id="4283635301190260296">Réduire les onglets verticaux</translation>
 <translation id="4284903252249997120">Lecteur d'écran ChromeVox et Sélectionner pour écouter</translation>
 <translation id="4285418559658561636">Mettre à jour le mot de passe</translation>
 <translation id="4285498937028063278">Retirer</translation>
@@ -5185,6 +5192,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4895799941222633551">Créer un &amp;raccourci…</translation>
 <translation id="4898913189644355814">Un site peut éventuellement enregistrer votre langue préférée ou les articles que vous voulez acheter. Le site et ses sous-domaines peuvent accéder à ces informations.</translation>
 <translation id="4899052647152077033">Inverser les couleurs</translation>
+<translation id="4899813415889597597">Impossible de se connecter à votre compte Google Drive</translation>
 <translation id="490031510406860025">Non autorisée sur ce site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelacé)</translation>
 <translation id="4900652253009739885">Impossible de supprimer l'unique contacteur associé à "Sélectionner". Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
@@ -5276,6 +5284,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4972129977812092092">Modifier l'imprimante</translation>
 <translation id="4972164225939028131">Mot de passe incorrect</translation>
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
+<translation id="4973302523373219907">Si le raccourci personnalisé n'est pas défini, "@@" est utilisé par défaut</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Couper le son du site}one{Couper le son du site}other{Couper le son des sites}}</translation>
 <translation id="497403230787583386">Les contrôles de sécurité sont terminés. Votre document va être imprimé.</translation>
 <translation id="4974442344472293753">Résultat de la mise à jour</translation>
@@ -7253,6 +7262,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6544134392255015460">activation/désactivation du rétroéclairage du clavier</translation>
 <translation id="6545665334409411530">Fréquence de répétition</translation>
 <translation id="6547354035488017500">Si vous ne libérez pas au moins 512 Mo en supprimant des fichiers de l'espace de stockage, votre appareil ne répondra plus.</translation>
+<translation id="6548240707386871455">Raccourci de saisie automatique améliorée</translation>
 <translation id="654871471440386944">Activer la navigation au clavier ?</translation>
 <translation id="6548945820758901244">Ouvrir le panneau latéral de la recherche Google</translation>
 <translation id="6549038875972762904">Reconfigurer</translation>

@@ -893,6 +893,7 @@
 <translation id="2365382709349300355">تم حظر ملف واحد بسبب السياسة.</translation>
 <translation id="2365508935344991784">أثاث خارجي</translation>
 <translation id="2366689192918515749">لحوم وأطعمة بحرية</translation>
+<translation id="2367025302166767427">حدثت مشكلة أثناء ملء معلوماتك</translation>
 <translation id="2367567093518048410">المستوى</translation>
 <translation id="23703388716193220">معدّات غولف</translation>
 <translation id="2370368710215137370">تحميل الملفات</translation>
@@ -3559,7 +3560,6 @@
 <translation id="6494750904506170417">النوافذ المنبثقة وعمليات إعادة التوجيه</translation>
 <translation id="6495664197699704593">تم حفظ كلمة المرور هذه على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">‏لاستخدام خدمة ملء تلقائي أخرى في Chrome، عليك اختيار مقدّم خدمة الملء التلقائي في إعدادات Android</translation>
-<translation id="6496531801333278234">تم العثور على هذه المعلومات باستخدام ميزة "الذكاء المخصّص". ويمكنك إدارة معلوماتك في الإعدادات.</translation>
 <translation id="6499038740797743453">هل تريد إعادة ضبط كلمة المرور؟</translation>
 <translation id="6502510275417601303">تم إغلاق التنبيه المتعلّق بإعدادات الدفع الجديدة.</translation>
 <translation id="6502991525169604759">بدون التغييرات التي أجريتها</translation>

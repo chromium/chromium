@@ -1930,6 +1930,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2460150227008936698">{COUNT,plural, =0{Vanhenee tänään}=1{Vanhenee huomenna}other{Vanhenee # päivän kuluttua}}</translation>
 <translation id="2460482211073772897">Muissa kansioissa</translation>
 <translation id="2460826998961521840">Näin voit käyttää Google-tilillesi tallennettuja avainkoodeja</translation>
+<translation id="2461457574123041923">Jos poistut tältä sivustolta, tehtävä päättyy. Jos haluat säilyttää tehtävän samalla, kun käyt muilla sivustoilla, avaa uusi välilehti.</translation>
 <translation id="2461550163693930491">Älä salli sivustojen vierittää ja zoomata jaettuja välilehtiä</translation>
 <translation id="2461593638794842577">Voit laittaa tämän asetuksen pois päältä, jos haluat tallentaa salasanat vain tälle laitteelle</translation>
 <translation id="2462550463312552298">Tee yhteenveto tästä dokumentista</translation>
@@ -2490,6 +2491,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2865057607286263192">Näet aksentti- ja erikoismerkit painamalla näppäimiä pitkään. Tämä poistaa käytöstä näppäinpainalluksen toiston aakkosnäppäinten osalta. Käytettävissä vain englanniksi (Yhdysvallat).</translation>
 <translation id="2865919525181940183">Kuvakaappaus ohjelmista, jotka ovat näytöllä tällä hetkellä</translation>
 <translation id="286643536820867504">Tekstittää tuetut kielet automaattisesti. Audio ei poistu laitteelta.</translation>
+<translation id="2866504884233915828">Voit lisätä enintään <ph name="COUNT" /> linkkiä.</translation>
 <translation id="286674810810214575">Tarkistetaan virtalähteitä…</translation>
 <translation id="2867768963760577682">Avaa kiinnitetyllä välilehdellä</translation>
 <translation id="2868746137289129307">Tämä laajennus on vanhentunut ja poistettu käytöstä yrityksen käytännön mukaisesti. Se voidaan ottaa käyttöön uudelleen automaattisesti, kun uusi versio on saatavilla.</translation>
@@ -2654,8 +2656,10 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2989805286512600854">Avaa uudessa välilehdessä</translation>
 <translation id="2990313168615879645">Lisää Google-tili</translation>
 <translation id="2990375978470734995">Liitä ulkoiset lisävarusteet uudelleen, jotta muutos tulee voimaan.</translation>
+<translation id="2990500505358145117">Muokkaa parannetun automaattisen täytön pikanäppäinyhdistelmää</translation>
 <translation id="2990583317361835189">Älä salli sivustojen käyttää liiketunnistimia</translation>
 <translation id="2991182900092497283">Kerro, miksi liität tätä dataa:</translation>
+<translation id="2992754757708650257">Poistutaanko sivustolta ja lopetetaanko tehtävä?</translation>
 <translation id="2992931425024192067">Näytä ilmoitusten koko sisältö</translation>
 <translation id="2993517869960930405">Sovelluksen tiedot</translation>
 <translation id="2994804273850542871">Taso 4: ULTRA</translation>
@@ -2992,6 +2996,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3247649647204519958">Täältä voit tarkistaa ja ylläpitää käyttämäsi sivuston laajennuslupia</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – verkkovirhe</translation>
 <translation id="3248902735035392926">Turvallisuudella on väliä. Käytä nyt hetki <ph name="BEGIN_LINK" />laajennusten tarkistamiseen<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Parannetun automaattisen täytön oma pikanäppäinyhdistelmä</translation>
 <translation id="3249558306861350254">Klikkaa Windowsin asetuksista <ph name="BEGIN_BOLD" />Aseta oletukseksi<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Hallinnoi taitoa</translation>
 <translation id="3251119461199395237">Tiedostojen synkronointi</translation>
@@ -3804,6 +3809,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3827548509471720579">Näytön kirkkaus</translation>
 <translation id="3827774300009121996">&amp;Koko näyttö</translation>
 <translation id="3828029223314399057">Hae kirjanmerkeistä</translation>
+<translation id="3828454092958722155">Tyhjennä parannetun automaattisen täytön pikanäppäinyhdistelmä</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Korkea muistin käyttö - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-tiedostonjako</translation>
 <translation id="3830470485672984938">Käytä toista avainkoodia</translation>
@@ -4373,6 +4379,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4281789858103154731">Luo</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="4281849573951338030">Muokkaa kynäpainikkeita</translation>
+<translation id="4283635301190260296">Tiivistä pystysuuntaiset välilehdet</translation>
 <translation id="4284903252249997120">ChromeVox-näytönlukuohjelma ja Teksti puhuttuna ‐ominaisuus</translation>
 <translation id="4285418559658561636">Päivitä salasana</translation>
 <translation id="4285498937028063278">Irrota</translation>
@@ -5197,6 +5204,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4895799941222633551">Luo &amp;pikakuvake…</translation>
 <translation id="4898913189644355814">Sivusto voi tallentaa ensisijaisen kielen tai tuotteita, jotka haluat ostaa. Nämä tiedot ovat sivuston ja sen aliverkkotunnusten saatavilla.</translation>
 <translation id="4899052647152077033">Käänteiset värit</translation>
+<translation id="4899813415889597597">Google Drive ‑tiliin ei saatu yhteyttä</translation>
 <translation id="490031510406860025">Ei sallittu tällä sivustolla</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – lomitettu</translation>
 <translation id="4900652253009739885">Ainoaa Valinta-toiminnolle määritettyä kytkintä ei voi poistaa. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
@@ -5288,6 +5296,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4972129977812092092">Muokkaa tulostinta</translation>
 <translation id="4972164225939028131">Väärä salasana</translation>
 <translation id="4972737347717125191">Sivustot saavat pyytää virtuaalitodellisuuslaitteiden ja ‑datan käyttölupaa</translation>
+<translation id="4973302523373219907">Jos omaa pikanäppäinyhdistelmää ei ole asetettu, oletuksena on @@</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Mykistä sivusto}other{Mykistä sivustot}}</translation>
 <translation id="497403230787583386">Turvatarkistukset on tehty. Dokumentti tulostetaan.</translation>
 <translation id="4974442344472293753">Päivityksen tulos</translation>
@@ -7265,6 +7274,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6544134392255015460">näppäimistön taustavalo päälle/pois</translation>
 <translation id="6545665334409411530">Toistonopeus</translation>
 <translation id="6547354035488017500">Vapauta vähintään 512 Mt tilaa, tai laite ei enää vastaa. Voit vapauttaa tilaa poistamalla laitteelle tallennettuja tiedostoja.</translation>
+<translation id="6548240707386871455">Parannetun automaattisen täytön pikanäppäinyhdistelmä</translation>
 <translation id="654871471440386944">Laitetaanko näppäimistöselaaminen päälle?</translation>
 <translation id="6548945820758901244">Avaa Google Haun sivupaneeli</translation>
 <translation id="6549038875972762904">Valitse asetukset uudelleen</translation>

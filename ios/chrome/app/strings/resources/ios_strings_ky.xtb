@@ -484,6 +484,7 @@
 <translation id="2579713773888829241">Жалпы дисктер</translation>
 <translation id="2580306219079937316">Которуу параметрлерин ачуу</translation>
 <translation id="2583688836549072561">Өтмөктөр тобу, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> өтмөк, жаңы аракет.</translation>
+<translation id="2584994295315085351">4 сааттан кийин Chrome'го кайтканыңызда жаңы өтмөктү ачыңыз</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Товарлардын баасынын төмөндөшүнө көз салуу</translation>
 <translation id="2602372807870028932">Бул түзмөктө сакталган тандалган маалымат өчүрүлөт</translation>
@@ -716,7 +717,7 @@
 <translation id="3449029510150690417">Аталышын коюп жана түсүн тандоо менен жаңы өтмөктөр тобун түзүңүз</translation>
 <translation id="345348365500626747">Дарек табылды</translation>
 <translation id="3459644598174926977">Веб-баракчанын мазмуну тууралуу сурап, ар кандай ойлорду талкуулап, өз ара маек куруу үчүн Gemini менен Live режимине өтүңүз.</translation>
-<translation id="3462768334899086950">Бул сакталбаган файлды жана учурдагы өтмөктөрдү жоготосуз дегенди билдирет</translation>
+<translation id="3462768334899086950">Сакталбаган файл жана учурдагы өтмөктөр жоголуп кетет</translation>
 <translation id="3464194322481586217">Баага көз салуу мүмкүн болгон жок.</translation>
 <translation id="346831467152294287">Сырсөздөр жана автотолтуруу боюнча тапшырма аткарылды!</translation>
 <translation id="3469117812148449995">Сырсөздү сактоо параметрлери</translation>
@@ -1489,7 +1490,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6042308850641462728">Дагы</translation>
 <translation id="6045460247888249350">Аталышын кошуу</translation>
-<translation id="6050237559175440178">Бардык түзмөктөрүңүздө маалыматты колдонуу жана сактоо үчүн өздүгүңүздү ырастаңыз</translation>
+<translation id="6050237559175440178">Маалыматты бардык түзмөктөрүңүздө колдонуп, сактоо үчүн өздүгүңүздү ырастаңыз</translation>
 <translation id="6052269326659653305">Профилди которуу</translation>
 <translation id="605721222689873409">ЖЖ</translation>
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
@@ -1866,7 +1867,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="722339453342442311">Азыр текшерүү</translation>
 <translation id="7227235818314667565">Бөлүшүүнү тескөө</translation>
 <translation id="7233006041370588369">Толтуруу үчүн сырсөздү тандаңыз.</translation>
-<translation id="723874023660911012">Профилдерди которуштуруу</translation>
+<translation id="723874023660911012">Башка профилге которулуу</translation>
 <translation id="7241135764990439166">Жашыруун режим жеткиликсиз</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Издөө таржымалы<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />аракеттердин башка формалары<ph name="END_LINK" /> Google аккаунтуңузга сакталышы мүмкүн.</translation>
 <translation id="7253951228444156601">Сырсөздөр текшерилүүдө…</translation>
@@ -2178,7 +2179,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="826614135184049678">iPad'ды баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="8270320981823560179">Google Drive</translation>
 <translation id="8273982424131314219">Маалыматты <ph name="URL" /> сайтында толтурасыз</translation>
-<translation id="8274795744553482834">Профилдерди которгону жатасыз</translation>
+<translation id="8274795744553482834">Башка профилге которулганы жатасыз</translation>
 <translation id="8275068909952022340">Дагы…</translation>
 <translation id="8280797717392145626">Шилтемелер алынды</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>

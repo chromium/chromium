@@ -1918,6 +1918,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2460150227008936698">{COUNT,plural, =0{Platnost vyprší dnes}=1{Platnost vyprší zítra}few{Platnost vyprší za # dny}many{Platnost vyprší za # dne}other{Platnost vyprší za # dní}}</translation>
 <translation id="2460482211073772897">V jiných složkách</translation>
 <translation id="2460826998961521840">Pokud chcete používat přístupové klíče uložené v účtu Google</translation>
+<translation id="2461457574123041923">Pokud tento web opustíte, úkol se ukončí. Pokud tenhle úkol chcete nechat běžet i při návštěvě jiných webů, otevřete novou kartu.</translation>
 <translation id="2461550163693930491">Nepovolovat webům posouvat a přibližovat sdílené karty</translation>
 <translation id="2461593638794842577">Toto nastavení můžete vypnout, aby se hesla ukládala pouze do tohoto zařízení</translation>
 <translation id="2462550463312552298">Shrň tenhle dokument</translation>
@@ -2478,6 +2479,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2865057607286263192">Po podržení klávesy zobrazit diakritiku a speciální znaky. Toto nastavení u kláves s písmeny vypne opakování při podržení. Dostupné pouze pro angličtinu (USA).</translation>
 <translation id="2865919525181940183">Snímek obrazovky programů, které jsou aktuálně na obrazovce.</translation>
 <translation id="286643536820867504">Automaticky vytváří titulky pro podporované jazyky. Zvuk nikdy neopustí vaše zařízení.</translation>
+<translation id="2866504884233915828">Můžete přidat maximálně tento počet souborů: <ph name="COUNT" /></translation>
 <translation id="286674810810214575">Probíhá kontrola zdrojů napájení...</translation>
 <translation id="2867768963760577682">Otevřít jako připnutou kartu</translation>
 <translation id="2868746137289129307">Toto rozšíření je zastaralé a je zakázáno podnikovou zásadou. Možná bude opět automaticky povoleno, až bude k dispozici novější verze.</translation>
@@ -2642,8 +2644,10 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2989805286512600854">Otevřít v nové kartě</translation>
 <translation id="2990313168615879645">Přidat účet Google</translation>
 <translation id="2990375978470734995">Aby se tato změna projevila, znovu připojte externí příslušenství.</translation>
+<translation id="2990500505358145117">Upravit zkratku vylepšeného automatického vyplňování</translation>
 <translation id="2990583317361835189">Nepovolovat webům používat senzory pohybu</translation>
 <translation id="2991182900092497283">Zadejte důvod vložení těchto dat:</translation>
+<translation id="2992754757708650257">Opustit web a ukončit úkol?</translation>
 <translation id="2992931425024192067">Zobrazovat veškerý obsah oznámení</translation>
 <translation id="2993517869960930405">O aplikaci</translation>
 <translation id="2994804273850542871">Úroveň 4: ULTRA</translation>
@@ -2978,6 +2982,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3247649647204519958">Zde můžete zobrazit a spravovat oprávnění rozšíření pro web, na kterém se nacházíte</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – chyba sítě</translation>
 <translation id="3248902735035392926">Bezpečnost je důležitá. Věnujte chvíli <ph name="BEGIN_LINK" />kontrole svých rozšíření<ph name="END_LINK" />.</translation>
+<translation id="3248957351402065497">Vlastní zkratka pro vylepšené automatické vyplňování</translation>
 <translation id="3249558306861350254">V nastavení systému Windows klikněte na <ph name="BEGIN_BOLD" />Nastavit jako výchozí<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Spravovat dovednost</translation>
 <translation id="3251119461199395237">Synchronizace souborů</translation>
@@ -3790,6 +3795,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3827548509471720579">Jas displeje</translation>
 <translation id="3827774300009121996">&amp;Celá obrazovka</translation>
 <translation id="3828029223314399057">Hledat v záložkách</translation>
+<translation id="3828454092958722155">Vymazat zkratku vylepšeného automatického vyplňování</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Vysoké využití paměti – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Sdílené úložiště SMB</translation>
 <translation id="3830470485672984938">Použít jiný přístupový klíč</translation>
@@ -4361,6 +4367,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4281789858103154731">Vytvořit</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4281849573951338030">Přizpůsobit tlačítka pera</translation>
+<translation id="4283635301190260296">Sbalit vertikální karty</translation>
 <translation id="4284903252249997120">Čtečka obrazovky ChromeVox a poslech vybraného textu</translation>
 <translation id="4285418559658561636">Aktualizovat heslo</translation>
 <translation id="4285498937028063278">Odepnout</translation>
@@ -5184,6 +5191,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4895799941222633551">Vytvořit &amp;zástupce…</translation>
 <translation id="4898913189644355814">Web může uložit váš preferovaný jazyk nebo položky, které chcete koupit. Tyto informace jsou dostupné pro web a jeho subdomény.</translation>
 <translation id="4899052647152077033">Převrátit barvy</translation>
+<translation id="4899813415889597597">K vašemu účtu Disku Google se nepodařilo připojit</translation>
 <translation id="490031510406860025">Na tomto webu není povoleno</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – s prokládáním</translation>
 <translation id="4900652253009739885">Jediný přepínač přiřazený k funkci výběru nelze odstranit. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
@@ -5275,6 +5283,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4972129977812092092">Úprava tiskárny</translation>
 <translation id="4972164225939028131">Špatné heslo</translation>
 <translation id="4972737347717125191">Weby mohou požádat o použití zařízení a dat pro virtuální realitu</translation>
+<translation id="4973302523373219907">Pokud není nastavena vlastní zkratka, používá se výchozí zkratka @@</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Vypnout zvuk webu}few{Vypnout zvuk webů}many{Vypnout zvuk webů}other{Vypnout zvuk webů}}</translation>
 <translation id="497403230787583386">Bezpečnostní kontroly jsou dokončeny. Dokument se vytiskne</translation>
 <translation id="4974442344472293753">Výsledek aktualizace</translation>
@@ -7248,6 +7257,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6544134392255015460">přepínač podsvícení klávesnice</translation>
 <translation id="6545665334409411530">Rychlost opakování</translation>
 <translation id="6547354035488017500">Uvolněte alespoň 512 MB místa, jinak zařízení přestane reagovat. Místo uvolníte smazáním souborů z úložiště zařízení.</translation>
+<translation id="6548240707386871455">Zkratka vylepšeného automatického vyplňování</translation>
 <translation id="654871471440386944">Zapnout procházení pomocí kurzoru?</translation>
 <translation id="6548945820758901244">Otevřít boční panel Vyhledávání Google</translation>
 <translation id="6549038875972762904">Znovu nastavit</translation>

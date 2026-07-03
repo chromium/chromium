@@ -1930,6 +1930,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2460150227008936698">{COUNT,plural, =0{Muda wa matumizi unaisha leo}=1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
 <translation id="2460482211073772897">Katika folda nyingine</translation>
 <translation id="2460826998961521840">Ili utumie funguo za siri zilizohifadhiwa katika akaunti yako ya Google</translation>
+<translation id="2461457574123041923">Ukiondoka kwenye tovuti hii, jukumu lako litasitishwa. Ili uendelee na jukumu huku ukitembelea tovuti nyingine, fungua kichupo kipya.</translation>
 <translation id="2461550163693930491">Usiruhusu tovuti kusogeza na kukuza vichupo unavyotumia na wengine</translation>
 <translation id="2461593638794842577">Unaweza kuzima mipangilio hii ili uhifadhi manenosiri yako kwenye kifaa hiki pekee</translation>
 <translation id="2462550463312552298">Andaa muhtasari wa hati hii</translation>
@@ -2490,6 +2491,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2865057607286263192">Bonyeza na ushikilie vitufe vya kibodi ili uone herufi maalum na alama za jinsi herufi zinavyotamkwa. Hatua hii huzima hali ya kubonyeza kitufe cha kurudia kwa vitufe vya alphabeti. Inapatikana tu kwa Kiingereza (Marekani).</translation>
 <translation id="2865919525181940183">Picha ya skrini ya programu ambazo zipo kwenye skrini yako kwa sasa.</translation>
 <translation id="286643536820867504">Hutayarisha manukuu kiotomatiki katika lugha zinazotumika. Sauti haiondoki kamwe kwenye kifaa chako.</translation>
+<translation id="2866504884233915828">Unaweza tu kuweka hadi faili <ph name="COUNT" /></translation>
 <translation id="286674810810214575">Inakagua vyanzo vya nishati...</translation>
 <translation id="2867768963760577682">Fungua kama Kichupo Kilichobanwa</translation>
 <translation id="2868746137289129307">Kiendelezi hiki kimekwisha muda na kuzimwa na sera ya biashara. Kinaweza kuwashwa kiotomatiki toleo jipya zaidi likipatikana.</translation>
@@ -2654,8 +2656,10 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2989805286512600854">Fungua katika Kichupo Kipya</translation>
 <translation id="2990313168615879645">Ongeza Akaunti ya Google</translation>
 <translation id="2990375978470734995">Ili mabadiliko haya yatekelezwe, unganisha tena vifaa vyako vya nje.</translation>
+<translation id="2990500505358145117">Badilisha njia ya mkato ya hali iliyoboreshwa ya kujaza kiotomatiki</translation>
 <translation id="2990583317361835189">Usiruhusu tovuti zitumie vitambuzi vya mwendo</translation>
 <translation id="2991182900092497283">Tafadhali weka sababu ya kubandika data hii:</translation>
+<translation id="2992754757708650257">Ungependa kuondoka kwenye tovuti na kusitisha jukumu?</translation>
 <translation id="2992931425024192067">Onyesha arifa za maudhui yote</translation>
 <translation id="2993517869960930405">Maelezo ya Programu</translation>
 <translation id="2994804273850542871">Kiwango cha 4: ULTRA</translation>
@@ -2992,6 +2996,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3247649647204519958">Kutoka hapa, unaweza kuona na kudhibiti ruhusa za viendelezi katika tovuti uliyopo</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Hitilafu ya mtandao</translation>
 <translation id="3248902735035392926">Masuala ya usalama. Chukua muda mfupi na <ph name="BEGIN_LINK" />uangalie viendelezi vyako sasa<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Njia maalum ya mkato ya hali iliyoboreshwa ya kujaza kiotomatiki</translation>
 <translation id="3249558306861350254">Bofya <ph name="BEGIN_BOLD" />Weka Chaguomsingi<ph name="END_BOLD" /> katika mipangilio yako ya Windows.</translation>
 <translation id="3250374026663843838">Dhibiti ujuzi wako</translation>
 <translation id="3251119461199395237">Usawazishaji wa faili</translation>
@@ -3804,6 +3809,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3827548509471720579">Ung'aavu wa skrini</translation>
 <translation id="3827774300009121996">&amp;Skrini Kamili</translation>
 <translation id="3828029223314399057">Tafuta katika alamisho</translation>
+<translation id="3828454092958722155">Futa njia ya mkato ya hali iliyoboreshwa ya kujaza kiotomatiki</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Matumizi ya juu ya hifadhi - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Faili ya kushiriki ya SMB</translation>
 <translation id="3830470485672984938">Tumia ufunguo tofauti wa siri</translation>
@@ -4374,6 +4380,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4281789858103154731">Buni</translation>
 <translation id="4281844954008187215">Sheria na Masharti</translation>
 <translation id="4281849573951338030">Badilisha upendavyo vitufe vya kalamu</translation>
+<translation id="4283635301190260296">Kunja Vichupo Wima</translation>
 <translation id="4284903252249997120">Kipengele cha kisoma skrini cha ChromeVox na Chagua ili Izungumze</translation>
 <translation id="4285418559658561636">Sasisha Nenosiri</translation>
 <translation id="4285498937028063278">Banua</translation>
@@ -5198,6 +5205,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4895799941222633551">Unda Njia ya Mkato...</translation>
 <translation id="4898913189644355814">Huenda tovuti ikahifadhi lugha unayopendelea au bidhaa ambazo ungependa kununua. Maelezo haya yanapatikana kwenye tovuti na vijikoa vyake.</translation>
 <translation id="4899052647152077033">Geuza rangi</translation>
+<translation id="4899813415889597597">Imeshindwa kuunganisha na akaunti yako ya Hifadhi ya Google</translation>
 <translation id="490031510406860025">Hakiruhusiwi katika tovuti hii</translation>
 <translation id="490051679772058907">Hz <ph name="REFRESH_RATE" /> - imejumuishwa pamoja</translation>
 <translation id="4900652253009739885">Huwezi kuondoa swichi ya pekee iliyokabidhiwa kitendo cha “Chagua.” Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>
@@ -5289,6 +5297,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4972129977812092092">Badilisha maelezo ya printa</translation>
 <translation id="4972164225939028131">Nenosiri si sahihi</translation>
 <translation id="4972737347717125191">Tovuti zinaweza kuomba ruhusa ya kutumia data na vifaa vya uhalisia pepe</translation>
+<translation id="4973302523373219907">Ikiwa njia maalum ya mkato haijawekwa, @@ hutumiwa kwa chaguomsingi</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Zima sauti ya tovuti}other{Zima sauti za tovuti}}</translation>
 <translation id="497403230787583386">Ukaguzi wa usalama umekamilika. Hati yako itachapishwa.</translation>
 <translation id="4974442344472293753">Matokeo ya Sasisho</translation>
@@ -7266,6 +7275,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6544134392255015460">kuzima au kuwasha mwangaza wa kibodi</translation>
 <translation id="6545665334409411530">Ukadiriaji wa kurudia</translation>
 <translation id="6547354035488017500">Futa angalau MB 512 za hifadhi, la sivyo kifaa chako kitakwama. Ili kupata nafasi, futa faili kwenye hifadhi ya kifaa.</translation>
+<translation id="6548240707386871455">Njia ya mkato ya hali iliyoboreshwa ya kujaza kiotomatiki</translation>
 <translation id="654871471440386944">Ungependa kuwasha mipangilio ya kuvinjari kwa kibodi?</translation>
 <translation id="6548945820758901244">Fungua kidirisha cha pembeni cha huduma ya Tafuta na Google</translation>
 <translation id="6549038875972762904">Weka mipangilio upya</translation>

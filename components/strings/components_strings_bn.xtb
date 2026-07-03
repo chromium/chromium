@@ -894,6 +894,7 @@
 <translation id="2365382709349300355">নীতির কারণে ১টি ফাইল ব্লক করা হয়েছে</translation>
 <translation id="2365508935344991784">আউটডোর ফার্নিচার</translation>
 <translation id="2366689192918515749">মাংস ও সিফুড</translation>
+<translation id="2367025302166767427">আপনার তথ্য পূরণ করতে সমস্যা হচ্ছে</translation>
 <translation id="2367567093518048410">স্তর</translation>
 <translation id="23703388716193220">গলফ খেলার সরঞ্জাম</translation>
 <translation id="2370368710215137370">আপলোড করা ফাইলের ধরন</translation>
@@ -1127,6 +1128,7 @@
 <translation id="271663710482723385">ফুল-স্ক্রিন থেকে বেরিয়ে আসতে |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| প্রেস করুন</translation>
 <translation id="2717336592027046789">রোল</translation>
 <translation id="2718207025093645426">ম্যানেজ করা ব্যবহারকারী বা ডিভাইসের কোনও নীতি লোড নেই।</translation>
+<translation id="271850739643214113">আপনার Pix অ্যাকাউন্ট Google Pay-এর সাথে লিঙ্ক করা হয়েছে</translation>
 <translation id="2719233594187778789">অনন্য নয় এমন URL এড়িয়ে যাওয়া হয়েছে: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">অনুরোধ সফল হয়েছে</translation>
 <translation id="2722622039067384533">বসার ঘরের আসবাবপত্র</translation>
@@ -1215,6 +1217,7 @@
 <translation id="2903493209154104877">ঠিকানা</translation>
 <translation id="290376772003165898">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষায় নয়?</translation>
 <translation id="2904180982022726666">আপনি কী শেয়ার করতে পারেন তা আপনার প্রতিষ্ঠান সীমিত করেছে</translation>
+<translation id="2905065304080706507">চালু করা থাকলে, আরও প্রাসঙ্গিক উত্তর পেতে সাহায্য করার জন্য Chrome এই উইন্ডোয় প্রাসঙ্গিক ট্যাবগুলি শেয়ার করবে।</translation>
 <translation id="2905107382358353958">নতুন পেমেন্টের সেটিংস সম্পর্কিত সতর্কতা</translation>
 <translation id="2909946352844186028">একটি নেটওয়ার্ক পরিবর্তন শনাক্ত হয়েছে৷</translation>
 <translation id="2910062169995917863">সেশন টাইম-আউট হয়ে গেছে</translation>
@@ -1417,6 +1420,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> স্থায়ীভাবে আপনার ডিভাইসে ডেটা স্টোর করতে চায়</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> এ <ph name="PRINTER_NAME" /></translation>
+<translation id="3196902089458890316">আরও ভালো উত্তরের জন্য সবসময় প্রাসঙ্গিক ট্যাব শেয়ার করবেন?</translation>
 <translation id="3197136577151645743">আপনি কখন ডিভাইস সক্রিয়ভাবে ব্যবহার করেন তা জানতে চাইতে পারে</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে কী ধরনের তথ্য আপনি সিঙ্ক করবেন, তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="3203025201812691413">URL খালি রাখা যাবে না</translation>
@@ -1566,6 +1570,7 @@
 <translation id="343474037147570563">আপনার আপলোড বা অ্যাটাচ করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
 <translation id="3435557549311968410">কন্টিনিউআস (শর্ট)</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
+<translation id="3436125638121079308">এই থ্রেডে আরও ভালো উত্তরের জন্য প্রাসঙ্গিক ট্যাব অটোমেটিক শেয়ার করবেন?</translation>
 <translation id="3438509337461223476">প্রতিটি থ্রেডে অটোমেটিক প্রাসঙ্গিক খোলা ট্যাব শেয়ার করুন</translation>
 <translation id="3440783957068352691">বর্গাকার</translation>
 <translation id="3441653493275994384">বাছাই করুন</translation>
@@ -1627,6 +1632,7 @@
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">স্ক্রিন (পেজেড)</translation>
 <translation id="3541016556608204104">Chrome Enterprise Connectors সম্পর্কে আরও তথ্য</translation>
+<translation id="3542005451565251757">আপনি এই সতর্কতা দেখছেন কারণ এই সাইটে HTTPS কাজ করে না এবং আপনি Android সেটিংস থেকে উন্নত সুরক্ষা চালু করেছেন। <ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">কার্ডের ছবি</translation>
 <translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="3543597750097719865">SHA-512 সহ X9.62 ECDSA স্বাক্ষর</translation>
@@ -1786,6 +1792,7 @@
 <translation id="3761718714832595332">স্ট্যাটাসটি লুকান</translation>
 <translation id="3763752038825281594">আপনি আগে এই সাইটের জন্য <ph name="PERMISSION" /> ব্যবহারের অনুমতি দেননি</translation>
 <translation id="3765588406864124894">মেলবক্স ৯</translation>
+<translation id="3766505784424699541">এই উইন্ডোতে প্রাসঙ্গিক ট্যাবগুলি এই থ্রেডের সাথে যুক্ত থাকলে, সেগুলি অটোমেটিক শেয়ার করার মাধ্যমে আরও বেশি কাস্টমাইজ করা উত্তর পান।</translation>
 <translation id="3767485424735936570">অ্যাডমিনিস্ট্রেটর নীতি অনুযায়ী <ph name="VM_NAME" />-এ এই কন্টেন্ট কপি ও পেস্ট না করার সাজেস্ট করা হচ্ছে</translation>
 <translation id="3769584711865378220"><ph name="URL" /> লোকেশন অ্যাক্সেস 'আনুমানিক' বিকল্প থেকে 'সুনির্দিষ্ট' হিসেবে পরিবর্তন করতে চায়</translation>
 <translation id="3772211998634047851">পেপার (বন্ড)</translation>
@@ -1871,6 +1878,7 @@
 <translation id="3901925938762663762">কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="390391808978419508">খোলার সময় শেষ হয়ে গেছে</translation>
 <translation id="3905894480064208252">{0,plural, =1{ফাইল ট্রান্সফার করা যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল ট্রান্সফার করা যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল ট্রান্সফার করা যাবে না}}</translation>
+<translation id="3906022360148923497">পেমেন্ট পদ্ধতির আইকন</translation>
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">এম্বেড করা কন্টেন্ট সম্পর্কে আরও জানুন</translation>
@@ -2092,6 +2100,7 @@
 <translation id="422722221769396062">রেস্তোরাঁতে ডেলিভারি সংক্রান্ত পরিষেবা</translation>
 <translation id="4230204356098880324">ক্যামেরা ব্যবহার করতে এবং সরাতে অনুমতি চাইতে পারে</translation>
 <translation id="4231448684371260244">৮ x ১৩ ইঞ্চি</translation>
+<translation id="4234996384188431444">Google Chrome-এ অ্যাপ পরিবর্তন না করেই Pix-এর মাধ্যমে পেমেন্ট করুন</translation>
 <translation id="4239799716689808527">লেবেল</translation>
 <translation id="424063167283213501">পরিচিত পর্যটকের নম্বর সেভ করা</translation>
 <translation id="4241830393007970744">আপনি যে সাইট ভিজিট করার চেষ্টা করেছেন সেখানে আক্রমণকারীরা প্রতারণার মাধ্যমে আপনাকে দিয়ে কোনও সফ্টওয়্যার ইনস্টল করিয়ে নিতে পারে। অথবা আপনার পাসওয়ার্ড, ফোন নম্বর বা ক্রেডিট কার্ড নম্বর জেনে নিতে পারে।</translation>
@@ -2108,6 +2117,7 @@
 <translation id="4255487295905690262">কোনও সাইটে দাম কমলে আপনি সেই বিষয়ে ইমেলের মাধ্যমে সতর্কতা পাবেন।</translation>
 <translation id="425582637250725228">আপনার করা পরিবর্তনগুলি সংরক্ষণ নাও করা হতে পারে।</translation>
 <translation id="4258748452823770588">ত্রুটিপূর্ণ স্বাক্ষর</translation>
+<translation id="4258927999980634471">এই থ্রেডের জন্য প্রাসঙ্গিক ট্যাব অটোমেটিক শেয়ার করবেন?</translation>
 <translation id="4260407128682690669">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, <ph name="ACCOUNT_EMAIL" />-এর সাথে ইতিহাস ও ট্যাব সিঙ্ক করুন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, Search ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="4265635050210404830">আপনার লয়ালটি কার্ড</translation>
 <translation id="4265872034478892965">আপনার প্রশাসক অনুমতি দিয়েছে</translation>
@@ -2175,6 +2185,7 @@
 <translation id="4340810192899866471">JSON থেকে ইমপোর্ট করুন</translation>
 <translation id="4340982228985273705">এই কম্পিউটারটি এন্টারপ্রাইজ স্তরে পরিচালনা করা হচ্ছে হিসেবে শনাক্ত করা যায়নি, তাই নীতিটি শুধুমাত্র Chrome ওয়েব স্টোরে হোস্ট করা এক্সটেনশন নিজে থেকে ইনস্টল করতে পারবে। Chrome ওয়েব স্টোর আপডেটের ইউআরএল হল "<ph name="CWS_UPDATE_URL" />"।</translation>
 <translation id="4342742994656318294">থিম পার্ক</translation>
+<translation id="4344194909635300809">পৃষ্ঠার শিরোনাম ও URL Google-এ পাঠানো হয় এবং হিউম্যান রিভিউয়ার তা পর্যালোচনা করতে পারেন</translation>
 <translation id="4346670990181948854">ভ্রমণ সংক্রান্ত তথ্য · যানবাহন</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-এর কানেকশনটি সুরক্ষিত নয়</translation>
 <translation id="4349365535725594680">গোপনীয় কন্টেন্ট শেয়ার করা যাচ্ছে না</translation>
@@ -2182,6 +2193,7 @@
 <translation id="4350629523305688469">মাল্টিফাংশন ট্রে</translation>
 <translation id="4351060348582610152">কাছাকাছি থাকা ব্লুটুথ ডিভাইসগুলিকে <ph name="ORIGIN" /> স্ক্যান করতে চায়, এই ডিভাইসগুলি পাওয়া গেছে:</translation>
 <translation id="4355383636893709732">Android অ্যাপের জন্য ChromeOS আপডেট</translation>
+<translation id="4357577888320640139">প্রতিটি থ্রেডে অটোমেটিক প্রাসঙ্গিক ট্যাব শেয়ার করুন</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode নীতিতে সমস্যা থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="4358461427845829800">পেমেন্ট পদ্ধতিগুলি পরিচালনা করুন...</translation>
 <translation id="4359160567981085931">আপনি এখনই প্রতারণামূলক একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। Chrome সাহায্য করবে। আপনার অ্যাকাউন্টের নিরাপত্তা লঙ্ঘনের সম্ভাবনা এড়ানোর জন্য পাসওয়ার্ড পরিবর্তন করতে এবং Google-কে বিজ্ঞপ্তি দিয়ে জানাতে 'অ্যাকাউন্ট সুরক্ষিত রাখুন' বিকল্পে ক্লিক করুন।</translation>
@@ -2217,6 +2229,7 @@
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">পাসওয়ার্ড তাদের ম্যানেজমেন্ট সেটিংস থেকে মুছে যেতে পারে</translation>
 <translation id="4424024547088906515">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট Chrome এর নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="4425137053900958839">Pix থেকে পাওয়া যেসব সুবিধা ও সুরক্ষার উপর আপনি নির্ভর করেন তা উপভোগ করুন</translation>
 <translation id="4425750422187370446">অ্যাথলিট পোশাক</translation>
 <translation id="443121186588148776">সিরিয়াল পোর্ট</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> আপনার লগ-ইন সার্টিফিকেটটি স্বীকার করেনি, অথবা কোনো সার্টিফিকেট দেওয়া হয়নি।</translation>
@@ -2383,6 +2396,7 @@
 <translation id="4726672564094551039">নীতিগুলি রিলোড করুন</translation>
 <translation id="4728558894243024398">প্ল্যাটফর্ম</translation>
 <translation id="4729147136006144950">চ্যারিটি ও ফিলানথ্রোপি</translation>
+<translation id="4730773064303503917">Wallet ব্যবহার করে বন্ধুদের ও ব্যবসায়িক প্রতিষ্ঠানকে Pix পাঠান</translation>
 <translation id="4730977633786878901">রিভিউ</translation>
 <translation id="4731638775147756694">আপনার অ্যাডমিনিস্ট্রেটর এই অ্যাপ্লিকেশন ব্লক করে দিয়েছেন</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ভাষা সংক্রান্ত প্যাক ডাউনলোড হচ্ছে...<ph name="PERCENT" />%</translation>
@@ -2667,6 +2681,7 @@
 <translation id="5157504274688344097">মাস মার্চেন্ট ও ডিপার্টমেন্ট স্টোর্স</translation>
 <translation id="5158275234811857234">কভার</translation>
 <translation id="5159010409087891077">নতুন ছদ্মবেশী উইন্ডোতে (⇧⌘N) করে একটি পৃষ্ঠা খুলুন</translation>
+<translation id="5160781056848005130">Google-এর সাথে ডেটা শেয়ার করার মাধ্যমে আপনি এনহ্যান্সড অটোফিলের সুবিধাকে উন্নত করতে সাহায্য করছেন</translation>
 <translation id="5161334686036120870">বিষয়:</translation>
 <translation id="5161506081086828129">স্ট্যাকার ৯</translation>
 <translation id="5164537320435517152">ফাইল <ph name="MINUTES" /> মিনিটের মধ্যে মুছে দিন</translation>
@@ -3407,6 +3422,7 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> অনুমতি সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="6304398603974202180">মাল্টিমিডিয়া সফ্টওয়্যার</translation>
 <translation id="6305205051461490394"><ph name="URL" /> এ পৌঁছানো যাচ্ছে না</translation>
+<translation id="6305834316918845109">এনহ্যান্সড অটোফিলের জন্য অনুরোধ টাইপ করলে, আপনি কীভাবে ফিচারটি ব্যবহার করেন তা Chrome লগ করে, যেমন আপনি অটোফিল সাজেশন গ্রহণ, এডিট বা উপেক্ষা করেন কিনা</translation>
 <translation id="6306713302480826305">এই ঠিকানাটি এটি এবং আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে মুছে ফেলা হবে</translation>
 <translation id="6307968763353904914">এই পেমেন্ট পদ্ধতির জন্য আপনার ব্যাঙ্ক এই মুহূর্তে ভার্চুয়াল কার্ড প্রদান করতে পারছে না, তবে আপনি এখনও অনলাইনে পেমেন্ট করার জন্য <ph name="CARD_LABEL" /> ব্যবহার করতে পারবেন।</translation>
 <translation id="6311410654831092784">কার্ড স্টক</translation>
@@ -3544,7 +3560,6 @@
 <translation id="6494750904506170417">পপ-আপ এবং রিডাইরেক্ট</translation>
 <translation id="6495664197699704593">এই পাসওয়ার্ডটি শুধুমাত্র এই ডিভাইসে সেভ আছে। আপনার অন্য ডিভাইসে এটি ব্যবহার করার জন্য, <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
 <translation id="649611364763911650">Chrome-এ অন্য একটি অটোফিল পরিষেবা ব্যবহার করতে, Android সেটিংসে আপনার অটোফিল পরিষেবা প্রদানকারী বেছে নেয়</translation>
-<translation id="6496531801333278234">পার্সোনাল ইন্টেলিজেন্সের মাধ্যমে খুঁজে পাওয়া গেছে। আপনি সেটিংস থেকে নিজের তথ্য ম্যানেজ করতে পারবেন।</translation>
 <translation id="6499038740797743453">পাসওয়ার্ড রিসেট করবেন?</translation>
 <translation id="6502510275417601303">নতুন পেমেন্টের সেটিংস সম্পর্কিত সতর্কতা বন্ধ করা আছে</translation>
 <translation id="6502991525169604759">আপনার করা এডিট ছাড়া</translation>
@@ -3658,6 +3673,7 @@
 <translation id="6689271823431384964">আপনি সাইন-ইন করে আছেন বলে, Chrome আপনার কার্ডগুলি Google অ্যাকাউন্টে সেভ করতে চান কিনা তা জানতে চাইছে। সেটিংস থেকে আপনি এই বিকল্প পরিবর্তন করতে পারেন। আপনার অ্যাকাউন্ট থেকেই কার্ডহোল্ডারের নাম পাওয়া গেছে।</translation>
 <translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" সঠিক ডেস্টিনেশন প্যাটার্ন নয়।</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" />-এর বেশি জায়গা খালি করুন</translation>
+<translation id="6692006953064648573">আপনি এই সতর্কতা দেখছেন কারণ, এই সাইটে HTTPS কাজ করে না এবং আপনি Google-এর উন্নত সুরক্ষা প্রোগ্রামের অধীনে রয়েছেন। <ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google অ্যাকাউন্টে আপনার ডিভাইস খুঁজে দেখতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="6695428916538794739">অ্যাকশন ও রোমাঞ্চকর সিনেমা</translation>
 <translation id="6696424331653607346">ভ্রমণের নির্দেশিকা ও ভ্রমণ বৃত্তান্ত</translation>
@@ -4049,6 +4065,7 @@
 <translation id="7310392214323165548">ডিভাইস খুব শীঘ্রই রিস্টার্ট হবে</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7313107491291103073">আপনার সংস্থা এই সাইটকে ফ্ল্যাগ করেছে কারণ এটি কোনও নীতি লঙ্ঘন করতে পারে।</translation>
+<translation id="7313260329718515829">অটোফিল উন্নত করতে Gemini-এর পার্সোনাল ইন্টেলিজেন্সে পাঠানো অনুরোধ বিশ্লেষণ করা হয়</translation>
 <translation id="7316521168101843192">Microsoft OneDrive-এ ফাইল সেভ করা হচ্ছে</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">কানেকশন সহায়তা</translation>
@@ -4498,6 +4515,7 @@
 <translation id="7966803981046576691">চাকরির অ্যাকাউন্টের ধরন</translation>
 <translation id="7967477318370169806">মিউচুয়াল ফান্ড</translation>
 <translation id="7967636097426665267">যোগাযোগের সরঞ্জাম</translation>
+<translation id="7967973398323409409">আপনার অটোফিল করা তথ্য অন্য কেউ দেখতে পায় না</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> মান ভুল হেক্স কালার কোড।</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
 <translation id="7972714317346275248">RSA এনক্রিপশানের সাথে PKCS #1 SHA-384</translation>

@@ -1931,6 +1931,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2460150227008936698">{COUNT,plural, =0{Verval vandag}=1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="2460482211073772897">In ander vouers</translation>
 <translation id="2460826998961521840">Om toegangsleutels te gebruik wat in jou Google-rekening gestoor is</translation>
+<translation id="2461457574123041923">As jy hierdie werf verlaat, sal jou taak eindig. Maak ’n nuwe oortjie oop om die taak aan die gang te hou terwyl jy ander werwe besoek.</translation>
 <translation id="2461550163693930491">Moenie werwe toelaat om gedeelde oortjies te rollees en te zoem nie</translation>
 <translation id="2461593638794842577">Jy kan hierdie instelling afskakel om jou wagwoorde slegs op hierdie toestel te stoor</translation>
 <translation id="2462550463312552298">Som hierdie dokument op</translation>
@@ -2491,6 +2492,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2865057607286263192">Druk en hou sleutelbordsleutels om aksentmerke en spesiale karakters te sien. Dit skakel Herhaal Sleuteldruk vir alfabetsleutels af. Net beskikbaar vir Engels (VS).</translation>
 <translation id="2865919525181940183">Skermkiekie van programme wat tans op die skerm is</translation>
 <translation id="286643536820867504">Skep outomaties onderskrifte vir gesteunde tale. Oudio verlaat nooit jou toestel nie.</translation>
+<translation id="2866504884233915828">Jy kan net tot <ph name="COUNT" /> lêers byvoeg</translation>
 <translation id="286674810810214575">Gaan tans kragbronne na …</translation>
 <translation id="2867768963760577682">Maak as vasgespelde oortjie oop</translation>
 <translation id="2868746137289129307">Hierdie uitbreiding is verouderd en volgens ondernemingsbeleid gedeaktiveer. Dit kan outomaties geaktiveer word wanneer 'n nuwer weergawe beskikbaar is.</translation>
@@ -2655,8 +2657,10 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2989805286512600854">Maak in 'n nuwe oortjie oop</translation>
 <translation id="2990313168615879645">Voeg Google-rekening by</translation>
 <translation id="2990375978470734995">Herkoppel jou eksterne bykomstighede sodat hierdie verandering om in werking te tree.</translation>
+<translation id="2990500505358145117">Wysig Verbeterde outovul-kortpad</translation>
 <translation id="2990583317361835189">Moenie werwe toelaat om bewegingsensors te gebruik nie</translation>
 <translation id="2991182900092497283">Voer asseblief ’n rede in hoekom jy hierdie data plak:</translation>
+<translation id="2992754757708650257">Verlaat werf en beëindig taak?</translation>
 <translation id="2992931425024192067">Wys alle kennisgewinginhoud</translation>
 <translation id="2993517869960930405">Programinligting</translation>
 <translation id="2994804273850542871">Vlak 4: ULTRA</translation>
@@ -2993,6 +2997,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3247649647204519958">Van hier af kan jy uitbreidingtoestemmings sien en bestuur vir die werf waarop jy is</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netwerkfout</translation>
 <translation id="3248902735035392926">Veiligheid is belangrik. Vat 'n oomblik om <ph name="BEGIN_LINK" />jou uitbreidings nou na te gaan<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Gepasmaakte kortpad vir verbeterde outovul</translation>
 <translation id="3249558306861350254">Klik <ph name="BEGIN_BOLD" />Stel as verstek<ph name="END_BOLD" /> in jou Windows-instellings.</translation>
 <translation id="3250374026663843838">Bestuur jou vaardigheid</translation>
 <translation id="3251119461199395237">Lêersinkronisering</translation>
@@ -3805,6 +3810,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3827548509471720579">Skermhelderheid</translation>
 <translation id="3827774300009121996">Volskerm</translation>
 <translation id="3828029223314399057">Deursoek boekmerke</translation>
+<translation id="3828454092958722155">Vee Verbeterde outovul-kortpad uit</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – hoë geheuegebruik – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-lêerdeling</translation>
 <translation id="3830470485672984938">Gebruik ’n ander toegangsleutel</translation>
@@ -4377,6 +4383,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4281789858103154731">Skep</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
 <translation id="4281849573951338030">Pasmaak penknoppies</translation>
+<translation id="4283635301190260296">Vou vertikale oortjies in</translation>
 <translation id="4284903252249997120">ChromeVox-skermleser en -hardoplees</translation>
 <translation id="4285418559658561636">Dateer wagwoord op</translation>
 <translation id="4285498937028063278">Ontspeld</translation>
@@ -5201,6 +5208,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4895799941222633551">Skep &amp;kortpad …</translation>
 <translation id="4898913189644355814">’n Werf kan dalk jou voorkeurtaal of items wat jy wil koop, stoor. Hierdie inligting is vir die webwerf en sy subdomeine beskikbaar.</translation>
 <translation id="4899052647152077033">Keer kleure om</translation>
+<translation id="4899813415889597597">Kon nie aan jou Google Drive-rekening koppel nie</translation>
 <translation id="490031510406860025">Word nie op hierdie werf toegelaat nie</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – deurweef</translation>
 <translation id="4900652253009739885">Kan nie die enigste skakelaar verwyder wat vir "Kies" toegewys is nie. Druk enige sleutel om <ph name="RESPONSE" />.</translation>
@@ -5292,6 +5300,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4972129977812092092">Wysig drukker</translation>
 <translation id="4972164225939028131">Verkeerde wagwoord</translation>
 <translation id="4972737347717125191">Werwe kan vra om virtuelerealiteittoestelle en -data te gebruik</translation>
+<translation id="4973302523373219907">As die gepasmaakte kortpad nie gestel is nie, word @@ by verstek gebruik</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Demp werf}other{Demp werwe}}</translation>
 <translation id="497403230787583386">Sekuriteitkontroles is afgehandel. Jou dokument sal gedruk word.</translation>
 <translation id="4974442344472293753">Opdateringuitkoms</translation>
@@ -7270,6 +7279,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6544134392255015460">sleutelbordagterligwisselaar</translation>
 <translation id="6545665334409411530">Herhaalkoers</translation>
 <translation id="6547354035488017500">Maak minstens 512 MB spasie beskikbaar; anders sal jou toestel nie meer reageer nie. Vee lêers van jou toestelberging af uit om spasie beskikbaar te maak.</translation>
+<translation id="6548240707386871455">Verbeterde outovul-kortpad</translation>
 <translation id="654871471440386944">Skakel karetblaai aan?</translation>
 <translation id="6548945820758901244">Maak Google Search-kantpaneel oop</translation>
 <translation id="6549038875972762904">Herdoen opstelling</translation>

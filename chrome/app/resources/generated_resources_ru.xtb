@@ -4370,6 +4370,7 @@
 <translation id="4281789858103154731">Создать</translation>
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4281849573951338030">Настроить кнопки пера</translation>
+<translation id="4283635301190260296">Свернуть вертикальные вкладки</translation>
 <translation id="4284903252249997120">Программа ChromeVox для чтения с экрана и озвучивания при нажатии</translation>
 <translation id="4285418559658561636">Обновить пароль</translation>
 <translation id="4285498937028063278">Открепить</translation>
@@ -4424,7 +4425,7 @@
 <translation id="4316850752623536204">Сайт разработчика</translation>
 <translation id="4317820549299924617">Не удалось выполнить верификацию</translation>
 <translation id="4319441675152393296">Нажмите на значок расширения, чтобы разрешить чтение и изменение данных <ph name="HOST" />.</translation>
-<translation id="4320177379694898372">Нет подключения к Интернету</translation>
+<translation id="4320177379694898372">Нет подключения к интернету</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Показать файл "<ph name="FILE_NAME" />" в Finder</translation>
 <translation id="4322394346347055525">Закрыть другие вкладки</translation>
@@ -5315,7 +5316,7 @@
 <translation id="4994426888044765950">Если удерживать клавишу, соответствующий символ будет вводится повторно</translation>
 <translation id="4994754230098574403">Настройка</translation>
 <translation id="4995676741161760215">Расширение включено</translation>
-<translation id="4997086284911172121">Нет подключения к Интернету.</translation>
+<translation id="4997086284911172121">Нет подключения к интернету.</translation>
 <translation id="4998430619171209993">Включено</translation>
 <translation id="4999804342505941663">Включить режим "Не беспокоить"</translation>
 <translation id="5000497292978544380">Режим ИИ в Google Поиске</translation>

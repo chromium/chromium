@@ -2237,7 +2237,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2692503699962701720">Tonhöhe beim Vorlesen von Elementtypen und formatiertem Text verändern</translation>
 <translation id="2692901429679246677">Aqua</translation>
 <translation id="2693134906590795721">Ladetöne</translation>
-<translation id="2694330288297637442">Aufgabe wird bearbeitet. Gemini fragen.</translation>
+<translation id="2694330288297637442">Aufgabe wird bearbeitet. Frag Gemini</translation>
 <translation id="2695943520968279338">Erweiterungen entdecken</translation>
 <translation id="2696675923413008404">Inhalte dieser Website, einschließlich ihrer URL, werden an Google gesendet und möglicherweise von Prüfern angesehen, um diese Funktion zu verbessern</translation>
 <translation id="269941332914175387">Starte den Browser neu, um deine Profildaten zu laden und verschlüsselt zu halten</translation>
@@ -2642,6 +2642,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2989805286512600854">In neuem Tab öffnen</translation>
 <translation id="2990313168615879645">Google-Konto hinzufügen</translation>
 <translation id="2990375978470734995">Damit diese Änderung wirksam wird, musst du das externe Zubehör wieder anschließen.</translation>
+<translation id="2990500505358145117">Tastenkombination für erweitertes automatisches Ausfüllen bearbeiten</translation>
 <translation id="2990583317361835189">Websites dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="2991182900092497283">Bitte gib einen Grund für das Einfügen dieser Daten an:</translation>
 <translation id="2992931425024192067">Gesamten Benachrichtigungsinhalt anzeigen</translation>
@@ -2978,6 +2979,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3247649647204519958">Hier kannst du die Erweiterungsberechtigungen für die aktuelle Website ansehen und verwalten</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netzwerkfehler</translation>
 <translation id="3248902735035392926">Sicherheit ist wichtig. Nimm dir einen Moment Zeit, um deine <ph name="BEGIN_LINK" />Erweiterungen zu prüfen<ph name="END_LINK" /></translation>
+<translation id="3248957351402065497">Benutzerdefinierte Tastenkombination für erweitertes automatisches Ausfüllen</translation>
 <translation id="3249558306861350254">Klicke in den Windows-Einstellungen auf <ph name="BEGIN_BOLD" />Als Standard festlegen<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Kompetenz verwalten</translation>
 <translation id="3251119461199395237">Dateisynchronisierung</translation>
@@ -3790,6 +3792,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3827548509471720579">Helligkeit des Displays</translation>
 <translation id="3827774300009121996">&amp;Vollbildmodus</translation>
 <translation id="3828029223314399057">In Lesezeichen suchen</translation>
+<translation id="3828454092958722155">Tastenkombination für erweitertes automatisches Ausfüllen löschen</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Hohe Arbeitsspeichernutzung – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-Netzwerkfreigabe</translation>
 <translation id="3830470485672984938">Anderen Passkey verwenden</translation>
@@ -4362,6 +4365,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4281789858103154731">Erstellen</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4281849573951338030">Stifttasten anpassen</translation>
+<translation id="4283635301190260296">Vertikale Tabs minimieren</translation>
 <translation id="4284903252249997120">Screenreader „ChromeVox“ und Bedienungshilfe „Vorlesen“</translation>
 <translation id="4285418559658561636">Passwort aktualisieren</translation>
 <translation id="4285498937028063278">Loslösen</translation>
@@ -5276,6 +5280,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4972129977812092092">Druckerinformationen bearbeiten</translation>
 <translation id="4972164225939028131">Falsches Passwort</translation>
 <translation id="4972737347717125191">Websites dürfen nachfragen, wenn sie Virtual-Reality-Geräte und -Daten verwenden möchten</translation>
+<translation id="4973302523373219907">Wenn die benutzerdefinierte Tastenkombination nicht festgelegt ist, wird standardmäßig @@ verwendet</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Website stummschalten}other{Websites stummschalten}}</translation>
 <translation id="497403230787583386">Die Sicherheitsprüfungen wurden abgeschlossen. Dein Dokument wird gedruckt.</translation>
 <translation id="4974442344472293753">Update-Ergebnis</translation>
@@ -5994,7 +5999,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="554535686826424776">Gutscheine suchen</translation>
 <translation id="5546865291508181392">Suchen</translation>
-<translation id="5547868626772433490">Gemini fragen</translation>
+<translation id="5547868626772433490">Frag Gemini</translation>
 <translation id="5548075230008247516">Auswahl für alle Elemente aufgehoben. Auswahlmodus beendet.</translation>
 <translation id="554810465530189549">Unverankertes Menü nicht anzeigen, wenn Text ausgewählt ist</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" und 1 weiterer Tab}other{"<ph name="TAB_TITLE" />" und # weitere Tabs}}</translation>
@@ -7249,6 +7254,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6544134392255015460">Ein-/Aus-Taste für Hintergrundbeleuchtung der Tastatur</translation>
 <translation id="6545665334409411530">Wiederholungsrate</translation>
 <translation id="6547354035488017500">Gib mindestens 512 MB Speicherplatz frei oder dein Gerät reagiert nicht mehr. Lösche Dateien aus dem Gerätespeicher, um Speicherplatz freizugeben.</translation>
+<translation id="6548240707386871455">Tastenkombination für erweitertes automatisches Ausfüllen</translation>
 <translation id="654871471440386944">Tastaturnavigation aktivieren?</translation>
 <translation id="6548945820758901244">Seitenleiste der Google Suche öffnen</translation>
 <translation id="6549038875972762904">Einrichtung wiederholen</translation>
