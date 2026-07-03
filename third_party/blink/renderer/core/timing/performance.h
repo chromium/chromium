@@ -107,6 +107,10 @@ class CORE_EXPORT Performance : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Delay used to throttle and batch IPC messages for observed performance
+  // entries, matching page load metrics buffer timer delay.
+  static constexpr base::TimeDelta kBufferTimerDelay = base::Milliseconds(100);
+
   ~Performance() override;
 
   const AtomicString& InterfaceName() const override;
@@ -473,6 +477,9 @@ class CORE_EXPORT Performance : public EventTarget {
 
   HeapMojoRemote<mojom::blink::DeclarativePerformanceObserverHost>
       declarative_performance_observer_host_;
+
+  void OnDeclarativePerformanceObserverHostDisconnected();
+  bool is_declarative_performance_observer_disabled_for_document_ = false;
 
   // Telling a document to pause/resume the parser for more optimized task
   // scheduling to priroitize key loading milestones. To explore this idea, the

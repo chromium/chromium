@@ -929,24 +929,28 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
       }
     }
 
-    std::optional<base::Value> detail_value;
-    if (mark_options && mark_options->hasDetail()) {
-      ScriptValue detail = mark_options->detail();
-      if (!detail.IsEmpty() && !detail.V8Value()->IsNullOrUndefined()) {
-        v8::Local<v8::Context> context = script_state->GetContext();
-        std::unique_ptr<WebV8ValueConverter> converter =
-            Platform::Current()->CreateWebV8ValueConverter();
-        if (std::unique_ptr<base::Value> new_value =
-                converter->FromV8Value(detail.V8Value(), context)) {
-          detail_value = std::move(*new_value);
+    if (RuntimeEnabledFeatures::DeclarativePerformanceObserverEnabled(
+            GetExecutionContext()) &&
+        !is_declarative_performance_observer_disabled_for_document_) {
+      std::optional<base::Value> detail_value;
+      if (mark_options && mark_options->hasDetail()) {
+        ScriptValue detail = mark_options->detail();
+        if (!detail.IsEmpty() && !detail.V8Value()->IsNullOrUndefined()) {
+          v8::Local<v8::Context> context = script_state->GetContext();
+          std::unique_ptr<WebV8ValueConverter> converter =
+              Platform::Current()->CreateWebV8ValueConverter();
+          if (std::unique_ptr<base::Value> new_value =
+                  converter->FromV8Value(detail.V8Value(), context)) {
+            detail_value = std::move(*new_value);
+          }
         }
       }
+      auto entry = mojom::blink::DeclarativePerformanceEntry::New();
+      entry->name = mark_name;
+      entry->start_time = base::Milliseconds(performance_mark->startTime());
+      entry->detail = std::move(detail_value);
+      BufferPerformanceEntry(std::move(entry));
     }
-    auto entry = mojom::blink::DeclarativePerformanceEntry::New();
-    entry->name = mark_name;
-    entry->start_time = base::Milliseconds(performance_mark->startTime());
-    entry->detail = std::move(detail_value);
-    BufferPerformanceEntry(std::move(entry));
 
     if (RuntimeEnabledFeatures::HTMLParserYieldByUserTimingEnabled() &&
         !mark_parser_blocking.empty() && !mark_parser_restart.empty()) {
@@ -1468,8 +1472,7 @@ void Performance::BufferPerformanceEntry(
     mojom::blink::DeclarativePerformanceEntryPtr entry) {
   batched_performance_entries_.push_back(std::move(entry));
   if (!performance_entries_flush_timer_.IsActive()) {
-    performance_entries_flush_timer_.StartOneShot(base::Milliseconds(100),
-                                                  FROM_HERE);
+    performance_entries_flush_timer_.StartOneShot(kBufferTimerDelay, FROM_HERE);
   }
 }
 
@@ -1490,6 +1493,10 @@ void Performance::FlushPerformanceEntries() {
           frame->GetBrowserInterfaceBroker().GetInterface(
               declarative_performance_observer_host_.BindNewPipeAndPassReceiver(
                   frame->GetTaskRunner(TaskType::kInternalDefault)));
+          declarative_performance_observer_host_.set_disconnect_handler(
+              BindOnce(&Performance::
+                           OnDeclarativePerformanceObserverHostDisconnected,
+                       WrapWeakPersistent(this)));
         }
         declarative_performance_observer_host_->DidObservePerformanceEntries(
             std::move(batched_performance_entries_));
@@ -1501,6 +1508,12 @@ void Performance::FlushPerformanceEntries() {
 
 void Performance::ResetTimeOriginForTesting(base::TimeTicks time_origin) {
   time_origin_ = time_origin;
+}
+
+void Performance::OnDeclarativePerformanceObserverHostDisconnected() {
+  is_declarative_performance_observer_disabled_for_document_ = true;
+  declarative_performance_observer_host_.reset();
+  batched_performance_entries_.clear();
 }
 
 }  // namespace blink
