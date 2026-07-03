@@ -49,13 +49,13 @@ UIImage* CreateMultiAvatarImage(NSArray<UIImage*>* images, CGFloat size) {
   CGFloat kHalfSize = size / 2;
 
   // Define 4 quarter rectangles.
-  CGRect leftUpperRect =
+  CGRect leftUpperRect = CGRectMake(-kSpacing, -kSpacing, kHalfSize, kHalfSize);
+  CGRect leftLowerRect =
       CGRectMake(-kSpacing, kHalfSize + kSpacing, kHalfSize, kHalfSize);
-  CGRect rightUpperRect = CGRectMake(kHalfSize + kSpacing, kHalfSize + kSpacing,
-                                     kHalfSize, kHalfSize);
-  CGRect rightLowerRect =
+  CGRect rightUpperRect =
       CGRectMake(kHalfSize + kSpacing, -kSpacing, kHalfSize, kHalfSize);
-  CGRect leftLowerRect = CGRectMake(-kSpacing, -kSpacing, kHalfSize, kHalfSize);
+  CGRect rightLowerRect = CGRectMake(kHalfSize + kSpacing, kHalfSize + kSpacing,
+                                     kHalfSize, kHalfSize);
 
   // Define 2 half rectangles.
   CGRect leftRect = CGRectMake(-kSpacing, 0, kHalfSize, size);
