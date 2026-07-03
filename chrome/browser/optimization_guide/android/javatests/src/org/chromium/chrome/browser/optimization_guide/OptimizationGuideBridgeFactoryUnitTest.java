@@ -8,7 +8,7 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,14 +16,17 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Unit tests for OptimizationGuideBridgeFactory */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class OptimizationGuideBridgeFactoryUnitTest {
 
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
 
     @Test
     @SmallTest
