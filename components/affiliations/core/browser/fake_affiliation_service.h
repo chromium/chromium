@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace affiliations {
 
@@ -15,6 +16,33 @@ class FakeAffiliationService : public AffiliationService {
   FakeAffiliationService();
   ~FakeAffiliationService() override;
 
+  // Seeds a `group` of affiliated facets.
+  //
+  // `group` represents the group to seed to the "database" (mimics the fact
+  // that some affiliation data is only available through live requests and not
+  // through cache).
+  // `add_to_cache` controls whether these facets are also pre-populated into
+  // the local cache. If `true` (default), queries for these facets will succeed
+  // immediately (cache hit). If `false`, queries will return `success=false`
+  // (cache miss) until `UpdateAffiliationsAndBranding` is called for them.
+  void AddAffiliationGroup(const AffiliatedFacets& group,
+                           bool add_to_cache = true);
+
+  // Seeds a `group` of grouped facets.
+  //
+  // `group` represents the group to seed to the "database" (mimics the fact
+  // that some grouping data is only available through live requests and not
+  // through cache).
+  // `add_to_cache` controls whether these facets are also pre-populated into
+  // the local cache. If `true` (default), queries for these facets will succeed
+  // immediately (cache hit). If `false`, queries will return `success=false`
+  // (cache miss) until `UpdateAffiliationsAndBranding` is called for them.
+  void AddGroupedFacets(const GroupedFacets& group, bool add_to_cache = true);
+
+  // Seeds the list of `psl_extensions` to return during queries.
+  void SetPSLExtensions(std::vector<std::string> psl_extensions);
+
+  // AffiliationService:
   void FetchChangePasswordURL(const GURL& url,
                               base::OnceCallback<void(GURL)> callback) override;
   GURL GetChangePasswordURL(const GURL& url) const override;
@@ -37,6 +65,18 @@ class FakeAffiliationService : public AffiliationService {
   base::WeakPtr<AffiliationService> AsWeakPtr() override;
 
  private:
+  // Ground-truth affiliation groups in the simulated backend database.
+  std::vector<AffiliatedFacets> affiliation_groups_;
+
+  // Ground-truth grouping info in the simulated backend database.
+  std::vector<GroupedFacets> grouped_facets_;
+
+  // Seeded list of PSL extensions.
+  std::vector<std::string> psl_extensions_;
+
+  // Simulated local profile cache of cached facet URIs.
+  absl::flat_hash_set<FacetURI, FacetURIHash> cache_;
+
   base::WeakPtrFactory<FakeAffiliationService> weak_ptr_factory_{this};
 };
 

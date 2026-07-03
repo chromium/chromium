@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_DOMAIN_MATCHING_DOMAIN_RELATION_CHECKER_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_DOMAIN_MATCHING_DOMAIN_RELATION_CHECKER_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/match_type.h"
 #include "url/origin.h"
-
-class GURL;
 
 namespace affiliations {
 
@@ -37,17 +40,49 @@ class DomainRelationChecker {
              const url::Origin& origin_2,
              base::OnceCallback<void(std::optional<MatchType>)> result_cb);
 
-  // Overload that accepts `GURL`s. They will be converted to `url::Origin`
-  // internally.
-  void Check(const GURL& url_1,
-             const GURL& url_2,
-             base::OnceCallback<void(std::optional<MatchType>)> result_cb);
-
  private:
+  // Callback run when the affiliations cache has been updated for both origins.
+  void OnCacheUpdated(
+      const url::Origin& origin_1,
+      const url::Origin& origin_2,
+      std::optional<AffiliatedFacets> origin_1_affiliations,
+      base::OnceCallback<void(std::optional<MatchType>)> result_cb);
+
+  // Callback run after checking if affiliations are available in the cache.
+  void OnAffiliationsAvailabilityChecked(
+      const url::Origin& origin_1,
+      const url::Origin& origin_2,
+      base::OnceCallback<void(std::optional<MatchType>)> result_cb,
+      const AffiliatedFacets& origin_1_affiliations,
+      bool success);
+
+  // Callback run when the affiliation service returns the list of affiliated
+  // facets.
+  void OnAffiliationsRetrieved(
+      const url::Origin& origin_2,
+      base::OnceCallback<void(std::optional<MatchType>)> callback,
+      const AffiliatedFacets& origin_1_affiliations,
+      bool success);
+
+  // Callback run when the affiliation service returns the PSL extension list.
+  void OnPSLExtensionsRetrieved(
+      const url::Origin& origin_1,
+      const url::Origin& origin_2,
+      base::OnceCallback<void(std::optional<MatchType>)> callback,
+      std::vector<std::string> psl_extensions);
+
+  // Callback run when the affiliation service returns the grouping info.
+  void OnGroupingInfoRetrieved(
+      const url::Origin& origin_2,
+      base::OnceCallback<void(std::optional<MatchType>)> callback,
+      const std::vector<GroupedFacets>& origin_1_groups);
+
   // The `AffiliationService` used to retrieve affiliations and PSL extensions.
   // It is owned by the `Profile` (as a `KeyedService`). The caller must ensure
   // that `affiliation_service_` outlives this instance.
   const raw_ref<AffiliationService> affiliation_service_;
+
+  base::WeakPtrFactory<DomainRelationChecker> weak_ptr_factory_{this};
 };
 
 }  // namespace affiliations
