@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -287,6 +288,9 @@ void CheckKeyboardIsUpAndNotCovered() {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupUserActionTester]);
+
+  [ChromeEarlGrey
+      clearUserPrefWithName:prefs::kIosSyncInfobarErrorLastDismissedTimestamp];
 }
 
 - (void)tearDownHelper {
@@ -1065,11 +1069,6 @@ void CheckKeyboardIsUpAndNotCovered() {
   DISABLED_testPasswordGenerationFallbackSignedInEncryptionError
 #endif
 - (void)MAYBE_testPasswordGenerationFallbackSignedInEncryptionError {
-  // TODO(crbug.com/455768802): Re-enable the test.
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
@@ -1088,10 +1087,17 @@ void CheckKeyboardIsUpAndNotCovered() {
 
   [self loadLoginPage];
 
-  // Swipe up the sync infobar error.
+  // Swipe up the sync infobar error if it is visible.
+  NSError* error = nil;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kInfobarBannerViewIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kInfobarBannerViewIdentifier)]
+        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  }
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]

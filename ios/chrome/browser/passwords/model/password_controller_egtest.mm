@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/password_breach/public/password_breach_constants.h"
 #import "ios/chrome/browser/settings/manage_sync/public/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -224,6 +225,9 @@ void LoginOnUff() {
       [MetricsAppInterface setupHistogramTester]);
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupUserActionTester]);
+
+  [ChromeEarlGrey
+      clearUserPrefWithName:prefs::kIosSyncInfobarErrorLastDismissedTimestamp];
 }
 
 - (void)tearDownHelper {
@@ -742,11 +746,6 @@ void LoginOnUff() {
   DISABLED_testPasswordGenerationWhileSignedInWithError
 #endif
 - (void)MAYBE_testPasswordGenerationWhileSignedInWithError {
-  // TODO(crbug.com/454547779): Re-enable the test.
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
@@ -765,10 +764,17 @@ void LoginOnUff() {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
 
-  // Swipe up the sync infobar error.
+  // Swipe up the sync infobar error if it is visible.
+  NSError* error = nil;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kInfobarBannerViewIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kInfobarBannerViewIdentifier)]
+        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  }
 
   // Verify that the target field is empty.
   NSString* emptyFieldCondition =
