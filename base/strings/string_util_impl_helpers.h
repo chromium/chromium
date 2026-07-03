@@ -105,16 +105,6 @@ TrimPositions TrimStringT(T input,
 }
 
 template <typename T, typename CharT = typename T::value_type>
-T TrimStringPieceT(T input, T trim_chars, TrimPositions positions) {
-  size_t begin =
-      (positions & TRIM_LEADING) ? input.find_first_not_of(trim_chars) : 0;
-  size_t end = (positions & TRIM_TRAILING)
-                   ? input.find_last_not_of(trim_chars) + 1
-                   : input.size();
-  return input.substr(std::min(begin, input.size()), end - begin);
-}
-
-template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> CollapseWhitespaceT(
     T text,
     bool trim_sequences_with_line_breaks) {

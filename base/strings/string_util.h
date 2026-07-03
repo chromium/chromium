@@ -25,6 +25,7 @@
 #include "base/containers/span.h"
 // For implicit conversions.
 #include "base/strings/string_util_internal.h"
+#include "base/strings/whitespace_constants.h"
 #include "base/types/to_address.h"
 #include "build/build_config.h"
 
@@ -204,22 +205,9 @@ inline bool EqualsCaseInsensitiveASCII(std::string_view a,
 BASE_EXPORT const std::string& EmptyString();
 BASE_EXPORT const std::u16string& EmptyString16();
 
-// Contains the set of characters representing whitespace in the corresponding
-// encoding. Null-terminated. The ASCII versions are the whitespaces as defined
-// by HTML5, and don't include control characters.
-BASE_EXPORT extern const wchar_t kWhitespaceWide[];    // Includes Unicode.
-BASE_EXPORT extern const char16_t kWhitespaceUTF16[];  // Includes Unicode.
-BASE_EXPORT extern const char16_t
-    kWhitespaceNoCrLfUTF16[];  // Unicode w/o CR/LF.
-BASE_EXPORT extern const char kWhitespaceASCII[];
-BASE_EXPORT extern const char16_t kWhitespaceASCIIAs16[];  // No unicode.
-
 // https://infra.spec.whatwg.org/#ascii-whitespace
 // Note that this array is not null-terminated.
 inline constexpr char kInfraAsciiWhitespace[] = {0x09, 0x0A, 0x0C, 0x0D, 0x20};
-
-// Null-terminated string representing the UTF-8 byte order mark.
-BASE_EXPORT extern const char kUtf8ByteOrderMark[];
 
 // Removes characters in |remove_chars| from anywhere in |input|.  Returns true
 // if any characters were removed.  |remove_chars| must be null-terminated.

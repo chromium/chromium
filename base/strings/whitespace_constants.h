@@ -1,8 +1,9 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_util.h"
+#ifndef BASE_STRINGS_WHITESPACE_CONSTANTS_H_
+#define BASE_STRINGS_WHITESPACE_CONSTANTS_H_
 
 namespace base {
 
@@ -43,12 +44,19 @@ namespace base {
 
 #define WHITESPACE_UNICODE WHITESPACE_ASCII, WHITESPACE_UNICODE_NON_ASCII
 
-const wchar_t kWhitespaceWide[] = {WHITESPACE_UNICODE, 0};
-const char16_t kWhitespaceUTF16[] = {WHITESPACE_UNICODE, 0};
-const char16_t kWhitespaceNoCrLfUTF16[] = {WHITESPACE_UNICODE_NO_CR_LF, 0};
-const char kWhitespaceASCII[] = {WHITESPACE_ASCII, 0};
-const char16_t kWhitespaceASCIIAs16[] = {WHITESPACE_ASCII, 0};
+// Contains the set of characters representing whitespace in the corresponding
+// encoding. Null-terminated. The ASCII versions are the whitespaces as defined
+// by HTML5, and don't include control characters.
+inline constexpr wchar_t kWhitespaceWide[] = {WHITESPACE_UNICODE, 0};
+inline constexpr char16_t kWhitespaceUTF16[] = {WHITESPACE_UNICODE, 0};
+inline constexpr char16_t kWhitespaceNoCrLfUTF16[] = {
+    WHITESPACE_UNICODE_NO_CR_LF, 0};
+inline constexpr char kWhitespaceASCII[] = {WHITESPACE_ASCII, 0};
+inline constexpr char16_t kWhitespaceASCIIAs16[] = {WHITESPACE_ASCII, 0};
 
-const char kUtf8ByteOrderMark[] = "\xEF\xBB\xBF";
+// Null-terminated string representing the UTF-8 byte order mark.
+inline constexpr char kUtf8ByteOrderMark[] = "\xEF\xBB\xBF";
 
 }  // namespace base
+
+#endif  // BASE_STRINGS_WHITESPACE_CONSTANTS_H_

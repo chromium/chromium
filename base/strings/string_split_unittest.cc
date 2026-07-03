@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -640,5 +641,78 @@ TEST(StringSplitTest, NullSeparatorWantAll) {
     EXPECT_EQ(results, i.expected);
   }
 }
+
+namespace {
+
+template <size_t MaxSize>
+constexpr std::array<char, MaxSize> GetNthPiece(
+    std::string_view str,
+    std::string_view delimiter,
+    base::WhitespaceHandling whitespace,
+    base::SplitResult split_result,
+    size_t n) {
+  std::vector<std::string_view> r =
+      SplitStringPiece(str, delimiter, whitespace, split_result);
+  std::array<char, MaxSize> output{};
+  base::span(output).first(r[n].size()).copy_from_nonoverlapping(r[n]);
+  return output;
+}
+
+TEST(ConstexprSplitStringPieceTest, SplitStringPieces) {
+  constexpr std::string_view str = "abc- def--ghi";
+  constexpr std::array<char, 10> first_piece =
+      GetNthPiece<10>(str, "-", TRIM_WHITESPACE, SPLIT_WANT_ALL, 0);
+  constexpr std::array<char, 10> second_piece =
+      GetNthPiece<10>(str, "-", TRIM_WHITESPACE, SPLIT_WANT_ALL, 1);
+  constexpr std::array<char, 10> third_piece =
+      GetNthPiece<10>(str, "-", TRIM_WHITESPACE, SPLIT_WANT_ALL, 2);
+  constexpr std::array<char, 10> fourth_piece =
+      GetNthPiece<10>(str, "-", TRIM_WHITESPACE, SPLIT_WANT_ALL, 3);
+
+  EXPECT_EQ(std::string_view(first_piece.data()), "abc");
+  EXPECT_EQ(std::string_view(second_piece.data()), "def");
+  EXPECT_EQ(std::string_view(third_piece.data()), "");
+  EXPECT_EQ(std::string_view(fourth_piece.data()), "ghi");
+}
+
+TEST(ConstexprSplitStringPieceTest, SplitStringPiecesSkipEmpty) {
+  constexpr std::string_view str = "abc- def--ghi";
+  constexpr std::array<char, 10> first_piece =
+      GetNthPiece<10>(str, "-", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY, 0);
+  constexpr std::array<char, 10> second_piece =
+      GetNthPiece<10>(str, "-", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY, 1);
+  constexpr std::array<char, 10> third_piece =
+      GetNthPiece<10>(str, "-", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY, 2);
+
+  EXPECT_EQ(std::string_view(first_piece.data()), "abc");
+  EXPECT_EQ(std::string_view(second_piece.data()), "def");
+  EXPECT_EQ(std::string_view(third_piece.data()), "ghi");
+}
+
+template <size_t MaxSize>
+constexpr std::array<char, MaxSize> GetNthPieceUsingSubstr(
+    std::string_view str,
+    std::string_view delimiter,
+    size_t n) {
+  std::vector<std::string_view> r = SplitStringPieceUsingSubstr(
+      str, delimiter, KEEP_WHITESPACE, SPLIT_WANT_ALL);
+  std::array<char, MaxSize> output{};
+  base::span(output).first(r[n].size()).copy_from_nonoverlapping(r[n]);
+  return output;
+}
+
+TEST(ConstexprSplitStringPieceTest, SplitStringUsingSubstr) {
+  constexpr std::string_view kStr = "abcDELIMITERdef";
+  constexpr std::string_view kDelimiter = "DELIMITER";
+  constexpr std::array<char, 10> first_piece =
+      GetNthPieceUsingSubstr<10>(kStr, kDelimiter, 0);
+  constexpr std::array<char, 10> second_piece =
+      GetNthPieceUsingSubstr<10>(kStr, kDelimiter, 1);
+
+  EXPECT_EQ(std::string_view(first_piece.data()), "abc");
+  EXPECT_EQ(std::string_view(second_piece.data()), "def");
+}
+
+}  // namespace
 
 }  // namespace base

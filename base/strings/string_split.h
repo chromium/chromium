@@ -64,6 +64,14 @@ enum SplitResult {
   SPLIT_WANT_NONEMPTY,
 };
 
+}  // namespace base
+
+// This file is only included after here so it can have visibility at
+// compile-time of the enums defined above.
+#include "base/strings/string_split_internal.h"
+
+namespace base {
+
 // Split the given string on ANY of the given separators, returning copies of
 // the result.
 //
@@ -73,16 +81,23 @@ enum SplitResult {
 //
 //   std::vector<std::string> tokens = base::SplitString(
 //       input, ",;", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-[[nodiscard]] BASE_EXPORT std::vector<std::string> SplitString(
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::string> SplitString(
     std::string_view input,
     std::string_view separators,
     WhitespaceHandling whitespace,
-    SplitResult result_type);
-[[nodiscard]] BASE_EXPORT std::vector<std::u16string> SplitString(
+    SplitResult result_type) {
+  return internal::SplitStringT<std::string>(input, separators, whitespace,
+                                             result_type);
+}
+
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::u16string> SplitString(
     std::u16string_view input,
     std::u16string_view separators,
     WhitespaceHandling whitespace,
-    SplitResult result_type);
+    SplitResult result_type) {
+  return internal::SplitStringT<std::u16string>(input, separators, whitespace,
+                                                result_type);
+}
 
 // Like SplitString above except it returns a vector of std::string_views which
 // reference the original buffer without copying. Although you have to be
@@ -98,16 +113,24 @@ enum SplitResult {
 //                               base::KEEP_WHITESPACE,
 //                               base::SPLIT_WANT_NONEMPTY)) {
 //     ...
-[[nodiscard]] BASE_EXPORT std::vector<std::string_view> SplitStringPiece(
-    std::string_view input LIFETIME_BOUND,
-    std::string_view separators,
-    WhitespaceHandling whitespace,
-    SplitResult result_type);
-[[nodiscard]] BASE_EXPORT std::vector<std::u16string_view> SplitStringPiece(
-    std::u16string_view input LIFETIME_BOUND,
-    std::u16string_view separators,
-    WhitespaceHandling whitespace,
-    SplitResult result_type);
+//   }
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::string_view>
+SplitStringPiece(std::string_view input LIFETIME_BOUND,
+                 std::string_view separators,
+                 WhitespaceHandling whitespace,
+                 SplitResult result_type) {
+  return internal::SplitStringT<std::string_view>(input, separators, whitespace,
+                                                  result_type);
+}
+
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::u16string_view>
+SplitStringPiece(std::u16string_view input LIFETIME_BOUND,
+                 std::u16string_view separators,
+                 WhitespaceHandling whitespace,
+                 SplitResult result_type) {
+  return internal::SplitStringT<std::u16string_view>(input, separators,
+                                                     whitespace, result_type);
+}
 
 using StringPairs = std::vector<std::pair<std::string, std::string>>;
 using StringViewPairs =
@@ -148,16 +171,23 @@ BASE_EXPORT bool SplitStringIntoKeyValueViewPairsUsingSubstr(
 
 // Similar to SplitString, but use a substring delimiter instead of a list of
 // characters that are all possible delimiters.
-[[nodiscard]] BASE_EXPORT std::vector<std::u16string> SplitStringUsingSubstr(
-    std::u16string_view input,
-    std::u16string_view delimiter,
-    WhitespaceHandling whitespace,
-    SplitResult result_type);
-[[nodiscard]] BASE_EXPORT std::vector<std::string> SplitStringUsingSubstr(
-    std::string_view input,
-    std::string_view delimiter,
-    WhitespaceHandling whitespace,
-    SplitResult result_type);
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::u16string>
+SplitStringUsingSubstr(std::u16string_view input,
+                       std::u16string_view delimiter,
+                       WhitespaceHandling whitespace,
+                       SplitResult result_type) {
+  return internal::SplitStringUsingSubstrT<std::u16string>(
+      input, delimiter, whitespace, result_type);
+}
+
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::string>
+SplitStringUsingSubstr(std::string_view input,
+                       std::string_view delimiter,
+                       WhitespaceHandling whitespace,
+                       SplitResult result_type) {
+  return internal::SplitStringUsingSubstrT<std::string>(
+      input, delimiter, whitespace, result_type);
+}
 
 // Like SplitStringUsingSubstr above except it returns a vector of StringPieces
 // which reference the original buffer without copying. Although you have to be
@@ -166,21 +196,28 @@ BASE_EXPORT bool SplitStringIntoKeyValueViewPairsUsingSubstr(
 //
 // To iterate through all newline-separated tokens in an input string:
 //
-//   for (const auto& cur :
+//   for (std::string_view token :
 //        base::SplitStringUsingSubstr(input, "\r\n",
 //                                     base::KEEP_WHITESPACE,
 //                                     base::SPLIT_WANT_NONEMPTY)) {
 //     ...
-[[nodiscard]] BASE_EXPORT std::vector<std::u16string_view>
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::u16string_view>
 SplitStringPieceUsingSubstr(std::u16string_view input LIFETIME_BOUND,
                             std::u16string_view delimiter,
                             WhitespaceHandling whitespace,
-                            SplitResult result_type);
-[[nodiscard]] BASE_EXPORT std::vector<std::string_view>
+                            SplitResult result_type) {
+  return internal::SplitStringUsingSubstrT<std::u16string_view>(
+      input, delimiter, whitespace, result_type);
+}
+
+[[nodiscard]] BASE_EXPORT constexpr std::vector<std::string_view>
 SplitStringPieceUsingSubstr(std::string_view input LIFETIME_BOUND,
                             std::string_view delimiter,
                             WhitespaceHandling whitespace,
-                            SplitResult result_type);
+                            SplitResult result_type) {
+  return internal::SplitStringUsingSubstrT<std::string_view>(
+      input, delimiter, whitespace, result_type);
+}
 
 }  // namespace base
 

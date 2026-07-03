@@ -9,7 +9,9 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_util_impl_helpers.h"
+#include "base/strings/trim_string_internal.h"
 
 namespace base {
 
@@ -53,7 +55,8 @@ bool TrimString(std::wstring_view input,
 std::wstring_view TrimString(std::wstring_view input,
                              std::wstring_view trim_chars,
                              TrimPositions positions) {
-  return internal::TrimStringPieceT(input, trim_chars, positions);
+  return internal::TrimStringPieceT(input, trim_chars, positions & TRIM_LEADING,
+                                    positions & TRIM_TRAILING);
 }
 
 TrimPositions TrimWhitespace(std::wstring_view input,
@@ -66,7 +69,8 @@ TrimPositions TrimWhitespace(std::wstring_view input,
 std::wstring_view TrimWhitespace(std::wstring_view input,
                                  TrimPositions positions) {
   return internal::TrimStringPieceT(input, std::wstring_view(kWhitespaceWide),
-                                    positions);
+                                    positions & TRIM_LEADING,
+                                    positions & TRIM_TRAILING);
 }
 
 std::wstring CollapseWhitespace(std::wstring_view text,

@@ -84,39 +84,6 @@ std::optional<std::pair<std::string_view, std::string_view>> RSplitStringOnce(
   return SplitStringAtExclusive(input, input.find_last_of(separators));
 }
 
-std::vector<std::string> SplitString(std::string_view input,
-                                     std::string_view separators,
-                                     WhitespaceHandling whitespace,
-                                     SplitResult result_type) {
-  return internal::SplitStringT<std::string>(input, separators, whitespace,
-                                             result_type);
-}
-
-std::vector<std::u16string> SplitString(std::u16string_view input,
-                                        std::u16string_view separators,
-                                        WhitespaceHandling whitespace,
-                                        SplitResult result_type) {
-  return internal::SplitStringT<std::u16string>(input, separators, whitespace,
-                                                result_type);
-}
-
-std::vector<std::string_view> SplitStringPiece(std::string_view input,
-                                               std::string_view separators,
-                                               WhitespaceHandling whitespace,
-                                               SplitResult result_type) {
-  return internal::SplitStringT<std::string_view>(input, separators, whitespace,
-                                                  result_type);
-}
-
-std::vector<std::u16string_view> SplitStringPiece(
-    std::u16string_view input,
-    std::u16string_view separators,
-    WhitespaceHandling whitespace,
-    SplitResult result_type) {
-  return internal::SplitStringT<std::u16string_view>(input, separators,
-                                                     whitespace, result_type);
-}
-
 bool SplitStringIntoKeyValuePairs(std::string_view input,
                                   char key_value_delimiter,
                                   char key_value_pair_delimiter,
@@ -176,42 +143,6 @@ bool SplitStringIntoKeyValueViewPairsUsingSubstr(
     }
   }
   return success;
-}
-
-std::vector<std::u16string> SplitStringUsingSubstr(
-    std::u16string_view input,
-    std::u16string_view delimiter,
-    WhitespaceHandling whitespace,
-    SplitResult result_type) {
-  return internal::SplitStringUsingSubstrT<std::u16string>(
-      input, delimiter, whitespace, result_type);
-}
-
-std::vector<std::string> SplitStringUsingSubstr(std::string_view input,
-                                                std::string_view delimiter,
-                                                WhitespaceHandling whitespace,
-                                                SplitResult result_type) {
-  return internal::SplitStringUsingSubstrT<std::string>(
-      input, delimiter, whitespace, result_type);
-}
-
-std::vector<std::u16string_view> SplitStringPieceUsingSubstr(
-    std::u16string_view input,
-    std::u16string_view delimiter,
-    WhitespaceHandling whitespace,
-    SplitResult result_type) {
-  std::vector<std::u16string_view> result;
-  return internal::SplitStringUsingSubstrT<std::u16string_view>(
-      input, delimiter, whitespace, result_type);
-}
-
-std::vector<std::string_view> SplitStringPieceUsingSubstr(
-    std::string_view input,
-    std::string_view delimiter,
-    WhitespaceHandling whitespace,
-    SplitResult result_type) {
-  return internal::SplitStringUsingSubstrT<std::string_view>(
-      input, delimiter, whitespace, result_type);
 }
 
 }  // namespace base
