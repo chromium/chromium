@@ -13,7 +13,6 @@ import androidx.test.uiautomator.UiDevice;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,10 +23,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.PasswordEchoSettingState;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -67,8 +66,6 @@ public class PasswordEchoSettingHandlerTest {
         }
     }
 
-    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
-
     private Profile mProfile;
     private PasswordEchoSettingHandler mPasswordEchoSettingHandler;
     private UiDevice mDevice;
@@ -77,6 +74,7 @@ public class PasswordEchoSettingHandlerTest {
 
     @Before
     public void setUp() throws ExecutionException, IOException {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestDelegate = new TestLegacyPasswordEchoSettingDelegate();
