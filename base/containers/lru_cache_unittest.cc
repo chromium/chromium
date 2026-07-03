@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/hashing_lru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/memory_usage_estimator.h"

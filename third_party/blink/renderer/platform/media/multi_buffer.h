@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
 
 namespace ash::file_system_provider {

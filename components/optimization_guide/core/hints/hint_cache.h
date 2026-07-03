@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

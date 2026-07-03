@@ -17,7 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"

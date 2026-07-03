@@ -9,7 +9,7 @@
 #import <variant>
 
 #import "base/base64.h"
-#import "base/containers/lru_cache.h"
+#import "base/containers/hashing_lru_cache.h"
 #import "base/memory/raw_ref.h"
 #import "base/observer_list.h"
 #import "base/task/sequenced_task_runner.h"
@@ -44,10 +44,6 @@ typedef std::variant<HomeCustomBackground, sync_pb::UserColorTheme>
 // Internally used type for storing recently used backgrounds.
 typedef std::variant<sync_pb::ThemeIosSpecifics, HomeUserUploadedBackground>
     RecentlyUsedBackgroundInternal;
-
-// Type of the lru cache used to store recently used backgrounds.
-typedef base::HashingLRUCacheSet<RecentlyUsedBackgroundInternal>
-    RecentlyUsedBackgroundsCache;
 
 namespace std {
 
@@ -110,6 +106,12 @@ struct std::hash<RecentlyUsedBackgroundInternal> {
 };
 
 }  // namespace std
+
+// Type of the lru cache used to store recently used backgrounds.
+// This needs to go after the std::hash specializations above in order to
+// compile.
+typedef base::HashingLRUCacheSet<RecentlyUsedBackgroundInternal>
+    RecentlyUsedBackgroundsCache;
 
 // Equality operators for theme comparison.
 namespace sync_pb {

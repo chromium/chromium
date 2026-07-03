@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/containers/weak_value_table.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

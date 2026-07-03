@@ -27,6 +27,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/linked_list.h"
 #include "base/containers/lru_cache.h"
@@ -616,8 +617,8 @@ size_t EstimateMemoryUsage(const LRUCache<K, V, C>& lru_cache) {
   return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
 }
 
-template <class K, class V, class C>
-size_t EstimateMemoryUsage(const HashingLRUCache<K, V, C>& lru_cache) {
+template <class K, class V, class H, class E>
+size_t EstimateMemoryUsage(const HashingLRUCache<K, V, H, E>& lru_cache) {
   return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
 }
 
@@ -626,8 +627,8 @@ size_t EstimateMemoryUsage(const LRUCacheSet<V, C>& lru_cache) {
   return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
 }
 
-template <class V, class C>
-size_t EstimateMemoryUsage(const HashingLRUCacheSet<V, C>& lru_cache) {
+template <class V, class H, class E>
+size_t EstimateMemoryUsage(const HashingLRUCacheSet<V, H, E>& lru_cache) {
   return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
 }
 

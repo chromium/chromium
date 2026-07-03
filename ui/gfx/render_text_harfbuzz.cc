@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"

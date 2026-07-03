@@ -7,7 +7,7 @@
 
 #include <list>
 
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"

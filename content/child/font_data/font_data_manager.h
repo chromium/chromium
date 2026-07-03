@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"

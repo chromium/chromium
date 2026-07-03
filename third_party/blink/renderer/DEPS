@@ -16,6 +16,7 @@ include_rules = [
     "+base/containers/enum_set.h",
     "+base/containers/fixed_flat_map.h",
     "+base/containers/fixed_flat_set.h",
+    "+base/containers/hashing_lru_cache.h",
     "+base/containers/heap_array.h",
     "+base/containers/lru_cache.h",
     "+base/containers/span.h",

@@ -16,7 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"

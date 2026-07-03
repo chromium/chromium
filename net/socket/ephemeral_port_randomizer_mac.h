@@ -10,7 +10,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/lru_cache.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"

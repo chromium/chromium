@@ -9,6 +9,7 @@
 #include <map>
 #include <utility>
 
+#include "base/containers/hashing_lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/local_fd.h"
