@@ -88,12 +88,14 @@ source_set("interactive_ui_tests") {
   deps = [
     ":send_tab_to_self",
     "//base/test:test_support",
+    "//chrome/browser/sync",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/views/send_tab_to_self",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/send_tab_to_self",
+    "//components/send_tab_to_self:test_support",
     "//content/test:test_support",
     "//ui/base:ozone_buildflags",
   ]

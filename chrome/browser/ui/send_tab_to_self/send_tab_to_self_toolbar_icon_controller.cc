@@ -36,7 +36,15 @@ namespace send_tab_to_self {
 
 SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
     Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    SendTabToSelfModel* model = GetModel();
+    model_observation_.Observe(model);
+    if (model->IsReady()) {
+      OnModelReady();
+    }
+  }
+}
 
 // static
 SendTabToSelfToolbarIconController*
@@ -53,23 +61,14 @@ bool SendTabToSelfToolbarIconController::CanShowOnBrowser(
 
 void SendTabToSelfToolbarIconController::DisplayNewEntries(
     base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
-  // TODO(crbug.com/40180897): Any entries that were never shown are lost.
-  // This is consistent with current behavior and we don't have UI for
-  // showing multiple entries with this iteration.
   if (new_entries.empty()) {
     return;
   }
 
-  // If the active browser matches `profile_`, show the toolbar icon.
-  // Otherwise, we will store this entry and wait to show on the next active
-  // appropriate browser.
-  BrowserWindowInterface* const browser =
-      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  if (browser && (browser->IsActive() || ignore_active_for_testing_) &&
-      CanShowOnBrowser(browser)) {
-    // TODO(crbug.com/488072250): Move this logic into a separate notification
-    // handler class.
-    if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    // If there is an active browser for this profile, open the tabs
+    // immediately.
+    if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
       // Open the first tab in the foreground and all the others in the
       // background.
       OpenEntryInNewForegroundTab(profile_, *new_entries[0],
@@ -92,40 +91,26 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
           ->toast_controller()
           ->MaybeShowToast(std::move(params));
     } else {
+      // If no browser is active, record the entries as pending and wait for
+      // a browser window to be activated.
+      for (size_t ii = 0; ii < new_entries.size(); ++ii) {
+        RecordAutoOpenOutcome(AutoOpenOutcome::kPending);
+      }
+      StartObservingBrowserCollection();
+    }
+  } else {
+    // If there is an active browser for this profile, show the toolbar button
+    // immediately.
+    if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
       // Select semi-randomly the first new entry from the list because there is
       // no UI to show multiple entries.
       ShowToolbarButton(*new_entries[0], browser);
+    } else {
+      // Otherwise, store the entry and wait for a browser to be activated.
+      pending_entry_ =
+          std::make_unique<SendTabToSelfEntry>(*new_entries.front());
+      StartObservingBrowserCollection();
     }
-    return;
-  }
-  StorePendingEntries(new_entries);
-}
-
-void SendTabToSelfToolbarIconController::StorePendingEntries(
-    base::span<const SendTabToSelfEntry* const>
-        new_entries_pending_notification) {
-  CHECK(!new_entries_pending_notification.empty());
-  const bool had_entry_pending_notification = !pending_entries_.empty();
-
-  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-    pending_entries_.reserve(pending_entries_.size() +
-                             new_entries_pending_notification.size());
-    for (const auto* entry : new_entries_pending_notification) {
-      pending_entries_.push_back(std::make_unique<SendTabToSelfEntry>(*entry));
-      RecordAutoOpenOutcome(AutoOpenOutcome::kPending);
-    }
-  } else {
-    pending_entries_.clear();
-    pending_entries_.push_back(std::make_unique<SendTabToSelfEntry>(
-        *new_entries_pending_notification.front()));
-  }
-
-  // Prevent adding the observer several times. This might happen when the
-  // window is inactive and this method is called more than once (i.e. the
-  // server sends multiple entry batches).
-  if (!had_entry_pending_notification) {
-    browser_collection_observer_.Observe(
-        ProfileBrowserCollection::GetForProfile(profile_));
   }
 }
 
@@ -147,54 +132,66 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
 
   browser_collection_observer_.Reset();
 
-  // Reset `pending_entries_` because it's used to determine if the
-  // BrowserListObserver is added in `DisplayNewEntries()`.
-  std::vector<std::unique_ptr<SendTabToSelfEntry>> entries =
-      std::move(pending_entries_);
-
-  if (!profile_ || entries.empty()) {
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    if (pending_entry_) {
+      ShowToolbarButton(*pending_entry_, browser);
+      pending_entry_.reset();
+    }
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-    for (const std::unique_ptr<SendTabToSelfEntry>& entry : entries) {
-      base::WeakPtr<content::WebContents> opened_contents =
-          OpenEntryInNewBackgroundTab(profile_, *entry);
-      if (opened_contents) {
-        latest_tabs_opened_in_background_.push_back(
-            tabs::TabInterface::GetFromContents(opened_contents.get())
-                ->GetWeakPtr());
-      }
-      RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
+  SendTabToSelfModel* model = GetModel();
+  std::vector<const SendTabToSelfEntry*> unopened_entries =
+      model->GetUnopenedEntriesTargetedToLocalDevice();
+  if (unopened_entries.empty()) {
+    return;
+  }
+  for (const SendTabToSelfEntry* entry : unopened_entries) {
+    base::WeakPtr<content::WebContents> opened_contents =
+        OpenEntryInNewBackgroundTab(profile_, *entry);
+    if (opened_contents) {
+      latest_tabs_opened_in_background_.push_back(
+          tabs::TabInterface::GetFromContents(opened_contents.get())
+              ->GetWeakPtr());
     }
-    // Show a toast (only if there are tabs that were successfully opened in
-    // the background).
-    if (!latest_tabs_opened_in_background_.empty()) {
-      ToastParams params(ToastId::kSendTabToSelfTabsOpenedInBackground);
-      // Only show the device name of the first tab. Note that the tabs might
-      // have been sent from different devices, but it's not worth the extra
-      // hassle to list them all.
-      params.body_string_override =
-          base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_BACKGROUND),
-              static_cast<int>(latest_tabs_opened_in_background_.size()),
-              base::UTF8ToUTF16(entries[0]->GetDeviceName()));
-      params.toast_close_callback = base::ScopedClosureRunner(
-          base::BindOnce(&SendTabToSelfToolbarIconController::OnToastClosed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      browser->GetFeatures()
-          .toast_service()
-          ->toast_controller()
-          ->MaybeShowToast(std::move(params));
+    RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
+  }
+  // Show a toast (only if there are tabs that were successfully opened in
+  // the background).
+  if (!latest_tabs_opened_in_background_.empty()) {
+    ToastParams params(ToastId::kSendTabToSelfTabsOpenedInBackground);
+    // Only show the device name of the first tab. Note that the tabs might
+    // have been sent from different devices, but it's not worth the extra
+    // hassle to list them all.
+    params.body_string_override =
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_BACKGROUND),
+            static_cast<int>(latest_tabs_opened_in_background_.size()),
+            base::UTF8ToUTF16(unopened_entries[0]->GetDeviceName()));
+    params.toast_close_callback = base::ScopedClosureRunner(
+        base::BindOnce(&SendTabToSelfToolbarIconController::OnToastClosed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    browser->GetFeatures().toast_service()->toast_controller()->MaybeShowToast(
+        std::move(params));
+  }
+}
+
+void SendTabToSelfToolbarIconController::OnModelReady() {
+  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
+  SendTabToSelfModel* model = GetModel();
+  if (!model->GetUnopenedEntriesTargetedToLocalDevice().empty()) {
+    if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
+      OnBrowserActivated(browser);
+    } else {
+      StartObservingBrowserCollection();
     }
-  } else {
-    ShowToolbarButton(*entries.back(), browser);
   }
 }
 
 void SendTabToSelfToolbarIconController::ShowToolbarButton(
     const SendTabToSelfEntry& entry,
     BrowserWindowInterface* browser) {
+  CHECK(!base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
   CHECK(browser);
   PinnedToolbarActions* controller =
       browser->GetFeatures().pinned_toolbar_actions();
@@ -256,6 +253,30 @@ void SendTabToSelfToolbarIconController::OnToastClosed() {
   // toast, but that is very very rare, because this toast is shown for the
   // browser was not active when the tabs were received.
   latest_tabs_opened_in_background_.clear();
+}
+
+BrowserWindowInterface* SendTabToSelfToolbarIconController::GetActiveBrowser() {
+  BrowserWindowInterface* const browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
+  return (browser && (browser->IsActive() || ignore_active_for_testing_) &&
+          CanShowOnBrowser(browser))
+             ? browser
+             : nullptr;
+}
+
+SendTabToSelfModel* SendTabToSelfToolbarIconController::GetModel() {
+  return SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
+      ->GetSendTabToSelfModel();
+}
+
+void SendTabToSelfToolbarIconController::StartObservingBrowserCollection() {
+  // Prevent adding the observer multiple times if this is called repeatedly
+  // while the window is inactive (e.g. if the server sends multiple batches
+  // of entries).
+  if (!browser_collection_observer_.IsObserving()) {
+    browser_collection_observer_.Observe(
+        ProfileBrowserCollection::GetForProfile(profile_));
+  }
 }
 
 SendTabToSelfToolbarIconController::~SendTabToSelfToolbarIconController() =

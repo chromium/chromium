@@ -70,13 +70,29 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
       base::RepeatingCallback<void(const SendTabToSelfEntry*)>;
   void SetSendEntryCallback(SendEntryCallback callback);
 
+  struct RemoteEntryParams {
+    GURL url;
+    std::string title;
+    std::string target_device_cache_guid;
+    PageContext context = PageContext();
+    NavigationHistory navigation_history = {};
+    base::Time shared_time = base::Time();
+  };
+
   // Simulates an entry being added from a remote device.
+  // TODO(crbug.com/488072250): Optionally, use RemoteEntryParams instead of
+  // individual parameters, or an overload that does.
   const SendTabToSelfEntry* AddEntryRemotely(
       const GURL& url,
       const std::string& title,
       const std::string& target_device_cache_guid,
       const PageContext& context,
       NavigationHistory navigation_history);
+
+  // Simulates multiple entries being added from a remote device in a single
+  // batch.
+  std::vector<const SendTabToSelfEntry*> AddEntriesRemotely(
+      std::vector<RemoteEntryParams> entries_params);
 
   // Simulates an entry being removed from a remote device.
   void RemoveEntryRemotely(const std::string& guid);
@@ -108,6 +124,8 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   int activated_call_count_ = 0;
   SendEntryCallback send_entry_callback_;
   SendTabToSelfResult send_result_ = SendTabToSelfResult::kSuccess;
+
+  bool is_adding_entries_remotely_ = false;
 };
 
 }  // namespace send_tab_to_self
