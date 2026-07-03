@@ -16,6 +16,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -323,6 +324,13 @@ void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
     NavigationHandle* handle,
     StoragePartition* partition,
     int net_error) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDeclarativePerformanceObserver) ||
+      !blink::features::
+           kDeclarativePerformanceObserverSupportCaptureEarlyFailures.Get()) {
+    return;
+  }
+
   if (!handle || !partition) {
     return;
   }
