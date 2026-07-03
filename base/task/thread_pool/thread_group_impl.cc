@@ -699,7 +699,7 @@ void ThreadGroupImpl::WorkerDelegate::BlockingStarted(
     return;
   }
 
-  worker_only().worker_thread_->MaybeUpdateThreadType();
+  worker_only().worker_thread_->MaybeBoostPriorityForShutdown();
 
   // WillBlock is always used when time overrides is active. crbug.com/1038867
   if (base::subtle::ScopedTimeClockOverrides::overrides_active()) {

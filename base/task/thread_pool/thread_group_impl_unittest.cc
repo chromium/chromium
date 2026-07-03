@@ -581,8 +581,14 @@ TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
                             // thread priority.
                             ScopedBlockingCall scoped_blocking_call(
                                 FROM_HERE, BlockingType::MAY_BLOCK);
-                            EXPECT_EQ(ThreadType::kDefault,
-                                      PlatformThread::GetCurrentThreadType());
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+                            // Apple priority boost doesn't reflect in the
+                            // effective ThreadType.
+                            EXPECT_EQ(
+                                ThreadType::kDefault,
+                                PlatformThread::
+                                    GetCurrentEffectiveThreadTypeForTest());
+#endif
                           }));
   }
   threads_running.Wait();

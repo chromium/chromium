@@ -42,18 +42,56 @@ constinit thread_local internal::ScopedBoostPriorityBase* current_boost_scope =
 
 namespace internal {
 
-ScopedBoostPriorityBase::ScopedBoostPriorityBase()
+ScopedBoostPriorityBase::ScopedBoostPriorityBase(
+    PlatformThreadHandle thread_handle)
     : initial_thread_type_(current_boost_scope &&
                                    current_boost_scope->target_thread_type_
                                ? *current_boost_scope->target_thread_type_
-                               : PlatformThread::GetCurrentThreadType()) {
+                               : PlatformThread::GetCurrentThreadType()),
+      thread_handle_(thread_handle) {
   previous_boost_scope_ = std::exchange(current_boost_scope, this);
 }
 
 ScopedBoostPriorityBase::~ScopedBoostPriorityBase() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (current_boost_scope != nullptr) {
+    DCHECK_EQ(current_boost_scope, this);
+    current_boost_scope = previous_boost_scope_;
+  }
+  Reset();
+}
+
+PlatformThread::RaiseThreadTypeLease ScopedBoostPriorityBase::AdoptAsLease(
+    ThreadType lease_thread_type) && {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Un-set `current_boost_scope` on the current thread while the priority
+  // override is still active on current thread.
   DCHECK_EQ(current_boost_scope, this);
-  current_boost_scope = previous_boost_scope_;
+  DCHECK_EQ(previous_boost_scope_, nullptr);
+  current_boost_scope = nullptr;
+
+  // Acquire standard lease, which expects that no ScopedBoostPriorityBase
+  // is active.
+  PlatformThread::RaiseThreadTypeLease lease(lease_thread_type);
+
+  // Remove OS priority override, which may noop if the priority is the same.
+  Reset();
+  return lease;
+}
+
+void ScopedBoostPriorityBase::Reset() {
+  if (thread_handle_.is_null()) {
+    return;
+  }
+  if (target_thread_type_) {
+    internal::RemoveThreadTypeOverride(
+        thread_handle_, priority_override_handle_,
+        previous_boost_scope_ && previous_boost_scope_->target_thread_type_
+            ? *previous_boost_scope_->target_thread_type_
+            : initial_thread_type_);
+    target_thread_type_ = std::nullopt;
+  }
 }
 
 bool ScopedBoostPriorityBase::ShouldBoostTo(
@@ -71,26 +109,21 @@ bool ScopedBoostPriorityBase::CurrentThreadHasScope() {
 
 }  // namespace internal
 
-ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {
+ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type)
+    : ScopedBoostPriorityBase(PlatformThread::CurrentHandle()) {
   CHECK_LT(target_thread_type, ThreadType::kRealtimeAudio);
   const bool should_boost = ShouldBoostTo(target_thread_type);
   if (should_boost) {
     target_thread_type_ = target_thread_type;
-    priority_override_handle_ = internal::SetThreadTypeOverride(
-        PlatformThread::CurrentHandle(), target_thread_type);
+    priority_override_handle_ =
+        internal::SetThreadTypeOverride(thread_handle_, target_thread_type);
   }
 }
 
-ScopedBoostPriority::~ScopedBoostPriority() {
-  if (target_thread_type_) {
-    internal::RemoveThreadTypeOverride(PlatformThread::CurrentHandle(),
-                                       priority_override_handle_,
-                                       initial_thread_type_);
-  }
-}
+ScopedBoostPriority::~ScopedBoostPriority() = default;
 
 ScopedBoostablePriority::ScopedBoostablePriority()
-    : thread_handle_(PortableCurrentThreadHandle())
+    : ScopedBoostPriorityBase(PortableCurrentThreadHandle())
 #if BUILDFLAG(IS_WIN)
       ,
       scoped_handle_(thread_handle_.platform_handle())
@@ -99,19 +132,17 @@ ScopedBoostablePriority::ScopedBoostablePriority()
 }
 
 ScopedBoostablePriority::~ScopedBoostablePriority() {
+  // Reset before `scoped_handle_` is destroyed.
   Reset();
 }
 
 bool ScopedBoostablePriority::BoostPriority(ThreadType target_thread_type) {
   CHECK_LT(target_thread_type, ThreadType::kRealtimeAudio);
-  if (thread_handle_.is_null()) {
+  if (thread_handle_.is_null() || target_thread_type_) {
     return false;
   }
   const bool should_boost = ShouldBoostTo(target_thread_type);
   if (!should_boost) {
-    return false;
-  }
-  if (target_thread_type_) {
     return false;
   }
   target_thread_type_ = target_thread_type;
@@ -121,14 +152,7 @@ bool ScopedBoostablePriority::BoostPriority(ThreadType target_thread_type) {
 }
 
 void ScopedBoostablePriority::Reset() {
-  if (thread_handle_.is_null()) {
-    return;
-  }
-  if (target_thread_type_) {
-    internal::RemoveThreadTypeOverride(
-        thread_handle_, priority_override_handle_, initial_thread_type_);
-    target_thread_type_ = std::nullopt;
-  }
+  ScopedBoostPriorityBase::Reset();
 }
 
 namespace internal {

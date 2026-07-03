@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_THREAD_POOL_WORKER_THREAD_H_
 #define BASE_TASK_THREAD_POOL_WORKER_THREAD_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +19,7 @@
 #include "base/task/thread_pool/tracked_ref.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -195,10 +198,8 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   Delegate* delegate();
 
-  // Possibly updates the thread type to the appropriate type based on the
-  // thread type hint, current shutdown state, and platform capabilities.
-  // Must be called on the thread managed by |this|.
-  void MaybeUpdateThreadType();
+  // Boosts thread priority for shutdown if shutdown has started.
+  void MaybeBoostPriorityForShutdown();
 
   // Informs this WorkerThread about periods during which it is not being
   // used. Thread-safe.
@@ -221,13 +222,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   bool ShouldExit() const;
 
-  // Returns the thread type to use based on the thread type hint, current
-  // shutdown state, and platform capabilities.
-  ThreadType GetDesiredThreadType() const;
-
-  // Changes the thread type to |desired_thread_type|. Must be called on the
-  // thread managed by |this|.
-  void UpdateThreadType(ThreadType desired_thread_type);
+  // Raises the thread type to kDefault during shutdown if shutdown has started.
+  // Must be called on the thread managed by |this|.
+  void MaybeUpdateThreadType();
 
   // PlatformThread::Delegate:
   void ThreadMain() override;
@@ -280,10 +277,12 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // Desired thread type.
   const ThreadType thread_type_hint_;
 
-  // Actual thread type. Can be different than |thread_type_hint_|
-  // depending on system capabilities and shutdown state. No lock required
-  // because all post-construction accesses occur on the thread.
-  ThreadType current_thread_type_;
+  // Active lease during shutdown to raise thread type to kDefault. No lock
+  // required because all post-construction accesses occur on the thread.
+  std::optional<PlatformThread::RaiseThreadTypeLease>
+      shutdown_raise_thread_type_lease_;
+
+  std::optional<ScopedBoostablePriority> priority_boost_;
 
   const size_t sequence_num_;
 

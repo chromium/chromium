@@ -87,27 +87,22 @@ PlatformThreadBase::RaiseThreadTypeLease::RaiseThreadTypeLease(
     ThreadType thread_type,
     internal::ThreadTypeManager* manager)
     : leased_thread_type_(thread_type), manager_(manager) {
-  // The lease system is currently not fully compatible with
-  // ScopedBoostablePriority since they both control the thread type without
-  // coordination and in slightly different ways. Creating a
-  // ScopedBoostablePriority while a lease is active works, but not the other
-  // way around.
-  //
-  // TODO(crbug.com/483622914): consider supporting both in a more relaxed way.
+  // Creating a lease while a ScopedBoostPriority is active is not allowed.
   DCHECK(!ScopedBoostablePriority::CurrentThreadHasScope());
   manager_->AcquireRaiseLease(thread_type);
 }
 
+PlatformThreadBase::RaiseThreadTypeLease::RaiseThreadTypeLease(
+    RaiseThreadTypeLease&& other) noexcept
+    : leased_thread_type_(other.leased_thread_type_),
+      manager_(std::exchange(other.manager_, nullptr)) {}
+
 PlatformThreadBase::RaiseThreadTypeLease::~RaiseThreadTypeLease() {
-  // The lease system is currently not fully compatible with
-  // ScopedBoostablePriority since they both control the thread type without
-  // coordination and in slightly different ways. Creating a
-  // ScopedBoostablePriority while a lease is active works, but not the other
-  // way around.
-  //
-  // TODO(crbug.com/483622914): consider supporting both in a more relaxed way.
-  DCHECK(!ScopedBoostablePriority::CurrentThreadHasScope());
-  manager_->DropRaiseLease(leased_thread_type_);
+  if (manager_) {
+    // Releasing a lease while a ScopedBoostPriority is active is not allowed.
+    DCHECK(!ScopedBoostablePriority::CurrentThreadHasScope());
+    manager_->DropRaiseLease(leased_thread_type_);
+  }
 }
 
 namespace internal {

@@ -144,7 +144,6 @@ WorkerThread::WorkerThread(ThreadType thread_type_hint,
     : thread_lock_(predecessor_lock),
       task_tracker_(std::move(task_tracker)),
       thread_type_hint_(thread_type_hint),
-      current_thread_type_(GetDesiredThreadType()),
       sequence_num_(sequence_num),
       flow_terminator_(flow_terminator == nullptr
                            ? reinterpret_cast<intptr_t>(this)
@@ -183,7 +182,7 @@ bool WorkerThread::Start(
 
   constexpr size_t kDefaultStackSize = 0;
   PlatformThread::CreateWithType(kDefaultStackSize, this, &thread_handle_,
-                                 current_thread_type_);
+                                 thread_type_hint_);
 
   if (thread_handle_.is_null()) {
     self_ = nullptr;
@@ -259,7 +258,23 @@ WorkerThread::~WorkerThread() {
 }
 
 void WorkerThread::MaybeUpdateThreadType() {
-  UpdateThreadType(GetDesiredThreadType());
+  // To avoid shutdown hangs, disallow a type below kDefault during shutdown.
+  if (!shutdown_raise_thread_type_lease_.has_value() &&
+      task_tracker_->HasShutdownStarted() &&
+      thread_type_hint_ < ThreadType::kDefault) {
+    DCHECK(priority_boost_);
+    shutdown_raise_thread_type_lease_.emplace(
+        std::move(*priority_boost_).AdoptAsLease(ThreadType::kDefault));
+    priority_boost_.reset();
+  }
+}
+
+void WorkerThread::MaybeBoostPriorityForShutdown() {
+  if (priority_boost_.has_value() && !priority_boost_->IsActive() &&
+      task_tracker_->HasShutdownStarted() &&
+      thread_type_hint_ < ThreadType::kDefault) {
+    priority_boost_->BoostPriority(ThreadType::kDefault);
+  }
 }
 
 void WorkerThread::BeginUnusedPeriod() {
@@ -286,24 +301,6 @@ bool WorkerThread::ShouldExit() const {
   // first.
   return should_exit_.IsSet() || join_called_for_testing_.IsSet() ||
          task_tracker_->IsShutdownComplete();
-}
-
-ThreadType WorkerThread::GetDesiredThreadType() const {
-  // To avoid shutdown hangs, disallow a type below kNormal during shutdown
-  if (task_tracker_->HasShutdownStarted()) {
-    return ThreadType::kDefault;
-  }
-
-  return thread_type_hint_;
-}
-
-void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
-  if (desired_thread_type == current_thread_type_) {
-    return;
-  }
-
-  PlatformThread::SetCurrentThreadType(desired_thread_type);
-  current_thread_type_ = desired_thread_type;
 }
 
 void WorkerThread::ThreadMain() {
@@ -418,11 +415,13 @@ void WorkerThread::RunWorker() {
 
   delegate()->OnMainEntry(this);
 
+  priority_boost_.emplace();
+
   // Background threads can take an arbitrary amount of time to complete, do not
   // watch them for hangs. Ignore priority boosting for now.
   const bool watch_for_hangs =
       base::HangWatcher::IsThreadPoolHangWatchingEnabled() &&
-      GetDesiredThreadType() != ThreadType::kBackground;
+      thread_type_hint_ != ThreadType::kBackground;
 
   // If this process has a HangWatcher register this thread for watching.
   base::ScopedClosureRunner unregister_for_hang_watching;
@@ -454,7 +453,7 @@ void WorkerThread::RunWorker() {
     }
 
     // Thread type needs to be updated before GetWork.
-    UpdateThreadType(GetDesiredThreadType());
+    MaybeUpdateThreadType();
 
     // Get the task source containing the first task to execute.
     RegisteredTaskSource task_source = delegate()->GetWork(this);
@@ -485,7 +484,7 @@ void WorkerThread::RunWorker() {
       RegisteredTaskSource new_task_source =
           delegate()->SwapProcessedTask(std::move(task_source), this);
 
-      UpdateThreadType(GetDesiredThreadType());
+      MaybeUpdateThreadType();
 
       // Check that task_source is always cleared, to help investigation of
       // memory corruption where task_source is non-null after being moved.
@@ -494,6 +493,9 @@ void WorkerThread::RunWorker() {
       task_source = std::move(new_task_source);
     }
   }
+
+  shutdown_raise_thread_type_lease_.reset();
+  priority_boost_.reset();
 
   // Important: It is unsafe to access unowned state (e.g. |task_tracker_|)
   // after invoking OnMainExit().

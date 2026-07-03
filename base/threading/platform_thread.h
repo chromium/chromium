@@ -201,16 +201,15 @@ class BASE_EXPORT PlatformThreadBase {
 
     RaiseThreadTypeLease() = delete;
     RaiseThreadTypeLease(const RaiseThreadTypeLease&) = delete;
+    RaiseThreadTypeLease(RaiseThreadTypeLease&& other) noexcept;
     RaiseThreadTypeLease& operator=(const RaiseThreadTypeLease&) = delete;
-    RaiseThreadTypeLease(RaiseThreadTypeLease&&) = delete;
-    RaiseThreadTypeLease& operator=(RaiseThreadTypeLease&&) = delete;
 
     ThreadType thread_type() const { return leased_thread_type_; }
 
    private:
     friend class PlatformThreadThreadTypeManagerTest;
-    explicit RaiseThreadTypeLease(ThreadType thread_type,
-                                  internal::ThreadTypeManager* manager);
+    RaiseThreadTypeLease(ThreadType thread_type,
+                         internal::ThreadTypeManager* manager);
 
     ThreadType leased_thread_type_;
     raw_ptr<internal::ThreadTypeManager> manager_;

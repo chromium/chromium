@@ -61,23 +61,35 @@ namespace internal {
 
 class BASE_EXPORT ScopedBoostPriorityBase {
  public:
-  ScopedBoostPriorityBase();
-  ~ScopedBoostPriorityBase();
-
   ScopedBoostPriorityBase(const ScopedBoostPriorityBase&) = delete;
   ScopedBoostPriorityBase& operator=(const ScopedBoostPriorityBase&) = delete;
+
+  bool IsActive() { return target_thread_type_.has_value(); }
+
+  // Adopts this boost into a PlatformThread::RaiseThreadTypeLease requesting
+  // `target_thread_type`. This must happen on the thread where this boost was
+  // instantiated, and requires that this boost be the only active one on its
+  // thread. This then allows other leases to be applied against this thread.
+  PlatformThread::RaiseThreadTypeLease AdoptAsLease(
+      ThreadType target_thread_type) &&;
 
   static bool CurrentThreadHasScope();
 
  protected:
+  ScopedBoostPriorityBase(PlatformThreadHandle thread_handle);
+  ~ScopedBoostPriorityBase();
+
   bool ShouldBoostTo(ThreadType target_thread_type) const;
 
+  void Reset();
+
   const ThreadType initial_thread_type_;
+  PlatformThreadHandle thread_handle_;
   std::optional<ThreadType> target_thread_type_;
   internal::PlatformPriorityOverride priority_override_handle_ = {};
+  raw_ptr<ScopedBoostPriorityBase> previous_boost_scope_;
 
  private:
-  raw_ptr<ScopedBoostPriorityBase> previous_boost_scope_;
   THREAD_CHECKER(thread_checker_);
 };
 
@@ -87,8 +99,6 @@ class BASE_EXPORT ScopedBoostPriorityBase {
 // `target_thread_type` in this scope. `target_thread_type` must be lower
 // priority than kRealtimeAudio, since realtime priority should only be used by
 // dedicated media threads.
-//
-// TODO(crbug.com/483622914): consider migrating to platform thread leases.
 class BASE_EXPORT ScopedBoostPriority
     : public internal::ScopedBoostPriorityBase {
  public:
@@ -101,8 +111,6 @@ class BASE_EXPORT ScopedBoostPriority
 // when the object is destroyed, which must happens on the current thread.
 // `target_thread_type` must be lower priority than kRealtimeAudio, since
 // realtime priority should only be used by dedicated media threads.
-//
-// TODO(crbug.com/483622914): consider migrating to platform thread leases.
 class BASE_EXPORT ScopedBoostablePriority
     : public internal::ScopedBoostPriorityBase {
  public:
@@ -112,18 +120,17 @@ class BASE_EXPORT ScopedBoostablePriority
   // Boosts the priority of the thread where this ScopedBoostablePriority was
   // created. Can be called from any thread, but requires proper external
   // synchronization with the constructor, destructor and any other call to
-  // BoostPriority/Reset(). If called multiple times, only the first call takes
-  // effect.
+  // BoostPriority/Reset()/AdoptAsLease(). If called multiple times, only the
+  // first call takes effect.
   bool BoostPriority(ThreadType target_thread_type);
 
   // Resets the priority of the thread where this ScopedBoostablePriority was
   // created to its original priority. Can be called from any thread, but
   // requires proper external synchronization with the constructor, destructor
-  // and any other call to BoostPriority/Reset().
+  // and any other call to BoostPriority/Reset()/AdoptAsLease().
   void Reset();
 
  private:
-  PlatformThreadHandle thread_handle_;
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle scoped_handle_;
 #endif
