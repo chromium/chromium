@@ -624,11 +624,15 @@ def main():
     metrics.add((resource_sizes_64_delta, _RESOURCE_SIZES_64_LOG))
 
   logging.info('Adding disassembly to dex symbols')
-  dex_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
-                                 after_path_resolver)
+  dex_disassembly.AddDisassembly(delta_size_info,
+                                 before_path_resolver,
+                                 after_path_resolver,
+                                 normalize=True)
   logging.info('Adding disassembly to native symbols')
-  native_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
-                                    after_path_resolver)
+  native_disassembly.AddDisassembly(delta_size_info,
+                                    before_path_resolver,
+                                    after_path_resolver,
+                                    normalize=True)
 
   # .sizediff can be consumed by the html viewer.
   logging.info('Creating HTML Report')

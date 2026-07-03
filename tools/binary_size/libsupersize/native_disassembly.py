@@ -8,6 +8,7 @@ import difflib
 import itertools
 import logging
 import os
+import re
 import shlex
 import subprocess
 
@@ -15,6 +16,45 @@ import dex_disassembly
 import models
 import path_util
 import readelf
+
+
+# E.g. "  400540:	55                    \tpush   %rbp"
+_DISASSEMBLY_RE = re.compile(r'^\s*([0-9a-f]+):\s*(.*)')
+# E.g. "callq  400450 <some_func>" or "je     40055b <frame_dummy+0x10>"
+_HEX_ADDR_WITH_SYM_RE = re.compile(r'\b([0-9a-f]{4,16})\s+<([^>]+)>')
+# E.g. "0x200aa3" or "401060"
+_RAW_HEX_ADDR_RE = re.compile(r'\b(0x[0-9a-f]{6,16}|[0-9a-f]{6,16})\b')
+
+
+def _NormalizeLines(lines):
+  # Pass 1: Collect target addresses
+  target_addresses = set()
+  for line in lines:
+    m = _DISASSEMBLY_RE.match(line)
+    if m:
+      instr = m.group(2)
+      for match in _HEX_ADDR_WITH_SYM_RE.finditer(instr):
+        target_addresses.add(int(match.group(1), 16))
+      for match in _RAW_HEX_ADDR_RE.finditer(instr):
+        target_addresses.add(int(match.group(1), 16))
+
+  # Pass 2: Normalize and insert labels
+  ret = []
+  for line in lines:
+    m = _DISASSEMBLY_RE.match(line)
+    if m:
+      addr = int(m.group(1), 16)
+      if addr in target_addresses:
+        ret.append('<target>:\n')
+
+      # Example: "  400540:\t55                   \tpush   %rbp"
+      instr = line.split('\t', 2)[-1]
+      instr = _HEX_ADDR_WITH_SYM_RE.sub(r'<\2>', instr)
+      instr = _RAW_HEX_ADDR_RE.sub('<target>', instr)
+      ret.append(instr.rstrip() + '\n')
+    else:
+      ret.append(line.rstrip() + '\n')
+  return ret
 
 
 # Don't disassemble more than this many bytes to guard against giant functions.
@@ -112,8 +152,11 @@ def _ResolveElfPath(elf_path):
   return None
 
 
-def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
-                    after_path_resolver, delta_size_info):
+def _AddUnifiedDiff(top_changed_symbols,
+                    before_path_resolver,
+                    after_path_resolver,
+                    delta_size_info,
+                    normalize=False):
   # Counter used to skip over symbols where we couldn't find the disassembly.
   counter = 10
   before = None
@@ -148,6 +191,10 @@ def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
           before = list(lines)
 
     logging.info('Creating unified diff')
+    if normalize:
+      after = _NormalizeLines(after)
+      if before:
+        before = _NormalizeLines(before)
     after_symbol.disassembly = _CreateUnifiedDiff(symbol.full_name, before
                                                   or [], after)
     counter -= 1
@@ -176,7 +223,10 @@ def _GetTopChangedSymbols(delta_size_info):
   return delta_size_info.raw_symbols.Filter(filter_symbol).Sorted()
 
 
-def AddDisassembly(delta_size_info, before_path_resolver, after_path_resolver):
+def AddDisassembly(delta_size_info,
+                   before_path_resolver,
+                   after_path_resolver,
+                   normalize=False):
   """Adds disassembly diffs to top changed native symbols.
 
     Adds the unified diff on the "before" and "after" disassembly to the
@@ -186,9 +236,13 @@ def AddDisassembly(delta_size_info, before_path_resolver, after_path_resolver):
       delta_size_info: DeltaSizeInfo Object we are adding disassembly to.
       before_path_resolver: Callable to compute paths for "before" artifacts.
       after_path_resolver: Callable to compute paths for "after" artifacts.
+      normalize: Whether to normalize the disassembly.
   """
   logging.debug('Computing top changed symbols')
   top_changed_symbols = _GetTopChangedSymbols(delta_size_info)
   logging.debug('Adding disassembly to top 10 changed native symbols')
-  _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
-                  after_path_resolver, delta_size_info)
+  _AddUnifiedDiff(top_changed_symbols,
+                  before_path_resolver,
+                  after_path_resolver,
+                  delta_size_info,
+                  normalize=normalize)

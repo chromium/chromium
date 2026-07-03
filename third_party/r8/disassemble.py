@@ -9,27 +9,19 @@ import re
 import subprocess
 import sys
 
-# Instruction prefix: "   0:   0x00: "
-PREFIX_RE = re.compile(r'^\s*\d+:\s+0x[0-9a-f]+:\s+')
-
-# Jump targets with absolute and relative offsets: "0x08 (+3)" or "0x3a (+48)"
-JUMP_TARGET_RE = re.compile(r'0x[0-9a-f]+\s+\([+-]\d+\)')
-
-# Targets in switches or catch handlers: "-> 0x6e" or "-> 0x10"
-TARGET_RE = re.compile(r'->\s+0x[0-9a-f]+')
-
-# Registers like v0, v1, v12, p0, p1, etc.
-REGISTER_RE = re.compile(r'\b[vp]\d+\b')
+_CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+_LIBSUPERSIZE_DIR = os.path.abspath(
+    os.path.join(_CUR_DIR, '..', '..', 'tools', 'binary_size', 'libsupersize'))
+sys.path.append(_LIBSUPERSIZE_DIR)
+import dex_disassembly
 
 
-def normalize_line(line):
-    if 'PcBasedDebugInfo' in line or line.startswith('~~R8{'):
-        return ''
-    line = PREFIX_RE.sub('', line)
-    line = REGISTER_RE.sub('vN', line)
-    line = JUMP_TARGET_RE.sub('<target>', line)
-    line = TARGET_RE.sub('-> <target>', line)
-    return line
+def _flush_block(block):
+    if not block:
+        return
+    for l in dex_disassembly.NormalizeLines(block):
+        sys.stdout.write(l)
+    block.clear()
 
 
 def main():
@@ -51,8 +43,12 @@ def main():
 
     if args.normalize:
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True)
+        current_block = []
         for line in process.stdout:
-            sys.stdout.write(normalize_line(line))
+            if line.startswith('# Method:'):
+                _flush_block(current_block)
+            current_block.append(line)
+        _flush_block(current_block)
         process.wait()
         sys.exit(process.returncode)
     else:

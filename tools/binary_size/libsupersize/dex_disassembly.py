@@ -22,6 +22,52 @@ import r8_disassembly
 import path_util
 import zip_util
 
+# Keep in sync with third_party/r8/disassemble.py
+_PREFIX_RE = re.compile(r'^\s*\d+:\s+(0x[0-9a-f]+):\s+')
+_JUMP_TARGET_RE = re.compile(r'(0x[0-9a-f]+)\s+\([+-]\d+\)')
+_TARGET_RE = re.compile(r'->\s+(0x[0-9a-f]+)')
+_REGISTER_RE = re.compile(r'\b[vp]\d+\b')
+_TRY_RANGE_RE = re.compile(r'\[(0x[0-9a-f]+)\s+\.\.\s+(0x[0-9a-f]+)\[')
+
+
+def NormalizeLines(lines):
+  """Normalizes disassembly lines to make them diff-friendly.
+
+  Keep in sync with third_party/r8/disassemble.py.
+  """
+  # Pass 1: Collect target addresses
+  target_addresses = set()
+  for line in lines:
+    for m in _JUMP_TARGET_RE.finditer(line):
+      target_addresses.add(int(m.group(1), 16))
+    for m in _TARGET_RE.finditer(line):
+      target_addresses.add(int(m.group(1), 16))
+    for m in _TRY_RANGE_RE.finditer(line):
+      target_addresses.add(int(m.group(1), 16))
+      target_addresses.add(int(m.group(2), 16))
+
+  # Pass 2: Normalize and insert labels
+  ret = []
+  for line in lines:
+    if 'PcBasedDebugInfo' in line or line.startswith('~~R8{'):
+      continue
+    m = _PREFIX_RE.match(line)
+    if m:
+      offset = int(m.group(1), 16)
+      if offset in target_addresses:
+        ret.append('<target>:\n')
+      line = _PREFIX_RE.sub('', line)
+      line = _REGISTER_RE.sub('vN', line)
+      line = _JUMP_TARGET_RE.sub('<target>', line)
+      line = _TARGET_RE.sub('-> <target>', line)
+      ret.append(line.rstrip() + '\n')
+    else:
+      line = _JUMP_TARGET_RE.sub('<target>', line)
+      line = _TARGET_RE.sub('-> <target>', line)
+      line = _TRY_RANGE_RE.sub('[<target> .. <target>[', line)
+      ret.append(line.rstrip() + '\n')
+  return ret
+
 _DISASSEMBLED_METHOD_QUOTA = 10
 _SYMBOL_FULL_NAME_RE = re.compile(r'(.*?)#(.*?)\((.*?)\):? ?(.*)')
 
@@ -131,8 +177,10 @@ def _CreateUnifiedDiff(name, before, after):
   return ''.join(unified_diff)
 
 
-def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
-                    after_path_resolver):
+def _AddUnifiedDiff(top_changed_symbols,
+                    before_path_resolver,
+                    after_path_resolver,
+                    normalize=False):
   # Counter used to skip over symbols where we couldn't find the disassembly.
   counter = _DISASSEMBLED_METHOD_QUOTA
   before = None
@@ -151,6 +199,10 @@ def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
     else:
       before = None
     logging.info('Adding disassembly for: %s', symbol.full_name)
+    if normalize:
+      after = NormalizeLines(after)
+      if before:
+        before = NormalizeLines(before)
     symbol.after_symbol.disassembly = _CreateUnifiedDiff(
         symbol.full_name, before or [], after)
     counter -= 1
@@ -176,7 +228,10 @@ def _GetTopChangedSymbols(delta_size_info):
   return delta_size_info.raw_symbols.Filter(filter_symbol).Sorted()
 
 
-def AddDisassembly(delta_size_info, before_path_resolver, after_path_resolver):
+def AddDisassembly(delta_size_info,
+                   before_path_resolver,
+                   after_path_resolver,
+                   normalize=False):
   """Adds disassembly diffs to top changed dex symbols.
 
     Adds the unified diff on the "before" and "after" disassembly to the
@@ -186,13 +241,16 @@ def AddDisassembly(delta_size_info, before_path_resolver, after_path_resolver):
       delta_size_info: DeltaSizeInfo Object we are adding disassembly to.
       before_path_resolver: Callable to compute paths for "before" artifacts.
       after_path_resolver: Callable to compute paths for "after" artifacts.
+      normalize: Whether to normalize the disassembly.
   """
   logging.info('Computing top changed symbols')
   top_changed_symbols = _GetTopChangedSymbols(delta_size_info)
   logging.info('Adding disassembly to top %d changed dex symbols',
                _DISASSEMBLED_METHOD_QUOTA)
-  _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
-                  after_path_resolver)
+  _AddUnifiedDiff(top_changed_symbols,
+                  before_path_resolver,
+                  after_path_resolver,
+                  normalize=normalize)
 
 
 def main():
