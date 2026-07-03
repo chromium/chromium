@@ -498,6 +498,7 @@ chromium-metrics-reviews@google.com.
   <int value="90" label="UMA_GLIC"/>
   <int value="91" label="UMA_TIPS_OPT_IN"/>
   <int value="92" label="UMA_NTP_THEME_TIP"/>
+  <int value="93" label="UMA_SEND_TAB_TO_SELF"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java:SnackbarIdentifier) -->
