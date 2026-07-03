@@ -517,6 +517,11 @@ bool ContainsMultiOpus(String sdp) {
   return sdp.contains("multiopus");
 }
 
+bool ContainsSctpSnap(String sdp) {
+  // SNAP (draft-hancke-tsvwg-snap) is signaled via the a=sctp-init: attribute.
+  return sdp.contains("\na=sctp-init:");
+}
+
 // Keep in sync with tools/metrics/histograms/metadata/web_rtc/enums.xml
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -3050,6 +3055,20 @@ void RTCPeerConnection::ChangePeerConnectionState(
         Event::Create(event_type_names::kConnectionstatechange),
         BindOnce(&RTCPeerConnection::SetPeerConnectionState,
                  WrapPersistent(this), peer_connection_state));
+  }
+  // The first time the connection gets established iѕ used to trigger
+  // some measurements.
+  if (peer_connection_state ==
+          webrtc::PeerConnectionInterface::PeerConnectionState::kConnected &&
+      !was_ever_connected_) {
+    was_ever_connected_ = true;
+    RTCSessionDescription* local = currentLocalDescription();
+    RTCSessionDescription* remote = currentRemoteDescription();
+    if (local && remote && ContainsSctpSnap(local->sdp()) &&
+        ContainsSctpSnap(remote->sdp())) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kRTCSctpSnapNegotiated);
+    }
   }
 }
 

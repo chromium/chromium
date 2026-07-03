@@ -6686,6 +6686,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5937" label="SubAppsRemove"/>
   <int value="5938" label="SubAppsList"/>
   <int value="5939" label="RTCLocalSdpModificationMultiOpus"/>
+  <int value="5940" label="RTCSctpSnapNegotiated"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
