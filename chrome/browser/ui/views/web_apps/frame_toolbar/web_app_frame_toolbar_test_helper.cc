@@ -239,12 +239,14 @@ gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
 void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
     content::WebContents* web_contents) {
   EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), R"(
-    var geometrychangeCount = 0;
+    window.geometrychangeCount = 0;
+    window.overlay_rect_from_event = null;
+    window.overlay_visible_from_event = null;
     document.title = 'beforegeometrychange';
     navigator.windowControlsOverlay.ongeometrychange = (e) => {
-      geometrychangeCount++;
-      overlay_rect_from_event = e.titlebarAreaRect;
-      overlay_visible_from_event = e.visible;
+      window.geometrychangeCount++;
+      window.overlay_rect_from_event = e.titlebarAreaRect;
+      window.overlay_visible_from_event = e.visible;
       document.title = 'ongeometrychange';
     }
   )"));

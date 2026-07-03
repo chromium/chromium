@@ -1326,7 +1326,13 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
 
   bool GetWindowControlOverlayVisibilityFromEvent() {
     auto* web_contents = helper()->browser_view()->GetActiveWebContents();
-    return EvalJs(web_contents, "overlay_visible_from_event").ExtractBool();
+    auto result = EvalJs(web_contents, "window.overlay_visible_from_event");
+    if (!result.is_ok() || !result.is_bool()) {
+      ADD_FAILURE() << "Failed to get overlay visibility from event: "
+                    << result;
+      return false;
+    }
+    return result.ExtractBool();
   }
 
   void ShowInfoBarAndWait() {
@@ -1386,8 +1392,11 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
 
   gfx::Rect GetWindowControlOverlayBoundingClientRectFromEvent() {
     const std::string kRectValueList =
-        "var rect = [overlay_rect_from_event.x, overlay_rect_from_event.y, "
-        "overlay_rect_from_event.width, overlay_rect_from_event.height];";
+        "var rect = window.overlay_rect_from_event ? "
+        "[window.overlay_rect_from_event.x, "
+        "window.overlay_rect_from_event.y, "
+        "window.overlay_rect_from_event.width, "
+        "window.overlay_rect_from_event.height] : [0, 0, 0, 0];";
 
     return helper()->GetXYWidthHeightRect(
         helper()->browser_view()->GetActiveWebContents(), kRectValueList,
