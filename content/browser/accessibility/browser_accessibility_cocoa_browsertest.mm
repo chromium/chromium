@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   BrowserAccessibilityCocoa* table_obj =
       base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
           table->GetNativeViewAccessible().Get());
-  NSArray* row_nodes = table_obj.accessibilityRows;
+  NSArray<BrowserAccessibilityCocoa*>* row_nodes = table_obj.accessibilityRows;
 
   EXPECT_EQ(3U, row_nodes.count);
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
@@ -868,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_NSEQ(@"AXColumn", col_obj.role);
   EXPECT_NSEQ(@"column1", col_obj.accessibilityLabel);
 
-  NSArray* row_nodes = col_obj.accessibilityRows;
+  NSArray<BrowserAccessibilityCocoa*>* row_nodes = col_obj.accessibilityRows;
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
   EXPECT_NSEQ(@"row1", [row_nodes[0] accessibilityLabel]);
 
@@ -915,7 +915,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_NSEQ(@"Population per country", table_obj.accessibilityLabel);
   BrowserAccessibilityCocoa* table_header = table_obj.header;
 
-  NSArray* children = table_header.accessibilityChildren;
+  NSArray<BrowserAccessibilityCocoa*>* children =
+      table_header.accessibilityChildren;
   EXPECT_EQ(2U, children.count);
 
   EXPECT_NSEQ(@"AXCell", [children[0] role]);
@@ -944,7 +945,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
       base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
           tree->GetNativeViewAccessible().Get());
 
-  NSArray* tree_children = cocoa_tree.accessibilityChildren;
+  NSArray<BrowserAccessibilityCocoa*>* tree_children =
+      cocoa_tree.accessibilityChildren;
   ASSERT_NSEQ(@"AXRow", [tree_children[0] role]);
   ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
