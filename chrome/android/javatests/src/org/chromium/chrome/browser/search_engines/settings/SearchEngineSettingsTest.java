@@ -16,6 +16,7 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -44,29 +44,29 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.List;
 
 /** Tests for Search Engine Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class SearchEngineSettingsTest {
-    private final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     private final SettingsActivityTestRule<SearchEngineSettings> mSearchEngineSettingsTestRule =
             new SettingsActivityTestRule<>(SearchEngineSettings.class);
 
     private final SettingsActivityTestRule<MainSettings> mMainSettingsTestRule =
             new SettingsActivityTestRule<>(MainSettings.class);
 
-    // We need to destroy the SettingsActivity before tearing down the mock sign-in environment
-    // setup in ChromeBrowserTestRule to avoid code crash.
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mBrowserTestRule)
-                    .around(mMainSettingsTestRule)
-                    .around(mSearchEngineSettingsTestRule);
+            RuleChain.outerRule(mMainSettingsTestRule).around(mSearchEngineSettingsTestRule);
 
     private TemplateUrlService mTemplateUrlService;
+
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
 
     /** Change search engine and make sure it works correctly. */
     @Test

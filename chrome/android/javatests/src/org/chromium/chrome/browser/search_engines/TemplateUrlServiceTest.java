@@ -13,7 +13,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,12 +24,12 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.search_engines.PrepopulatedAndRecentlyVisitedTemplateURLs;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
@@ -47,8 +46,6 @@ import java.util.stream.Collectors;
 /** Tests for Chrome on Android's usage of the TemplateUrlService API. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TemplateUrlServiceTest {
-    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
-
     private static final String QUERY_PARAMETER = "q";
     private static final String QUERY_VALUE = "cat";
 
@@ -76,6 +73,7 @@ public class TemplateUrlServiceTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mTemplateUrlService =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
