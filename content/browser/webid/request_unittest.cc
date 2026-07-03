@@ -1328,9 +1328,12 @@ class RequestTest : public RenderViewHostImplTestHarness {
       std::optional<base::Value> token,
       blink::mojom::TokenErrorPtr error,
       bool is_auto_selected) {
-    service->OnTokenRequestComplete(request, std::move(callback), status,
-                                    selected_idp_config_url, std::move(token),
-                                    std::move(error), is_auto_selected);
+    auto wrapped_callback = base::BindOnce(
+        &RequestService::InvokeTokenRequestCallback, std::move(callback));
+
+    service->OnTokenRequestCompleteInternal(
+        request, std::move(wrapped_callback), status, selected_idp_config_url,
+        std::move(token), std::move(error), is_auto_selected);
   }
 
   void RunAuthTest(const RequestParameters& request_parameters,

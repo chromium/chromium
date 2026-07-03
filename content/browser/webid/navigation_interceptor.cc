@@ -11,7 +11,6 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
-#include "content/browser/webid/request.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/content_browser_client.h"
@@ -48,16 +47,26 @@ NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry)
     : NavigationInterceptor(
           registry,
-          base::BindRepeating([](content::RenderFrameHost* rfh) -> Request* {
-            return webid::RequestService::GetOrCreateForCurrentDocument(rfh)
-                ->GetOrCreateActiveRequest();
-          })) {}
+          base::BindRepeating(
+              [](content::RenderFrameHost* rfh,
+                 std::vector<blink::mojom::IdentityProviderGetParametersPtr>
+                     idp_get_params,
+                 MediationRequirement requirement,
+                 NavigationHandle* navigation_handle,
+                 const GURL& intercepted_url,
+                 RequestTokenCallback callback) -> bool {
+                return webid::RequestService::GetOrCreateForCurrentDocument(rfh)
+                    ->StartTokenRequestFromNavigation(
+                        std::move(idp_get_params), requirement,
+                        navigation_handle, intercepted_url,
+                        std::move(callback));
+              })) {}
 
 NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry,
-    RequestFactory request_factory)
+    RequestInitiator request_initiator)
     : content::NavigationThrottle(registry),
-      request_factory_(std::move(request_factory)) {}
+      request_initiator_(std::move(request_initiator)) {}
 
 NavigationInterceptor::~NavigationInterceptor() = default;
 
@@ -277,12 +286,16 @@ void NavigationInterceptor::OnHeaderParsed(
     return;
   }
 
-  request_factory_.Run(rfh)->RequestToken(
-      std::move(*idp_get_params_vector),
+  callback_executed_ = false;
+  bool started = request_initiator_.Run(
+      rfh, std::move(*idp_get_params_vector),
       password_manager::CredentialMediationRequirement::kOptional,
       navigation_handle(), intercepted_url,
       base::BindOnce(&NavigationInterceptor::OnTokenResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+  if (!started && !callback_executed_) {
+    Resume();
+  }
 }
 
 void NavigationInterceptor::OnTokenResponse(
@@ -291,6 +304,7 @@ void NavigationInterceptor::OnTokenResponse(
     std::optional<base::Value> token,
     blink::mojom::TokenErrorPtr error,
     bool is_auto_selected) {
+  callback_executed_ = true;
   // The token response is not used in the navigation interception flow because
   // the IdP is expected to respond with a "redirect_to" field which is handled
   // in Request.

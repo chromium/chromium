@@ -107,50 +107,8 @@ void RequestService::DestroyActiveRequestForTesting() {
   active_request_.reset();
 }
 
-void RequestService::StartTokenRequest(
-    std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params,
-    MediationRequirement requirement,
-    mojo::PendingReceiver<blink::mojom::FederatedRequest> request_receiver,
-    StartTokenRequestCallback callback) {
-  // 1. Create the new request temporarily.
-  RenderFrameHost& rfh = render_frame_host();
-  auto new_request = std::make_unique<Request>(&rfh, *this);
-  new_request->BindReceiver(std::move(request_receiver));
-
-  auto wrapper_callback = base::BindOnce(
-      &RequestService::OnTokenRequestComplete, weak_ptr_factory_.GetWeakPtr(),
-      new_request.get(), std::move(callback));
-
-  // 2. Temporarily hold the old active request on the stack.
-  // This keeps it alive and valid during the RequestToken() checks, preventing
-  // dangling pointers/UAF if the new request is rejected or replaces the old
-  // one.
-  std::unique_ptr<Request> old_request = std::move(active_request_);
-
-  // 3. Pre-assign the new request as active.
-  // This ensures that if the request completes synchronously (e.g. in tests or
-  // some error cases), OnTokenRequestComplete() will find it in active_request_
-  // and clean it up.
-  active_request_ = std::move(new_request);
-
-  // 4. Call RequestToken on the new request.
-  // This is coming from Mojo, so we have no navigation handle.
-  if (active_request_->RequestToken(std::move(idp_get_params), requirement,
-                                    /*navigation_handle=*/nullptr, GURL(),
-                                    std::move(wrapper_callback))) {
-    // 5. If it started successfully, we keep it as the active request!
-    // The old_request on the stack will go out of scope and be destroyed
-    // safely.
-  } else {
-    // 6. If it failed immediately, discard the new request and restore the old
-    // one!
-    active_request_ = std::move(old_request);
-    MaybeDestroyDialogController();
-  }
-}
-
-void RequestService::OnTokenRequestComplete(
-    Request* request,
+// static
+void RequestService::InvokeTokenRequestCallback(
     StartTokenRequestCallback callback,
     blink::mojom::RequestTokenStatus status,
     const std::optional<GURL>& selected_idp_config_url,
@@ -169,6 +127,93 @@ void RequestService::OnTokenRequestComplete(
     failure->error = std::move(error);
     std::move(callback).Run(base::unexpected(std::move(failure)));
   }
+}
+
+void RequestService::StartTokenRequest(
+    std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params,
+    MediationRequirement requirement,
+    mojo::PendingReceiver<blink::mojom::FederatedRequest> request_receiver,
+    StartTokenRequestCallback callback) {
+  RenderFrameHost& rfh = render_frame_host();
+  auto new_request = std::make_unique<Request>(&rfh, *this);
+  new_request->BindReceiver(std::move(request_receiver));
+
+  auto wrapped_callback = base::BindOnce(
+      &RequestService::InvokeTokenRequestCallback, std::move(callback));
+
+  InitiateTokenRequest(std::move(new_request), std::move(idp_get_params),
+                       requirement, /*navigation_handle=*/nullptr, GURL(),
+                       std::move(wrapped_callback));
+}
+
+bool RequestService::StartTokenRequestFromNavigation(
+    std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params,
+    MediationRequirement requirement,
+    NavigationHandle* navigation_handle,
+    const GURL& intercepted_url,
+    RequestTokenCallback callback) {
+  RenderFrameHost& rfh = render_frame_host();
+  auto new_request = std::make_unique<Request>(&rfh, *this);
+
+  return InitiateTokenRequest(std::move(new_request), std::move(idp_get_params),
+                              requirement, navigation_handle, intercepted_url,
+                              std::move(callback));
+}
+
+bool RequestService::InitiateTokenRequest(
+    std::unique_ptr<Request> new_request,
+    std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params,
+    MediationRequirement requirement,
+    NavigationHandle* navigation_handle,
+    const GURL& intercepted_url,
+    RequestTokenCallback callback) {
+  // Wrap the callback to ensure the request is cleaned up from the active
+  // request list and destroyed asynchronously when it completes.
+  auto wrapper_callback = base::BindOnce(
+      &RequestService::OnTokenRequestCompleteInternal,
+      weak_ptr_factory_.GetWeakPtr(), new_request.get(), std::move(callback));
+
+  // Temporarily hold the old active request on the stack. This keeps it alive
+  // and valid during the RequestToken() checks, preventing dangling pointers
+  // or Use-After-Free if the new request is rejected or replaces the old one.
+  std::unique_ptr<Request> old_request = std::move(active_request_);
+
+  // Pre-assign the new request as active. This ensures that if the request
+  // completes synchronously (e.g. in tests or synchronous error cases), the
+  // completion callback will find it in `active_request_` and clean it up.
+  active_request_ = std::move(new_request);
+
+  // Call RequestToken on the new request.
+  if (active_request_->RequestToken(std::move(idp_get_params), requirement,
+                                    navigation_handle, intercepted_url,
+                                    std::move(wrapper_callback))) {
+    // If it started successfully, we keep it as the active request.
+    // The `old_request` on the stack will go out of scope and be destroyed
+    // safely.
+    return true;
+  } else {
+    // If it failed immediately, discard the new request and restore the old
+    // one.
+    active_request_ = std::move(old_request);
+    MaybeDestroyDialogController();
+    return false;
+  }
+}
+
+void RequestService::OnTokenRequestCompleteInternal(
+    Request* request,
+    RequestTokenCallback callback,
+    blink::mojom::RequestTokenStatus status,
+    const std::optional<GURL>& selected_idp_config_url,
+    std::optional<base::Value> token,
+    blink::mojom::TokenErrorPtr error,
+    bool is_auto_selected) {
+  std::move(callback).Run(status, selected_idp_config_url, std::move(token),
+                          std::move(error), is_auto_selected);
+  CleanUpActiveRequest(request);
+}
+
+void RequestService::CleanUpActiveRequest(Request* request) {
   if (active_request_.get() == request) {
     if (dialog_controller_) {
       // Reset the dialog controller synchronously. While this carries a
