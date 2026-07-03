@@ -69,6 +69,10 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   void SetStoragePartitionForTesting(  // IN-TEST
       StoragePartition* storage_partition);
 
+  void SetMaxBufferedEntriesForTesting(size_t max_entries) {
+    max_buffered_entries_for_testing_ = max_entries;
+  }
+
  private:
   friend class DocumentUserData<DeclarativePerformanceObserver>;
   DeclarativePerformanceObserver(RenderFrameHost* rfh,
@@ -86,6 +90,21 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   std::string reporting_endpoint_;
   base::flat_set<network::mojom::PerformanceEntryType> enabled_types_;
   std::optional<base::flat_set<std::string>> include_user_timing_;
+
+  static constexpr size_t kMaxDocumentBufferBytes = 640 * 1024;
+
+  // Enforce a maximum entry count to prevent OOM. While the 640KB memory limit
+  // would normally be sufficient, memory tracking only accounts for dynamic
+  // heap allocations. We need to prevent memory exhaustion from the overhead
+  // of the objects themselves when spammed with empty or tiny entries.
+  // A typical entry takes ~256 bytes (meaning the 640KB limit accommodates
+  // around 2,500 entries). We set the entry count limit to 10,000 to ensure
+  // legitimate websites hit the memory limit first, while capping the maximum
+  // object overhead to under 2MB.
+  static constexpr size_t kMaxBufferedEntries = 10000;
+
+  size_t current_buffer_bytes_ = 0;
+  size_t max_buffered_entries_for_testing_ = 0;
   base::ListValue buffered_entries_;
   bool started_in_foreground_ = false;
   bool is_session_ended_ = false;

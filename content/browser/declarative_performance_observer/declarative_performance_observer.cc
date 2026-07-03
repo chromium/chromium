@@ -140,6 +140,7 @@ void DeclarativePerformanceObserver::OnDidFinishNavigation(
 
   navigation_start_ = navigation_handle->NavigationStart();
   buffered_entries_.clear();
+  current_buffer_bytes_ = 0;
 
   // Reset `is_session_ended_` so that a new session-end entry can be appended
   // when this restored document eventually enters BFCache or is closed.
@@ -237,6 +238,7 @@ void DeclarativePerformanceObserver::FlushMetrics() {
   base::DictValue body;
   body.Set("entries", std::move(buffered_entries_));
   buffered_entries_.clear();
+  current_buffer_bytes_ = 0;
 
   StoragePartition* storage_partition =
       storage_partition_for_testing_
@@ -272,6 +274,17 @@ void DeclarativePerformanceObserver::AppendSessionEndEntry() {
 }
 
 void DeclarativePerformanceObserver::AddEntryToBuffer(base::DictValue entry) {
+  size_t max_entries = max_buffered_entries_for_testing_
+                           ? max_buffered_entries_for_testing_
+                           : kMaxBufferedEntries;
+  if (buffered_entries_.size() >= max_entries) {
+    return;
+  }
+  size_t entry_size = entry.EstimateMemoryUsage();
+  if (current_buffer_bytes_ + entry_size > kMaxDocumentBufferBytes) {
+    return;
+  }
+  current_buffer_bytes_ += entry_size;
   buffered_entries_.Append(std::move(entry));
 }
 
