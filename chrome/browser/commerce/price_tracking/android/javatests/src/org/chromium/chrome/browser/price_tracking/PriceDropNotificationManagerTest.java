@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.DismissNotificationChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -75,6 +74,7 @@ import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -104,7 +104,6 @@ public class PriceDropNotificationManagerTest {
     private BookmarkModel mMockBookmarkModel;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Mock private ShoppingService mMockShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
@@ -114,6 +113,7 @@ public class PriceDropNotificationManagerTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
