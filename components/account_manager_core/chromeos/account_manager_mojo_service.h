@@ -68,9 +68,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
 
   // crosapi::mojom::AccountManager:
   void AddObserver(AddObserverCallback callback) override;
-  void GetPersistentErrorForAccount(
-      mojom::AccountKeyPtr mojo_account_key,
-      GetPersistentErrorForAccountCallback callback) override;
   void ShowAddAccountDialog(mojom::AccountAdditionOptionsPtr options,
                             ShowAddAccountDialogCallback callback) override;
   void ShowReauthAccountDialog(

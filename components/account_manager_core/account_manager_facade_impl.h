@@ -100,10 +100,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void OnReceiverReceived(
       mojo::PendingReceiver<AccountManagerObserver> receiver);
 
-  void GetPersistentErrorInternal(
-      const AccountKey& account,
-      base::OnceCallback<void(const GoogleServiceAuthError&)> callback);
-
   // Proxy method to call `CreateAccessTokenFetcher` on
   // `account_manager_remote_`. Returns `true` if `account_manager_remote_` is
   // bound and the call was queued successfully.

@@ -43,22 +43,6 @@ const char kMojoDisconnectionsAccountManagerObserverReceiver[] =
 const char kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote[] =
     "AccountManager.MojoDisconnections.AccessTokenFetcherRemote";
 
-void UnmarshalPersistentError(
-    base::OnceCallback<void(const GoogleServiceAuthError&)> callback,
-    crosapi::mojom::GoogleServiceAuthErrorPtr mojo_error) {
-  std::optional<GoogleServiceAuthError> maybe_error =
-      FromMojoGoogleServiceAuthError(mojo_error);
-  if (!maybe_error) {
-    // Couldn't unmarshal GoogleServiceAuthError, report the account as not
-    // having an error. This is safe to do, as GetPersistentErrorForAccount is
-    // best-effort (there's no way to know that the token was revoked on the
-    // server).
-    std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
-    return;
-  }
-  std::move(callback).Run(maybe_error.value());
-}
-
 // Error logs the Mojo connection stats when `event` occurs.
 void LogMojoConnectionStats(const std::string& event,
                             int num_remote_disconnections,
@@ -285,16 +269,21 @@ void AccountManagerFacadeImpl::GetAccounts(
 void AccountManagerFacadeImpl::GetPersistentErrorForAccount(
     const AccountKey& account,
     base::OnceCallback<void(const GoogleServiceAuthError&)> callback) {
-  if (!account_manager_remote_ ||
-      remote_version_ <
-          RemoteMinVersions::kGetPersistentErrorForAccountMinVersion) {
-    // Remote side doesn't support GetPersistentErrorForAccount.
-    std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
-    return;
-  }
-  RunAfterInitializationSequence(
-      base::BindOnce(&AccountManagerFacadeImpl::GetPersistentErrorInternal,
-                     weak_factory_.GetWeakPtr(), account, std::move(callback)));
+  account_manager_->HasDummyGaiaToken(
+      account,
+      base::BindOnce(
+          [](base::OnceCallback<void(const GoogleServiceAuthError&)> callback,
+             bool has_dummy_token) {
+            GoogleServiceAuthError error =
+                has_dummy_token
+                    ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                              CREDENTIALS_REJECTED_BY_CLIENT)
+                    : GoogleServiceAuthError::AuthErrorNone();
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), error));
+          },
+          std::move(callback)));
 }
 
 std::unique_ptr<OAuth2AccessTokenFetcher>
@@ -391,14 +380,6 @@ void AccountManagerFacadeImpl::OnAccountRemoved(const Account& account) {
 
 void AccountManagerFacadeImpl::OnSigninDialogClosed() {
   observer_list_.Notify(&AccountManagerFacade::Observer::OnSigninDialogClosed);
-}
-
-void AccountManagerFacadeImpl::GetPersistentErrorInternal(
-    const AccountKey& account,
-    base::OnceCallback<void(const GoogleServiceAuthError&)> callback) {
-  account_manager_remote_->GetPersistentErrorForAccount(
-      ToMojoAccountKey(account),
-      base::BindOnce(&UnmarshalPersistentError, std::move(callback)));
 }
 
 bool AccountManagerFacadeImpl::CreateAccessTokenFetcher(

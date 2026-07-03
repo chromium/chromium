@@ -31,18 +31,6 @@ namespace crosapi {
 
 namespace {
 
-void ReportErrorStatusFromHasDummyGaiaToken(
-    base::OnceCallback<void(mojom::GoogleServiceAuthErrorPtr)> callback,
-    bool has_dummy_token) {
-  GoogleServiceAuthError error(GoogleServiceAuthError::AuthErrorNone());
-  if (has_dummy_token) {
-    error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-            CREDENTIALS_REJECTED_BY_CLIENT);
-  }
-  std::move(callback).Run(account_manager::ToMojoGoogleServiceAuthError(error));
-}
-
 void RecordMojoAccountUpsertionResultStatusAndRunCallback(
     base::OnceCallback<void(mojom::AccountUpsertionResultPtr)> callback,
     mojom::AccountUpsertionResultPtr mojo_result) {
@@ -86,19 +74,6 @@ void AccountManagerMojoService::AddObserver(AddObserverCallback callback) {
   auto receiver = remote.BindNewPipeAndPassReceiver();
   observers_.Add(std::move(remote));
   std::move(callback).Run(std::move(receiver));
-}
-
-void AccountManagerMojoService::GetPersistentErrorForAccount(
-    mojom::AccountKeyPtr mojo_account_key,
-    mojom::AccountManager::GetPersistentErrorForAccountCallback callback) {
-  std::optional<account_manager::AccountKey> maybe_account_key =
-      account_manager::FromMojoAccountKey(mojo_account_key);
-  DCHECK(maybe_account_key)
-      << "Can't unmarshal account of type: " << mojo_account_key->account_type;
-  account_manager_->HasDummyGaiaToken(
-      maybe_account_key.value(),
-      base::BindOnce(&ReportErrorStatusFromHasDummyGaiaToken,
-                     std::move(callback)));
 }
 
 void AccountManagerMojoService::ShowAddAccountDialog(
