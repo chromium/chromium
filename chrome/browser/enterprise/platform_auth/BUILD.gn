@@ -41,3 +41,117 @@ if (is_android) {
     sources = [ "entra_provider_android.h" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+  deps = [
+    ":features",
+    "//base",
+    "//chrome/browser/enterprise:impl",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+
+  # PlatformAuthProviderManager (referenced by :test_utils) is only built on
+  # these platforms.
+  if (is_mac || is_win || is_android) {
+    deps += [ ":test_utils" ]
+  }
+
+  if (is_android) {
+    sources += [ "entra_provider_android_unittest.cc" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "cloud_ap_provider_win_unittest.cc",
+      "cloud_ap_utils_win_unittest.cc",
+    ]
+  }
+
+  if (is_win || is_mac) {
+    sources += [
+      "platform_auth_navigation_throttle_unittest.cc",
+      "platform_auth_provider_manager_unittest.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "extensible_enterprise_sso_entra_unittest.mm",
+      "extensible_enterprise_sso_prefs_handler_unittest.cc",
+      "platform_auth_proxying_url_loader_factory_unittest.cc",
+      "scoped_cf_prefs_observer_override.cc",
+      "scoped_cf_prefs_observer_override.h",
+    ]
+    deps += [
+      "//components/enterprise/platform_auth:enterprise_platform_auth",
+      "//third_party/ocmock",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = []
+    deps = [
+      ":features",
+      "//base",
+      "//chrome/browser/enterprise:impl",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+
+    if (is_win || is_mac) {
+      sources += [
+        "platform_auth_policy_observer_browsertest.cc",
+        "platform_auth_provider_manager_browsertest.cc",
+      ]
+      deps += [ ":test_utils" ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "extensible_enterprise_sso_okta_browsertest.mm",
+        "extensible_enterprise_sso_provider_mac_browsertest.mm",
+        "scoped_cf_prefs_observer_override.cc",
+        "scoped_cf_prefs_observer_override.h",
+      ]
+      deps += [
+        "//components/enterprise/platform_auth:enterprise_platform_auth",
+        "//third_party/ocmock",
+      ]
+    }
+  }
+}
+
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "entra_sso_android_browsertest.cc",
+      "platform_auth_policy_observer_browsertest.cc",
+      "platform_auth_provider_manager_browsertest.cc",
+    ]
+
+    deps = [
+      ":features",
+      ":test_utils",
+      "//base",
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/enterprise:impl",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+}
