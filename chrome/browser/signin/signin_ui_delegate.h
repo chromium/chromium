@@ -8,6 +8,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/functional/callback_forward.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
@@ -16,6 +17,7 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 struct CoreAccountId;
 
@@ -66,6 +68,12 @@ class SigninUiDelegate {
   virtual void ShowHistorySyncOptinUI(Profile* profile,
                                       const CoreAccountId& account_id,
                                       signin_metrics::AccessPoint access_point);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  virtual void ShowCrossDeviceSigninQrBubble(
+      BrowserWindowInterface* browser,
+      base::OnceClosure closing_callback) = 0;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  protected:
   static Browser* EnsureBrowser(Profile* profile);

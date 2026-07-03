@@ -17,7 +17,6 @@
 
 struct AccountInfo;
 struct CoreAccountInfo;
-class Browser;
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
@@ -29,6 +28,14 @@ class IdentityManager;
 // Utility functions to gather status information from the various signed in
 // services and construct messages suitable for showing in UI.
 namespace signin_ui_util {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Shows a bubble containing a QR code to transfer credentials to a mobile
+// device.
+void ShowCrossDeviceSigninQrBubble(
+    BrowserWindowInterface* browser_window_interface,
+    base::OnceClosure closing_callback);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Enables history sync for the primary account.
 // If the user is already signed in, the history datatype is enabled

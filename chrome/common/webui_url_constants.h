@@ -119,6 +119,10 @@ inline constexpr char kChromeUICrashHost[] = "crash";
 inline constexpr char kChromeUICreditsHost[] = "credits";
 inline constexpr char kChromeUICreditsURL[] = "chrome://credits/";
 inline constexpr char16_t kChromeUICreditsURL16[] = u"chrome://credits/";
+inline constexpr char kChromeUICrossDeviceSigninQrBubbleHost[] =
+    "cross-device-signin-qr-bubble";
+inline constexpr char kChromeUICrossDeviceSigninQrBubbleURL[] =
+    "chrome://cross-device-signin-qr-bubble/";
 inline constexpr char kChromeUIDataSharingInternalsHost[] =
     "data-sharing-internals";
 inline constexpr char kChromeUIDefaultHost[] = "version";

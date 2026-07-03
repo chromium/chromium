@@ -50,6 +50,7 @@ build_webui("build") {
   }
   if (enable_dice_support) {
     static_files += [
+      "cross_device_signin_qr_bubble/cross_device_signin_qr_bubble.html",
       "dice_web_signin_intercept/chrome_signin/chrome_signin.html",
       "dice_web_signin_intercept/dice_web_signin_intercept.html",
       "dice_web_signin_intercept/images/split_header.svg",

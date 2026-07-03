@@ -24,6 +24,7 @@
 #include "components/sync/base/data_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -160,6 +161,11 @@ class SigninViewController {
       const std::string& last_email,
       const std::string& email,
       SigninEmailConfirmationDialog::Callback callback);
+
+  // Shows the cross-device sign-in QR code bubble. The bubble is anchored to
+  // the profile menu button if available, or centered on the browser window
+  // otherwise.
+  void ShowCrossDeviceSigninQrBubble(base::OnceClosure closing_callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top
@@ -211,11 +217,19 @@ class SigninViewController {
   // SigninViewController, if one exists. Does nothing otherwise.
   void CloseModalSignin();
 
+  // Closes the bubble-based signin flow previously shown using this
+  // SigninViewController, if one exists. Does nothing otherwise.
+  void CloseBubbleSignin();
+
   // Sets the height of the modal signin dialog.
   void SetModalSigninHeight(int height);
 
   // Called by a `dialog_`' when it closes.
   void OnModalDialogClosed();
+
+  // Called when `bubble_widget_` is closed. Defers C++ object destruction
+  // to prevent re-entrancy crashes during the native Views teardown.
+  void OnBubbleClosed(views::Widget::ClosedReason reason);
 
   base::WeakPtr<SigninViewController> AsWeakPtr();
 
@@ -301,6 +315,12 @@ class SigninViewController {
 
   // Currently displayed modal dialog, or nullptr if none is displayed.
   std::unique_ptr<SigninModalDialog> dialog_;
+
+  // Stores the active bubble widget, if one is currently shown.
+  // New bubble promos/UIs should use this widget, whereas modal dialogs should
+  // use `dialog_`. Note that bubbles managed by this widget are completely
+  // decoupled from the modal dialogs.
+  std::unique_ptr<views::Widget> bubble_widget_;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;

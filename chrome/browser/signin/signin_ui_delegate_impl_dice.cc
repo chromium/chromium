@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -54,6 +55,20 @@ void SigninUiDelegateImplDice::ShowReauthUI(
 
   ShowDiceTab(EnsureBrowser(profile), email, enable_sync, access_point,
               promo_action);
+}
+
+void SigninUiDelegateImplDice::ShowCrossDeviceSigninQrBubble(
+    BrowserWindowInterface* browser,
+    base::OnceClosure closing_callback) {
+  if (!browser) {
+    if (closing_callback) {
+      std::move(closing_callback).Run();
+    }
+    return;
+  }
+  browser->GetFeatures()
+      .signin_view_controller()
+      ->ShowCrossDeviceSigninQrBubble(std::move(closing_callback));
 }
 
 }  // namespace signin_ui_util

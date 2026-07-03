@@ -298,6 +298,9 @@ base::span<const std::string_view> GetUntestedChromeUrlsForTest() {
       // TODO(crbug.com/487113801): Investigate why tests are flaky on dbg bots.
       "chrome://accessibility",
 #endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      "chrome://cross-device-signin-qr-bubble",
+#endif
       "chrome://app-settings",
       "chrome://constrained-test",
       "chrome://contextual-tasks",
