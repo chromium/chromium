@@ -643,6 +643,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/contextual_search",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/critical_actions",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/data_sharing",
     "//chrome/browser/device_reauth",

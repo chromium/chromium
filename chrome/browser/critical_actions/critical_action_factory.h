@@ -2,34 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CRITICAL_ACTIONS_CONTENT_BROWSER_CRITICAL_ACTION_FACTORY_H_
-#define COMPONENTS_CRITICAL_ACTIONS_CONTENT_BROWSER_CRITICAL_ACTION_FACTORY_H_
+#ifndef CHROME_BROWSER_CRITICAL_ACTIONS_CRITICAL_ACTION_FACTORY_H_
+#define CHROME_BROWSER_CRITICAL_ACTIONS_CRITICAL_ACTION_FACTORY_H_
 
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace content {
-class BrowserContext;
-}
+class Profile;
 
 namespace critical_actions {
 
 class CriticalActionService;
 
 // A factory that creates and manages `CriticalActionService` instances
-// for each `content::BrowserContext`.
-class CriticalActionFactory : public BrowserContextKeyedServiceFactory {
+// for each eligible `Profile`.
+class CriticalActionFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the singleton instance of `CriticalActionFactory`.
   static CriticalActionFactory* GetInstance();
 
   // Retrieves the `CriticalActionService` instance associated with the given
-  // `context`, creating one if it does not exist yet. Returns nullptr if
-  // `context` is off-the-record (incognito).
-  static CriticalActionService* GetForBrowserContext(
-      content::BrowserContext* context);
+  // `profile`, creating one if it does not exist yet. Returns nullptr if
+  // `profile` is off-the-record (incognito) or otherwise ineligible.
+  static CriticalActionService* GetForProfile(Profile* profile);
 
   CriticalActionFactory(const CriticalActionFactory&) = delete;
   CriticalActionFactory& operator=(const CriticalActionFactory&) = delete;
@@ -47,4 +44,4 @@ class CriticalActionFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace critical_actions
 
-#endif  // COMPONENTS_CRITICAL_ACTIONS_CONTENT_BROWSER_CRITICAL_ACTION_FACTORY_H_
+#endif  // CHROME_BROWSER_CRITICAL_ACTIONS_CRITICAL_ACTION_FACTORY_H_

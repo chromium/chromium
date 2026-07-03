@@ -12,11 +12,14 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace critical_actions {
@@ -24,17 +27,26 @@ namespace critical_actions {
 class CriticalActionBackend;
 
 // UI thread service for recording and retrieving critical action history.
-class CriticalActionService : public KeyedService {
+class CriticalActionService : public KeyedService,
+                              public history::HistoryServiceObserver {
  public:
   CriticalActionService(
       const base::FilePath& db_path,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
+      history::HistoryService* history_service = nullptr);
   CriticalActionService(const CriticalActionService&) = delete;
   CriticalActionService& operator=(const CriticalActionService&) = delete;
   ~CriticalActionService() override;
 
   // KeyedService:
   void Shutdown() override;
+
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
 
   // UI thread entry point to add a new critical action.
   void AddCriticalAction(const CriticalActionEntry& entry);
@@ -59,6 +71,10 @@ class CriticalActionService : public KeyedService {
   SEQUENCE_CHECKER(sequence_checker_);
   base::SequenceBound<CriticalActionBackend> backend_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 };
 
 }  // namespace critical_actions

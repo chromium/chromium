@@ -73,6 +73,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/data_sharing/personal_collaboration_data/personal_collaboration_data_service_factory.h"
@@ -929,6 +930,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   metrics::CriticalUserJourneyServiceFactory::GetInstance();
 #endif  // BUILDFLAG(!IS_ANDROID)
+  critical_actions::CriticalActionFactory::GetInstance();
   CrossDevicePrefTrackerFactory::GetInstance();
   DataTypeStoreServiceFactory::GetInstance();
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)

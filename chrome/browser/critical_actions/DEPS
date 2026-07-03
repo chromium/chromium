@@ -1,0 +1,11 @@
+include_rules = [
+  "+chrome/browser/history",
+  "+chrome/browser/profiles",
+  "+components/critical_actions/core/browser",
+]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

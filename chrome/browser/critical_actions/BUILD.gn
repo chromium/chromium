@@ -1,0 +1,36 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("critical_actions") {
+  sources = [
+    "critical_action_factory.cc",
+    "critical_action_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser/profiles:profile" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/history",
+    "//components/critical_actions/core/browser",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "critical_action_factory_unittest.cc" ]
+
+  deps = [
+    ":critical_actions",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/critical_actions/core/browser",
+    "//components/keyed_service/core",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

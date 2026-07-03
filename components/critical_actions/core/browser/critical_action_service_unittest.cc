@@ -9,15 +9,18 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/history/core/browser/history_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -59,8 +62,8 @@ TEST_F(CriticalActionServiceTest, AddAndGetActionRunsOnMainThread) {
   entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.timestamp = base::Time::Now();
   entry.visit_id = base::RandIntInclusive(1, 1000000);
-  entry.conversation_id = "test-conv-1";
-  entry.actor_task_id = "test-task-1";
+  entry.conversation_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.actor_task_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.action_type = ActionType::kCredentialAccess;
   entry.url = GURL("https://example.com/oauth");
   entry.metadata = "{\"scopes\": [\"profile\"]}";
@@ -95,21 +98,114 @@ TEST_F(CriticalActionServiceTest, AddAndGetActionRunsOnMainThread) {
 TEST_F(CriticalActionServiceTest, CallsAfterShutdownGracefullyFail) {
   service_->Shutdown();
 
+  const std::string action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   CriticalActionEntry entry;
-  entry.critical_action_id = "after-shutdown";
+  entry.critical_action_id = action_id;
   entry.action_type = ActionType::kFormFill;
 
   // The following calls should be safe no-ops and not crash.
   service_->AddCriticalAction(entry);
-  service_->DeleteCriticalAction("after-shutdown");
+  service_->DeleteCriticalAction(action_id);
   service_->DeleteCriticalActionsInTimeRange(base::Time(), base::Time());
   service_->DeleteCriticalActionsByVisitIds({123, 456});
 
   base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
-  service_->GetCriticalAction("after-shutdown", get_future.GetCallback());
+  service_->GetCriticalAction(action_id, get_future.GetCallback());
   EXPECT_FALSE(get_future.Get().has_value());
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(CriticalActionServiceTest, DeleteAllHistoryDeletesEverything) {
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kCredentialAccess;
+  service_->AddCriticalAction(entry);
+
+  service_->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
+  service_->GetCriticalAction(entry.critical_action_id,
+                              get_future.GetCallback());
+  EXPECT_FALSE(get_future.Get().has_value());
+}
+
+TEST_F(CriticalActionServiceTest, DeleteHistoryByRange) {
+  base::Time start_time = base::Time::Now();
+  base::Time action_time = start_time + base::Minutes(5);
+  base::Time end_time = start_time + base::Minutes(10);
+
+  CriticalActionEntry entry1;
+  entry1.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry1.timestamp = action_time;
+  entry1.action_type = ActionType::kCredentialAccess;
+  service_->AddCriticalAction(entry1);
+
+  CriticalActionEntry entry2;
+  entry2.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry2.timestamp = end_time + base::Minutes(5);
+  entry2.action_type = ActionType::kCredentialAccess;
+  service_->AddCriticalAction(entry2);
+
+  history::DeletionTimeRange time_range(start_time, end_time);
+  history::DeletionInfo deletion_info(time_range, /*is_from_expiration=*/false,
+                                      history::DeletionInfo::Reason::kOther,
+                                      /*deleted_rows=*/{},
+                                      /*deleted_visit_ids=*/{},
+                                      /*favicon_urls=*/{},
+                                      /*restrict_urls=*/std::nullopt);
+  service_->OnHistoryDeletions(nullptr, deletion_info);
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future1;
+  service_->GetCriticalAction(entry1.critical_action_id,
+                              get_future1.GetCallback());
+  EXPECT_FALSE(get_future1.Get().has_value());
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future2;
+  service_->GetCriticalAction(entry2.critical_action_id,
+                              get_future2.GetCallback());
+  EXPECT_TRUE(get_future2.Get().has_value());
+}
+
+TEST_F(CriticalActionServiceTest, DeleteHistoryByVisitId) {
+  int64_t visit_id_to_delete = base::RandIntInclusive(1, 1000000);
+  int64_t visit_id_to_keep = visit_id_to_delete + 1;
+
+  CriticalActionEntry entry1;
+  entry1.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry1.visit_id = visit_id_to_delete;
+  entry1.action_type = ActionType::kCredentialAccess;
+  service_->AddCriticalAction(entry1);
+
+  CriticalActionEntry entry2;
+  entry2.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry2.visit_id = visit_id_to_keep;
+  entry2.action_type = ActionType::kCredentialAccess;
+  service_->AddCriticalAction(entry2);
+
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange::Invalid(),
+      /*is_from_expiration=*/false, history::DeletionInfo::Reason::kOther,
+      /*deleted_rows=*/{},
+      /*deleted_visit_ids=*/{visit_id_to_delete},
+      /*favicon_urls=*/{},
+      /*restrict_urls=*/std::nullopt);
+  service_->OnHistoryDeletions(nullptr, deletion_info);
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future1;
+  service_->GetCriticalAction(entry1.critical_action_id,
+                              get_future1.GetCallback());
+  EXPECT_FALSE(get_future1.Get().has_value());
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future2;
+  service_->GetCriticalAction(entry2.critical_action_id,
+                              get_future2.GetCallback());
+  EXPECT_TRUE(get_future2.Get().has_value());
 }
 
 }  // namespace critical_actions

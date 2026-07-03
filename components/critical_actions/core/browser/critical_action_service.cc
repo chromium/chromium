@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/critical_actions/core/browser/critical_action_backend.h"
 
@@ -17,9 +18,13 @@ namespace critical_actions {
 
 CriticalActionService::CriticalActionService(
     const base::FilePath& db_path,
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
+    history::HistoryService* history_service)
     : backend_(backend_task_runner, db_path) {
   backend_.AsyncCall(&CriticalActionBackend::Init);
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
 }
 
 CriticalActionService::~CriticalActionService() {
@@ -28,6 +33,7 @@ CriticalActionService::~CriticalActionService() {
 
 void CriticalActionService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  history_service_observation_.Reset();
   backend_.Reset();
 }
 
@@ -83,6 +89,28 @@ void CriticalActionService::DeleteCriticalActionsByVisitIds(
   }
   backend_.AsyncCall(&CriticalActionBackend::DeleteCriticalActionsByVisitIds)
       .WithArgs(visit_ids);
+}
+
+void CriticalActionService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (deletion_info.IsAllHistory()) {
+    DeleteCriticalActionsInTimeRange(base::Time(), base::Time::Max());
+  } else if (deletion_info.time_range().IsValid()) {
+    DeleteCriticalActionsInTimeRange(deletion_info.time_range().begin(),
+                                     deletion_info.time_range().end());
+  } else if (!deletion_info.deleted_visit_ids().empty()) {
+    std::vector<int64_t> visit_ids(deletion_info.deleted_visit_ids().begin(),
+                                   deletion_info.deleted_visit_ids().end());
+    DeleteCriticalActionsByVisitIds(visit_ids);
+  }
+}
+
+void CriticalActionService::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTREACHED();
 }
 
 }  // namespace critical_actions

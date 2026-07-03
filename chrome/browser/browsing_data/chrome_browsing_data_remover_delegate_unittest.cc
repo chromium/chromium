@@ -49,6 +49,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -125,6 +126,8 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
@@ -1787,6 +1790,45 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveHistoryForever) {
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
   EXPECT_FALSE(tester.HistoryContainsURL(kOrigin1));
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearCriticalActionsHistory) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      critical_actions::features::kCriticalActionHistory);
+
+  critical_actions::CriticalActionService* critical_action_service =
+      critical_actions::CriticalActionFactory::GetForProfile(GetProfile());
+  ASSERT_NE(critical_action_service, nullptr);
+
+  base::Time time = base::Time::Now() - base::Hours(1);
+  critical_actions::CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.timestamp = time;
+  entry.action_type = critical_actions::ActionType::kFormFill;
+  critical_action_service->AddCriticalAction(entry);
+
+  // Verify the entry has been successfully added to the database.
+  {
+    base::test::TestFuture<std::optional<critical_actions::CriticalActionEntry>>
+        get_future;
+    critical_action_service->GetCriticalAction(entry.critical_action_id,
+                                               get_future.GetCallback());
+    ASSERT_TRUE(get_future.Get().has_value());
+  }
+
+  // Trigger browsing data removal for history.
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  // Verify the entry has been deleted from the database.
+  {
+    base::test::TestFuture<std::optional<critical_actions::CriticalActionEntry>>
+        get_future;
+    critical_action_service->GetCriticalAction(entry.critical_action_id,
+                                               get_future.GetCallback());
+    EXPECT_FALSE(get_future.Get().has_value());
+  }
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveHistoryForLastHour) {

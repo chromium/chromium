@@ -644,7 +644,6 @@ test("components_unittests") {
       "//components/blocked_content:unit_tests",
       "//components/browser_apis:unit_tests",
       "//components/content_settings/browser/ui:unit_tests",
-      "//components/critical_actions/content/browser:unit_tests",
       "//components/headless/test:unit_tests",
       "//components/media_router/browser:unit_tests",
       "//components/media_router/common:unit_tests",

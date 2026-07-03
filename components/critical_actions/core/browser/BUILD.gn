@@ -12,10 +12,13 @@ static_library("browser") {
     "critical_action_service.h",
     "critical_action_types.cc",
     "critical_action_types.h",
+    "features.cc",
+    "features.h",
   ]
 
   deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//sql",
     "//url",
@@ -34,6 +37,7 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//components/history/core/browser",
     "//sql:test_support",
     "//testing/gtest",
     "//third_party/sqlite",
