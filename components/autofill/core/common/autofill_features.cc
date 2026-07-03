@@ -855,6 +855,11 @@ BASE_FEATURE(kAutofillServerUploadMoreData, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillShowBubblesBasedOnPriorities,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch: If enabled, the focus check in AutofillPopupControllerImpl and
+// AutofillKeyboardAccessoryControllerImpl is simplified.
+// TODO(crbug.com/530190112): Clean up after September 1, 2026.
+BASE_FEATURE(kAutofillSimplifyFocusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, a pre-filled field will not be filled.
 BASE_FEATURE(kAutofillSkipPreFilledFields, base::FEATURE_ENABLED_BY_DEFAULT);
 
