@@ -54,7 +54,9 @@ class AtMemoryManager {
   // TODO(crbug.com/507770024): Rename to OnSuggestionsShown.
   void OnPopupShown(AutofillSuggestionTriggerSource trigger_source,
                     bool is_context_secure,
-                    UpdateSuggestionsCallback update_callback);
+                    UpdateSuggestionsCallback update_callback,
+                    FormSignature form_signature,
+                    FieldSignature field_signature);
 
   // Called when the user types in the filter/search bar. Returns true if
   // handled by the manager (i.e., the current session is an @memory one).

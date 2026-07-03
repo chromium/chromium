@@ -476,7 +476,9 @@ AtMemoryManager::~AtMemoryManager() = default;
 void AtMemoryManager::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
     bool is_context_secure,
-    UpdateSuggestionsCallback update_callback) {
+    UpdateSuggestionsCallback update_callback,
+    FormSignature form_signature,
+    FieldSignature field_signature) {
   if (at_memory_metrics_recorder_ || !IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
@@ -487,7 +489,7 @@ void AtMemoryManager::OnPopupShown(
   at_memory_metrics_recorder_ = std::make_unique<AtMemoryMetricsRecorder>(
       owner_->client().GetMqlsUploadService(),
       owner_->client().GetLastCommittedPrimaryMainFrameURL(),
-      owner_->client().GetPageTitle());
+      owner_->client().GetPageTitle(), form_signature, field_signature);
   at_memory_metrics_recorder_->OnPopupShown(trigger_source);
 }
 

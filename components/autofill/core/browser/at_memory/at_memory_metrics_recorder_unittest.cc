@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -27,7 +28,8 @@ class AtMemoryMetricsRecorderTest : public testing::Test {
 // Tests that `OnPopupShown` correctly logs the "PopupDisplayed" metric when
 // triggered by typing the invocation sequence.
 TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_TypedTrigger) {
-  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                  FormSignature(0), FieldSignature(0));
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
 
   histogram_tester_.ExpectUniqueSample(
@@ -38,7 +40,8 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_TypedTrigger) {
 // Tests that `OnPopupShown` correctly logs the "PopupDisplayed" metric when
 // triggered via the context menu.
 TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_ContextMenu) {
-  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                  FormSignature(0), FieldSignature(0));
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 
   histogram_tester_.ExpectUniqueSample(
@@ -49,7 +52,8 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_ContextMenu) {
 // Tests that `OnPopupShown` is idempotent and only logs a metric for the
 // first call in a session.
 TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
-  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                  FormSignature(0), FieldSignature(0));
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
   // Second call should be ignored.
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
@@ -62,7 +66,8 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
 // Tests that the destructor correctly logs that a query was submitted.
 TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_True) {
   {
-    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"some query");
   }
@@ -75,7 +80,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_True) {
 // during a shown session.
 TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_False) {
   {
-    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     // No query submitted.
   }
@@ -87,7 +93,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_False) {
 // Tests that the destructor correctly logs that a suggestion was accepted.
 TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
   {
-    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
   }
@@ -100,7 +107,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
 // during a shown session.
 TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_False) {
   {
-    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     // No suggestion accepted.
   }
@@ -112,7 +120,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_False) {
 // Tests that `MarkFilled` correctly logs whether a suggestion was filled.
 TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
   {
-    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
     metrics.MarkFilled();
@@ -122,7 +131,8 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
       "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
 
   {
-    AtMemoryMetricsRecorder metrics2(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics2(nullptr, GURL(), std::u16string(),
+                                     FormSignature(0), FieldSignature(0));
     metrics2.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics2.OnSuggestionAccepted();
   }
@@ -136,7 +146,8 @@ TEST_F(AtMemoryMetricsRecorderTest, TimeToFetchUnmasked) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   {
-    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string());
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
     metrics.OnFetchPiiStarted();
@@ -161,8 +172,9 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
       &local_state);
 
   {
-    AtMemoryMetricsRecorder metrics(&uploader_service,
-                                  GURL("https://example.com"), u"Example Page");
+    AtMemoryMetricsRecorder metrics(
+        &uploader_service, GURL("https://example.com"), u"Example Page",
+        FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"test query");
   }
@@ -174,6 +186,9 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
   EXPECT_EQ(quality.query(), "test query");
   EXPECT_EQ(quality.url(), "https://example.com/");
   EXPECT_EQ(quality.title(), "Example Page");
+  EXPECT_EQ(quality.form_signature(), 123u);
+  EXPECT_EQ(quality.field_signature(), 456u);
+  EXPECT_FALSE(quality.session_id().empty());
 }
 
 // Tests that the ModelQualityLogEntry is correctly filled and uploaded when the
@@ -187,9 +202,11 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
   optimization_guide::TestModelQualityLogsUploaderService uploader_service(
       &local_state);
 
+  std::string quality1_session_id;
   {
-    AtMemoryMetricsRecorder metrics(&uploader_service,
-                                  GURL("https://example.com"), u"Example Page");
+    AtMemoryMetricsRecorder metrics(
+        &uploader_service, GURL("https://example.com"), u"Example Page",
+        FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnQuerySubmitted(u"test query");
 
@@ -201,9 +218,13 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
     ASSERT_EQ(uploader_service.uploaded_logs().size(), 1u);
     const optimization_guide::proto::AtMemoryQuality& quality1 =
         uploader_service.uploaded_logs()[0]->at_memory().quality();
+    quality1_session_id = quality1.session_id();
     EXPECT_EQ(quality1.query(), "test query");
     EXPECT_EQ(quality1.url(), "https://example.com/");
     EXPECT_EQ(quality1.title(), "Example Page");
+    EXPECT_EQ(quality1.form_signature(), 123u);
+    EXPECT_EQ(quality1.field_signature(), 456u);
+    EXPECT_FALSE(quality1.session_id().empty());
   }
 
   // The second query is flushed on destruction of the object.
@@ -214,6 +235,10 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
   EXPECT_EQ(quality2.query(), "next query");
   EXPECT_EQ(quality2.url(), "https://example.com/");
   EXPECT_EQ(quality2.title(), "Example Page");
+  EXPECT_EQ(quality2.form_signature(), 123u);
+  EXPECT_EQ(quality2.field_signature(), 456u);
+  EXPECT_FALSE(quality2.session_id().empty());
+  EXPECT_EQ(quality2.session_id(), quality1_session_id);
 }
 
 }  // namespace autofill

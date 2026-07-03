@@ -2233,8 +2233,14 @@ void BrowserAutofillManager::DidShowSuggestions(
   auto [form_structure, autofill_field] =
       GetCachedFormAndField(form_id, field_id);
 
+  FormSignature form_signature =
+      form_structure ? form_structure->form_signature() : FormSignature(0);
+  FieldSignature field_signature =
+      autofill_field ? autofill_field->GetFieldSignature() : FieldSignature(0);
+
   GetAtMemoryManager().OnPopupShown(trigger_source, client().IsContextSecure(),
-                                    update_suggestions_callback);
+                                    update_suggestions_callback, form_signature,
+                                    field_signature);
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);

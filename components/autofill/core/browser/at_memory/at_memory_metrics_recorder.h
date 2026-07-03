@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/token.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/signatures.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -29,7 +31,9 @@ class AtMemoryMetricsRecorder {
   AtMemoryMetricsRecorder(
       optimization_guide::ModelQualityLogsUploaderService* uploader_service,
       GURL url,
-      std::u16string_view title);
+      std::u16string_view title,
+      FormSignature form_signature,
+      FieldSignature field_signature);
   AtMemoryMetricsRecorder(const AtMemoryMetricsRecorder&) = delete;
   AtMemoryMetricsRecorder& operator=(const AtMemoryMetricsRecorder&) = delete;
   ~AtMemoryMetricsRecorder();
@@ -58,6 +62,10 @@ class AtMemoryMetricsRecorder {
   void OnFetchPiiCompleted();
 
  private:
+  // The unique identifier of the session. A session begins when the popup is
+  // first shown to the user and ends when it is hidden. Popup updates (e.g.,
+  // due to typing in the search bar) do not change the session.
+  const base::Token session_id_token_;
   // The trigger source of the popup. It is `std::nullopt` until `OnPopupShown`
   // is called, serving as a signal that the popup was shown.
   std::optional<AutofillMetrics::AtMemoryTriggerSource> source_;
@@ -72,9 +80,14 @@ class AtMemoryMetricsRecorder {
   std::optional<base::TimeDelta> fetch_pii_duration_;
 
   // The URL of the primary page the user triggered the @memory search on.
-  GURL url_;
+  const GURL url_;
   // The title of the primary page the user triggered the @memory search on.
-  std::u16string title_;
+  const std::u16string title_;
+
+  // The form and field signature of the form the user triggered the @memory search on, or
+  // 0 if no form was involved.
+  const FormSignature form_signature_;
+  const FieldSignature field_signature_;
 
   // The uploader service used to log metrics to MQLS. Not owned. Guaranteed to
   // outlive `this`.

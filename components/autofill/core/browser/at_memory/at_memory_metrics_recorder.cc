@@ -17,9 +17,14 @@ namespace autofill {
 AtMemoryMetricsRecorder::AtMemoryMetricsRecorder(
     optimization_guide::ModelQualityLogsUploaderService* uploader_service,
     GURL url,
-    std::u16string_view title)
-    : url_(std::move(url)),
+    std::u16string_view title,
+    FormSignature form_signature,
+    FieldSignature field_signature)
+    : session_id_token_(base::Token::CreateRandom()),
+      url_(std::move(url)),
       title_(title),
+      form_signature_(form_signature),
+      field_signature_(field_signature),
       uploader_service_(uploader_service) {}
 
 AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
@@ -92,9 +97,12 @@ void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string query) {
         pending_log_entry_->log_ai_data_request()
             ->mutable_at_memory()
             ->mutable_quality();
+    quality->set_session_id(session_id_token_.ToString());
     quality->set_query(base::UTF16ToUTF8(query));
     quality->set_url(url_.spec());
     quality->set_title(base::UTF16ToUTF8(title_));
+    quality->set_form_signature(form_signature_.value());
+    quality->set_field_signature(field_signature_.value());
     // Rely on log entry destructor to upload the log entry, so this will flush
     // when a new query comes in or the funnel metrics object gets destroyed.
   }
