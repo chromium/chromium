@@ -920,20 +920,15 @@ id<GREYMatcher> CloseButton() {
       performAction:grey_tap()];
   WaitForDetent(AssistantContainerDetent::kLarge);
 
-  // 3. Verify that an attachment appears in the Cobrowse carousel.
-  id<GREYMatcher> cobrowseCarousel = grey_allOf(
-      grey_accessibilityID(kComposeboxCarouselAccessibilityIdentifier),
+  // 3. Verify that the auto-attached tab appears in the Cobrowse tabs
+  // accordion.
+  id<GREYMatcher> cobrowseTabsAccordion = grey_allOf(
+      grey_accessibilityID(kComposeboxTabsAccordionAccessibilityIdentifier),
       grey_ancestor(
           grey_accessibilityID(kAssistantContainerDetentLargeIdentifier)),
       nil);
 
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cobrowseCarousel];
-
-  id<GREYMatcher> attachedItem = grey_allOf(
-      grey_accessibilityID(kComposeboxCarouselItemAccessibilityIdentifier),
-      grey_ancestor(cobrowseCarousel), nil);
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:attachedItem];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cobrowseTabsAccordion];
 }
 
 @end

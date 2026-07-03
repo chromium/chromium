@@ -62,5 +62,7 @@ extern NSString* const kComposeboxCarouselItemAccessibilityIdentifier;
 // Accessibility identifier for the close button of an item in the carousel.
 extern NSString* const
     kComposeboxInputItemCellCloseButtonAccessibilityIdentifier;
+// Accessibility identifier for the tabs accordion in cobrowse mode.
+extern NSString* const kComposeboxTabsAccordionAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_UI_COMPOSEBOX_UI_CONSTANTS_H_

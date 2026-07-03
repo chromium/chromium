@@ -182,7 +182,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
 - (void)start {
   _viewController =
-      [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme];
+      [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme
+                                                     entrypoint:_entrypoint];
   _viewController.delegate = self;
   _pickerPresenter = [[ComposeboxPickerPresenter alloc]
       initWithBaseViewController:_viewController

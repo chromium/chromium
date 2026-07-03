@@ -63,7 +63,9 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, copy, readonly) NSString* assetID;
 // The source of the item.
 @property(nonatomic, assign) ComposeboxInputItemSource source;
-
+// Whether or not an animation was performed for this item. Only applied for tab
+// items when composebox is presented in the assistant sheet.
+@property(nonatomic, assign) BOOL performedAnimation;
 // The image provider for this item. Only set for image types.
 @property(nonatomic, strong) NSItemProvider* imageProvider;
 // The file URL for this item. Only set for PDF and raw file types.

@@ -7,6 +7,8 @@ source_set("ui") {
     "composebox_animation_context.h",
     "composebox_dismiss_animator.h",
     "composebox_dismiss_animator.mm",
+    "composebox_favicons_accordion_view.h",
+    "composebox_favicons_accordion_view.mm",
     "composebox_input_item.h",
     "composebox_input_item.mm",
     "composebox_input_item_cell.h",
@@ -36,6 +38,7 @@ source_set("ui") {
     "//ios/chrome/browser/composebox/public:animation",
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:constants",
+    "//ios/chrome/browser/composebox/public:entrypoint",
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:input_item_source",
     "//ios/chrome/browser/composebox/public:input_plate_controls",
@@ -94,7 +97,10 @@ source_set("state") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "composebox_strings_unittest.mm" ]
+  sources = [
+    "composebox_favicons_accordion_view_unittest.mm",
+    "composebox_strings_unittest.mm",
+  ]
   deps = [
     ":state",
     ":ui",

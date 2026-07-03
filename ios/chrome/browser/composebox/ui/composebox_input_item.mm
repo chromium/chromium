@@ -68,6 +68,7 @@
     copy.driveIdentifier = self.driveIdentifier;
     copy.driveResourceKey = self.driveResourceKey;
     copy.driveMimeType = self.driveMimeType;
+    copy.performedAnimation = copy.performedAnimation;
   }
   return copy;
 }
