@@ -22,12 +22,14 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/shared_types.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
@@ -90,6 +92,22 @@ class MockKeyedOneTimeTokenService
 
 class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
  protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    ActorToolsTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  AffiliationServiceFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+                        return std::make_unique<
+                            affiliations::FakeAffiliationService>();
+                      }));
+                }));
+  }
+
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
 
@@ -151,6 +169,11 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
     return *mock_otp_service;
   }
 
+  affiliations::FakeAffiliationService* fake_affiliation_service() {
+    return static_cast<affiliations::FakeAffiliationService*>(
+        AffiliationServiceFactory::GetForProfile(GetProfile()));
+  }
+
   void SetExpectedOtp(std::optional<std::string> otp) {
     EXPECT_CALL(GetMockOtpService(),
                 Subscribe(one_time_tokens::OneTimeTokenSource::kGmail,
@@ -174,8 +197,21 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
             });
   }
 
+  bool HasJournalEntryWithDetails(std::string_view event,
+                                  std::string_view detail_key_value) {
+    for (const std::string& entry : JournalEntries()) {
+      if (entry.find(base::StrCat({"Event: ", event, ";"})) !=
+              std::string::npos &&
+          entry.find(detail_key_value) != std::string::npos) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  private:
   std::unique_ptr<TestJournalObserver> observer_ = nullptr;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 // Gets the dom node or returns nullopt when the node id or document token
@@ -476,6 +512,241 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+}
+
+// Tests verifying if the OTP filling attempt is part of an ongoing actor login
+// flow. If true, the confirmation UI is skipped because the user already
+// consented. Verifies exact, affiliation, PSL matching, and page navigation
+// limits.
+
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       IsActorLoginFlow_ExactMatch_SilentFilling) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(url),
+                                /*should_use_strong_matching=*/true, {});
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=true;"));
+}
+
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       IsActorLoginFlow_Mismatch_RequiresConfirmation) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+
+  // Sign-in started on mismatch.com.
+  GURL login_url = GURL("https://mismatch.com");
+
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(login_url),
+                                /*should_use_strong_matching=*/false, {});
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=false;"));
+}
+
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       IsActorLoginFlow_AffiliationMatch_SilentFilling) {
+  const GURL url = embedded_https_test_server().GetURL("b.example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+
+  // Sign-in started on example.com.
+  GURL login_url = embedded_https_test_server().GetURL("example.com", "/");
+
+  std::string login_spec = url::Origin::Create(login_url).Serialize();
+  std::string page_spec = url::Origin::Create(url).Serialize();
+
+  // Seed affiliation group containing example.com and b.example.com.
+  fake_affiliation_service()->AddAffiliationGroup({
+      affiliations::Facet(
+          affiliations::FacetURI::FromCanonicalSpec(login_spec)),
+      affiliations::Facet(affiliations::FacetURI::FromCanonicalSpec(page_spec)),
+  });
+
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(login_url),
+                                /*should_use_strong_matching=*/true, {});
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=true;"));
+}
+
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       IsActorLoginFlow_PslMatchStrong_RequiresConfirmation) {
+  const GURL url = embedded_https_test_server().GetURL("sub1.example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+
+  // Sign-in started on sub2.example.com.
+  GURL login_url = GURL("https://sub2.example.com");
+
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(login_url),
+                                /*should_use_strong_matching=*/true, {});
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=false;"));
+}
+
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       IsActorLoginFlow_PslMatchWeak_SilentFilling) {
+  const GURL url = embedded_https_test_server().GetURL("sub1.example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+
+  // Sign-in started on sub2.example.com.
+  GURL login_url = GURL("https://sub2.example.com");
+
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(login_url),
+                                /*should_use_strong_matching=*/false, {});
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=true;"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttemptOtpFillingToolBrowserTest,
+    IsActorLoginFlow_ExcessiveNavigations_RequiresConfirmation) {
+  const GURL url1 = embedded_https_test_server().GetURL("example.com",
+                                                        "/actor/otp_page.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
+  const GURL url3 = embedded_https_test_server().GetURL("example.com",
+                                                        "/actor/otp_page.html");
+
+  // 1. Initial navigation.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url1));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  // 2. Start tracking login flow (tracks main frame with 0 navigations).
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(active_tab()->GetHandle(),
+                                url::Origin::Create(url1),
+                                /*should_use_strong_matching=*/true, {});
+
+  // 3. First navigation (count becomes 1).
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url2));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  // 4. Second navigation (count becomes 2 - limit reached).
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url3));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=false;"));
 }
 
 }  // namespace

@@ -17,6 +17,10 @@
 #include "components/actor/core/task_id.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+namespace affiliations {
+class DomainRelationChecker;
+}  // namespace affiliations
+
 namespace actor {
 
 // A tool that attempts to retrieve a one-time password (OTP) and fill it into
@@ -51,11 +55,17 @@ class AttemptOtpFillingTool : public Tool {
  private:
   void OnOtpRetrieved(ToolCallback callback, std::string otp);
   void OnOtpFilled(ToolCallback callback, bool success);
+  void OnActorLoginFlowChecked(ToolCallback callback, bool is_actor_login);
 
   tabs::TabHandle tab_handle_;
   std::vector<PageTarget> trigger_fields_;
   std::vector<autofill::FieldGlobalId> trigger_field_ids_;
   bool for_signin_;
+
+  // `DomainRelationChecker` finds relationship between origins (exactly the
+  // same, affiliated, ePSL match, weak match, no match). used to determine if
+  // an OTP form is related to the last actor login flow.
+  std::unique_ptr<affiliations::DomainRelationChecker> domain_relation_checker_;
 
   base::WeakPtrFactory<AttemptOtpFillingTool> weak_factory_{this};
 };

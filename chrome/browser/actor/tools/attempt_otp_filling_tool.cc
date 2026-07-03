@@ -12,19 +12,49 @@
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
+#include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
+#include "components/affiliations/core/browser/match_type.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace actor {
 
 namespace {
+
+void OnOtpFrameOriginMatchEvaluated(
+    bool should_use_strong_matching,
+    base::OnceCallback<void(bool)> callback,
+    std::optional<affiliations::MatchType> match_type) {
+  if (!match_type.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Exact or affiliated matches are always allowed.
+  bool is_exact_or_affiliated =
+      (*match_type == affiliations::MatchType::kExact) ||
+      (static_cast<int>(*match_type) &
+       static_cast<int>(affiliations::MatchType::kAffiliated));
+  if (is_exact_or_affiliated) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // PSL match is only allowed when `should_use_strong_matching` is false.
+  bool is_psl = static_cast<int>(*match_type) &
+                static_cast<int>(affiliations::MatchType::kPSL);
+  std::move(callback).Run(is_psl && !should_use_strong_matching);
+}
 
 // We need to make sure that we don't skip user confirmation for OTPs that do
 // not belong to actor login flows. Actor login fills credentials in all iframes
@@ -36,22 +66,33 @@ namespace {
 // frame, we try to match the OTP form's origin with the origin of the main
 // frame where actor login flow started and rely on the fact that affiliations
 // are transitive.
-bool OtpFormOriginMatchesLoginMainFrameOrigin(
-    const url::Origin& login_main_frame_origin,
-    const url::Origin& otp_origin,
-    bool should_use_strong_matching) {
-  // TODO(crbug.com/504573041): Implement
-  NOTIMPLEMENTED();
-  return false;
+void VerifyOtpFrameOriginMatch(affiliations::DomainRelationChecker* checker,
+                               const url::Origin& login_main_frame_origin,
+                               const url::Origin& otp_origin,
+                               bool should_use_strong_matching,
+                               base::OnceCallback<void(bool)> callback) {
+  if (!checker) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        // Without the affiliation information, only origin equality is checked.
+        base::BindOnce(std::move(callback),
+                       login_main_frame_origin.IsSameOriginWith(otp_origin)));
+    return;
+  }
+  checker->Check(
+      login_main_frame_origin, otp_origin,
+      base::BindOnce(&OnOtpFrameOriginMatchEvaluated,
+                     should_use_strong_matching, std::move(callback)));
 }
 
-// Returns the RenderFrameHost containing the OTP fields.
+// Returns the `RenderFrameHost` containing the OTP fields.
 content::RenderFrameHost* GetOtpFrame(
     tabs::TabHandle tab_handle,
     base::span<const PageTarget> trigger_fields) {
-  // TODO(crbug.com/504573041): Implement
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (trigger_fields.empty()) {
+    return nullptr;
+  }
+  return FindTargetLocalRootFrame(tab_handle, trigger_fields[0]);
 }
 
 // Checks if the tool execution corresponds to an actor login's sign in flow.
@@ -59,39 +100,53 @@ content::RenderFrameHost* GetOtpFrame(
 // reasoning being that the user already consented to the login attempt
 // during actor login execution and this OTP filling is considered part of
 // the same flow.
-bool IsActorLoginFlow(tabs::TabHandle tab_handle,
-                      base::span<const PageTarget> trigger_fields,
-                      const autofill::ActorLoginContext& context) {
-  if (trigger_fields.empty()) {
-    return false;
+//
+// The verification consists of the following checks:
+// 1. In `IsActorLoginFlow`:
+//    - Verify the target OTP frame was tracked during the login attempt
+//      (checked via `navigations_per_frame` in `ActorLoginContext`).
+//    - Verify that no tracked login frames have navigated more than once
+//      (multiple redirects likely exit the sign-in flow).
+// 2. In `VerifyOtpFrameOriginMatch` (and `OnOtpFrameOriginMatchEvaluated`):
+//    - Verify the OTP frame origin is related to the main frame
+//      origin of the login attempt (via `DomainRelationChecker`).
+//    - Verify the match strength complies with `should_use_strong_matching`
+//      (rejecting grouped affiliations, and allowing PSL only for weak
+//      matching).
+// TODO(crbug.com/530490937): Consider extracting this and other functions into
+// a separate class.
+void IsActorLoginFlow(affiliations::DomainRelationChecker* checker,
+                      content::RenderFrameHost& otp_frame,
+                      autofill::ActorLoginContext context,
+                      base::OnceCallback<void(bool)> callback) {
+  content::FrameTreeNodeId otp_frame_id = otp_frame.GetFrameTreeNodeId();
+  if (!context.navigations_per_frame.contains(otp_frame_id)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
   }
 
-  content::RenderFrameHost* otp_frame = GetOtpFrame(tab_handle, trigger_fields);
-  if (!otp_frame) {
-    return false;
+  // Actor Login filled credentials in all of these frames but the actual
+  // login frame is unknown. While finding an OTP field in one
+  // of those frames is a signal that the frame was the login frame, it's not
+  // guaranteed. Therefore, require all frames to have <2 navigations to
+  // avoid accidentally skipping user confirmation for OTPs not meant for
+  // login flows.
+  bool navigations_ok = std::ranges::all_of(
+      context.navigations_per_frame,
+      [](const std::pair<const content::FrameTreeNodeId, int>& entry) {
+        return entry.second < 2;
+      });
+  if (!navigations_ok) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
   }
 
-  const url::Origin& otp_form_origin = otp_frame->GetLastCommittedOrigin();
-  content::FrameTreeNodeId otp_frame_id = otp_frame->GetFrameTreeNodeId();
-
-  if (context.navigations_per_frame.contains(otp_frame_id) &&
-      OtpFormOriginMatchesLoginMainFrameOrigin(
-          context.origin, otp_form_origin,
-          context.should_use_strong_matching)) {
-    // Actor Login filled credentials in all of these frames but we don't know
-    // which one was the actual login frame. While finding an OTP field in one
-    // of those frames is a signal that the frame was the login frame, it's not
-    // guaranteed. Therefore, require all frames to have <2 navigations to
-    // avoid accidentally skipping user confirmation for OTPs not meant for
-    // login flows.
-    return std::ranges::all_of(
-        context.navigations_per_frame,
-        [](const std::pair<const content::FrameTreeNodeId, int>& entry) {
-          return entry.second < 2;
-        });
-  }
-
-  return false;
+  // Last check: verify OTP form origin and main frame origin are related.
+  VerifyOtpFrameOriginMatch(
+      checker, context.origin, otp_frame.GetLastCommittedOrigin(),
+      context.should_use_strong_matching, std::move(callback));
 }
 
 }  // namespace
@@ -106,9 +161,17 @@ AttemptOtpFillingTool::AttemptOtpFillingTool(
       tab_handle_(tab_handle),
       trigger_fields_(std::move(trigger_fields)),
       for_signin_(for_signin) {
-  // Guaranteed by validation in CreateAttemptOtpFillingRequest in
-  // actor_proto_conversion.cc.
+  // Guaranteed by validation in `CreateAttemptOtpFillingRequest` in
+  // `actor_proto_conversion.cc`.
   CHECK(!trigger_fields_.empty());
+
+  auto* affiliation_service =
+      AffiliationServiceFactory::GetForProfile(&tool_delegate.GetProfile());
+  if (affiliation_service) {
+    domain_relation_checker_ =
+        std::make_unique<affiliations::DomainRelationChecker>(
+            *affiliation_service);
+  }
 }
 
 AttemptOtpFillingTool::~AttemptOtpFillingTool() = default;
@@ -116,8 +179,8 @@ AttemptOtpFillingTool::~AttemptOtpFillingTool() = default;
 void AttemptOtpFillingTool::Validate(ToolCallback callback) {
   // This could be a place to check (once more) if the feature is enabled and
   // that the user has not permanently opted out.
-  // Note: There's also the method TimeOfUseValidation for checks that happen
-  // synchronously just before Invoke().
+  // Note: There's also the method `TimeOfUseValidation` for checks that happen
+  // synchronously just before `Invoke()`.
 
   std::move(callback).Run(MakeOkResult());
 }
@@ -154,15 +217,26 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
 }
 
 void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
-  // TODO(b/484334125): Check for user consent before filling!
-  // The checks will be somewhat different, depending on the for_signin
-  // parameter.
-  // For now, we just log it ...
   journal().Log(JournalURL(), task_id(), "AttemptOtpFillingTool::Invoke",
                 JournalDetailsBuilder()
                     .Add("trigger_fields_count", trigger_field_ids_.size())
                     .Add("for_signin", for_signin_)
                     .Build());
+
+  content::RenderFrameHost* otp_frame =
+      GetOtpFrame(GetTargetTab(), trigger_fields_);
+  if (!otp_frame) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            // TODO(crbug.com/502908360): Consider using a more specific error
+            // code.
+            MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound,
+                       /*requires_page_stabilization=*/false,
+                       "Target frame containing OTP fields not found.")));
+    return;
+  }
 
   // Consume the context. The service clears its state and stops observing.
   std::optional<autofill::ActorLoginContext> context =
@@ -170,8 +244,27 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
           .GetActorOneTimeTokenFillingService()
           .ConsumeLoginContext();
 
-  if (context.has_value() &&
-      IsActorLoginFlow(GetTargetTab(), trigger_fields_, *context)) {
+  if (context.has_value()) {
+    IsActorLoginFlow(
+        domain_relation_checker_.get(), *otp_frame, std::move(*context),
+        base::BindOnce(&AttemptOtpFillingTool::OnActorLoginFlowChecked,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AttemptOtpFillingTool::OnActorLoginFlowChecked,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       /*is_actor_login=*/false));
+  }
+}
+
+void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
+                                                    bool is_actor_login) {
+  journal().Log(
+      JournalURL(), task_id(), "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      JournalDetailsBuilder().Add("is_actor_login", is_actor_login).Build());
+
+  if (is_actor_login) {
     // Verified sign-in journey: proceed with silent OTP filling.
     // TODO(crbug.com/504573041): Implement
   } else {
