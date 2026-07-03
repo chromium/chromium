@@ -8,7 +8,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,10 +19,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Test for the Site Engagement Service Java binding. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -31,7 +31,10 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 public class SiteEngagementServiceTest {
     private static final String URL = "https://www.example.com";
 
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
 
     /** Verify that setting the engagement score for a URL and reading it back it works. */
     @Test
