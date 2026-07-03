@@ -282,12 +282,25 @@ public class NtpCustomizationConfigManagerUnitTest {
         ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
     })
     public void testOnUploadedImageSelected_sync() {
+        testOnUploadedImageSelectedImpl(/* primaryColor= */ null);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testOnUploadedImageSelected_fromHistory() {
+        testOnUploadedImageSelectedImpl(Color.BLUE);
+    }
+
+    private void testOnUploadedImageSelectedImpl(@Nullable @ColorInt Integer primaryColor) {
         NtpBackgroundDataUploadImage uploadImageData =
                 new NtpBackgroundDataUploadImage(
                         PlatformType.ANDROID_LOCAL,
                         mBackgroundImageInfo,
                         mBitmap,
-                        /* primaryColor= */ null,
+                        primaryColor,
                         FILE_ID_HASH);
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, uploadImageData);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -295,11 +308,17 @@ public class NtpCustomizationConfigManagerUnitTest {
         verify(mNtpBackgroundDataManager)
                 .saveUserSelectedBackgroundTypeToSharedPreference(
                         any(NtpBackgroundDataUploadImage.class));
-        // Verifies that the image file are saved to the disk and matrices are persisted to prefs.
-        assertTrue(NtpCustomizationUtils.createUploadImageFileInDir(FILE_ID_HASH).exists());
-        assertEquals(
-                NtpCustomizationUtils.createUploadImageFileInDir(FILE_ID_HASH).getAbsolutePath(),
-                NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+        if (primaryColor == null) {
+            assertTrue(NtpCustomizationUtils.createUploadImageFileInDir(FILE_ID_HASH).exists());
+            assertEquals(
+                    NtpCustomizationUtils.createUploadImageFileInDir(FILE_ID_HASH)
+                            .getAbsolutePath(),
+                    NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+        } else {
+            assertEquals(
+                    primaryColor.intValue(),
+                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        }
     }
 
     @Test
@@ -740,6 +759,62 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         assertTrue(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
         assertNotEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testOnThemeCollectionImageSelected_sync() {
+        testOnThemeCollectionImageSelectedImpl(/* primaryColor= */ null);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testOnThemeCollectionImageSelected_fromHistory() {
+        testOnThemeCollectionImageSelectedImpl(Color.RED);
+    }
+
+    private void testOnThemeCollectionImageSelectedImpl(@Nullable @ColorInt Integer primaryColor) {
+        CustomBackgroundInfo customBackgroundInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.NTP_URL,
+                        /* collectionId= */ "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection backgroundData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        customBackgroundInfo,
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        primaryColor,
+                        FILE_ID_HASH);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        if (primaryColor == null) {
+            verify(mNtpBackgroundDataManager, never())
+                    .saveUserSelectedBackgroundTypeToSharedPreference(any());
+            assertTrue(
+                    NtpCustomizationUtils.createThemeCollectionImageFileInDir(FILE_ID_HASH)
+                            .exists());
+            assertEquals(
+                    NtpCustomizationUtils.createThemeCollectionImageFileInDir(FILE_ID_HASH)
+                            .getAbsolutePath(),
+                    NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+        } else {
+            verify(mNtpBackgroundDataManager)
+                    .saveUserSelectedBackgroundTypeToSharedPreference(
+                            any(NtpBackgroundDataThemeCollection.class));
+            assertEquals(
+                    primaryColor.intValue(),
+                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        }
     }
 
     @Test

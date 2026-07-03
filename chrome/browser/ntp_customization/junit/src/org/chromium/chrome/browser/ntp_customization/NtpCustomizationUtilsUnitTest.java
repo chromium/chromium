@@ -517,13 +517,17 @@ public class NtpCustomizationUtilsUnitTest {
         File imageFile = NtpCustomizationUtils.createBackgroundImageFile();
         File dailyRefreshImageFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
         File uploadImageFile = NtpCustomizationUtils.createUploadImageFileInDir("test");
+        File themeCollectionImageFile =
+                NtpCustomizationUtils.createThemeCollectionImageFileInDir("test_theme");
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, imageFile);
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, dailyRefreshImageFile);
         NtpCustomizationUtils.saveBitmapImageToFile(bitmap, uploadImageFile);
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, themeCollectionImageFile);
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(imageFile.exists());
         assertTrue(dailyRefreshImageFile.exists());
         assertTrue(uploadImageFile.exists());
+        assertTrue(themeCollectionImageFile.exists());
 
         // Call reset.
         NtpCustomizationUtils.resetCustomizedImage(/* deleteImageFile= */ true);
@@ -557,6 +561,8 @@ public class NtpCustomizationUtilsUnitTest {
         assertFalse(dailyRefreshImageFile.exists());
         assertFalse(uploadImageFile.exists());
         assertFalse(uploadImageFile.getParentFile().exists());
+        assertFalse(themeCollectionImageFile.exists());
+        assertFalse(themeCollectionImageFile.getParentFile().exists());
     }
 
     @Test
@@ -1317,6 +1323,23 @@ public class NtpCustomizationUtilsUnitTest {
                 uploadImageData);
     }
 
+    @Test
+    public void testSaveBackgroundInfo_withThemeCollection() {
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        NtpBackgroundDataThemeCollection themeCollectionData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        /* customBackgroundInfo= */ null,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        "themeHash");
+        testSaveBackgroundInfoImpl(
+                /* customBackgroundInfo= */ null,
+                /* skipSavingPrimaryColor= */ false,
+                themeCollectionData);
+    }
+
     private void testSaveBackgroundInfoImpl(
             @Nullable CustomBackgroundInfo customBackgroundInfo,
             boolean skipSavingPrimaryColor,
@@ -1355,6 +1378,10 @@ public class NtpCustomizationUtilsUnitTest {
             expectedSavedFile =
                     NtpCustomizationUtils.createUploadImageFileInDir(
                             uploadImageData.getFileIdHash());
+        } else if (ntpBackgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData
+                && themeCollectionData.getLastUploadImageFilePath() != null) {
+            expectedSavedFile =
+                    NtpCustomizationUtils.createThemeCollectionImageFileInDir("themeHash");
         } else {
             expectedSavedFile = NtpCustomizationUtils.createBackgroundImageFile();
         }

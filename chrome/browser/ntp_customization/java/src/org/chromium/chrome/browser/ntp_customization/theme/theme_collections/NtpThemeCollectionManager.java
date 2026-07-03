@@ -285,7 +285,8 @@ public class NtpThemeCollectionManager {
     }
 
     /** Returns a unique file name from the path. */
-    private static @Nullable String getFileName(@Nullable String path) {
+    @VisibleForTesting
+    static @Nullable String getFileName(@Nullable String path) {
         if (path == null || path.isEmpty()) {
             return null;
         }

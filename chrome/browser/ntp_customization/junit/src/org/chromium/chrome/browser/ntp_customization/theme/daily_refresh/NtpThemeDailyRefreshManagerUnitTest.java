@@ -17,6 +17,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 
+import androidx.annotation.Nullable;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -320,5 +322,36 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         assertNull(mManager.getLastDailyUpdateTimestampForTesting());
         assertNull(mManager.getNtpThemeColorIdForTesting());
         assertFalse(mManager.getIsDailyUpdateAppliedForTesting());
+    }
+
+    @Test
+    public void testReadNtpBackgroundImageForThemeCollection_dailyUpdateApplied() {
+        testReadNtpBackgroundImageForThemeCollectionImpl(
+                /* isDailyUpdateApplied= */ true, /* filePath= */ null);
+    }
+
+    @Test
+    public void testReadNtpBackgroundImageForThemeCollection_dailyUpdateNotApplied() {
+        File customFile = NtpCustomizationUtils.createThemeCollectionImageFileInDir("test_read");
+        testReadNtpBackgroundImageForThemeCollectionImpl(
+                /* isDailyUpdateApplied= */ false, customFile.getAbsolutePath());
+    }
+
+    private void testReadNtpBackgroundImageForThemeCollectionImpl(
+            boolean isDailyUpdateApplied, @Nullable String filePath) {
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        File targetFile =
+                isDailyUpdateApplied
+                        ? NtpCustomizationUtils.createDailyRefreshBackgroundImageFile()
+                        : new File(filePath);
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, targetFile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        if (isDailyUpdateApplied) {
+            mManager.setDailyUpdateStatusForThemeCollection(100);
+        }
+        mManager.readNtpBackgroundImageForThemeCollection(
+                (result) -> assertNotNull(result), /* executor= */ Runnable::run, filePath);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }
