@@ -6,7 +6,10 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -187,10 +190,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
 
 // Test a scenario which prefetch fails when a search related url in the
 // redirect chain.
-// TODO(crbug.com/527655680): Particularly flaky on Windows, but also flakes
-// on Linux and Mac
 IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
-                       DISABLED_PreventSearchRelatedRedirect) {
+                       PreventSearchRelatedRedirect) {
   base::HistogramTester histogram_tester;
   StartServer();
 
@@ -203,13 +204,18 @@ IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
              base::EscapeQueryParamValue(
                  "https://www.google.co.jp/search?q=123", /*use_plus=*/true));
   {
-    content::test::TestPrefetchWatcher test_prefetch_watcher;
+    // Wait for the prefetch's terminal status (recorded exactly once): the
+    // redirect response arrives over the network, so RunUntilIdle() could
+    // return while the prefetch is still in flight and the navigation below
+    // would cancel it instead of letting it fail on the invalid redirect.
+    base::RunLoop run_loop;
+    base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
+        "Preloading.Prefetch.PrefetchStatus",
+        base::BindLambdaForTesting(
+            [&run_loop](std::string_view, uint64_t,
+                        base::HistogramBase::Sample32) { run_loop.Quit(); }));
     GetNewTabPagePreloadPipelineManager()->StartPrefetch(preload_url);
-    // TODO(crbug.com/421941586): There is no existing method to be notified of
-    // event completeness at the moment as mentioned in
-    // https://chromium-review.googlesource.com/c/chromium/src/+/7408336/comment/3da2c289_ff73b245/
-    // Consider plumbing event completeness notification to avoid RunUntilIdle
-    base::RunLoop().RunUntilIdle();
+    run_loop.Run();
   }
 
   // Simulate the navigation and flush the metrics.
