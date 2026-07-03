@@ -18916,6 +18916,21 @@
             ]
         }
     ],
+    "PasswordSaveInContextErrorResolution": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordSaveInContextErrorResolution"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordSaveUpdateDropdownMenuExperiment": [
         {
             "platforms": [
