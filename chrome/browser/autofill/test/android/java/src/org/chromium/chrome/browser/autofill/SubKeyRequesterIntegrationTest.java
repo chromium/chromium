@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,9 +14,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.SubKeyRequester;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
@@ -25,12 +24,12 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests for SubKeyRequesterFactory/SubKeyRequester. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class SubKeyRequesterIntegrationTest {
-    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private SubKeyRequester mSubKeyRequester;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSubKeyRequester = SubKeyRequesterFactory.getInstance();

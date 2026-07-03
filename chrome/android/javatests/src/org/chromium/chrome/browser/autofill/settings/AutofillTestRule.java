@@ -19,17 +19,17 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/** Custom ChromeBrowserTestRule to test Autofill. */
-class AutofillTestRule extends ChromeBrowserTestRule
-        implements EditorObserverForTest, Callback<Fragment> {
+/** Custom SigninTestRule to test Autofill. */
+class AutofillTestRule extends SigninTestRule implements EditorObserverForTest, Callback<Fragment> {
     final CallbackHelper mClickUpdate;
     final CallbackHelper mEditorTextUpdate;
     final CallbackHelper mPreferenceUpdate;
@@ -55,6 +55,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
+                NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
                 // If the test suit is batched, the observers are reset after every test method by
                 // the {@link ResettersForTesting}. Thus the observers must be set in the
                 // {@link TestRule#apply()} method.

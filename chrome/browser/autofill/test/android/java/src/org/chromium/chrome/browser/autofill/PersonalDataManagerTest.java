@@ -24,7 +24,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,7 +34,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.IbanRecordType;
@@ -43,6 +41,7 @@ import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -54,12 +53,12 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PersonalDataManagerTest {
-    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private AutofillTestHelper mHelper;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mHelper = new AutofillTestHelper();
     }
 
