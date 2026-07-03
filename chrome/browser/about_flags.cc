@@ -5016,6 +5016,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kFallbackToSWIfGLES3NotSupported)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
+    {"variable-system-font-support-on-windows",
+     flag_descriptions::kVariableSystemFontSupportOnWindowsName,
+     flag_descriptions::kVariableSystemFontSupportOnWindowsDescription, kOsWin,
+     FEATURE_VALUE_TYPE(blink::features::kVariableSystemFontSupportOnWindows)},
+#endif  // BUILDFLAG(IS_WIN)
     {"enable-experimental-web-platform-features",
      flag_descriptions::kExperimentalWebPlatformFeaturesName,
      flag_descriptions::kExperimentalWebPlatformFeaturesDescription, kOsAll,

@@ -1446,6 +1446,12 @@ inline constexpr char kHttpHeadersInjectionName[] = "HTTP Headers Injection";
 inline constexpr char kHttpHeadersInjectionDescription[] =
     "Enables injection of custom HTTP headers in network requests.";
 
+inline constexpr char kVariableSystemFontSupportOnWindowsName[] =
+    "Variable system font support on Windows";
+inline constexpr char kVariableSystemFontSupportOnWindowsDescription[] =
+    "Enables axis-aware matching and application of variation settings "
+    "for variable system fonts on Windows.";
+
 inline constexpr char kViewportSegmentsName[] = "Viewport Segments API";
 inline constexpr char kViewportSegmentsDescription[] =
     "Enable the viewport segment API, giving information about the logical "

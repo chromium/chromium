@@ -9676,6 +9676,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "variable-system-font-support-on-windows",
+    "owners": [ "dileepmaurya@microsoft.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "variations-experimental-corpus",
     "owners": [ "//components/variations/OWNERS" ],
     // This is used by testers to manually test changes to the variations seed

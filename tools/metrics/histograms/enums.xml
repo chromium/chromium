@@ -11924,6 +11924,7 @@ from previous Chrome versions.
   <int value="-839788988" label="EnableToggleCameraShortcut:disabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
   <int value="-839544057" label="WebRtcCombinedNetworkAndWorkerThread:enabled"/>
+  <int value="-838973510" label="VariableSystemFontSupportOnWindows:disabled"/>
   <int value="-838719204"
       label="ForceMajorVersionInMinorPositionInUserAgent:disabled"/>
   <int value="-838233458" label="RustyPng:enabled"/>
@@ -15436,6 +15437,7 @@ from previous Chrome versions.
   <int value="291998717" label="AccessibilitySnapshotStressTests:disabled"/>
   <int value="292058664" label="OpenDownloadDialog:disabled"/>
   <int value="292150395" label="AndroidVerticalTabs:enabled"/>
+  <int value="292541723" label="VariableSystemFontSupportOnWindows:enabled"/>
   <int value="292560715" label="ViewsCastDialog:disabled"/>
   <int value="292731264" label="PasswordChangeInSettings:disabled"/>
   <int value="292842744"

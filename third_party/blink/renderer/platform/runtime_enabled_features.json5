@@ -6646,6 +6646,9 @@
       public: true,
     },
     {
+      name: "VariableSystemFontSupportOnWindows",
+    },
+    {
       // Whether a video element should automatically play fullscreen unless
       // 'playsinline' is set.
       name: "VideoAutoFullscreen",
