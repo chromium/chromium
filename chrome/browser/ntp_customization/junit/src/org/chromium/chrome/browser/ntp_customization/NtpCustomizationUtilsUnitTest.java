@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Cus
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -586,7 +587,7 @@ public class NtpCustomizationUtilsUnitTest {
         String filePath = "/path/to/image.png";
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
 
-        assertEquals("", NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+        assertNull(NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
 
         NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(filePath);
         assertEquals(
@@ -594,7 +595,7 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(
                 filePath,
                 prefsManager.readString(
-                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH, ""));
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH, null));
 
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         assertFalse(
@@ -1331,12 +1332,21 @@ public class NtpCustomizationUtilsUnitTest {
                         /* portraitWindowSize= */ null,
                         /* landscapeWindowSize= */ null);
 
+        String filePath = null;
+        if (ntpBackgroundData instanceof NtpBackgroundDataUploadImage uploadImageData) {
+            filePath = uploadImageData.getLastUploadImageFilePath();
+        } else if (ntpBackgroundData
+                instanceof NtpBackgroundDataThemeCollection themeCollectionData) {
+            filePath = themeCollectionData.getLastUploadImageFilePath();
+        }
+
         NtpCustomizationUtils.saveBackgroundInfo(
                 customBackgroundInfo,
                 bitmap,
                 backgroundImageInfo,
                 skipSavingPrimaryColor,
-                ntpBackgroundData);
+                /* primaryColor= */ null,
+                filePath);
         RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         File expectedSavedFile;

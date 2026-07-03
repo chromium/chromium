@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Cus
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -609,11 +610,18 @@ public class NtpChromeColorsCoordinatorUnitTest {
         CustomBackgroundInfo customBackgroundInfo =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.EXAMPLE_URL,
-                        "test",
+                        /* collectionId= */ "test",
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false);
-        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                bitmap, customBackgroundInfo, backgroundImageInfo);
+        NtpBackgroundDataThemeCollection backgroundData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        customBackgroundInfo,
+                        backgroundImageInfo,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
 
         mCoordinator.onBackgroundTypeChanged();
 

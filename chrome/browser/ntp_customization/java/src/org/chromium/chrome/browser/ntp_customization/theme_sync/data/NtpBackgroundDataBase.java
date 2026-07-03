@@ -32,6 +32,7 @@ public abstract class NtpBackgroundDataBase {
     @VisibleForTesting static final String PLATFORM_TYPE_KEY = "platformType";
     @VisibleForTesting static final String BACKGROUND_TYPE_KEY = "backgroundType";
     @VisibleForTesting static final String PRIMARY_COLOR_KEY = "primaryColor";
+    @VisibleForTesting static final String FILE_ID_HASH_KEY = "fileIdHash";
 
     @IntDef({
         PlatformType.UNKNOWN,

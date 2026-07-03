@@ -92,13 +92,13 @@ public class NtpThemeDailyRefreshManager {
      * applied, it reads the image for the refreshed theme.
      */
     public void readNtpBackgroundImageForThemeCollection(
-            Callback<@Nullable Bitmap> callback, Executor executor) {
+            Callback<@Nullable Bitmap> callback, Executor executor, @Nullable String filePath) {
         if (mIsDailyUpdateApplied) {
             NtpCustomizationUtils.readDailyRefreshNtpBackgroundImage(callback, executor);
             return;
         }
 
-        NtpCustomizationUtils.readNtpBackgroundImage(callback, executor, /* filePath= */ null);
+        NtpCustomizationUtils.readNtpBackgroundImage(callback, executor, filePath);
     }
 
     /**

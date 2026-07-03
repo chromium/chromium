@@ -53,21 +53,24 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         info1,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
-                        Color.RED);
+                        Color.RED,
+                        /* fileIdHash= */ null);
         NtpBackgroundDataThemeCollection data2 =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID_LOCAL,
                         info2,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
-                        Color.RED);
+                        Color.RED,
+                        /* fileIdHash= */ null);
         NtpBackgroundDataThemeCollection data3 =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID_LOCAL,
                         info1,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
-                        Color.BLUE);
+                        Color.BLUE,
+                        /* fileIdHash= */ null);
 
         assertEquals(data1, data2);
         assertNotEquals(data1, data3);
@@ -98,7 +101,12 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
         NtpBackgroundDataThemeCollection data =
                 new NtpBackgroundDataThemeCollection(
-                        platformType, info, backgroundImageInfo, /* bitmap= */ null, primaryColor);
+                        platformType,
+                        info,
+                        backgroundImageInfo,
+                        /* bitmap= */ null,
+                        primaryColor,
+                        /* fileIdHash= */ null);
 
         JSONObject json = data.toJson();
         NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);
@@ -139,7 +147,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         info,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
-                        primaryColor);
+                        primaryColor,
+                        /* fileIdHash= */ null);
 
         JSONObject json = data.toJson();
         NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);

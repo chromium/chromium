@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -661,10 +662,20 @@ public class NtpCustomizationConfigManagerUnitTest {
         int initialBackgroundType = mNtpCustomizationConfigManager.getBackgroundType();
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         CustomBackgroundInfo customBackgroundInfo =
-                new CustomBackgroundInfo(JUnitTestGURLs.NTP_URL, "test", false, false);
-
-        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.NTP_URL,
+                        /* collectionId= */ "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection backgroundData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        customBackgroundInfo,
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
 
         // Verifies the listener was notified with the correct parameters.
         verify(mListener)
@@ -699,9 +710,15 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* collectionId= */ "test",
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false);
-
-        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
+        NtpBackgroundDataThemeCollection backgroundData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        customBackgroundInfo,
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
 
@@ -712,8 +729,15 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* collectionId= */ "test",
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true);
-        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
+        backgroundData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        customBackgroundInfo,
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         assertTrue(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
         assertNotEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
     }
@@ -748,9 +772,20 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertNull(mNtpCustomizationConfigManager.getCustomBackgroundInfo());
 
         CustomBackgroundInfo customBackgroundInfo =
-                new CustomBackgroundInfo(JUnitTestGURLs.NTP_URL, "test", false, false);
-        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.NTP_URL,
+                        /* collectionId= */ "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection backgroundData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        customBackgroundInfo,
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         assertEquals(
                 customBackgroundInfo, mNtpCustomizationConfigManager.getCustomBackgroundInfo());
     }
@@ -781,7 +816,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // 4. Verify that the manager tried to read the background image.
         verify(mNtpThemeDailyRefreshManager)
                 .readNtpBackgroundImageForThemeCollection(
-                        mBitmapCallbackCaptor.capture(), any(Executor.class));
+                        mBitmapCallbackCaptor.capture(), any(Executor.class), eq(null));
 
         // 5. Add a listener and simulate the bitmap becoming available.
         configManager.addListener(mListener, mContext, /* skipNotify= */ true);
@@ -862,7 +897,8 @@ public class NtpCustomizationConfigManagerUnitTest {
                 mBitmap,
                 mBackgroundImageInfo,
                 /* skipSavingPrimaryColor= */ true,
-                /* ntpBackgroundData= */ null);
+                /* primaryColor= */ null,
+                /* filePath= */ null);
 
         NtpCustomizationConfigManager manager =
                 ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);

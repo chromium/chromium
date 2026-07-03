@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -30,7 +29,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
@@ -39,9 +37,11 @@ import static org.chromium.components.browser_ui.bottomsheet.BottomSheetControll
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -65,12 +65,13 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager.SnackBarState;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -601,39 +602,45 @@ public class NtpCustomizationMediatorUnitTest {
                 NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        @ColorInt int themeCollectionDataPrimaryColor = Color.BLUE;
+        bitmap.eraseColor(themeCollectionDataPrimaryColor);
+        NtpBackgroundDataThemeCollection themeCollectionData =
+                mock(NtpBackgroundDataThemeCollection.class);
+        when(themeCollectionData.getPrimaryColor()).thenReturn(null);
+        mMediator.onNewThemeCollectionImageSelected(bitmap);
+        when(mConfigManager.getNtpBackgroundData()).thenReturn(themeCollectionData);
+        observer.onSheetClosed(0);
+
         // Verifies pickAndSavePrimaryColor() is called when a new theme collection image is
         // selected and the background image type is THEME_COLLECTION.
-        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        mMediator.onNewThemeCollectionImageSelected(bitmap);
-        when(mConfigManager.getBackgroundType()).thenReturn(THEME_COLLECTION);
-
-        observer.onSheetClosed(0);
-
-        assertNotEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+        assertEquals(
+                themeCollectionDataPrimaryColor,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
+        // Sets the current theme type is NtpBackgroundType.IMAGE_FROM_DISK.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        NtpBackgroundDataUploadImage uploadImageData = mock(NtpBackgroundDataUploadImage.class);
+        when(mConfigManager.getNtpBackgroundData()).thenReturn(uploadImageData);
+        mMediator.onNewThemeCollectionImageSelected(bitmap);
+        observer.onSheetClosed(0);
         // Verifies pickAndSavePrimaryColor() is NOT called if background image type is not
         // THEME_COLLECTION.
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        when(mConfigManager.getBackgroundType()).thenReturn(NtpBackgroundType.IMAGE_FROM_DISK);
-        mMediator.onNewThemeCollectionImageSelected(bitmap);
-        observer.onSheetClosed(0);
         assertEquals(
                 NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
-        // Verifies pickAndSavePrimaryColor() is not called when mNewThemeCollectionImage is null.
-        mMediator.onNewThemeCollectionImageSelected(null);
         // Clean up shared preference for the test.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        when(mConfigManager.getBackgroundType()).thenReturn(THEME_COLLECTION);
+        when(mConfigManager.getNtpBackgroundData()).thenReturn(themeCollectionData);
         assertEquals(
                 NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
+        mMediator.onNewThemeCollectionImageSelected(null);
         observer.onSheetClosed(0);
 
+        // Verifies pickAndSavePrimaryColor() is not called when mNewThemeCollectionImage is null.
         assertEquals(
                 NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());

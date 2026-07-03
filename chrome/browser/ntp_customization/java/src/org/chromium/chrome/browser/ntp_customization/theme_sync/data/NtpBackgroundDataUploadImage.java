@@ -28,8 +28,6 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataBase {
     @VisibleForTesting
     static final String LAST_UPLOAD_IMAGE_FILE_PATH_KEY = "lastUploadImageFilePath";
 
-    private static final String FILE_ID_HASH_KEY = "fileIdHash";
-
     private final @Nullable BackgroundImageInfo mBackgroundImageInfo;
     // The mFileIdHash isn't null when NTP theme sync is enabled.
     private final @Nullable String mFileIdHash;
