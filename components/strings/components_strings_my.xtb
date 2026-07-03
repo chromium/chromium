@@ -2350,6 +2350,7 @@
 <translation id="4691093235373904540">အမိုး ပြုပြင်ခြင်း</translation>
 <translation id="4692623383562244444">ရှာဖွေမှု အင်ဂျင်</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ကို မေးပါ</translation>
+<translation id="4697071790493980729">ရှာမတွေ့ပါ</translation>
 <translation id="4698308118265482293">နိုင်ငံကူးလက်မှတ် အပ်ဒိတ်လုပ်မလား</translation>
 <translation id="4698692901173737941">တိုက်ခိုက်ရေးအားကစား</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4709,6 +4710,7 @@
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8352849934814541340">ဤစက်၏ စီမံခန့်ခွဲသူက ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် အပလီကေးရှင်းများ ထည့်သွင်းထားသည်။ အပလီကေးရှင်းများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
 <translation id="8355270400102541638">စက်တွင်း ရပ်တန့်သွားမှု အခြေအနေ-</translation>
+<translation id="8362914115861174987">ဤဘာသာသို့ ပြန်ဆိုရန်</translation>
 <translation id="8363502534493474904">လေယာဉ်ပျံမုဒ်ကို ပိတ်နေသည်</translation>
 <translation id="8363929499301563123">ဝဘ်ဆိုက် ကွတ်ကီးများ (မကြာသေးမီက ဝင်ကြည့်ထားသည့် ဝဘ်ဆိုက်များရှိ လက်မှတ်ထိုးဝင်ထားသော အခြေအနေကို ထိန်းသိမ်းထားပါမည်)</translation>
 <translation id="8364627913115013041">မသတ်မှတ်ရသေး</translation>
@@ -4716,7 +4718,7 @@
 <translation id="836616551641291797">သင့်ဘရောင်ဇာကို စီမံပုံအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="8367705492654390392">ကြိုက်ရာမေးရန်</translation>
 <translation id="8368001212524806591">ဈေးနှုန်း စောင့်ကြည့်ခြင်း</translation>
-<translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
+<translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် စက် ( <ph name="DEVICE_ID" /> )</translation>
 <translation id="8368476060205742148">Google Play ဝန်ဆောင်မှုများ</translation>
 <translation id="8369073279043109617">ကုဒ်အသစ် ရယူရန်</translation>
 <translation id="8371841335382565017">ကာစ်လုပ်ခြင်းအတွက် စက်စာရင်းကို ပြပါ</translation>

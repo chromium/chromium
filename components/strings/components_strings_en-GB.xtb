@@ -2349,6 +2349,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4691093235373904540">Roofing</translation>
 <translation id="4692623383562244444">Search engines</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – ask <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">No results found</translation>
 <translation id="4698308118265482293">Update passport</translation>
 <translation id="4698692901173737941">Combat Sports</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4708,6 +4709,7 @@ Additional details:
 <translation id="8351131234907093545">Create note</translation>
 <translation id="8352849934814541340">The administrator of this device has installed applications for additional functions. Applications have access to some of your data.</translation>
 <translation id="8355270400102541638">Local crash context:</translation>
+<translation id="8362914115861174987">Translate to</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
 <translation id="8363929499301563123">Website cookies (signed-in state on recently visited websites will be preserved)</translation>
 <translation id="8364627913115013041">Not set.</translation>

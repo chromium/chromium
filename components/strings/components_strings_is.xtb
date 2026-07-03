@@ -2349,6 +2349,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4691093235373904540">Þakviðgerðir og þakefni</translation>
 <translation id="4692623383562244444">Leitarvélar</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> - Spurðu <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">Engar niðurstöður fundust</translation>
 <translation id="4698308118265482293">Uppfæra vegabréf</translation>
 <translation id="4698692901173737941">Bardagaíþróttir</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4707,6 +4708,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="8352849934814541340">Kerfisstjóri þessa tækis hefur sett upp forrit fyrir fleiri aðgerðir. Forrit hafa aðgang að einhverjum gögnum í þinni eigu.</translation>
 <translation id="8355270400102541638">Samhengi staðbundins hruns:</translation>
+<translation id="8362914115861174987">Þýða yfir á</translation>
 <translation id="8363502534493474904">Slökkva á flugstillingu</translation>
 <translation id="8363929499301563123">Fótspor vefsvæða (innskráningarstaða á vefsvæðum sem nýlega voru heimsótt verður varðveitt)</translation>
 <translation id="8364627913115013041">Ekkert valið.</translation>

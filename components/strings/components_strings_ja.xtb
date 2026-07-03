@@ -1441,7 +1441,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> の CVC を入力</translation>
 <translation id="323585066388831737">ライトレッド</translation>
 <translation id="3235902901585019063">ローカル ファイルは <ph name="DATE_TIME" /> に削除されます。ビジネスや個人の重要なデータは外部に保存してください。</translation>
-<translation id="3236212803136366317">カードのメリット</translation>
+<translation id="3236212803136366317">カード特典</translation>
 <translation id="3237427677128462778">Google ウォレットに保存できませんでした</translation>
 <translation id="3238395604961564389">シークレット ウインドウでリンクを開く</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ブラウザのデザインをカスタマイズできます</translation>
@@ -2349,6 +2349,7 @@
 <translation id="4691093235373904540">屋根材、ルーフ修理</translation>
 <translation id="4692623383562244444">検索エンジン</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> に質問</translation>
+<translation id="4697071790493980729">一致する検索結果は見つかりませんでした</translation>
 <translation id="4698308118265482293">パスポート情報を更新</translation>
 <translation id="4698692901173737941">格闘技</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4708,6 +4709,7 @@
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8352849934814541340">このデバイスの管理者によって、機能を追加するアプリケーションがインストールされました。このアプリケーションでは、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="8355270400102541638">ローカル クラッシュ コンテキスト:</translation>
+<translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8363502534493474904">機内モードをオフにする</translation>
 <translation id="8363929499301563123">ウェブサイト Cookie（最近アクセスしたウェブサイトのログイン状態が保持されます）</translation>
 <translation id="8364627913115013041">未設定</translation>

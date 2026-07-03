@@ -4629,7 +4629,7 @@
 <translation id="4317733381297736564">Есть платный контент</translation>
 <translation id="4317820549299924617">Не удалось выполнить верификацию</translation>
 <translation id="4319441675152393296">Нажмите на значок расширения, чтобы разрешить чтение и изменение данных <ph name="HOST" />.</translation>
-<translation id="4320177379694898372">Нет подключения к Интернету</translation>
+<translation id="4320177379694898372">Нет подключения к интернету</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Показать файл "<ph name="FILE_NAME" />" в Finder</translation>
 <translation id="4322394346347055525">Закрыть другие вкладки</translation>
@@ -5547,7 +5547,7 @@
 <translation id="4994754230098574403">Настройка</translation>
 <translation id="4995676741161760215">Расширение включено</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Виртуальные машины "<ph name="VM_TYPE" />" не найдены}=1{Найдена 1 ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}one{Найдена {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}few{Найдены {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}many{Найдено {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}other{Найдено {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}}</translation>
-<translation id="4997086284911172121">Нет подключения к Интернету.</translation>
+<translation id="4997086284911172121">Нет подключения к интернету.</translation>
 <translation id="4998430619171209993">Включено</translation>
 <translation id="4999804342505941663">Включить режим "Не беспокоить"</translation>
 <translation id="5000497292978544380">Режим ИИ в Google Поиске</translation>

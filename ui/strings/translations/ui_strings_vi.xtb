@@ -68,7 +68,7 @@
 <translation id="2653844658857826081">MỚI</translation>
 <translation id="2666092431469916601">Trên cùng</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 năm trước}other{# năm trước}}</translation>
-<translation id="2878511608894704031">Xóa tất cả</translation>
+<translation id="2878511608894704031">Xoá tất cả</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{trong 1 ngày}other{trong # ngày}}</translation>
 <translation id="2922712708897119705">Cột <ph name="COLUMN_NAME" /> sắp xếp theo thứ tự giảm dần.</translation>
 <translation id="293972288692056847">{COUNT,plural, =1{Không tìm thấy tiện ích}other{Không tìm thấy tiện ích}}</translation>

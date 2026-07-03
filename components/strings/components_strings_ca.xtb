@@ -2349,6 +2349,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4691093235373904540">Teulats</translation>
 <translation id="4692623383562244444">Motors de cerca</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> - Pregunta a <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">No s'ha trobat cap resultat</translation>
 <translation id="4698308118265482293">Actualitza el passaport</translation>
 <translation id="4698692901173737941">Esports de combat</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4708,6 +4709,7 @@ Detalls addicionals:
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8352849934814541340">L'administrador del dispositiu ha instal·lat aplicacions per obtenir funcions addicionals. Les aplicacions tenen accés a algunes de les teves dades.</translation>
 <translation id="8355270400102541638">Context del bloqueig local:</translation>
+<translation id="8362914115861174987">Tradueix a</translation>
 <translation id="8363502534493474904">Desactiva el mode d'avió.</translation>
 <translation id="8363929499301563123">Galetes de llocs web (l'estat de sessió iniciada als llocs web que s'han visitat recentment es conservarà)</translation>
 <translation id="8364627913115013041">No s'ha definit.</translation>

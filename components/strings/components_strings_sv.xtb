@@ -2349,6 +2349,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4691093235373904540">Takläggning</translation>
 <translation id="4692623383562244444">Sökmotorer</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – Fråga <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">Inga resultat hittades</translation>
 <translation id="4698308118265482293">Uppdatera passet</translation>
 <translation id="4698692901173737941">Kampsport</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4708,6 +4709,7 @@ Mer information.
 <translation id="8351131234907093545">Skapa anteckning</translation>
 <translation id="8352849934814541340">Administratören för enheten har installerat appar för ytterligare funktioner. Apparna har åtkomst till en del av din data.</translation>
 <translation id="8355270400102541638">Kontext för lokal krasch:</translation>
+<translation id="8362914115861174987">Översätt till</translation>
 <translation id="8363502534493474904">inaktivera flygplansläget</translation>
 <translation id="8363929499301563123">Webbplatscookies (inloggningsstatus på webbplatser som du har besökt nyligen bevaras)</translation>
 <translation id="8364627913115013041">Inte angiven.</translation>

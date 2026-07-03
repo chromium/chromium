@@ -2349,6 +2349,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4691093235373904540">Tagdækning</translation>
 <translation id="4692623383562244444">Søgemaskiner</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – Spørg <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">Der blev ikke fundet nogen resultater</translation>
 <translation id="4698308118265482293">Opdater pas</translation>
 <translation id="4698692901173737941">Kampsport</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4708,6 +4709,7 @@ Yderligere oplysninger:
 <translation id="8351131234907093545">Opret note</translation>
 <translation id="8352849934814541340">Administratoren af denne enhed har installeret apps til yderligere funktioner. De pågældende apps har adgang til nogle af dine data.</translation>
 <translation id="8355270400102541638">Lokal nedbrudskontekst:</translation>
+<translation id="8362914115861174987">Oversæt til</translation>
 <translation id="8363502534493474904">Deaktivere flytilstand</translation>
 <translation id="8363929499301563123">Websitecookies (loginstatus på websites, der er besøgt for nylig, bevares)</translation>
 <translation id="8364627913115013041">Ikke angivet.</translation>

@@ -2349,6 +2349,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4691093235373904540">Pokrivanje krova</translation>
 <translation id="4692623383562244444">Pretraživači</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – pitajte funkciju <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">Nije pronađen nijedan rezultat</translation>
 <translation id="4698308118265482293">Ažurirajte pasoš</translation>
 <translation id="4698692901173737941">Borilački sportovi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4708,6 +4709,7 @@ Dodatni detalji:
 <translation id="8351131234907093545">Napravite bilješku</translation>
 <translation id="8352849934814541340">Administrator ovog uređaja je instalirao ekstenzije radi dodatnih funkcija. Ekstenzije imaju pristup samo nekim vašim podacima.</translation>
 <translation id="8355270400102541638">Kontekst lokalnog pada aplikacije:</translation>
+<translation id="8362914115861174987">Prevedi na</translation>
 <translation id="8363502534493474904">Isključiti način rada u avionu</translation>
 <translation id="8363929499301563123">Kolačići web lokacije (prijava na nedavno posjećene web lokacije će se sačuvati)</translation>
 <translation id="8364627913115013041">Nije postavljeno.</translation>

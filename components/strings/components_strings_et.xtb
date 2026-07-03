@@ -2349,6 +2349,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4691093235373904540">Katusetööd</translation>
 <translation id="4692623383562244444">Otsingumootorid</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – küsige mudelilt <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">Ei leitud ühtegi tulemust</translation>
 <translation id="4698308118265482293">Värskenda passi</translation>
 <translation id="4698692901173737941">Võitlussport</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4708,6 +4709,7 @@ Lisateave:
 <translation id="8351131234907093545">Märkme loomine</translation>
 <translation id="8352849934814541340">Seadme administraator on installinud rakendused, mis hõlmavad lisafunktsioone. Rakendustel on juurdepääs teie mõningatele andmetele.</translation>
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>
+<translation id="8362914115861174987">Tõlke sihtkeel</translation>
 <translation id="8363502534493474904">Lülitage lennurežiim välja</translation>
 <translation id="8363929499301563123">Veebisaidi küpsised (säilitatakse hiljuti külastatud veebisaitide sisselogitud olek)</translation>
 <translation id="8364627913115013041">Määramata.</translation>

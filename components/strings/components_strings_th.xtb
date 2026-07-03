@@ -2348,6 +2348,7 @@
 <translation id="4691093235373904540">การมุงหลังคา</translation>
 <translation id="4692623383562244444">เครื่องมือค้นหา</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> - ถาม <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4697071790493980729">ไม่พบผลการค้นหา</translation>
 <translation id="4698308118265482293">อัปเดตหนังสือเดินทาง</translation>
 <translation id="4698692901173737941">กีฬาต่อสู้</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -4707,6 +4708,7 @@
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8352849934814541340">ผู้ดูแลระบบของอุปกรณ์นี้ได้ติดตั้งแอปพลิเคชันสำหรับฟังก์ชันเพิ่มเติม แอปพลิเคชันมีสิทธิ์เข้าถึงข้อมูลบางส่วนของคุณได้</translation>
 <translation id="8355270400102541638">บริบทของการขัดข้องในเครื่อง:</translation>
+<translation id="8362914115861174987">แปลเป็นภาษา</translation>
 <translation id="8363502534493474904">ปิดโหมดบนเครื่องบิน</translation>
 <translation id="8363929499301563123">คุกกี้ของเว็บไซต์ (สถานะที่ลงชื่อเข้าใช้บนเว็บไซต์ที่คุณเข้าชมล่าสุดจะได้รับการเก็บไว้)</translation>
 <translation id="8364627913115013041">ไม่ได้ตั้งค่า</translation>
