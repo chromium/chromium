@@ -114,10 +114,6 @@ const PaymentRequestData& GetPaymentRequestData(
 const char* GetIssuerNetworkForBasicCardIssuerNetwork(
     std::string_view basic_card_issuer_network);
 
-// Returns whether the specified `basic_card_issuer_network` is a valid basic
-// card network or not. Note that 'generic' is not considered valid.
-bool IsValidBasicCardIssuerNetwork(std::string_view basic_card_issuer_network);
-
 // Returns whether the specified `country_code` is a valid country code.
 bool IsValidCountryCode(std::string_view country_code);
 bool IsValidCountryCode(std::u16string_view country_code);

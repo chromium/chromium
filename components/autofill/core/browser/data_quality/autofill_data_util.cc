@@ -522,11 +522,6 @@ const char* GetIssuerNetworkForBasicCardIssuerNetwork(
   return kGenericPaymentRequestData.issuer_network;
 }
 
-bool IsValidBasicCardIssuerNetwork(std::string_view basic_card_issuer_network) {
-  return std::ranges::contains(kPaymentRequestData, basic_card_issuer_network,
-                               &PaymentRequestData::basic_card_issuer_network);
-}
-
 bool IsValidCountryCode(std::string_view country_code) {
   return GetCountryCodes().contains(country_code);
 }
