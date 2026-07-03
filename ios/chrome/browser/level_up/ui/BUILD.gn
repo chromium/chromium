@@ -10,6 +10,8 @@ source_set("ui") {
     "level_up_completed_task_header_row_view.mm",
     "level_up_consumer.h",
     "level_up_profile_consumer.h",
+    "level_up_progress_bar.h",
+    "level_up_progress_bar.mm",
     "level_up_progress_view.h",
     "level_up_progress_view.mm",
     "level_up_stat_view.h",
