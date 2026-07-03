@@ -856,8 +856,9 @@ ScopedExecutionEngineFactory::~ScopedExecutionEngineFactory() {
 MockActorTaskDelegate::MockActorTaskDelegate() = default;
 MockActorTaskDelegate::~MockActorTaskDelegate() = default;
 
-MockPolicyChecker::MockPolicyChecker(UrlBlockReason reason,
-                                     ContentValidationReason content_reason)
+MockPolicyChecker::MockPolicyChecker(
+    UrlBlockReason reason,
+    std::optional<ContentValidationReason> content_reason)
     : reason_(reason), content_reason_(content_reason) {}
 MockPolicyChecker::~MockPolicyChecker() = default;
 
@@ -870,8 +871,12 @@ void MockPolicyChecker::ValidateContentSentToRenderer(
     content::RenderFrameHost* frame,
     const std::string& content,
     ContentValidationCallback callback) const {
+  if (!content_reason_) {
+    // Silently drop the callback without running it.
+    return;
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), content_reason_));
+      FROM_HERE, base::BindOnce(std::move(callback), *content_reason_));
 }
 
 const EnterprisePolicyChecker* NoEnterprisePolicyChecker() {

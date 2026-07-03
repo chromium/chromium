@@ -38,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -285,6 +286,12 @@ void PageTool::Validate(ToolCallback callback) {
                                         journal().AllocateDynamicTrackUUID(),
                                         "ContentAnalysisScan", {});
 
+  // If the enterprise scan drops this callback (e.g. frame/content torn down
+  // midscan and the warn dialog is destroyed), resolve as kFrameWentAway
+  // instead of hanging the action indefinitely.
+  ToolCallback wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), MakeResult(mojom::ActionResultCode::kFrameWentAway));
+
   checker.ValidateContentSentToRenderer(
       frame, text,
       base::BindOnce(
@@ -331,7 +338,7 @@ void PageTool::Validate(ToolCallback callback) {
               std::move(callback).Run(MakeOkResult());
             }
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          weak_ptr_factory_.GetWeakPtr(), std::move(wrapped_callback),
           std::move(invocation), validation_supported, std::move(trace_entry)));
 }
 

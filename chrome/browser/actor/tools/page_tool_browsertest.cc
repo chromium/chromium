@@ -500,6 +500,35 @@ IN_PROC_BROWSER_TEST_P(ActorPageToolContentScanningTest,
   ExpectOkResult(result);
 }
 
+IN_PROC_BROWSER_TEST_P(ActorPageToolContentScanningTest,
+                       ContentScanningDropped) {
+  const GURL url = embedded_test_server()->GetURL("/actor/cancel_typing.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+
+  MockPolicyChecker dropped_checker(
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked, std::nullopt);
+
+  TaskId task_id = ActorKeyedService::Get(GetProfile())
+                       ->CreateTask(TestTaskSourceInfo(), &dropped_checker);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), "some data",
+                      /*follow_by_enter=*/false);
+
+  ActResultFuture result;
+  ActorKeyedService::Get(GetProfile())
+      ->GetTask(task_id)
+      ->Act(ToRequestList(action), result.GetCallback());
+
+  // Because the callback is dropped without being run,
+  // WrapCallbackWithDefaultInvokeIfNotRun should automatically invoke the
+  // fallback, resolving to kFrameWentAway and preventing a hang.
+  ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ActorPageToolContentScanningTest,
                          testing::Bool());

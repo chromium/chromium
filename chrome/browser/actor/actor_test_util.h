@@ -419,9 +419,10 @@ class MockActorTaskDelegate : public ActorTaskDelegate {
 
 class MockPolicyChecker : public EnterprisePolicyChecker {
  public:
-  explicit MockPolicyChecker(UrlBlockReason reason,
-                             ContentValidationReason content_reason =
-                                 ContentValidationReason::kAllowed);
+  explicit MockPolicyChecker(
+      UrlBlockReason reason,
+      std::optional<ContentValidationReason> content_reason =
+          ContentValidationReason::kAllowed);
   ~MockPolicyChecker() override;
 
   UrlBlockReason Evaluate(const GURL& url) const override;
@@ -432,7 +433,7 @@ class MockPolicyChecker : public EnterprisePolicyChecker {
 
  private:
   UrlBlockReason reason_;
-  ContentValidationReason content_reason_;
+  std::optional<ContentValidationReason> content_reason_;
 };
 
 // Returns a passthrough EnterprisePolicyChecker tests can use to avoid
