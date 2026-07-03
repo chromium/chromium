@@ -46,7 +46,7 @@ void PlatformThreadId::WriteIntoTrace(perfetto::TracedValue&& context) const {
 }
 
 // static
-void PlatformThreadBase::SetCurrentThreadType(ThreadType thread_type) {
+void PlatformThreadBase::SetDefaultThreadType(ThreadType thread_type) {
   GetThreadTypeManager()->SetDefault(thread_type);
 }
 

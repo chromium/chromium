@@ -92,7 +92,7 @@ void* ThreadFunc(void* params) {
     // Threads on linux/android may inherit their priority from the thread
     // where they were created. This explicitly sets the priority of all new
     // threads.
-    PlatformThread::SetCurrentThreadType(thread_params->thread_type);
+    PlatformThread::SetDefaultThreadType(thread_params->thread_type);
   }
 
   ThreadIdNameManager::GetInstance()->RegisterThread(

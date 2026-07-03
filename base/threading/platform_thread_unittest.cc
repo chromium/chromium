@@ -314,9 +314,9 @@ class ThreadTypeTestThread : public FunctionTestThread {
  private:
   void RunTest() override {
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), ThreadType::kDefault);
-    PlatformThread::SetCurrentThreadType(from_);
+    PlatformThread::SetDefaultThreadType(from_);
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), from_);
-    PlatformThread::SetCurrentThreadType(to_);
+    PlatformThread::SetDefaultThreadType(to_);
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), to_);
   }
 
@@ -336,7 +336,7 @@ class ThreadPriorityTestThread : public FunctionTestThread {
     SCOPED_TRACE(message);
 
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), ThreadType::kDefault);
-    PlatformThread::SetCurrentThreadType(thread_type_);
+    PlatformThread::SetDefaultThreadType(thread_type_);
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), thread_type_);
     if (PlatformThread::CanChangeThreadType(ThreadType::kDefault,
                                             thread_type_)) {
@@ -349,7 +349,7 @@ class ThreadPriorityTestThread : public FunctionTestThread {
   const ThreadType priority;
 };
 
-void TestSetCurrentThreadType() {
+void TestSetDefaultThreadType() {
   for (auto from : kAllThreadTypes) {
     if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault, from)) {
       continue;
@@ -388,17 +388,17 @@ void TestPriorityResultingFromThreadType(ThreadType thread_type,
 }  // namespace
 
 // Test changing a created thread's type.
-TEST(PlatformThreadTest, SetCurrentThreadType) {
-  TestSetCurrentThreadType();
+TEST(PlatformThreadTest, SetDefaultThreadType) {
+  TestSetDefaultThreadType();
 }
 
 #if BUILDFLAG(IS_WIN)
 // Test changing a created thread's priority in an IDLE_PRIORITY_CLASS process
 // (regression test for https://crbug.com/901483).
 TEST(PlatformThreadTest,
-     SetCurrentThreadTypeWithThreadModeBackgroundIdleProcess) {
+     SetDefaultThreadTypeWithThreadModeBackgroundIdleProcess) {
   ::SetPriorityClass(Process::Current().Handle(), IDLE_PRIORITY_CLASS);
-  TestSetCurrentThreadType();
+  TestSetDefaultThreadType();
   ::SetPriorityClass(Process::Current().Handle(), NORMAL_PRIORITY_CLASS);
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -459,7 +459,7 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 #endif
 }
 
-TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
+TEST(PlatformThreadTest, SetDefaultThreadTypeTest) {
   TestPriorityResultingFromThreadType(ThreadType::kBackground,
                                       ThreadType::kBackground);
   TestPriorityResultingFromThreadType(ThreadType::kUtility,
@@ -775,16 +775,16 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
     test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
 
     EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
-    PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+    PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
     EXPECT_EQ(SysInfo::NumberOfProcessors() - 1, NumberOfAllowedProcessors());
-    PlatformThread::SetCurrentThreadType(ThreadType::kPresentation);
+    PlatformThread::SetDefaultThreadType(ThreadType::kPresentation);
     EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
-    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+    PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
     EXPECT_EQ(SysInfo::NumberOfProcessors() - 1, NumberOfAllowedProcessors());
 
     // Make sure that affinity is reset to everything, as when the feature is
     // disabled, the affinity will stay to the value it had previously.
-    PlatformThread::SetCurrentThreadType(ThreadType::kPresentation);
+    PlatformThread::SetDefaultThreadType(ThreadType::kPresentation);
     EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
   }
 
@@ -792,9 +792,9 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
     test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(kRestrictBigCoreThreadAffinity);
 
-    PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+    PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
     EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
-    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+    PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
     EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
   }
 
@@ -813,7 +813,7 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinityNoopWithTwoCoreTypes) {
   test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
 
   EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
-  PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+  PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
   EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
 
   SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);

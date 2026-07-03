@@ -252,7 +252,7 @@ class ContextProviderImplTest : public ::testing::Test {
 
   static void SetUpTestSuite() {
     // Need to do this once on the main thread before spinning off others.
-    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
+    base::PlatformThread::SetDefaultThreadType(base::ThreadType::kDefault);
   }
 
   void SetUp() override {

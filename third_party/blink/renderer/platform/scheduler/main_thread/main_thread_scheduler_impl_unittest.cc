@@ -537,7 +537,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
     scheduler_->Shutdown();
     base::RunLoop().RunUntilIdle();
     scheduler_ = nullptr;
-    base::PlatformThread::SetCurrentThreadType(thread_type_);
+    base::PlatformThread::SetDefaultThreadType(thread_type_);
   }
 
   void ShutdownWidgetScheduler() {

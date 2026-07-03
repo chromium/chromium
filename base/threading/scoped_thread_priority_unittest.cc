@@ -37,7 +37,7 @@ class ScopedThreadPriorityTest : public testing::Test {
  protected:
   void SetUp() override {
     // Ensures the default thread priority is set.
-    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+    PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
     ASSERT_EQ(ThreadType::kDefault,
               PlatformThread::GetCurrentEffectiveThreadTypeForTest());
   }
@@ -197,7 +197,7 @@ TEST_F(ScopedThreadPriorityTest, WithPriorityBoost) {
 
   // Validates that a thread at background priority is boosted to normal
   // priority.
-  PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+  PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
   {
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
     EXPECT_EQ(ThreadType::kDefault,
@@ -207,7 +207,7 @@ TEST_F(ScopedThreadPriorityTest, WithPriorityBoost) {
             PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 
   // Put back the default thread priority.
-  PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+  PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -215,7 +215,7 @@ TEST_F(ScopedThreadPriorityTest, WithPriorityBoost) {
 TEST_F(ScopedThreadPriorityTest, NestedScope) {
   ASSERT_RUNS_ONCE();
 
-  PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+  PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
 
   {
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
@@ -234,7 +234,7 @@ TEST_F(ScopedThreadPriorityTest, NestedScope) {
             PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 
   // Put back the default thread priority.
-  PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+  PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -242,23 +242,23 @@ TEST_F(ScopedThreadPriorityTest, NestedScope) {
 TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnFirstInvoke) {
   ASSERT_RUNS_ONCE();
 
-  PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+  PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
 
   FunctionThatBoostsPriorityOnFirstInvoke(base::ThreadType::kDefault);
   FunctionThatBoostsPriorityOnFirstInvoke(base::ThreadType::kBackground);
 
   // Put back the default thread priority.
-  PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+  PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
 }
 
 TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnEveryInvoke) {
-  PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+  PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
 
   FunctionThatBoostsPriorityOnEveryInvoke();
   FunctionThatBoostsPriorityOnEveryInvoke();
 
   // Put back the default thread priority.
-  PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+  PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

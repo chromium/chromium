@@ -85,7 +85,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   }
 
   if (thread_params->thread_type != ThreadType::kDefault) {
-    PlatformThread::SetCurrentThreadType(thread_params->thread_type);
+    PlatformThread::SetDefaultThreadType(thread_params->thread_type);
   }
 
   // Retrieve a copy of the thread handle to use as the key in the
@@ -124,7 +124,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   // performing TLS destruction which causes hangs if performed at background
   // priority (priority inversion) (see: http://crbug.com/1096203).
   if (::GetThreadPriority(::GetCurrentThread()) < THREAD_PRIORITY_NORMAL) {
-    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+    PlatformThread::SetDefaultThreadType(ThreadType::kDefault);
   }
 
   return 0;

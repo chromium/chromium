@@ -313,8 +313,7 @@ class BASE_EXPORT PlatformThreadBase {
   // Declares the type of work running on the current thread. This will affect
   // things like thread priority and thread QoS (Quality of Service) to the best
   // of the current platform's abilities.
-  // TODO(crbug.com/470337728): Rename this method to SetDefaultThreadType.
-  static void SetCurrentThreadType(ThreadType thread_type);
+  static void SetDefaultThreadType(ThreadType thread_type);
 
   // Get the last effective `thread_type` set by SetCurrentThreadType and
   // currently active leases.
