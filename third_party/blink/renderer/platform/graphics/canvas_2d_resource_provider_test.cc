@@ -188,10 +188,12 @@ std::unique_ptr<Canvas2DResourceProvider> MakeCanvas2DResourceProvider(
 
 scoped_refptr<CanvasResource> UpdateResource(
     Canvas2DResourceProvider* provider) {
-  provider->ProduceCanvasResource(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
+  provider->ProduceCanvasResource();
   // Resource updated after draw.
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
-  return provider->ProduceCanvasResource(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
+  return provider->ProduceCanvasResource();
 }
 
 TEST_F(Canvas2DResourceProviderTest, SharedImageResourceRecycling) {
@@ -224,14 +226,15 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageResourceRecycling) {
 #endif
 
   // Same resource and sync token if we query again without updating.
-  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
+  auto resource = provider->ProduceCanvasResource();
   auto sync_token = GetSyncToken(resource.get());
   ASSERT_TRUE(resource);
-  EXPECT_EQ(resource, provider->ProduceCanvasResource(FlushReason::kOther));
+  EXPECT_EQ(resource, provider->ProduceCanvasResource());
   EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
 
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
-  auto new_resource = provider->ProduceCanvasResource(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
+  auto new_resource = provider->ProduceCanvasResource();
   EXPECT_NE(resource, new_resource);
   EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   auto* resource_ptr = resource.get();
@@ -239,7 +242,8 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageResourceRecycling) {
   EnsureResourceRecycled(std::move(resource));
 
   provider->GetCanvasForTesting().clear(SkColors::kBlack);
-  auto resource_again = provider->ProduceCanvasResource(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
+  auto resource_again = provider->ProduceCanvasResource();
   EXPECT_EQ(resource_ptr, resource_again);
   EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
 }
@@ -249,7 +253,7 @@ TEST_F(Canvas2DResourceProviderTest, UnusedResources) {
 
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
+  auto resource = provider->ProduceCanvasResource();
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
 
@@ -279,7 +283,7 @@ TEST_F(Canvas2DResourceProviderTest,
 
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
+  auto resource = provider->ProduceCanvasResource();
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
@@ -298,7 +302,7 @@ TEST_F(Canvas2DResourceProviderTest, UnusedResourcesAreNotCollectedWhenYoung) {
 
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
+  auto resource = provider->ProduceCanvasResource();
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
@@ -361,9 +365,8 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   ASSERT_TRUE(image);
   auto new_image = provider->Snapshot();
   EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
-  EXPECT_EQ(
-      provider->ProduceCanvasResource(FlushReason::kOther)->GetSharedImage(),
-      image->GetSharedImage());
+  EXPECT_EQ(provider->ProduceCanvasResource()->GetSharedImage(),
+            image->GetSharedImage());
 
   // Resource updated after draw.
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
@@ -407,7 +410,8 @@ TEST_F(Canvas2DResourceProviderTest, FlushForImage) {
   // Modify the canvas to trigger OnFlushForImage
   src_provider->GetCanvasForTesting().clear(SkColors::kWhite);
   // So that all the cached draws are executed
-  src_provider->ProduceCanvasResource(FlushReason::kOther);
+  src_provider->Flush(FlushReason::kOther);
+  src_provider->ProduceCanvasResource();
 
   // The paint canvas may have moved
   MemoryManagedPaintCanvas& new_dst_canvas =

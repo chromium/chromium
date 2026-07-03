@@ -602,7 +602,7 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProvider {
         });
   }
   ~FakeCanvasResourceProvider() override = default;
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
+  scoped_refptr<CanvasResource> ProduceCanvasResource() override {
     return scoped_refptr<CanvasResource>(
         CanvasResourceSharedImage::CreateForTesting(
             Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
@@ -3552,13 +3552,11 @@ TEST_P(CanvasRenderingContext2DTestLowLatency, LowLatencyIsSingleBuffered) {
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_TRUE(Context2D()->GetSharedImageProvider()->IsSingleBuffered());
   auto frame1_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -3596,13 +3594,11 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_TRUE(Context2D()->GetSharedImageProvider()->IsSingleBuffered());
   auto frame1_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }

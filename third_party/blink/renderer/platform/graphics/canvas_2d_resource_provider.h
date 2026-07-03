@@ -258,7 +258,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
-  virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
+  virtual scoped_refptr<CanvasResource> ProduceCanvasResource();
 
   void EnsureWriteAccess();
   void EndWriteAccess();

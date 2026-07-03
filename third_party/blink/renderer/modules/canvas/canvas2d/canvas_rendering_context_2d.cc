@@ -800,7 +800,8 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
     return nullptr;
   }
 
-  return si_provider->ProduceCanvasResource(reason);
+  FlushCanvas(reason);
+  return si_provider->ProduceCanvasResource();
 }
 
 scoped_refptr<StaticBitmapImage>
