@@ -67,7 +67,13 @@ class StarViewTest : public InProcessBrowserTest {
 };
 
 // Verifies clicking the star bookmarks the page.
-IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
+// TODO(https://crbug.com/530890337): Flaky on Win 10 builder.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BookmarksUrlOnPress DISABLED_BookmarksUrlOnPress
+#else
+#define MAYBE_BookmarksUrlOnPress BookmarksUrlOnPress
+#endif
+IN_PROC_BROWSER_TEST_F(StarViewTest, MAYBE_BookmarksUrlOnPress) {
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
