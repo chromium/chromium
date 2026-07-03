@@ -474,6 +474,15 @@ chromium-metrics-reviews@google.com.
   <variant name="FedCmClickthroughRate"
       summary="Provides information about FedCM API clickthrough rate
                aggregated across all users on the page."/>
+  <variant name="FilterExecutionStrategy"
+      summary="This optimization provides execution strategies for Magic
+               Filter candidate suggestions."/>
+  <variant name="FilterExtractAttributes"
+      summary="This optimization provides task attributes extracted from a
+               URL for Magic Filters."/>
+  <variant name="FilterTasksSupported"
+      summary="This optimization provides the supported tasks for a URL in
+               Magic Filters."/>
   <variant name="FindsPageTheme"
       summary="Provides information about the page theme for Finds."/>
   <variant name="FormsAnnotations"

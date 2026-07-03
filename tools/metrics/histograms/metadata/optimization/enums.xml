@@ -892,6 +892,12 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="124" label="BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM_ANDROID"/>
   <int value="125" label="BUY_NOW_PAY_LATER_BLOCKLIST_ZIP_ANDROID"/>
   <int value="126" label="BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA_ANDROID"/>
+  <int value="127" label="CURINOS_CREDIT_CARD_FLIGHT_BENEFITS"/>
+  <int value="128" label="CURINOS_CREDIT_CARD_HOTEL_BENEFITS"/>
+  <int value="129" label="CURINOS_CREDIT_CARD_CAR_RENTAL_BENEFITS"/>
+  <int value="130" label="FILTER_TASKS_SUPPORTED"/>
+  <int value="131" label="FILTER_EXTRACT_ATTRIBUTES"/>
+  <int value="133" label="FILTER_EXECUTION_STRATEGY"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

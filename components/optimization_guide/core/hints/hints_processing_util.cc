@@ -247,6 +247,12 @@ std::string_view GetStringNameForOptimizationType(
       return "CurinosCreditCardHotelBenefits";
     case proto::OptimizationType::CURINOS_CREDIT_CARD_CAR_RENTAL_BENEFITS:
       return "CurinosCreditCardCarRentalBenefits";
+    case proto::OptimizationType::FILTER_TASKS_SUPPORTED:
+      return "FilterTasksSupported";
+    case proto::OptimizationType::FILTER_EXTRACT_ATTRIBUTES:
+      return "FilterExtractAttributes";
+    case proto::OptimizationType::FILTER_EXECUTION_STRATEGY:
+      return "FilterExecutionStrategy";
   }
 
   // The returned string is used to record histograms for the optimization type.
