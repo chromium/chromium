@@ -1100,7 +1100,10 @@ struct UpdateRequirementsTestParams {
   int db_version;
   bool db_has_engine_migration_enabled;
   std::string profile_country;
+
+  // TODO(crbug.com/530597465): Remove these test cases during cleanup.
   std::optional<int> pref_override_version;
+
   bool is_engine_migration_enabled;
 
   // Indicates that the call should CHECK on most builds.
@@ -1149,9 +1152,18 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
                                  GetParam().pref_override_version.value());
     }
 
-    scoped_feature_list_.InitWithFeatureState(
-        switches::kPrepopulatedEnginesMigration,
-        GetParam().is_engine_migration_enabled);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam().is_engine_migration_enabled) {
+      enabled_features.push_back(switches::kPrepopulatedEnginesMigration);
+    } else {
+      disabled_features.push_back(switches::kPrepopulatedEnginesMigration);
+    }
+
+    disabled_features.push_back(switches::kIgnoreSearchProviderOverrides);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   static auto Cases() {

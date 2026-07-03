@@ -359,6 +359,7 @@ TemplateURLServiceTestBase::CreatePreloadedTemplateURL(
   return std::make_unique<TemplateURL>(data);
 }
 
+// TODO(crbug.com/530597465): Remove this when cleaning up the feature.
 void TemplateURLServiceTestBase::SetOverriddenEngines() {
   // Set custom search engine as default fallback through overrides.
   base::DictValue entry;
@@ -1385,10 +1386,12 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedEnginesUpdatesSyncGuid) {
 
 // Checks that RepairPrepopulatedEngines correctly updates sync guid for default
 // search when search engines are overridden using pref.
+// TODO(crbug.com/530597465): Remove the test when cleaning up the feature.
 TEST_F(TemplateURLServiceTest,
        RepairPrepopulatedEnginesWithOverridesUpdatesSyncGuid) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
+  test_util()->ResetModel(false);  // Force-reset services with the flag.
 
   SetOverriddenEngines();
   test_util()->VerifyLoad();
@@ -1434,6 +1437,7 @@ TEST_F(TemplateURLServiceTest,
 TEST_F(TemplateURLServiceTest, SearchProviderOverridesIgnoredWhenFlagEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(switches::kIgnoreSearchProviderOverrides);
+  test_util()->ResetModel(false);  // Force-reset services with the flag.
 
   SetOverriddenEngines();
   test_util()->VerifyLoad();

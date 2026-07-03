@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -463,32 +464,28 @@ TEST_F(DefaultSearchManagerTest,
   ExpectSimilar(&expected_engine, result);
 }
 
-TEST_F(DefaultSearchManagerTest,
-       DefaultSearchSetByPlayAPI_MergeByDomainName_FeatureEnabled) {
-  SetOverrides(pref_service(), false);
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByPlayAPI_MergeByDomainName) {
   auto manager = create_manager();
 
   // Find the expected engine. We could fabricate one too, this is easier.
-  auto all_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
-  const auto& builtin_engine =
-      *std::ranges::find_if(all_engines, [](const auto& engine) {
-        GURL url(engine->url());
-        return url.is_valid() && url.host() == "emea.search.yahoo.com";
-      });
+  const TemplateURLPrepopulateData::PrepopulatedEngine& builtin_engine =
+      TemplateURLPrepopulateData::yahoo_emea;
+  ASSERT_EQ(GURL(builtin_engine.search_url).host(), "emea.search.yahoo.com");
 
   auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
   supplied_engine->SetURL("https://emea.search.yahoo.com/any_path");
   supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   // Needed by ExpectSimilar.
-  supplied_engine->favicon_url = builtin_engine->favicon_url;
+  supplied_engine->favicon_url = GURL(builtin_engine.favicon_url);
 
   // Verify engine reconciled with builtin definition.
   manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
   auto* result = manager->GetDefaultSearchEngine(nullptr);
 
-  TemplateURLData expected_engine = *builtin_engine;
-  expected_engine.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
-  ExpectSimilar(&expected_engine, result);
+  std::unique_ptr<TemplateURLData> expected_engine =
+      TemplateURLDataFromPrepopulatedEngine(builtin_engine);
+  expected_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
+  ExpectSimilar(expected_engine.get(), result);
 }
 
 TEST_F(DefaultSearchManagerTest,

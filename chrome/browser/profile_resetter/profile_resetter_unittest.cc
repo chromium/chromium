@@ -19,7 +19,9 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -46,6 +48,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
@@ -78,7 +81,27 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
-const char kDistributionConfig[] = "{"
+const char kDistributionConfig[] =
+    "{"
+    " \"homepage\" : \"http://www.foo.com\","
+    " \"homepage_is_newtabpage\" : false,"
+    " \"browser\" : {"
+    "   \"show_home_button\" : true"
+    "  },"
+    " \"session\" : {"
+    "   \"restore_on_startup\" : 4,"
+    "   \"startup_urls\" : [\"http://goo.gl\", \"http://foo.de\"]"
+    "  },"
+    " \"extensions\" : {"
+    "   \"settings\" : {"
+    "     \"placeholder_for_id\": {"
+    "      }"
+    "    }"
+    "  }"
+    "}";
+
+const char kDistributionConfigWithSearch[] =
+    "{"
     " \"homepage\" : \"http://www.foo.com\","
     " \"homepage_is_newtabpage\" : false,"
     " \"browser\" : {"
@@ -399,17 +422,39 @@ TEST_F(ProfileResetterTest, ResetNothing) {
   ResetAndWait(0);
 }
 
-TEST_F(ProfileResetterTest, ResetDefaultSearchEngineNonOrganic) {
-  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE, kDistributionConfig);
+class ProfileResetterTestWithIgnoreSearchProviderOverrides
+    : public base::test::WithFeatureOverride,
+      public ProfileResetterTest {
+ public:
+  ProfileResetterTestWithIgnoreSearchProviderOverrides()
+      : base::test::WithFeatureOverride(
+            switches::kIgnoreSearchProviderOverrides) {}
+};
+
+TEST_P(ProfileResetterTestWithIgnoreSearchProviderOverrides,
+       ResetDefaultSearchEngineNonOrganic) {
+  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE,
+               kDistributionConfigWithSearch);
 
   TemplateURLService* model =
       TemplateURLServiceFactory::GetForProfile(profile());
   const TemplateURL* default_engine = model->GetDefaultSearchProvider();
   ASSERT_NE(static_cast<TemplateURL*>(nullptr), default_engine);
-  EXPECT_EQ(u"first", default_engine->short_name());
-  EXPECT_EQ(u"firstkey", default_engine->keyword());
-  EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", default_engine->url());
+
+  if (IsParamFeatureEnabled()) {
+    EXPECT_EQ(u"Google", default_engine->short_name());
+    EXPECT_EQ(u"google.com", default_engine->keyword());
+    EXPECT_NE(std::string::npos,
+              default_engine->url().find("{google:baseURL}"));
+  } else {
+    EXPECT_EQ(u"first", default_engine->short_name());
+    EXPECT_EQ(u"firstkey", default_engine->keyword());
+    EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", default_engine->url());
+  }
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ProfileResetterTestWithIgnoreSearchProviderOverrides);
 
 TEST_F(ProfileResetterTest, ResetDefaultSearchEnginePartially) {
   // Search engine's logic is tested by
@@ -796,87 +841,117 @@ TEST_F(ConfigParserTest, InvalidResponseDeleteFromCallback) {
   run_loop.Run();
 }
 
-TEST_F(ProfileResetterTest, CheckSnapshots) {
-  ResettableSettingsSnapshot empty_snap(profile());
-  EXPECT_EQ(0, empty_snap.FindDifferentFields(empty_snap));
+class ProfileResetterTestForSnapshots
+    : public ProfileResetterTestWithIgnoreSearchProviderOverrides {
+ protected:
+  void CheckSnapshots(std::string_view initial_prefs,
+                      int expected_nonorganic_diff_fields,
+                      std::string_view expected_dse_url) {
+    ResettableSettingsSnapshot empty_snap(profile());
+    EXPECT_EQ(0, empty_snap.FindDifferentFields(empty_snap));
 
-  scoped_refptr<Extension> ext = CreateExtension(
-      u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
-      false);
-  ASSERT_TRUE(ext.get());
-  registrar()->AddExtension(ext.get());
+    scoped_refptr<Extension> ext = CreateExtension(
+        u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+        ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+        false);
+    ASSERT_TRUE(ext.get());
+    registrar()->AddExtension(ext.get());
 
-  std::string master_prefs(kDistributionConfig);
-  std::string ext_id = ext->id();
-  ReplaceString(&master_prefs, "placeholder_for_id", ext_id);
+    std::string master_prefs(initial_prefs);
+    std::string ext_id = ext->id();
+    ReplaceString(&master_prefs, "placeholder_for_id", ext_id);
 
-  // Reset to non organic defaults.
-  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE |
-               ProfileResetter::HOMEPAGE |
-               ProfileResetter::STARTUP_PAGES,
-               master_prefs);
-  ShortcutHandler shortcut_hijacked;
-  ShortcutCommand command_line = shortcut_hijacked.CreateWithArguments(
-      L"chrome1.lnk", L"--profile-directory=Default foo.com");
-  shortcut_hijacked.CheckShortcutHasArguments(
-      L"--profile-directory=Default foo.com");
-  ShortcutHandler shortcut_ok;
-  shortcut_ok.CreateWithArguments(L"chrome2.lnk",
-                                  L"--profile-directory=Default1");
+    // Reset to non organic defaults.
+    ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE |
+                     ProfileResetter::HOMEPAGE | ProfileResetter::STARTUP_PAGES,
+                 master_prefs);
+    ShortcutHandler shortcut_hijacked;
+    ShortcutCommand command_line = shortcut_hijacked.CreateWithArguments(
+        L"chrome1.lnk", L"--profile-directory=Default foo.com");
+    shortcut_hijacked.CheckShortcutHasArguments(
+        L"--profile-directory=Default foo.com");
+    ShortcutHandler shortcut_ok;
+    shortcut_ok.CreateWithArguments(L"chrome2.lnk",
+                                    L"--profile-directory=Default1");
 
-  ResettableSettingsSnapshot nonorganic_snap(profile());
-  nonorganic_snap.RequestShortcuts(base::OnceClosure());
-  // Let it enumerate shortcuts on a blockable task runner.
-  content::RunAllTasksUntilIdle();
-  int diff_fields = ResettableSettingsSnapshot::ALL_FIELDS;
-  if (!ShortcutHandler::IsSupported())
-    diff_fields &= ~ResettableSettingsSnapshot::SHORTCUTS;
-  EXPECT_EQ(diff_fields,
-            empty_snap.FindDifferentFields(nonorganic_snap));
-  empty_snap.Subtract(nonorganic_snap);
-  EXPECT_TRUE(empty_snap.startup_urls().empty());
-  EXPECT_EQ(SessionStartupPref::GetDefaultStartupType(),
-            empty_snap.startup_type());
-  EXPECT_TRUE(empty_snap.homepage().empty());
-  EXPECT_TRUE(empty_snap.homepage_is_ntp());
-  EXPECT_FALSE(empty_snap.show_home_button());
-  EXPECT_NE(std::string::npos, empty_snap.dse_url().find("{google:baseURL}"));
-  EXPECT_EQ(ResettableSettingsSnapshot::ExtensionList(),
-            empty_snap.enabled_extensions());
-  EXPECT_EQ(std::vector<ShortcutCommand>(), empty_snap.shortcuts());
+    ResettableSettingsSnapshot nonorganic_snap(profile());
+    nonorganic_snap.RequestShortcuts(base::OnceClosure());
+    // Let it enumerate shortcuts on a blockable task runner.
+    content::RunAllTasksUntilIdle();
+    int diff_fields = expected_nonorganic_diff_fields;
+    if (!ShortcutHandler::IsSupported()) {
+      diff_fields &= ~ResettableSettingsSnapshot::SHORTCUTS;
+    }
+    EXPECT_EQ(diff_fields, empty_snap.FindDifferentFields(nonorganic_snap));
+    empty_snap.Subtract(nonorganic_snap);
+    EXPECT_TRUE(empty_snap.startup_urls().empty());
+    EXPECT_EQ(SessionStartupPref::GetDefaultStartupType(),
+              empty_snap.startup_type());
+    EXPECT_TRUE(empty_snap.homepage().empty());
+    EXPECT_TRUE(empty_snap.homepage_is_ntp());
+    EXPECT_FALSE(empty_snap.show_home_button());
+    EXPECT_NE(std::string::npos, empty_snap.dse_url().find("{google:baseURL}"));
+    EXPECT_EQ(ResettableSettingsSnapshot::ExtensionList(),
+              empty_snap.enabled_extensions());
+    EXPECT_EQ(std::vector<ShortcutCommand>(), empty_snap.shortcuts());
 
-  // Reset to organic defaults.
-  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE |
-               ProfileResetter::HOMEPAGE |
-               ProfileResetter::STARTUP_PAGES |
-               ProfileResetter::EXTENSIONS |
-               ProfileResetter::SHORTCUTS);
+    // Reset to organic defaults.
+    ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE |
+                 ProfileResetter::HOMEPAGE | ProfileResetter::STARTUP_PAGES |
+                 ProfileResetter::EXTENSIONS | ProfileResetter::SHORTCUTS);
 
-  ResettableSettingsSnapshot organic_snap(profile());
-  organic_snap.RequestShortcuts(base::OnceClosure());
-  // Let it enumerate shortcuts on a blockable task runner.
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(diff_fields, nonorganic_snap.FindDifferentFields(organic_snap));
-  nonorganic_snap.Subtract(organic_snap);
-  const GURL urls[] = {GURL("http://foo.de"), GURL("http://goo.gl")};
-  EXPECT_EQ(std::vector<GURL>(std::begin(urls), std::end(urls)),
-            nonorganic_snap.startup_urls());
-  EXPECT_EQ(SessionStartupPref::URLS, nonorganic_snap.startup_type());
-  EXPECT_EQ("http://www.foo.com", nonorganic_snap.homepage());
-  EXPECT_FALSE(nonorganic_snap.homepage_is_ntp());
-  EXPECT_TRUE(nonorganic_snap.show_home_button());
-  EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", nonorganic_snap.dse_url());
-  EXPECT_EQ(ResettableSettingsSnapshot::ExtensionList(
-      1, std::make_pair(ext_id, "example")),
-      nonorganic_snap.enabled_extensions());
-  if (ShortcutHandler::IsSupported()) {
-    std::vector<ShortcutCommand> shortcuts = nonorganic_snap.shortcuts();
-    ASSERT_EQ(1u, shortcuts.size());
-    EXPECT_EQ(command_line.first.value(), shortcuts[0].first.value());
-    EXPECT_EQ(command_line.second, shortcuts[0].second);
+    ResettableSettingsSnapshot organic_snap(profile());
+    organic_snap.RequestShortcuts(base::OnceClosure());
+    // Let it enumerate shortcuts on a blockable task runner.
+    content::RunAllTasksUntilIdle();
+    EXPECT_EQ(diff_fields, nonorganic_snap.FindDifferentFields(organic_snap));
+    nonorganic_snap.Subtract(organic_snap);
+    const GURL urls[] = {GURL("http://foo.de"), GURL("http://goo.gl")};
+    EXPECT_EQ(std::vector<GURL>(std::begin(urls), std::end(urls)),
+              nonorganic_snap.startup_urls());
+    EXPECT_EQ(SessionStartupPref::URLS, nonorganic_snap.startup_type());
+    EXPECT_EQ("http://www.foo.com", nonorganic_snap.homepage());
+    EXPECT_FALSE(nonorganic_snap.homepage_is_ntp());
+    EXPECT_TRUE(nonorganic_snap.show_home_button());
+    EXPECT_EQ(expected_dse_url, nonorganic_snap.dse_url());
+    EXPECT_EQ(ResettableSettingsSnapshot::ExtensionList(
+                  1, std::make_pair(ext_id, "example")),
+              nonorganic_snap.enabled_extensions());
+    if (ShortcutHandler::IsSupported()) {
+      std::vector<ShortcutCommand> shortcuts = nonorganic_snap.shortcuts();
+      ASSERT_EQ(1u, shortcuts.size());
+      EXPECT_EQ(command_line.first.value(), shortcuts[0].first.value());
+      EXPECT_EQ(command_line.second, shortcuts[0].second);
+    }
   }
+};
+
+TEST_P(ProfileResetterTestForSnapshots, CheckSnapshots) {
+  CheckSnapshots(kDistributionConfig,
+                 /*expected_nonorganic_diff_fields=*/
+                 ResettableSettingsSnapshot::ALL_FIELDS &
+                     ~ResettableSettingsSnapshot::DSE_URL,
+                 TemplateURLPrepopulateData::google.search_url);
 }
+
+TEST_P(ProfileResetterTestForSnapshots, CheckSnapshots_WithSearch) {
+  int expected_nonorganic_diff_fields;
+  std::string expected_search_url;
+
+  if (IsParamFeatureEnabled()) {
+    expected_nonorganic_diff_fields = ResettableSettingsSnapshot::ALL_FIELDS &
+                                      ~ResettableSettingsSnapshot::DSE_URL;
+    expected_search_url = TemplateURLPrepopulateData::google.search_url;
+  } else {
+    expected_nonorganic_diff_fields = ResettableSettingsSnapshot::ALL_FIELDS;
+    expected_search_url = "http://www.foo.com/s?q={searchTerms}";
+  }
+
+  CheckSnapshots(kDistributionConfigWithSearch, expected_nonorganic_diff_fields,
+                 expected_search_url);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ProfileResetterTestForSnapshots);
 
 TEST_F(ProfileResetterTest, FeedbackSerializationAsProtoTest) {
   // Reset to non organic defaults.
