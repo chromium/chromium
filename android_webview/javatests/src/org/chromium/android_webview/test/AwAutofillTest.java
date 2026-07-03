@@ -2668,6 +2668,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         "disable-features=AutofillServerCommunication",
         "enable-features=AutofillAcrossIframes"
     })
+    @DisabledTest(message = "crbug.com/530651513")
     public void testCrossFrameServerPredictionArrivesBeforeAutofillStart() throws Throwable {
         loadHTML(
                 """
