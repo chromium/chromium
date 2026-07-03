@@ -9,6 +9,7 @@ import android.app.Activity;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +23,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Unit tests for {@link SyncSettingsUtils}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -35,11 +36,14 @@ public class SyncSettingsUtilsTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     @Mock private Profile mProfile;
 
     @Mock private SyncService mSyncService;
+
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
 
     @Test
     @SmallTest
