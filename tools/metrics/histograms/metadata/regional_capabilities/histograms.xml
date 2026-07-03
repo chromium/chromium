@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="RegionalCapabilities.Debug.TriggeringEligibility.{SessionType}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-07-05">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-11-01">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
