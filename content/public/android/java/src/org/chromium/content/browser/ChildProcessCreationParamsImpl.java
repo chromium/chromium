@@ -106,6 +106,7 @@ public class ChildProcessCreationParamsImpl {
 
     private static boolean isNativeSandboxedServiceSupported() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                && BuildConfig.JAVALESS_RENDERERS_AVAILABLE
                 // Incremental install disables isolated processes, which are required for
                 // javaless renderers.
                 && !BuildConfig.IS_INCREMENTAL_INSTALL;

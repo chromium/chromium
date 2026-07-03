@@ -373,6 +373,10 @@ if (is_android) {
     tiered_dex_partitions_file =
         "//build/config/android/tiered_dex_partitions.json"
 
+    # Component build breaks javaless renderers - see
+    # go/javaless-renderers-component-build
+    enable_javaless_renderers = !is_component_build
+
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that
     # adds trace events to some methods in android.view.View subclasses.

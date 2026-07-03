@@ -1125,7 +1125,10 @@ if (is_android) {
         "//components/test/android/browsertests_apk/AndroidManifest.xml.jinja2"
     output =
         "${target_gen_dir}/components_browsertests_manifest/AndroidManifest.xml"
-    variables = [ "library_name=components_browsertests__library" ]
+    variables = [
+      "javaless_renderers=$enable_javaless_renderers",
+      "library_name=components_browsertests__library",
+    ]
   }
 
   android_resources("components_browsertests_resources") {

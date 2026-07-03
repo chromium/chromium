@@ -2125,6 +2125,9 @@ if (is_android) {
       "manifest_package=org.chromium.android_browsertests_apk",
       "library_name=android_browsertests__library",
     ]
+    if (enable_javaless_renderers) {
+      variables += [ "javaless_renderers=true" ]
+    }
   }
 
   jinja_template("android_sync_integration_tests_manifest") {
@@ -2135,6 +2138,9 @@ if (is_android) {
       "manifest_package=org.chromium.android_browsertests_apk",
       "library_name=android_sync_integration_tests__library",
     ]
+    if (enable_javaless_renderers) {
+      variables += [ "javaless_renderers=true" ]
+    }
   }
 }
 
