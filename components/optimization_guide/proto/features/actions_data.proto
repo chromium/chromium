@@ -366,7 +366,7 @@ message AttemptFormFillingAction {
 
 // Attempts to fill One-Time Password (OTP) /verification codes in the tab. This
 // action is used for OTP filling, which is different from the general form
-// filling action above. Next ID: 4
+// filling action above. Next ID: 5
 message AttemptOtpFillingAction {
   // The tab ID in which to attempt OTP filling.
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
@@ -379,6 +379,19 @@ message AttemptOtpFillingAction {
   // filling the OTP/verification code. A dialog is shown only when
   // `for_signin` is false.
   bool for_signin = 3 [features = { field_presence: EXPLICIT }];
+
+  // The type of the OTP.
+  OtpType predicted_otp_type = 4 [features = { field_presence: EXPLICIT }];
+
+  enum OtpType {
+    OTP_TYPE_UNSPECIFIED = 0;
+
+    OTP_TYPE_SMS = 1;
+
+    OTP_TYPE_EMAIL = 2;
+
+    OTP_TYPE_AUTHENTICATOR_APP = 3;
+  }
 }
 
 // Scrolls the DOM element into viewport.
