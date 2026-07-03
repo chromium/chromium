@@ -42,7 +42,12 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/SigninManagerImpl_jni.h"
@@ -246,6 +251,28 @@ void SigninManagerAndroid::WipeGoogleServiceWorkerCaches(
     JNIEnv* env,
     const base::RepeatingClosure& callback) {
   WipeData(profile_, ClearedTypes::kGoogleServiceWorkerCaches, callback);
+}
+
+void SigninManagerAndroid::SetUninstallAccountExtensionsOnSignout(
+    JNIEnv* env,
+    bool uninstall) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::AccountExtensionTracker* tracker =
+      extensions::AccountExtensionTracker::Get(profile_);
+  if (tracker) {
+    tracker->set_uninstall_account_extensions_on_signout(uninstall);
+  }
+#endif
+}
+
+bool SigninManagerAndroid::HasSignedInAccountExtensions(JNIEnv* env) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::AccountExtensionTracker* tracker =
+      extensions::AccountExtensionTracker::Get(profile_);
+  return tracker && !tracker->GetSignedInAccountExtensions().empty();
+#else
+  return false;
+#endif
 }
 
 // static

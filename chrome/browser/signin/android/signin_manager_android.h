@@ -76,6 +76,13 @@ class SigninManagerAndroid : public KeyedService {
   void WipeGoogleServiceWorkerCaches(JNIEnv* env,
                                      const base::RepeatingClosure& callback);
 
+  // Configures the AccountExtensionTracker to uninstall signed-in account
+  // extensions during the next sign-out event.
+  void SetUninstallAccountExtensionsOnSignout(JNIEnv* env, bool uninstall);
+
+  // Returns true if there are any signed-in account extensions installed.
+  bool HasSignedInAccountExtensions(JNIEnv* env);
+
   void SetUserAcceptedAccountManagement(JNIEnv* env,
                                         bool accepted_account_management);
 

@@ -646,6 +646,11 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 long nativeSigninManagerAndroid,
                 @JniType("base::RepeatingClosure") Runnable callback);
 
+        void setUninstallAccountExtensionsOnSignout(
+                long nativeSigninManagerAndroid, boolean uninstall);
+
+        boolean hasSignedInAccountExtensions(long nativeSigninManagerAndroid);
+
         void setUserAcceptedAccountManagement(
                 long nativeSigninManagerAndroid, boolean acceptedAccountManagement);
 
