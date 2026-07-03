@@ -45,18 +45,19 @@ const SVGRect& SVGViewportContainerElement::CurrentViewBox() const {
   return *viewBox()->CurrentValue();
 }
 
-gfx::RectF SVGViewportContainerElement::CurrentViewBoxRect() const {
+gfx::RectF SVGViewportContainerElement::CurrentViewBoxRect(float zoom) const {
   gfx::RectF use_view_box = CurrentViewBox().Rect();
   if (!use_view_box.IsEmpty()) {
-    return use_view_box;
+    return gfx::ScaleRect(use_view_box, zoom);
   }
   return gfx::RectF();
 }
 
 AffineTransform SVGViewportContainerElement::ViewBoxToViewTransform(
-    const gfx::SizeF& viewport_size) const {
+    const gfx::SizeF& viewport_size,
+    float zoom) const {
   return SVGFitToViewBox::ViewBoxToViewTransform(
-      CurrentViewBoxRect(), CurrentPreserveAspectRatio(), viewport_size);
+      CurrentViewBoxRect(zoom), CurrentPreserveAspectRatio(), viewport_size);
 }
 
 bool SVGViewportContainerElement::HasEmptyViewBox() const {

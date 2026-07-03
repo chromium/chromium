@@ -22,9 +22,10 @@ class SVGViewportContainerElement : public SVGGraphicsElement,
 
  public:
   virtual const SVGRect& CurrentViewBox() const;
-  virtual gfx::RectF CurrentViewBoxRect() const;
+  virtual gfx::RectF CurrentViewBoxRect(float zoom) const;
   virtual AffineTransform ViewBoxToViewTransform(
-      const gfx::SizeF& viewport_size) const;
+      const gfx::SizeF& viewport_size,
+      float zoom) const;
 
   bool HasEmptyViewBox() const;
 

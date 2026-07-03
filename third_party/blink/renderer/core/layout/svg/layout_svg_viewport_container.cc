@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_viewport_container_element.h"
+#include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 
 namespace blink {
 
@@ -86,7 +87,8 @@ SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(
 }
 
 gfx::RectF LayoutSVGViewportContainer::ViewBoxRect() const {
-  return To<SVGViewportContainerElement>(*GetElement()).CurrentViewBoxRect();
+  return To<SVGViewportContainerElement>(*GetElement())
+      .CurrentViewBoxRect(NoZoomWillBeSvgObjectZoom(StyleRef()));
 }
 
 bool LayoutSVGViewportContainer::NodeAtPoint(
@@ -121,7 +123,8 @@ AffineTransform LayoutSVGViewportContainer::ComputeViewboxTransform() const {
   const auto* svg = To<SVGViewportContainerElement>(GetElement());
 
   return AffineTransform::Translation(viewport_.x(), viewport_.y()) *
-         svg->ViewBoxToViewTransform(viewport_.size());
+         svg->ViewBoxToViewTransform(viewport_.size(),
+                                     NoZoomWillBeSvgObjectZoom(StyleRef()));
 }
 
 void LayoutSVGViewportContainer::StyleDidChange(

@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
@@ -444,10 +445,11 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform(
   SVGTransformChangeDetector change_detector(local_to_border_box_transform_);
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
-  float scale = StyleRef().EffectiveZoom();
+  const float scale = SvgObjectZoomWillBeNoZoom(StyleRef());
   gfx::SizeF content_size(content_rect.size.width / scale,
                           content_rect.size.height / scale);
-  local_to_border_box_transform_ = svg->ViewBoxToViewTransform(content_size);
+  local_to_border_box_transform_ = svg->ViewBoxToViewTransform(
+      content_size, NoZoomWillBeSvgObjectZoom(StyleRef()));
 
   gfx::Vector2dF translate = svg->CurrentTranslate();
   AffineTransform view_to_border_box_transform(
@@ -467,13 +469,14 @@ AffineTransform LayoutSVGRoot::LocalToSVGParentTransform() const {
 }
 
 gfx::RectF LayoutSVGRoot::ViewBoxRect() const {
-  return To<SVGSVGElement>(*GetNode()).CurrentViewBoxRect();
+  return To<SVGSVGElement>(*GetNode())
+      .CurrentViewBoxRect(NoZoomWillBeSvgObjectZoom(StyleRef()));
 }
 
 gfx::SizeF LayoutSVGRoot::ViewportSize() const {
   const PhysicalSize& viewport_size =
       new_content_size_ ? *new_content_size_ : PhysicalContentBoxSize();
-  const float zoom = StyleRef().EffectiveZoom();
+  const float zoom = SvgObjectZoomWillBeNoZoom(StyleRef());
   return gfx::SizeF(viewport_size.width / zoom, viewport_size.height / zoom);
 }
 

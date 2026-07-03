@@ -59,7 +59,7 @@ class SVGSVGElement final : public SVGViewportContainerElement,
   // This method, as opposed to the one above, also includes the synthesized
   // viewBox if one is active. Because of that it shouldn't be used for sizing
   // calculations.
-  gfx::RectF CurrentViewBoxRect() const override;
+  gfx::RectF CurrentViewBoxRect(float zoom) const override;
   const SVGPreserveAspectRatio* CurrentPreserveAspectRatio() const override;
 
   float currentScale() const;
@@ -104,8 +104,8 @@ class SVGSVGElement final : public SVGViewportContainerElement,
   static SVGTransformTearOff* createSVGTransform();
   static SVGTransformTearOff* createSVGTransformFromMatrix(SVGMatrixTearOff*);
 
-  AffineTransform ViewBoxToViewTransform(
-      const gfx::SizeF& viewport_size) const override;
+  AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size,
+                                         float zoom) const override;
 
   const SVGViewSpec* ParseViewSpec(const String& fragment_identifier,
                                    Element* anchor_node) const;
