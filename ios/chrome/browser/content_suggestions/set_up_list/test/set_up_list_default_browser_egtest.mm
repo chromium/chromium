@@ -112,6 +112,11 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   [self prepareToTestSetUpListInMagicStack];
 }
 
+- (void)tearDownHelper {
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"FirstRunRecency"];
+  [super tearDownHelper];
+}
+
 #pragma mark - Tests
 
 // Tests that the default text on the Default Browser compacted Set Up List item
