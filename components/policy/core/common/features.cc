@@ -89,6 +89,4 @@ BASE_FEATURE(kDeviceSignalsBackfillDisclaimer,
 BASE_FEATURE(kURLBlocklistOverridesIncognitoAllowlist,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVerifyVerificationDataKey, base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace policy::features
