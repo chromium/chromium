@@ -68,7 +68,7 @@ jobs:
           RUNS: ${{ matrix.os == 'macos-latest' && 10 || 100 }}
           ITERATIONS: 100
         run: |
-          DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs
+          DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log ./tools/node.py tools/benchmark-puppeteer.mjs
           cat puppeteer_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -121,7 +121,7 @@ jobs:
           RUNS: 10
           ITERATIONS: 100
         run: |
-          node tools/benchmark-selenium.mjs
+          ./tools/node.py tools/benchmark-selenium.mjs
           cat selenium_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

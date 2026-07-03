@@ -24,8 +24,15 @@ class HttpProxyServer:
         self._url = ""
 
     def start(self):
+        import os
+        import sys
+
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        node_path = os.path.join(repo_root, "tools", "node.py")
         self._process = Popen(
-            ["node", "tools/http-proxy.mjs"], stdout=PIPE, shell=False
+            [sys.executable, node_path, "tools/http-proxy.mjs"],
+            stdout=PIPE,
+            shell=False,
         )
         # Wait for the proxy to start.
         node_output_line = self._process.stdout.readline().decode("utf-8").strip()

@@ -38,7 +38,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Test that BidiMapper can be imported
-        run: node out/Default/gen/src/bidiMapper/BidiMapper.js
+        run: ./tools/node.py out/Default/gen/src/bidiMapper/BidiMapper.js
       - name: Run formatting and linting
         run: npm run format
       - name: Verify that codebase is fully formatted

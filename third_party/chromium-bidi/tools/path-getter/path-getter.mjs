@@ -41,7 +41,11 @@ export function installAndGetChromePath(isHeadlessShell = false) {
   const channel = getChannel();
 
   if (channel === 'local') {
-    const commandArray = ['node', join('tools', 'install-browser.mjs')];
+    const commandArray = [
+      process.env.PYTHON || 'python3',
+      join('tools', 'node.py'),
+      join('tools', 'install-browser.mjs'),
+    ];
     if (isHeadlessShell) {
       commandArray.push('--chrome-headless-shell');
     }
@@ -80,7 +84,12 @@ export function installAndGetChromeDriverPath() {
   }
 
   return execSync(
-    ['node', join('tools', 'install-browser.mjs'), '--chromedriver'].join(' '),
+    [
+      process.env.PYTHON || 'python3',
+      join('tools', 'node.py'),
+      join('tools', 'install-browser.mjs'),
+      '--chromedriver',
+    ].join(' '),
   )
     .toString()
     .trim();

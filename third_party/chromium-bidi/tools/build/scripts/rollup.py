@@ -32,9 +32,11 @@ def main():
     repo_root = os.path.abspath(os.path.join(script_dir, "../../.."))
     rollup_path = os.path.join(repo_root, "node_modules/rollup/dist/bin/rollup")
 
-    # Invoke rollup via system node, setting the working directory to the repository root
+    # Invoke rollup via node wrapper, setting the working directory to the repository root
+    node_path = os.path.join(repo_root, "tools", "node.py")
     cmd = [
-        "node",
+        sys.executable,
+        node_path,
         rollup_path,
         "--config",
         os.path.abspath(args.config),

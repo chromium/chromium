@@ -87,8 +87,9 @@ def main():
     # Resolve absolute path to TSC under repository root
     tsc_path = os.path.join(repo_root, "node_modules/typescript/lib/tsc.js")
 
-    # Execute TSC using system node
-    cmd = ["node", tsc_path, "--project", args.tsconfig_output]
+    # Execute TSC using node wrapper
+    node_path = os.path.join(repo_root, "tools", "node.py")
+    cmd = [sys.executable, node_path, tsc_path, "--project", args.tsconfig_output]
     result = subprocess.run(cmd, capture_output=True, text=True)
 
     if result.returncode != 0:

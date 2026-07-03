@@ -224,10 +224,14 @@ try {
           process.env.PIP_EXTRA_INDEX_URL || 'https://pypi.org/simple/',
       };
 
-      execFileSync('node', ['tools/run-wpt.mjs', '--wpt-report', report.path], {
-        stdio: 'inherit',
-        env,
-      });
+      execFileSync(
+        process.env.PYTHON || 'python3',
+        ['tools/node.py', 'tools/run-wpt.mjs', '--wpt-report', report.path],
+        {
+          stdio: 'inherit',
+          env,
+        },
+      );
     }
   }
 

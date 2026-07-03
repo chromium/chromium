@@ -36,7 +36,7 @@ if [ ! -f .release-please-manifest.json ]; then
   exit 1
 fi
 
-VERSION=$(node -p "require('./.release-please-manifest.json')['.']" 2>/dev/null)
+VERSION=$(./tools/node.py -p "require('./.release-please-manifest.json')['.']" 2>/dev/null)
 if [ -z "$VERSION" ]; then
   echo "Error: Failed to extract version from .release-please-manifest.json." >&2
   exit 1
@@ -63,7 +63,7 @@ echo "GitHub release '$TAG_NAME' does not exist. Proceeding..."
 
 # 4. Extract the changelog for this version from CHANGELOG.md
 export VERSION
-CHANGELOG=$(node << 'EOF' 2>/dev/null
+CHANGELOG=$(./tools/node.py << 'EOF' 2>/dev/null
 const fs = require('fs');
 if (!fs.existsSync('CHANGELOG.md')) {
   process.exit(1);

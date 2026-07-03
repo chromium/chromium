@@ -327,7 +327,7 @@ jobs:
       - name: Generate HTML test report
         run: >
           mkdir -p wpt-report;
-          node tools/wpt-report-builder/builder.mjs \
+          ./tools/node.py tools/wpt-report-builder/builder.mjs \
             --bidi $(ls out/wptreport.*.json) \
             --interop $(ls out/wptreport-interop.*.json) \
             --out wpt-report/index.html \
