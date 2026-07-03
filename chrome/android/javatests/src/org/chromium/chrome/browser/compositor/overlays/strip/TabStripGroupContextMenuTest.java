@@ -73,7 +73,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -90,6 +89,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 })
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
 public class TabStripGroupContextMenuTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -412,7 +412,6 @@ public class TabStripGroupContextMenuTest {
     @Test
     @SmallTest
     @Feature("KeyboardA11y")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testKeyboardFocusAndActivation() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -686,14 +685,12 @@ public class TabStripGroupContextMenuTest {
         onView(withId(R.id.tab_group_title)).perform(click());
 
         // Verify keyboard is displayed.
-        if (!DeviceInput.supportsKeyboard(mPage.getActivity())) {
-            CriteriaHelper.pollUiThread(
-                    () ->
-                            delegate.isKeyboardShowing(
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getCompositorViewHolderForTesting()));
-        }
+        CriteriaHelper.pollUiThread(
+                () ->
+                        delegate.isKeyboardShowing(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getCompositorViewHolderForTesting()));
 
         // Enter new title in text box and press "enter" to dismiss keyboard to update group title.
         onView(withId(R.id.tab_group_title))
