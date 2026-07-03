@@ -18,7 +18,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_creator.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "crypto/hkdf.h"
+#include "crypto/kdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -118,10 +118,15 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
     std::string expected_handshake_secret =
         DeriveSecret(fake_server_ephemeral_dh_, client_ephemeral_dh);
 
-    std::string expected_symmetric_key_material = crypto::HkdfSha256(
-        expected_handshake_secret, kCryptAuthSymmetricKeyDerivationSalt,
-        CryptAuthKeyBundle::KeyBundleNameEnumToString(bundle_name),
-        NumBytesForSymmetricKeyType(key_to_create.type));
+    std::string expected_symmetric_key_material(
+        NumBytesForSymmetricKeyType(key_to_create.type), '\0');
+    crypto::kdf::Hkdf(
+        crypto::hash::kSha256, base::as_byte_span(expected_handshake_secret),
+        base::as_byte_span(
+            std::string_view(kCryptAuthSymmetricKeyDerivationSalt)),
+        base::as_byte_span(
+            CryptAuthKeyBundle::KeyBundleNameEnumToString(bundle_name)),
+        base::as_writable_byte_span(expected_symmetric_key_material));
 
     return CryptAuthKey(expected_symmetric_key_material, key_to_create.status,
                         key_to_create.type, key_to_create.handle);
