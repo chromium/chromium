@@ -1100,10 +1100,8 @@ void ServiceWorkerVersion::MoveControlleeToBackForwardCacheMap(
 
 void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
     const std::string& client_uuid) {
-  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
-  // we are sure this isn't hit.
-  DCHECK(IsBackForwardCacheEnabled());
-  DCHECK(!controllee_map_.contains(client_uuid));
+  CHECK(IsBackForwardCacheEnabled());
+  CHECK(!controllee_map_.contains(client_uuid));
   if (!bfcached_controllee_map_.contains(client_uuid)) {
     // We are navigating to the page using BackForwardCache, which is being
     // evicted due to activation, postMessage or claim. In this case, we reload

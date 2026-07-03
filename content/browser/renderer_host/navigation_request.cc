@@ -10162,9 +10162,7 @@ NavigationRequest::GetAssociatedRFHType() const {
   // we only update the value for non-pending commit navigations (i.e. the
   // NavigationRequest owned by the FrameTreeNode). See the comments in
   // `RenderFrameHostManager::CommitPendingIfNecessary()` for more details.
-  // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
-  // we are sure this isn't hit.
-  DCHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST)
+  CHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST)
       << "Use GetRenderFrameHost() instead when the final RenderFrameHost "
          "for the navigation has been picked";
   return associated_rfh_type_;
