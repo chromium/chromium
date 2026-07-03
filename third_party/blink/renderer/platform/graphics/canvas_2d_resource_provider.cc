@@ -397,14 +397,18 @@ void Canvas2DResourceProvider::OnContextDestroyed() {
 scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
     FlushReason reason) {
   TRACE_EVENT0("blink", "Canvas2DResourceProvider::ProduceCanvasResource");
+
+  // We are about to give the caller read access to this resource (and its
+  // backing SharedImage). Hence, we must make sure that the SI is updated to
+  // reflect the ops made in the current write access (if any).
+  Flush(reason);
+
   if (IsSoftware()) {
     DCHECK(GetSkSurface());
     scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
     if (!output_resource) {
       return nullptr;
     }
-
-    Flush(reason);
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
@@ -418,11 +422,6 @@ scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
     return nullptr;
   }
 
-  // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must make sure that the SI is updated to
-  // reflect the ops made in the current write access (if any) and give up any
-  // such write access.
-  Flush(reason);
   EndWriteAccess();
 
   return resource_;
