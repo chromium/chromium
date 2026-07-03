@@ -53,12 +53,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -67,6 +67,7 @@ import org.chromium.components.policy.test.annotations.Policies.Add;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
@@ -76,7 +77,7 @@ import org.chromium.ui.test.util.ViewUtils;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedRootUiCoordinatorTest {
-    @Rule public ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -95,6 +96,7 @@ public class TabbedRootUiCoordinatorTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJni);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -110,7 +112,7 @@ public class TabbedRootUiCoordinatorTest {
 
     @After
     public void tearDown() {
-        mBrowserTestRule.signOut();
+        mSigninTestRule.signOut();
         TrackerFactory.setTrackerForTests(null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -169,7 +171,7 @@ public class TabbedRootUiCoordinatorTest {
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
     public void testForcedSignin() {
-        mBrowserTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
 
         // The user is already signed in at first, so the fullscreen signin prompt is not displayed.
         mPage = mActivityTestRule.startOnBlankPage();
@@ -178,7 +180,7 @@ public class TabbedRootUiCoordinatorTest {
         ViewFinder.waitForNoView(withText(R.string.signin_fre_title_signin_forced_by_policy));
 
         // The fullscreen prompt should be displayed upon signout.
-        mBrowserTestRule.signOut();
+        mSigninTestRule.signOut();
         ViewUtils.waitForVisibleView(withText(R.string.signin_fre_title_signin_forced_by_policy));
     }
 

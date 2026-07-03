@@ -23,7 +23,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -87,12 +86,12 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
@@ -112,8 +111,6 @@ public class TabPersistentStoreTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
-
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private ChromeActivity mChromeActivity;
 
@@ -327,6 +324,7 @@ public class TabPersistentStoreTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         TabPersistentStoreImpl.resetDeferredStartupCompleteForTesting();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

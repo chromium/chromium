@@ -10,7 +10,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,7 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,12 +32,12 @@ import java.io.FileOutputStream;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class WebContentsStateTest {
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
     private TestTabModelDirectory mTestTabModelDirectory;
     private Profile mProfile;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mTestTabModelDirectory =
                 new TestTabModelDirectory(
                         ApplicationProvider.getApplicationContext(), "WebContentsStateTest", null);

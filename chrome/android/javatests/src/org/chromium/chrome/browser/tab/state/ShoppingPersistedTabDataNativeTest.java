@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tab.state;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -31,7 +31,11 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.PRICE_ANNOTATIONS})
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataNativeTest {
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
 
     @SmallTest
     @Test

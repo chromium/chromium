@@ -39,8 +39,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataTestUtils.ShoppingServiceResponse;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -52,7 +52,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataServiceTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Mock ShoppingService mShoppingService;
 
@@ -66,6 +65,7 @@ public class ShoppingPersistedTabDataServiceTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);

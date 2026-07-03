@@ -26,15 +26,16 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
 /** Basis for testing tab model selector observers. */
-public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
+public class TabModelSelectorObserverTestRule extends SigninTestRule {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
@@ -68,6 +69,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     }
 
     private void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     initialize();

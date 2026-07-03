@@ -10,7 +10,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,7 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -32,13 +31,12 @@ import java.nio.ByteBuffer;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TabStateTest {
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     private TestTabModelDirectory mTestTabModelDirectory;
     private CipherFactory mCipherFactory;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mCipherFactory = new CipherFactory();
         mTestTabModelDirectory =
                 new TestTabModelDirectory(
