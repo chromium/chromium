@@ -21,10 +21,6 @@ __input_deps = {
 }
 
 def __step_config(ctx, step_config):
-    if runtime.os == "windows":
-        # TODO: b/515026786 - Re-enable typescript rules on Windows after fixing massive lstat performance issue.
-        return step_config
-
     remote_run = config.get(ctx, "googlechrome")
     step_config["input_deps"].update(typescript_all.input_deps)
 
@@ -51,6 +47,9 @@ def __step_config(ctx, step_config):
             "third_party/node/node_modules:node_modules",
         ],
     })
+
+    # Do not attach Starlark handlers for local builds to avoid overhead
+    # from redundant tsconfig dependency scanning (tsc.scandeps).
     step_config["rules"].extend([
         {
             "name": "typescript/ts_library",
@@ -64,7 +63,7 @@ def __step_config(ctx, step_config):
             },
             "remote": remote_run,
             "timeout": "2m",
-            "handler": "typescript_ts_library",
+            "handler": "typescript_ts_library" if remote_run else None,
             "output_local": True,
             "input_root_absolute_path": use_input_root_absolute_path,
             # Only runs on Linux workers.
@@ -81,7 +80,7 @@ def __step_config(ctx, step_config):
             },
             "remote": remote_run,
             "timeout": "2m",
-            "handler": "typescript_ts_definitions",
+            "handler": "typescript_ts_definitions" if remote_run else None,
             "input_root_absolute_path": use_input_root_absolute_path,
             # Only runs on Linux workers.
             "remote_command": "python3",
@@ -91,8 +90,6 @@ def __step_config(ctx, step_config):
 
 # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
 def __filegroups(ctx):
-    if runtime.os == "windows":
-        return {}
     return {
         "third_party/node/node_modules:node_modules": {
             "type": "glob",
@@ -199,17 +196,12 @@ def _ts_definitions(ctx, cmd):
     print("_ts_definitions: tsconfig=%s, deps=%s" % (tsconfig, deps))
     ctx.actions.fix(inputs = cmd.inputs + deps)
 
-_handlers = {
-    True: {},
-    False: {
+typescript_all = module(
+    "typescript_all",
+    handlers = {
         "typescript_ts_library": _ts_library,
         "typescript_ts_definitions": _ts_definitions,
     },
-}[runtime.os == "windows"]
-
-typescript_all = module(
-    "typescript_all",
-    handlers = _handlers,
     step_config = __step_config,
     filegroups = __filegroups,
     input_deps = __input_deps,
