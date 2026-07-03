@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -46,8 +47,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
-import java.util.function.Supplier;
-
 /**
  * Coordinator that hosts SearchUiCoordinator in a floating Tab Search panel positioned overlaying
  * the Vertical Tabs rail.
@@ -59,7 +58,7 @@ public class TabSearchOverlayCoordinator {
     private final WindowAndroid mWindowAndroid;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final SnackbarManager mSnackbarManager;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final NullableObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final @Nullable EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
@@ -81,8 +80,7 @@ public class TabSearchOverlayCoordinator {
      * @param windowAndroid The window helper for managing window-level state.
      * @param profileSupplier Supplier for the current Profile.
      * @param snackbarManager Manager for showing snackbar notifications.
-     * @param modalDialogManagerSupplier Supplier for the modal dialog manager. Uses a wildcard type
-     *     to resolve NullAway type incompatibility between non-null and nullable supplier generics.
+     * @param modalDialogManagerSupplier Supplier for the modal dialog manager.
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events.
      * @param tabModelSelectorSupplier Supplier for the tab model selector.
      * @param edgeToEdgeSystemBarColorHelper Helper for managing system bar colors in edge-to-edge.
@@ -93,7 +91,7 @@ public class TabSearchOverlayCoordinator {
             WindowAndroid windowAndroid,
             MonotonicObservableSupplier<Profile> profileSupplier,
             SnackbarManager snackbarManager,
-            Supplier<? extends @Nullable ModalDialogManager> modalDialogManagerSupplier,
+            NullableObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
@@ -102,10 +100,7 @@ public class TabSearchOverlayCoordinator {
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
         mSnackbarManager = snackbarManager;
-        // Wrap with a lambda to bridge generic nullability invariance between callers providing a
-        // NonNullObservableSupplier (e.g. TabbedRootUiCoordinator) and downstream coordinators
-        // expecting Supplier<@Nullable ModalDialogManager> (e.g. SearchUiCoordinator).
-        mModalDialogManagerSupplier = () -> modalDialogManagerSupplier.get();
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;

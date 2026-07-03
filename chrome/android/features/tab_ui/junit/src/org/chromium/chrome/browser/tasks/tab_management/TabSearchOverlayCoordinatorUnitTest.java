@@ -95,7 +95,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         mWindowAndroid,
                         profileSupplier,
                         mSnackbarManager,
-                        () -> mModalDialogManager,
+                        ObservableSuppliers.createNonNull(mModalDialogManager),
                         mActivityLifecycleDispatcher,
                         mTabModelSelectorSupplier,
                         /* edgeToEdgeSystemBarColorHelper= */ null);
