@@ -15,6 +15,8 @@
 #include "services/network/public/mojom/x_frame_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
+class GURL;
+
 namespace net {
 class HttpResponseHeaders;
 }
@@ -50,17 +52,20 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
       LoggingDisposition logging,
       bool is_response_check);
   void ParseXFrameOptionsError(const net::HttpResponseHeaders* headers,
-                               network::mojom::XFrameOptionsValue disposition);
-  void ConsoleErrorXFrameOptions(
-      network::mojom::XFrameOptionsValue disposition);
-  void ConsoleErrorEmbeddingRequiresOptIn();
+                               network::mojom::XFrameOptionsValue disposition,
+                               const GURL& url);
+  void ConsoleErrorXFrameOptions(network::mojom::XFrameOptionsValue disposition,
+                                 const GURL& url);
+  void ConsoleErrorEmbeddingRequiresOptIn(const GURL& url);
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            std::string message);
-  CheckResult EvaluateXFrameOptions(LoggingDisposition logging);
+  CheckResult EvaluateXFrameOptions(LoggingDisposition logging,
+                                    const GURL& url);
   CheckResult EvaluateFrameAncestors(
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&
           content_security_policy);
-  CheckResult EvaluateEmbeddingOptIn(LoggingDisposition logging);
+  CheckResult EvaluateEmbeddingOptIn(LoggingDisposition logging,
+                                     const GURL& url);
 };
 
 }  // namespace content

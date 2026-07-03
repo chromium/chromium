@@ -37,6 +37,11 @@ BASE_FEATURE(kAccessibilityExposeNonAtomicTextFieldChildren,
 BASE_FEATURE(kAllowContentInitiatedDataUrlNavigations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, AncestorThrottle evaluates redirect responses using the source
+// URL of the redirect rather than the target URL.
+BASE_FEATURE(kAncestorThrottleEvaluateRedirectSource,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables desktop-style scrollbars.
 BASE_FEATURE(kAndroidDesktopStyleScrollbars, base::FEATURE_DISABLED_BY_DEFAULT);
 
