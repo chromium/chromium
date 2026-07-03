@@ -24,6 +24,9 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_personal_context_access_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_personal_context_enablement_service_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_personal_context_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
@@ -229,6 +232,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   autofill::AutocompleteHistoryManagerFactory::GetInstance();
   autofill::AutofillImageFetcherFactory::GetInstance();
   autofill::AutofillLogRouterFactory::GetInstance();
+  autofill::IOSPersonalContextAccessManagerFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::StrikeDatabaseFactory::GetInstance();
   client_certificates::CertificateStoreFactory::GetInstance();
@@ -280,6 +284,8 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ios::WebDataServiceFactory::GetInstance();
   ios::WebHistoryServiceFactory::GetInstance();
   ios::ZeroSuggestCacheServiceFactory::GetInstance();
+  personal_context::IOSPersonalContextEnablementServiceFactory::GetInstance();
+  personal_context::IOSPersonalContextServiceFactory::GetInstance();
   policy::EnterpriseManagementMetricsServiceFactory::GetInstance();
   policy::UserPolicySigninServiceFactory::GetInstance();
   safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance();

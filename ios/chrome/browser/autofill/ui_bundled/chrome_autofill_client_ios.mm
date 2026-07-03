@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_personal_context_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
@@ -281,6 +282,14 @@ void ChromeAutofillClientIOS::GetAiPageContent(
 
 AutofillAiManager* ChromeAutofillClientIOS::GetAutofillAiManager() {
   return autofill_ai_manager_.get();
+}
+
+PersonalContextAccessManager*
+ChromeAutofillClientIOS::GetPersonalContextAccessManager() {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
+    return nullptr;
+  }
+  return IOSPersonalContextAccessManagerFactory::GetForProfile(profile_);
 }
 
 AutofillAiModelCache* ChromeAutofillClientIOS::GetAutofillAiModelCache() {
