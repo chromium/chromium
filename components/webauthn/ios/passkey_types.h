@@ -16,7 +16,7 @@ namespace webauthn {
 
 // Represents the code of an error returned when the user dismisses the GPM Pin
 // flow by clicking the "Cancel" button.
-// TODO(crbug.com/460485614): Define an enum and parse it in keychain provider.
+// TODO(crbug.com/530911220): Define an enum and parse it in keychain provider.
 static const NSInteger kErrorUserDismissedGPMPinFlow = -105;
 
 // Block type used for the completion of the primary action button tap in
