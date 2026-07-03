@@ -986,8 +986,8 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     // N32 and premul (as set by
     // `CopyRenderingResultsFromDrawingBufferAccelerated`) and
     // top-left origin (the orientation that is used by
-    // `CanvasResourceProvider::Snapshot()` when it is not passed an orientation
-    // explicitly).
+    // `CanvasNon2DResourceProvider::Snapshot()` when it is not passed an
+    // orientation explicitly).
     return CopyRenderingResultsToUnacceleratedStaticBitmapImage(
         kBackBuffer, viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
         kTopLeft_GrSurfaceOrigin);
@@ -2074,7 +2074,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     // N32 and premul (as set by
     // `CopyRenderingResultsFromDrawingBuffer{Accelerated, Unaccelerated}`) and
     // top-left origin (the orientation that is used by
-    // `CanvasResourceProvider::Snapshot()` when it is not passed an
+    // `CanvasNon2DResourceProvider::Snapshot()` when it is not passed an
     // orientation explicitly).
     if (!cached_snapshot_) {
       cached_snapshot_ = CopyRenderingResultsToUnacceleratedStaticBitmapImage(

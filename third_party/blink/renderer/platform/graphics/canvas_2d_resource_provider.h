@@ -79,15 +79,12 @@ enum class RasterMode {
   kCPU,
 };
 
-// CanvasResourceProvider
+// Canvas2DResourceProvider
 //==============================================================================
 //
-// This is an abstract base class that encapsulates a drawable graphics
-// resource.  Subclasses manage specific resource types (Gpu Textures, Bitmap in
-// RAM). CanvasResourceProvider serves as an abstraction layer for these
-// resource types. It is designed to serve the needs of Canvas2D, but can also
-// be used as a general purpose provider of drawable surfaces for 2D rendering
-// with skia.
+// Encapsulates a drawable graphics resource for Canvas2D.
+// Canvas2DResourceProvider serves as a provider of drawable surfaces for 2D
+// rendering with Skia.
 //
 // General usage:
 //   1) Use the Create() static method to create an instance

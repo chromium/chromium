@@ -304,7 +304,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void ColorSchemeMayHaveChanged() override;
 
   // If the ResourceProvider currently exists, replaces it with a newly-created
-  // CanvasResourceProvider.
+  // resource provider.
   void DropAndRecreateExistingResourceProvider();
 
   // This method should be called only when both providers are null.

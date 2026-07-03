@@ -244,11 +244,11 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // copying is effectively skipped due to a dummy WebGPU texture.
   void PrepareForWebGPUDummyMailbox();
 
-  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
-  // exists, after flushing the resource and signaling that an external write
-  // will occur on it. The caller should wait on `internal_access_sync_token`
-  // before writing the contents. When the external write is complete, the
-  // caller should call `EndExternalWrite()`.
+  // Returns the ClientSharedImage backing this CanvasNon2DResourceProvider, if
+  // one exists, after flushing the resource and signaling that an external
+  // write will occur on it. The caller should wait on
+  // `internal_access_sync_token` before writing the contents. When the external
+  // write is complete, the caller should call `EndExternalWrite()`.
   scoped_refptr<gpu::ClientSharedImage> BeginExternalOverwrite(
       gpu::SyncToken& internal_access_sync_token);
 

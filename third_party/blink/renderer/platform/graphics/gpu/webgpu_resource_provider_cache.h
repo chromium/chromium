@@ -72,7 +72,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   }
 
  private:
-  // The maximum number of unused CanvasResourceProviders size, 128 MB.
+  // The maximum number of unused CanvasNon2DResourceProviders size, 128 MB.
   static constexpr int kMaxRecyclableResourceCachesInKB = 128 * 1024;
   static constexpr int kMaxRecyclableResourceCachesInBytes =
       kMaxRecyclableResourceCachesInKB * 1024;
@@ -120,7 +120,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   // Start the clean-up function runs when there are unused resources.
   void StartResourceCleanUpTimer();
 
-  // This is the place to keep the unused CanvasResourceProviders. They are
+  // This is the place to keep the unused CanvasNon2DResourceProviders. They are
   // waiting to be used. MRU is in the front of the deque.
   DequeResourceProvider unused_providers_;
 

@@ -52,7 +52,7 @@ class OffscreenCanvasRenderingContext2D;
 // Renders canvas2D ops to a Skia RAM-backed bitmap. Mailboxing is not
 // supported : cannot be directly composited. For usage by (Offscreen)Canvas2D
 // as a last-case resort when it is not possible to create
-// CanvasResourceProviderSharedImage.
+// Canvas2DResourceProvider.
 class PLATFORM_EXPORT Canvas2DBitmapProvider final
     : public CanvasMemoryDumpClient,
       public MemoryManagedPaintRecorder::Client,

@@ -43,7 +43,7 @@ class ScopedFakeGpuContext {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
 
     if (disable_imagebitmap) {
-      // Disable CanvasResourceProvider using GPU.
+      // Disable CanvasNon2DResourceProvider using GPU.
       auto& feature_info = test_context_provider_->GetWritableGpuFeatureInfo();
       feature_info.enabled_gpu_driver_bug_workarounds.push_back(
           DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU);
@@ -123,7 +123,7 @@ class VideoFrameImageUtilTest
           info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
       if (!snapshot_provider) {
-        DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
+        DLOG(ERROR) << "Failed to create CanvasNon2DResourceProvider.";
         return nullptr;
       }
       return CreateAcceleratedImageFromVideoFrame(
