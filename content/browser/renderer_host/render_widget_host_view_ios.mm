@@ -934,11 +934,13 @@ void RenderWidgetHostViewIOS::OnUnconfirmedTapConvertedToTap() {
 void RenderWidgetHostViewIOS::UpdateFrameBounds() {
   const gfx::PointF scrollOffset =
       last_root_scroll_offset_.value_or(gfx::PointF());
-  const CGRect parentBounds = [[ui_view_->view_ superview] bounds];
+  UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
+  const CGRect parentBounds = [scrollView bounds];
+  const UIEdgeInsets parentInset = [scrollView contentInset];
 
-  CGRect frameBounds;
-  frameBounds.origin = scrollOffset.ToCGPoint();
-  frameBounds.size = parentBounds.size;
+  CGRect frameBounds = UIEdgeInsetsInsetRect(parentBounds, parentInset);
+  frameBounds.origin = CGPointMake(scrollOffset.x() + parentInset.left,
+                                   scrollOffset.y() + parentInset.top);
 
   // If we are scrolling we don't resize the WebView immediately.
   if (!is_scrolling_ && !IsTesting()) {
@@ -981,6 +983,8 @@ void RenderWidgetHostViewIOS::OnRootScrollOffsetChanged(
 void RenderWidgetHostViewIOS::ContentInsetChanged() {
   if (last_root_scroll_offset_) {
     ApplyRootScrollOffsetChanged(*last_root_scroll_offset_, /*force=*/true);
+  } else {
+    UpdateFrameBounds();
   }
   if (!is_scrolling_) {
     host()->SynchronizeVisualProperties();

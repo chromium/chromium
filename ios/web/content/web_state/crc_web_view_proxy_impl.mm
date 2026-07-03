@@ -121,10 +121,11 @@
 }
 
 - (UIEdgeInsets)obscuredInsets {
-  return UIEdgeInsetsZero;
+  return _contentView.contentInset;
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
+  _contentView.contentInset = obscuredInsets;
 }
 
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
