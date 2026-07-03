@@ -51,6 +51,16 @@ class PopupPersonalContextNoticeView : public PopupRowView {
   // Opens personal context settings for autofill in Chrome settings.
   void OnSettingsButtonClicked();
 
+  // views::View:
+  // Returns a minimum size with a width of `kMinimumWidth` to keep the notice
+  // content readable.
+  gfx::Size GetMinimumSize() const override;
+  // Calculates the preferred size to support height-for-width calculations.
+  // Passing the target width constraint to the base class allows the wrapping label child
+  // to calculate its preferred height based on the text wrapping at this width.
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_bounds) const override;
+
   // The description text inside of the notice element.
   raw_ptr<views::StyledLabel> description_ = nullptr;
 

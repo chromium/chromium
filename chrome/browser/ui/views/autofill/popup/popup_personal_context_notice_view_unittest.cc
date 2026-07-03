@@ -88,12 +88,12 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialState) {
   views::StyledLabel* description = view().description_for_testing();
   ASSERT_NE(description, nullptr);
   EXPECT_TRUE(description->GetVisible());
-  EXPECT_EQ(u"Manage in settings", description->GetText());
+  EXPECT_EQ(u"lorem ipsum lorem ipsum lorem ipsum", description->GetText());
 
   // Check that the description contains a link with a correct text.
   views::Link* settings_link = description->GetFirstLinkForTesting();
   EXPECT_TRUE(settings_link);
-  EXPECT_EQ(u"settings", settings_link->GetText());
+  EXPECT_EQ(u"lorem ipsum", settings_link->GetText());
 
   // Check that the "Got it" button is visible and has the correct text.
   views::MdTextButton* got_it_button = view().got_it_button_for_testing();

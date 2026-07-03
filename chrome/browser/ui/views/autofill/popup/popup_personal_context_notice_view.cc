@@ -9,15 +9,32 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
+
+namespace {
+
+constexpr int kBetweenChildSpacing = 8;
+constexpr int kBackgroundCornerRadius = 10;
+constexpr int kBorderInsets = 12;
+constexpr int kRowVerticalMargin = 8;
+constexpr int kRowHorizontalMargin = 12;
+constexpr int kMinimumWidth = 320;
+
+}  // namespace
 
 PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
@@ -32,40 +49,69 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
                    std::move(content_view)),
       controller_(std::move(controller)),
       line_number_(line_number) {
-  // Text container (Title + Description)
-  // TODO(crbug.com/517520354): Add styling and the title.
   views::View& text_container = GetContentView();
-  auto* layout =
+  auto* layout_manager =
       static_cast<views::BoxLayout*>(text_container.GetLayoutManager());
-  layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  layout_manager->set_between_child_spacing(kBetweenChildSpacing);
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // Description (with link)
-  // TODO(crbug.com/517520354): Add styling and strings.
-  size_t link_offset;
-  std::u16string link_text = u"settings";
-  std::u16string description_text = u"Manage in settings";
-  link_offset = description_text.find(link_text);
+  text_container.SetProperty(views::kMarginsKey, gfx::Insets());
+
+  SetProperty(views::kMarginsKey,
+              gfx::Insets::TLBR(kRowVerticalMargin, kRowHorizontalMargin,
+                                kRowVerticalMargin, kRowHorizontalMargin));
+
+  SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysSurface3, /*radius=*/kBackgroundCornerRadius));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
 
   description_ =
       text_container.AddChildView(std::make_unique<views::StyledLabel>());
-  description_->SetText(description_text);
-  // TODO(crbug.com/515651588): Update accessibility names.
-  text_container.GetViewAccessibility().SetName(description_text);
-  GetViewAccessibility().SetName(description_text);
 
-  // Make the link substring in the description clickable.
+  layout_manager->SetFlexForView(description_, 1);
+
+  std::u16string title_text = u"lorem ipsum ";
+  std::u16string context_text = u"lorem ipsum ";
+  std::u16string link_text = u"lorem ipsum";
+
+  std::u16string full_text = title_text + context_text + link_text;
+  const size_t full_text_length = full_text.length();
+  GetViewAccessibility().SetName(full_text, ax::mojom::NameFrom::kAttribute);
+  text_container.GetViewAccessibility().SetName(
+      full_text, ax::mojom::NameFrom::kAttribute);
+  description_->SetText(std::move(full_text));
+  description_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+
+  views::StyledLabel::RangeStyleInfo title_style;
+  title_style.text_style = views::style::STYLE_BODY_5_MEDIUM;
+  title_style.override_color_id = ui::kColorSysOnSurface;
+  description_->AddStyleRange(gfx::Range(0, title_text.length()), title_style);
+
+  views::StyledLabel::RangeStyleInfo context_style;
+  context_style.text_style = views::style::STYLE_BODY_5_MEDIUM;
+  context_style.override_color_id = ui::kColorLabelForegroundSecondary;
   description_->AddStyleRange(
-      gfx::Range(link_offset, link_offset + link_text.length()),
+      gfx::Range(title_text.length(),
+                 title_text.length() + context_text.length()),
+      context_style);
+
+  size_t link_start = title_text.length() + context_text.length();
+  views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PopupPersonalContextNoticeView::OnSettingsButtonClicked,
-          base::Unretained(this))));
+          base::Unretained(this)));
+  description_->AddStyleRange(gfx::Range(link_start, full_text_length),
+                              link_style);
 
-  // "Got it" button
-  // TODO(crbug.com/517520354): Add styling and strings.
-  got_it_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&PopupPersonalContextNoticeView::OnGotItButtonClicked,
-                          base::Unretained(this)),
-      u"OK"));
+  // TODO(crbug.com/517520354): Check dark theme appearance and accessibility.
+  got_it_button_ =
+      text_container.AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              &PopupPersonalContextNoticeView::OnGotItButtonClicked,
+              base::Unretained(this)),
+          u"OK"));
+  got_it_button_->SetStyle(ui::ButtonStyle::kTonal);
 }
 
 void PopupPersonalContextNoticeView::OnGotItButtonClicked() {
@@ -80,6 +126,24 @@ void PopupPersonalContextNoticeView::OnGotItButtonClicked() {
 
 void PopupPersonalContextNoticeView::OnSettingsButtonClicked() {
   // TODO(crbug.com/520188717): Route to new Chrome settings once available.
+}
+
+gfx::Size PopupPersonalContextNoticeView::GetMinimumSize() const {
+  return gfx::Size(kMinimumWidth, views::View::GetMinimumSize().height());
+}
+
+gfx::Size PopupPersonalContextNoticeView::CalculatePreferredSize(
+    const views::SizeBounds& available_bounds) const {
+  int target_width = available_bounds.width().is_bounded()
+                         ? available_bounds.width().value()
+                         : kMinimumWidth;
+
+  target_width = std::max(kMinimumWidth, target_width);
+
+  views::SizeBounds custom_bounds(target_width, available_bounds.height());
+  gfx::Size size = views::View::CalculatePreferredSize(custom_bounds);
+  size.set_width(target_width);
+  return size;
 }
 
 PopupPersonalContextNoticeView::~PopupPersonalContextNoticeView() = default;
