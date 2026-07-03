@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -109,6 +110,9 @@ Request* RequestService::GetActiveRequestForTesting() const {
 }
 
 void RequestService::DestroyActiveRequestForTesting() {
+  if (dialog_controller_) {
+    dialog_controller_.reset();
+  }
   active_request_.reset();
 }
 
@@ -177,6 +181,15 @@ void RequestService::OnTokenRequestComplete(
     std::move(callback).Run(base::unexpected(std::move(failure)));
   }
   if (active_request_.get() == request) {
+    if (dialog_controller_) {
+      // Reset the dialog controller synchronously. While this carries a
+      // potential Use-After-Free risk if the completion callback was triggered
+      // synchronously from the dialog controller itself, doing it synchronously
+      // is necessary to avoid asynchronous overlap where a subsequent request
+      // could instantiate and display a new dialog before the old one is
+      // destroyed.
+      dialog_controller_.reset();
+    }
     // Release ownership synchronously to prevent race conditions with
     // subsequent requests, but keep it in completed_requests_ to ensure it does
     // not outlive RequestService.
