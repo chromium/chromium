@@ -61,19 +61,6 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
 }
 
 // static
-metrics::MetricsReportingLevel
-GoogleUpdateSettings::GetMetricsReportingLevel() {
-  // TODO(crbug.com/483043192): Implement this method.
-  return metrics::MetricsReportingLevel::kNone;
-}
-
-// static
-bool GoogleUpdateSettings::SetMetricsReportingLevel(
-    metrics::MetricsReportingLevel level) {
-  // TODO(crbug.com/483043192): Implement this method.
-  return false;
-}
-
 std::unique_ptr<metrics::ClientInfo>
 GoogleUpdateSettings::LoadMetricsClientInfo() {
   auto& backup_client_id_file_manager =
