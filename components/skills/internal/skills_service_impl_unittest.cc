@@ -562,12 +562,9 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_FromService_Success) {
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  skills::proto::SkillsList skills_list;
-  skills::proto::Skill* skill = skills_list.add_skills();
-  skill->set_name("Service Skill");
-
-  test_url_loader_factory_.AddResponse(features::kSkillsServiceApiUrl.Get(),
-                                       skills_list.SerializeAsString());
+  test_url_loader_factory_.AddResponse(
+      features::kSkillsServiceApiUrl.Get(),
+      R"({"skills": [{"name": "Service Skill"}]})");
 
   MockSkillsServiceImpl mock_service(
       &pref_service_, &mock_optimization_guide_decider_,

@@ -4,6 +4,8 @@
 
 #include "components/skills/internal/skills_fetcher.h"
 
+#include "base/json/json_reader.h"
+#include "base/values.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -52,6 +54,90 @@ constexpr net::NetworkTrafficAnnotationTag kSkillsFetcherNetworkTag =
           }
         }
       })");
+
+bool ParseSkillsListFromJson(const std::string& json_str,
+                             skills::proto::SkillsList* skills_list) {
+  std::optional<base::DictValue> result = base::JSONReader::ReadDict(
+      json_str, base::JSONParserOptions::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    return false;
+  }
+  const base::DictValue& root_dict = *result;
+
+  // Parse skills
+  const base::ListValue* skills_val = root_dict.FindList("skills");
+  if (skills_val) {
+    for (const auto& skill_val : *skills_val) {
+      if (!skill_val.is_dict()) {
+        continue;
+      }
+      const base::DictValue& skill_dict = skill_val.GetDict();
+      auto* skill = skills_list->add_skills();
+      if (const std::string* id = skill_dict.FindString("id")) {
+        skill->set_id(*id);
+      }
+      if (const std::string* name = skill_dict.FindString("name")) {
+        skill->set_name(*name);
+      }
+      if (const std::string* category = skill_dict.FindString("category")) {
+        skill->set_category(*category);
+      }
+      if (const std::string* icon = skill_dict.FindString("icon")) {
+        skill->set_icon(*icon);
+      }
+      if (const std::string* prompt = skill_dict.FindString("prompt")) {
+        skill->set_prompt(*prompt);
+      }
+      if (const std::string* description =
+              skill_dict.FindString("description")) {
+        skill->set_description(*description);
+      }
+      if (const std::string* image_url = skill_dict.FindString("imageUrl")) {
+        skill->set_image_url(*image_url);
+      } else if (const std::string* image_url_snake =
+                     skill_dict.FindString("image_url")) {
+        skill->set_image_url(*image_url_snake);
+      }
+      if (const std::string* curated_by = skill_dict.FindString("curatedBy")) {
+        skill->set_curated_by(*curated_by);
+      } else if (const std::string* curated_by_snake =
+                     skill_dict.FindString("curated_by")) {
+        skill->set_curated_by(*curated_by_snake);
+      }
+    }
+  }
+
+  // Parse topics_info_list
+  const base::ListValue* topics_val = root_dict.FindList("topicsInfoList");
+  if (!topics_val) {
+    topics_val = root_dict.FindList("topics_info_list");
+  }
+  if (topics_val) {
+    for (const auto& topic_val : *topics_val) {
+      if (!topic_val.is_dict()) {
+        continue;
+      }
+      const base::DictValue& topic_dict = topic_val.GetDict();
+      auto* topic = skills_list->add_topics_info_list();
+      if (const std::string* category_name =
+              topic_dict.FindString("categoryName")) {
+        topic->set_category_name(*category_name);
+      } else if (const std::string* category_name_snake =
+                     topic_dict.FindString("category_name")) {
+        topic->set_category_name(*category_name_snake);
+      }
+      if (const std::string* display_name =
+              topic_dict.FindString("displayName")) {
+        topic->set_display_name(*display_name);
+      } else if (const std::string* display_name_snake =
+                     topic_dict.FindString("display_name")) {
+        topic->set_display_name(*display_name_snake);
+      }
+    }
+  }
+
+  return true;
+}
 
 }  // namespace
 
@@ -104,7 +190,7 @@ void SkillsFetcher::OnResponseFetched(
   }
 
   skills::proto::SkillsList skills_list;
-  if (!skills_list.ParseFromString(response->response)) {
+  if (!ParseSkillsListFromJson(response->response, &skills_list)) {
     RecordSkillsFetchResult(SkillsFetchResult::kProtoParseFailure);
     std::move(callback).Run(nullptr);
     return;
