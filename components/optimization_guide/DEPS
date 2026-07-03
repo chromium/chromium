@@ -1,5 +1,6 @@
 include_rules = [
   "+components/leveldb_proto",
+  "+components/multistep_filter/core/annotation_index/proto",
   "+components/prefs",
   "+components/sync_preferences",
   "+components/unified_consent",

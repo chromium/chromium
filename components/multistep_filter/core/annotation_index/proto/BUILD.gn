@@ -2,8 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/protobuf/proto_library.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
-proto_library("proto") {
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+# Uses fuzzable_proto_library because it is imported by fuzzable
+# optimization_guide_proto. Any proto imported by a fuzzable
+# target must also be fuzzable to keep runtime modes synchronized.
+#
+# Additionally, because annotation_index.proto is included from a proto file
+# outside its own directory, proto_in_dir is required so that import can follow
+# the Chromium style guide that all imports start from the source root.
+fuzzable_proto_library("proto") {
+  proto_in_dir = "//"
   sources = [ "annotation_index.proto" ]
+}
+
+if (is_android) {
+  proto_java_library("proto_java") {
+    proto_path = "//"
+    sources = [ "annotation_index.proto" ]
+  }
 }

@@ -78,6 +78,8 @@ std::string_view GetStringNameForRequestContext(
       return "ShopCard";
     case proto::RequestContext::CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS:
       return "GlicZeroStateSuggestions";
+    case proto::RequestContext::CONTEXT_FILTER_EXECUTION:
+      return "FilterExecution";
   }
   NOTREACHED();
 }

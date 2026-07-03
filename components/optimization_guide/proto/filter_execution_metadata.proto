@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "FilterExecutionMetadataProto";
+
+import "components/multistep_filter/core/annotation_index/proto/annotation_index.proto";
+
+// Metadata provided with a GetHintsRequest when the context is
+// CONTEXT_FILTER_EXECUTION.
+message FilterExecutionRequestContextMetadata {
+  // A list of potential task and attribute combinations.
+  // The server will evaluate these and generate strategies for all valid
+  // candidates.
+  repeated multistep_filter.ExecutionCandidate execution_candidate = 1;
+}
