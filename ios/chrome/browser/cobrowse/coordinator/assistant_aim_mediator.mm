@@ -332,16 +332,25 @@
   std::string locale = base::SysNSStringToUTF8(localeIdentifier);
   base::ReplaceChars(locale, "_", "-", &locale);
 
-  base::WeakPtr<web::WebState> weakWebState = _webState->GetWeakPtr();
+  __weak AssistantAIMMediator* weakSelf = self;
+
   _contextualTasksService->GetThreadUrlFromTaskId(
       uuid, locale,
       omnibox::ChromeAimEntryPoint::IOS_CHROME_OMNIBOX_SEARCH_ENTRY_POINT,
       base::BindOnce(^(GURL url) {
-        if (url.is_valid() && weakWebState) {
-          web::NavigationManager::WebLoadParams params(url);
-          weakWebState->GetNavigationManager()->LoadURLWithParams(params);
+        if (url.is_valid()) {
+          [weakSelf didGetSelectedThreadURL:url];
         }
       }));
+}
+
+// Updates and loads the context URL.
+- (void)didGetSelectedThreadURL:(GURL)url {
+  _context = [[CobrowseContext alloc] initWithURL:url];
+  if (_cobrowseBrowserAgent) {
+    _cobrowseBrowserAgent->SetCobrowseContext(_context);
+  }
+  [self loadAIMURL];
 }
 
 #pragma mark - ComposeboxURLLoader
