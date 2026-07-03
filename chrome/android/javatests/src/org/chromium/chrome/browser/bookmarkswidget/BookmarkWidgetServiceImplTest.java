@@ -19,7 +19,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,9 +30,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
@@ -48,14 +47,13 @@ public class BookmarkWidgetServiceImplTest {
     private static final String FOLDER_TITLE = "Test Bookmark Folder";
     private static final GURL TEST_URL = new GURL("https://www.test.com");
 
-    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     private Context mContext;
     private FakeBookmarkModel mBookmarkModel;
     private BookmarkWidgetServiceImpl.BookmarkAdapter mFactory;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
