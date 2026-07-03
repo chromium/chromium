@@ -25,19 +25,21 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Tests for PassphraseActivity. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PassphraseActivityTest {
-    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private Context mContext;
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mContext = ApplicationProvider.getApplicationContext();
     }
 
@@ -49,7 +51,7 @@ public class PassphraseActivityTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         // Override before signing in, otherwise regular SyncService will be created.
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        mChromeBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Create the activity.
         final PassphraseActivity activity = launchPassphraseActivity();
@@ -77,7 +79,7 @@ public class PassphraseActivityTest {
     public void testLaunchPassphraseDialog() {
         // Override before signing in, otherwise regular SyncService will be created.
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        mChromeBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Create the activity.
         final PassphraseActivity activity = launchPassphraseActivity();
@@ -95,7 +97,7 @@ public class PassphraseActivityTest {
     public void testLaunchPassphraseDialogForSignedInUsers() {
         // Override before signing in, otherwise regular SyncService will be created.
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        mChromeBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Create the activity.
         final PassphraseActivity activity = launchPassphraseActivity();
