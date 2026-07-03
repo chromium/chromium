@@ -9,6 +9,7 @@
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -25,7 +26,6 @@
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
-#import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/chrome/browser/autofill/manual_fill/coordinator/form_fetcher_consumer_bridge.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credential+PasswordForm.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credential.h"
@@ -241,7 +241,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
   if (!_webAuthnDelegate && IsConditionalPasskeyLoginEnabled()) {
     web::WebFramesManager* framesManager =
-        webauthn::PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
             _webState);
     if (framesManager) {
       webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
