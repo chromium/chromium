@@ -24,6 +24,8 @@ namespace multistep_filter {
 // Observes navigations to trigger Multistep Filter feature logic.
 // This chrome-specific observer manages the lifetime of the component
 // FilterNavigationObserver and bridges it with the TabInterface.
+//
+// Owned by `WebContents`, one instance per `WebContents`.
 class ChromeFilterNavigationObserver
     : public tabs::ContentsObservingTabFeature {
  public:

@@ -49,6 +49,9 @@ class FilterSuggestionGenerator;
 // suggestions for filters to the user. It acts as the central
 // coordinator for the Multistep Filter feature, managing the lifecycle of
 // related components like the FilterSuggestionGenerator.
+//
+// One instance of `MultistepFilterService` is created per `BrowserContext`
+// (i.e. per profile) and owned by the `BrowserContext`.
 class MultistepFilterService : public KeyedService,
                                public history::HistoryServiceObserver {
  public:

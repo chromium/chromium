@@ -16,6 +16,9 @@ namespace multistep_filter {
 // This delegate allows core services and observers to query the UI state
 // (like suppression) and trigger UI updates (like clearing or showing
 // suggestions).
+//
+// Instances are owned by `ChromeFilterNavigationObserver` in chrome/browser;
+// one instance exists per `WebContents` (i.e. per tab).
 class MultistepFilterUiDelegate {
  public:
   virtual ~MultistepFilterUiDelegate() = default;
