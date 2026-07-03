@@ -255,6 +255,29 @@ TEST_F(WebRtcMediaStreamTrackAdapterMapTest, GetMissingRemoteTrackAdapter) {
   EXPECT_EQ(nullptr, map_->GetRemoteTrackAdapter(webrtc_track.get()));
 }
 
+TEST_F(WebRtcMediaStreamTrackAdapterMapTest,
+       DestroyAdapterRefOnSignalingThread) {
+  MediaStreamComponent* track = CreateLocalTrack("local_track");
+  std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
+      adapter_ref = map_->GetOrCreateLocalTrackAdapter(track);
+  EXPECT_TRUE(adapter_ref->is_initialized());
+  EXPECT_EQ(1u, map_->GetLocalTrackCount());
+
+  // Destroying the AdapterRef on the signaling thread should post the removal
+  // and disposal to the main thread.
+  PostCrossThreadTask(
+      *signaling_thread(), FROM_HERE,
+      CrossThreadBindOnce(
+          [](std::unique_ptr<
+              blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef> ref) {
+            // Destroyed when going out of scope on the signaling thread.
+          },
+          std::move(adapter_ref)));
+  RunMessageLoopsUntilIdle();
+  EXPECT_EQ(0u, map_->GetLocalTrackCount());
+  EXPECT_EQ(nullptr, map_->GetLocalTrackAdapter(track));
+}
+
 // Continuously calls GetOrCreateLocalTrackAdapter() on the main thread and
 // GetOrCreateRemoteTrackAdapter() on the signaling thread hoping to hit
 // deadlocks if the operations were to synchronize with the other thread while

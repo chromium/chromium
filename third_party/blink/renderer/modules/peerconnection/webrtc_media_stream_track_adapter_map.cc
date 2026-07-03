@@ -25,29 +25,47 @@ WebRtcMediaStreamTrackAdapterMap::AdapterRef::AdapterRef(
 }
 
 WebRtcMediaStreamTrackAdapterMap::AdapterRef::~AdapterRef() {
-  DCHECK(map_->main_thread_->BelongsToCurrentThread());
+  if (!map_->main_thread_->BelongsToCurrentThread()) {
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread =
+        map_->main_thread_;
+    PostCrossThreadTask(
+        *main_thread, FROM_HERE,
+        CrossThreadBindOnce(
+            &WebRtcMediaStreamTrackAdapterMap::DisposeAdapterRef,
+            std::move(map_), type_, std::move(adapter_)));
+    return;
+  }
+  DisposeAdapterRef(std::move(map_), type_, std::move(adapter_));
+}
+
+// static
+void WebRtcMediaStreamTrackAdapterMap::DisposeAdapterRef(
+    scoped_refptr<WebRtcMediaStreamTrackAdapterMap> map,
+    AdapterRef::Type type,
+    scoped_refptr<blink::WebRtcMediaStreamTrackAdapter> adapter) {
+  DCHECK(map->main_thread_->BelongsToCurrentThread());
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapter> removed_adapter;
   {
-    base::AutoLock scoped_lock(map_->lock_);
-    // The adapter is stored in the track adapter map and we have |adapter_|,
+    base::AutoLock scoped_lock(map->lock_);
+    // The adapter is stored in the track adapter map and we have |adapter|,
     // so there must be at least two references to the adapter.
-    DCHECK(!adapter_->HasOneRef());
-    // Using a raw pointer instead of |adapter_| allows the reference count to
+    DCHECK(!adapter->HasOneRef());
+    // Using a raw pointer instead of |adapter| allows the reference count to
     // go down to one if this is the last |AdapterRef|.
-    blink::WebRtcMediaStreamTrackAdapter* adapter = adapter_.get();
-    adapter_ = nullptr;
-    if (adapter->HasOneRef()) {
-      removed_adapter = adapter;
+    blink::WebRtcMediaStreamTrackAdapter* adapter_ptr = adapter.get();
+    adapter = nullptr;
+    if (adapter_ptr->HasOneRef()) {
+      removed_adapter = adapter_ptr;
       // "GetOrCreate..." ensures the adapter is initialized and the secondary
       // key is set before the last |AdapterRef| is destroyed. We can use either
       // the primary or secondary key for removal.
-      DCHECK(adapter->is_initialized());
-      if (type_ == Type::kLocal) {
-        map_->local_track_adapters_.EraseByPrimary(
-            adapter->track()->UniqueId());
+      DCHECK(adapter_ptr->is_initialized());
+      if (type == AdapterRef::Type::kLocal) {
+        map->local_track_adapters_.EraseByPrimary(
+            adapter_ptr->track()->UniqueId());
       } else {
-        map_->remote_track_adapters_.EraseByPrimary(
-            adapter->webrtc_track().get());
+        map->remote_track_adapters_.EraseByPrimary(
+            adapter_ptr->webrtc_track().get());
       }
     }
   }
