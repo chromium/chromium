@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.AtomicDouble;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,9 +20,9 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -36,9 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class DistilledPagePrefsTest {
-    @ClassRule
-    public static final ChromeBrowserTestRule sChromeBrowserTestRule = new ChromeBrowserTestRule();
-
     private DistilledPagePrefs mDistilledPagePrefs;
 
     private static final double EPSILON = 1e-5;
@@ -48,6 +44,7 @@ public class DistilledPagePrefsTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         getDistilledPagePrefs();
     }
 
