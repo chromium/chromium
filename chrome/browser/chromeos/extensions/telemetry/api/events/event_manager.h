@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -20,7 +19,6 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -82,7 +80,7 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   static const bool kServiceIsCreatedInGuestMode = false;
   static const bool kServiceRedirectedInIncognito = true;
 
-  mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService();
+  crosapi::mojom::TelemetryEventService& GetEventService();
 
   void OnAppUiClosed(extensions::ExtensionId extension_id);
   void OnAppUiFocusChanged(extensions::ExtensionId extension_id,
@@ -95,7 +93,7 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>
       app_ui_observers_;
   EventRouter event_router_;
-  std::unique_ptr<RemoteEventServiceStrategy> remote_event_service_strategy_;
+  std::unique_ptr<crosapi::mojom::TelemetryEventService> event_service_;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 };

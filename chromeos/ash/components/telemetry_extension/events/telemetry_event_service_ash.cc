@@ -31,38 +31,9 @@ using EventObserverProxy =
 
 }  // namespace
 
-// static
-TelemetryEventServiceAsh::Factory*
-    TelemetryEventServiceAsh::Factory::test_factory_ = nullptr;
-
-// static
-std::unique_ptr<crosapi::mojom::TelemetryEventService>
-TelemetryEventServiceAsh::Factory::Create(
-    mojo::PendingReceiver<crosapi::mojom::TelemetryEventService> receiver) {
-  if (test_factory_) {
-    return test_factory_->CreateInstance(std::move(receiver));
-  }
-
-  auto event_service = std::make_unique<TelemetryEventServiceAsh>();
-  event_service->BindReceiver(std::move(receiver));
-  return event_service;
-}
-
-// static
-void TelemetryEventServiceAsh::Factory::SetForTesting(Factory* test_factory) {
-  test_factory_ = test_factory;
-}
-
-TelemetryEventServiceAsh::Factory::~Factory() = default;
-
 TelemetryEventServiceAsh::TelemetryEventServiceAsh() = default;
 
 TelemetryEventServiceAsh::~TelemetryEventServiceAsh() = default;
-
-void TelemetryEventServiceAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::TelemetryEventService> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
 
 void TelemetryEventServiceAsh::AddEventObserver(
     crosapi::mojom::TelemetryEventCategoryEnum category,

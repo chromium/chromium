@@ -11,39 +11,16 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash {
 
 class TelemetryEventServiceAsh : public crosapi::mojom::TelemetryEventService {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<crosapi::mojom::TelemetryEventService> Create(
-        mojo::PendingReceiver<crosapi::mojom::TelemetryEventService> receiver);
-
-    static void SetForTesting(Factory* test_factory);
-
-    virtual ~Factory();
-
-   protected:
-    virtual std::unique_ptr<crosapi::mojom::TelemetryEventService>
-    CreateInstance(mojo::PendingReceiver<crosapi::mojom::TelemetryEventService>
-                       receiver) = 0;
-
-   private:
-    static Factory* test_factory_;
-  };
-
   TelemetryEventServiceAsh();
   TelemetryEventServiceAsh(const TelemetryEventServiceAsh&) = delete;
   TelemetryEventServiceAsh& operator=(const TelemetryEventServiceAsh&) = delete;
   ~TelemetryEventServiceAsh() override;
-
-  void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::TelemetryEventService> receiver);
 
   // crosapi::TelemetryEventService implementation.
   void AddEventObserver(
@@ -61,9 +38,6 @@ class TelemetryEventServiceAsh : public crosapi::mojom::TelemetryEventService {
  private:
   // Currently open connections.
   std::vector<base::WeakPtr<SelfOwnedMojoProxyInterface>> observers_;
-
-  // Support any number of connections.
-  mojo::ReceiverSet<crosapi::mojom::TelemetryEventService> receivers_;
 
   base::WeakPtrFactory<TelemetryEventServiceAsh> weak_factory_{this};
 };

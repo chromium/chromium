@@ -36,8 +36,6 @@ source_set("event_router") {
     "event_observation_crosapi.h",
     "event_router.cc",
     "event_router.h",
-    "remote_event_service_strategy.cc",
-    "remote_event_service_strategy.h",
   ]
 
   deps = [
@@ -66,6 +64,7 @@ source_set("event_manager") {
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:util",
     "//chrome/common/chromeos/extensions",
+    "//chromeos/ash/components/telemetry_extension/events",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
   ]

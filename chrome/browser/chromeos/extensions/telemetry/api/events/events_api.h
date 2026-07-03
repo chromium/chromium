@@ -8,11 +8,9 @@
 #include <optional>
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "extensions/browser/extension_function.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -22,8 +20,6 @@ class EventsApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
 
  protected:
   ~EventsApiFunctionBase() override;
-
-  mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService();
 
   // Gets the parameters passed to the JavaScript call and tries to convert it
   // to the `Params` type. If the `Params` can't be created, this resolves the

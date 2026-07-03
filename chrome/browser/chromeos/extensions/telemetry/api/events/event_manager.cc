@@ -12,7 +12,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
+#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -23,7 +23,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -144,7 +143,7 @@ EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     }
   }
 
-  GetRemoteService()->AddEventObserver(
+  GetEventService().AddEventObserver(
       category, event_router_.GetPendingRemoteForCategoryAndExtension(
                     category, extension_id));
   return kSuccess;
@@ -190,14 +189,14 @@ void EventManager::IsEventSupported(
     std::move(callback).Run(std::move(unsupported));
     return;
   }
-  GetRemoteService()->IsEventSupported(category, std::move(callback));
+  GetEventService().IsEventSupported(category, std::move(callback));
 }
 
-mojo::Remote<crosapi::TelemetryEventService>& EventManager::GetRemoteService() {
-  if (!remote_event_service_strategy_) {
-    remote_event_service_strategy_ = RemoteEventServiceStrategy::Create();
+crosapi::TelemetryEventService& EventManager::GetEventService() {
+  if (!event_service_) {
+    event_service_ = std::make_unique<ash::TelemetryEventServiceAsh>();
   }
-  return remote_event_service_strategy_->GetRemoteService();
+  return *event_service_;
 }
 
 void EventManager::OnAppUiClosed(extensions::ExtensionId extension_id) {

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
@@ -67,34 +68,32 @@ class TelemetryEventServiceAshTest : public testing::Test {
   void SetUp() override { cros_healthd::FakeCrosHealthd::Initialize(); }
   void TearDown() override { cros_healthd::FakeCrosHealthd::Shutdown(); }
 
-  crosapi::mojom::TelemetryEventServiceProxy* event_service() const {
-    return remote_event_service_.get();
+  crosapi::mojom::TelemetryEventService& event_service() {
+    return event_service_;
   }
 
  protected:
   TestEventObserver& observer() { return observer_; }
 
-  void FlushForTesting() { remote_event_service_.FlushForTesting(); }
-
  private:
   base::test::TaskEnvironment task_environment_;
   TestEventObserver observer_;
 
-  mojo::Remote<crosapi::mojom::TelemetryEventService> remote_event_service_;
-  std::unique_ptr<crosapi::mojom::TelemetryEventService> event_service_{
-      TelemetryEventServiceAsh::Factory::Create(
-          remote_event_service_.BindNewPipeAndPassReceiver())};
+  ash::TelemetryEventServiceAsh event_service_;
   mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
 TEST_F(TelemetryEventServiceAshTest, AddEventObserver) {
-  event_service()->AddEventObserver(
+  event_service().AddEventObserver(
       crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
       observer().GetRemote());
 
   // Flush so that the registration shows up.
   observer().GetReceiver().FlushForTesting();
-  FlushForTesting();
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    return cros_healthd::FakeCrosHealthd::Get()->GetObserversByCategory(
+        cros_healthd::mojom::EventCategoryEnum::kAudioJack);
+  }));
 
   auto audio_jack_info = cros_healthd::mojom::AudioJackEventInfo::New();
   audio_jack_info->state =
@@ -106,9 +105,6 @@ TEST_F(TelemetryEventServiceAshTest, AddEventObserver) {
       std::move(audio_jack_info));
   cros_healthd::FakeCrosHealthd::Get()->EmitEventForCategory(
       cros_healthd::mojom::EventCategoryEnum::kAudioJack, std::move(info));
-
-  // Flush so that the result shows up.
-  FlushForTesting();
 
   EXPECT_EQ(observer().WaitAndGetEvent(),
             crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
@@ -127,7 +123,7 @@ TEST_F(TelemetryEventServiceAshTest, IsEventSupported) {
   base::test::TestFuture<crosapi::mojom::TelemetryExtensionSupportStatusPtr>
       future;
 
-  event_service()->IsEventSupported(
+  event_service().IsEventSupported(
       crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
       future.GetCallback());
 
@@ -135,13 +131,16 @@ TEST_F(TelemetryEventServiceAshTest, IsEventSupported) {
 }
 
 TEST_F(TelemetryEventServiceAshTest, OnCrosapiDisconnect) {
-  event_service()->AddEventObserver(
+  event_service().AddEventObserver(
       crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
       observer().GetRemote());
 
   // Flush so that the registration shows up.
   observer().GetReceiver().FlushForTesting();
-  FlushForTesting();
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    return cros_healthd::FakeCrosHealthd::Get()->GetObserversByCategory(
+        cros_healthd::mojom::EventCategoryEnum::kAudioJack);
+  }));
 
   mojo::RemoteSet<cros_healthd::mojom::EventObserver>* observers =
       cros_healthd::FakeCrosHealthd::Get()->GetObserversByCategory(
@@ -149,10 +148,9 @@ TEST_F(TelemetryEventServiceAshTest, OnCrosapiDisconnect) {
 
   ASSERT_TRUE(observers);
   EXPECT_EQ(observers->size(), 1UL);
-  observer().Reset();
 
-  // Flush so that the reset shows up.
-  FlushForTesting();
+  observer().Reset();
+  observers->FlushForTesting();
 
   EXPECT_EQ(observers->size(), 0UL);
 }
@@ -161,7 +159,7 @@ TEST_F(TelemetryEventServiceAshTest, OnCrosHealthdDisconnect) {
   constexpr uint32_t kReason = 123;
   constexpr char kMsg[] = "test";
 
-  event_service()->AddEventObserver(
+  event_service().AddEventObserver(
       crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
       observer().GetRemote());
 
@@ -176,7 +174,10 @@ TEST_F(TelemetryEventServiceAshTest, OnCrosHealthdDisconnect) {
 
   // Flush so that the registration shows up.
   observer().GetReceiver().FlushForTesting();
-  FlushForTesting();
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    return cros_healthd::FakeCrosHealthd::Get()->GetObserversByCategory(
+        cros_healthd::mojom::EventCategoryEnum::kAudioJack);
+  }));
 
   mojo::RemoteSet<cros_healthd::mojom::EventObserver>* observers =
       cros_healthd::FakeCrosHealthd::Get()->GetObserversByCategory(
