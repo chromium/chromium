@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_accessibility_manager.h"
 
+#include <string>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -21,7 +24,8 @@ namespace blink {
 
 class HTMLCanvasAccessibilityManagerTest : public PageTestBase {
  public:
-  HTMLCanvasAccessibilityManagerTest() = default;
+  HTMLCanvasAccessibilityManagerTest()
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUpCanvas(const char* html_content) {
     GetDocument().GetSettings()->SetScriptEnabled(true);
@@ -234,49 +238,76 @@ TEST_F(HTMLCanvasAccessibilityManagerTest, InitiallyIgnoredBecomesVisible) {
             HTMLCanvasAccessibilityManager::HeuristicResult::kNeedsA11ySupport);
 }
 
-TEST_F(HTMLCanvasAccessibilityManagerTest, RecordAndSortRenderedText) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(::features::kAccessibilityCanvas);
+class HTMLCanvasAccessibilityManagerCaptureTest
+    : public HTMLCanvasAccessibilityManagerTest {
+ public:
+  void SetUp() override {
+    HTMLCanvasAccessibilityManagerTest::SetUp();
+    feature_list_.InitAndEnableFeature(::features::kAccessibilityCanvas);
+    SetUpCanvas("<body><canvas id='c' width=300 height=200></canvas></body>");
+    canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/false);
+    WaitForAccessibilityManagerUpdate();
 
-  SetUpCanvas("<body><canvas id='c' width=300 height=200></canvas></body>");
-  canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/false);
-  WaitForAccessibilityManagerUpdate();
+    manager_ = canvas_element_->GetAccessibilityManagerForTesting();
+    ASSERT_TRUE(manager_);
+    ASSERT_TRUE(manager_->ShouldCaptureRenderedTextForTesting());
+  }
 
-  HTMLCanvasAccessibilityManager* manager =
-      canvas_element_->GetAccessibilityManagerForTesting();
-  ASSERT_TRUE(manager);
-  EXPECT_TRUE(manager->ShouldCaptureRenderedTextForTesting());
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  Persistent<HTMLCanvasAccessibilityManager> manager_;
+};
 
-  // Record text runs out of order.
+TEST_F(HTMLCanvasAccessibilityManagerCaptureTest,
+       RecordTextRunsVerticalSorting) {
   // "World" is lower (larger Y) so it should come second.
-  manager->RecordRenderedText("World", gfx::RectF(0, 50, 100, 20), 12.0f);
+  manager_->RecordRenderedText("World", gfx::RectF(0, 50, 100, 20), 12.0f);
   // "Hello" is higher (smaller Y) so it should come first.
-  manager->RecordRenderedText("Hello", gfx::RectF(0, 0, 100, 20), 12.0f);
-  manager->UpdateAnnotation();
-  EXPECT_EQ(manager->CanvasAnnotation(), "Hello World");
+  manager_->RecordRenderedText("Hello", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  EXPECT_EQ(manager_->CanvasAnnotation(), "Hello World");
+}
 
-  // Record another run on the same line as "World" to test horizontal sorting.
-  // "Again" is to the right of "World" (bounds.x() = 110).
-  manager->RecordRenderedText("Again", gfx::RectF(110, 50, 100, 20), 12.0f);
-  manager->UpdateAnnotation();
-  EXPECT_EQ(manager->CanvasAnnotation(), "Hello World Again");
+TEST_F(HTMLCanvasAccessibilityManagerCaptureTest,
+       RecordTextRunsHorizontalSorting) {
+  manager_->RecordRenderedText("World", gfx::RectF(0, 50, 100, 20), 12.0f);
+  // "Again" is to the right of "World" (bounds.x() = 110) on the same line.
+  manager_->RecordRenderedText("Again", gfx::RectF(110, 50, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  EXPECT_EQ(manager_->CanvasAnnotation(), "World Again");
+}
 
-  // Test overwrite: recording text in a sufficiently overlapping area should
-  // overwrite the existing run instead of adding a new one.
-  manager->RecordRenderedText("Hi", gfx::RectF(0, 0, 100, 20), 12.0f);
-  manager->UpdateAnnotation();
-  EXPECT_EQ(manager->CanvasAnnotation(), "Hi World Again");
+TEST_F(HTMLCanvasAccessibilityManagerCaptureTest, RecordTextRunsOverwrite) {
+  manager_->RecordRenderedText("Hello", gfx::RectF(0, 0, 100, 20), 12.0f);
+  // Recording text in a sufficiently overlapping area should overwrite the
+  // existing run.
+  manager_->RecordRenderedText("Hi", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  EXPECT_EQ(manager_->CanvasAnnotation(), "Hi");
+}
 
-  // Test clearing a specific region.
+TEST_F(HTMLCanvasAccessibilityManagerCaptureTest, RecordTextRunsClearRegion) {
+  manager_->RecordRenderedText("Hi", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->RecordRenderedText("World", gfx::RectF(0, 50, 100, 20), 12.0f);
+  manager_->RecordRenderedText("Again", gfx::RectF(110, 50, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  ASSERT_EQ(manager_->CanvasAnnotation(), "Hi World Again");
+
   // This rect intersects mainly with the "World" run (at Y=50).
-  manager->ClearRenderedText(gfx::RectF(-10, 40, 120, 30));
-  manager->UpdateAnnotation();
-  EXPECT_EQ(manager->CanvasAnnotation(), "Hi Again");
+  manager_->ClearRenderedText(gfx::RectF(-10, 40, 120, 30));
+  manager_->UpdateAnnotation();
+  EXPECT_EQ(manager_->CanvasAnnotation(), "Hi Again");
+}
 
-  // Test full clear.
-  manager->ClearRenderedText();
-  manager->UpdateAnnotation();
-  EXPECT_TRUE(manager->CanvasAnnotation().empty());
+TEST_F(HTMLCanvasAccessibilityManagerCaptureTest, RecordTextRunsFullClear) {
+  manager_->RecordRenderedText("Hi", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->RecordRenderedText("Again", gfx::RectF(110, 50, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  ASSERT_EQ(manager_->CanvasAnnotation(), "Hi Again");
+
+  manager_->ClearRenderedText();
+  manager_->UpdateAnnotation();
+  EXPECT_TRUE(manager_->CanvasAnnotation().empty());
 }
 
 TEST_F(HTMLCanvasAccessibilityManagerTest,
@@ -348,6 +379,146 @@ TEST_F(HTMLCanvasAccessibilityManagerTest,
   EXPECT_EQ(manager->GetHeuristicResultForTesting(),
             HTMLCanvasAccessibilityManager::HeuristicResult::kIsIgnored);
   EXPECT_TRUE(canvas_element_->CanvasAnnotation().empty());
+}
+
+class HTMLCanvasAccessibilityManagerOCRTest
+    : public HTMLCanvasAccessibilityManagerTest {
+ public:
+  void SetUp() override {
+    HTMLCanvasAccessibilityManagerTest::SetUp();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kAccessibilityCanvas,
+        {{"CanvasAccessibilityMode", "Advanced"}});
+    ax_context_ =
+        std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+    SetUpCanvas("<body><canvas id='c' width=300 height=200></canvas></body>");
+    canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/false);
+    WaitForAccessibilityManagerUpdate();
+
+    manager_ = canvas_element_->GetAccessibilityManagerForTesting();
+    ASSERT_TRUE(manager_);
+    ASSERT_TRUE(manager_->NeedsA11ySupport());
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<AXContext> ax_context_;
+  Persistent<HTMLCanvasAccessibilityManager> manager_;
+};
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerFromEmptyTextRuns) {
+  // Initially, canvas_annotation_ is empty, which meets the "no text extracted"
+  // criteria for NeedsOCR(). So UpdateAnnotation() should start the OCR timer.
+  manager_->UpdateAnnotation();
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRNoTriggerWithValidTextRuns) {
+  // If we record some text runs that are valid and non-empty (so
+  // canvas_annotation_ is neither empty nor too long), NeedsOCR() should be
+  // false, and the timer should stop.
+  manager_->RecordRenderedText("Hello", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerWithTooManyTextRuns) {
+  // If too much text is extracted (exceeds kMaxTextRuns), the OCR timer
+  // should be active again.
+  for (size_t i = 0; i < HTMLCanvasAccessibilityManager::kMaxTextRuns + 1;
+       ++i) {
+    manager_->RecordRenderedText(
+        "A", gfx::RectF(0, static_cast<float>(i * 50), 100, 20), 12.0f);
+  }
+  manager_->UpdateAnnotation();
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerOnFirstCanvasDrawing) {
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+
+  // First draw / frame finalization: triggers the OCR timer.
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       OCRRescheduleOnSubsequentCanvasDrawing) {
+  ASSERT_LT(HTMLCanvasAccessibilityManager::kOCRDelay,
+            HTMLCanvasAccessibilityManager::kMaxOCRDelay);
+
+  // Trigger initial OCR timer scheduling.
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  ASSERT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  const base::TimeDelta kRescheduleDelay =
+      HTMLCanvasAccessibilityManager::kOCRDelay / 2;
+
+  // Fast forward by reschedule interval.
+  FastForwardBy(kRescheduleDelay);
+  ASSERT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  // Second draw reschedules the timer.
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  // Fast forward a little before another complete OCR delay.
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay -
+                HTMLCanvasAccessibilityManager::kOCRDelay / 10);
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRFiresAfterCanvasDrawingDelay) {
+  // Trigger initial OCR timer scheduling.
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  ASSERT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  // Fast forward past the OCR delay.
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay +
+                HTMLCanvasAccessibilityManager::kOCRDelay / 10);
+
+  // The timer must have fired and become inactive.
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       OCRTriggerFromContinuousCanvasDrawing) {
+  // First draw / frame finalization.
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  const base::TimeDelta kDrawInterval =
+      HTMLCanvasAccessibilityManager::kOCRDelay / 10;
+  base::TimeDelta total_draw_time = base::TimeDelta();
+
+  // Continuously draw at small intervals and check that OCR is still scheduled
+  // until the total drawn time is above the threshold.
+  while (total_draw_time < HTMLCanvasAccessibilityManager::kMaxOCRDelay) {
+    FastForwardBy(kDrawInterval);
+    canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+    EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+    total_draw_time += kDrawInterval;
+  }
+
+  // At this point, total_draw_time is >= kMaxOCRDelay.
+  // The last slot where we rescheduled was at (total_draw_time -
+  // kDrawInterval). So the timer is scheduled to run at: (total_draw_time -
+  // kDrawInterval) + HTMLCanvasAccessibilityManager::kOCRDelay
+  //
+  // Since we are currently at total_draw_time, the remaining time until the
+  // timer fires is exactly: HTMLCanvasAccessibilityManager::kOCRDelay -
+  // kDrawInterval
+  //
+  // For safety, fast forward by a duration slightly less than this remaining
+  // time and check that the timer is still active.
+  const base::TimeDelta time_before_fire =
+      HTMLCanvasAccessibilityManager::kOCRDelay - kDrawInterval - kDrawInterval;
+  FastForwardBy(time_before_fire);
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  // Fast forward past the fire time and check that it has fired (inactive).
+  FastForwardBy(kDrawInterval * 2);
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
 }
 
 }  // namespace blink

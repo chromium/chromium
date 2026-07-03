@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -26,6 +27,32 @@ class HTMLCanvasElement;
 class CORE_EXPORT HTMLCanvasAccessibilityManager
     : public GarbageCollected<HTMLCanvasAccessibilityManager> {
  public:
+  // TODO(crbug.com/498093320): Add A/B testing for below constants. All
+  // constants are chosen ad hoc and should be fine tuned.
+
+  // Two rectangles are considered to be sufficiently overlapping if the
+  // intersection area is greater than 80% of the area of either rectangle.
+  static constexpr float kSufficientlyOverlappingThreshold = 0.8f;
+
+  // Two texts are considered to be on the same line if the vertical distance
+  // between them is less than 10% of the size of the smaller font.
+  static constexpr float kSameLineFontRatioThreshold = 0.1f;
+
+  // Delay to ensure the canvas element has had a chance to update its
+  // accessibility related information.
+  static constexpr base::TimeDelta kUMATimerDelay = base::Seconds(5);
+
+  // Delay before triggering OCR after the canvas image becomes stable.
+  static constexpr base::TimeDelta kOCRDelay = base::Seconds(1);
+
+  // Maximum time an OCR request can be postponed before we stop rescheduling
+  // it.
+  static constexpr base::TimeDelta kMaxOCRDelay = base::Seconds(5);
+
+  // Threshold of text runs count beyond which too much text is considered
+  // extracted, requiring support from the OCR service.
+  static constexpr size_t kMaxTextRuns = 10;
+
   using Options = unsigned;
   enum Option : Options {
     kNone = 0,
@@ -104,10 +131,16 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
     return options_ & kCollectTextRuns;
   }
 
+  bool IsOCRTimerActiveForTesting() const { return ocr_timer_.IsActive(); }
+
  private:
   void SetHeuristicResult(HeuristicResult result);
   void RecordUma(TimerBase*);
   bool IsTooSmall() const;
+  bool NeedsOCR() const;
+  void TriggerOCR(TimerBase*);
+  void SetOCRDeadline();
+  void ClearOCRDeadline();
 
   struct RenderedTextRun {
     String text;
@@ -137,6 +170,8 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
   std::optional<bool> needs_a11y_support_;
 
   HeapTaskRunnerTimer<HTMLCanvasAccessibilityManager> uma_timer_;
+  HeapTaskRunnerTimer<HTMLCanvasAccessibilityManager> ocr_timer_;
+  base::TimeTicks ocr_deadline_;
   bool is_uma_recorded_ = false;
 
   // Owns this object and should outlive it.
