@@ -1008,7 +1008,7 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
                             WebFeature::kRTCLocalSdpModificationIceUfragPwd);
         }
         if (ContainsOpusStereo(parsed_sdp.sdp()) &&
-            !ContainsOpusStereo(last_offer_)) {
+            !ContainsOpusStereo(last_answer_)) {
           UseCounter::Count(context,
                             WebFeature::kRTCLocalSdpModificationOpusStereo);
         }
