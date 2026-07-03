@@ -30,6 +30,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -2004,6 +2005,11 @@ bool VerifyHeaderPermissionsPolicyAgainstBaseline(
   }
   return true;
 }
+constexpr base::MemoryConsumerTraits kRenderFrameHostTraits(
+    base::MemoryConsumerTraits::ConsumerType::kPassive,
+    // Frames are in an out-of-process renderer.
+    base::MemoryConsumerTraits::InProcess::kNo);
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -2608,7 +2614,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           agent_scheduling_group_->GetProcess()->GetID())),
       memory_consumer_registration_(
           /*consumer_name=*/"RenderFrameHostImpl",
-          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          kRenderFrameHostTraits,
           this,
           base::MemoryConsumerRegistration::CheckUnregister::kDisabled) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::RenderFrameHostImpl",
