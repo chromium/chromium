@@ -36,7 +36,6 @@ static_library("eche_app") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/phonehub",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/notifications",
     "//chrome/browser/ui/web_applications",

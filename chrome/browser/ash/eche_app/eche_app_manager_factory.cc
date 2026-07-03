@@ -31,12 +31,12 @@
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
@@ -322,7 +322,7 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
   const std::string board_name = base::SysInfo::GetLsbReleaseBoard();
   const std::u16string device_type = ui::GetChromeOSDeviceName();
   const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   GaiaId gaia_id;
   if (user) {
     std::u16string given_name = user->GetGivenName();

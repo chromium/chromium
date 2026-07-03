@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/device_sync",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/phonehub",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/secure_channel",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",
