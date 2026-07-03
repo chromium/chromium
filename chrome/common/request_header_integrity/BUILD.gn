@@ -43,6 +43,7 @@ source_set("request_header_integrity") {
     "//chrome/common/platform_runtime",
     "//components/embedder_support:user_agent",
     "//components/google/core/common",
+    "//content/public/common",
     "//google_apis",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

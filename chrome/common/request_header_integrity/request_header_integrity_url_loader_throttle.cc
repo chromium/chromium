@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -22,6 +23,7 @@
 #include "chrome/common/platform_runtime/platform_runtime_impl.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/google/core/common/google_util.h"
+#include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
@@ -67,7 +69,7 @@ namespace {
 // These values are persisted to UMA logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PlatformRuntimeIntegrityResult {
-  kComponentUnavailable = 0,
+  // kComponentUnavailable = 0, // OBSOLETE.
   kLibraryUnavailable = 1,
   kSuccess = 2,
   kFailure = 3,
@@ -153,16 +155,16 @@ bool GetHeader(void* headers,
 }
 
 void ProcessRequestHeaders(net::HttpRequestHeaders* headers, const GURL& url) {
-  platform_runtime::PlatformRuntimeImpl* runtime =
-      platform_runtime::PlatformRuntimeImpl::GetInstance();
-  if (!runtime) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    base::UmaHistogramEnumeration(
-        "ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult",
-        PlatformRuntimeIntegrityResult::kComponentUnavailable);
-#endif
+  // Don't process request headers in non-browser processes since the Platform
+  // Runtime component is not loaded there, and we only need to process headers
+  // for main frame requests.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kProcessType)) {
     return;
   }
+  platform_runtime::PlatformRuntimeImpl* runtime =
+      platform_runtime::PlatformRuntimeImpl::GetInstance();
+  CHECK(runtime);
   scoped_refptr<platform_runtime::PlatformRuntimeLibrary> loaded_lib =
       runtime->GetLoadedLibrary();
   if (!loaded_lib) {
