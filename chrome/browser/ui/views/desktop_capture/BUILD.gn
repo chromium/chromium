@@ -68,6 +68,7 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
     "//components/constrained_window",
     "//components/strings:components_strings",
     "//components/vector_icons",

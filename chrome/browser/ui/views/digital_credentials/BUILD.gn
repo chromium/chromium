@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/app/vector_icons",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/accessibility",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
     "//components/constrained_window",
     "//components/url_formatter",
     "//ui/base",

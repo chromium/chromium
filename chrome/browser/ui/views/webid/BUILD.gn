@@ -50,6 +50,7 @@ source_set("impl") {
     "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
     "//chrome/browser/ui/views/interaction",
     "//components/constrained_window",
     "//components/url_formatter",
