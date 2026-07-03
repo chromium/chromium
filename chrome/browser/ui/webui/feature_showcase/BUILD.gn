@@ -49,6 +49,7 @@ source_set("feature_showcase") {
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/resources/feature_showcase:resources",
     "//chrome/browser/resources/intro:resources",
+    "//chrome/browser/ui:feature_showcase_metrics",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/toolbar/pinned_toolbar",

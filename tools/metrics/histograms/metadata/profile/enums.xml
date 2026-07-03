@@ -38,6 +38,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/first_run_flow_controller.h:FeatureShowcaseStep) -->
 
+<!-- LINT.IfChange(FeatureShowcaseStepUserAction) -->
+
+<enum name="FeatureShowcaseStepUserAction">
+  <summary>Action taken by the user on a Feature Showcase step</summary>
+  <int value="0" label="Declined"/>
+  <int value="1" label="Accepted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h:FeatureShowcaseStepUserAction) -->
+
 <enum name="FirstRunCloudPolicyStoreState">
   <int value="0" label="Loaded before initialization">
     The cloud policy store was already loaded when the FRE intro was first

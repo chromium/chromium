@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 
 PasswordManagerHandler::PasswordManagerHandler(
     mojo::PendingReceiver<feature_showcase::mojom::PasswordManagerPageHandler>
@@ -20,9 +22,16 @@ PasswordManagerHandler::PasswordManagerHandler(
 PasswordManagerHandler::~PasswordManagerHandler() = default;
 
 void PasswordManagerHandler::PinPasswordManager() {
+  RecordStepUserAction(FeatureShowcaseStep::kPasswordManager,
+                       FeatureShowcaseStepUserAction::kAccepted);
   PinnedToolbarActionsModel* model = PinnedToolbarActionsModel::Get(profile_);
   if (model) {
     model->UpdatePinnedState(kActionShowPasswordsBubbleOrPage,
                              /*should_pin=*/true);
   }
+}
+
+void PasswordManagerHandler::SkipPasswordManager() {
+  RecordStepUserAction(FeatureShowcaseStep::kPasswordManager,
+                       FeatureShowcaseStepUserAction::kDeclined);
 }

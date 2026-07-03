@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/feature_showcase/google_lens_handler.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 #include "chrome/browser/ui/webui/feature_showcase/google_lens.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/lens/lens_permission_user_action.h"
@@ -19,6 +21,8 @@ class GoogleLensHandlerTest : public testing::Test {
 
  protected:
   TestingProfile* profile() { return &profile_; }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -37,4 +41,20 @@ TEST_F(GoogleLensHandlerTest, EnablesGoogleLens) {
 
   // Ensure it is now granted.
   EXPECT_TRUE(lens::DidUserGrantLensOverlayNeededPermissions(profile()));
+
+  histogram_tester_.ExpectUniqueSample(
+      "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.GoogleLens",
+      FeatureShowcaseStepUserAction::kAccepted, 1);
+}
+
+TEST_F(GoogleLensHandlerTest, SkipsGoogleLens) {
+  mojo::PendingReceiver<feature_showcase::mojom::GoogleLensPageHandler>
+      receiver;
+  GoogleLensHandler handler(std::move(receiver), profile());
+
+  handler.SkipGoogleLens();
+
+  histogram_tester_.ExpectUniqueSample(
+      "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.GoogleLens",
+      FeatureShowcaseStepUserAction::kDeclined, 1);
 }

@@ -33,14 +33,14 @@ export class FeatureShowcasePasswordManagerStepElement extends CrLitElement {
   accessor buttonsDisabled: boolean = false;
 
   protected onConfirmClick_() {
-    PasswordManagerBrowserProxyImpl.getInstance().handler.pinPasswordManager();
     this.buttonsDisabled = true;
+    PasswordManagerBrowserProxyImpl.getInstance().handler.pinPasswordManager();
     this.fire('step-completed');
   }
 
   protected onSkipClick_() {
-    // TODO(crbug.com/505631006): Add unified way to handle "No, thanks".
     this.buttonsDisabled = true;
+    PasswordManagerBrowserProxyImpl.getInstance().handler.skipPasswordManager();
     this.fire('step-completed');
   }
 }

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/feature_showcase/password_manager_handler.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,6 +33,8 @@ class PasswordManagerHandlerTest : public testing::Test {
  protected:
   TestingProfile& profile() { return profile_; }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -47,6 +51,22 @@ TEST_F(PasswordManagerHandlerTest, PinPasswordManager) {
   ASSERT_FALSE(model->Contains(kActionShowPasswordsBubbleOrPage));
   handler.PinPasswordManager();
   EXPECT_TRUE(model->Contains(kActionShowPasswordsBubbleOrPage));
+
+  histogram_tester_.ExpectUniqueSample(
+      "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.PasswordManager",
+      FeatureShowcaseStepUserAction::kAccepted, 1);
+}
+
+TEST_F(PasswordManagerHandlerTest, SkipPasswordManager) {
+  mojo::PendingReceiver<feature_showcase::mojom::PasswordManagerPageHandler>
+      receiver;
+  PasswordManagerHandler handler(std::move(receiver), &profile());
+
+  handler.SkipPasswordManager();
+
+  histogram_tester_.ExpectUniqueSample(
+      "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.PasswordManager",
+      FeatureShowcaseStepUserAction::kDeclined, 1);
 }
 
 }  // namespace

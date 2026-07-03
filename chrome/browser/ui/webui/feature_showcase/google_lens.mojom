@@ -8,6 +8,9 @@ module feature_showcase.mojom;
 interface GoogleLensPageHandler {
   // Grants the necessary permissions to enable Google Lens.
   EnableGoogleLens();
+
+  // Skips enabling Google Lens.
+  SkipGoogleLens();
 };
 
 // Used by the WebUI to bootstrap WebUI->Browser communication for Google Lens.

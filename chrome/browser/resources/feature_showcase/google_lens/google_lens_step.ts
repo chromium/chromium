@@ -40,6 +40,7 @@ export class FeatureShowcaseGoogleLensStepElement extends CrLitElement {
 
   protected onSkipClick_() {
     this.buttonsDisabled = true;
+    GoogleLensBrowserProxyImpl.getInstance().handler.skipGoogleLens();
     this.fire('step-completed');
   }
 }
