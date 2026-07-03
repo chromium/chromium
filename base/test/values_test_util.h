@@ -186,7 +186,7 @@ DictionaryHasValues(T&& template_dict) {
 //   base::DictValue template_dict = ...;
 //   EXPECT_THAT(actual, IsSupersetOfValue(template_dict));
 //
-//   EXPECT_THAT(actual, IsSupersetOfValue(R("{"goats": 3})")));
+//   EXPECT_THAT(actual, IsSupersetOfValue(R"({"goats": 3})"));
 template <typename T>
 inline testing::PolymorphicMatcher<internal::IsSupersetOfValueMatcher>
 IsSupersetOfValue(T&& template_value) {
@@ -215,7 +215,7 @@ IsSupersetOfValue(T&& template_value) {
 //   base::ListValue value_list = ...;
 //   EXPECT_THAT(actual, IsJson(value_list));
 //
-//   EXPECT_THAT(actual, IsJson(R("{"goats": 3})")));
+//   EXPECT_THAT(actual, IsJson(R"({"goats": 3})"));
 template <typename T>
 inline testing::PolymorphicMatcher<internal::IsJsonMatcher> IsJson(T&& value) {
   return testing::MakePolymorphicMatcher(
