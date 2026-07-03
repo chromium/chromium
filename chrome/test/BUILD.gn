@@ -3266,6 +3266,7 @@ if (!is_android) {
       "../browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.h",
       "../browser/page_load_metrics/observers/gws_hp_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/gws_page_load_metrics_observer_browsertest.cc",
+      "../browser/page_load_metrics/observers/navigation_initiator_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/prerender_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/use_counter_page_load_metrics_observer_browsertest.cc",
       "../browser/prefs/tracked/pref_hash_browsertest.cc",

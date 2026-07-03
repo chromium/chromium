@@ -308,6 +308,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Browser mapped urn::uuid is rendered in iframe"/>
 </enum>
 
+<!-- LINT.IfChange(NavigationInitiatorType) -->
+
+<enum name="NavigationInitiatorType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Bookmark Bar"/>
+  <int value="2" label="New Tab Page"/>
+  <int value="3" label="Omnibox Direct URL Input"/>
+  <int value="4" label="Omnibox Default Search Engine"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/navigation_handle_user_data.h:NavigationInitiatorType) -->
+
 <enum name="NavigationIsGuest">
   <int value="0" label="Not a guest navigation"/>
   <int value="1" label="Guest navigation"/>

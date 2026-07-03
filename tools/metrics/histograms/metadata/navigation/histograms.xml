@@ -1443,6 +1443,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.InitiatorType.All" enum="NavigationInitiatorType"
+    expires_after="2026-12-01">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the initiator type of a navigation. Recorded for a standard
+    navigation when it commits. For a prerendered navigation, it is recorded
+    when the page is activated.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.InitiatorType.SRP" enum="NavigationInitiatorType"
+    expires_after="2026-12-01">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the initiator type of a SRP navigation. Recorded for a standard SRP
+    navigation when it commits. For a prerendered SRP navigation, it is recorded
+    when the page is activated.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
     expires_after="2027-03-21">
   <owner>alexmos@chromium.org</owner>
