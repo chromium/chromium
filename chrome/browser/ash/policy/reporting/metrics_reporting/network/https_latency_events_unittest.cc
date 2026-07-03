@@ -11,19 +11,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/fake_network_diagnostics_util.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -33,9 +33,10 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using HttpsLatencyProblemMojom =
@@ -127,24 +128,26 @@ class HttpsLatencyEventsTest : public ::testing::Test {
     reporting_test_enviroment_ =
         reporting::ReportingClient::TestEnvironment::CreateWithStorageModule();
 
-    ::ash::LoginState::Initialize();
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            g_browser_process->local_state());
     ::ash::DebugDaemonClient::InitializeFake();
     ::ash::cros_healthd::FakeCrosHealthd::Initialize();
   }
 
   void InitProfile(bool affiliated) {
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    user_manager_ = user_manager.get();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-    auto account_id = AccountId::FromUserEmail("ini_fan@gmail.com");
+    const auto account_id =
+        AccountId::FromUserEmailGaiaId("ini_fan@gmail.com", GaiaId("123456"));
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    test_user_session_manager_->LogIn(account_id);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        account_id, /*is_managed=*/affiliated, affiliated);
+
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(account_id.GetUserEmail());
     profile_ = profile_builder.Build();
-    user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, affiliated, user_manager::UserType::kRegular,
-        profile_.get());
-    user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
+
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
   }
 
   void ProcessProblem(FakeNetworkDiagnostics* diagnostics,
@@ -168,7 +171,7 @@ class HttpsLatencyEventsTest : public ::testing::Test {
   void TearDown() override {
     ::ash::cros_healthd::FakeCrosHealthd::Shutdown();
     ::ash::DebugDaemonClient::Shutdown();
-    ::ash::LoginState::Shutdown();
+    test_user_session_manager_.reset();
 
     reporting_test_enviroment_.reset();
   }
@@ -187,6 +190,7 @@ class HttpsLatencyEventsTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<reporting::ReportingClient::TestEnvironment>
       reporting_test_enviroment_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
 
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
@@ -194,8 +198,6 @@ class HttpsLatencyEventsTest : public ::testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };

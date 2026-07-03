@@ -15,16 +15,29 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "components/onc/onc_constants.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 
 using ::onc::network_config::kWiFi;
 using ::onc::wifi::kSignalStrengthRssi;
 
 namespace reporting {
 namespace {
+
+std::string GetProfileUserHash() {
+  const auto* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
+    return std::string();
+  }
+  return user_manager::UserManager::Get()
+      ->FindUser(primary_session->account_id())
+      ->username_hash();
+}
 
 void FetchNextWifiSignalStrengthRssi(
     base::queue<std::string> service_path_queue,
@@ -70,7 +83,7 @@ void FetchNextWifiSignalStrengthRssi(
   ::ash::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->GetProperties(
-          ash::LoginState::Get()->primary_user_hash(), service_path,
+          GetProfileUserHash(), service_path,
           base::BindOnce(&OnGetProperties, std::move(service_path_queue),
                          std::move(path_rssi_map), std::move(cb)));
 }
