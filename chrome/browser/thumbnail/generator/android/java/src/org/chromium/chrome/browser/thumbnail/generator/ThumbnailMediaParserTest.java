@@ -8,7 +8,6 @@ import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,7 +18,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -39,8 +37,6 @@ import java.io.File;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ThumbnailMediaParserTest {
-    @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
-
     /** Wraps result from media parser. */
     public static class MediaParserResult {
         public boolean done;
