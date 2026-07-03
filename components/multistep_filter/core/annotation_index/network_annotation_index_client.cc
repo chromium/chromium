@@ -321,7 +321,8 @@ std::unique_ptr<network::ResourceRequest> CreatePostResourceRequest(
 }  // namespace
 
 // static
-std::unique_ptr<AnnotationIndexClient> AnnotationIndexClient::Create(
+std::unique_ptr<NetworkAnnotationIndexClient>
+NetworkAnnotationIndexClient::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     MultistepFilterLogRouter* log_router) {

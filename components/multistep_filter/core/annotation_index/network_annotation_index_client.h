@@ -55,6 +55,11 @@ struct FilterSuggestionCandidate;
 //    packaging it into clean, lightweight C++ structs for callers.
 class NetworkAnnotationIndexClient : public AnnotationIndexClient {
  public:
+  static std::unique_ptr<NetworkAnnotationIndexClient> Create(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager,
+      MultistepFilterLogRouter* log_router);
+
   NetworkAnnotationIndexClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,

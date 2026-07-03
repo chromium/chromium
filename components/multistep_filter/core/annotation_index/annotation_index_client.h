@@ -12,24 +12,15 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
-#include "components/version_info/channel.h"
 #include "url/gurl.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 namespace multistep_filter {
 
-class MultistepFilterLogRouter;
 struct FilterAnnotation;
 struct FilterSuggestionCandidate;
 
+// TODO(crbug.com/530584136): Remove once the optimization guide migration is
+// complete.
 // An interface for querying site automation annotation indexing services and
 // data sources for the `multistep_filter` component.
 //
@@ -38,12 +29,6 @@ struct FilterSuggestionCandidate;
 // and extract filter annotations.
 class AnnotationIndexClient {
  public:
-  // Creates a default instance of `AnnotationIndexClient`.
-  static std::unique_ptr<AnnotationIndexClient> Create(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager,
-      MultistepFilterLogRouter* log_router);
-
   virtual ~AnnotationIndexClient() = default;
 
   // Evaluates potential filter candidates and generates a list of

@@ -13,6 +13,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
+#include "components/multistep_filter/core/annotation_index/network_annotation_index_client.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
@@ -62,8 +63,8 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   MultistepFilterLogRouter* log_router =
       MultistepFilterLogRouterFactory::GetForProfile(profile);
 
-  std::unique_ptr<AnnotationIndexClient> annotation_index_client =
-      AnnotationIndexClient::Create(
+  std::unique_ptr<NetworkAnnotationIndexClient> annotation_index_client =
+      NetworkAnnotationIndexClient::Create(
           context->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess(),
           identity_manager, log_router);
