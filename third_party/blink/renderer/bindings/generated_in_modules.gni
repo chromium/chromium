@@ -206,6 +206,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs_js_on.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs_js_on.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs_js_on.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_browser_bound_signature.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_browser_bound_signature.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_outputs.cc",

@@ -34,5 +34,6 @@ dictionary AuthenticationExtensionsClientInputsJSON {
   [RuntimeEnabled=SecurePaymentConfirmation] AuthenticationExtensionsPaymentInputs payment;
   [RuntimeEnabled=WebAuthenticationRemoteDesktopSupport] RemoteDesktopClientOverride remoteDesktopClientOverride;
   AuthenticationExtensionsPRFInputsJSON prf;
+  [RuntimeEnabled=WebAuthenticationCmtgKey] boolean cmtgKey;
   [RuntimeEnabled=WebAuthenticationCrossDeviceFallbackUrl] USVString crossDeviceFallbackUrl;
 };

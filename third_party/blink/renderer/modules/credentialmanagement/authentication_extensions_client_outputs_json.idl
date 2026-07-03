@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+dictionary AuthenticationExtensionsCmtgKeyOutputsJSON {
+  required Base64URLString cmtgKey;
+  required Base64URLString signature;
+};
+
 // https://w3c.github.io/webauthn/#dictdef-authenticationextensionsclientoutputsjson
 
 dictionary AuthenticationExtensionsClientOutputsJSON {
@@ -22,6 +27,10 @@ dictionary AuthenticationExtensionsClientOutputsJSON {
 
   // https://w3c.github.io/webauthn/#prf-extension
   object prf;
+
+  // Credential Manager Trust Group (CMTG) key.
+  // https://github.com/w3c/webauthn/pull/2377
+  [RuntimeEnabled=WebAuthenticationCmtgKey] AuthenticationExtensionsCmtgKeyOutputsJSON cmtgKey;
 
   // Cross-device fallback URL support.
   // https://github.com/w3c/webauthn/pull/2380

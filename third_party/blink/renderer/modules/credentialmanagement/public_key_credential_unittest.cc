@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs_js_on.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs_js_on.h"
@@ -82,6 +84,7 @@ struct ExtensionsClientInputsValues {
   std::optional<std::vector<std::pair<std::string, PRFValues>>>
       prf_eval_by_credential;
   std::optional<std::string> cross_device_fallback_url;
+  std::optional<bool> cmtg_key;
 };
 
 AuthenticationExtensionsClientInputsJSON* MakeExtensionsInputsJSON(
@@ -133,6 +136,9 @@ AuthenticationExtensionsClientInputsJSON* MakeExtensionsInputsJSON(
   if (in.cross_device_fallback_url) {
     extensions->setCrossDeviceFallbackUrl(
         String(*in.cross_device_fallback_url));
+  }
+  if (in.cmtg_key) {
+    extensions->setCmtgKey(*in.cmtg_key);
   }
   return extensions;
 }
@@ -393,6 +399,11 @@ void ExpectExtensionsMatch(
   } else {
     EXPECT_FALSE(extensions.hasCrossDeviceFallbackUrl());
   }
+  if (values.cmtg_key) {
+    EXPECT_EQ(extensions.cmtgKey(), *values.cmtg_key);
+  } else {
+    EXPECT_FALSE(extensions.hasCmtgKey());
+  }
 }
 
 // Tests `PublicKeyCredentialCreationOptions` and `CreationOptionsValues` for
@@ -576,6 +587,8 @@ TEST(PublicKeyCredentialTest, ParseCreationOptionsFromJSON_WithExtensions) {
       {.cred_props = true},
       {.cred_blob = kTestB64URL},
       {.prf_eval = kTestPRFValues},
+      {.cmtg_key = true},
+      {.cmtg_key = false},
   };
   for (const auto& ext : kTestCases) {
     CredentialCreationOptionsValues options_values{.extensions = ext};
@@ -603,6 +616,8 @@ TEST(PublicKeyCredentialTest, ParseRequestOptionsFromJSON_WithExtensions) {
       {.get_cred_blob = true},
       {.prf_eval_by_credential = {{std::make_pair("ABEiMw", kTestPRFValues)}}},
       {.cross_device_fallback_url = "https://example.com/fallback"},
+      {.cmtg_key = true},
+      {.cmtg_key = false},
   };
   for (const auto& ext : kTestCases) {
     CredentialRequestOptionsValues options_values{.extensions = ext};
@@ -689,6 +704,8 @@ struct ExtensionsClientOutputsValues {
   std::optional<Vector<uint8_t>> large_blob_data;
   std::optional<bool> large_blob_written;
   std::optional<Vector<uint8_t>> get_cred_blob;
+  std::optional<Vector<uint8_t>> cmtg_key_data;
+  std::optional<Vector<uint8_t>> cmtg_key_sig;
   std::optional<bool> cross_device_fallback_url;
 };
 
@@ -721,6 +738,16 @@ AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
   }
   if (in.get_cred_blob) {
     extensions->setGetCredBlob(DOMArrayBuffer::Create(*in.get_cred_blob));
+  }
+  if (in.cmtg_key_data || in.cmtg_key_sig) {
+    auto* cmtg_key = AuthenticationExtensionsCmtgKeyOutputs::Create();
+    if (in.cmtg_key_data) {
+      cmtg_key->setCmtgKey(DOMArrayBuffer::Create(*in.cmtg_key_data));
+    }
+    if (in.cmtg_key_sig) {
+      cmtg_key->setSignature(DOMArrayBuffer::Create(*in.cmtg_key_sig));
+    }
+    extensions->setCmtgKey(cmtg_key);
   }
   if (in.cross_device_fallback_url) {
     extensions->setCrossDeviceFallbackUrl(*in.cross_device_fallback_url);
@@ -802,6 +829,25 @@ void ExpectExtensionsJSONMatch(
   } else {
     EXPECT_FALSE(extensions.hasCrossDeviceFallbackUrl());
   }
+  if (values.cmtg_key_data || values.cmtg_key_sig) {
+    ASSERT_TRUE(extensions.hasCmtgKey());
+    const auto* cmtg_key = extensions.cmtgKey();
+    ASSERT_NE(cmtg_key, nullptr);
+    if (values.cmtg_key_data) {
+      ASSERT_TRUE(cmtg_key->hasCmtgKey());
+      EXPECT_EQ(cmtg_key->cmtgKey(),
+                WebAuthnBase64UrlEncode(
+                    DOMArrayBuffer::Create(*values.cmtg_key_data)));
+    }
+    if (values.cmtg_key_sig) {
+      ASSERT_TRUE(cmtg_key->hasSignature());
+      EXPECT_EQ(cmtg_key->signature(),
+                WebAuthnBase64UrlEncode(
+                    DOMArrayBuffer::Create(*values.cmtg_key_sig)));
+    }
+  } else {
+    EXPECT_FALSE(extensions.hasCmtgKey());
+  }
 }
 
 TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
@@ -827,6 +873,8 @@ TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
       {.get_cred_blob = Vector<uint8_t>{'g', 'e', 't', 't', 'y'}},
       {.cross_device_fallback_url = true},
       {.cross_device_fallback_url = false},
+      {.cmtg_key_data = Vector<uint8_t>{'c', 'm', 't', 'g', 'k'},
+       .cmtg_key_sig = Vector<uint8_t>{'c', 'm', 't', 'g', 's'}},
   };
 
   for (const auto& inputs : kTestCases) {
