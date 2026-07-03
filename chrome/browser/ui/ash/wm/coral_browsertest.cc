@@ -20,12 +20,15 @@
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -86,7 +89,10 @@ aura::Window* GetNativeWindowForSwa(SystemWebAppType swa_type) {
   aura::Window* found_window = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [swa_type, &found_window](BrowserWindowInterface* browser) {
-        if (IsBrowserForSystemWebApp(browser, swa_type)) {
+        if (ash::IsBrowserForSystemWebApp(
+                CHECK_DEREF(ash::BrowserController::GetInstance()->GetDelegate(
+                    browser)),
+                swa_type)) {
           found_window = browser->GetWindow()->GetNativeWindow();
         }
         return !found_window;

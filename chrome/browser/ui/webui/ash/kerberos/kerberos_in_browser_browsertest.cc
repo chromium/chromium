@@ -4,7 +4,10 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -26,8 +29,10 @@ constexpr test::UIPath kOpenSettingsButtonPath = {"redirect-dialog",
 bool IsSettingsWindowOpened() {
   auto settings_browsers =
       ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
-        return ash::IsBrowserForSystemWebApp(browser,
-                                             ash::SystemWebAppType::SETTINGS);
+        return ash::IsBrowserForSystemWebApp(
+            CHECK_DEREF(
+                ash::BrowserController::GetInstance()->GetDelegate(browser)),
+            ash::SystemWebAppType::SETTINGS);
       });
   return !settings_browsers.empty();
 }

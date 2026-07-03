@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -500,9 +499,10 @@ void BrowserFrameViewChromeOS::Layout(PassKey) {
 
 gfx::Size BrowserFrameViewChromeOS::GetMinimumSize() const {
   // System web apps (e.g. Settings) may have a fixed minimum size.
-  Browser* browser = GetBrowserView()->browser();
-  if (ash::IsSystemWebApp(browser)) {
-    gfx::Size minimum_size = ash::GetSystemWebAppMinimumWindowSize(browser);
+  const auto* const swa_delegate =
+      web_app::GetSystemWebAppDelegate(GetBrowserView()->browser());
+  if (swa_delegate) {
+    gfx::Size minimum_size = swa_delegate->GetMinimumWindowSize();
     if (!minimum_size.IsEmpty()) {
       return minimum_size;
     }

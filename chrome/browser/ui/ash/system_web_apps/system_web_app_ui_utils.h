@@ -132,22 +132,14 @@ BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,
 // Returns a count of the `app_type` SWA Browser instances for `profile`.
 int CountSystemWebAppBrowsers(Profile* profile, SystemWebAppType app_type);
 
-// Returns true if the |browser| is dedicated (see above) to hosting a system
-// web app.
-bool IsSystemWebApp(Browser* browser);
-
 // Returns whether the |browser| is dedicated (see above) to hosting the system
 // app |type|.
-bool IsBrowserForSystemWebApp(BrowserWindowInterface* browser,
+bool IsBrowserForSystemWebApp(const BrowserDelegate& browser,
                               SystemWebAppType type);
 
 // Returns the SystemWebAppType that should capture the |url|.
 std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
                                                             const GURL& url);
-
-// Returns the minimum window size for a system web app, or an empty size if
-// the app does not specify a minimum size.
-gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser);
 
 }  // namespace ash
 

@@ -48,7 +48,6 @@
 #include "ui/wm/core/window_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
@@ -466,7 +465,7 @@ ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS SystemWebApps use the OS theme all the time.
-  if (ash::IsSystemWebApp(browser_view_->browser())) {
+  if (web_app::GetSystemWebAppType(browser_view_->browser()).has_value()) {
     return key;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

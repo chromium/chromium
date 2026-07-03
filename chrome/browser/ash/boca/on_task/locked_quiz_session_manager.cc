@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
@@ -124,8 +125,10 @@ void LockedQuizSessionManager::OnBocaSWALaunched(
 void LockedQuizSessionManager::SetLockedFullscreenState(Browser* browser,
                                                         bool pinned) {
   if (ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
-    bool is_boca_app_instance =
-        ash::IsBrowserForSystemWebApp(browser, ash::SystemWebAppType::BOCA);
+    bool is_boca_app_instance = ash::IsBrowserForSystemWebApp(
+        CHECK_DEREF(
+            ash::BrowserController::GetInstance()->GetDelegate(browser)),
+        ash::SystemWebAppType::BOCA);
 
     // Enforce that the browser instance provided is the Boca SWA.
     if (!is_boca_app_instance) {

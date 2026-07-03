@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -950,8 +951,7 @@ void FilesPolicyNotificationManager::LaunchFilesApp(
 
 void FilesPolicyNotificationManager::OnBrowserCreated(
     ash::BrowserDelegate* browser_delegate) {
-  // TODO(crbug.com/440947120): Migrate away from using Browser* here.
-  if (!ash::IsBrowserForSystemWebApp(&browser_delegate->GetBrowser(),
+  if (!ash::IsBrowserForSystemWebApp(CHECK_DEREF(browser_delegate),
                                      ash::SystemWebAppType::FILE_MANAGER)) {
     LOG(WARNING) << "Browser did not match Files app";
     return;

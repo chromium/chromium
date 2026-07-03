@@ -123,6 +123,7 @@ void LockedSessionWindowTracker::set_oauth_in_progress(
 
 void LockedSessionWindowTracker::MaybeCloseBrowser(
     ash::BrowserDelegate* browser) {
+  CHECK(browser);
   pending_close_tasks_.erase(browser);
 
   // The browser window needs to be closed if:
@@ -153,8 +154,8 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
     return;
   }
 
-  bool is_boca_app_instance = ash::IsBrowserForSystemWebApp(
-      &browser->GetBrowser(), ash::SystemWebAppType::BOCA);
+  bool is_boca_app_instance =
+      ash::IsBrowserForSystemWebApp(*browser, ash::SystemWebAppType::BOCA);
 
   if (browser_ &&
       !platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser()) &&

@@ -26,6 +26,10 @@
 #include "ui/color/color_provider_key.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class Browser;
 class BrowserWindowInterface;
 class BrowserThemePack;
@@ -404,6 +408,18 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   ui::ScopedUnownedUserData<AppBrowserController> scoped_unowned_user_data_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns the SystemWebAppDelegate if `browser` is hosting a System Web App, or
+// nullptr otherwise.
+const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(
+    const BrowserWindowInterface* browser);
+
+// Returns the SystemWebAppType if `browser` is hosting a System Web App, or
+// std::nullopt otherwise.
+std::optional<ash::SystemWebAppType> GetSystemWebAppType(
+    const BrowserWindowInterface* browser);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
 

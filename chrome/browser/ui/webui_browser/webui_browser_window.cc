@@ -62,10 +62,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace {
 
 const char* const kWebUIBrowserWindowKey = "__WEBUI_BROWSER_WINDOW__";
@@ -493,7 +489,7 @@ ui::ColorProviderKey WebUIBrowserWindow::GetColorProviderKey() const {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS SystemWebApps use the OS theme all the time.
-  if (ash::IsSystemWebApp(browser_)) {
+  if (web_app::GetSystemWebAppType(browser_).has_value()) {
     return key;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

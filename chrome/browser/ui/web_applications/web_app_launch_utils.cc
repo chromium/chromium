@@ -767,12 +767,11 @@ content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  Browser* browser = nav_params.browser->GetBrowserForMigrationOnly();
+  Profile* profile = nav_params.browser->GetProfile();
   const std::optional<ash::SystemWebAppType> capturing_system_app_type =
-      ash::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
-  if (capturing_system_app_type &&
-      (!browser ||
-       !IsBrowserForSystemWebApp(browser, capturing_system_app_type.value()))) {
+      ash::GetCapturingSystemAppForURL(profile, nav_params.url);
+  if (capturing_system_app_type && GetSystemWebAppType(nav_params.browser) !=
+                                       capturing_system_app_type.value()) {
     // Web app launch process should receive the correct `NavigateParams`
     // argument from system web app launches, so that Navigate() call below
     // succeeds (i.e. don't trigger system web app link capture).

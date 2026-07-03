@@ -19,11 +19,14 @@
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/informed_restore_test_api.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -214,10 +217,14 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
   bool found_settings = false;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
-        if (IsBrowserForSystemWebApp(browser, SystemWebAppType::FILE_MANAGER)) {
+        const auto& delegate = CHECK_DEREF(
+            ash::BrowserController::GetInstance()->GetDelegate(browser));
+        if (ash::IsBrowserForSystemWebApp(delegate,
+                                          SystemWebAppType::FILE_MANAGER)) {
           found_file_manager = true;
         }
-        if (IsBrowserForSystemWebApp(browser, SystemWebAppType::SETTINGS)) {
+        if (ash::IsBrowserForSystemWebApp(delegate,
+                                          SystemWebAppType::SETTINGS)) {
           found_settings = true;
         }
         return true;

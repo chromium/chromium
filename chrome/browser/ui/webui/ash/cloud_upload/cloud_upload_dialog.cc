@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
@@ -1289,14 +1290,19 @@ void CloudOpenTask::OnBrowserCreated(BrowserWindowInterface* browser) {
   if (!need_new_files_app_) {
     return;
   }
+
   // TODO(petermarshall): Add a timeout. If Files app never launches for some
   // reason, then we will never show the dialog.
   DCHECK(pending_dialog_);
-  if (!IsBrowserForSystemWebApp(browser, SystemWebAppType::FILE_MANAGER)) {
+  const BrowserDelegate& delegate =
+      CHECK_DEREF(ash::BrowserController::GetInstance()->GetDelegate(browser));
+  if (!ash::IsBrowserForSystemWebApp(delegate,
+                                     SystemWebAppType::FILE_MANAGER)) {
     // Wait for Files app to launch.
     LOG(WARNING) << "Browser did not match Files app";
     return;
   }
+
   need_new_files_app_ = false;
   files_app_browser_ = BrowserController::GetInstance()->GetDelegate(browser);
 

@@ -130,6 +130,21 @@ bool AppBrowserController::IsIsolatedWebApp(
   return IsWebApp(browser) && From(browser)->IsIsolatedWebApp();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(
+    const BrowserWindowInterface* browser) {
+  auto* app_controller =
+      browser ? AppBrowserController::From(browser) : nullptr;
+  return app_controller ? app_controller->system_app() : nullptr;
+}
+
+std::optional<ash::SystemWebAppType> GetSystemWebAppType(
+    const BrowserWindowInterface* browser) {
+  auto* swa_delegate = GetSystemWebAppDelegate(browser);
+  return swa_delegate ? std::optional(swa_delegate->GetType()) : std::nullopt;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // static
 bool AppBrowserController::IsForWebApp(const BrowserWindowInterface* browser,
                                        const webapps::AppId& app_id) {

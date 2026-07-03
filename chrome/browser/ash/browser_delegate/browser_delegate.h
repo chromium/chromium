@@ -33,6 +33,8 @@ class BaseWindow;
 
 namespace ash {
 
+class SystemWebAppDelegate;
+
 // Abstraction of the `Browser` class from chrome/browser/ui/browser.h for use
 // by ChromeOS feature code. See README.md.
 class BrowserDelegate {
@@ -89,6 +91,10 @@ class BrowserDelegate {
 
   // Returns whether the browser is a web app window/pop-up.
   virtual bool IsWebApp() const = 0;
+
+  // Returns the SystemWebAppDelegate if this browser is hosting a system web
+  // app, or nullptr otherwise.
+  virtual const SystemWebAppDelegate* GetSWADelegate() const = 0;
 
   // Returns true during the initial phase of the browser being closed, when
   // `beforeunload` handlers are running (async). It may be aborted.

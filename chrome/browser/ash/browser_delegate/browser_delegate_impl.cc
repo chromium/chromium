@@ -113,6 +113,10 @@ bool BrowserDelegateImpl::IsWebApp() const {
   return web_app::AppBrowserController::IsWebApp(&*browser_);
 }
 
+const SystemWebAppDelegate* BrowserDelegateImpl::GetSWADelegate() const {
+  return web_app::GetSystemWebAppDelegate(&*browser_);
+}
+
 bool BrowserDelegateImpl::IsAttemptingToClose() const {
   return browser_->IsAttemptingToCloseBrowser();
 }

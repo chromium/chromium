@@ -43,7 +43,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -75,9 +77,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/multi_user/multi_user_window_manager.h"
@@ -582,9 +581,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   const std::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(params->initiating_profile, params->url);
   if (capturing_system_app_type &&
-      (!params->browser || !ash::IsBrowserForSystemWebApp(
-                               params->browser->GetBrowserForMigrationOnly(),
-                               capturing_system_app_type.value()))) {
+      web_app::GetSystemWebAppType(params->browser) !=
+          capturing_system_app_type.value()) {
     ash::SystemAppLaunchParams swa_params;
     swa_params.url = params->url;
     ash::LaunchSystemWebAppAsync(params->initiating_profile,

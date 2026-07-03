@@ -153,14 +153,10 @@ base::TimeDelta GetShowDelay(BrowserWindowInterface* browser,
 bool IsBrowserForSystemWebApp(
     const BrowserWindowInterface* browser_window_interface) {
 #if BUILDFLAG(IS_CHROMEOS)
-  CHECK(browser_window_interface);
-  const auto* const app_controller =
-      web_app::AppBrowserController::From(browser_window_interface);
-  if (app_controller && app_controller->system_app()) {
-    return true;
-  }
-#endif
+  return web_app::GetSystemWebAppType(browser_window_interface).has_value();
+#else
   return false;
+#endif
 }
 
 views::WidgetFadeAnimator::SlideDirection ComputeSlideDirection(
