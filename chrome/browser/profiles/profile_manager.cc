@@ -452,7 +452,7 @@ bool ShouldGoOffTheRecord(Profile* profile) {
 }  // namespace
 
 BASE_FEATURE(kProfileManagerDeferAsyncLoading,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
     : user_data_dir_(user_data_dir)
