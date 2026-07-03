@@ -147,8 +147,10 @@ source_set("password_sharing_util") {
     "multi_avatar_image_util.mm",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
   ]
 }
 

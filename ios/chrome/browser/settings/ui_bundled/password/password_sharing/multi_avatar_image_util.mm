@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/multi_avatar_image_util.h"
 
+#import "base/check.h"
+#import "base/not_fatal_until.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
 
@@ -26,14 +29,43 @@ UIImage* CropToMiddle(UIImage* image) {
   return newImage;
 }
 
+// Draws a "+N" badge in the bottom-right quadrant, centering the text in the
+// sector.
+void DrawBadgeInBottomRightCorner(CGRect rect, NSInteger count, CGFloat size) {
+  CHECK(UIGraphicsGetCurrentContext(), base::NotFatalUntil::M160);
+  [[UIColor colorNamed:kTertiaryBackgroundColor] setFill];
+  UIRectFill(rect);
+
+  NSString* text = [NSString stringWithFormat:@"+%ld", (long)count];
+  NSDictionary* attributes = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:size / 5.0
+                                            weight:UIFontWeightBold],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+  };
+  CGSize textSize = [text sizeWithAttributes:attributes];
+
+  // Calculate the visual center of the bottom-right quarter-circle sector.
+  // 0.45 * R is slightly outer than the mathematical centroid (0.42 * R)
+  // to look visually centered with the text.
+  CGFloat R = size / 2;
+  CGFloat centerX = R * 1.45;
+  CGFloat centerY = R * 1.45;
+
+  CGRect textRect = CGRectMake(centerX - textSize.width / 2.0,
+                               centerY - textSize.height / 2.0, textSize.width,
+                               textSize.height);
+  [text drawInRect:textRect withAttributes:attributes];
+}
+
 }  // namespace
 
 UIImage* CreateMultiAvatarImage(NSArray<UIImage*>* images, CGFloat size) {
-  if (images.count == 0) {
+  NSInteger imagesCount = static_cast<NSInteger>(images.count);
+  if (imagesCount == 0) {
     return DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol, size);
   }
 
-  if (images.count == 1) {
+  if (imagesCount == 1) {
     return CircularImageFromImage(images[0], size);
   }
 
@@ -64,7 +96,7 @@ UIImage* CreateMultiAvatarImage(NSArray<UIImage*>* images, CGFloat size) {
   UIImage* mergedImage =
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
         // Create the left side of the image.
-        if (images.count <= 3) {
+        if (imagesCount <= 3) {
           [CropToMiddle(images[0]) drawInRect:leftRect];
         } else {
           [images[0] drawInRect:leftUpperRect];
@@ -72,12 +104,16 @@ UIImage* CreateMultiAvatarImage(NSArray<UIImage*>* images, CGFloat size) {
         }
 
         // Create the right side of the image.
-        // TODO(crbug.com/40275395): Handle the case of more than 4 images.
-        if (images.count == 2) {
+        if (imagesCount == 2) {
           [CropToMiddle(images[1]) drawInRect:rightRect];
         } else {
           [images[1] drawInRect:rightUpperRect];
-          [images[2] drawInRect:rightLowerRect];
+
+          if (imagesCount <= 4) {
+            [images[2] drawInRect:rightLowerRect];
+          } else {
+            DrawBadgeInBottomRightCorner(rightLowerRect, imagesCount - 3, size);
+          }
         }
       }];
 
