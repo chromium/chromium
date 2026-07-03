@@ -104,7 +104,7 @@ class CC_EXPORT ScrollJankV4DecisionQueue {
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
 
   void FlushDeferredSyntheticFrames(
-      bool future_real_frame_is_fast_scroll_or_sufficiently_fast_fling);
+      const ScrollJankV4Frame::Stage::ScrollUpdates::Real* future_real_updates);
 
   ScrollJankV4Decider decider_;
 
