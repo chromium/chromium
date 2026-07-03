@@ -63,6 +63,10 @@ CREATE PERFETTO TABLE chrome_scroll_frame_info_v4 (
   -- included in this frame (in pixels). NULL if the first scroll update in this
   -- frame is synthetic.
   real_abs_total_raw_delta_pixels DOUBLE,
+  -- The total raw (unpredicted) delta of all real scroll updates included in
+  -- this frame (in pixels). NULL if the first scroll update in this frame is
+  -- synthetic, or if the trace was recorded before the field was added.
+  real_total_raw_delta_pixels DOUBLE,
   -- Duration from the start of the browser process to the input generation
   -- timestamp of the first scroll update in this frame. NULL if the first
   -- scroll update in this frame is synthetic.
@@ -329,6 +333,7 @@ SELECT
   row_number() OVER (PARTITION BY info.scroll_id ORDER BY results.ts) AS frame_index_in_scroll,
   -- Columns which are only relevant frames whose first scroll update is REAL.
   _if_real_first_scroll_update!(results.real_abs_total_raw_delta_pixels) AS real_abs_total_raw_delta_pixels,
+  _if_real_first_scroll_update!(results.real_total_raw_delta_pixels) AS real_total_raw_delta_pixels,
   _if_real_first_scroll_update!(info.browser_uptime_dur) AS browser_uptime_dur,
   _if_real_first_scroll_update!(info.generation_ts) AS first_input_generation_ts,
   _if_real_first_scroll_update!(info.input_reader_dur) AS input_reader_dur,

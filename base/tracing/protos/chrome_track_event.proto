@@ -1016,14 +1016,20 @@ message EventLatency {
         // be joined with EventLatency.event_latency_id.
         optional int64 first_event_latency_id = 1;
 
+        // Deprecated in favor of `total_raw_delta_pixels`.
+        //
         // The absolute total raw (unpredicted) delta of all real scroll updates
         // included in this frame (in pixels).
-        optional float abs_total_raw_delta_pixels = 2;
+        optional float abs_total_raw_delta_pixels = 2 [deprecated = true];
 
         // The maximum absolute raw (unpredicted) delta out of all inertial
         // (fling) scroll updates included in this frame (in pixels). Empty if
         // there were no inertial scroll updates in this frame.
         optional float max_abs_inertial_raw_delta_pixels = 3;
+
+        // The total raw (unpredicted) delta of all real scroll updates included
+        // in this frame (in pixels).
+        optional float total_raw_delta_pixels = 4;
       }
       optional Real real = 1;
 
