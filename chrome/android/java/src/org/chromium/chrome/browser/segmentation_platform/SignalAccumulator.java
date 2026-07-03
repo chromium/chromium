@@ -42,20 +42,16 @@ public class SignalAccumulator {
     private long mGetSignalsStartMs;
 
     private final Map<Integer, ActionProvider> mActionProviders;
-    private final Tab mTab;
     private final Handler mHandler;
 
     /**
      * Constructor.
      *
      * @param handler A handler for posting task.
-     * @param tab The given tab.
      * @param actionProviders List of action providers to get signals from.
      */
-    public SignalAccumulator(
-            Handler handler, Tab tab, Map<Integer, ActionProvider> actionProviders) {
+    public SignalAccumulator(Handler handler, Map<Integer, ActionProvider> actionProviders) {
         mHandler = handler;
-        mTab = tab;
         mActionProviders = actionProviders;
         for (var actionType : mActionProviders.keySet()) {
             mSignals.put(actionType, null);
@@ -65,12 +61,15 @@ public class SignalAccumulator {
     /**
      * Called to start getting signals from the respective action providers. The callback will be
      * invoked at the end of signal collection or timeout.
+     *
+     * @param tab The given tab.
+     * @param callback Callback to be invoked on completion or timeout.
      */
-    void getSignals(Runnable callback) {
+    void getSignals(Tab tab, Runnable callback) {
         mCompletionCallback = callback;
         mGetSignalsStartMs = System.currentTimeMillis();
         for (ActionProvider actionProvider : mActionProviders.values()) {
-            actionProvider.getAction(mTab, this);
+            actionProvider.getAction(tab, this);
         }
         mHandler.postDelayed(
                 () -> {

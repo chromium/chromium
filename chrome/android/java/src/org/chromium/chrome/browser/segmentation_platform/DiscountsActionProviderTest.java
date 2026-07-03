@@ -51,7 +51,7 @@ public class DiscountsActionProviderTest {
     SignalAccumulator getSignalAccumulator() {
         HashMap<Integer, ActionProvider> providers = new HashMap<>();
         providers.put(AdaptiveToolbarButtonVariant.DISCOUNTS, mDiscountsActionProvider);
-        return new SignalAccumulator(new Handler(), mMockTab, providers);
+        return new SignalAccumulator(new Handler(), providers);
     }
 
     @Test

@@ -77,8 +77,8 @@ public class SignalAccumulatorTest {
                         signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.DISCOUNTS, true));
         final CallbackHelper callbackHelper = new CallbackHelper();
         int callCount = callbackHelper.getCallCount();
-        SignalAccumulator accumulator = new SignalAccumulator(mHandler, mMockTab, actionProviders);
-        accumulator.getSignals(() -> callbackHelper.notifyCalled());
+        SignalAccumulator accumulator = new SignalAccumulator(mHandler, actionProviders);
+        accumulator.getSignals(mMockTab, () -> callbackHelper.notifyCalled());
         callbackHelper.waitForCallback(callCount);
         Assert.assertTrue(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
         Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE));
@@ -98,8 +98,8 @@ public class SignalAccumulatorTest {
         actionProviders.put(
                 AdaptiveToolbarButtonVariant.PRICE_INSIGHTS, (tab, signalAccumulator) -> {});
         actionProviders.put(AdaptiveToolbarButtonVariant.DISCOUNTS, (tab, signalAccumulator) -> {});
-        SignalAccumulator accumulator = new SignalAccumulator(mHandler, mMockTab, actionProviders);
-        accumulator.getSignals(() -> callbackHelper.notifyCalled());
+        SignalAccumulator accumulator = new SignalAccumulator(mHandler, actionProviders);
+        accumulator.getSignals(mMockTab, () -> callbackHelper.notifyCalled());
         callbackHelper.waitForCallback(callCount);
         Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
         Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE));
@@ -116,8 +116,8 @@ public class SignalAccumulatorTest {
                     signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, false);
                 };
         actionProviders.put(AdaptiveToolbarButtonVariant.READER_MODE, actionProvider);
-        SignalAccumulator accumulator = new SignalAccumulator(mHandler, mMockTab, actionProviders);
-        accumulator.getSignals(CallbackUtils.emptyRunnable());
+        SignalAccumulator accumulator = new SignalAccumulator(mHandler, actionProviders);
+        accumulator.getSignals(mMockTab, CallbackUtils.emptyRunnable());
         verify(mHandler).postDelayed(any(), eq(300L));
     }
 }

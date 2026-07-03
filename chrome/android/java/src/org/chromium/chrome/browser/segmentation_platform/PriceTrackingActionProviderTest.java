@@ -114,7 +114,7 @@ public class PriceTrackingActionProviderTest {
         PriceTrackingActionProvider provider =
                 new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
         providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
-        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
+        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), providers);
         setIsUrlPriceTrackableResult(true);
         provider.getAction(mMockTab, accumulator);
         Assert.assertTrue(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
@@ -127,7 +127,7 @@ public class PriceTrackingActionProviderTest {
         PriceTrackingActionProvider provider =
                 new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
         providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
-        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
+        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), providers);
         // URL does not support price tracking.
         setIsUrlPriceTrackableResult(false);
         // URL is bookmarked.
@@ -146,7 +146,7 @@ public class PriceTrackingActionProviderTest {
         PriceTrackingActionProvider provider =
                 new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
         providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
-        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
+        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), providers);
         provider.getAction(mMockTab, accumulator);
         Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
         // Bookmark model shouldn't be loaded/queried.

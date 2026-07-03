@@ -138,7 +138,7 @@ public class ReaderModeActionProviderTest {
         HashMap<Integer, ActionProvider> providers = new HashMap<>();
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         providers.put(AdaptiveToolbarButtonVariant.READER_MODE, provider);
-        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
+        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), providers);
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, accumulator);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -153,7 +153,7 @@ public class ReaderModeActionProviderTest {
         HashMap<Integer, ActionProvider> providers = new HashMap<>();
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         providers.put(AdaptiveToolbarButtonVariant.READER_MODE, provider);
-        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
+        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), providers);
         provider.getAction(mMockTab, accumulator);
         RobolectricUtil.runAllBackgroundAndUi();
 

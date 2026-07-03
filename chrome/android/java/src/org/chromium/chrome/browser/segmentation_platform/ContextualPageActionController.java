@@ -240,8 +240,8 @@ public class ContextualPageActionController {
     private void collectSignals(Tab tab) {
         if (mActionProviders.isEmpty()) return;
         mSignalAccumulator =
-                new SignalAccumulator(new Handler(Looper.getMainLooper()), tab, mActionProviders);
-        mSignalAccumulator.getSignals(this::findBestAction);
+                new SignalAccumulator(new Handler(Looper.getMainLooper()), mActionProviders);
+        mSignalAccumulator.getSignals(tab, this::findBestAction);
     }
 
     private void findBestAction() {

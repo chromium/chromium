@@ -76,9 +76,7 @@ public class TabGroupingActionProviderTest {
         var provider = new TabGroupingActionProvider(mControllerSupplier);
         var signalAccumulator =
                 new SignalAccumulator(
-                        new Handler(),
-                        mTab,
-                        Map.of(AdaptiveToolbarButtonVariant.TAB_GROUPING, provider));
+                        new Handler(), Map.of(AdaptiveToolbarButtonVariant.TAB_GROUPING, provider));
         provider.getAction(mTab, signalAccumulator);
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
@@ -95,9 +93,7 @@ public class TabGroupingActionProviderTest {
         var provider = new TabGroupingActionProvider(mControllerSupplier);
         var signalAccumulator =
                 new SignalAccumulator(
-                        new Handler(),
-                        mTab,
-                        Map.of(AdaptiveToolbarButtonVariant.TAB_GROUPING, provider));
+                        new Handler(), Map.of(AdaptiveToolbarButtonVariant.TAB_GROUPING, provider));
         provider.getAction(mTab, signalAccumulator);
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
