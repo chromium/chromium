@@ -15,6 +15,34 @@
 
 namespace autofill {
 
+namespace {
+
+std::optional<AtMemoryQueryCompletedStatus> GetQueryCompletedStatus(
+    const accessibility_annotator::MemorySearchResults& result) {
+  using accessibility_annotator::MemorySearchStatus;
+
+  switch (result.status) {
+    case MemorySearchStatus::kUnsupportedQuery:
+      return AtMemoryQueryCompletedStatus::kQueryUnsupported;
+    case MemorySearchStatus::kNoConnectionFailure:
+      return AtMemoryQueryCompletedStatus::kNetworkError;
+    case MemorySearchStatus::kInferenceFailure:
+      return AtMemoryQueryCompletedStatus::kInferenceFailure;
+    case MemorySearchStatus::kInternalFailure:
+      return AtMemoryQueryCompletedStatus::kInternalError;
+    case MemorySearchStatus::kFinalResponseSuccess:
+      return result.entries.empty()
+                 ? AtMemoryQueryCompletedStatus::kNoData
+                 : AtMemoryQueryCompletedStatus::kQueryReturnedData;
+    case MemorySearchStatus::kPartialResponseSuccess:
+      return std::nullopt;
+  }
+
+  NOTREACHED();
+}
+
+}  // namespace
+
 AtMemoryMetricsRecorder::AtMemoryMetricsRecorder(
     optimization_guide::ModelQualityLogsUploaderService* uploader_service,
     GURL url,
@@ -121,7 +149,12 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted() {
 }
 
 void AtMemoryMetricsRecorder::OnQueryResponseReceived(
-    base::span<const accessibility_annotator::MemorySearchResult> suggestions) {
+    const accessibility_annotator::MemorySearchResults& result) {
+  if (std::optional<AtMemoryQueryCompletedStatus> status =
+          GetQueryCompletedStatus(result)) {
+    base::UmaHistogramEnumeration("Autofill.AtMemory.QueryCompleted", *status);
+  }
+
   if (!query_to_suggestions_shown_timer_) {
     return;
   }
@@ -141,7 +174,7 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived(
   quality->set_query_submitted_to_suggestions_shown_ms(
       time_since_query_submitted.InMilliseconds());
 
-  for (const auto& suggestion : suggestions) {
+  for (const auto& suggestion : result.entries) {
     auto* quality_suggestion = quality->add_suggestions();
     bool has_autofill_source = std::ranges::contains(
         suggestion.sources,

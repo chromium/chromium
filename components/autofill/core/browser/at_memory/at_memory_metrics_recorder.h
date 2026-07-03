@@ -19,7 +19,7 @@
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
-struct MemorySearchResult;
+struct MemorySearchResults;
 }  // namespace accessibility_annotator
 
 namespace optimization_guide {
@@ -28,6 +28,26 @@ class ModelQualityLogsUploaderService;
 }  // namespace optimization_guide
 
 namespace autofill {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Logs the final execution status of search queries.
+enum class AtMemoryQueryCompletedStatus {
+  // The query completed successfully and returned at least one result.
+  kQueryReturnedData = 0,
+  // The query service did not support the query input.
+  kQueryUnsupported = 1,
+  // The query completed successfully but returned no results.
+  kNoData = 2,
+  // The query failed due to connection error.
+  kNetworkError = 3,
+  // The query failed due to model inference failure.
+  kInferenceFailure = 4,
+  // The query failed due to internal query service error.
+  kInternalError = 5,
+  kMaxValue = kInternalError
+};
 
 // Encapsulates the state and logging logic for the @memory search funnel.
 // This class tracks the progression of a user's interaction with the @memory
@@ -57,8 +77,7 @@ class AtMemoryMetricsRecorder {
 
   // Records that a response for the pending query was received.
   void OnQueryResponseReceived(
-      base::span<const accessibility_annotator::MemorySearchResult>
-          suggestions);
+      const accessibility_annotator::MemorySearchResults& result);
 
   // Records that a suggestion was accepted during this session.
   void OnSuggestionAccepted();

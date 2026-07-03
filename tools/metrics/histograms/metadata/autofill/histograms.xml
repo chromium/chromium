@@ -2202,6 +2202,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.QueryCompleted"
+    enum="AutofillAtMemoryQueryCompletedStatus" expires_after="2027-03-09">
+  <owner>tobson@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the status of a search query completed within an Autofill AtMemory
+    session. Emitted every time a query response (including timeouts) is
+    received.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.QuerySubmitted" enum="Boolean"
     expires_after="2027-03-09">
   <owner>rahimis@google.com</owner>

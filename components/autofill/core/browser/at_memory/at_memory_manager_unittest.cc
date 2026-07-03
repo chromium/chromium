@@ -932,6 +932,52 @@ TEST_F(AtMemoryManagerTest,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA));
 }
 
+// Tests that search query completion does not log the QueryCompleted UMA
+// metric on partial responses.
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_DoesNotLogQueryCompletedMetricsOnPartialResponse) {
+  base::HistogramTester histogram_tester;
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
+                       u"Full Address");
+  MockQueryResultsAndExpectCallback(
+      u"query",
+      accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess,
+      std::move(entries), final_suggestions);
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         FormSignature(0), FieldSignature(0));
+
+  manager().OnSearchSubmitted(u"query");
+
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.QueryCompleted", 0);
+}
+
+// Tests that search query completion logs the QueryCompleted UMA metric
+// correctly on final responses.
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_LogsQueryCompletedMetricsOnFinalResponse) {
+  base::HistogramTester histogram_tester;
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
+                       u"Full Address");
+  MockQueryResultsAndExpectCallback(
+      u"query",
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      std::move(entries), final_suggestions);
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         FormSignature(0), FieldSignature(0));
+
+  manager().OnSearchSubmitted(u"query");
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AtMemory.QueryCompleted",
+      AtMemoryQueryCompletedStatus::kQueryReturnedData, 1);
+}
+
 enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };
 
 class AtMemoryManagerIconTest

@@ -237,7 +237,10 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
     remote_suggestion.remote_response_index = 0;
     remote_suggestion.sources = {accessibility_annotator::MemoryEntrySource(
         accessibility_annotator::MemoryEntrySourceType::kGmail)};
-    metrics.OnQueryResponseReceived({local_suggestion, remote_suggestion});
+    metrics.OnQueryResponseReceived(
+        accessibility_annotator::MemorySearchResults(
+            accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+            {local_suggestion, remote_suggestion}));
   }
 
   const auto& uploaded_logs = uploader_service.uploaded_logs();
@@ -312,5 +315,81 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
   EXPECT_FALSE(quality2.session_id().empty());
   EXPECT_EQ(quality2.session_id(), quality1_session_id);
 }
+
+struct QueryCompletedTestCase {
+  accessibility_annotator::MemorySearchResults search_result;
+  std::optional<AtMemoryQueryCompletedStatus> expected_status;
+};
+
+class AtMemoryMetricsRecorderQueryCompletedTest
+    : public AtMemoryMetricsRecorderTest,
+      public testing::WithParamInterface<QueryCompletedTestCase> {};
+
+// Tests that `OnQueryResponseReceived` logs the "QueryCompleted" metric
+// with the appropriate status.
+TEST_P(AtMemoryMetricsRecorderQueryCompletedTest, LogsQueryCompletedMetric) {
+  const QueryCompletedTestCase& test_case = GetParam();
+  AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                  FormSignature(0), FieldSignature(0));
+
+  metrics.OnQueryResponseReceived(test_case.search_result);
+
+  if (test_case.expected_status) {
+    histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.QueryCompleted",
+                                         *test_case.expected_status, 1);
+  } else {
+    histogram_tester_.ExpectTotalCount("Autofill.AtMemory.QueryCompleted", 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AtMemoryMetricsRecorderTest,
+    AtMemoryMetricsRecorderQueryCompletedTest,
+    testing::Values(
+        // Success with data.
+        QueryCompletedTestCase{
+            .search_result = accessibility_annotator::MemorySearchResults(
+                accessibility_annotator::MemorySearchStatus::
+                    kFinalResponseSuccess,
+                /*entries=*/{{accessibility_annotator::MemoryDataType::
+                                  kAddressFull,
+                              u"Address", u"Value"}}),
+            .expected_status =
+                AtMemoryQueryCompletedStatus::kQueryReturnedData},
+        QueryCompletedTestCase{
+            .search_result = accessibility_annotator::MemorySearchResults(
+                accessibility_annotator::MemorySearchStatus::kUnsupportedQuery,
+                /*entries=*/{}),
+            .expected_status = AtMemoryQueryCompletedStatus::kQueryUnsupported},
+        // Success without data.
+        QueryCompletedTestCase{
+            .search_result = accessibility_annotator::MemorySearchResults(
+                accessibility_annotator::MemorySearchStatus::
+                    kFinalResponseSuccess,
+                /*entries=*/{}),
+            .expected_status = AtMemoryQueryCompletedStatus::kNoData},
+        QueryCompletedTestCase{
+            .search_result = accessibility_annotator::MemorySearchResults(
+                accessibility_annotator::MemorySearchStatus::
+                    kNoConnectionFailure,
+                /*entries=*/{}),
+            .expected_status = AtMemoryQueryCompletedStatus::kNetworkError},
+        QueryCompletedTestCase{
+            .search_result = accessibility_annotator::MemorySearchResults(
+                accessibility_annotator::MemorySearchStatus::kInferenceFailure,
+                /*entries=*/{}),
+            .expected_status = AtMemoryQueryCompletedStatus::kInferenceFailure},
+        QueryCompletedTestCase{
+            .search_result = accessibility_annotator::MemorySearchResults(
+                accessibility_annotator::MemorySearchStatus::kInternalFailure,
+                /*entries=*/{}),
+            .expected_status = AtMemoryQueryCompletedStatus::kInternalError},
+        // Partial response (ignored).
+        QueryCompletedTestCase{
+            .search_result = accessibility_annotator::MemorySearchResults(
+                accessibility_annotator::MemorySearchStatus::
+                    kPartialResponseSuccess,
+                /*entries=*/{}),
+            .expected_status = std::nullopt}));
 
 }  // namespace autofill
