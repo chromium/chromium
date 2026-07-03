@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/public/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/public/default_browser_promo_non_modal_metrics_util.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -337,18 +338,27 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   [promo_commands_handler_ verify];
 
-  NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-  if (@available(iOS 18.3, *)) {
-    if (IsDefaultAppsDestinationAvailable() &&
-        IsUseDefaultAppsDestinationForPromosEnabled()) {
-      url = [NSURL
-          URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    [[pip_commands_handler_ expect]
+        showPictureInPictureWithConfig:[OCMArg any]];
+  } else {
+    NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    if (@available(iOS 18.3, *)) {
+      if (IsDefaultAppsDestinationAvailable() &&
+          IsUseDefaultAppsDestinationForPromosEnabled()) {
+        url = [NSURL URLWithString:
+                         UIApplicationOpenDefaultApplicationsSettingsURLString];
+      }
     }
+    [[application_ expect] openURL:url options:{} completionHandler:nil];
   }
-  [[application_ expect] openURL:url options:{} completionHandler:nil];
   [scheduler_ logUserPerformedPromoAction];
 
-  [application_ verify];
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    [pip_commands_handler_ verify];
+  } else {
+    [application_ verify];
+  }
 
   // Check that NSUserDefaults has been updated.
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
@@ -404,6 +414,11 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
+
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    OCMStub(
+        [pip_commands_handler_ showPictureInPictureWithConfig:[OCMArg any]]);
+  }
 
   // Attempt to log the action 3 times.
   [scheduler_ logUserPerformedPromoAction];

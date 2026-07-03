@@ -18,8 +18,7 @@ const char kDefaultBrowserPictureInPictureParamEnabledDefaultApps[] =
 BASE_FEATURE(kDefaultBrowserPromoIpadInstructions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDefaultBrowserPictureInPicture,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultBrowserPictureInPicture, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsDefaultBrowserPromoIpadInstructions() {
   return base::FeatureList::IsEnabled(kDefaultBrowserPromoIpadInstructions);
@@ -33,7 +32,7 @@ bool IsDefaultBrowserPictureInPictureEnabled() {
 std::string DefaultBrowserPictureInPictureParam() {
   return base::GetFieldTrialParamByFeatureAsString(
       kDefaultBrowserPictureInPicture, kDefaultBrowserPictureInPictureParam,
-      kDefaultBrowserPictureInPictureParamEnabled);
+      kDefaultBrowserPictureInPictureParamEnabledDefaultApps);
 }
 
 bool IsDefaultAppsPictureInPictureVariant() {

@@ -14,6 +14,7 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -144,7 +145,8 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest, TestRemindMeLater) {
 TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
        TestPersistentPromoOnlyRecordsOutcomeOnce) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kPersistentDefaultBrowserPromo);
+  scoped_feature_list.InitWithFeatures({kPersistentDefaultBrowserPromo},
+                                       {kDefaultBrowserPictureInPicture});
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
