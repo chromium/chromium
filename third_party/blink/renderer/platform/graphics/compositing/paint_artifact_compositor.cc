@@ -1336,12 +1336,6 @@ bool PaintArtifactCompositor::TryFastPathUpdate(
   }
 #endif
 
-  if (scrolling_contents_cull_rect_changed_) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.Compositor.PACUpdateTypeOnScrollCullRectChange", needs_update_);
-    scrolling_contents_cull_rect_changed_ = false;
-  }
-
   switch (needs_update_) {
     case UpdateType::kNone:
       return true;

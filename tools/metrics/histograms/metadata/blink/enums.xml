@@ -8632,17 +8632,6 @@ Called by update_use_counter_css.py.-->
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/preload_helper.h:OriginStatusOnSubresource) -->
 
-<!-- LINT.IfChange(PACUpdateType)-->
-
-<enum name="PACUpdateType">
-  <int value="0" label="None"/>
-  <int value="1" label="RasterInducingScroll"/>
-  <int value="2" label="Repaint"/>
-  <int value="3" label="Full"/>
-</enum>
-
-<!-- LINT.ThenChange(//third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h:UpdateType) -->
-
 <!-- LINT.IfChange(PermissionElementInvalidStyleReason) -->
 
 <enum name="PermissionElementInvalidStyleReason">

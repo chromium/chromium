@@ -893,18 +893,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Compositor.PACUpdateTypeOnScrollCullRectChange"
-    enum="PACUpdateType" expires_after="2026-07-11">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Reports the type of PaintArtifactCompositor::NeedsUpdate() when any
-    scrolling contents cull rect changed (which occurs after the accumulated
-    scroll delta of a scroller exceeds 512 since the last change) during a
-    document lifecycle update.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Compositor.StickyLayerCount" units="count"
     expires_after="2026-08-07">
   <owner>wangxianzhu@chromium.org</owner>
