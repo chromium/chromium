@@ -225,6 +225,7 @@ BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
 BASE_DECLARE_FEATURE(kNotificationTrampoline);
 BASE_DECLARE_FEATURE(kNotificationTrampolineNoNewTask);
 BASE_DECLARE_FEATURE(kNtpMvcRefactor);
+BASE_DECLARE_FEATURE(kNtpVision);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
 BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCapture);
 BASE_DECLARE_FEATURE(kOnStartupWindowPolicy);

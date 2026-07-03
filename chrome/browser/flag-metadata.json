@@ -7111,6 +7111,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ntp-vision",
+    "owners": ["yanlinghu@google.com","hanxi@chromium.org", "clank-start@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-wallpaper-search-button",
     "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
     "expiry_milestone": 130

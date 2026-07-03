@@ -13319,6 +13319,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(dictation::kDictation)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"ntp-vision", flag_descriptions::kNtpVisionName,
+     flag_descriptions::kNtpVisionDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNtpVision)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -5509,6 +5509,10 @@ inline constexpr char kLongScreenshotsNoMemoryCheckName[] =
 inline constexpr char kLongScreenshotsNoMemoryCheckDescription[] =
     "Bypass memory pressure checks for long screenshots.";
 
+inline constexpr char kNtpVisionName[] = "New tab page vision";
+inline constexpr char kNtpVisionDescription[] =
+    "Enable the new vision of the new tab page";
+
 inline constexpr char kUpdatePaddingForDisplayCalculationName[] =
     "Update Padding For Display Calculation";
 inline constexpr char kUpdatePaddingForDisplayCalculationDescription[] =
