@@ -208,7 +208,9 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
   // Shell's sort of node-set.
   for (size_t incr = len / 2; incr > 0; incr /= 2) {
     for (size_t i = incr; i < len; ++i) {
-      int j = i - incr;
+      // `i` and `incr` are at most `len` (from `list->nodeNr` which is `int`),
+      // so the difference fits in `int`.
+      int j = static_cast<int>(i - incr);
       if (!results[i])
         continue;
 

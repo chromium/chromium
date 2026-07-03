@@ -1281,14 +1281,15 @@ RetryOptions* Request::getRetryOptions() const {
   RetryOptions* options = RetryOptions::Create();
   options->setMaxAttempts(network_options.max_attempts);
   if (network_options.initial_delay.has_value()) {
-    options->setInitialDelay(
-        network_options.initial_delay.value().InMilliseconds());
+    options->setInitialDelay(static_cast<uint32_t>(
+        network_options.initial_delay.value().InMilliseconds()));
   }
   if (network_options.backoff_factor.has_value()) {
     options->setBackoffFactor(network_options.backoff_factor.value());
   }
   if (network_options.max_age.has_value()) {
-    options->setMaxAge(network_options.max_age->InMilliseconds());
+    options->setMaxAge(
+        static_cast<uint32_t>(network_options.max_age->InMilliseconds()));
   }
   options->setRetryAfterUnload(network_options.retry_after_unload);
   options->setRetryNonIdempotent(network_options.retry_non_idempotent);

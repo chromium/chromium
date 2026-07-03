@@ -241,7 +241,7 @@ class AnnotationAgentImplTest : public SimTest {
     return GetDocument().Markers().Markers();
   }
 
-  float GetAlphaForGlicMarkerAt(size_t index) {
+  float GetAlphaForGlicMarkerAt(wtf_size_t index) {
     const auto& markers = GetAllMarkers();
     EXPECT_GE(markers.size(), index + 1);
     DocumentMarker* marker = markers[index];

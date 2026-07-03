@@ -575,7 +575,7 @@ WebDragData DataObject::ToWebDragData(ExecutionContext* context) {
               }
 
               const String& name = file->name();
-              size_t dot_index = name.rfind('.');
+              wtf_size_t dot_index = name.rfind('.');
 
               if (dot_index != kNotFound && dot_index + 1 < name.length()) {
                 String ext = name.substr(dot_index + 1);

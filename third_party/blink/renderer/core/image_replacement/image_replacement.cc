@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/image_replacement/image_replacement.h"
 
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/features.h"
@@ -46,7 +47,7 @@ mojom::blink::ImageDataPtr ImageDataForImageResource(
   Vector<uint8_t> buffer;
   if (!sk_image->peekPixels(&pixmap)) {
     SkImageInfo info = sk_image->imageInfo();
-    buffer.resize(info.computeMinByteSize());
+    buffer.resize(base::checked_cast<wtf_size_t>(info.computeMinByteSize()));
     pixmap.reset(info, buffer.data(), info.minRowBytes());
     if (!sk_image->readPixels(pixmap, 0, 0)) {
       return nullptr;

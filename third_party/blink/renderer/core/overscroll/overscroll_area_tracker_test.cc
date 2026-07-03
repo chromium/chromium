@@ -607,7 +607,7 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPropertyTrees) {
        bar->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
        foo->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
        GetDocument().View()->GetPage()->GetVisualViewport().GetScrollNode()});
-  for (size_t i = 1; i < scroll_chain.size(); ++i) {
+  for (wtf_size_t i = 1; i < scroll_chain.size(); ++i) {
     const ScrollPaintPropertyNode* child = scroll_chain[i - 1];
     const ScrollPaintPropertyNode* parent = scroll_chain[i];
     EXPECT_EQ(child->Parent(), parent);
@@ -633,7 +633,7 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPropertyTrees) {
           foo_props->PaintOffsetTranslation(),
           container_props->PaintOffsetTranslation(),
       });
-  for (size_t i = 1; i < overlay_transform_chain.size(); ++i) {
+  for (wtf_size_t i = 1; i < overlay_transform_chain.size(); ++i) {
     const TransformPaintPropertyNodeOrAlias* child =
         overlay_transform_chain[i - 1];
     const TransformPaintPropertyNodeOrAlias* parent =
@@ -668,7 +668,7 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPropertyTrees) {
            ->FirstFragment()
            .PaintProperties()
            ->PaintOffsetTranslation()});
-  for (size_t i = 1; i < overlay_clip_chain.size(); ++i) {
+  for (wtf_size_t i = 1; i < overlay_clip_chain.size(); ++i) {
     const ClipPaintPropertyNode* parent = overlay_clip_chain[i];
     EXPECT_EQ(&overlay_clip_chain[i]->LocalTransformSpace(),
               overlay_clip_transform[i]);
@@ -724,7 +724,7 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollOverlayPropertyTrees) {
        bar->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
        foo->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
        GetDocument().View()->GetPage()->GetVisualViewport().GetScrollNode()});
-  for (size_t i = 1; i < scroll_chain.size(); ++i) {
+  for (wtf_size_t i = 1; i < scroll_chain.size(); ++i) {
     const ScrollPaintPropertyNode* child = scroll_chain[i - 1];
     const ScrollPaintPropertyNode* parent = scroll_chain[i];
     EXPECT_EQ(child->Parent(), parent);

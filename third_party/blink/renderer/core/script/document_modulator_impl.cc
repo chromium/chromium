@@ -18,7 +18,7 @@ Vector<AtomicString> FindUrlPrefixes(AtomicString specifier) {
   Vector<AtomicString> result;
   result.ReserveInitialCapacity(specifier.length() / 4 + 4);
   constexpr char slash = '/';
-  size_t position = specifier.find(slash);
+  wtf_size_t position = specifier.find(slash);
   while (position != kNotFound) {
     ++position;
     result.emplace_back(specifier.GetString().substr(0, position));

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -107,9 +108,9 @@ void DomScenarioRunner::CreateInitialDOM(
     root = document.CreateRawElement(input.root_tag);
     document.body()->appendChild(root);
   }
-  created_elements.reserve(input.node_specs.size());
-
-  for (size_t i = 0; i < input.node_specs.size(); ++i) {
+  created_elements.reserve(
+      base::checked_cast<wtf_size_t>(input.node_specs.size()));
+  for (wtf_size_t i = 0; i < input.node_specs.size(); ++i) {
     const auto& node_spec = input.node_specs[i];
     const AtomicString& local_name = node_spec.tag.LocalName();
     Element* element;
@@ -129,7 +130,7 @@ void DomScenarioRunner::CreateInitialDOM(
     created_elements.push_back(element);
   }
 
-  for (size_t i = 0; i < input.node_specs.size(); ++i) {
+  for (wtf_size_t i = 0; i < input.node_specs.size(); ++i) {
     const auto& node_spec = input.node_specs[i];
     Element* element = created_elements[i];
     SetParent(element, i, node_spec.initial_state.parent_index, root,
@@ -144,7 +145,7 @@ void DomScenarioRunner::CreateInitialDOM(
   ObserveInitialDOM(created_elements);
 
   bool needs_update = false;
-  for (size_t i = 0; i < input.node_specs.size(); ++i) {
+  for (wtf_size_t i = 0; i < input.node_specs.size(); ++i) {
     needs_update |= PerformElementActions(created_elements[i],
                                           input.node_specs[i].initial_state);
   }
@@ -160,7 +161,7 @@ void DomScenarioRunner::ApplyModifications(
   const auto& node_specs = input.node_specs;
   CHECK_EQ(node_specs.size(), created_elements.size());
 
-  for (size_t i = 0; i < node_specs.size(); ++i) {
+  for (wtf_size_t i = 0; i < node_specs.size(); ++i) {
     const auto& node_spec = node_specs[i];
     const auto& modified_state = node_spec.modified_state;
     Element* element = created_elements[i];
@@ -183,7 +184,7 @@ void DomScenarioRunner::ApplyModifications(
   ObserveModifiedDOM(created_elements);
 
   bool needs_update = false;
-  for (size_t i = 0; i < node_specs.size(); ++i) {
+  for (wtf_size_t i = 0; i < node_specs.size(); ++i) {
     needs_update |= PerformElementActions(created_elements[i],
                                           node_specs[i].modified_state);
   }

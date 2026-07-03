@@ -5,6 +5,7 @@
 #include "third_party/blink/public/web/web_bundled_code_cache_generator.h"
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -24,7 +25,7 @@ WebBundledCodeCacheGenerator::CreateSerializedCodeCacheForModule(
   v8::Local<v8::String> module_source =
       v8::String::NewFromUtf8(isolate, module_text_utf8.c_str(),
                               v8::NewStringType::kNormal,
-                              module_text_utf8.size())
+                              base::checked_cast<int>(module_text_utf8.size()))
           .ToLocalChecked();
 
   v8::Local<v8::String> resource_name =

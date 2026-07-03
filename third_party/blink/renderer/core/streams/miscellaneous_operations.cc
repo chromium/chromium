@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
@@ -108,7 +109,7 @@ class JavaScriptStreamAlgorithmWithoutExtraArg final : public StreamAlgorithm {
     // In this class extraArgs is always empty, but there may be other arguments
     // supplied to the method.
     return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
-                       argv.size(), argv.data());
+                       base::checked_cast<int>(argv.size()), argv.data());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -149,7 +150,7 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
       full_argv[0] = argv[0];
     }
     full_argv[argv.size()] = extra_arg_.Get(isolate);
-    int full_argc = argv.size() + 1;
+    int full_argc = base::checked_cast<int>(argv.size() + 1);
 
     //     ii. Return ! PromiseCall(method, underlyingObject, fullArgs).
     return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),

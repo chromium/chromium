@@ -176,7 +176,8 @@ class IDBValueUnwrapperReadTestHelper {
       ASSERT_EQ(&unwrapper.parse_span_.back(), &parse_span.back())
           << "ReadVarInt should not change end of buffer";
     }
-    consumed_bytes_ = parse_span.size() - unwrapper.parse_span_.size();
+    consumed_bytes_ = base::checked_cast<unsigned>(
+        parse_span.size() - unwrapper.parse_span_.size());
   }
 
   void ReadBytes(base::span<const uint8_t> parse_span) {
@@ -189,7 +190,8 @@ class IDBValueUnwrapperReadTestHelper {
       ASSERT_EQ(&unwrapper.parse_span_.back(), &parse_span.back())
           << "ReadBytes should not change end of buffer";
     }
-    consumed_bytes_ = parse_span.size() - unwrapper.parse_span_.size();
+    consumed_bytes_ = base::checked_cast<unsigned>(
+        parse_span.size() - unwrapper.parse_span_.size());
   }
 
   bool success() { return success_; }

@@ -141,7 +141,7 @@ class DeferredFetchPolicyTestBase : public SimTest {
     LoadURL(root_url);
     root_request.Complete(String(html));
     // Simulates loading all other requests from the root page.
-    for (size_t i = 0; i < url_and_data.size(); i++) {
+    for (wtf_size_t i = 0; i < url_and_data.size(); ++i) {
       requests[i]->Complete(url_and_data[i].second);
     }
 
@@ -456,7 +456,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, ManyCrossOriginFrames) {
 
   Vector<String> frame_urls;
   RequestUrlAndDataType frame_url_and_data;
-  for (size_t i = 0; i < kNumCrossOriginFrames; i++) {
+  for (wtf_size_t i = 0; i < kNumCrossOriginFrames; ++i) {
     auto frame_id = i + 1;
     frame_urls.emplace_back(kCrossSubdomainUrl + "frame-" +
                             String::Number(frame_id) + ".html");

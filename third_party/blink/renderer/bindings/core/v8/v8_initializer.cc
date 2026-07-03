@@ -33,6 +33,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -163,7 +164,8 @@ String ToBlinkString(v8::Local<v8::Context> context,
     return String();
   }
   base::span<UChar> buffer;
-  String result = String::CreateUninitialized(len, buffer);
+  String result =
+      String::CreateUninitialized(base::checked_cast<uint32_t>(len), buffer);
   DCHECK_LE(len, std::numeric_limits<uint32_t>::max());
   source->WriteV2(v8::Isolate::GetCurrent(), 0, static_cast<uint32_t>(len),
                   reinterpret_cast<uint16_t*>(buffer.data()));

@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -172,9 +173,10 @@ String CookieJar::Cookies() {
   constexpr int kMinTimeMicros = 10;
   constexpr int kMaxTimeMicros = 1 * 1000 * 1000;  // 1 second
   if (ipc_needed) {
-    base::UmaHistogramCustomCounts("Blink.CookiesTime.IpcNeeded2",
-                                   elapsed.InMicroseconds(), kMinTimeMicros,
-                                   kMaxTimeMicros, 50);
+    base::UmaHistogramCustomCounts(
+        "Blink.CookiesTime.IpcNeeded2",
+        base::saturated_cast<int>(elapsed.InMicroseconds()), kMinTimeMicros,
+        kMaxTimeMicros, 50);
 
     // Temporary histograms to investigate https://crbug.com/414748254.
     switch (pipe_state) {
@@ -190,9 +192,10 @@ String CookieJar::Cookies() {
         break;
     }
   } else {
-    base::UmaHistogramCustomCounts("Blink.CookiesTime.IpcNotNeeded2",
-                                   elapsed.InMicroseconds(), kMinTimeMicros,
-                                   kMaxTimeMicros, 50);
+    base::UmaHistogramCustomCounts(
+        "Blink.CookiesTime.IpcNotNeeded2",
+        base::saturated_cast<int>(elapsed.InMicroseconds()), kMinTimeMicros,
+        kMaxTimeMicros, 50);
   }
 
   // We should run the ablation study only for scenarios with ipc.

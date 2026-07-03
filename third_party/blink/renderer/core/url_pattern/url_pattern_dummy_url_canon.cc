@@ -228,7 +228,7 @@ base::expected<String, String> CanonicalizeIPv6HostnameInternal(
   // hostname parser wants to completely parse IPv6 hostnames, this will always
   // trigger an error.  Therefore, to allow pattern syntax within IPv6 brackets
   // we simply check for valid characters and lowercase any hex digits.
-  for (size_t i = 0; i < input.length(); ++i) {
+  for (wtf_size_t i = 0; i < input.length(); ++i) {
     char c = input[i];
     if (!blink::IsAsciiHexDigit(c) && c != '[' && c != ']' && c != ':') {
       return base::unexpected(blink::StrCat(

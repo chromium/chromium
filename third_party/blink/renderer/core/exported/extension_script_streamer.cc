@@ -5,6 +5,7 @@
 #include "third_party/blink/public/web/extension_script_streamer.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -30,7 +31,7 @@ void EmitCompilationHistograms(
         script_streamer->ElapsedTime());
     UMA_HISTOGRAM_MEMORY_KB(
         "Extensions.BackgroundCompileInjectedScripts.ScriptSizeTimedOut",
-        script_streamer->script_length());
+        base::saturated_cast<int>(script_streamer->script_length()));
   } else {
     UMA_HISTOGRAM_TIMES(
         "Extensions.BackgroundCompileInjectedScripts."
@@ -38,7 +39,7 @@ void EmitCompilationHistograms(
         script_streamer->ElapsedTime());
     UMA_HISTOGRAM_MEMORY_KB(
         "Extensions.BackgroundCompileInjectedScripts.ScriptSizeSuccess",
-        script_streamer->script_length());
+        base::saturated_cast<int>(script_streamer->script_length()));
   }
 }
 }  // namespace

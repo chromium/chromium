@@ -175,7 +175,7 @@ String AdTracker::AdScriptAncestry::ToString() const {
   builder.Append("Debug info: adscript '");
   builder.Append(ancestry_chain[0].name);
   builder.Append("' ");
-  for (size_t i = 1; i < ancestry_chain.size(); ++i) {
+  for (wtf_size_t i = 1; i < ancestry_chain.size(); ++i) {
     builder.Append("(loaded by '");
     builder.Append(ancestry_chain[i].name);
     builder.Append("') ");
