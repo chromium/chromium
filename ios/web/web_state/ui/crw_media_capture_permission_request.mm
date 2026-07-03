@@ -107,8 +107,21 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
 
 // Handle user response to media capture request.
 - (void)handleDecision:(WKPermissionDecision)decision {
-  _decisionHandler(_presenter ? decision : WKPermissionDecisionDeny);
+  if (_decisionHandlerInvoked) {
+    return;
+  }
   _decisionHandlerInvoked = YES;
+  WKPermissionDecision finalDecision =
+      _presenter ? decision : WKPermissionDecisionDeny;
+  auto decisionHandler = _decisionHandler;
+  // Post the decision handler asynchronously to prevent synchronous re-entrancy
+  // and stack overflow if WebKit immediately initiates another permission
+  // request upon decision completion.
+  _taskRunner->PostTask(FROM_HERE, base::BindOnce(
+                                       ^(WKPermissionDecision webkit_decision) {
+                                         decisionHandler(webkit_decision);
+                                       },
+                                       finalDecision));
 }
 
 @end

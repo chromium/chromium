@@ -39,6 +39,7 @@
 
 namespace {
 
+using ::base::test::ios::kWaitForPageLoadTimeout;
 using ::base::test::ios::kWaitForUIElementTimeout;
 using ::base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -756,6 +757,33 @@ void TapDoneButtonOnInfobarModal() {
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:CameraBadge(
                                                          /*accepted=*/YES)];
+  }
+}
+
+// Tests that denying microphone permissions on a webpage that recursively
+// re-requests permission upon denial does not cause a synchronous WebKit
+// re-entrancy crash (regression test for issue 529634846).
+- (void)testMicrophonePermissionRecursionCrashRegression {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(
+                              "/permissions/microphone_recursion.html")];
+
+  {
+    ScopedSynchronizationDisabler disabler;
+    // Deny the initial microphone permission alert.
+    [self checkAndTapAlertContainingPermissions:
+              l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE)
+                                    shouldAllow:NO];
+
+    // Verify that Chrome survives the recursion loop and updates the title.
+    GREYAssert(WaitUntilConditionOrTimeout(
+                   kWaitForPageLoadTimeout,
+                   ^{
+                     return [[ChromeEarlGrey currentTabTitle]
+                         isEqualToString:@"Denied And Survived"];
+                   }),
+               @"Page title was not updated after recursion loop.");
   }
 }
 

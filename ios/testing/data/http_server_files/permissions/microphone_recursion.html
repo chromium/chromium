@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+  <title>Microphone Recursion Test</title>
+</head>
+<body>
+  <script type="text/javascript">
+    function loopPermission(count) {
+      if (count <= 0) {
+        document.title = 'Denied And Survived';
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .catch(function(err) {
+          loopPermission(count - 1);
+        });
+    }
+    // Initiate recursive request loop upon load
+    loopPermission(100);
+  </script>
+</body>
+</html>
