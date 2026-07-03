@@ -30,6 +30,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_navigation_throttle.h"
+#include "content/public/test/test_utils.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
@@ -1715,6 +1716,61 @@ TEST_F(NavigationRequestTest, SubframeWithoutMimeHandlerParentDoesNotInherit) {
 
   EXPECT_FALSE(
       request->GetUrlInfo().embedder_isolation_info.is_unique_instance());
+}
+
+namespace {
+
+// A throttle that accesses request headers before modifying them.
+// This is used to verify that modifications made after an initial access
+// (which triggers caching in NavigationRequest::request_headers_) are still
+// correctly reflected.
+class HeaderModifyingThrottle : public NavigationThrottle {
+ public:
+  explicit HeaderModifyingThrottle(NavigationThrottleRegistry& registry)
+      : NavigationThrottle(registry) {}
+
+  NavigationThrottle::ThrottleCheckResult WillStartRequest() override {
+    navigation_handle()->GetRequestHeaders();
+    navigation_handle()->SetRequestHeader("X-Test-Header", "Value");
+    return PROCEED;
+  }
+
+  const char* GetNameForLogging() override { return "HeaderModifyingThrottle"; }
+};
+
+class HeaderTestContentBrowserClient : public TestContentBrowserClient {
+ public:
+  HeaderTestContentBrowserClient() = default;
+
+  void CreateThrottlesForNavigation(
+      NavigationThrottleRegistry& registry) override {
+    registry.AddThrottle(std::make_unique<HeaderModifyingThrottle>(registry));
+  }
+};
+
+}  // namespace
+
+// Verifies that request headers modified during navigation start (e.g. via
+// SetRequestHeader in a throttle) are correctly reflected in
+// GetRequestHeaders().
+TEST_F(NavigationRequestTest, GetRequestHeadersReflectsLaterModifications) {
+  HeaderTestContentBrowserClient client;
+  ScopedContentBrowserClientSetting setting(&client);
+
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  navigation->Start();
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+
+  EXPECT_TRUE(request->GetRequestHeaders().HasHeader("X-Test-Header"));
+
+  // Commit the navigation to ensure the NavigationRequest is destroyed while
+  // the ScopedContentBrowserClientSetting (and the local browser client) is
+  // still in scope.
+  navigation->Commit();
 }
 
 }  // namespace content

@@ -5982,6 +5982,7 @@ void NavigationRequest::OnStartChecksComplete(
     headers.MergeFrom(headers_update_params_.modified_headers);
     headers_update_params_.Clear();
     begin_params_->headers = headers.ToString();
+    request_headers_.reset();
   }
 
   // TODO(clamy): Avoid cloning the navigation params and create the
