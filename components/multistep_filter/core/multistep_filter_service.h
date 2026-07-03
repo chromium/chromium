@@ -133,17 +133,17 @@ class MultistepFilterService : public KeyedService,
   // Callback for when `GetSupportedTaskForUrl` finishes for extraction.
   void OnUrlAllowedForExtraction(
       const GURL& url,
-      std::vector<std::string> supported_task_types,
       int64_t navigation_id,
-      std::optional<UrlFilterSuggestion> applied_suggestion);
+      std::optional<UrlFilterSuggestion> applied_suggestion,
+      std::vector<std::string> supported_task_types);
 
   // Callback for when `GetSupportedTaskForUrl` finishes for suggestion
   // generation.
   void OnUrlAllowedForSuggestion(
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-      std::vector<std::string> supported_task_types,
-      int64_t navigation_id);
+      int64_t navigation_id,
+      std::vector<std::string> supported_task_types);
 
   // Checks if the user has provided consent (signed in, URL-keyed data
   // collection enabled, and history sync enabled), and logs the eligibility
