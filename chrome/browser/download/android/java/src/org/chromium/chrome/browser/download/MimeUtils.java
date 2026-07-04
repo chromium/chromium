@@ -37,6 +37,7 @@ public class MimeUtils {
                             "text/plain",
                             "application/octet-stream",
                             "binary/octet-stream",
+                            "binary/data",
                             "octet/stream",
                             "application/download",
                             "application/force-download",

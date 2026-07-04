@@ -38,6 +38,8 @@ BASE_FEATURE(kShowBlockedSensitiveDownload, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowDownloadScanningState, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadsCompactListView, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRemapGenericMimeType, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kDownloadNotificationServiceUnifiedAPI,

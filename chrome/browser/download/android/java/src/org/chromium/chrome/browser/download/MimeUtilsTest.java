@@ -45,4 +45,23 @@ public class MimeUtilsTest {
         Assert.assertTrue(MimeUtils.canAutoOpenMimeType("application/x-wifi-config"));
         Assert.assertTrue(MimeUtils.canAutoOpenMimeType("application/pkix-cert"));
     }
+
+    /**
+     * Test to make sure {@link MimeUtils#remapGenericMimeType} preserves non-generic MIME types
+     * (such as application/x-wifi-config) regardless of file extension.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testRemapGenericMimeType() {
+        Assert.assertEquals(
+                "image/jpeg",
+                MimeUtils.remapGenericMimeType("application/octet-stream", "http://file.jpg", ""));
+        Assert.assertEquals(
+                "image/jpeg", MimeUtils.remapGenericMimeType("binary/data", "http://file.jpg", ""));
+        Assert.assertEquals(
+                "application/x-wifi-config",
+                MimeUtils.remapGenericMimeType(
+                        "application/x-wifi-config", "http://file.xml", "file.xml"));
+    }
 }

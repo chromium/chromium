@@ -290,6 +290,20 @@ bool IsForceSaveToCloud(download::DownloadDangerType danger_type) {
 std::string GetMimeType(const base::FilePath& path) {
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
+    if (base::FeatureList::IsEnabled(
+            download::features::kRemapGenericMimeType)) {
+      // Determine the MIME type registered with the content URI. If it is a
+      // generic MIME type (e.g., application/octet-stream), attempt to deduce a
+      // more specific MIME type from the display name extension.
+      std::string mime_type = base::GetContentUriMimeType(path);
+      std::u16string display_name;
+      if (base::MaybeGetFileDisplayName(path, &display_name)) {
+        mime_type = DownloadUtils::RemapGenericMimeType(
+            mime_type, GURL(), base::UTF16ToUTF8(display_name));
+      }
+      return mime_type;
+    }
+
     // Here we should determine the MIME type from the display name of the
     // content URI. GetContentUriMimeType() will return the current MIME type
     // that is registered with the URI. As a result, calling it will not change
