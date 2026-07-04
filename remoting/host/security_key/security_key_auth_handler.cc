@@ -7,6 +7,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "remoting/host/client_session_details.h"
@@ -22,6 +23,13 @@ namespace {
 
 std::atomic<bool> g_use_mojo_handler{false};
 
+SecurityKeyAuthHandler::CreateHandlerCallbackForTesting& GetTestingCallback() {
+  static base::NoDestructor<
+      SecurityKeyAuthHandler::CreateHandlerCallbackForTesting>
+      g_callback;
+  return *g_callback;
+}
+
 }  // namespace
 
 // static
@@ -30,8 +38,18 @@ void SecurityKeyAuthHandler::set_use_mojo_handler(bool use_mojo_handler) {
 }
 
 // static
+void SecurityKeyAuthHandler::SetCreateHandlerCallbackForTesting(
+    CreateHandlerCallbackForTesting callback) {
+  GetTestingCallback() = std::move(callback);
+}
+
+// static
 std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(
     ClientSessionDetails* client_session_details) {
+  if (!GetTestingCallback().is_null()) {
+    return GetTestingCallback().Run(client_session_details);
+  }
+
   std::unique_ptr<SecurityKeyAuthHandler> auth_handler;
   if (g_use_mojo_handler) {
     auth_handler =

@@ -25,14 +25,19 @@ constexpr size_t kMaxMessageSize = kMaxPayloadSize + 1024;
 
 SecurityKeyDataChannelHandler::SecurityKeyDataChannelHandler(
     std::unique_ptr<protocol::MessagePipe> pipe,
-    base::WeakPtr<SecurityKeyAuthHandler> auth_handler)
+    base::WeakPtr<SecurityKeyAuthHandler> auth_handler,
+    base::OnceClosure takeover_callback)
     : protocol::NamedMessagePipeHandler(kChannelName, std::move(pipe)),
-      auth_handler_(auth_handler) {
+      auth_handler_(auth_handler),
+      takeover_callback_(std::move(takeover_callback)) {
   DCHECK(auth_handler_);
 }
 
 SecurityKeyDataChannelHandler::~SecurityKeyDataChannelHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (auth_handler_) {
+    auth_handler_->ClearSendMessageCallback(this);
+  }
 }
 
 void SecurityKeyDataChannelHandler::OnConnected() {
@@ -42,7 +47,13 @@ void SecurityKeyDataChannelHandler::OnConnected() {
   if (auth_handler_) {
     auth_handler_->SetSendMessageCallback(
         base::BindRepeating(&SecurityKeyDataChannelHandler::SendMessageToClient,
-                            weak_factory_.GetWeakPtr()));
+                            weak_factory_.GetWeakPtr()),
+        this);
+    auth_handler_->CreateSecurityKeyConnection();
+  }
+
+  if (takeover_callback_) {
+    std::move(takeover_callback_).Run();
   }
 }
 
@@ -102,7 +113,7 @@ void SecurityKeyDataChannelHandler::OnDisconnecting() {
   HOST_LOG << "SecurityKey data channel disconnecting.";
 
   if (auth_handler_) {
-    auth_handler_->SetSendMessageCallback(base::NullCallback());
+    auth_handler_->ClearSendMessageCallback(this);
     // TODO(crbug.com/517007701): Close all connections when the interface
     // supports it.
   }

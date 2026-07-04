@@ -62,7 +62,7 @@ void SecurityKeyDataChannelHandlerTest::SetUp() {
   // when the pipe notifies it of closure). We must not wrap it in a
   // std::unique_ptr here.
   auto* handler = new SecurityKeyDataChannelHandler(
-      fake_pipe_.Wrap(), mock_auth_handler_.GetWeakPtr());
+      fake_pipe_.Wrap(), mock_auth_handler_.GetWeakPtr(), base::OnceClosure());
   handler_ = handler->GetWeakPtr();
 
   fake_pipe_.OpenPipe();
@@ -223,6 +223,37 @@ TEST_F(SecurityKeyDataChannelHandlerTest, PipeDisconnectClosesHostConnections) {
   // interface supports it in the next CL.
   fake_pipe_.ClosePipe();
   EXPECT_FALSE(handler_);
+}
+
+TEST_F(SecurityKeyDataChannelHandlerTest, TakeoverCallbackRunOnConnect) {
+  // 1. Destroy the default handler created in SetUp.
+  fake_pipe_.ClosePipe();
+  ASSERT_FALSE(handler_);
+
+  // 2. Create a new fake pipe and a mock callback.
+  protocol::FakeMessagePipe local_fake_pipe{/* asynchronous= */ false};
+  bool callback_run = false;
+  base::OnceClosure takeover_callback =
+      base::BindOnce([](bool* run) { *run = true; }, &callback_run);
+
+  // 3. Create a new handler with the callback.
+  auto* handler = new SecurityKeyDataChannelHandler(
+      local_fake_pipe.Wrap(), mock_auth_handler_.GetWeakPtr(),
+      std::move(takeover_callback));
+  base::WeakPtr<SecurityKeyDataChannelHandler> weak_handler =
+      handler->GetWeakPtr();
+
+  EXPECT_FALSE(callback_run);
+
+  // 4. Open the pipe. This triggers OnConnected() synchronously.
+  local_fake_pipe.OpenPipe();
+
+  // 5. Verify the callback was run.
+  EXPECT_TRUE(callback_run);
+
+  // Cleanup.
+  local_fake_pipe.ClosePipe();
+  EXPECT_FALSE(weak_handler);
 }
 
 }  // namespace remoting

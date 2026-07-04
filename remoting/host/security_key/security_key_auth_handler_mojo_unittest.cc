@@ -89,7 +89,8 @@ class SecurityKeyAuthHandlerMojoTest : public testing::Test {
 SecurityKeyAuthHandlerMojoTest::SecurityKeyAuthHandlerMojoTest() {
   auth_handler_ = std::make_unique<SecurityKeyAuthHandlerMojo>(
       &mock_client_session_details_);
-  auth_handler_->SetSendMessageCallback(request_future_.GetRepeatingCallback());
+  auth_handler_->SetSendMessageCallback(request_future_.GetRepeatingCallback(),
+                                        this);
 }
 
 SecurityKeyAuthHandlerMojoTest::~SecurityKeyAuthHandlerMojoTest() = default;
@@ -289,7 +290,7 @@ TEST_F(SecurityKeyAuthHandlerMojoTest,
   EstablishIpcConnection(remote, kConnectionId1);
 
   // 2. Clear the callback.
-  auth_handler_->SetSendMessageCallback(base::NullCallback());
+  auth_handler_->ClearSendMessageCallback(this);
 
   // 3. Send a request.
   remote->OnSecurityKeyRequest("0123456789",

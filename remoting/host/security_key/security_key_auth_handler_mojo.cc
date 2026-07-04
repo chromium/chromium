@@ -111,9 +111,27 @@ void SecurityKeyAuthHandlerMojo::SendErrorAndCloseConnection(
 }
 
 void SecurityKeyAuthHandlerMojo::SetSendMessageCallback(
-    const SendMessageCallback& callback) {
+    const SendMessageCallback& callback,
+    const void* client_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (active_client_id_ && active_client_id_ != client_id) {
+    VLOG(1) << "Overwriting active client: " << active_client_id_
+            << " with: " << client_id;
+  }
   send_message_callback_ = callback;
+  active_client_id_ = client_id;
+}
+
+void SecurityKeyAuthHandlerMojo::ClearSendMessageCallback(
+    const void* client_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (active_client_id_ == client_id) {
+    send_message_callback_.Reset();
+    active_client_id_ = nullptr;
+  } else if (active_client_id_) {
+    VLOG(1) << "Ignoring request to clear callback for client: " << client_id
+            << " (active client is: " << active_client_id_ << ")";
+  }
 }
 
 base::WeakPtr<SecurityKeyAuthHandler> SecurityKeyAuthHandlerMojo::GetWeakPtr() {
@@ -144,8 +162,8 @@ void SecurityKeyAuthHandlerMojo::OnSecurityKeyRequest(
     CloseSecurityKeyRequestConnection(connection_id);
     return;
   }
-  if (!send_message_callback_) {
-    LOG(ERROR) << "send_message_callback_ is null, dropping request.";
+  if (send_message_callback_.is_null()) {
+    LOG(ERROR) << "No callback registered, dropping request.";
     CloseSecurityKeyRequestConnection(connection_id);
     return;
   }

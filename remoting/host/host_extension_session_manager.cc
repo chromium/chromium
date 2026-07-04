@@ -45,6 +45,11 @@ HostExtensionSession* HostExtensionSessionManager::FindExtensionSession(
   return iter->second.get();
 }
 
+void HostExtensionSessionManager::RemoveExtensionSession(
+    const std::string& capability) {
+  extension_sessions_.erase(capability);
+}
+
 void HostExtensionSessionManager::OnNegotiatedCapabilities(
     protocol::ClientStub* client_stub,
     const std::string& capabilities) {

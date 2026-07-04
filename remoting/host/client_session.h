@@ -251,6 +251,10 @@ class ClientSession : public protocol::HostStub,
     return effective_policies_;
   }
 
+  HostExtensionSessionManager* extension_manager_for_tests() const {
+    return extension_manager_.get();
+  }
+
  private:
   void OnDesktopEnvironmentCreated(
       std::unique_ptr<DesktopEnvironment> desktop_environment);
@@ -296,6 +300,12 @@ class ClientSession : public protocol::HostStub,
   void CreateRemoteWebAuthnMessageHandler(
       const std::string& channel_name,
       std::unique_ptr<protocol::MessagePipe> pipe);
+
+  void CreateSecurityKeyDataChannelHandler(
+      const std::string& channel_name,
+      std::unique_ptr<protocol::MessagePipe> pipe);
+
+  void DestroySecurityKeyExtensionSession();
 
   void CreatePerMonitorVideoStreams();
 

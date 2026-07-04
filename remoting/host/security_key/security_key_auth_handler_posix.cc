@@ -156,6 +156,11 @@ void SecurityKeyAuthHandlerPosix::CreateSecurityKeyConnection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!socket_name_.empty());
 
+  if (socket_created_) {
+    return;
+  }
+  socket_created_ = true;
+
   // We need to run the DeleteFile method on the ThreadPool as it is a
   // blocking function call which cannot be run on the main thread.  Once
   // that task has completed, the main thread will be called back and we will
@@ -217,8 +222,27 @@ void SecurityKeyAuthHandlerPosix::SendErrorAndCloseConnection(int id) {
 }
 
 void SecurityKeyAuthHandlerPosix::SetSendMessageCallback(
-    const SendMessageCallback& callback) {
+    const SendMessageCallback& callback,
+    const void* client_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (active_client_id_ && active_client_id_ != client_id) {
+    VLOG(1) << "Overwriting active client: " << active_client_id_
+            << " with: " << client_id;
+  }
   send_message_callback_ = callback;
+  active_client_id_ = client_id;
+}
+
+void SecurityKeyAuthHandlerPosix::ClearSendMessageCallback(
+    const void* client_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (active_client_id_ == client_id) {
+    send_message_callback_.Reset();
+    active_client_id_ = nullptr;
+  } else if (active_client_id_) {
+    VLOG(1) << "Ignoring request to clear callback for client: " << client_id
+            << " (active client is: " << active_client_id_ << ")";
+  }
 }
 
 base::WeakPtr<SecurityKeyAuthHandler>
@@ -287,8 +311,8 @@ void SecurityKeyAuthHandlerPosix::OnReadComplete(int connection_id) {
   HOST_LOG << "Received request from socket: " << connection_id
            << ", code: " << GetCommandCode(request_data);
 
-  if (!send_message_callback_) {
-    LOG(ERROR) << "send_message_callback_ is null, dropping request.";
+  if (send_message_callback_.is_null()) {
+    LOG(ERROR) << "No callback registered, dropping request.";
     active_sockets_.erase(iter);
     return;
   }

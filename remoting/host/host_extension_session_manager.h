@@ -49,6 +49,9 @@ class HostExtensionSessionManager {
   // completed.
   HostExtensionSession* FindExtensionSession(const std::string& capability);
 
+  // Dynamically destroys an extension session with the matching capability.
+  void RemoveExtensionSession(const std::string& capability);
+
   // Handles completion of authentication and capabilities negotiation, creating
   // the set of HostExtensionSessions to match the client's capabilities.
   void OnNegotiatedCapabilities(protocol::ClientStub* client_stub,

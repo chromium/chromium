@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -46,7 +47,9 @@ class SecurityKeyAuthHandlerMojo : public SecurityKeyAuthHandler,
   void SendClientResponse(int security_key_connection_id,
                           const std::string& response) override;
   void SendErrorAndCloseConnection(int security_key_connection_id) override;
-  void SetSendMessageCallback(const SendMessageCallback& callback) override;
+  void SetSendMessageCallback(const SendMessageCallback& callback,
+                              const void* client_id) override;
+  void ClearSendMessageCallback(const void* client_id) override;
   base::WeakPtr<SecurityKeyAuthHandler> GetWeakPtr() override;
   size_t GetActiveConnectionCountForTest() const override;
   void SetRequestTimeoutForTest(base::TimeDelta timeout) override;
@@ -78,8 +81,11 @@ class SecurityKeyAuthHandlerMojo : public SecurityKeyAuthHandler,
   // Represents the last id assigned to a new security key request connection.
   int last_connection_id_ = 0;
 
-  // Sends a security key extension message to the client when called.
+  // The callback used to send messages to the client.
   SendMessageCallback send_message_callback_;
+
+  // The id of the client that registered the callback.
+  RAW_PTR_EXCLUSION const void* active_client_id_ = nullptr;
 
   // Interface which provides details about the client session.
   raw_ptr<ClientSessionDetails> client_session_details_ = nullptr;

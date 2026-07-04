@@ -14,12 +14,14 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -36,12 +38,21 @@
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_extension_session.h"
 #include "remoting/host/host_mock_objects.h"
+#include "remoting/host/security_key/security_key_auth_handler.h"
+#include "remoting/host/security_key/security_key_data_channel_handler.h"
+#include "remoting/host/security_key/security_key_extension.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include "remoting/host/security_key/security_key_auth_handler_posix.h"
+#endif
+
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "remoting/protocol/fake_message_pipe.h"
+#include "remoting/protocol/fake_message_pipe_wrapper.h"
 #include "remoting/protocol/fake_session.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -895,6 +906,109 @@ TEST_F(ClientSessionTest, ActiveDisplayMessageSent) {
                      ->last_active_display_monitor();
   ASSERT_TRUE(monitor);
   monitor->SetActiveDisplay(static_cast<webrtc::ScreenId>(kDisplay1Id));
+}
+
+class ClientSessionSecurityKeyTest : public ClientSessionTest {
+ public:
+  ClientSessionSecurityKeyTest() {
+    // Bind the factory override to return the mock handler.
+    SecurityKeyAuthHandler::SetCreateHandlerCallbackForTesting(
+        base::BindRepeating(&ClientSessionSecurityKeyTest::CreateMockHandler,
+                            base::Unretained(this)));
+  }
+
+  ~ClientSessionSecurityKeyTest() override {
+    SecurityKeyAuthHandler::SetCreateHandlerCallbackForTesting(
+        base::NullCallback());
+  }
+
+  void SetUp() override {
+    ClientSessionTest::SetUp();
+
+    desktop_environment_options_.set_enable_security_key(true);
+    SessionPolicies policies;
+    policies.allow_gnubby_forwarding = true;
+    local_session_policies_provider_.set_local_policies(policies);
+  }
+
+  void TearDown() override {
+    mock_handler_ = nullptr;
+    ClientSessionTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<SecurityKeyAuthHandler> CreateMockHandler(
+      ClientSessionDetails* client_session_details) {
+    auto mock =
+        std::make_unique<testing::NiceMock<MockSecurityKeyAuthHandler>>();
+    mock_handler_ = mock.get();
+    return mock;
+  }
+
+  raw_ptr<testing::NiceMock<MockSecurityKeyAuthHandler>> mock_handler_ =
+      nullptr;
+};
+
+// Verifies that the security key extension is created and its capabilities
+// advertised.
+TEST_F(ClientSessionSecurityKeyTest, AdvertisesCapabilities) {
+  // Expect that the client stub gets both legacy and V2 capabilities
+  // advertised.
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities(
+                                std::string(SecurityKeyExtension::kCapability) +
+                                " " + protocol::kSecurityKeyV2Capability)));
+
+  CreateClientSession();
+  ConnectClientSession();
+}
+
+// Verifies that when the WebRTC data channel connects, the legacy extension
+// session is destroyed.
+TEST_F(ClientSessionSecurityKeyTest, DataChannelTakeoverDestroysLegacySession) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  // Negotiate capabilities. The client supports both.
+  protocol::Capabilities capabilities_message;
+
+  capabilities_message.set_capabilities(
+      std::string(SecurityKeyExtension::kCapability) + " " +
+      protocol::kSecurityKeyV2Capability);
+  client_session_->SetCapabilities(capabilities_message);
+
+  // The signaling session should have been created.
+  HostExtensionSession* extension_session =
+      client_session_->extension_manager_for_tests()->FindExtensionSession(
+          SecurityKeyExtension::kCapability);
+  ASSERT_TRUE(extension_session);
+
+  // Now mimic WebRTC data channel connection.
+  // The data channel manager will invoke our callback.
+  // In the real flow, the connection will trigger this. We can trigger it by
+  // creating the channel.
+  auto pipe = std::make_unique<protocol::FakeMessagePipe>(true);
+
+  // Expect that when the data channel connects:
+  // 1. The legacy extension session is destroyed.
+  // 2. The data channel handler binds to the handler.
+
+  // We can verify that the extension session is destroyed by checking the
+  // manager.
+  client_session_->OnIncomingDataChannel(
+      SecurityKeyDataChannelHandler::kChannelName, pipe->Wrap());
+
+  // Open the pipe to trigger OnConnected() and the takeover.
+  pipe->OpenPipe();
+
+  // Wait until the legacy extension session is destroyed.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !client_session_->extension_manager_for_tests()
+                ->FindExtensionSession(SecurityKeyExtension::kCapability);
+  }));
+
+  // Close the pipe to clean up the handler and avoid dangling pointers.
+  pipe->ClosePipe();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !pipe->HasWrappers(); }));
 }
 
 }  // namespace remoting

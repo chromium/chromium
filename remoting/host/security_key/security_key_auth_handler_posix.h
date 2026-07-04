@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -63,7 +65,9 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   void SendClientResponse(int security_key_connection_id,
                           const std::string& response) override;
   void SendErrorAndCloseConnection(int security_key_connection_id) override;
-  void SetSendMessageCallback(const SendMessageCallback& callback) override;
+  void SetSendMessageCallback(const SendMessageCallback& callback,
+                              const void* client_id) override;
+  void ClearSendMessageCallback(const void* client_id) override;
   base::WeakPtr<SecurityKeyAuthHandler> GetWeakPtr() override;
   size_t GetActiveConnectionCountForTest() const override;
   void SetRequestTimeoutForTest(base::TimeDelta timeout) override;
@@ -106,8 +110,11 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   // A temporary holder for an accepted connection.
   std::unique_ptr<net::StreamSocket> accept_socket_;
 
-  // Used to pass security key extension messages to the client.
+  // The callback used to send messages to the client.
   SendMessageCallback send_message_callback_;
+
+  // The id of the client that registered the callback.
+  RAW_PTR_EXCLUSION const void* active_client_id_ = nullptr;
 
   // The last assigned security key connection id.
   int last_connection_id_ = 0;
@@ -123,6 +130,8 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
 
   // Timeout used for a request.
   base::TimeDelta request_timeout_;
+
+  bool socket_created_ = false;
 
   base::WeakPtrFactory<SecurityKeyAuthHandlerPosix> weak_factory_{this};
 };

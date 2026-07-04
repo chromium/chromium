@@ -11,7 +11,10 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -312,13 +315,17 @@ class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {
               (override));
 
   void SetSendMessageCallback(
-      const SecurityKeyAuthHandler::SendMessageCallback& callback) override;
+      const SecurityKeyAuthHandler::SendMessageCallback& callback,
+      const void* client_id) override;
+  void ClearSendMessageCallback(const void* client_id) override;
+
   const SecurityKeyAuthHandler::SendMessageCallback& GetSendMessageCallback();
 
   base::WeakPtr<SecurityKeyAuthHandler> GetWeakPtr() override;
 
  private:
-  SecurityKeyAuthHandler::SendMessageCallback callback_;
+  RAW_PTR_EXCLUSION const void* active_client_id_ = nullptr;
+  SecurityKeyAuthHandler::SendMessageCallback send_message_callback_;
 
   base::WeakPtrFactory<MockSecurityKeyAuthHandler> weak_factory_{this};
 };

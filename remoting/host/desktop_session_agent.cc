@@ -279,11 +279,15 @@ void DesktopSessionAgent::Start(
       security_key_auth_handler_ =
           base::SequenceBound<SecurityKeyAuthHandlerPosix>(io_task_runner_);
 
+      // We pass `base::Unretained(this)` as the `client_id` token. This is
+      // safe because the handler only uses it as an opaque key for
+      // comparison and never dereferences it.
       security_key_auth_handler_
           .AsyncCall(&SecurityKeyAuthHandler::SetSendMessageCallback)
-          .WithArgs(base::BindPostTaskToCurrentDefault(
-              base::BindRepeating(&DesktopSessionAgent::OnSecurityKeyMessage,
-                                  weak_factory_.GetWeakPtr())));
+          .WithArgs(base::BindPostTaskToCurrentDefault(base::BindRepeating(
+                        &DesktopSessionAgent::OnSecurityKeyMessage,
+                        weak_factory_.GetWeakPtr())),
+                    base::Unretained(this));
 
       security_key_auth_handler_.AsyncCall(
           &SecurityKeyAuthHandler::CreateSecurityKeyConnection);

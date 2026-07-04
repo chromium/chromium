@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -84,7 +85,8 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
 
     auth_handler_ = remoting::SecurityKeyAuthHandlerPosix::CreateForTesting(
         socket_path_, file_task_runner);
-    auth_handler_->SetSendMessageCallback(send_message_callback_);
+    auth_handler_->SetSendMessageCallback(send_message_callback_, this);
+
     EXPECT_NE(auth_handler_.get(), nullptr);
   }
 
@@ -423,7 +425,7 @@ TEST_F(SecurityKeyAuthHandlerPosixTest,
   ASSERT_EQ(connect_callback.GetResult(rv), net::OK);
 
   // 2. Clear the callback.
-  auth_handler_->SetSendMessageCallback(base::NullCallback());
+  auth_handler_->ClearSendMessageCallback(this);
 
   // 3. Write request data (which will trigger OnIncomingData).
   WriteRequestData(&client_socket);
@@ -434,6 +436,54 @@ TEST_F(SecurityKeyAuthHandlerPosixTest,
   // 5. Verify the connection was cleaned up.
   ASSERT_FALSE(auth_handler_->IsValidConnectionId(1));
   ASSERT_EQ(auth_handler_->GetActiveConnectionCountForTest(), 0u);
+}
+
+TEST_F(SecurityKeyAuthHandlerPosixTest, CreateConnectionIsIdempotent) {
+  CreateSocketAndWait();
+
+  // Calling it again should not recreate the socket or crash.
+  auth_handler_->CreateSecurityKeyConnection();
+
+  // Verify we can still connect to the socket.
+  net::UnixDomainClientSocket client_socket(socket_path_.value(), false);
+  net::TestCompletionCallback connect_callback;
+  int rv = client_socket.Connect(connect_callback.callback());
+  ASSERT_EQ(connect_callback.GetResult(rv), net::OK);
+
+  // Verify the connection is tracked.
+  WriteRequestData(&client_socket);
+  WaitForSendMessageToClient();
+  CheckHostDataMessage(1);
+}
+
+TEST_F(SecurityKeyAuthHandlerPosixTest,
+       ClearSendMessageCallbackIgnoresMismatchedClient) {
+  // Attempt to clear the callback with a mismatched client ID.
+  const void* mismatched_client_id = reinterpret_cast<const void*>(0xdeadbeef);
+  auth_handler_->ClearSendMessageCallback(mismatched_client_id);
+
+  CreateSocketAndWait();
+
+  net::UnixDomainClientSocket client_socket(socket_path_.value(), false);
+  net::TestCompletionCallback connect_callback;
+  int rv = client_socket.Connect(connect_callback.callback());
+  ASSERT_EQ(connect_callback.GetResult(rv), net::OK);
+
+  // Verify that the callback is STILL active and receives the message.
+  WriteRequestData(&client_socket);
+  WaitForSendMessageToClient();
+  CheckHostDataMessage(1);
+
+  // Now clear it with the CORRECT client ID.
+  auth_handler_->ClearSendMessageCallback(this);
+
+  // Verify that subsequent requests are dropped and connection is closed.
+  net::UnixDomainClientSocket client_socket2(socket_path_.value(), false);
+  rv = client_socket2.Connect(connect_callback.callback());
+  ASSERT_EQ(connect_callback.GetResult(rv), net::OK);
+
+  WriteRequestData(&client_socket2);
+  WaitForSocketClose(&client_socket2);
 }
 
 }  // namespace remoting

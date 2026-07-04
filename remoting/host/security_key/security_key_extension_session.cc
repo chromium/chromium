@@ -71,14 +71,15 @@ SecurityKeyExtensionSession::SecurityKeyExtensionSession(
   if (auth_handler_) {
     auth_handler_->SetSendMessageCallback(
         base::BindRepeating(&SecurityKeyExtensionSession::SendMessageToClient,
-                            weak_factory_.GetWeakPtr()));
+                            weak_factory_.GetWeakPtr()),
+        this);
   }
 }
 
 SecurityKeyExtensionSession::~SecurityKeyExtensionSession() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (auth_handler_) {
-    auth_handler_->SetSendMessageCallback(base::NullCallback());
+    auth_handler_->ClearSendMessageCallback(this);
   }
 }
 
