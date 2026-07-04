@@ -3859,6 +3859,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (o filă)}few{<ph name="GROUP_TITLE" /> (# file)}other{<ph name="GROUP_TITLE" /> (# de file)}}</translation>
 <translation id="3871350334636688135">După 24 de ore, administratorul va face o actualizare unică ce va șterge datele locale când repornești dispozitivul. Salvează datele locale de care ai nevoie în stocarea în cloud în cel mult 24 de ore.</translation>
 <translation id="3872991219937722530">Eliberează spațiu pe hard disk sau dispozitivul nu va mai răspunde la comenzi.</translation>
+<translation id="3873121930618553927">Folosești agenți de programare AI pentru a crea extensii? Instalează <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> și <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> pentru a-ți pune agentul de programare la curent cu cele mai recente actualizări ale API-urilor și cele mai bune practici.</translation>
 <translation id="3873423927483480833">Afișează codurile PIN</translation>
 <translation id="3874532133373654352">Organizația ta gestionează modul în care pot fi folosite datele colectate de aceste funcții. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Această funcție folosește AI și este experimentală</translation>

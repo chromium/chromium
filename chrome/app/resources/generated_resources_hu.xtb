@@ -3871,6 +3871,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 lap)}other{<ph name="GROUP_TITLE" /> (# lap)}}</translation>
 <translation id="3871350334636688135">24 óra múlva a rendszergazda egyszeri frissítést fog végezni, amely az eszköz újraindításakor törli a helyi adatokat. 24 órán belül mentse felhőtárhelyre a szükséges helyi adatokat.</translation>
 <translation id="3872991219937722530">Szabadítson fel tárhelyet, máskülönben eszköze lefagy.</translation>
+<translation id="3873121930618553927">Kódoló AI-ügynököket használ a bővítmények létrehozásához? Telepítse a következőket, hogy a kódolási ügynök megismerhesse a legújabb API-frissítéseket és bevált módszereket: <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> és <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />.</translation>
 <translation id="3873423927483480833">PIN-kódok megjelenítése</translation>
 <translation id="3874532133373654352">A szervezete kezeli, hogy miként használhatók fel az ezekkel a funkciókkal gyűjtött adatok. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3874845889165401548">Ez a funkció AI-t használ, és kísérleti fázisban van</translation>

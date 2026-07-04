@@ -122,6 +122,7 @@
 정책을 1 - DisabledForBrowser로 설정하면 <ph name="PRODUCT_NAME" /> 브라우저 프로세스에서 동적 코드를 만들 수 없게 됩니다.
 
 참고: 프로세스 완화 정책(https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies)에 관해 자세히 알아보세요.</translation>
+<translation id="1067605384506001359">인디고 설정</translation>
 <translation id="1068801725746725727">세이프 브라우징 설문조사 수신 허용</translation>
 <translation id="107045325503547419">기능 출시 프로세스에 따라 달라집니다.</translation>
 <translation id="1073983258515362346">기기의 백라이트에 관한 정보를 보고합니다.
@@ -1306,6 +1307,7 @@ Manifest V2 확장 프로그램 지원이 중단되며 향후 모든 확장 프�
 정책을 사용 안함으로 설정하거나 설정하지 않으면 <ph name="REQUIRED_PLATFORM_VERSION" /> 매니페스트 키가 무시되고 자동 업데이트가 정상적으로 진행됩니다.
 
 경고: 기기가 소프트웨어 업데이트와 중요 보안 수정사항을 받지 못할 수 있으므로 <ph name="PRODUCT_OS_NAME" /> 버전의 컨트롤을 키오스크 앱에 위임하지 마세요. <ph name="PRODUCT_OS_NAME" /> 버전의 컨트롤을 위임하면 사용자가 위험해질 수 있습니다.</translation>
+<translation id="1865927800836673132">인디고를 사용 중지합니다.</translation>
 <translation id="186719019195685253">AC 전원으로 기기를 실행하는 동안 유휴 지연 시간에 도달했을 때 실행할 작업</translation>
 <translation id="1869688072690234823">정책을 설정하여 사용 가능한 WebAuthn 요소를 제어할 수 있습니다.
 
@@ -9353,6 +9355,7 @@ False로 설정하거나 설정하지 않으면 레이아웃을 사용할 수 �
 <translation id="6883050310557769428">플로팅 SSO의 사용 설정 여부, 쿠키 도메인 차단 목록 및 예외를 제어합니다.</translation>
 <translation id="6889123056995503704">사용자가 채널 다운그레이드 동작 결정</translation>
 <translation id="6894178810167845842">새 탭 페이지 URL</translation>
+<translation id="6894938636048011953">모델 개선을 불포함해 인디고를 사용 설정합니다.</translation>
 <translation id="6895437634974956885">배터리 성능 상태는 잦은 완충이나 장시간 충전 등의 요인으로 영향을 받을 수 있습니다. 이 정책은 충전 방식을 최적화하고 이러한 요인을 완화하여 궁극적으로 배터리 수명을 연장하는 세 가지 옵션을 제공합니다.
 
 정책을 설정하지 않으면 사용자가 자동 조절 충전 전환 버튼을 사용하여 자동 조절 충전을 사용 설정하거나 중지할 수 있습니다.
@@ -9677,6 +9680,7 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
       정책이 필수로 설정되면 사용자가 변경하거나 재정의할 수 없습니다.
 
       정책이 설정되지 않으면 앱 표시줄이 기본적으로 화면 하단에 배치되며 사용자가 앱 표시줄의 위치를 변경할 수 있습니다.</translation>
+<translation id="703900496796064997">모델 개선을 포함해 인디고를 사용 설정합니다.</translation>
 <translation id="7039815268521168329">최초 설정 시 Google 어시스턴트 Voice Match 흐름 표시</translation>
 <translation id="7040229947030068419">예시:</translation>
 <translation id="7044883996351280650">Android 백업 및 복원 서비스 제어</translation>
@@ -11267,6 +11271,15 @@ https://chromeenterprise.google/policies/url-patterns를 참고하세요.
 <translation id="8006921530139404577">정책을 사용 안함으로 설정하면 커튼 모드가 활성화되지 않은 원격 액세스 연결에 대해 연결 관련 UI(예: 연결 해제 창)가 표시되지 않습니다. 커튼 모드가 활성화된 원격 액세스 세션 및 원격 지원 세션은 이 정책의 영향을 받지 않습니다.
 
           정책은 True로 설정되거나, 비어 있거나, 설정되지 않을 경우 아무런 영향을 미치지 않습니다.</translation>
+<translation id="8007695731441786330">인디고가 웹에서 이미지를 변환하도록 허용할지 설정합니다.
+
+0 = 인디고를 사용 설정합니다(모델 개선 포함).
+
+1 = 인디고를 사용 설정합니다(모델 개선 불포함).
+
+2 = 인디고를 사용 중지합니다.
+
+정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.</translation>
 <translation id="8008421342605619236">기본 메시지의 정책을 설정합니다. 차단된 기본 메시지 호스트는 허용 목록에 추가되지 않는 한 허용되지 않습니다.</translation>
 <translation id="8011935490612940798"><ph name="PRODUCT_NAME" /> 기능을 제어합니다.</translation>
 <translation id="8013646845541206453">모든 인증서 확인 기능 사용</translation>

@@ -122,6 +122,7 @@ Politika, 0 - Varsayılan değerine ayarlanırsa veya ayarlanmadan bırakılırs
 Politika, 1 - DisabledForBrowser değerine ayarlanırsa <ph name="PRODUCT_NAME" /> tarayıcı işleminin dinamik kod oluşturması engellenir.
 
 Not: İşlem çözüm politikaları hakkında daha fazla bilgi edinin (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
+<translation id="1067605384506001359">Indigo ayarları.</translation>
 <translation id="1068801725746725727">Güvenli Tarama anketlerini almayı etkinleştir</translation>
 <translation id="107045325503547419">Özelliğin kullanıma sunulma sürecine göre değişir.</translation>
 <translation id="1073983258515362346">Bir cihazın arka ışıkları ile ilgili bilgileri rapor edin.
@@ -1313,6 +1314,7 @@ Bu, tüm havuzlar için varsayılan olarak etkindir ancak bu politika, özelliğ
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="REQUIRED_PLATFORM_VERSION" /> manifest anahtarı yok sayılır ve otomatik güncelleme normal şekilde devam eder.
 
 Uyarı: Cihazın yazılım güncellemelerini ve kritik güvenlik düzeltmelerini almasını engelleyebileceği için <ph name="PRODUCT_OS_NAME" /> sürümünün kontrol yetkisini bir kiosk uygulamasına vermeyin. <ph name="PRODUCT_OS_NAME" /> sürümünün kontrol yetkisini vermek kullanıcılar için risk oluşturabilir.</translation>
+<translation id="1865927800836673132">Indigo'yu devre dışı bırakın.</translation>
 <translation id="186719019195685253">Cihaz AC güçle çalışırken boşta kalma süresine ulaşıldığında yapılacak işlem</translation>
 <translation id="1869688072690234823">Bu politika hangi WebAuthn faktörlerinin kullanılabileceğini kontrol eder.
 
@@ -9375,6 +9377,7 @@ Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa bu düz
 <translation id="6883050310557769428">Kayan TOA'nın etkin olup olmadığını, ayrıca çerez alan adı engellenenler listesi ve istisnalarını kontrol eder.</translation>
 <translation id="6889123056995503704">Kanal sürümü değiştirme davranışına kullanıcı karar verir</translation>
 <translation id="6894178810167845842">Yeni Sekme sayfasının URL'si</translation>
+<translation id="6894938636048011953">1 = Indigo'yu model iyileştirme olmadan etkinleştirin.</translation>
 <translation id="6895437634974956885">Sık sık tam şarj etme ve uzun şarj süreleri gibi faktörler pil sağlığını etkileyebilir. Bu politika, şarj davranışını optimize etmek ve bu faktörlerden kaynaklanan riski azaltarak pil kullanım ömrünü uzatmak için üç seçenek sunar.
 
 Politika ayarlanmadan bırakıldığında - Kullanıcılar, Uyarlanabilir Şarj açma/kapatma düğmesini kullanarak Uyarlanabilir Şarj'ı etkinleştirebilir ve devre dışı bırakabilir.
@@ -9703,6 +9706,7 @@ Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_
       Bu politikayı zorunlu olacak şekilde ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
       Bu politika ayarlanmadan bırakılırsa raf varsayılan olarak ekranın alt tarafında konumlandırılır ve kullanıcı rafın yerini değiştirebilir.</translation>
+<translation id="703900496796064997">0 = Indigo'yu model iyileştirme ile birlikte etkinleştirin.</translation>
 <translation id="7039815268521168329">İlk kurulum sırasında Google Asistan Voice Match akışını göster</translation>
 <translation id="7040229947030068419">Örnek değer:</translation>
 <translation id="7044883996351280650">Android yedekleme ve geri yükleme hizmetini kontrol etme</translation>
@@ -11283,6 +11287,15 @@ Politika ayarlanırsa kullanıcılar bunu <ph name="PRODUCT_NAME" /> ürününde
 <translation id="8006921530139404577">Bu politika devre dışı bırakılırsa perde modunda olmayan uzaktan erişim bağlantıları için bağlantıyla ilgili kullanıcı arayüzü (ör. bağlantıyı kesme penceresi) gösterilmez. Perde modunda uzaktan erişim oturumları ve uzaktan destek oturumları bu politikadan etkilenmez.
 
           Doğru değerine ayarlanırsa, boş bırakılırsa veya ayarlanmazsa bu politikanın hiçbir etkisi olmaz.</translation>
+<translation id="8007695731441786330">Indigo'nun web'deki görselleri dönüştürmesine izin verilip verilmeyeceğini kontrol eder.
+
+0 = Indigo'yu model iyileştirme ile birlikte etkinleştir.
+
+1 = Indigo'yu model iyileştirme olmadan etkinleştir.
+
+2 = Indigo'yu devre dışı bırak.
+
+Bu politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.</translation>
 <translation id="8008421342605619236">Yerel Mesajlaşma için politikaları yapılandırır. Engellenen yerel mesajlaşma ana makinelerine, beyaz listeye eklenmedikçe izin verilmez.</translation>
 <translation id="8011935490612940798"><ph name="PRODUCT_NAME" /> özelliğini kontrol eder.</translation>
 <translation id="8013646845541206453">Herhangi bir sertifika doğrulayıcıyı kullan</translation>

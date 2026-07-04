@@ -3862,6 +3862,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 onglet)}one{<ph name="GROUP_TITLE" /> (# onglet)}other{<ph name="GROUP_TITLE" /> (# onglets)}}</translation>
 <translation id="3871350334636688135">Après 24 heures, votre administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales la prochaine fois que vous redémarrerez votre appareil. Enregistrez toutes les données locales dont vous avez besoin dans un espace de stockage infonuagique d'ici 24 heures.</translation>
 <translation id="3872991219937722530">Libérez de l'espace disque ou votre appareil ne répondra plus.</translation>
+<translation id="3873121930618553927">Utilisez-vous des agents de codage IA pour créer des extensions? Installez <ph name="BEGIN_LINK" />les <ph name="CHROME_EXTENSIONS" /> et le <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> pour enseigner à votre agent de codage les dernières mises à jour de l'API et les pratiques exemplaires.</translation>
 <translation id="3873423927483480833">Afficher les NIP</translation>
 <translation id="3874532133373654352">Votre organisation gère la façon dont les données recueillies par ces fonctionnalités peuvent être utilisées. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Cette fonctionnalité utilise l'IA et est expérimentale</translation>

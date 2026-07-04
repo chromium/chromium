@@ -3872,6 +3872,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (Kichupo 1)}other{<ph name="GROUP_TITLE" /> (Vichupo #)}}</translation>
 <translation id="3871350334636688135">Baada ya saa 24, msimamizi wako ataweka sasisho la mara moja ambalo litafuta data ya kifaa chako utakapokizima kisha ukiwashe tena. Hifadhi data yoyote ya kifaa unayohitaji kwenye hifadhi ya wingu ndani ya saa 24.</translation>
 <translation id="3872991219937722530">Futa maudhui katika hifadhi ya diski la sivyo kifaa chako kitaacha kufanya kazi.</translation>
+<translation id="3873121930618553927">Je, unatumia mifumo tekelezi ya usimbaji inayotumia AI ili kubuni viendelezi? Weka <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> na <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> ili ufundishe mfumo tekelezi wa usimbaji masasisho mapya zaidi ya API na mbinu bora.</translation>
 <translation id="3873423927483480833">Onyesha PIN</translation>
 <translation id="3874532133373654352">Shirika lako hudhibiti jinsi data iliyokusanywa na vipengele hivi inaweza kutumika. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Kipengele hiki kinatumia AI na ni cha majaribio</translation>

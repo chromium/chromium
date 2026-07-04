@@ -3873,6 +3873,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (১টি ট্যাব)}one{<ph name="GROUP_TITLE" /> (#টি ট্যাব)}other{<ph name="GROUP_TITLE" /> (#টি ট্যাব)}}</translation>
 <translation id="3871350334636688135">২৪ ঘণ্টা পরে ডিভাইস আবার চালু করলে, আপনার অ্যাডমিনিস্ট্রেটর এককালীন আপডেট করবেন যার ফলে আপনার স্থানীয় ডেটা মুছে যাবে। ২৪ ঘণ্টার মধ্যে আপনার প্রয়োজনীয় স্থানীয় ডেটা ক্লাউড স্টোরেজে সেভ করে রাখুন।</translation>
 <translation id="3872991219937722530">ডিস্কে জায়গা খালি করুন, নাহলে ডিভাইস সাড়া দিবে না।</translation>
+<translation id="3873121930618553927">এক্সটেনশন তৈরি করতে AI কোডিং এজেন্ট ব্যবহার করছেন? আপনার কোডিং এজেন্টকে লেটেস্ট API আপডেট ও পেশাদার পদ্ধতি শেখাতে <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> ও <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> ইনস্টল করুন।</translation>
 <translation id="3873423927483480833">পিন দেখুন</translation>
 <translation id="3874532133373654352">আপনার সংস্থা ম্যানেজ করে কীভাবে এইসব ফিচারের মাধ্যমে সংগ্রহ করা ডেটা ব্যবহার করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">এই ফিচার AI ব্যবহার করে এবং এটি পরীক্ষামূলক</translation>

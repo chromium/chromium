@@ -3869,6 +3869,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{‫<ph name="GROUP_TITLE" /> (כרטיסייה אחת)}one{‫<ph name="GROUP_TITLE" /> ‏(# כרטיסיות)}two{‫<ph name="GROUP_TITLE" /> ‏(# כרטיסיות)}other{‫<ph name="GROUP_TITLE" /> ‏(# כרטיסיות)}}</translation>
 <translation id="3871350334636688135">כעבור 24 שעות, מנהל המערכת יבצע עדכון חד-פעמי שימחק את הנתונים המקומיים כשהמכשיר יופעל מחדש. חשוב לשמור באחסון בענן תוך 24 שעות את הנתונים המקומיים הנחוצים לך.</translation>
 <translation id="3872991219937722530">אם לא מפנים שטח אחסון, המכשיר יפסיק להגיב.</translation>
+<translation id="3873121930618553927">‏משתמשים בסוכני AI לתכנות כדי לפתח תוספים? כדי ללמד את סוכן התכנות את העדכונים האחרונים של ה-API ואת השיטות המומלצות, צריך להתקין את <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> ואת <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />.</translation>
 <translation id="3873423927483480833">הצגת קודי אימות</translation>
 <translation id="3874532133373654352">הארגון שלך קובע את אופן השימוש בנתונים שנאספו באמצעות התכונות האלה. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">‏התכונה הזאת היא ניסיונית ומבוססת על AI</translation>

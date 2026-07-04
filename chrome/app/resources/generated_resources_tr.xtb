@@ -3858,6 +3858,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 Sekme)}other{<ph name="GROUP_TITLE" /> (# Sekme)}}</translation>
 <translation id="3871350334636688135">24 saat sonra yöneticiniz, cihazınızı yeniden başlattığınızda yerel verilerinizi silecek bir seferlik güncelleme yapacaktır. İhtiyacınız olan yerel verileri 24 saat içinde bulut depolama alanına kaydedin.</translation>
 <translation id="3872991219937722530">Disk alanını boşaltmazsanız cihazınız tepkisiz hale gelecek.</translation>
+<translation id="3873121930618553927">Uzantı oluşturmak için yapay zeka kodlama temsilcileri mı kullanıyorsunuz? Kodlama temsilcinize en yeni API güncellemelerini ve en iyi uygulamaları öğretmek için <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> ve <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> öğelerini yükleyin.</translation>
 <translation id="3873423927483480833">PIN numaralarını göster</translation>
 <translation id="3874532133373654352">Bu özelliklerin topladığı verilerin kullanılma şeklini kuruluşunuz kontrol eder. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="3874845889165401548">Bu özellik yapay zekadan yararlanır ve deneyseldir</translation>

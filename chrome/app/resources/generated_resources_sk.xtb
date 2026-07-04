@@ -3860,6 +3860,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 karta)}few{<ph name="GROUP_TITLE" /> (# karty)}many{<ph name="GROUP_TITLE" /> (# Tabs)}other{<ph name="GROUP_TITLE" /> (# kariet)}}</translation>
 <translation id="3871350334636688135">Po 24 hodinách správca vykoná jednorazovú aktualizáciu, ktorá pri reštartovaní zariadenia odstráni miestne údaje. Všetky potrebné miestne údaje uložte do cloudového úložiska do 24 hodín.</translation>
 <translation id="3872991219937722530">Uvoľnite miesto na disku, inak vaše zariadenie prestane reagovať.</translation>
+<translation id="3873121930618553927">Vytvárate rozšírenia pomocou agentov umelej inteligencie na programovanie? Nainštalujte si <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> a <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, aby ste svojho programovacieho agenta naučili najnovšie aktualizácie rozhraní API a osvedčené postupy.</translation>
 <translation id="3873423927483480833">Zobraziť kódy PIN</translation>
 <translation id="3874532133373654352">Vaša organizácia spravuje, ako sa môžu používať údaje zhromažďované týmito funkciami. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Táto funkcia využíva umelú inteligenciu a je experimentálna</translation>

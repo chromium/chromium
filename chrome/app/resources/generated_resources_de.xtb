@@ -3855,6 +3855,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 Tab)}other{<ph name="GROUP_TITLE" /> (# Tabs)}}</translation>
 <translation id="3871350334636688135">Nach 24 Stunden führt dein Administrator ein einmaliges Update durch, bei dem deine lokalen Daten gelöscht werden, wenn du dein Gerät neu startest. Speichere alle lokalen Daten, die du benötigst, innerhalb von 24 Stunden im Cloud-Speicher.</translation>
 <translation id="3872991219937722530">Gib Speicherplatz frei oder dein Gerät reagiert nicht mehr.</translation>
+<translation id="3873121930618553927">Verwendest du einen KI-Programmieragenten zum Erstellen von Erweiterungen? Installiere <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> und <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, um KI-Programmieragenten die neuesten API-Updates und Best Practices beizubringen.</translation>
 <translation id="3873423927483480833">PINs anzeigen</translation>
 <translation id="3874532133373654352">Deine Organisation legt fest, wie die von diesen Funktionen erhobenen Daten verwendet werden dürfen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Diese Funktion verwendet KI und ist experimentell</translation>

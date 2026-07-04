@@ -3870,6 +3870,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 kartica)}one{<ph name="GROUP_TITLE" /> (# kartica)}few{<ph name="GROUP_TITLE" /> (# kartice)}other{<ph name="GROUP_TITLE" /> (# kartica)}}</translation>
 <translation id="3871350334636688135">Nakon 24 sata, vaš administrator će izvršiti jednokratno ažuriranje kojim će se izbrisati vaši lokalni podaci kada ponovo pokrenete uređaj. Sačuvajte lokalne podatke koji su vam potrebni u pohranu u oblaku, u roku od naredna 24 sata.</translation>
 <translation id="3872991219937722530">Oslobodite prostor na disku ili će uređaj prestati reagirati.</translation>
+<translation id="3873121930618553927">Koristite li AI agente za kodiranje za izradu ekstenzija? Instalirajte <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> i <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> da podučite agenta za kodiranje najnovijim ažuriranjima API-ja i najboljim praksama.</translation>
 <translation id="3873423927483480833">Prikaži PIN-ove</translation>
 <translation id="3874532133373654352">Vaša organizacija upravlja načinom korištenja podataka koje ove funkcije prikupljaju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ova funkcija koristi AI i eksperimentalna je</translation>

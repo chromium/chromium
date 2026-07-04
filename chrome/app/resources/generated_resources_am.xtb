@@ -3868,6 +3868,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 ትር)}one{<ph name="GROUP_TITLE" /> (# ትር)}other{<ph name="GROUP_TITLE" /> (# ትሮች)}}</translation>
 <translation id="3871350334636688135">ከ24 ሰዓቶች በኋላ መሣሪያዎን ዳግም ሲያስነሱት አስተዳዳሪዎ አካባቢያዊ ውሂብዎን የሚሰርዝ የአንድ ጊዜ ዝማኔ ያከናውናሉ። የሚያስፈልገዎትን ማንኛውም ውሂብ በ24 ሰዓቶች ውስጥ ወደ ደመናው ያስቀምጡት።</translation>
 <translation id="3872991219937722530">የዲስክ ቦታ ያስለቅቁ፣ አለበለዚያ መሣሪያው ምላሽ የማይሰጥ ይሆናል</translation>
+<translation id="3873121930618553927">ቅጥያዎችን ለመገንባት የሰው ሠራሽ አስተውሎት ምስጠራ ወኪሎችን በመጠቀም ላይ ነዎት? የቅርብ ጊዜዎቹን የኤፒአይ ዝማኔዎች እና ምርጥ ልምዶችን ለኮድ ወኪልዎ ለማስተማር <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> እና <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> ይጫኑ።</translation>
 <translation id="3873423927483480833">ፒኖችን አሳይ</translation>
 <translation id="3874532133373654352">ድርጅትዎ በእነዚህ ባህሪያት የተሰበሰበ ውሂብ እንዴት ጥቅም ላይ ሊውል እንደሚችል ያስተዳድራል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">ይህን ባህሪ ሰው ሠራሽ አስተውሎት ይጠቀማል እና የሙከራ ነው</translation>

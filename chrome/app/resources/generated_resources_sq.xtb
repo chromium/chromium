@@ -3334,6 +3334,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3512465804715993309">Theksimi me përshtatje</translation>
 <translation id="3513019849832307207">Bashkohu dhe hap</translation>
 <translation id="3513563267917474897">Rrëshqitësi i nuancës nga <ph name="MIN_VALUE" /> deri në <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Gozhdo shtesat e reja</translation>
 <translation id="3514647716686280777">Po merr mbrojtjen standarde të sigurisë. Për të marrë më shumë mbrojtje ndaj sajteve të uebit, shkarkimeve dhe shtesave të rrezikshme, aktivizo "Shfletimin e sigurt të përmirësuar" te cilësimet e Chrome.</translation>
 <translation id="3514681096978190000">Ky skedar arkivi përmban skedarë të tjerë që mund të fshehin softuerë keqdashës</translation>
 <translation id="3515983984924808886">Prek përsëri çelësin e sigurisë për të konfirmuar rivendosjen. Të gjitha informacionet e ruajtura në çelësin e sigurisë, duke përfshirë kodin e tij PIN, do të fshihen.</translation>
@@ -3860,6 +3861,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 skedë)}other{<ph name="GROUP_TITLE" /> (# skeda)}}</translation>
 <translation id="3871350334636688135">Pas 24 orësh, administratori yt do të kryejë një përditësim vetëm një herë që do të fshijë të dhënat e tua lokale kur të rinisësh pajisjen tënde. Ruaj çdo të dhënë lokale që të nevojitet në hapësirën ruajtëse të resë kompjuterike brenda 24 orësh.</translation>
 <translation id="3872991219937722530">Liro hapësirë në disk ose pajisja nuk do të reagojë ndaj komandave.</translation>
+<translation id="3873121930618553927">Po përdor agjentët e kodimit me IA për të krijuar shtesa? Instalo <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> dhe <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> për t'i mësuar agjentit tënd të kodimit përditësimet më të fundit të API-së dhe praktikat më të mira.</translation>
 <translation id="3873423927483480833">Shfaq kodet PIN</translation>
 <translation id="3874532133373654352">Organizata jote menaxhon se si mund të përdoren të dhënat e mbledhura nga këto veçori. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Kjo veçori përdor IA-në dhe është eksperimentale</translation>

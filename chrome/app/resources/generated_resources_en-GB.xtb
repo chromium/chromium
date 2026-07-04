@@ -3873,6 +3873,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 tab)}other{<ph name="GROUP_TITLE" /> (# tabs)}}</translation>
 <translation id="3871350334636688135">After 24 hours, your administrator will perform a one-off update that will delete your local data when you restart your device. Save any local data that you need to cloud storage within 24 hours.</translation>
 <translation id="3872991219937722530">Free up disk space or device will become unresponsive.</translation>
+<translation id="3873121930618553927">Using AI coding agents to build extensions? Install the <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> and <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> to teach your coding agent the latest API updates and best practices.</translation>
 <translation id="3873423927483480833">Show PINs</translation>
 <translation id="3874532133373654352">Your organisation manages how data collected by these features may be used. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">This feature uses AI and is experimental</translation>

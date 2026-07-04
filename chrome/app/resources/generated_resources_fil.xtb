@@ -3873,6 +3873,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 Tab)}one{<ph name="GROUP_TITLE" /> (# Tab)}other{<ph name="GROUP_TITLE" /> (# na Tab)}}</translation>
 <translation id="3871350334636688135">Pagkalipas ng 24 na oras, magsasagawa ang administrator mo ng isang beses na pag-update na magde-delete sa iyong lokal na data kapag na-restart mo ang iyong device. I-save ang anumang lokal na data na kailangan mo sa cloud storage sa loob ng 24 na oras.</translation>
 <translation id="3872991219937722530">Magbakante ng espasyo sa disk o hindi gagana nang maayos ang iyong device.</translation>
+<translation id="3873121930618553927">Gumagamit ka ba ng mga AI coding agent para bumuo ng mga extension? I-install ang <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> at <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> para ituro sa iyong coding agent ang mga pinakabagong update sa API at pinakamahuhusay na kagawian.</translation>
 <translation id="3873423927483480833">Ipakita ang Mga PIN</translation>
 <translation id="3874532133373654352">Pinapamahalaan ng iyong organisasyon kung paano puwedeng gamitin ang data na kinokolekta ng mga feature na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Gumagamit ng AI ang feature na ito at pang-eksperimento ito</translation>

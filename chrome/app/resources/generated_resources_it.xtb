@@ -3859,6 +3859,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 scheda)}other{<ph name="GROUP_TITLE" /> (# schede)}}</translation>
 <translation id="3871350334636688135">Dopo 24 ore, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali al riavvio del dispositivo. Salva i dati locali che ti servono nello spazio di archiviazione sul cloud entro 24 ore.</translation>
 <translation id="3872991219937722530">Libera spazio sul disco, altrimenti il dispositivo non risponderà più ai comandi.</translation>
+<translation id="3873121930618553927">Utilizzare agenti di programmazione AI per creare estensioni? Installa <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> e <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> per istruire il tuo agente di programmazione sugli ultimi aggiornamenti delle API e sulle best practice.</translation>
 <translation id="3873423927483480833">Mostra i codici PIN</translation>
 <translation id="3874532133373654352">La tua organizzazione gestisce il modo in cui possono essere utilizzati i dati raccolti da queste funzionalità. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Questa funzionalità utilizza l'AI ed è sperimentale</translation>

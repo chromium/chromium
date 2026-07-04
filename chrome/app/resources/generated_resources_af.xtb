@@ -3873,6 +3873,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 oortjie)}other{<ph name="GROUP_TITLE" /> (# oortjies)}}</translation>
 <translation id="3871350334636688135">Ná 24 uur sal jou administrateur 'n eenmalige opdatering uitvoer wat jou plaaslike data sal uitvee wanneer jy jou toestel herbegin. Berg enige plaaslike data wat jy moet hê binne 24 uur in wolkberging.</translation>
 <translation id="3872991219937722530">Maak skyfspasie beskikbaar, anders sal jou toestel nie meer reageer nie.</translation>
+<translation id="3873121930618553927">Gebruik jy KI-koderingagente om uitbreidings te bou? Installeer die <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> en <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> om jou koderingagent die jongste API-opdaterings en beste praktyke te leer.</translation>
 <translation id="3873423927483480833">Wys PIN-nommers</translation>
 <translation id="3874532133373654352">Jou organisasie bestuur hoe data wat deur hierdie kenmerke ingesamel word, gebruik mag word. <ph name="BEGIN_LINK" />Vind meer uit<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Hierdie kenmerk gebruik KI en is eksperimenteel</translation>

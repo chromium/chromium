@@ -3861,6 +3861,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1ක් පටිත්තක්)}one{<ph name="GROUP_TITLE" /> (පටිති #ක්)}other{<ph name="GROUP_TITLE" /> (පටිති #ක්)}}</translation>
 <translation id="3871350334636688135">පැය 24කට පසු, ඔබේ පරිපාලකයා ඔබ ඔබේ උපාංගය යළි අරඹන විට ඔබේ අභ්‍යන්තර දත්ත මකා දමන එක් වරක යාවත්කාලීනයක් සිදු කරයි. ඔබට අවශ්‍ය කිසියම් අභ්‍යන්තර දත්ත පැය 24ක් තුළ වළාකුළු ආචයනය වෙත සුරකින්න.</translation>
 <translation id="3872991219937722530">තැටි ඉඩ හිස් කරන්න නැතහොත් ඔබේ උපාංගය ප්‍රතිචාර නොදක්වන බවට පත් විය හැකිය.</translation>
+<translation id="3873121930618553927">දිගු තැනීමට AI කේතීකරණ නියෝජිතයන් භාවිතා කරන්නේ ද? ඔබේ කේතීකරණ නියෝජිතයාට නවතම API යාවත්කාලීන සහ හොඳම භාවිතයන් ඉගැන්වීමට <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> සහ <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> ස්ථාපනය කරන්න.</translation>
 <translation id="3873423927483480833">රහස් අංක පෙන්වන්න</translation>
 <translation id="3874532133373654352">මෙම විශේෂාංග මගින් රැස් කරන ලද දත්ත භාවිතා කළ හැකි ආකාරය ඔබේ සංවිධානය කළමනාකරණය කරයි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">මෙම විශේෂාංගය AI භාවිතා කරන අතර එය පර්යේෂණාත්මක වේ</translation>

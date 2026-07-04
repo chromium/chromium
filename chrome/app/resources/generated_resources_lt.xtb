@@ -3873,6 +3873,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (vienas skirtukas)}one{<ph name="GROUP_TITLE" /> (# skirtukas)}few{<ph name="GROUP_TITLE" /> (# skirtukai)}many{<ph name="GROUP_TITLE" /> (# skirtuko)}other{<ph name="GROUP_TITLE" /> (# skirtukų)}}</translation>
 <translation id="3871350334636688135">Po 24 valandų administratorius pritaikys vienkartinį naujinį ir bus ištrinti jūsų vietiniai duomenys, kai iš naujo paleisite įrenginį. Visus reikalingus duomenis išsaugokite saugykloje debesyje per 24 valandas.</translation>
 <translation id="3872991219937722530">Atlaisvinkite vietos diske arba įrenginys nebeatsakys.</translation>
+<translation id="3873121930618553927">Naudojate DI kodavimo agentus, kad galėtumėte kurti plėtinius? Įdiekite <ph name="BEGIN_LINK" />„<ph name="CHROME_EXTENSIONS" />“ ir „<ph name="WEB_STORE_SKILL" />“<ph name="END_LINK" />, kad išmokytumėte kodavimo agentą dirbti pagal naujausius API naujinius ir geriausios praktikos pavyzdžius.</translation>
 <translation id="3873423927483480833">Rodyti PIN kodus</translation>
 <translation id="3874532133373654352">Jūsų organizacija tvarko, kaip gali būti naudojami duomenys, surinkti naudojant šias funkcijas. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Šiai funkcijai naudojamas DI ir ji yra eksperimentinė</translation>

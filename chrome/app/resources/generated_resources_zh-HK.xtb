@@ -3870,6 +3870,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 個分頁)}other{<ph name="GROUP_TITLE" /> (# 個分頁)}}</translation>
 <translation id="3871350334636688135">24 小時後，管理員會在您重新啟動裝置時執行一次性更新，而此更新會刪除您的本機資料。請在 24 小時內將您需要的任何本機資料儲存至雲端儲存空間。</translation>
 <translation id="3872991219937722530">請釋出磁碟的儲存空間，否則裝置將無法回應。</translation>
+<translation id="3873121930618553927">要使用 AI 編碼代理建立擴充程式嗎？安裝 <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" />和 <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />，即可讓編碼代理瞭解最新的 API 更新和最佳做法。</translation>
 <translation id="3873423927483480833">顯示 PIN</translation>
 <translation id="3874532133373654352">你的機構會管理這些功能所收集資料的用途。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">此實驗版功能採用 AI</translation>

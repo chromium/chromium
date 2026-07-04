@@ -3857,6 +3857,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (fitxa bat)}other{<ph name="GROUP_TITLE" /> (# fitxa)}}</translation>
 <translation id="3871350334636688135">24 orduren buruan, gailua berrabiarazten duzunean, administratzaileak erabilera bakarreko eguneratze bat egingo du eta, haren ondorioz, gailuan dituzun datu guztiak ezabatuko dira. Datozen 24 orduetan, gorde hodeiko biltegian gailuan dituzun beharrezko datuak.</translation>
 <translation id="3872991219937722530">Egin tokia diskoan; bestela, gailuak ez du erantzungo.</translation>
+<translation id="3873121930618553927">AA bidezko programazio-agenteak erabiltzen dituzu luzapenak sortzeko? Instalatu <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> eta <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> zure programazio-agentea APIaren azken eguneratzeekin eta jardunbide egokiekin trebatzeko.</translation>
 <translation id="3873423927483480833">Erakutsi PIN kodeak</translation>
 <translation id="3874532133373654352">Zure erakundeak kudeatzen du nola erabil daitezkeen eginbide hauek biltzen dituzten datuak. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Eginbideak AA darabil, eta esperimentala da</translation>

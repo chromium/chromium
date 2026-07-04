@@ -3858,6 +3858,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 cilne)}zero{<ph name="GROUP_TITLE" /> (# ciļņu)}one{<ph name="GROUP_TITLE" /> (# cilne)}other{<ph name="GROUP_TITLE" /> (# ciļņu)}}</translation>
 <translation id="3871350334636688135">Pēc 24 stundām jūsu administrators veiks vienreizēju atjauninājumu, kas dzēsīs jūsu lokālos datus, kad restartēsiet ierīci. 24 stundu laikā saglabājiet nepieciešamos lokālos datus mākoņa krātuvē.</translation>
 <translation id="3872991219937722530">Atbrīvojiet diskā vietu; pretējā gadījumā ierīce nereaģēs.</translation>
+<translation id="3873121930618553927">Vai izmantojat MI kodēšanas aģentus, lai izveidotu paplašinājumus? Instalējiet <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> un <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, lai iemācītu savam kodēšanas aģentam izmantot jaunākos API atjauninājumus un paraugprakses ieteikumus.</translation>
 <translation id="3873423927483480833">Rādīt PIN kodus</translation>
 <translation id="3874532133373654352">Jūsu organizācija pārvalda šo funkciju vākto datu izmantošanas veidus. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Šī funkcija izmanto MI un ir eksperimentāla.</translation>

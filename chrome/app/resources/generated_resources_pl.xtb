@@ -390,6 +390,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1272508081857842302">Otwieranie <ph name="BEGIN_LINK" />obsługiwanych linków<ph name="END_LINK" /></translation>
 <translation id="1273937721055267968">Zablokuj witrynę <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Zarządzaj połączeniem między usługami wyszukiwania a aplikacjami Google Workspace, takimi jak Dysk Google</translation>
 <translation id="1274997165432133392">Pliki cookie i inne dane witryn</translation>
 <translation id="1275936815032730048">Menu z aplikacjami + strzałka w prawo</translation>
 <translation id="1275963833368139883">Gdy przeszukujesz historię przeglądania, odpowiedzi i wyniki wyszukiwania są oparte na treści strony. Dzięki temu otrzymujesz lepsze wyniki</translation>
@@ -2524,6 +2525,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> nie może skomunikować się z drukarką. Upewnij się, że jest ona podłączona, i spróbuj ponownie.</translation>
 <translation id="2902312830803030883">Więcej czynności</translation>
 <translation id="2903457445916429186">Otwórz zaznaczone elementy</translation>
+<translation id="2903764741244499151">Witryny mogą automatycznie włączać obraz w obrazie. Dzięki temu możesz kontynuować oglądanie filmu, a jednocześnie zyskać miejsce na ekranie na inne zadania.</translation>
 <translation id="2903882649406874750">Zawsze blokuj witrynie <ph name="HOST" /> dostęp do czujników</translation>
 <translation id="2903925626657991994">Aby zmienić wybór przycisku myszy na lewy, prawy lub oba, naciśnij „,”</translation>
 <translation id="290415756080113152">Witryny nie mogą szukać drukarek dostępnych dla Twojego urządzenia ani ich używać</translation>
@@ -3324,6 +3326,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3512465804715993309">Podświetlanie adaptacyjne</translation>
 <translation id="3513019849832307207">Dołącz i otwórz</translation>
 <translation id="3513563267917474897">Suwak odcienia od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Przypnij nowe rozszerzenia</translation>
 <translation id="3514647716686280777">Korzystasz ze standardowej ochrony. Aby lepiej chronić się przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami, włącz Ulepszone Bezpieczne przeglądanie w ustawieniach Chrome.</translation>
 <translation id="3514681096978190000">Ten plik archiwum zawiera inne pliki, które mogą ukrywać złośliwe oprogramowanie</translation>
 <translation id="3515983984924808886">Jeszcze raz dotknij klucza bezpieczeństwa, by potwierdzić resetowanie. Wszystkie informacje zapisane w kluczu, w tym jego kod PIN, zostaną usunięte.</translation>
@@ -10003,6 +10006,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8619803522055190423">Z cieniem</translation>
 <translation id="8620206585293032550">Wygląd nieaktywnych kart</translation>
 <translation id="8621979332865976405">Udostępnij cały ekran</translation>
+<translation id="8622145666696249878">Tryb AI w wyszukiwarce Google i połączone aplikacje</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Odczytywanie numerów seryjnych urządzeń z ChromeOS i komponentów</translation>
 <translation id="862542460444371744">&amp;Rozszerzenia</translation>

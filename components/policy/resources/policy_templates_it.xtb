@@ -122,6 +122,7 @@ Se il criterio viene impostato su 0 - Predefinito o se non viene impostato, <ph 
 Se il criterio viene impostato su 1 - DisabledForBrowser, il processo del browser <ph name="PRODUCT_NAME" /> non potrà creare codice dinamico.
 
 Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
+<translation id="1067605384506001359">Impostazioni per Indigo.</translation>
 <translation id="1068801725746725727">Attiva la ricezione di sondaggi di Navigazione sicura</translation>
 <translation id="107045325503547419">Dipende dal processo di implementazione della funzionalità.</translation>
 <translation id="1073983258515362346">Consente di segnalare informazioni sulla retroilluminazione del dispositivo.
@@ -1324,6 +1325,7 @@ Questa opzione è abilitata per impostazione predefinita per tutti i pool, ma qu
 Se la policy viene impostata su Disattivata o se non viene configurata, la chiave manifest <ph name="REQUIRED_PLATFORM_VERSION" /> viene ignorata e l'aggiornamento automatico viene eseguito normalmente.
 
 Avviso: non delegare il controllo della versione di <ph name="PRODUCT_OS_NAME" /> a un'app kiosk, poiché potrebbe impedire al dispositivo di ricevere gli aggiornamenti del software e correzioni fondamentali per la sicurezza. La delega del controllo della versione di <ph name="PRODUCT_OS_NAME" /> potrebbe esporre gli utenti a dei rischi.</translation>
+<translation id="1865927800836673132">Disattiva Indigo.</translation>
 <translation id="186719019195685253">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della corrente CA</translation>
 <translation id="1869688072690234823">Questa policy consente di stabilire quali fattori WebAuthn è possibile usare.
 
@@ -9351,6 +9353,7 @@ Se viene impostata su False o se non viene configurata, il layout non è disponi
 <translation id="6883050310557769428">Consente di verificare che il servizio SSO mobile sia attivo e di controllare la lista bloccata di domini dei cookie e le relative eccezioni.</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
+<translation id="6894938636048011953">Attiva Indigo senza miglioramento del modello.</translation>
 <translation id="6895437634974956885">L'integrità della batteria può essere influenzata da fattori quali ricariche complete frequenti e ricariche prolungate. Questa policy offre tre opzioni per ottimizzare il comportamento di ricarica e attenuare questi fattori, prolungando così la durata della batteria.
 
 Se la policy non viene configurata, gli utenti possono usare il pulsante di attivazione/disattivazione della ricarica adattiva per attivare/disattivare la ricarica adattiva.
@@ -9684,6 +9687,7 @@ l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
       Se imposti questa policy come obbligatoria, gli utenti non potranno modificarla o ignorarla.
 
       Se la policy non viene impostata, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
+<translation id="703900496796064997">Attiva Indigo con il miglioramento del modello.</translation>
 <translation id="7039815268521168329">Mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
@@ -11252,6 +11256,15 @@ Se la policy viene configurata, gli utenti non possono modificarla in <ph name="
 <translation id="8006921530139404577">Se la policy viene disattivata, l'interfaccia utente relativa alla connessione (ad esempio, la finestra per disconnettersi) non verrà mostrata per le connessioni di accesso remoto non in modalità Curtain. La policy non riguarda le sessioni di accesso remoto in modalità Curtain e le sessioni di assistenza in remoto.
 
           La policy non ha effetto se impostata su True, se non viene impostata o se viene lasciata vuota.</translation>
+<translation id="8007695731441786330">Consente di stabilire se Indigo può trasformare le immagini sul web.
+
+0 = Attiva Indigo con il miglioramento del modello.
+
+1 = Attiva Indigo senza miglioramento del modello.
+
+2 = Disattiva Indigo.
+
+Se questa policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="8008421342605619236">Consente di configurare le policy per i messaggi nativi. Gli host di messaggi nativi bloccati non saranno consentiti se non vengono autorizzati.</translation>
 <translation id="8011935490612940798">Controlla la funzionalità di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8013646845541206453">Utilizza uno strumento di verifica dei certificati</translation>

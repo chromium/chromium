@@ -122,6 +122,7 @@ Nếu bạn không đặt hoặc đặt chính sách này thành 0 – Mặc đ�
 Nếu bạn đặt chính sách này thành 1 – DisabledForBrowser, thì quy trình của trình duyệt <ph name="PRODUCT_NAME" /> sẽ không được tạo mã động.
 
 Lưu ý: Hãy đọc thêm về chính sách giảm thiểu quy trình (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
+<translation id="1067605384506001359">Chế độ cài đặt cho Indigo.</translation>
 <translation id="1068801725746725727">Cho phép nhận khảo sát về Duyệt web an toàn</translation>
 <translation id="107045325503547419">Tuỳ thuộc vào quy trình ra mắt tính năng.</translation>
 <translation id="1073983258515362346">Báo cáo thông tin về đèn nền của thiết bị.
@@ -1301,6 +1302,7 @@ Theo mặc định, tính năng ngẫu nhiên hoá được bật cho tất cả
 Nếu bạn đặt thành Disabled (Tắt) hoặc không đặt chính sách này, thì khoá tệp kê khai <ph name="REQUIRED_PLATFORM_VERSION" /> sẽ bị bỏ qua và quá trình tự động cập nhật sẽ tiếp tục như bình thường.
 
 Cảnh báo: Không được uỷ quyền kiểm soát phiên bản <ph name="PRODUCT_OS_NAME" /> cho ứng dụng kiosk vì điều này có thể khiến thiết bị không nhận được các bản cập nhật phần mềm cũng như bản vá bảo mật quan trọng. Việc uỷ quyền kiểm soát phiên bản <ph name="PRODUCT_OS_NAME" /> có thể khiến người dùng gặp rủi ro.</translation>
+<translation id="1865927800836673132">Tắt Indigo.</translation>
 <translation id="186719019195685253">Tác vụ sẽ thực hiện khi đạt độ trễ không hoạt động trong khi chạy bằng nguồn AC</translation>
 <translation id="1869688072690234823">Việc đặt chính sách này sẽ kiểm soát yếu tố WebAuthn nào có thể được sử dụng.
 
@@ -9375,6 +9377,7 @@ Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố c
 <translation id="6883050310557769428">Kiểm soát việc dịch vụ SSO di động có được bật hay không cũng như danh sách miền cookie bị chặn và các trường hợp ngoại lệ của danh sách này.</translation>
 <translation id="6889123056995503704">Người dùng sẽ quyết định chế độ hạ cấp kênh</translation>
 <translation id="6894178810167845842">URL trang Thẻ mới</translation>
+<translation id="6894938636048011953">Bật Indigo mà không cải thiện mô hình.</translation>
 <translation id="6895437634974956885">Tình trạng pin có thể chịu ảnh hưởng từ các yếu tố như thường xuyên sạc đầy và thời gian sạc kéo dài. Do đó, chính sách này cung cấp ba lựa chọn để tối ưu hoá hành vi sạc và giảm thiểu các yếu tố trên, từ đó kéo dài thời lượng pin.
 
 Không đặt chính sách này – Người dùng có thể sử dụng nút bật/tắt tính năng Sạc thích ứng để bật/tắt tính năng Sạc thích ứng.
@@ -9702,6 +9705,7 @@ Nếu bạn không đặt chính sách này cho một trang web thì hệ thốn
       Nếu bạn đặt chính sách này thành bắt buộc, thì người dùng sẽ không thể thay đổi hoặc ghi đè chính sách này.
 
       Nếu bạn không đặt chính sách này, thì kệ sẽ được đặt ở cuối màn hình theo mặc định và người dùng có thể thay đổi vị trí của kệ.</translation>
+<translation id="703900496796064997">Bật Indigo và cải thiện mô hình.</translation>
 <translation id="7039815268521168329">Hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="7040229947030068419">Giá trị mẫu:</translation>
 <translation id="7044883996351280650">Kiểm soát dịch vụ sao lưu và khôi phục trên thiết bị Android</translation>
@@ -11269,6 +11273,15 @@ Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đ�
 <translation id="8006921530139404577">Nếu bạn tắt chính sách này, thì đường kết nối liên quan đến giao diện người dùng (ví dụ như cửa sổ ngắt kết nối) sẽ không hiển thị cho các đường kết nối truy cập từ xa không có chế độ màn che. Chính sách này không ảnh hưởng đến các phiên truy cập từ xa có chế độ màn che và phiên hỗ trợ từ xa.
 
           Chính sách này không có hiệu lực nếu bạn đặt thành bật, để trống hoặc không đặt.</translation>
+<translation id="8007695731441786330">Kiểm soát việc Indigo có được phép biến đổi hình ảnh trên web hay không.
+
+0 = Bật Indigo và cải thiện mô hình.
+
+1 = Bật Indigo mà không cải thiện mô hình.
+
+2 = Tắt Indigo.
+
+Nếu bạn không đặt chính sách này, hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.</translation>
 <translation id="8008421342605619236">Định cấu hình chính sách cho Máy chủ nhắn tin gốc. Máy chủ nhắn tin gốc bị chặn sẽ không được phép sử dụng trừ phi các máy chủ đó nằm trong danh sách cho phép.</translation>
 <translation id="8011935490612940798">Kiểm soát tính năng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8013646845541206453">Sử dụng trình xác minh chứng chỉ bất kỳ</translation>

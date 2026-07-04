@@ -3861,6 +3861,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestaña)}other{<ph name="GROUP_TITLE" /> (# pestañas)}}</translation>
 <translation id="3871350334636688135">Después de 24 horas, tu administrador llevará a cabo una actualización única que eliminará tus datos locales cuando reinicies tu dispositivo. Guarda los datos locales que necesites en el almacenamiento en la nube en un plazo de 24 horas.</translation>
 <translation id="3872991219937722530">Libera espacio del disco o el dispositivo no responderá.</translation>
+<translation id="3873121930618553927">¿Usas agentes de programación de IA para crear extensiones? Instala <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> y <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> para enseñar a tu agente de programación las últimas actualizaciones de la API y las prácticas recomendadas.</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
 <translation id="3874532133373654352">Tu organización gestiona cómo se pueden usar los datos recogidos por estas funciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Esta función usa IA y es experimental</translation>

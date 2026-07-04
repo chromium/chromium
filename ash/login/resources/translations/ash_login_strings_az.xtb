@@ -95,6 +95,8 @@
 <translation id="2565214867520763227">Ekran oxuyucusunu aktiv edin</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Xeyr, ChromeVox olmadan davam edin</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google-un məkan xidməti bu cihazın məkanını təxmin etmək üçün Wi-Fi, mobil şəbəkə və sensorlar kimi mənbələrdən istifadə edir.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt bu cihazda Ayarlar &gt; Tətbiqlər &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Güvənlik və məkan &gt; Məkan bölməsinə keçərək Android məkanını deaktiv edə bilərsiniz. Eyni menyuda "Google Məkan Dəqiqliyini" deaktiv edərək Android məkanı üçün Wi-Fi, mobil şəbəkələr və sensorlardan istifadəni də deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2687407218262674387">Google xidmət şərtləri</translation>
 <translation id="2688196195245426394">Cihazı server ilə qeydiyyat edərkən xəta: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Bu paketə bağlı cihazdır və Kiosk və Signage Upgrade'də qeydiyyatdan keçə bilməz.</translation>
@@ -103,10 +105,15 @@
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> əlavə məzmun</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2754825024506485820">Məhsuldarlıqdan tutmuş əyləncəyə qədər sizə lazım olan tətbiqləri Google Play Marketdə tapa bilərsiniz. İstənilən vaxt tətbiqləri quraşdıra bilərsiniz.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi aktiv olduqda Wi-Fi giriş nöqtələri və mobil şəbəkə qüllələri kimi simsiz siqnallar barədə məlumatlar, həmçinin akselerometr və giroskop kimi cihaz sensorlarının məlumatları cihazın daha dəqiq məkanını təxmin etmək üçün istifadə olunur. Android tətbiqləri və xidmətləri isə bundan məkana əsaslanan funksiyalar təqdim etmək üçün yararlanır. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq bu cihazın yaxınlığında əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları emal edir.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google bu cihazdan toplanmış bu məlumatları aşağıdakı məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik. Bu məlumatlar hər hansı şəxsin kimliyini müəyyənləşdirmək üçün istifadə edilmir.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Bu cihazın məkan ayarlarında Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş &gt; Təkmil məkan ayarları bölməsində Məkan Dəqiqliyini söndürə bilərsiniz. Məkan Dəqiqliyi deaktiv olarsa, Məkan Dəqiqliyi datası toplanılmayacaq. Android tətbiq və xidmətlərində bu cihazın məkanını müəyyən etmək üçün yalnız IP ünvanı (əlçatandırsa) istifadə olunur. Bu da Google Xəritə kimi Android tətbiq və xidmətləri üçün məkanın əlçatanlığına və dəqiqliyinə təsir göstərə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Hər şey hazırdır!</translation>
 <translation id="2832124733806557606">Övladınız cihaza daxil olmaq və ya onu kiliddən çıxarmaq üçün PİN kod istifadə edə bilər.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> şəbəkəsini istifadə etmək üçün ilk öncə internet bağlantınızı tamamlayın.</translation>
 <translation id="2849767214114481738">PİN kodunuz əlavə edilib</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazından hesabat göndərilməsini avtomatikləşdirmək ChromeOS düzəliş və təkmilləşmələrini prioritetləşdirməyə kömək edir. Bu hesabatlara ChromeOS-un nə vaxt çökdüyü, hansı funksiyaların istifadə edildiyi və adətən nə qədər yaddaş istifadə edildiyi kimi məlumatlar daxil ola bilər.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt Chrome cihaz ayarlarında bu hesabatlara icazə verə və ya onları dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2893180576842394309">Axtarış və digər Google xidmətlərini fərdiləşdirmək üçün Google tarixçədən istifadə edə bilər</translation>
 <translation id="2902265136119311513">Qonaq kimi gözdən keçirin</translation>
 <translation id="2904210161403910217">Parolunuz sonuncu dəfə daxil olduğunuzdan bəri dəyişib</translation>
@@ -183,6 +190,9 @@
 <translation id="4341905082470253054">TPM statusu yoxlanılır...</translation>
 <translation id="4370975561335139969">Daxil etdiyiniz e-poçt və parol uyğun gəlmir</translation>
 <translation id="4373418556073552953">Android telefonu ilə daxil olun</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarınızın avtomatik hesabatlar göndərməsinə icazə vermək ChromeOS-da nələri düzəltməli və təkmilləşdirməli olduğumuzu prioritetləşdirməyimizə kömək edir. Bu hesabatlara ChromeOS-un çökmə vaxtı, istifadə etdiyiniz funksiyalar və istifadə edilən yaddaş, habelə Android tətbiqinin diaqnostika və istifadə datası kimi məlumatlar daxil ola bilər. Data məcmusunun bir hissəsi Google tətbiqlərinə və Android proqramçıları kimi partnyorlara da kömək edəcək.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt ChromeOS cihaz ayarlarında bu hesabatlara icazə verə və ya onları dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Veb və tətbiq fəaliyyəti ayarı Google Hesabı üçün aktiv edilərsə, Android datanız Google Hesabında saxlanıla bilər. account.google.com ünvanında dataya baxa, onu silə və hesab ayarlarını dəyişə bilərsiniz.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4403266582403435904">İstədiyiniz zaman asanlıqla datanı bərpa edin və ya cihazları dəyişin. Yedəkləmələr Google'a yüklənir və uşağınızın Google Hesabı parolundan istifadə etməklə şifrələnir.</translation>
 <translation id="4410545552906060960">Cihazı kilidləmək üçün parol əvəzinə rəqəmdən (PIN) istifadə edin. Sonra PIN ayarlamaq üçün Ayarlara keçin.</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> cihazınızdan istifadə etməyə hazırsınız.</translation>
@@ -261,6 +271,9 @@
 <translation id="5539070192556911367">Google'a daxil olmaq mümkün deyil</translation>
 <translation id="557722062034137776">Cihazınızın sıfırlanması Google hesablarınıza və ya bu hesablara sinxronizasiya edilmiş dataya təsir etməyəcək. Cihazınızda yerli olaraq saxlanılan bütün fayllar silinəcək.</translation>
 <translation id="5626172233890210551">Əvəzində parol istifadə edin</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Ən yaxşı təcrübəni təmin etmək üçün <ph name="DEVICE_OS" /> cihazlar haqqında avadanlıq datasını toplayır və hansı güncəlləmələrin təmin edilməli olduğunu müəyyən etmək üçün onları Google ilə paylaşır. İstəyə görə Google-a bu datadan <ph name="DEVICE_OS" /> təcrübəsi və xidmətinə dəstək və təkmilləşdirmələr kimi əlavə məqsədlər üçün istifadə etməyə icazə verə bilərsiniz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu cihaza daxil ola və chrome://system bölməsində chromeosflex_ kimi qeyd edilmiş sahələrə baxaraq güncəllənmə filtri üçün Google-a göndərilən dataya, eləcə də Google ilə data paylaşmağı seçdiyiniz digər hallara nəzər sala bilərsiniz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> tərəfindən Google ilə paylaşılacaq data və ondan istifadə qaydası haqqında ətraflı məlumat üçün g.co/flex/HWDataCollection ünvanına daxil olun.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> istifadə etmək üçün ilk öncə <ph name="LINK_START" />şəbəkənin hesaba giriş səhifəsinə daxil olun<ph name="LINK_END" />.</translation>
 <translation id="5655296450510165335">Cihaz qeydiyyatı</translation>
 <translation id="5659964844710667266">Bu <ph name="DEVICE_TYPE" /> üçün parol yaradın</translation>
@@ -310,6 +323,8 @@
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="6380143666419481200">Qəbul edin və davam edin</translation>
 <translation id="640457954117263537">ChromeOS, habelə Android tətbiq və xidmətləri üçün məkan istifadə edin.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarınızın avtomatik hesabatlar göndərməsinə icazə vermək ChromeOS-da nələri düzəltməli və təkmilləşdirməli olduğumuzu prioritetləşdirməyimizə kömək edir. Bu hesabatlara ChromeOS-un nə vaxt çökdüyü, hansı funksiyalardan istifadə etdiyiniz və adətən nə qədər yaddaş istifadə etdiyiniz kimi məlumatlar daxil ola bilər.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt Chrome cihaz ayarlarında bu hesabatlara icazə verə və ya onları dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Kritik güncəlləməni quraşdırın</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="6495266441917713704">Wi-Fi-ı ötürmək olmur</translation>
@@ -326,11 +341,16 @@
 <translation id="6722744767592605627"><ph name="EMAIL" /> bərpa edilə bilər, amma lokal data silinəcək.</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtlərini<ph name="END_LINK2" /> oxudum və qəbul edirəm.</translation>
 <translation id="6789834167207639931">Bərpanı başa çatdırmaq üçün növbəti ekranda Google Hesab parolunuzu yenidən daxil edin</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazından hesabat göndərilməsini avtomatikləşdirmək ChromeOS düzəliş və təkmilləşmələrini prioritetləşdirməyə kömək edir. Bu hesabatlara ChromeOS-un nə vaxt çökdüyü, hansı funksiyalardan istifadə edildiyi və adətən nə qədər yaddaş istifadə edildiyi, habelə Android tətbiqinin diaqnostika və istifadə datası kimi məlumatlar daxil ola bilər. Data məcmusunun bir hissəsi Google tətbiqlərinə və Android proqramçıları kimi partnyorlara da kömək edəcək.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt övladınızın ChromeOS cihaz ayarlarında bu hesabatlara icazə verə və ya onları dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Veb və Tətbiq fəaliyyəti ayarı övladınızın Google Hesabı üçün aktiv edilərsə, övladınızın datası Google Hesabında saxlanıla bilər. families.google.com ünvanında bu ayarlar və onları tənzimləmək haqqında ətraflı məlumat əldə edin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> üçün əsas tətbiqlər</translation>
 <translation id="682971198310367122">Google məxfilik siyasəti</translation>
 <translation id="6835762382653651563">Yeniləmə İnternetə qoşulmaq edin sizin <ph name="DEVICE_TYPE" /> .</translation>
 <translation id="6839916869147598086">Giriş dəyişdirilib</translation>
 <translation id="6883319974225028188">Ups! Sistem cihaz konfiqurasiyasını yadda saxlaya bimədi.</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Tətbiq datası kontaktlar, mesajlar və fotolar da daxil olmaqla tətbiq tərəfindən yadda saxlanılan (proqramçı ayarlarından asılı olaraq) istənilən data ola bilər. Yedəkləmə datası övladınızın Disk yaddaşı kvotasına aid edilmir.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu xidməti Ayarlarda deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
 <translation id="6918733588290914545">Android telefonu ilə cəld ayarlama</translation>
 <translation id="6920473853105515518"><ph name="DEVICE_TYPE" /> cihazının internetə qoşulduğuna əmin olub, yenidən cəhd edin. Başqa cihazda play.google/play-terms ünvanına da keçə bilərsiniz.</translation>
@@ -377,6 +397,8 @@
 <translation id="7630426712700473382">Bu cihaz <ph name="MANAGER" /> tərəfindən idarə edilir və hər dəfə sizdən daxil olmağınızı tələb edir.</translation>
 <translation id="7639914187072011620">SAML yönləndirmə keçidini serverdən əldə etmək alınmadı</translation>
 <translation id="7643117827468520640">Bu şərtləri nəzərdən keçirin</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Tətbiq datası kontaktlar, mesajlar və fotolar da daxil olmaqla tətbiq tərəfindən yadda saxlanılan (proqramçı ayarlarından asılı olaraq) istənilən data ola bilər. Yedəkləmə datası Disk yaddaşı kvotanıza aid edilməyəcək.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu xidməti Ayarlarda deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7659584679870740384">Bu cihazı istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün administrator ilə əlaqə saxlayın.</translation>
@@ -394,6 +416,8 @@
 <translation id="7870730066603611552">Quraşdırmadan sonra sinxronizasiya seçimlərinə nəzər salın</translation>
 <translation id="7883792253546618164">İstədiyiniz vaxt abunəlikdən çıxın.</translation>
 <translation id="7906440585529721295">Lokal data silinəcək</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazından hesabat göndərilməsini avtomatikləşdirmək ChromeOS düzəliş və təkmilləşmələrini prioritetləşdirməyə kömək edir. Bu hesabatlara ChromeOS-un nə vaxt çökdüyü, hansı funksiyaların istifadə edildiyi və adətən nə qədər yaddaş istifadə edildiyi kimi məlumatlar daxil ola bilər.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt övladınızın ChromeOS cihaz ayarlarında bu hesabatlara icazə verə və ya onları dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7943311690198910993">Giriş metodu güncəlləndi</translation>
 <translation id="795240231873601803">İş və məktəb hesabları üçün müəssisə qeydiyyatından istifadə edin</translation>
 <translation id="7968982339740310781">Detallara baxın</translation>
@@ -412,6 +436,8 @@
 <translation id="815491593104042026">Doğrulama alınmadı, çünki (<ph name="BLOCKED_URL" />) güvənsiz URL istifadəsi üçün ayarlanıb. Lütfən, administratorunuz ilə əlaqə saxlayın.</translation>
 <translation id="8157704005178149728">Nəzarət ayarlanır</translation>
 <translation id="8174047975335711832">Cihaz haqqında məlumat</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google-un məkan xidməti cihazın məkanını təxmin etməyə kömək üçün Wi-Fi, mobil şəbəkə və sensorlar kimi mənbələrdən istifadə edir.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt cihazınızda Ayarlar &gt; Tətbiqlər &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Güvənlik və məkan &gt; Məkan bölməsinə keçərək Android məkanını deaktiv edə bilərsiniz. Eyni menyuda "Google Məkan Dəqiqliyini" deaktiv edərək Android məkanı üçün Wi-Fi, mobil şəbəkələr və sensorlardan istifadəni də deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Yeniləmə Şifrəni yenidən daxil edin <ph name="DEVICE_TYPE" /> profil.</translation>
 <translation id="8239032431519548577">Müəssisə qeydiyyatı tamamlandı</translation>
 <translation id="8241806945692107836">Cihazın sazlanması bəlirlənir...</translation>
@@ -439,6 +465,9 @@
         <ph name="BR" />
         Yaxınlıqdakı cihazlara <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> kimi görünür...</translation>
 <translation id="8655972064210167941">Sign-sizin parol təsdiq edilə bilməz, çünki uğursuz oldu. Sizin administratoru ilə əlaqə və ya yenidən cəhd edin.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi aktiv olduqda Wi-Fi giriş nöqtələri və mobil şəbəkə qüllələri kimi simsiz siqnallar barədə məlumatlar, həmçinin akselerometr və giroskop kimi cihaz sensorlarının məlumatları cihazın daha dəqiq məkanını təxmin etmək üçün istifadə olunur. Android tətbiqləri və xidmətləri isə bundan məkana əsaslanan funksiyalar təqdim etmək üçün yararlanır. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq yaxınlığınızda əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları toplayır.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google bu məlumatı kimliyinizi müəyyən etmədən bu məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Cihazın məkan ayarlarında Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş &gt; Təkmil məkan ayarları bölməsində Məkan Dəqiqliyini söndürə bilərsiniz. Məkan Dəqiqliyi deaktiv olarsa, Məkan Dəqiqliyi datası toplanılmayacaq. Android tətbiq və xidmətlərində cihazın məkanını müəyyən etmək üçün yalnız IP ünvanı (əlçatandırsa) istifadə olunur. Bu da Gogole Xəritə kimi Android tətbiq və xidmətləri üçün məkanın əlçatanlığına və dəqiqliyinə təsir göstərə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Kompüteriniz düzgün olmayan avadanlıq ID-si ilə sazlanıb. Bu, ChromeOS'i ən son güvənlik bərpaları etməyə mane ola və kompüteriniz <ph name="BEGIN_BOLD" />hücumlara məruz qala bilər<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Ayarlamadan sonra valideyn nəzarəti əlavə edin</translation>
 <translation id="8698269656364382265">Əvvəlki ekrana qayıtmaq üçün yan tərəfdən çəkin.</translation>

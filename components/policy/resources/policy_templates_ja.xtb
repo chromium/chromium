@@ -118,6 +118,7 @@
 このポリシーを 1（DisabledForBrowser）に設定した場合は、<ph name="PRODUCT_NAME" /> のブラウザ プロセスで動的コードが作成されなくなります。
 
 注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
+<translation id="1067605384506001359">Indigo を設定する。</translation>
 <translation id="1068801725746725727">セーフ ブラウジングに関するアンケートの受け取りを有効にする</translation>
 <translation id="107045325503547419">機能のリリース プロセスに準拠する。</translation>
 <translation id="1073983258515362346">デバイスのバックライトに関する情報を報告します。
@@ -1251,6 +1252,7 @@ Manifest V2 を使用した拡張機能はサポートの終了が予定され�
 このポリシーを無効に設定するか未設定のままにした場合、<ph name="REQUIRED_PLATFORM_VERSION" /> マニフェスト キーは無視され、自動更新は通常どおりに進められます。
 
 警告: デバイスがソフトウェアのアップデートと重要なセキュリティ修正を取得できなくなる可能性があるため、<ph name="PRODUCT_OS_NAME" /> バージョンの制御をキオスクアプリに委任することはやめてください。<ph name="PRODUCT_OS_NAME" /> バージョンの制御を委任すると、ユーザーが危険にさらされる恐れがあります。</translation>
+<translation id="1865927800836673132">Indigo を無効にする。</translation>
 <translation id="186719019195685253">AC 電源での実行時、アイドル時間に到達したときに行う操作</translation>
 <translation id="1869688072690234823">このポリシー設定では、使用を許可する WebAuthn 要素を管理します。
 
@@ -8916,6 +8918,7 @@ false に設定するか未設定のままにした場合、このレイアウ�
 <translation id="6883050310557769428">フローティング SSO を有効にするかどうか、および Cookie ドメインのブロックリストとその例外を制御します。</translation>
 <translation id="6889123056995503704">ユーザーがチャンネル ダウングレードの動作を決定する</translation>
 <translation id="6894178810167845842">新しいタブページ URL</translation>
+<translation id="6894938636048011953">モデルの改善を許可せずに Indigo を有効にする。</translation>
 <translation id="6895437634974956885">バッテリーの健全性は、頻繁なフル充電や長時間の充電などの要因によって影響を受ける可能性があります。このポリシーには、充電動作を最適化してこれらの要因を軽減し、最終的にバッテリー寿命を延ばすための 3 つのオプションがあります。
 
 このポリシーを未設定のままにした場合、ユーザーはアダプティブ充電の切り替えボタンを使用して、アダプティブ充電を有効または無効にできます。
@@ -9215,6 +9218,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
       このポリシーを必須として設定した場合、ユーザーが設定を変更またはオーバーライドすることはできません。
 
       このポリシーを設定しない場合、シェルフはデフォルトで画面の下部に配置されますが、ユーザーはシェルフの位置を変更できます。</translation>
+<translation id="703900496796064997">モデルの改善を許可して Indigo を有効にする。</translation>
 <translation id="7039815268521168329">初期設定時に Google アシスタントの Voice Match 設定フローを表示する</translation>
 <translation id="7040229947030068419">サンプル値:</translation>
 <translation id="7044883996351280650">Android のバックアップと復元サービスを制御する</translation>
@@ -10684,6 +10688,15 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
 <translation id="8006921530139404577">このポリシーが無効の場合、カーテンモード以外のリモート アクセス接続では接続関連の UI（接続解除ウィンドウなど）は表示されません。このポリシーは、カーテンモードのリモート アクセス セッションとリモート サポート セッションには適用されません。
 
           このポリシーが true、空白のまま、または未設定の場合、ポリシーは無視されます。</translation>
+<translation id="8007695731441786330">ウェブ上の画像の変換を Indigo に許可するかどうかを制御します。
+
+0 = モデルの改善を許可して Indigo を有効にします。
+
+1 = モデルの改善を許可せずに Indigo を有効にします。
+
+2 = Indigo を無効にします。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。</translation>
 <translation id="8008421342605619236">ネイティブ メッセージングのポリシーを設定します。ブロックされたネイティブ メッセージング ホストは、許可されていない限り読み込みできません。</translation>
 <translation id="8011935490612940798"><ph name="PRODUCT_NAME" /> の機能を制御する。</translation>
 <translation id="8013646845541206453">任意の証明書確認機能を使用する</translation>

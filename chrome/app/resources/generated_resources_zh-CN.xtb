@@ -3857,6 +3857,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />（1 个标签页）}other{<ph name="GROUP_TITLE" />（# 个标签页）}}</translation>
 <translation id="3871350334636688135">24 小时后，当您重启设备时，您的管理员将会执行一项一次性更新，这项更新会删除您的本地数据。请在 24 小时之内将您需要的所有本地数据保存到云端存储空间。</translation>
 <translation id="3872991219937722530">请释放磁盘空间，否则设备将无响应。</translation>
+<translation id="3873121930618553927">使用 AI 编码智能体构建扩展程序？安装 <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> 和 <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />，即可让编码智能体掌握最新的 API 动态与最佳实践。</translation>
 <translation id="3873423927483480833">显示 PIN 码</translation>
 <translation id="3874532133373654352">您的组织可管理由这些功能收集的数据的使用方式。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">此功能使用了 AI 技术，处于实验阶段</translation>

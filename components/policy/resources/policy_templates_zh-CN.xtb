@@ -122,6 +122,7 @@
 如果将此政策设为 1 - DisabledForBrowser，系统将阻止 <ph name="PRODUCT_NAME" /> 浏览器进程创建动态代码。
 
 注意：请详细了解进程缓解政策 (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies)。</translation>
+<translation id="1067605384506001359">Indigo 的设置。</translation>
 <translation id="1068801725746725727">允许接收“安全浏览”功能调查问卷</translation>
 <translation id="107045325503547419">具体取决于功能发布流程。</translation>
 <translation id="1073983258515362346">报告与设备背光有关的信息。
@@ -1274,6 +1275,7 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 如果此政策已停用或未设置，<ph name="REQUIRED_PLATFORM_VERSION" /> 清单键便会被忽略，并且系统会按照常规流程进行自动更新。
 
 警告：不得将 <ph name="PRODUCT_OS_NAME" /> 的版本控制权委派给自助服务终端应用，否则这可能会阻止设备获取软件更新和重要的安全修复。委派 <ph name="PRODUCT_OS_NAME" /> 版本控制权可能会将用户置于风险之中。</translation>
+<translation id="1865927800836673132">停用 Indigo。</translation>
 <translation id="186719019195685253">当闲置延迟时间已过且使用交流电源供电时执行的操作</translation>
 <translation id="1869688072690234823">通过设置此政策，您可以控制使用哪些 WebAuthn 因素。若要：
 
@@ -9140,6 +9142,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="6883050310557769428">控制是否启用流动单点登录，并管理 Cookie 网域屏蔽名单及例外项。</translation>
 <translation id="6889123056995503704">由用户决定版本降级行为</translation>
 <translation id="6894178810167845842">在新标签页中打开的页面网址</translation>
+<translation id="6894938636048011953">启用 Indigo，但不改进模型。</translation>
 <translation id="6895437634974956885">电池健康度可能会受到频繁充满电和充电时间过长等因素的影响。此政策提供三种选项，旨在优化充电行为并减轻这些因素的影响，最终延长电池寿命。
 
 如果您未设置此政策，用户可以使用“自动调节充电”切换按钮来启用/停用“自动调节充电”功能。
@@ -9454,6 +9457,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
       如果您将此政策设为强制性要求，用户便无法更改或覆盖它。
 
       如果未设置此政策，工具栏将默认放置在屏幕底部，但用户可以更改工具栏的位置。</translation>
+<translation id="703900496796064997">启用 Indigo 并改进模型。</translation>
 <translation id="7039815268521168329">在初始设置期间显示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">值示例：</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>
@@ -10975,6 +10979,15 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8006921530139404577">如果此政策已停用，系统将不会针对未启用幕布模式的远程访问连接显示与连接相关的界面（例如“断开连接”窗口）。已启用幕布模式的远程访问会话和远程支持会话不会受到此政策的影响。
 
           如果设为 true、留空或未设置，此政策将不会产生任何影响。</translation>
+<translation id="8007695731441786330">控制是否允许 Indigo 在网络上转换图片。
+
+0 表示启用 Indigo 并改进模型。
+
+1 表示启用 Indigo，但不改进模型。
+
+2 表示停用 Indigo。
+
+如果未设置此政策，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。</translation>
 <translation id="8008421342605619236">配置原生消息传递政策。不允许使用已被屏蔽的原生消息传递主机，除非相应主机已列入白名单。</translation>
 <translation id="8011935490612940798">控制 <ph name="PRODUCT_NAME" /> 功能。</translation>
 <translation id="8013646845541206453">使用任意证书验证程序</translation>

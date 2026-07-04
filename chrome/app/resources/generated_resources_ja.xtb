@@ -3855,6 +3855,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />（1 個のタブ）}other{<ph name="GROUP_TITLE" />（# 個のタブ）}}</translation>
 <translation id="3871350334636688135">24 時間経過してからデバイスを再起動すると、管理者による 1 回限りの更新が行われ、ローカルデータが削除されます。必要なローカルデータは 24 時間以内にクラウド ストレージに保存してください。</translation>
 <translation id="3872991219937722530">ディスクの空き領域を確保してください。十分な空き領域がない場合、デバイスは応答しなくなります。</translation>
+<translation id="3873121930618553927">拡張機能の作成に AI コーディング エージェントを使用しているのであれば、<ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> と <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> をインストールして、最新の API アップデートとベスト プラクティスをコーディング エージェントに学習させましょう。</translation>
 <translation id="3873423927483480833">PIN を表示</translation>
 <translation id="3874532133373654352">これらの機能で収集されるデータの使用方法は組織が管理しています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">この機能は AI を使用しており、試験運用中です</translation>

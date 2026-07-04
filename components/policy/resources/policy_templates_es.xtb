@@ -122,6 +122,7 @@ Si a esta política se le asigna el valor 0 (predeterminado) o no se define, <ph
 Si se le asigna el valor 1 (DisabledForBrowser), se impedirá que el proceso del navegador <ph name="PRODUCT_NAME" /> cree código dinámico.
 
 Nota: Consulta más información sobre las políticas de mitigación de procesos en la página https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
+<translation id="1067605384506001359">Configuración de Indigo.</translation>
 <translation id="1068801725746725727">Habilitar la recepción de encuestas sobre Navegación segura</translation>
 <translation id="107045325503547419">Depender del proceso de lanzamiento de la función.</translation>
 <translation id="1073983258515362346">Enviar información sobre la retroiluminación de un dispositivo.
@@ -1286,6 +1287,7 @@ Esta opción está habilitada de forma predeterminada en todos los grupos, pero 
 Si se inhabilita o no se define, la clave del archivo de manifiesto <ph name="REQUIRED_PLATFORM_VERSION" /> se ignorará y la actualización automática se realizará con normalidad.
 
 Advertencia: No delegues el control de la versión de <ph name="PRODUCT_OS_NAME" /> a una aplicación de kiosco, ya que podría impedir que el dispositivo reciba actualizaciones de software y correcciones de seguridad importantes. Si se delega el control de la versión de <ph name="PRODUCT_OS_NAME" />, se podría poner en riesgo a los usuarios.</translation>
+<translation id="1865927800836673132">Inhabilitar Indigo.</translation>
 <translation id="186719019195685253">Acción a emprender si se alcanza el retraso de inactividad mientras el dispositivo está conectado a la red eléctrica</translation>
 <translation id="1869688072690234823">Si se define esta política, controlará qué factores de WebAuthn se pueden usar.
 
@@ -9261,6 +9263,7 @@ Si se asigna el valor false a esta política o no se define, este diseño no est
 <translation id="6883050310557769428">Controla si el SSO flotante está habilitado, así como la lista de dominios de cookies bloqueados y sus excepciones.</translation>
 <translation id="6889123056995503704">El usuario decide el comportamiento del cambio a una versión inferior</translation>
 <translation id="6894178810167845842">URL de la página Nueva pestaña</translation>
+<translation id="6894938636048011953">Habilitar Indigo sin mejorar el modelo.</translation>
 <translation id="6895437634974956885">El estado de la batería puede verse afectado por factores como las cargas completas frecuentes y las duraciones de carga prolongadas. Esta política ofrece tres opciones para optimizar el comportamiento de carga y mitigar estos factores, lo que, en última instancia, prolonga la vida útil de la batería.
 
 Si no se define la política, los usuarios podrán usar el botón activar/desactivar de Carga inteligente para habilitar o inhabilitar esta función.
@@ -9575,6 +9578,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si defines esta política como obligatoria, los usuarios no podrán cambiarla ni anularla.
 
       Si no le asignas ningún valor, la estantería se colocará en la parte inferior de la pantalla de forma predeterminada y el usuario podrá cambiar su posición.</translation>
+<translation id="703900496796064997">Habilitar Indigo con la mejora del modelo.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match del Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
@@ -11129,6 +11133,15 @@ Si se define esta política, los usuarios no podrán modificarla en <ph name="PR
 <translation id="8006921530139404577">Si se inhabilita esta política, no se mostrará la UI relacionada con la conexión (por ejemplo, la ventana de desconexión) para las conexiones de acceso remoto que no estén en el modo de cortina. Las sesiones de acceso remoto en modo de cortina y las sesiones de asistencia remotas no se ven afectadas por esta política.
 
           Esta política no tendrá efecto si se le asigna el valor "True", se deja vacía o no se le asigna ningún valor.</translation>
+<translation id="8007695731441786330">Controla si Indigo puede transformar imágenes en la Web.
+
+0 = Habilitar Indigo con mejora del modelo.
+
+1 = Habilitar Indigo sin mejorar el modelo.
+
+2 = Inhabilitar Indigo.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="8008421342605619236">Configura las políticas de mensajería nativa. No se permitirán los hosts de mensajería nativa bloqueados si no se incluyen en la lista de permitidos.</translation>
 <translation id="8011935490612940798">Controlar la función <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8013646845541206453">Usar cualquier verificador de certificados</translation>

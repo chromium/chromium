@@ -3873,6 +3873,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (১ টা টেব)}one{<ph name="GROUP_TITLE" /> (# টা টেব)}other{<ph name="GROUP_TITLE" /> (# টা টেব)}}</translation>
 <translation id="3871350334636688135">২৪ ঘণ্টাৰ পাছত, আপুনি নিজৰ ডিভাইচ ৰিষ্টার্ট কৰিলে, আপোনাৰ প্ৰশাসকে এবাৰেই কৰিবলগীয়া আপডে'টটো কৰিব যিয়ে আপোনাৰ স্থানীয় ডেটা মচিব। আপুনি Cloud Storageত ৰাখিব খোজা যিকোনো ডেটা ২৪ ঘণ্টাৰ ভিতৰত ছেভ কৰক।</translation>
 <translation id="3872991219937722530">ডিস্কত খালী ঠাই উলিয়াওক অন্যথা ডিভাইচটো কাম নকৰা হৈ যাব।</translation>
+<translation id="3873121930618553927">এক্সটেনশ্বন তৈয়াৰ কৰিবলৈ AI ক’ডিং এজেণ্ট ব্যৱহাৰ কৰি আছে নেকি? আপোনাৰ ক’ডিং এজেণ্টক শেহতীয়া API আপডে’ট আৰু উত্তম কাৰ্যপ্ৰণালী শিকাবলৈ <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> আৰু <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> ইনষ্টল কৰক।</translation>
 <translation id="3873423927483480833">পিনসমূহ দেখুৱাওক</translation>
 <translation id="3874532133373654352">আপোনাৰ প্ৰতিষ্ঠানে এই সুবিধাসমূহৰ দ্বাৰা সংগ্ৰহ কৰা ডেটা কিদৰে ব্যৱহাৰ কৰা হয় সেয়া পৰিচালনা কৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">এই সুবিধাটোৱে AI ব্যৱহাৰ কৰে আৰু এয়া পৰীক্ষামূলক</translation>

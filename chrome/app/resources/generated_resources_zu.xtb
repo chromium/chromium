@@ -3872,6 +3872,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (Ithebhu e-1)}one{<ph name="GROUP_TITLE" /> (Amathebhu angu-#)}other{<ph name="GROUP_TITLE" /> (Amathebhu angu-#)}}</translation>
 <translation id="3871350334636688135">Ngemuva kwamahora angu-24, umlawuli wakho uzokwenza isibuyekezo sesikhathi esisodwa esizosusa yonke idatha yakho yasendaweni uma uqala kabusha idivayisi yakho. Londoloza noma iyiphi idatha yasendaweni oyidingela isitoreji samafu phakathi kwamahora angu-24.</translation>
 <translation id="3872991219937722530">Ukukhulula isikhala sediski noma idivayisi ngeke kuphendule.</translation>
+<translation id="3873121930618553927">Usebenzisa ama-ejenti okubhala amakhodi e-AI ukuze wakhe izandiso? Faka okuthi <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> nokuthi <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> ukuze ufundise umenzeli wakho wokubhala ikhodi izibuyekezo zakamuva ze-API kanye nemikhuba engcono kakhulu.</translation>
 <translation id="3873423927483480833">Bonisa ama-PIN</translation>
 <translation id="3874532133373654352">Inhlangano yakho ilawula indlela idatha eqoqwa yilezi zakhi engasetshenziswa ngayo. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Lesi sakhi sisebenzisa i-AI futhi sisahlolwa</translation>

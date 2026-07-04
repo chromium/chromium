@@ -390,6 +390,7 @@
 <translation id="1272079795634619415">შეწყვეტა</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />მხარდაჭერილი ბმულების<ph name="END_LINK" /> გახსნა</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" />-ის დაბლოკვა</translation>
+<translation id="1274721046703404848">მართეთ კავშირი Search-ის სერვისებსა და Google Workspace აპებს, მაგალითად, Google Drive-ს შორის</translation>
 <translation id="1274997165432133392">ქუქი და საიტის სხვა მონაცემები</translation>
 <translation id="1275936815032730048">launcher + მარჯვნივ მიმართული ისარი</translation>
 <translation id="1275963833368139883">დათვალიერების ისტორიაში ძიებისას, პასუხები და ძიების შედეგები ეფუძნება გვერდის კონტენტს. ეს გაძლევთ უკეთეს შედეგებს</translation>
@@ -2530,6 +2531,7 @@
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ვერ უკავშირდება ამ პრინტერს. დარწმუნდით, რომ პრინტერი შეერთებულია და ისევ ცადეთ.</translation>
 <translation id="2902312830803030883">სხვა ქმედებები</translation>
 <translation id="2903457445916429186">არჩეული ერთეულების გახსნა</translation>
+<translation id="2903764741244499151">საიტებს შეუძლია რეჟიმში „ეკრანი ეკრანში“ ავტომატურად შესვლა. მაგალითად, ეს საშუალებას მოგცემთ, გააგრძელოთ ვიდეოს ყურება, როცა ეკრანის სივრცე სხვა ამოცანებისთვის გჭირდებათ.</translation>
 <translation id="2903882649406874750"><ph name="HOST" />-ისთვის სენსორებზე წვდომის ყოველთვის აკრძალვა</translation>
 <translation id="2903925626657991994">გამოიყენეთ „,“, რომ შეცვალოთ მაუსის მარცხენა, მარჯვენა ან ორივე ღილაკის არჩევანი</translation>
 <translation id="290415756080113152">საიტებს არ შეუძლია თქვენი მოწყობილობისთვის ხელმისაწვდომი პრინტერების მოძიება თუ გამოყენება</translation>
@@ -10015,6 +10017,7 @@
 <translation id="8619803522055190423">დაშვებული ჩრდილი</translation>
 <translation id="8620206585293032550">არააქტიური ჩანართების იერსახე</translation>
 <translation id="8621979332865976405">ეკრანის მთლიანად გაზიარება</translation>
+<translation id="8622145666696249878">Google Search-ის ხელოვნური ინტელექტის რეჟიმი და დაკავშირებული აპები</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS მოწყობილობისა და კომპონენტების სერიული ნომრების წაკითხვა</translation>
 <translation id="862542460444371744">&amp;გაფართოებები</translation>

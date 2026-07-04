@@ -3874,6 +3874,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 fane)}one{<ph name="GROUP_TITLE" /> (# fane)}other{<ph name="GROUP_TITLE" /> (# faner)}}</translation>
 <translation id="3871350334636688135">Efter 24 timer udfører din administrator en engangsopdatering, der sletter dine lokale data, når du genstarter enheden. Gem relevante lokale data i skyen inden for 24 timer.</translation>
 <translation id="3872991219937722530">Din enhed holder op med at svare, hvis du ikke frigør diskplads.</translation>
+<translation id="3873121930618553927">Bruger du AI-kodningsagenter til at oprette udvidelser? Installer <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> og <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> for at lære din kodningsagent de nyeste API-opdateringer og bedste praksisser.</translation>
 <translation id="3873423927483480833">Vis pinkoder</translation>
 <translation id="3874532133373654352">Din organisation administrerer, hvordan data, der indsamles af disse funktioner, må anvendes. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Denne funktion anvender AI og er eksperimentel</translation>

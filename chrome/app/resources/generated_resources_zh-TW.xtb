@@ -3857,6 +3857,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 個分頁)}other{<ph name="GROUP_TITLE" /> (# 個分頁)}}</translation>
 <translation id="3871350334636688135">24 小時後，系統管理員會在你重新啟動裝置時執行一次性更新，而這項更新會刪除你的本機資料。請在 24 小時內將你需要的任何本機資料儲存至雲端儲存空間。</translation>
 <translation id="3872991219937722530">請釋出磁碟空間，否則裝置會無回應。</translation>
+<translation id="3873121930618553927">想使用 AI 程式設計代理建構擴充功能嗎？請安裝 <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" />和 <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />，讓程式設計代理掌握最新的 API 更新資訊與最佳做法。</translation>
 <translation id="3873423927483480833">顯示 PIN 碼</translation>
 <translation id="3874532133373654352">貴機構會管理如何使用這些功能收集的資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">這項功能採用 AI 技術，目前仍處於實驗階段</translation>

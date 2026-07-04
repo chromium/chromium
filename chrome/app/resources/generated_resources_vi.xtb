@@ -690,7 +690,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1526560967942511387">Tài liệu không Tên</translation>
 <translation id="1527336312600375509">Tốc độ làm mới màn hình</translation>
 <translation id="152913213824448541">Người liên hệ Chia sẻ lân cận</translation>
-<translation id="1529769834253316556">Chiều cao dòng</translation>
+<translation id="1529769834253316556">Khoảng cách giữa các dòng</translation>
 <translation id="1529891865407786369">Nguồn điện</translation>
 <translation id="1530376661400379364">Chrome đặt lại những chế độ cài đặt này</translation>
 <translation id="1530466164747090379"><ph name="FILE_NAME" /> có chứa dữ liệu nhạy cảm hoặc nguy hiểm</translation>
@@ -3347,6 +3347,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3512465804715993309">Đánh dấu thích ứng</translation>
 <translation id="3513019849832307207">Tham gia và mở</translation>
 <translation id="3513563267917474897">Thanh trượt điều chỉnh màu sắc từ <ph name="MIN_VALUE" /> đến <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Ghim tiện ích mới</translation>
 <translation id="3514647716686280777">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn. Để tăng cường khả năng bảo vệ trước các trang web, nội dung tải xuống và tiện ích nguy hiểm, hãy bật tính năng Duyệt web an toàn có tăng cường bảo vệ trong phần cài đặt của Chrome.</translation>
 <translation id="3514681096978190000">Tệp lưu trữ này bao gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
 <translation id="3515983984924808886">Chạm lại vào khóa bảo mật để xác nhận đặt lại. Thao tác này sẽ xóa toàn bộ thông tin lưu trữ trên khóa bảo mật, bao gồm cả mã PIN của khóa.</translation>
@@ -3873,6 +3874,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 thẻ)}other{<ph name="GROUP_TITLE" /> (# thẻ)}}</translation>
 <translation id="3871350334636688135">Sau 24 giờ, quản trị viên sẽ tiến hành cập nhật một lần để xóa dữ liệu trên thiết bị của bạn khi bạn khởi động lại thiết bị. Hãy lưu mọi dữ liệu trên thiết bị mà bạn cần vào bộ nhớ trên đám mây trong vòng 24 giờ.</translation>
 <translation id="3872991219937722530">Giải phóng dung lượng đĩa, nếu không thiết bị sẽ không phản hồi.</translation>
+<translation id="3873121930618553927">Bạn có dùng các tác nhân lập trình AI để xây dựng tiện ích không? Hãy cài đặt <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> và <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> để giúp tác nhân lập trình nắm bắt các bản cập nhật API và các phương pháp hay nhất mới nhất.</translation>
 <translation id="3873423927483480833">Hiển thị mã PIN</translation>
 <translation id="3874532133373654352">Tổ chức của bạn quản lý cách sử dụng dữ liệu do các tính năng này thu thập. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Tính năng này sử dụng AI và đang trong giai đoạn thử nghiệm</translation>

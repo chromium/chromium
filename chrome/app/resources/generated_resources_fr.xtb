@@ -3858,6 +3858,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 onglet)}one{<ph name="GROUP_TITLE" /> (# onglet)}other{<ph name="GROUP_TITLE" /> (# onglets)}}</translation>
 <translation id="3871350334636688135">Dans 24 heures, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales lorsque vous redémarrerez votre appareil. Veillez à enregistrer dans le cloud toutes les données locales dont vous avez besoin avant que ce délai ne soit écoulé.</translation>
 <translation id="3872991219937722530">Libérez de l'espace disque, car l'appareil risque de ne plus répondre.</translation>
+<translation id="3873121930618553927">Vous utilisez des agents de codage IA pour créer des extensions ? Installez les <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> et la <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> pour enseigner à votre agent de codage les dernières mises à jour d'API et bonnes pratiques.</translation>
 <translation id="3873423927483480833">Afficher les codes</translation>
 <translation id="3874532133373654352">Votre organisation gère la manière dont les données collectées par ces fonctionnalités peuvent être utilisées. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Cette fonctionnalité utilise l'IA et est expérimentale</translation>

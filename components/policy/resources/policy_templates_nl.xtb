@@ -122,6 +122,7 @@ Als je het beleid instelt op 0 - Default of niet instelt, gebruikt <ph name="PRO
 Als je het beleid instelt op 1 - DisabledForBrowser, wordt voorkomen dat het browserproces van <ph name="PRODUCT_NAME" /> dynamische code maakt.
 
 Let op: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
+<translation id="1067605384506001359">Instellingen voor Indigo.</translation>
 <translation id="1068801725746725727">Ontvangst van Safe Browsing-enquêtes aanzetten</translation>
 <translation id="107045325503547419">Afhankelijk van het releaseproces voor de functie.</translation>
 <translation id="1073983258515362346">Informatie rapporteren over de schermverlichting van een apparaat.
@@ -1286,6 +1287,7 @@ Dit staat standaard aan voor alle groepen, maar met dit beleid kun je de functie
 Als je het beleid niet toepast of niet instelt, wordt de manifestsleutel <ph name="REQUIRED_PLATFORM_VERSION" /> genegeerd en verloopt de automatische update zoals gebruikelijk.
 
 Waarschuwing: Delegeer het beheer van de <ph name="PRODUCT_OS_NAME" />-versie niet aan een kiosk-app, omdat deze misschien voorkomt dat het apparaat software-updates en essentiële beveiligingsoplossingen ontvangt. Als je het beheer van de <ph name="PRODUCT_OS_NAME" />-versie delegeert, kan dit een risico opleveren voor gebruikers.</translation>
+<translation id="1865927800836673132">Indigo uitzetten.</translation>
 <translation id="186719019195685253">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op netspanning</translation>
 <translation id="1869688072690234823">Als je het beleid instelt, bepaal je welke WebAuthn-factoren kunnen worden gebruikt.
 
@@ -9172,6 +9174,7 @@ Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet b
 <translation id="6883050310557769428">Bepaalt of zwevende SSO aanstaat en beheert de blokkeerlijst voor cookiedomeinen en de uitzonderingen daarop.</translation>
 <translation id="6889123056995503704">De gebruiker bepaalt het downgradegedrag voor kanalen</translation>
 <translation id="6894178810167845842">URL van pagina 'Nieuw tabblad'</translation>
+<translation id="6894938636048011953">Indigo aanzetten zonder modelverbetering.</translation>
 <translation id="6895437634974956885">De batterijconditie kan worden beïnvloed door factoren zoals vaak volledig opladen en langere oplaadtijden. Dit beleid biedt 3 opties om het oplaadgedrag te optimaliseren en deze factoren te beperken, waardoor de levensduur van de batterij wordt verlengd.
 
 Als je het beleid niet instelt, kunnen gebruikers de schakelknop voor Aangepast opladen gebruiken om Aangepast opladen aan of uit te zetten.
@@ -9483,6 +9486,7 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
       Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
 
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
+<translation id="703900496796064997">Indigo aanzetten met modelverbetering.</translation>
 <translation id="7039815268521168329">Voice Match-proces van de Google Assistent laten zien tijdens de eerste installatie</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
@@ -11027,6 +11031,15 @@ Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PROD
 <translation id="8006921530139404577">Als je dit beleid niet toepast, wordt verbindingsgerelateerde UI (bijvoorbeeld het venster voor het verbreken van de verbinding) niet getoond voor niet-afgeschermde verbindingen voor externe toegang. Dit beleid heeft geen gevolgen voor afgeschermde verbindingen voor externe toegang en externe supportsessies.
 
           Dit beleid is niet geldig als het is ingesteld op True, leeg wordt gelaten of niet wordt ingesteld.</translation>
+<translation id="8007695731441786330">Hiermee bepaal je of Indigo afbeeldingen op internet mag transformeren.
+
+0 = Indigo aanzetten met modelverbetering.
+
+1 = Indigo aanzetten zonder modelverbetering.
+
+2 = Indigo uitzetten.
+
+Als je dit beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="8008421342605619236">Stelt beleid voor systeemeigen berichten in. Geblokkeerde hosts voor systeemeigen berichten worden niet toegestaan, tenzij ze op de toelatingslijst worden gezet.</translation>
 <translation id="8011935490612940798">De functie <ph name="PRODUCT_NAME" /> beheren.</translation>
 <translation id="8013646845541206453">Willekeurige certificaatverificatie gebruiken</translation>

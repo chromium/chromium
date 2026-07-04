@@ -3858,6 +3858,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 karta)}few{<ph name="GROUP_TITLE" /> (# karty)}many{<ph name="GROUP_TITLE" /> (# karty)}other{<ph name="GROUP_TITLE" /> (# karet)}}</translation>
 <translation id="3871350334636688135">Za 24 hodin administrátor provede jednorázovou aktualizaci. Až zařízení restartujete, tato aktualizace vymaže vaše místní data. Všechna místní data, která potřebujete, si do 24 hodin uložte do cloudového úložiště.</translation>
 <translation id="3872991219937722530">Uvolněte místo na disku, jinak zařízení přestane reagovat.</translation>
+<translation id="3873121930618553927">Používáte při vytváření rozšíření programovací agenty s AI? Nainstalujte <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> a <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, aby se váš programovací agent naučil nejnovější aktualizace rozhraní API a doporučené postupy.</translation>
 <translation id="3873423927483480833">Zobrazit kódy PIN</translation>
 <translation id="3874532133373654352">Vaše organizace určuje, jak mohou být data shromážděná těmito funkcemi použita. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Tato funkce využívá AI a je experimentální</translation>

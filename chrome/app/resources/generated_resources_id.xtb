@@ -3872,6 +3872,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 Tab)}other{<ph name="GROUP_TITLE" /> (# Tab)}}</translation>
 <translation id="3871350334636688135">Setelah 24 jam, administrator akan menjalankan update satu kali yang akan menghapus data lokal Anda saat Anda memulai ulang perangkat. Simpan semua data lokal yang Anda perlukan ke penyimpanan cloud dalam waktu 24 jam.</translation>
 <translation id="3872991219937722530">Kosongkan ruang disk atau perangkat akan lambat merespons.</translation>
+<translation id="3873121930618553927">Menggunakan agen coding AI untuk membuat ekstensi? Instal <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> dan <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> untuk mengajarkan update API terbaru dan praktik terbaik kepada agen coding Anda.</translation>
 <translation id="3873423927483480833">Tampilkan PIN</translation>
 <translation id="3874532133373654352">Organisasi Anda mengelola cara penggunaan data yang dikumpulkan oleh fitur ini. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Fitur ini menggunakan AI dan bersifat eksperimental</translation>

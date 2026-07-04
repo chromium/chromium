@@ -3872,6 +3872,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 zavihek)}one{<ph name="GROUP_TITLE" /> (# zavihek)}two{<ph name="GROUP_TITLE" /> (# zavihka)}few{<ph name="GROUP_TITLE" /> (# zavihki)}other{<ph name="GROUP_TITLE" /> (# zavihkov)}}</translation>
 <translation id="3871350334636688135">Po 24 urah bo skrbnik opravil enkratno posodobitev, s katero bodo izbrisani lokalni podatki, ko znova zaženete napravo. Vse lokalne podatke, ki jih potrebujete, v 24 urah shranite v shrambo v oblaku.</translation>
 <translation id="3872991219937722530">Sprostite prostor na disku, sicer bo postala naprava neodzivna.</translation>
+<translation id="3873121930618553927">Ali za ustvarjanje razširitev uporabljate agente za kodiranje z umetno inteligenco? Namestite <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> in <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, da boste agenta za kodiranje naučili najnovejših posodobitev API-jev in najboljših praks.</translation>
 <translation id="3873423927483480833">Prikaz kod PIN</translation>
 <translation id="3874532133373654352">Vaša organizacija upravlja, kako se morda uporabljajo podatki, ki jih zberejo te funkcije. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ta funkcija uporablja umetno inteligenco in je preizkusna</translation>

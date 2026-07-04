@@ -837,7 +837,7 @@
 <translation id="2277753418458118549">Ցույց տալ միացման մանրամասները</translation>
 <translation id="2277949605527755300"><ph name="URL" /> կայքը հայցում է ձեր ձեռքերի շարժումները հետագծելու թույլտվություն</translation>
 <translation id="22792995594807632">Նախքան ներբեռնելը ստուգեք ֆայլերը</translation>
-<translation id="2283340219607151381">Պահել հասցեները և դրանցով ինքնալրացնել ձևերը</translation>
+<translation id="2283340219607151381">Պահել և ավտոմատ լրացնել հասցեները</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» էջը ջնջվեց</translation>
 <translation id="2283599456633275070">Ճամփորդություն</translation>
 <translation id="2285709459648658719">Անձնագրեր</translation>
@@ -3361,6 +3361,7 @@
     <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Ստեղնաշարի կամ որոշ ստեղների, օրինակ՝ Esc-ի, փոխարինում</translation>
 <translation id="6194209731893739467">Տեսեք բոլոր ապրանքները, որոնք հետագծում եք, այստեղ</translation>
+<translation id="6194245113389143644">Ծանոթագրություն</translation>
 <translation id="6195371403461054755">Երկրաբանություն</translation>
 <translation id="6195418151868446719">Կենցաղային էլեկտրոնիկա</translation>
 <translation id="6197648101609735209">89 x 89 մմ</translation>

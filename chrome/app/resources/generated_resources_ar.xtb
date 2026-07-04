@@ -3864,6 +3864,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (علامة تبويب واحدة)}zero{<ph name="GROUP_TITLE" /> (# علامة تبويب)}two{<ph name="GROUP_TITLE" /> (علامتا تبويب)}few{<ph name="GROUP_TITLE" /> (# علامات تبويب)}many{<ph name="GROUP_TITLE" /> (# علامة تبويب)}other{<ph name="GROUP_TITLE" /> (# علامة تبويب)}}</translation>
 <translation id="3871350334636688135">بعد 24 ساعة، سيجري مشرفك تحديثًا لمرة واحدة سيؤدي إلى حذف بياناتك المحلية عند إعادة تشغيل جهازك. يمكنك حفظ أي بيانات محلية تحتاج إليها وتخزينها في السحابة الإلكترونية خلال 24 ساعة.</translation>
 <translation id="3872991219937722530">احرص على تفريغ مساحة على القرص أو سيصبح الجهاز غير مستجيب.</translation>
+<translation id="3873121930618553927">هل تتم الاستعانة بوكلاء الترميز بالذكاء الاصطناعي في إنشاء الإضافات؟ يمكنك تثبيت <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> و<ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> لتدريب وكيل الترميز على آخر التحديثات وأفضل الممارسات المتعلقة بواجهات برمجة التطبيقات.</translation>
 <translation id="3873423927483480833">إظهار أرقام التعريف الشخصية</translation>
 <translation id="3874532133373654352">تتحكّم مؤسستك في كيفية استخدام البيانات التي تجمعها هذه الميزات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">هذه الميزة تجريبية وتستخدِم الذكاء الاصطناعي</translation>

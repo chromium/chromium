@@ -122,6 +122,7 @@
 將這項政策設為 1 - DisabledForBrowser：禁止 <ph name="PRODUCT_NAME" /> 瀏覽器程序建立動態程式碼。
 
 注意：如要進一步瞭解程序控管政策，請前往 https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies。</translation>
+<translation id="1067605384506001359">Indigo 的設定。</translation>
 <translation id="1068801725746725727">啟用接收安全瀏覽問卷調查功能</translation>
 <translation id="107045325503547419">視功能啟動程序而定。</translation>
 <translation id="1073983258515362346">回報有關裝置背光的資訊。
@@ -1252,6 +1253,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 如果將這項政策設為停用或不設定，系統會忽略 <ph name="REQUIRED_PLATFORM_VERSION" /> 資訊清單鍵值，且自動更新會照常運作。
 
 警告：請勿將 <ph name="PRODUCT_OS_NAME" /> 版本的控制權委派給資訊站應用程式。如果這麼做，裝置可能會無法取得軟體更新和重大安全性修正項目。假如委派 <ph name="PRODUCT_OS_NAME" /> 版本的控制權，使用者可能會因此面臨風險。</translation>
+<translation id="1865927800836673132">停用 Indigo。</translation>
 <translation id="186719019195685253">使用 AC 電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="1869688072690234823">你可以透過這項政策，控管可使用哪些 WebAuthn 要素。
 
@@ -8990,6 +8992,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="6883050310557769428">控管浮動單一登入 (SSO) 是否啟用、Cookie 網域封鎖清單及其例外狀況。</translation>
 <translation id="6889123056995503704">使用者決定版本降級行為</translation>
 <translation id="6894178810167845842">新分頁網址</translation>
+<translation id="6894938636048011953">啟用 Indigo，但不改良模型。</translation>
 <translation id="6895437634974956885">許多因素可能會影響電池健康度，例如經常充飽電、長時間充電等等。這項政策提供三個選項，可最佳化充電行為並減輕這些因素的影響，進而延長電池壽命。如果不設定這項政策，使用者可以使用自動調節充電切換鈕，啟用/停用自動調節充電功能。
 
 如果將這項政策設為「1 - 標準」或不設定，電池會以正常速度充飽電，並停用自動調節充電和限制充電功能。
@@ -9296,6 +9299,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果將這項政策設為強制套用，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，檔案櫃預設會顯示在畫面底部，且使用者可以變更檔案櫃的位置。</translation>
+<translation id="703900496796064997">啟用 Indigo 並改良模型。</translation>
 <translation id="7039815268521168329">在初始設定期間顯示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">範例值：</translation>
 <translation id="7044883996351280650">控制 Android 備份與還原服務</translation>
@@ -10783,6 +10787,15 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8006921530139404577">如果停用這項政策，非簾幕模式的遠端存取連線將不會顯示連線相關 UI (例如中斷連線視窗)。這項政策不會影響已啟用簾幕模式的遠端存取工作階段和遠端支援工作階段。
 
           如果設為 True、保留空白或不設定，這項政策就不會生效。</translation>
+<translation id="8007695731441786330">控管 Indigo 可否轉換網路上的圖片。
+
+0 = 啟用 Indigo 並改良模型。
+
+1 = 啟用 Indigo，但不改良模型。
+
+2 = 停用 Indigo。
+
+如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。</translation>
 <translation id="8008421342605619236">設定內建訊息傳遞政策。如要允許遭封鎖的內建訊息傳遞主機，必須將其加入許可清單。</translation>
 <translation id="8011935490612940798">控管 <ph name="PRODUCT_NAME" /> 功能。</translation>
 <translation id="8013646845541206453">使用任何憑證驗證器</translation>

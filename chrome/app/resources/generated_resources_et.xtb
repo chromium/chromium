@@ -3864,6 +3864,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 vaheleht)}other{<ph name="GROUP_TITLE" /> (# vahelehte)}}</translation>
 <translation id="3871350334636688135">24 tunni möödudes teeb administraator ühekordse värskenduse, mis kustutab seadme taaskäivitamisel kohalikud andmed. Salvestage vajalikud kohalikud andmed 24 tunni jooksul pilvepõhisesse salvestusruumi.</translation>
 <translation id="3872991219937722530">Vabastage kettaruumi, muidu seade ei reageeri.</translation>
+<translation id="3873121930618553927">Kas kasutate AI koodimisagente laienduste loomiseks? Installige <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> ja <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, et õpetada oma kodeerimisagendile uusimaid API värskendusi ja häid tavasid.</translation>
 <translation id="3873423927483480833">PIN-koodide kuvamine</translation>
 <translation id="3874532133373654352">Nende funktsioonide kogutavate andmete kasutusviise haldab teie organisatsioon. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">See funktsioon kasutab AI-d ja on eksperimentaalne</translation>

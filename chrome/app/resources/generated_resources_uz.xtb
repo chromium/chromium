@@ -390,6 +390,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1272079795634619415">To‘xtatish</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Mos havolalarni<ph name="END_LINK" /> ochish</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ilovasini bloklash</translation>
+<translation id="1274721046703404848">Qidiruv xizmatlari va Google Drive kabi Google Workspace ilovalari orasidagi aloqani boshqaring</translation>
 <translation id="1274997165432133392">Cookie fayllari va boshqa sayt ma’lumotlari</translation>
 <translation id="1275936815032730048">launcher + oʻng strelka</translation>
 <translation id="1275963833368139883">Brauzer tarixini qidirganingizda, javoblar va qidiruv natijalari sahifaning kontentiga asoslanadi. Bu sizga yaxshilangan natijalarni beradi</translation>
@@ -2535,6 +2536,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2902127500170292085">“<ph name="EXTENSION_NAME" />” bu printer bilan aloqa o‘rnata olmadi. Printer yoqilganligini tekshiring va qaytadan urining.</translation>
 <translation id="2902312830803030883">Boshqa amallar</translation>
 <translation id="2903457445916429186">Tanlangan elementlarni ochish</translation>
+<translation id="2903764741244499151">Saytlar tasvir ustida tasvir rejimiga avtomatik kirishi mumkin. Bu boshqa vazifalar uchun ekranni boʻshatib, videoni tomosha qilishni davom ettirish imkonini beradi.</translation>
 <translation id="2903882649406874750"><ph name="HOST" /> uchun sensorlardan foydalanish doim taqiqlansin</translation>
 <translation id="2903925626657991994">Sichqonchaning chap, oʻng va ikkala tugmalar tanlovini almashtirishda “,” ishlating</translation>
 <translation id="290415756080113152">Saytlarning qurilma ishlatishi mumkin printerlarni qidirishi yoki ulardan foydalanishi taqiqlanadi</translation>
@@ -10019,6 +10021,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8619803522055190423">Soyali</translation>
 <translation id="8620206585293032550">Nofaol varaqlar koʻrinishi</translation>
 <translation id="8621979332865976405">Butun ekranni namoyish qilish</translation>
+<translation id="8622145666696249878">Google Qidiruv AI rejimi va ulanadigan ilovalar</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS qurilmasi va komponenti seriya raqamlarini oʻqish</translation>
 <translation id="862542460444371744">&amp;Kengaytmalar</translation>

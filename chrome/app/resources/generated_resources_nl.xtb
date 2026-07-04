@@ -3858,6 +3858,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 tabblad)}other{<ph name="GROUP_TITLE" /> (# tabbladen)}}</translation>
 <translation id="3871350334636688135">Na 24 uur voert je beheerder een update uit waarmee je lokale gegevens worden verwijderd wanneer je het apparaat opnieuw opstart. Sla lokale gegevens die je nodig hebt, binnen 24 uur op in de cloudopslag.</translation>
 <translation id="3872991219937722530">Maak schijfruimte vrij om te voorkomen dat het apparaat niet meer reageert.</translation>
+<translation id="3873121930618553927">AI-programmeeragents gebruiken om extensies te maken? Installeer de <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> en <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> om je programmeeragent de nieuwste API-updates en best practices te leren.</translation>
 <translation id="3873423927483480833">Pincodes bekijken</translation>
 <translation id="3874532133373654352">Je organisatie beheert hoe gegevens die door deze functies worden verzameld, mogen worden gebruikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Deze functie gebruikt AI en is experimenteel</translation>

@@ -3860,6 +3860,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestaña)}other{<ph name="GROUP_TITLE" /> (# pestañas)}}</translation>
 <translation id="3871350334636688135">A las 24 horas de que restablezcas tu dispositivo, el administrador realizará una actualización única que borrará tus datos locales. Guarda estos datos en el almacenamiento en la nube antes de que se cumpla este plazo.</translation>
 <translation id="3872991219937722530">Libera espacio en el disco o el dispositivo dejará de funcionar.</translation>
+<translation id="3873121930618553927">¿Estás usando agentes de programación de IA para crear extensiones? Instala <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> y <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> para enseñarle a tu agente de programación las actualizaciones y prácticas recomendadas más recientes de la API.</translation>
 <translation id="3873423927483480833">Muestra los PIN</translation>
 <translation id="3874532133373654352">Tu organización administra cómo se pueden usar los datos recopilados por estas funciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Esta función usa IA y es experimental</translation>

@@ -3858,6 +3858,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 ٹیب)}other{<ph name="GROUP_TITLE" /> (# ٹیبز)}}</translation>
 <translation id="3871350334636688135">24 گھنٹے کے بعد جب آپ اپنا آلہ دوبارہ شروع کریں گے تو آپ کا منتظم یک وقتی اپ ڈیٹ کرے گا جس سے آپ کا مقامی ڈیٹا حذف ہو جائے گا۔ 24 گھنٹے کے اندر کسی بھی ایسے مقامی ڈیٹا کو محفوظ کریں جسے آپ کلاؤڈ اسٹوریج میں رکھنا چاہتے ہیں۔</translation>
 <translation id="3872991219937722530">ڈسک کی جگہ خالی کریں، ورنہ آلہ جواب دینا بند کر دے گا۔</translation>
+<translation id="3873121930618553927">‏ایکسٹینشنز بنانے کے لیے AI کوڈنگ ایجنٹس کا استعمال کر رہے ہیں؟ اپنے کوڈنگ ایجنٹ کو API کی تازہ ترین اپ ڈیٹس اور بہترین طریقوں کی تعلیم دینے کے لیے <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> اور <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> انسٹال کریں۔</translation>
 <translation id="3873423927483480833">‏PINs دکھائیں</translation>
 <translation id="3874532133373654352">آپ کی تنظیم نظم کرتی ہے کہ ان خصوصیات کے ذریعے جمع کردہ ڈیٹا کو کس طرح استعمال کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">‏یہ خصوصیت AI کا استعمال کرتی ہے اور تجرباتی ہے</translation>

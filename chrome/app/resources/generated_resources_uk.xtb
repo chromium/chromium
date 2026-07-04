@@ -3873,6 +3873,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 вкладка)}one{<ph name="GROUP_TITLE" /> (# вкладка)}few{<ph name="GROUP_TITLE" /> (# вкладки)}many{<ph name="GROUP_TITLE" /> (# вкладок)}other{<ph name="GROUP_TITLE" /> (# вкладки)}}</translation>
 <translation id="3871350334636688135">Через 24 години адміністратор виконає одноразове оновлення, що призведе до видалення локальних даних під час наступного перезапуску пристрою. Збережіть потрібні локальні дані в хмарному сховищі впродовж 24 годин.</translation>
 <translation id="3872991219937722530">Звільніть місце на диску. Інакше пристрій перестане відповідати.</translation>
+<translation id="3873121930618553927">Створюєте розширення за допомогою агентів на основі ШІ? Установіть <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> і <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, щоб навчити агента з програмування останнім оновленням API і практичним порадам.</translation>
 <translation id="3873423927483480833">Показати PIN-коди</translation>
 <translation id="3874532133373654352">Ваша організація керує тим, як використовуються дані, зібрані цими функціями. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Це експериментальна функція на основі ШІ</translation>

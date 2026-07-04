@@ -3861,6 +3861,7 @@
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 ટૅબ)}one{<ph name="GROUP_TITLE" /> (# ટૅબ)}other{<ph name="GROUP_TITLE" /> (# ટૅબ)}}</translation>
 <translation id="3871350334636688135">24 કલાક પછી તમારા વ્યવસ્થાપક એક-સમયનો અપડેટ કરશે, જેના કારણે તમે તમારું ડિવાઇસ ફરી શરૂ કરશો, ત્યારે તમારો બધો સ્થાનિક ડેટા ડિલીટ થઈ જશે. તમને જરૂર હોય તે બધો સ્થાનિક ડેટા 24 કલાકની અંદર ક્લાઉડ સ્ટોરેજમાં સાચવી લો.</translation>
 <translation id="3872991219937722530">ડિસ્ક સ્થાન ખાલી કરો અથવા ઉપકરણ પ્રતિભાવવિહીન બની જશે.</translation>
+<translation id="3873121930618553927">એક્સ્ટેન્શન બનાવવા માટે AI કોડિંગ એજન્ટનો ઉપયોગ કરી રહ્યાં છો? તમારા કોડિંગ એજન્ટને લેટેસ્ટ API અપડેટ અને શ્રેષ્ઠ પદ્ધતિઓ શીખવવા માટે <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> અને <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> ઇન્સ્ટૉલ કરો.</translation>
 <translation id="3873423927483480833">પિન બતાવો</translation>
 <translation id="3874532133373654352">તમારી સંસ્થા, આ સુવિધાઓ દ્વારા એકત્રિત કરવામાં આવેલા ડેટાનો ઉપયોગ કેવી રીતે કરવામાં આવી શકે છે તે મેનેજ કરે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">આ સુવિધા AIનો ઉપયોગ કરે છે અને તે પ્રાયોગિક છે</translation>

@@ -3872,6 +3872,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 välilehti)}other{<ph name="GROUP_TITLE" /> (# välilehteä)}}</translation>
 <translation id="3871350334636688135">24 tunnin päästä järjestelmänvalvoja tekee kertaluontoisen päivityksen, joka poistaa paikallisen datasi, kun käynnistät laitteesi uudelleen. Tallenna kaikki tarvitsemasi paikallinen data pilvitallennustilaan 24 tunnin sisällä.</translation>
 <translation id="3872991219937722530">Vapauta levytilaa, tai laite ei enää vastaa.</translation>
+<translation id="3873121930618553927">Käytätkö tekoälykoodausagentteja laajennusten luomiseen? Asenna <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> ja <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" />, jotta voit opettaa koodausagentille uusimmat API-päivitykset ja parhaat käytännöt.</translation>
 <translation id="3873423927483480833">Näytä PIN-koodit</translation>
 <translation id="3874532133373654352">Organisaatiosi päättää, miten näiden ominaisuuksien keräämää dataa voidaan käyttää. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ominaisuus käyttää tekoälyä ja on kokeellinen</translation>

@@ -3344,6 +3344,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3512465804715993309">Tilpasset fremheving</translation>
 <translation id="3513019849832307207">Bli med og åpne</translation>
 <translation id="3513563267917474897">Glidebryter for fargetone – går fra <ph name="MIN_VALUE" /> til <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Fest nye utvidelser</translation>
 <translation id="3514647716686280777">Du får standard sikkerhetsbeskyttelse. For å få mer beskyttelse mot farlige nettsteder, nedlastinger og utvidelser, slå på Safe Browsing med økt beskyttelse i Chrome-innstillingene.</translation>
 <translation id="3514681096978190000">Denne arkivfilen inneholder andre filer som kan skjule skadelig programvare</translation>
 <translation id="3515983984924808886">Berør sikkerhetsnøkkelen en gang til for å bekrefte tilbakestillingen. All informasjon som er lagret på sikkerhetsnøkkelen, inkludert PIN-koden, blir slettet.</translation>
@@ -3870,6 +3871,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 fane)}other{<ph name="GROUP_TITLE" /> (# faner)}}</translation>
 <translation id="3871350334636688135">Etter 24 timer utfører administratoren en engangsoppdatering som sletter de lokale dataene dine når du starter enheten på nytt. Lagre eventuelle lokale data du trenger, i nettskyen innen 24 timer.</translation>
 <translation id="3872991219937722530">Frigjør lagringsplass for å unngå at enheten slutter å reagere.</translation>
+<translation id="3873121930618553927">Bruker du AI-kodeagenter til å lage utvidelser? Installer <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> og <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> for å lære kodeagenten de nyeste API-oppdateringene og anbefalte fremgangsmåter.</translation>
 <translation id="3873423927483480833">Vis PIN-koder</translation>
 <translation id="3874532133373654352">Organisasjonen din administrerer hvordan dataene som samles inn av disse funksjonene, kan brukes. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Denne funksjonen bruker AI og er på forsøksstadiet</translation>
