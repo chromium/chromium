@@ -20,6 +20,8 @@ namespace base::i18n {
 class IcuBridge;
 struct DateTimeFormatterOptions;
 
+class BASE_I18N_EXPORT LanguageTag;
+
 // DateTimeFormatter provides a set of helper functions for formatting dates and
 // times using ICU. It handles locale-specific formatting and provides
 // common patterns used across the codebase.
@@ -28,6 +30,7 @@ struct DateTimeFormatterOptions;
 //
 // #include "base/i18n/icubridge/icu_bridge.h"
 // #include "base/i18n/icubridge/date_time_formatter.h"
+// #include "base/i18n/language_tag.h"
 //
 // // Simple usage with predefined shorthands:
 // std::u16string simple = base::i18n::IcuBridge::GetInstance()
@@ -45,12 +48,26 @@ struct DateTimeFormatterOptions;
 //               .with_time_zone(base::i18n::TimeZone::FromString("Asia/Tokyo"))
 //               .with_time_zone_style(
 //                   DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
+//
+// // Usage with a specific locale:
+// auto locale = base::i18n::LanguageTagConverter::GetInstance()
+//     .FromString("ja-JP");
+// std::u16string localized = base::i18n::IcuBridge::GetInstance()
+//     .date_time_formatter()
+//     .Format(base::Time::Now(),
+//             *locale,
+//             base::i18n::datetime_options::YMDT::Short());
 class BASE_I18N_EXPORT IcuBridge::DateTimeFormatter {
  public:
   // Formats date and time according to the provided options.
   // The formatting is locale-aware and uses the default locale set for the
   // process.
   std::u16string Format(const base::Time& time,
+                        const DateTimeFormatterOptions& options) const;
+
+  // Formats date and time according to the provided options and locale.
+  std::u16string Format(const base::Time& time,
+                        const LanguageTag& locale,
                         const DateTimeFormatterOptions& options) const;
 
   explicit DateTimeFormatter(base::PassKey<IcuBridge>) {}

@@ -12,6 +12,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/icubridge/icu_bridge_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -423,8 +424,9 @@ icu::UnicodeString GetBestPattern(const icu::Locale& locale,
 }
 
 icu::Locale GetLocaleWithHourClockType(
+    const icu::Locale& locale_arg,
     std::optional<base::HourClockType> hour_clock_type) {
-  icu::Locale locale = icu::Locale::getDefault();
+  icu::Locale locale = locale_arg;
   if (!hour_clock_type) {
     return locale;
   }
@@ -435,17 +437,15 @@ icu::Locale GetLocaleWithHourClockType(
   return locale;
 }
 
-}  // namespace
-
-// DateTime Formatting
-std::u16string IcuBridge::DateTimeFormatter::Format(
-    const base::Time& time,
-    const DateTimeFormatterOptions& options) const {
-  icu::Locale locale = GetLocaleWithHourClockType(options.hour_clock_type);
+std::u16string FormatWithLocale(const base::Time& time,
+                                const DateTimeFormatterOptions& options,
+                                const icu::Locale& locale_arg) {
+  icu::Locale locale =
+      GetLocaleWithHourClockType(locale_arg, options.hour_clock_type);
 
   if (options.format_identifier ==
       DateTimeFormatterOptions::FormatIdentifier::kNone) {
-    return Format(time, datetime_options::YMD::Medium());
+    return FormatWithLocale(time, datetime_options::YMD::Medium(), locale);
   }
 
   icu::UnicodeString best_pattern = GetBestPattern(locale, options);
@@ -456,6 +456,28 @@ std::u16string IcuBridge::DateTimeFormatter::Format(
     formatter.setTimeZone(*icu_tz);
   }
   return DateTimeFormat(formatter, time, options.am_pm_clock_type);
+}
+
+}  // namespace
+
+// DateTime Formatting
+std::u16string IcuBridge::DateTimeFormatter::Format(
+    const base::Time& time,
+    const DateTimeFormatterOptions& options) const {
+  return FormatWithLocale(time, options, icu::Locale::getDefault());
+}
+
+std::u16string IcuBridge::DateTimeFormatter::Format(
+    const base::Time& time,
+    const LanguageTag& locale,
+    const DateTimeFormatterOptions& options) const {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale icu_locale = icu::Locale::forLanguageTag(
+      std::string(locale.tag_string()).c_str(), status);
+  if (U_FAILURE(status) || icu_locale.isBogus()) {
+    icu_locale = icu::Locale::getDefault();
+  }
+  return FormatWithLocale(time, options, icu_locale);
 }
 
 }  // namespace base::i18n
