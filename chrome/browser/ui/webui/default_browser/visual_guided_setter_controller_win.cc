@@ -50,6 +50,7 @@ void VisualGuidedSetterControllerWin::Start() {
   if (is_running_) {
     return;
   }
+
   CHECK(parent_widget_ && chrome_hwnd_);
   if (!has_anchor_rect_) {
     return;
@@ -62,6 +63,7 @@ void VisualGuidedSetterControllerWin::Start() {
   if (!overlay_) {
     overlay_ = std::make_unique<GuidedSetterOverlayWindowWin>(
         parent_widget_->GetNativeWindow());
+    UpdateOverlayColor();
   }
 
   LaunchSettings();
@@ -189,6 +191,13 @@ void VisualGuidedSetterControllerWin::OnWidgetShowStateChanged(
     return;
   }
   UpdateDockedLayout();
+}
+
+void VisualGuidedSetterControllerWin::OnWidgetThemeChanged(
+    views::Widget* widget) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(widget, parent_widget_);
+  UpdateOverlayColor();
 }
 
 void VisualGuidedSetterControllerWin::OnVisibilityChanged(
@@ -492,6 +501,19 @@ void VisualGuidedSetterControllerWin::UpdateOverlay() {
   const gfx::Point end =
       visual_guided_setter::ComputeArrowEndPoint(target_rect);
   overlay_->UpdateAndShow(overlay_bounds, start, end);
+}
+
+void VisualGuidedSetterControllerWin::UpdateOverlayColor() {
+  if (!overlay_ || !parent_widget_) {
+    return;
+  }
+
+  const ui::ColorProvider* provider = parent_widget_->GetColorProvider();
+  if (!provider) {
+    return;
+  }
+
+  overlay_->SetArrowColor(provider->GetColor(ui::kColorSysPrimary));
 }
 
 gfx::Rect VisualGuidedSetterControllerWin::GetAnchorRectScreenDip() const {

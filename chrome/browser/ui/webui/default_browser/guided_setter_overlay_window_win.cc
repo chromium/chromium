@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -38,6 +39,11 @@ class OverlayArrowView : public views::View {
     SchedulePaint();
   }
 
+  void SetColor(SkColor color) {
+    color_ = color;
+    SchedulePaint();
+  }
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
@@ -48,7 +54,8 @@ class OverlayArrowView : public views::View {
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(GetColorProvider()->GetColor(ui::kColorAccent));
+    flags.setColor(
+        color_.value_or(GetColorProvider()->GetColor(ui::kColorAccent)));
     flags.setAntiAlias(true);
 
     // Curved stem of the guidance arrow.
@@ -99,6 +106,8 @@ class OverlayArrowView : public views::View {
  private:
   gfx::Point start_;
   gfx::Point end_;
+
+  std::optional<SkColor> color_;
 };
 
 BEGIN_METADATA(OverlayArrowView)
@@ -153,6 +162,10 @@ void GuidedSetterOverlayWindowWin::UpdateAndShow(const gfx::Rect& bounds_screen,
       ->SetEndpoints(start_local, end_local);
 
   widget_->ShowInactive();
+}
+
+void GuidedSetterOverlayWindowWin::SetArrowColor(SkColor color) {
+  static_cast<OverlayArrowView*>(arrow_view_.get())->SetColor(color);
 }
 
 void GuidedSetterOverlayWindowWin::CreateWidget(

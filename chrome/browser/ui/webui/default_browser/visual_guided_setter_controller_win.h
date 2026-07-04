@@ -110,6 +110,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetShowStateChanged(views::Widget* widget) override;
+  void OnWidgetThemeChanged(views::Widget* widget) override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -132,6 +133,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   void EnterDegradedFloating(Outcome reason);
 
   void UpdateOverlay();
+  void UpdateOverlayColor();
 
   gfx::Rect GetAnchorRectScreenDip() const;
 
