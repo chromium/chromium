@@ -14,6 +14,7 @@
 </script>
 <link id="hrefDynamicallySet" rel="compression-dictionary"></link>
 <link id="hrefDynamicallyChanged" rel="compression-dictionary" href="./resources/register-dictionary.py?hrefDynamicallyChanged"></link>
+<link id="relDynamicallySet" href="./resources/register-dictionary.py?relDynamicallySet">
 <body>
   <script>
     let fetchedDictionaries = [];
@@ -59,6 +60,14 @@
       assert_array_equals(fetchedDictionaries.toSorted(), expectedEntries, "dictionaries fetched after dynamic changes to href attribute.");
       fetchedDictionaries = [];
 
+      // Dynamic change to rel.
+      expectedEntries = [
+        "?relDynamicallySet",
+      ];
+      relDynamicallySet.setAttribute("rel", "compression-dictionary");
+      await t.step_wait(_ => fetchedDictionaries.length >= expectedEntries.length, "setting rel should trigger fetch", 5000);
+      assert_array_equals(fetchedDictionaries.toSorted(), expectedEntries, "dictionary fetched after setting the rel attribute.");
+      fetchedDictionaries = [];
     }, "<link rel=compression-dictionary> are fetched after DOM operations.");
   </script>
 </body>
