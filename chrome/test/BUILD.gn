@@ -342,41 +342,6 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos && is_chromeos_device) {
-    sources += [
-      "base/chromeos/crosier/chromeos_integration_login_mixin.cc",
-      "base/chromeos/crosier/chromeos_integration_login_mixin.h",
-      "base/chromeos/crosier/chromeos_integration_test_mixin.cc",
-      "base/chromeos/crosier/chromeos_integration_test_mixin.h",
-      "base/chromeos/crosier/chromeos_test_launcher.cc",
-      "base/chromeos/crosier/chromeos_test_launcher.h",
-      "base/chromeos/crosier/chromeos_test_suite.cc",
-      "base/chromeos/crosier/chromeos_test_suite.h",
-      "base/chromeos/crosier/power_manager_emitter.cc",
-      "base/chromeos/crosier/power_manager_emitter.h",
-      "base/chromeos/crosier/supervised_user_login_delegate.cc",
-      "base/chromeos/crosier/supervised_user_login_delegate.h",
-      "base/chromeos/crosier/upstart.cc",
-      "base/chromeos/crosier/upstart.h",
-    ]
-
-    deps += [
-      "base/chromeos/crosier/helper:common",
-      "//chrome/app:chrome_crash_reporter_client",
-      "//chromeos/dbus/power:power_manager_proto",
-      "//ui/ozone/platform/drm:ui_controls",
-    ]
-
-    if (is_chrome_branded) {
-      sources += [
-        "base/chromeos/crosier/adb_helper.cc",
-        "base/chromeos/crosier/adb_helper.h",
-        "base/chromeos/crosier/chromeos_integration_arc_mixin.cc",
-        "base/chromeos/crosier/chromeos_integration_arc_mixin.h",
-      ]
-    }
-  }
-
   if (is_android) {
     sources += [
       "base/android/android_ui_test_utils.cc",
@@ -908,28 +873,14 @@ static_library("test_support") {
       "base/ash/scoped_test_system_nss_key_slot_mixin.h",
       "base/browser_process_platform_part_test_api_chromeos.cc",
       "base/browser_process_platform_part_test_api_chromeos.h",
-      "base/chromeos/crosier/annotations.cc",
-      "base/chromeos/crosier/annotations.h",
+
+      # TODO(crbug.com/521960574): Move these files. They are not crosier
+      # specific and are used by non-crosier tests.
       "base/chromeos/crosier/aura_window_title_observer.cc",
       "base/chromeos/crosier/aura_window_title_observer.h",
-      "base/chromeos/crosier/crosier_util.cc",
-      "base/chromeos/crosier/crosier_util.h",
     ]
 
-    if (is_chrome_branded) {
-      sources += [
-        "base/chromeos/crosier/gaia_host_util.cc",
-        "base/chromeos/crosier/gaia_host_util.h",
-        "base/chromeos/crosier/test_accounts.cc",
-        "base/chromeos/crosier/test_accounts.h",
-      ]
-      data += [
-        "../browser/internal/resources/chromeos/crosier/test_accounts.json",
-      ]
-    }
-
     deps += [
-      "base/chromeos/crosier:proto",
       "//ash/constants",
       "//base/test:proto_test_support",
       "//chrome/browser/ash/app_list/arc",
@@ -1194,6 +1145,7 @@ if (is_chromeos && is_chromeos_device) {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ui/ash/main_extra_parts",
       "//chrome/common:non_code_constants",
+      "//chrome/test/base/chromeos/crosier:test_support",
       "//google_apis",
       "//net:test_support",
       "//url",
@@ -1211,6 +1163,7 @@ if (is_chromeos && is_chromeos_device) {
     ]
     deps = [
       ":test_support",
+      "//chrome/test/base/chromeos/crosier:test_support",
       "//components/app_constants",
     ]
 

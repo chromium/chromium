@@ -136,7 +136,10 @@ grit_strings("branded_strings") {
 
 static_library("test_support") {
   testonly = true
-  visibility = [ "//chrome/test:test_support" ]
+  visibility = [
+    "//chrome/test:test_support",
+    "//chrome/test/base/chromeos/crosier:test_support",
+  ]
 
   sources = [
     "chrome_main_delegate.cc",

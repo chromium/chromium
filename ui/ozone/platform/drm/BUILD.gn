@@ -283,5 +283,8 @@ source_set("ui_controls") {
     "//ui/ozone/common",
   ]
 
-  visibility += [ "//chrome/test:test_support" ]
+  visibility += [
+    "//chrome/test:test_support",
+    "//chrome/test/base/chromeos/crosier:test_support",
+  ]
 }

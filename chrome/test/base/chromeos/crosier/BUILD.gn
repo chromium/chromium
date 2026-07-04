@@ -4,7 +4,85 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+assert(is_chromeos)
+assert(is_chromeos_device)
+
 proto_library("proto") {
   sources = [ "chromeos_test_definition.proto" ]
   cc_generator_options = "lite=true:"
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "annotations.cc",
+    "annotations.h",
+    "chromeos_integration_login_mixin.cc",
+    "chromeos_integration_login_mixin.h",
+    "chromeos_integration_test_mixin.cc",
+    "chromeos_integration_test_mixin.h",
+    "chromeos_test_launcher.cc",
+    "chromeos_test_launcher.h",
+    "chromeos_test_suite.cc",
+    "chromeos_test_suite.h",
+    "crosier_util.cc",
+    "crosier_util.h",
+    "power_manager_emitter.cc",
+    "power_manager_emitter.h",
+    "supervised_user_login_delegate.cc",
+    "supervised_user_login_delegate.h",
+    "upstart.cc",
+    "upstart.h",
+  ]
+
+  deps = [
+    "//ash:test_support",
+    "//chrome/app:chrome_crash_reporter_client",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/ash/dbus",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/lifetime",
+    "//chrome/test/base/chromeos/crosier/helper:common",
+    "//chrome/utility",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//services/test/echo:lib",
+    "//ui/events:test_support",
+    "//ui/ozone/platform/drm:ui_controls",
+  ]
+
+  public_deps = [
+    ":proto",
+    "//base/test:test_support",
+    "//chrome/app:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+
+  data = []
+
+  if (is_chrome_branded) {
+    sources += [
+      "adb_helper.cc",
+      "adb_helper.h",
+      "chromeos_integration_arc_mixin.cc",
+      "chromeos_integration_arc_mixin.h",
+      "gaia_host_util.cc",
+      "gaia_host_util.h",
+      "test_accounts.cc",
+      "test_accounts.h",
+    ]
+
+    deps += [
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/arc/boot_phase_monitor",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/experiences/arc:arc_metrics_constants",
+    ]
+
+    data += [
+      "//chrome/browser/internal/resources/chromeos/crosier/test_accounts.json",
+    ]
+  }
 }
