@@ -2258,4 +2258,47 @@ TEST_F(ThreadControllerWithMessagePumpTest, WorkIdIncrementedDelegateRun) {
   EXPECT_EQ(work_id_provider->GetWorkId(), 1u);
 }
 
+TEST_F(ThreadControllerWithMessagePumpTest, LockMetricsReportedOnIdle) {
+  constexpr TimeDelta test_sample1 = Microseconds(42);
+  constexpr TimeDelta test_sample2 = Milliseconds(42);
+  constexpr std::string_view kBaseLockHistogramName =
+      "Scheduling.ContendedLockAcquisitionTime.BaseLock."
+      "LockMetricsReportedOnIdle";
+  constexpr std::string_view kPartitionAllocLockHistogramName =
+      "Scheduling.ContendedLockAcquisitionTime.PartitionAllocLock."
+      "LockMetricsReportedOnIdle";
+
+  SingleThreadTaskRunner::CurrentDefaultHandle handle(
+      MakeRefCounted<FakeTaskRunner>());
+  LockMetricsRecorder::EnableRecordingOnCurrentThread(
+      "LockMetricsReportedOnIdle");
+
+  HistogramTester histogram_tester;
+
+  base::LockMetricsRecorder::GetForCurrentThread()->RecordLockAcquisitionTime(
+      test_sample1, LockMetricsRecorder::LockType::kBaseLock);
+  base::LockMetricsRecorder::GetForCurrentThread()->RecordLockAcquisitionTime(
+      test_sample2, LockMetricsRecorder::LockType::kPartitionAllocLock);
+  base::LockMetricsRecorder::GetForCurrentThread()->RecordLockAcquisitionTime(
+      test_sample2, LockMetricsRecorder::LockType::kPartitionAllocLock);
+
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce([&](MessagePump::Delegate* delegate) {
+        histogram_tester.ExpectBucketCount(kBaseLockHistogramName,
+                                           test_sample1.InMicroseconds(), 0);
+        histogram_tester.ExpectBucketCount(kPartitionAllocLockHistogramName,
+                                           test_sample2.InMicroseconds(), 0);
+
+        thread_controller_.DoIdleWork();
+
+        histogram_tester.ExpectBucketCount(kBaseLockHistogramName,
+                                           test_sample1.InMicroseconds(), 1);
+        histogram_tester.ExpectBucketCount(kPartitionAllocLockHistogramName,
+                                           test_sample2.InMicroseconds(), 2);
+      });
+
+  RunLoop().Run();
+  testing::Mock::VerifyAndClearExpectations(message_pump_);
+}
+
 }  // namespace base::sequence_manager::internal

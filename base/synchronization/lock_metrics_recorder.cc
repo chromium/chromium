@@ -79,8 +79,7 @@ base::HistogramBase* CreateLockHistogram(std::string_view lock_name,
       StrCat({"Scheduling.ContendedLockAcquisitionTime.", lock_name, ".",
               histogram_suffix}),
       Microseconds(1), Seconds(1), kHistogramBucketCount,
-      base::HistogramBase::kUmaTargetedHistogramFlag |
-          base::HistogramBase::kDisableSingleSampleOptimizationFlag);
+      base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
 }  // namespace
@@ -109,28 +108,65 @@ LockMetricsRecorder* LockMetricsRecorder::GetForCurrentThread() {
   return slot->Get();
 }
 
+// static
+void LockMetricsRecorder::ReportLockHistogram(
+    const TimeDelta& sample,
+    base::HistogramBase* histogram_pointer) {
+  histogram_pointer->AddTimeMicrosecondsGranularity(sample);
+}
+
 bool LockMetricsRecorder::ShouldRecordLockAcquisitionTime() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return !recording_in_progress_ && subsampler_.ShouldSample(kSamplingRatio);
+  return !iterating_in_progress_ && subsampler_.ShouldSample(kSamplingRatio);
 }
 
 void LockMetricsRecorder::RecordLockAcquisitionTime(TimeDelta sample,
                                                     LockType type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!recording_in_progress_);
-  // Set the `recording_in_progress_` flag to true. Writing to a histogram (via
-  // AddTimeMicrosecondsGranularity) could invoke active global or local sample
-  // callbacks, and if those callbacks acquire a lock they will re-enter this
-  // recorder.
-  base::AutoReset<bool> auto_reset(&recording_in_progress_, true);
-  switch (type) {
-    case LockType::kBaseLock:
-      base_lock_histogram_->AddTimeMicrosecondsGranularity(sample);
-      break;
-    case LockType::kPartitionAllocLock:
-      partition_alloc_lock_histogram_->AddTimeMicrosecondsGranularity(sample);
-      break;
+  sample_buffer_[static_cast<size_t>(type)].SaveToBuffer(sample);
+}
+
+void LockMetricsRecorder::ForEachSample(LockType type,
+                                        FunctionRef<void(const TimeDelta&)> f) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(!iterating_in_progress_);
+  CHECK_LE(type, LockType::kMax);
+  // Set the `iterating_in_progress_` flag to true to prevent reentrancy due to
+  // any lock contention during the recording of the histogram. This keeps the
+  // recording and reporting logic simple at the cost of a tiny blind-spot in
+  // our metrics.
+  AutoReset<bool> mark_iterating_in_progress(&iterating_in_progress_, true);
+
+  auto& buffer = sample_buffer_[static_cast<size_t>(type)];
+  for (auto it = buffer.Begin(); it; ++it) {
+    f(**it);
   }
+  buffer.Clear();
+}
+
+void LockMetricsRecorder::ReportLockAcquisitionTimes() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (iterating_in_progress_) {
+    return;
+  }
+
+  // Copy guarded members to local variables to appease the static analyzer.
+  // Clang's thread-safety analysis treats lambda scopes as new contexts and
+  // generates false-positive "missing lock" errors, even though the context was
+  // verified at the top of this function.
+  base::HistogramBase* base_lock_histogram = base_lock_histogram_;
+  base::HistogramBase* partition_alloc_lock_histogram =
+      partition_alloc_lock_histogram_;
+
+  ForEachSample(LockType::kBaseLock,
+                [base_lock_histogram](const TimeDelta& sample) {
+                  ReportLockHistogram(sample, base_lock_histogram);
+                });
+  ForEachSample(LockType::kPartitionAllocLock,
+                [partition_alloc_lock_histogram](const TimeDelta& sample) {
+                  ReportLockHistogram(sample, partition_alloc_lock_histogram);
+                });
 }
 
 // `EnableRecordingOnCurrentThread()` is the only function responsible for

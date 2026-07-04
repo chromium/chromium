@@ -579,6 +579,11 @@ void ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+  auto* recorder = base::LockMetricsRecorder::GetForCurrentThread();
+  if (recorder) {
+    recorder->ReportLockAcquisitionTimes();
+  }
+
   if (main_thread_only().task_source->OnIdle()) {
     work_id_provider_->IncrementWorkId();
     // The OnIdle() callback resulted in more immediate work, so schedule a

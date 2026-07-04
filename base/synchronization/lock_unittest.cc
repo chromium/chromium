@@ -34,7 +34,6 @@
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -635,11 +634,24 @@ class LockTrySpinTest : public testing::Test {
     PlatformThreadHandle handle_;
   };
 
-  int GetBaseLockSampleCount(const base::HistogramTester& tester) const {
-    return tester
-        .GetHistogramSamplesSinceCreation(
-            "Scheduling.ContendedLockAcquisitionTime.BaseLock.LockTrySpinTest")
-        ->TotalCount();
+  bool DidRecordLockMetricsSample() {
+    bool sample_recorded = false;
+    auto* recorder = LockMetricsRecorder::GetForCurrentThread();
+    if (recorder) {
+      recorder->ForEachSample(
+          LockMetricsRecorder::LockType::kBaseLock,
+          [&sample_recorded](const TimeDelta&) { sample_recorded = true; });
+    }
+    return sample_recorded;
+  }
+
+  void ClearLockMetricsSamples() {
+    // Clear any samples that may have been recorded.
+    auto* recorder = LockMetricsRecorder::GetForCurrentThread();
+    if (recorder) {
+      recorder->ForEachSample(LockMetricsRecorder::LockType::kBaseLock,
+                              [](const TimeDelta&) {});
+    }
   }
 
  private:
@@ -675,31 +687,22 @@ TEST_F(LockTrySpinTest, MAYBE_TrySpinAvoidsSyscall) {
       });
   base::Lock::InitializeFeatures();
 
+  ClearLockMetricsSamples();
   {
-    base::HistogramTester histogram_tester;
-
     TestThread thread;
     thread.CreateLockContention();
-
-    // We expect zero samples because the spin succeeded locally without
-    // blocking syscall.
-    EXPECT_EQ(GetBaseLockSampleCount(histogram_tester), 0);
   }
+  EXPECT_FALSE(DidRecordLockMetricsSample());
 
   // Set the try-spin count to zero to ensure that the thread always waits for
   // the lock in the kernel.
   internal::LockImpl::SetTrySpinCount(0);
-
+  ClearLockMetricsSamples();
   {
-    base::HistogramTester histogram_tester;
-
     TestThread thread;
     thread.CreateLockContention();
-
-    // We expect at least 1 sample because the mutex was contended blocked in
-    // kernel.
-    EXPECT_GE(GetBaseLockSampleCount(histogram_tester), 1);
   }
+  EXPECT_TRUE(DidRecordLockMetricsSample());
 }
 #endif  // BUILDFLAG(IS_POSIX)
 

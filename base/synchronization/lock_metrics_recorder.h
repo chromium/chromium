@@ -48,6 +48,12 @@ class BASE_EXPORT LockMetricsRecorder {
     kMax = kPartitionAllocLock,
   };
 
+  // The internal buffer size is a trade-off between memory usage and the number
+  // of samples that can be stored. With sampling, this buffer size should be
+  // sufficient for most cases. If the buffer overflows, the `RingBuffer` will
+  // overwrite the oldest samples.
+  constexpr static size_t kMaxSamples = 256;
+
   explicit LockMetricsRecorder(PassKey, std::string_view histogram_suffix);
   LockMetricsRecorder(const LockMetricsRecorder&) = delete;
   LockMetricsRecorder& operator=(const LockMetricsRecorder&) = delete;
@@ -67,6 +73,16 @@ class BASE_EXPORT LockMetricsRecorder {
   // Records a sample into the internal buffer. Must be called on the target
   // thread.
   void RecordLockAcquisitionTime(TimeDelta sample, LockType type);
+
+  // Report lock acquisition times to UMA histograms, if the current thread is
+  // the target thread.
+  void ReportLockAcquisitionTimes();
+
+  // Iterate over all the samples of the given type and synchronously call the
+  // FunctionRef for each sample. Only exposed for testing. Call
+  // `ReportLockAcquisitionTimes()` to report histograms for all the stored
+  // samples.
+  void ForEachSample(LockType type, FunctionRef<void(const TimeDelta&)> f);
 
   // Timer that records into a lock metrics object.
   class BASE_EXPORT ScopedLockAcquisitionTimer {
@@ -117,11 +133,19 @@ class BASE_EXPORT LockMetricsRecorder {
  private:
   constexpr static double kSamplingRatio = 0.001;
 
-  bool recording_in_progress_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  static void ReportLockHistogram(const TimeDelta& sample,
+                                  base::HistogramBase* histogram_pointer);
+
+  bool iterating_in_progress_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+
   raw_ptr<base::HistogramBase> base_lock_histogram_
       GUARDED_BY_CONTEXT(thread_checker_) = nullptr;
   raw_ptr<base::HistogramBase> partition_alloc_lock_histogram_
       GUARDED_BY_CONTEXT(thread_checker_) = nullptr;
+
+  std::array<RingBuffer<TimeDelta, kMaxSamples>,
+             static_cast<size_t>(LockType::kMax) + 1>
+      sample_buffer_ GUARDED_BY_CONTEXT(thread_checker_) = {};
 
   // Include the subsampler in the thread-local data to avoid reallocations
   // when the subsampler is created and destroyed.
