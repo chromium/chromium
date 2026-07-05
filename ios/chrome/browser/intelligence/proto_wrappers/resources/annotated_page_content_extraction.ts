@@ -252,6 +252,9 @@ const ATTR_VALUE_ROLE_OPTION = 'option';
 const ATTR_VALUE_ROLE_RADIO = 'radio';
 const ATTR_VALUE_ROLE_SWITCH = 'switch';
 const ATTR_VALUE_ROLE_TAB = 'tab';
+const ATTR_VALUE_ROLE_SEARCHBOX = 'searchbox';
+const ATTR_VALUE_ROLE_TEXTBOX = 'textbox';
+const ATTR_VALUE_ROLE_COMBOBOX = 'combobox';
 const ATTR_VALUE_ROLE_BANNER = 'banner';
 const ATTR_VALUE_ROLE_NAVIGATION = 'navigation';
 const ATTR_VALUE_ROLE_SEARCH = 'search';
@@ -624,6 +627,156 @@ function getFormControlType(element: HTMLElement): FormControlType|undefined {
 
   // Fallback, though we shouldn't reach here for form controls.
   return undefined;
+}
+
+/**
+ * Maps an ARIA role to its corresponding FormControlType.
+ *
+ * @param activeRole The normalized, active ARIA role.
+ * @return The corresponding FormControlType, or undefined if no mapping exists.
+ */
+function getFormControlTypeForAriaRole(activeRole: string): FormControlType|
+    undefined {
+  switch (activeRole) {
+    case ATTR_VALUE_ROLE_CHECKBOX:
+    case ATTR_VALUE_ROLE_MENUITEMCHECKBOX:
+    case ATTR_VALUE_ROLE_SWITCH:
+      return FormControlType.INPUT_CHECKBOX;
+    case ATTR_VALUE_ROLE_RADIO:
+    case ATTR_VALUE_ROLE_MENUITEMRADIO:
+      return FormControlType.INPUT_RADIO;
+    case ATTR_VALUE_ROLE_SEARCHBOX:
+      return FormControlType.INPUT_SEARCH;
+    case ATTR_VALUE_ROLE_TEXTBOX:
+    case ATTR_VALUE_ROLE_COMBOBOX:
+      return FormControlType.INPUT_TEXT;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Normalizes an ARIA attribute or role value by converting to lowercase and
+ * trimming.
+ */
+function normalizeAriaValue(value: string|null|undefined): string {
+  if (!value) {
+    return '';
+  }
+  return value.toLowerCase().trim();
+}
+
+/**
+ * Helper to determine if an ARIA attribute value is considered "true",
+ * matching Blink's `AXObject::IsAriaAttributeTrue`.
+ *
+ * We use negative checks (not empty, 'false', or 'undefined') instead of
+ * checking for 'true' because some attributes support other truthy values
+ * (for example, `aria-checked="mixed"` is considered checked/truthy).
+ */
+function isAriaAttributeTrue(value: string|null|undefined): boolean {
+  const normalized = normalizeAriaValue(value);
+  return normalized !== '' && normalized !== 'false' &&
+      normalized !== 'undefined';
+}
+
+/**
+ * Returns whether the given ARIA role supports the `aria-required` attribute,
+ * matching Blink's `ui::SupportsRequired` behavior for supported roles.
+ */
+function ariaRoleSupportsRequired(role: string): boolean {
+  const normalizedRole = normalizeAriaValue(role);
+  // Out of the ARIA roles we support, all except 'menuitemcheckbox' and
+  // 'menuitemradio' support aria-required.
+  return normalizedRole === ATTR_VALUE_ROLE_CHECKBOX ||
+      normalizedRole === ATTR_VALUE_ROLE_SWITCH ||
+      normalizedRole === ATTR_VALUE_ROLE_RADIO ||
+      normalizedRole === ATTR_VALUE_ROLE_SEARCHBOX ||
+      normalizedRole === ATTR_VALUE_ROLE_TEXTBOX ||
+      normalizedRole === ATTR_VALUE_ROLE_COMBOBOX;
+}
+
+/**
+ * Returns the first recognized ARIA role from a space-separated role attribute
+ * value, which determines the element's FormControlType.
+ */
+function getActiveAriaRole(roleAttr: string): string|undefined {
+  const roles = roleAttr.trim().split(SPACE_SEPARATOR);
+  for (const role of roles) {
+    const normalizedRole = normalizeAriaValue(role);
+    switch (normalizedRole) {
+      case ATTR_VALUE_ROLE_CHECKBOX:
+      case ATTR_VALUE_ROLE_MENUITEMCHECKBOX:
+      case ATTR_VALUE_ROLE_SWITCH:
+      case ATTR_VALUE_ROLE_RADIO:
+      case ATTR_VALUE_ROLE_MENUITEMRADIO:
+      case ATTR_VALUE_ROLE_SEARCHBOX:
+      case ATTR_VALUE_ROLE_TEXTBOX:
+      case ATTR_VALUE_ROLE_COMBOBOX:
+        return normalizedRole;
+      default:
+        break;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Extracts form control data for ARIA-based custom form controls.
+
+ *
+ * @param element The DOM element to process.
+ * @return The populated PageContentFormControlData, or undefined if the element
+ *     is not an ARIA form control.
+ */
+function getAriaFormControlData(element: HTMLElement):
+    PageContentFormControlData|undefined {
+  const roleAttr = element.getAttribute(ATTR_KEY_ROLE);
+  if (!roleAttr) {
+    return undefined;
+  }
+
+  const activeRole = getActiveAriaRole(roleAttr);
+  if (!activeRole) {
+    return undefined;
+  }
+
+  const formControlType = getFormControlTypeForAriaRole(activeRole);
+  if (formControlType === undefined) {
+    return undefined;
+  }
+
+  const formControlData: PageContentFormControlData = {
+    formControlType: formControlType,
+    selectOptions: [],
+    isChecked: false,
+    isRequired: false,
+    redactionDecision: PageContentRedactionDecision.NO_REDACTION_NECESSARY,
+  };
+
+  if (ariaRoleSupportsRequired(activeRole) &&
+      isAriaAttributeTrue(element.getAttribute('aria-required'))) {
+    formControlData.isRequired = true;
+  }
+
+  formControlData.isReadonly =
+      isAriaAttributeTrue(element.getAttribute('aria-readonly'));
+
+  if (formControlType === FormControlType.INPUT_TEXT ||
+      formControlType === FormControlType.INPUT_SEARCH) {
+    const placeholder = element.getAttribute('aria-placeholder');
+    if (placeholder) {
+      formControlData.placeholder = placeholder;
+    }
+  }
+
+  if (formControlType === FormControlType.INPUT_CHECKBOX ||
+      formControlType === FormControlType.INPUT_RADIO) {
+    formControlData.isChecked =
+        isAriaAttributeTrue(element.getAttribute('aria-checked'));
+  }
+
+  return formControlData;
 }
 
 /**
@@ -2055,7 +2208,7 @@ function getFormControlData(
 
   // Handle aria-required override.
   if (!formControlData.isRequired &&
-      domNode.getAttribute('aria-required') === 'true') {
+      isAriaAttributeTrue(domNode.getAttribute('aria-required'))) {
     formControlData.isRequired = true;
   }
 
@@ -2063,7 +2216,8 @@ function getFormControlData(
   formControlData.isReadonly = isReadonly;
 
   // Handle aria-readonly override.
-  if (!isReadonly && domNode.getAttribute('aria-readonly') === 'true') {
+  if (!isReadonly &&
+      isAriaAttributeTrue(domNode.getAttribute('aria-readonly'))) {
     formControlData.isReadonly = true;
   }
 
@@ -2445,7 +2599,22 @@ function getContentForElementNode(
   const annotatedRoles: PageContentAnnotatedRole[] = [];
   addAnnotatedRoles(domNode, annotatedRoles, paidContentContext, styleCache);
 
-  // 2. Fallback: Generic Container.
+  // 2. Try to get content for ARIA custom form controls.
+  if (!contentNode) {
+    const ariaFormControlData = getAriaFormControlData(domNode);
+    if (ariaFormControlData) {
+      contentNode = {
+        childrenNodes: [],
+        contentAttributes: {
+          ...BASIC_CONTENT_ATTRIBUTES,
+          attributeType: PageContentAttributeType.FORM_CONTROL,
+          formControlData: ariaFormControlData,
+        },
+      };
+    }
+  }
+
+  // 3. Fallback: Generic Container.
   if (!contentNode &&
       isGenericContainer(
           domNode, interactiveNodeIds, interactionInfo, annotatedRoles,
@@ -2458,8 +2627,6 @@ function getContentForElementNode(
       },
     };
   }
-
-  // TODO(crbug.com/495959941): Support ARIA custom form control semantics.
 
   // TODO(crbug.com/468852704): Populate the rest of the attributes on top of
   // `basicAttributes`.

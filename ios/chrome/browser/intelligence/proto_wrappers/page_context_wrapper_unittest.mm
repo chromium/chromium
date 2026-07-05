@@ -740,6 +740,223 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithAnchors) {
             "foo");
 }
 
+// Tests that ARIA-based custom form controls are correctly extracted.
+TEST_P(PageContextWrapperTest, PopulatePageContextWithAriaCustomFormControls) {
+  if (!IsRefactored()) {
+    GTEST_SKIP()
+        << "Rich Extraction not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "",
+      RawHtml(
+          "<div id=\"ctrl1\" role=\"checkbox\" aria-checked=\"true\" "
+          "aria-required=\"true\" aria-placeholder=\"Check me\" "
+          "style=\"display:block;width:10px;height:10px;\">Checkbox</div>"
+          "<span id=\"ctrl2\" role=\"textbox\" aria-placeholder=\"Enter text\" "
+          "aria-readonly=\"true\" "
+          "style=\"display:block;width:10px;height:10px;\">Textbox</span>"
+          "<div id=\"ctrl3\" role=\"switch\" aria-checked=\"false\" "
+          "style=\"display:block;width:10px;height:10px;\">Switch</div>"
+          "<div id=\"ctrl4\" role=\"radio\" aria-checked=\"mixed\" "
+          "style=\"display:block;width:10px;height:10px;\">Radio</div>"
+          "<div id=\"ctrl5\" role=\"searchbox\" aria-placeholder=\"Search...\" "
+          "style=\"display:block;width:10px;height:10px;\">Searchbox</div>"
+          "<div id=\"ctrl6\" role=\"combobox\" aria-placeholder=\"Select...\" "
+          "style=\"display:block;width:10px;height:10px;\">Combobox</div>"
+          "<div id=\"ctrl7\" role=\"menuitemcheckbox\" aria-required=\"true\" "
+          "aria-checked=\"true\" "
+          "style=\"display:block;width:10px;height:10px;\">Menuitemcheckbox</"
+          "div>"
+          "<div id=\"ctrl8\" role=\"menuitemradio\" aria-required=\"true\" "
+          "aria-checked=\"true\" "
+          "style=\"display:block;width:10px;height:10px;\">Menuitemradio</div>"
+          "<div id=\"ctrl9\" role=\"checkbox\" aria-checked=\"undefined\" "
+          "style=\"display:block;width:10px;height:10px;\">Checkbox "
+          "Undefined</div>"
+          "<div id=\"ctrl10\" role=\"checkbox\" aria-required=\"TRUE\" "
+          "aria-checked=\"TRUE\" "
+          "style=\"display:block;width:10px;height:10px;\">Checkbox Case</div>"
+          "<span id=\"ctrl11\" role=\"textbox\" aria-readonly=\"TRUE\" "
+          "style=\"display:block;width:10px;height:10px;\">Textbox "
+          "Case</span>"));
+  std::string main_html = page_helper_->Build(page_structure);
+
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  std::vector<optimization_guide::proto::ContentNode> form_controls;
+  for (const auto& child : root_node.children_nodes()) {
+    if (child.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL) {
+      form_controls.push_back(child);
+    }
+  }
+
+  ASSERT_EQ(form_controls.size(), 11u);
+
+  // 1. checkbox
+  // <div id="ctrl1" role="checkbox" aria-checked="true" aria-required="true"
+  // aria-placeholder="Check me" ...>
+  {
+    const auto& ctrl = form_controls[0];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX);
+    EXPECT_TRUE(data.is_checked());
+    EXPECT_TRUE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+    EXPECT_FALSE(data.has_placeholder());
+  }
+
+  // 2. textbox
+  // <span id="ctrl2" role="textbox" aria-placeholder="Enter text"
+  // aria-readonly="true" ...>
+  {
+    const auto& ctrl = form_controls[1];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+    EXPECT_FALSE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_TRUE(data.is_readonly());
+    EXPECT_EQ(data.placeholder(), "Enter text");
+  }
+
+  // 3. switch
+  // <div id="ctrl3" role="switch" aria-checked="false" ...>
+  {
+    const auto& ctrl = form_controls[2];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX);
+    EXPECT_FALSE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+    EXPECT_FALSE(data.has_placeholder());
+  }
+
+  // 4. radio (aria-checked="mixed")
+  // <div id="ctrl4" role="radio" aria-checked="mixed" ...>
+  {
+    const auto& ctrl = form_controls[3];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RADIO);
+    EXPECT_TRUE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+    EXPECT_FALSE(data.has_placeholder());
+  }
+
+  // 5. searchbox
+  // <div id="ctrl5" role="searchbox" aria-placeholder="Search..." ...>
+  {
+    const auto& ctrl = form_controls[4];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_SEARCH);
+    EXPECT_FALSE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+    EXPECT_EQ(data.placeholder(), "Search...");
+  }
+
+  // 6. combobox
+  // <div id="ctrl6" role="combobox" aria-placeholder="Select..." ...>
+  {
+    const auto& ctrl = form_controls[5];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+    EXPECT_FALSE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+    EXPECT_EQ(data.placeholder(), "Select...");
+  }
+
+  // 7. menuitemcheckbox (aria-required not supported)
+  // <div id="ctrl7" role="menuitemcheckbox" aria-required="true"
+  // aria-checked="true" ...>
+  {
+    const auto& ctrl = form_controls[6];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX);
+    EXPECT_TRUE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+  }
+
+  // 8. menuitemradio (aria-required not supported)
+  // <div id="ctrl8" role="menuitemradio" aria-required="true"
+  // aria-checked="true" ...>
+  {
+    const auto& ctrl = form_controls[7];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RADIO);
+    EXPECT_TRUE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+  }
+
+  // 9. checkbox (aria-checked="undefined" evaluates to false)
+  // <div id="ctrl9" role="checkbox" aria-checked="undefined" ...>
+  {
+    const auto& ctrl = form_controls[8];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX);
+    EXPECT_FALSE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+  }
+
+  // 10. checkbox (case normalization: aria-required="TRUE",
+  // aria-checked="TRUE") <div id="ctrl10" role="checkbox" aria-required="TRUE"
+  // aria-checked="TRUE" ...>
+  {
+    const auto& ctrl = form_controls[9];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX);
+    EXPECT_TRUE(data.is_checked());
+    EXPECT_TRUE(data.is_required());
+    EXPECT_FALSE(data.is_readonly());
+  }
+
+  // 11. textbox (case normalization: aria-readonly="TRUE")
+  // <span id="ctrl11" role="textbox" aria-readonly="TRUE" ...>
+  {
+    const auto& ctrl = form_controls[10];
+    const auto& data = ctrl.content_attributes().form_control_data();
+    EXPECT_EQ(data.form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+    EXPECT_FALSE(data.is_checked());
+    EXPECT_FALSE(data.is_required());
+    EXPECT_TRUE(data.is_readonly());
+  }
+}
+
 // Tests that the wrapper records a screenshot failures.
 TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
   base::HistogramTester histogram_tester;

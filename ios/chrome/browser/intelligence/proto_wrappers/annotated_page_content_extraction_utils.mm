@@ -525,7 +525,10 @@ void PopulateFormControlData(
   proto_form_control_data->set_is_required(
       form_control_data.FindBool(kIsRequiredKey).value_or(false));
 
-  if (form_control_data.FindBool(kIsReadonlyKey).value_or(false)) {
+  bool is_readonly = form_control_data.FindBool(kIsReadonlyKey).value_or(false);
+  proto_form_control_data->set_is_readonly(is_readonly);
+
+  if (is_readonly) {
     // Temporarily map readonly to disabled. This is a lossy workaround that
     // preserves "do not edit" intent for consumers that only read proto data.
     // TODO(crbug.com/481361478): Add readonly field to FormControlData proto.
