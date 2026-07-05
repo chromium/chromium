@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
 #include "chrome/browser/dictation/stream_provider_delegate.h"
@@ -57,7 +58,8 @@ class SessionController : public SessionUiDelegate,
   // Starts a new dictation stream by creating and attaching a new stream
   // provider. An existing stream must have been detached before calling this
   // method.
-  void StartDictationStream(const TargetId& target_id);
+  void StartDictationStream(const TargetId& target_id,
+                            DictationStreamStartTrigger trigger);
 
   // Ends the current dictation stream and detaches the stream provider.
   void EndDictationStream();

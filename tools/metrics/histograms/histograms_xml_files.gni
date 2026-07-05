@@ -320,6 +320,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/virtualization/histograms.xml",
   "//tools/metrics/histograms/metadata/visited_url_ranking/enums.xml",
   "//tools/metrics/histograms/metadata/visited_url_ranking/histograms.xml",
+  "//tools/metrics/histograms/metadata/voice_typing/enums.xml",
+  "//tools/metrics/histograms/metadata/voice_typing/histograms.xml",
   "//tools/metrics/histograms/metadata/wallet/enums.xml",
   "//tools/metrics/histograms/metadata/wallet/histograms.xml",
   "//tools/metrics/histograms/metadata/web_apk/enums.xml",
