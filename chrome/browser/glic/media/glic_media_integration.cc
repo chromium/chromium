@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/media/glic_media_integration.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -153,16 +154,18 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
 
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<captions::CaptionControllerBase::Listener> listener_ = nullptr;
+
+  base::WeakPtrFactory<GlicMediaIntegrationImpl> weak_ptr_factory_{this};
 };
 
 class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
  public:
-  explicit CaptionListenerImpl(Profile* profile) : profile_(profile) {}
+  explicit CaptionListenerImpl(
+      base::WeakPtr<GlicMediaIntegrationImpl> integration)
+      : integration_(integration) {}
   ~CaptionListenerImpl() override {
-    auto* integration = static_cast<GlicMediaIntegrationImpl*>(
-        profile_->GetUserData(kGlicMediaIntegrationKey));
-    if (integration) {
-      integration->OnListenerDestroyed();
+    if (integration_) {
+      integration_->OnListenerDestroyed();
     }
   }
 
@@ -200,7 +203,7 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
       const media::mojom::LanguageIdentificationEventPtr&) override {}
 
  private:
-  raw_ptr<Profile> profile_;
+  base::WeakPtr<GlicMediaIntegrationImpl> integration_;
 };
 
 GlicMediaIntegrationImpl::GlicMediaIntegrationImpl(Profile* profile)
@@ -248,7 +251,8 @@ void GlicMediaIntegrationImpl::OnPrefChanged() {
   auto* lc = captions::LiveCaptionControllerFactory::GetForProfile(profile_);
   if (enabled) {
     if (!listener_) {
-      auto listener = std::make_unique<CaptionListenerImpl>(profile_);
+      auto listener =
+          std::make_unique<CaptionListenerImpl>(weak_ptr_factory_.GetWeakPtr());
       listener_ = listener.get();
       lc->AddListener(std::move(listener));
     }
