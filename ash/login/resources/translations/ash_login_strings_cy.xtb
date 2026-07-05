@@ -95,6 +95,8 @@
 <translation id="2565214867520763227">Troi'r darllenydd sgrîn ymlaen</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platfform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Na, parhau heb ChromeVox</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Mae gwasanaeth lleoliad Google yn defnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol a synwyryddion i helpu i amcangyfrif lleoliad y ddyfais hon.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddiffodd lleoliad Android ar y ddyfais hon unrhyw bryd drwy fynd i Gosodiadau &gt; Apiau &gt; Google Play Store &gt; Rheoli dewisiadau Android &gt; Diogelwch a lleoliad &gt; Lleoliad. Gallwch hefyd ddiffodd y defnydd o Wi-Fi, rhwydweithiau symudol, a synwyryddion ar gyfer lleoliad Android drwy ddiffodd “Cywirdeb Lleoliad Google” yn yr un ddewislen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2687407218262674387">Telerau Gwasanaeth Google</translation>
 <translation id="2688196195245426394">Bu gwall wrth gofrestru'r ddyfais gyda'r gweinydd: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Dyfais sydd wedi'i bwndelu yw hon ac ni ellir ei chofrestru gydag Uwchraddiad Ciosg ac Arwyddion.</translation>
@@ -103,10 +105,15 @@
 <translation id="2732134891301408122">Cynnwys ychwanegol <ph name="CURRENT_ELEMENT" /> allan o <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Iawn</translation>
 <translation id="2754825024506485820">Dewch o hyd i'r apiau sydd eu hangen arnoch, o gynhyrchiant i adloniant, ar y Google Play Store. Gallwch osod apiau unrhyw bryd.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Pan fydd Cywirdeb Lleoliad ymlaen, defnyddir gwybodaeth am signalau diwifr, megis pwyntiau mynediad Wi-Fi a thyrau rhwydwaith symudol, ynghyd â data synhwyrydd dyfeisiau, megis mesurydd cyflymu a gyrosgop, i amcangyfrif lleoliad dyfais yn fwy cywir, y mae apiau a gwasanaethau Android yn ei ddefnyddio i ddarparu nodweddion sy'n seiliedig ar leoliad. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'ch dyfais er mwyn cyfrannu at leoliadau signal diwifr a gasglwyd drwy gyfrannu torfol.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Mae Google yn defnyddio'r wybodaeth hon a gasglwyd o'r ddyfais hon i: wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad; a gwella, darparu a chynnal gwasanaethau Google yn gyffredinol. Rydym yn prosesu'r wybodaeth hon yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd partïon i wasanaethu anghenion defnyddwyr. Ni ddefnyddir y wybodaeth hon i adnabod unrhyw unigolyn.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Gallwch ddiffodd Cywirdeb Lleoliad ar unrhyw adeg yng ngosodiadau lleoliad y ddyfais hon o dan Gosodiadau &gt; Preifatrwydd a diogelwch &gt; Rheolyddion preifatrwydd &gt; Mynediad i leoliad &gt; Gosodiadau lleoliad uwch. Os yw Cywirdeb Lleoliad wedi'i ddiffodd, ni fydd data Cywirdeb Lleoliad yn cael eu casglu. Ar gyfer apiau a gwasanaethau Android, dim ond cyfeiriad IP a ddefnyddir, os yw ar gael, i bennu lleoliad y ddyfais hon, a allai effeithio ar argaeledd a chywirdeb lleoliadau ar gyfer apiau a gwasanaethau Android megis Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Rydych yn barod i fynd!</translation>
 <translation id="2832124733806557606">Gall eich plentyn ddefnyddio PIN i fewngofnodi neu ddatgloi'r ddyfais.</translation>
 <translation id="283669119850230892">I ddefnyddio'r rhwydwaith <ph name="NETWORK_ID" />, cwblhewch eich cysylltiad â'r Rhyngrwyd isod yn gyntaf.</translation>
 <translation id="2849767214114481738">Mae'ch PIN wedi'i ychwanegu</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, a faint o gof a ddefnyddiwyd yn nodweddiadol.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yn eich gosodiadau dyfais Chrome. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2893180576842394309">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill</translation>
 <translation id="2902265136119311513">Pori fel Gwestai</translation>
 <translation id="2904210161403910217">Mae eich cyfrinair wedi newid ers y tro diwethaf i chi fewngofnodi</translation>
@@ -183,6 +190,9 @@
 <translation id="4341905082470253054">Wrthi'n gwirio'r statws TPM...</translation>
 <translation id="4370975561335139969">Nid yw'r e-bost a'r cyfrinair a roddwyd gennych yn cyfateb</translation>
 <translation id="4373418556073552953">Mewngofnodi gyda'ch ffôn Android</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i'ch dyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion rydych yn eu defnyddio, faint o gof rydych yn ei ddefnyddio, a data diagnostig a defnydd apiau Android. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw amser yn eich gosodiadau dyfais ChromeOS. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Os yw'r gosodiad Gweithgarwch ar y We ac Apiau wedi'i droi ymlaen ar gyfer eich Cyfrif Google, gellir cadw eich data Android i'ch Cyfrif Google. Gallwch weld eich data, eu dileu, a newid gosodiadau eich cyfrif yn account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4403266582403435904">Adfer data neu newid dyfeisiau yn hawdd unrhyw bryd. Mae copïau wrth gefn yn cael eu huwchlwytho i Google a'u hamgryptio gan ddefnyddio cyfrinair Cyfrif Google eich plentyn.</translation>
 <translation id="4410545552906060960">Defnyddiwch rif (PIN) yn hytrach na chyfrinair i ddatgloi eich dyfais. Ewch i'r gosodiadau i osod eich PIN yn nes ymlaen.</translation>
 <translation id="4415213869328311284">Rydych yn barod i ddechrau defnyddio <ph name="DEVICE_TYPE" />.</translation>
@@ -261,6 +271,9 @@
 <translation id="5539070192556911367">Methu â chyrraedd Google</translation>
 <translation id="557722062034137776">Ni fydd ailosod eich dyfais yn effeithio ar eich cyfrifon Google nac unrhyw ddata sy'n cael eu cysoni i'r cyfrifon hyn. Fodd bynnag, bydd yr holl ffeiliau a gedwir yn lleol ar eich dyfais yn cael eu dileu.</translation>
 <translation id="5626172233890210551">Defnyddiwch gyfrinair yn lle hynny</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />I ddarparu'r profiad gorau, mae <ph name="DEVICE_OS" /> yn casglu data caledwedd am ddyfeisiau ac yn eu rhannu gyda Google i benderfynu pa ddiweddariadau y dylid eu hanfon. Gallwch ddewis i ganiatáu i Google ddefnyddio'r data hyn at ddibenion ychwanegol megis cymorth a gwelliannau i'r profiad a gwasanaeth <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch fewngofnodi ar y ddyfais hon a gweld meysydd a restrir fel chromeosflex_ yn chrome://system i weld y data a anfonwyd at Google ar gyfer hidlo diweddariadau, yn ogystal ag unrhyw achosion eraill ble rydych yn dewis rhannu data â Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Am ragor o fanylion ar ddata y gall <ph name="DEVICE_OS" /> eu rhannu â Google, a sut maent yn cael eu defnyddio, ewch i g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Er mwyn defnyddio <ph name="NETWORK_ID" /> mae'n bosib y bydd rhaid i chi <ph name="LINK_START" />fynd i dudalen fewngofnodi'r rhwydwaith<ph name="LINK_END" /> yn gyntaf, a fydd yn agor yn awtomatig ymhen rhai eiliadau. Os na fydd yn agor yn awtomatig, ni fydd modd i chi ddefnyddio'r rhwydwaith.</translation>
 <translation id="5655296450510165335">Cofrestru dyfais</translation>
 <translation id="5659964844710667266">Creu cyfrinair ar gyfer y <ph name="DEVICE_TYPE" /> hwn</translation>
@@ -310,6 +323,8 @@
 <translation id="636850387210749493">Cofrestru menter</translation>
 <translation id="6380143666419481200">Derbyn a pharhau</translation>
 <translation id="640457954117263537">Defnyddiwch leoliad ar gyfer apiau a gwasanaethau Android a ChromeOS.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i'ch dyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion rydych yn eu defnyddio a faint o gof rydych yn ei ddefnyddio yn nodweddiadol.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yn eich gosodiadau dyfais Chrome. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Gosod diweddariad critigol</translation>
 <translation id="6480327114083866287">Rheolir gan <ph name="MANAGER" /></translation>
 <translation id="6495266441917713704">Methu â throsglwyddo Wi-Fi</translation>
@@ -326,11 +341,16 @@
 <translation id="6722744767592605627">Gallwch adfer <ph name="EMAIL" />, ond bydd data lleol yn cael eu dileu.</translation>
 <translation id="6748980958975836188">Rydw i wedi darllen ac yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Telerau Gwasanaeth Ychwanegol Chrome a ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6789834167207639931">Rhowch eich cyfrinair Cyfrif Google eto ar y sgrîn nesaf i orffen yr adferiad</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fydd ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, faint o gof a ddefnyddiwyd yn nodweddiadol, a data diagnostig a defnydd ap Android. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yng ngosodiadau dyfais ChromeOS eich plentyn. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Os yw'r gosodiad Gweithgarwch ar y We ac Apiau wedi'i droi ymlaen ar gyfer Cyfrif Google eich plentyn, gellir cadw data eich plentyn i'w Gyfrif Google. Gellir dysgu rhagor am y gosodiadau hyn a sut i'w haddasu yn family.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Apiau gorau ar gyfer eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="682971198310367122">Polisi preifatrwydd Google</translation>
 <translation id="6835762382653651563">Cysylltwch â'r Rhyngrwyd i ddiweddaru eich <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Mae mewngofnodi wedi newid</translation>
 <translation id="6883319974225028188">Wps!  Gwnaeth y system fethu â chadw ffufrweddiad dyfais.</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Gall data apiau fod yn unrhyw ddata y mae ap wedi'u cadw (yn seiliedig ar y gosodiadau datblygwr), gan gynnwys data megis cysylltiadau, negeseuon a lluniau. Ni fydd data wrth gefn yn cyfrif tuag at gwota storfa Drive eich plentyn.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddiffodd y gwasanaeth hwn yn y Gosodiadau.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Troi cysoni ymlaen</translation>
 <translation id="6918733588290914545">Gosodiad cyflym gyda ffôn Android</translation>
 <translation id="6920473853105515518">Gwnewch yn siŵr bod eich <ph name="DEVICE_TYPE" /> wedi'i chysylltu â'r rhyngrwyd a rhowch gynnig arall arni. Gallwch hefyd fynd i play.google/play-terms ar ddyfais arall.</translation>
@@ -377,6 +397,8 @@
 <translation id="7630426712700473382">Rheolir y ddyfais hon gan <ph name="MANAGER" /> ac mae'n gofyn i chi fewngofnodi bob tro.</translation>
 <translation id="7639914187072011620">Methwyd â nôl yr URL ailgyfeirio SAML o'r gweinydd</translation>
 <translation id="7643117827468520640">Adolygu'r telerau hyn</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Gall data apiau fod yn unrhyw ddata y mae ap wedi'u cadw (yn seiliedig ar y gosodiadau datblygwr), gan gynnwys data megis cysylltiadau, negeseuon a lluniau. Ni fydd data wrth gefn yn cyfrif tuag at eich cwota storfa Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddiffodd y gwasanaeth hwn yn y Gosodiadau.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7659584679870740384">Nid oes gennych awdurdod i ddefnyddio'r ddyfais hon. Cysylltwch â'r gweinyddwr i gael caniatâd mewngofnodi.</translation>
@@ -394,6 +416,8 @@
 <translation id="7870730066603611552">Adolygu dewisiadau cysoni ar ôl gosod</translation>
 <translation id="7883792253546618164">Gallwch ddad-danysgrifio unrhyw bryd.</translation>
 <translation id="7906440585529721295">Bydd data lleol yn cael eu dileu</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, a faint o gof a ddefnyddiwyd yn nodweddiadol.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yng ngosodiadau dyfais ChromeOS eich plentyn. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7943311690198910993">Diweddarwyd y dull mewngofnodi</translation>
 <translation id="795240231873601803">Defnyddio cofrestru Enterprise ar gyfer cyfrifon gwaith ac ysgol</translation>
 <translation id="7968982339740310781">Gweld y manylion</translation>
@@ -412,6 +436,8 @@
 <translation id="815491593104042026">Wps!  Wedi methu â dilysu oherwydd ei fod wedi'i ffurfweddu i ddefnyddio URL nad yw'n ddiogel (<ph name="BLOCKED_URL" />). Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="8157704005178149728">Wrthi'n gosod goruchwyliaeth</translation>
 <translation id="8174047975335711832">Gwybodaeth am y ddyfais</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Mae gwasanaeth lleoliad Google yn defnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol a synwyryddion i helpu i amcangyfrif lleoliad eich dyfais.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gallwch ddiffodd lleoliad Android ar eich dyfais unrhyw bryd drwy fynd i Gosodiadau &gt; Apiau &gt; Google Play Store &gt; Rheoli dewisiadau Android &gt; Diogelwch a lleoliad &gt; Lleoliad. Gallwch hefyd ddiffodd y defnydd o Wi-Fi, rhwydweithiau symudol, a synwyryddion ar gyfer lleoliad Android drwy ddiffodd “Cywirdeb Lleoliad Google” yn yr un ddewislen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Rhowch eich cyfrinair eto i ddiweddaru'ch proffil <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8239032431519548577">Cofrestriad menter wedi'i gwblhau</translation>
 <translation id="8241806945692107836">Wrthi'n pennu ffurfweddiad y ddyfais...</translation>
@@ -439,6 +465,9 @@
         <ph name="BR" />
         Yn weladwy i ddyfeisiau cyfagos fel <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="8655972064210167941">Methwyd â mewngofnodi gan nad oedd modd dilysu eich cyfrinair. Cysylltwch â'ch gweinyddwr neu rhowch gynnig arall arni.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Pan fydd Cywirdeb Lleoliad ymlaen, defnyddir gwybodaeth am signalau diwifr, megis pwyntiau mynediad Wi-Fi a thyrau rhwydwaith symudol, ynghyd â data synhwyrydd dyfeisiau, megis mesurydd cyflymu a gyrosgop, i amcangyfrif lleoliad dyfais yn fwy cywir, y mae apiau a gwasanaethau Android yn ei ddefnyddio i ddarparu nodweddion sy'n seiliedig ar leoliad. I wneud hyn, mae Google yn casglu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr yn eich ardal chi i gyfrannu at leoliadau signal diwifr torfol.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Mae Google yn defnyddio'r wybodaeth hon heb eich adnabod er mwyn: gwella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad; a gwella, darparu a chynnal gwasanaethau Google yn gyffredinol. Rydym yn prosesu'r wybodaeth hon yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd partïon i wasanaethu anghenion defnyddwyr.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Gallwch ddiffodd Cywirdeb Lleoliad ar unrhyw adeg yng ngosodiadau lleoliad eich dyfais o dan Gosodiadau &gt; Preifatrwydd a diogelwch &gt; Rheolyddion preifatrwydd &gt; Mynediad i leoliad &gt; Gosodiadau lleoliad uwch. Os yw Cywirdeb Lleoliad wedi'i ddiffodd, ni fydd data Cywirdeb Lleoliad yn cael eu casglu. Ar gyfer apiau a gwasanaethau Android, dim ond cyfeiriad IP a ddefnyddir, os yw ar gael, i bennu lleoliad eich dyfais, a allai effeithio ar argaeledd a chywirdeb lleoliadau ar gyfer apiau a gwasanaethau Android megis Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Yn anffodus, mae eich cyfrifiadur wedi'i ffurfweddu â chaledwedd sydd wedi'i gamffurfio. Mae hyn yn atal ChromeOS rhag diweddaru gyda'r gwelliannau diogelwch diweddaraf ac <ph name="BEGIN_BOLD" />mae'n bosib y bydd eich cyfrifiadur yn agored i ymosodiadau maleisus<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Ychwanegu rheolaethau rhieni ar ôl gosod</translation>
 <translation id="8698269656364382265">I ddychwelyd i'r sgrîn flaenorol, sweipiwch o'r ochr chwith.</translation>

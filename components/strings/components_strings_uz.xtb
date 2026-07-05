@@ -503,6 +503,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="175656076281618225">Sehr</translation>
 <translation id="1757773103848038814">Monospace shrifti</translation>
 <translation id="1757935267918149452">Google parolini oʻzgartirish tugmasi, Google hisobingiz parolini oʻzgartirish uchun faollashtiring</translation>
+<translation id="1759776526873274358">Xavfsizligingizni taʼminlash uchun saytlar yuboradigan tasdiq kodlarini avtomatik kiritish. Chrome bu kodlarni bevosita Gmail hisobingizdan olishi mumkin. <ph name="BEGIN_LINK" />Bu funksiya haqida batafsil<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati qurilmangizdagi operatsion tizimga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows tarmoq diagnostikasi bilan tekshirib ko‘ring<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotoqogʻoz (arxiv</translation>
@@ -3124,6 +3125,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5862579898803147654">Taxlovchi 8</translation>
 <translation id="5863515189965725638">IBAN raqamini tahrirlash</translation>
+<translation id="5863517400058880216">Tasdiq kodlarini Gmail orqali avtomatik kiritish</translation>
 <translation id="5863847714970149516">Bu sahifa sizdan pul talab qilishi mumkin</translation>
 <translation id="5866257070973731571">Telefon raqamini qo‘shing</translation>
 <translation id="5866327164731551901">Qayerdan: <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4512,6 +4514,7 @@ Batafsil axborot:
 <translation id="7967973398323409409">Avtomatik kiritilgan maʼlumotlar hech kimga koʻrinmaydi</translation>
 <translation id="79682505114836835">“<ph name="VALUE" />” qiymati hex formati uchun yaroqsiz.</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>
+<translation id="7971403153351954587">Nusxa olish jarayoni tashkilotingiz nazoratida</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA shifri bilan</translation>
 <translation id="7976053965094442846">Muddatli toʻlov taklif qiladigan hozir olib, keyin toʻlash emitentlari. Klaviatura yashirildi.</translation>
 <translation id="7976214039405368314">Limitdan oshib ketdi</translation>

@@ -1541,6 +1541,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7248671827512403053">Programa</translation>
 <translation id="7253951228444156601">Tikrinami slaptažodžiai…</translation>
 <translation id="7260367682327802201">Jūsų „Android“ įrenginyje gali būti panašus nustatymas. Jei naršyklėje „Chrome“ ir „Android“ įrenginyje įjungtas skelbimų vertinimo nustatymas, įmonė gali vertinti skelbimo efektyvumą svetainėse, kuriose lankotės, ir programose, kurias naudojate.</translation>
+<translation id="7265857422443387781">Ieškoti skirtuke naudojant „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Pateikti <ph name="ONE_TIME_CODE" /> šaltiniui <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Užblokuota svetainė</translation>
 <translation id="7276868533747677875">Jei anksčiau eksportavote slaptažodžius, ieškokite CSV failo įrenginyje ir importuokite juos į pageidaujamą slaptažodžių tvarkyklę.</translation>
@@ -1883,6 +1884,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="860282621117673749">Įspėjimai apie sumažintas kainas</translation>
 <translation id="8611922158252451755">Visi nuorodą turintys žmonės gali redaguoti visus skirtukus, todėl bendrinkite atsakingai. Nuoroda baigia galioti po 48 val.</translation>
 <translation id="8616006591992756292">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Versti į: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Atidarykite „Chrome“ meniu &gt; „Nustatymai“</translation>
 <translation id="8634050254805484913">Paslėpta siauruose ekranuose</translation>
 <translation id="8635399646025169806">Išsaugoti skirtukų grupę?</translation>

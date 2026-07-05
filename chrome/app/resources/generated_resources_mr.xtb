@@ -390,6 +390,7 @@
 <translation id="1272079795634619415">थांबा</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />सपोर्ट असलेल्या लिंक<ph name="END_LINK" /> उघडत आहे</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ब्लॉक करा</translation>
+<translation id="1274721046703404848">Google Drive सारख्या शोध सेवा आणि Google Workspace अ‍ॅप्स यांमधील कनेक्शन व्यवस्थापित करा</translation>
 <translation id="1274997165432133392">कुकी आणि इतर साइट डेटा</translation>
 <translation id="1275936815032730048">launcher + राइट अ‍ॅरो</translation>
 <translation id="1275963833368139883">तुम्ही तुमचा ब्राउझिंग इतिहास शोधता, तेव्हा उत्तरे आणि शोध परिणाम हे तुमच्या पेजवरील आशयावर आधारित असतात. हे तुम्हाला सुधारित परिणाम देते</translation>
@@ -2543,6 +2544,7 @@
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ला या प्रिंटरसह संवाद प्रस्थापित करणे शक्य झाले नाही. प्रिंटर प्लग इन केले आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2902312830803030883">आणखी क्रिया</translation>
 <translation id="2903457445916429186">निवडलेले आयटम उघडा</translation>
+<translation id="2903764741244499151">साइट चित्रात-चित्र यामध्ये आपोआप एंटर करू शकतात. यामुळे इतर टास्कसाठी तुमची स्क्रीन मोकळी करून तुम्हाला व्हिडिओ पाहणे सुरू ठेवता येते.</translation>
 <translation id="2903882649406874750"><ph name="HOST" /> ला सेन्सर ॲक्सेस करण्यापासून नेहमी ब्लॉक करा</translation>
 <translation id="2903925626657991994">डावे बटण, उजवे बटण आणि दोन्ही बटणे यांच्यामधून माउस बटणाची निवड बदलण्यासाठी “,” वापरा</translation>
 <translation id="290415756080113152">साइट या तुमच्या डिव्हाइसवर अ‍ॅक्सेस करण्यायोग्य असलेली प्रिंटर शोधू किंवा वापरू शकत नाहीत</translation>
@@ -10031,6 +10033,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8619803522055190423">ड्रॉप शॅडो</translation>
 <translation id="8620206585293032550">इनॲक्टिव्ह टॅबचे स्वरूप</translation>
 <translation id="8621979332865976405">तुमची संपूर्ण स्क्रीन शेअर करा</translation>
+<translation id="8622145666696249878">Google Search AI मोड आणि कनेक्ट केलेली ॲप्स</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS डिव्हाइस आणि घटकाचे सिरीअल नंबर वाचू शकेल</translation>
 <translation id="862542460444371744">&amp;विस्तार</translation>
