@@ -33,6 +33,12 @@ class FakeGeminiViewStateChangeHandlerTarget
   void CollapseFloatyIfInvoked() override { collapse_floaty_called_ = true; }
   void OnLiveButtonTapped() override { live_button_tapped_called_ = true; }
   void OnGeminiLiveUserDidBargeIn() override { barge_in_called_ = true; }
+  void OnGeminiLiveUserDidPressStopButton() override {
+    stop_button_pressed_called_ = true;
+  }
+  void OnModeChanged(ios::provider::GeminiViewMode mode) override {
+    last_mode_changed_ = mode;
+  }
   void OnGeminiUIDidAppear() override { ui_did_appear_called_ = true; }
 
   std::optional<ios::provider::GeminiViewState> last_view_state_changed_;
@@ -44,6 +50,8 @@ class FakeGeminiViewStateChangeHandlerTarget
   bool collapse_floaty_called_ = false;
   bool live_button_tapped_called_ = false;
   bool barge_in_called_ = false;
+  bool stop_button_pressed_called_ = false;
+  std::optional<ios::provider::GeminiViewMode> last_mode_changed_;
   bool ui_did_appear_called_ = false;
 };
 
@@ -164,6 +172,20 @@ TEST_F(GeminiViewStateChangeHandlerTest, TestLiveButtonTapped) {
 TEST_F(GeminiViewStateChangeHandlerTest, TestGeminiUIDidAppear) {
   [handler_ geminiUIDidAppear];
   EXPECT_TRUE(target_.ui_did_appear_called_);
+}
+
+// Tests that the handler correctly forwards didSwitchToMode calls.
+TEST_F(GeminiViewStateChangeHandlerTest, TestDidSwitchToMode) {
+  [handler_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+  EXPECT_THAT(target_.last_mode_changed_,
+              testing::Optional(ios::provider::GeminiViewMode::kLive));
+}
+
+// Tests that the handler correctly forwards geminiLiveUserDidPressStopButton
+// calls.
+TEST_F(GeminiViewStateChangeHandlerTest, TestGeminiLiveUserDidPressStopButton) {
+  [handler_ geminiLiveUserDidPressStopButton];
+  EXPECT_TRUE(target_.stop_button_pressed_called_);
 }
 
 }  // namespace

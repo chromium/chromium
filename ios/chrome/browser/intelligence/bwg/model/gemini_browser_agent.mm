@@ -1116,6 +1116,15 @@ void GeminiBrowserAgent::OnLiveButtonTapped() {
   }
 }
 
+void GeminiBrowserAgent::OnGeminiLiveUserDidPressStopButton() {
+  // TODO(crbug.com/513271981): Record metrics when the user presses the Live
+  // stop button.
+}
+
+void GeminiBrowserAgent::OnModeChanged(ios::provider::GeminiViewMode mode) {
+  // TODO(crbug.com/513271981): Record metrics for mode changes.
+}
+
 void GeminiBrowserAgent::DismissGeminiFromOtherWindows(
     base::OnceClosure completion) {
   // Collect all browsers (excluding the current one) for all profiles.

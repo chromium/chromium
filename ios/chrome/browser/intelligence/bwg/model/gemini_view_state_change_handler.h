@@ -33,8 +33,14 @@ class GeminiViewStateChangeHandlerTarget {
   // Called when the user taps the Live button.
   virtual void OnLiveButtonTapped() = 0;
 
+  // Called when the user presses the Live stop button.
+  virtual void OnGeminiLiveUserDidPressStopButton() = 0;
+
   // Called when the user barges in during Gemini Live session.
   virtual void OnGeminiLiveUserDidBargeIn() = 0;
+
+  // Called when the Gemini view mode changes.
+  virtual void OnModeChanged(ios::provider::GeminiViewMode mode) = 0;
 
   // Called when the Gemini UI did appear.
   virtual void OnGeminiUIDidAppear() = 0;

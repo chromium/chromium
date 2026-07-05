@@ -34,8 +34,14 @@
 // Called when the user taps the Live button in Gemini UI.
 - (void)geminiLiveUserDidTapLiveButton;
 
+// Called when the user presses the Live stop button.
+- (void)geminiLiveUserDidPressStopButton;
+
 // Called when the user barges in during Gemini Live session.
 - (void)geminiLiveUserDidBargeIn;
+
+// Called when the Gemini view mode changes.
+- (void)didSwitchToMode:(ios::provider::GeminiViewMode)mode;
 
 // Called when the Gemini UI did appear.
 - (void)geminiUIDidAppear;

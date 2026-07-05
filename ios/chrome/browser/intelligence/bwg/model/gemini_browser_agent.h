@@ -157,6 +157,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       ios::provider::GeminiViewState view_state) override;
   void OnLiveButtonTapped() override;
   void OnGeminiLiveUserDidBargeIn() override;
+  void OnGeminiLiveUserDidPressStopButton() override;
+  void OnModeChanged(ios::provider::GeminiViewMode mode) override;
   void OnGeminiUIDidAppear() override;
 
   // Called when the scene activation level changes.
