@@ -778,7 +778,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1526560967942511387">Tài liệu không Tên</translation>
 <translation id="1527336312600375509">Tốc độ làm mới màn hình</translation>
 <translation id="152913213824448541">Người liên hệ Chia sẻ lân cận</translation>
-<translation id="1529769834253316556">Chiều cao dòng</translation>
+<translation id="1529769834253316556">Khoảng cách giữa các dòng</translation>
 <translation id="1529891865407786369">Nguồn điện</translation>
 <translation id="1530376661400379364">Chrome đặt lại những chế độ cài đặt này</translation>
 <translation id="1531275250079031713">Hiển thị hộp thoại "Thêm Wi-Fi mới"</translation>
@@ -9930,7 +9930,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="787268756490971083">Đang tắt</translation>
 <translation id="7872758299142009420">Quá nhiều nhóm con: <ph name="ERROR_LINE" /></translation>
 <translation id="7876027585589532670">Không thể chỉnh sửa lối tắt</translation>
-<translation id="7876243839304621966">Xóa tất cả</translation>
+<translation id="7876243839304621966">Xoá tất cả</translation>
 <translation id="7877126887274043657">Khắc phục sự cố &amp;đồng bộ hoá</translation>
 <translation id="7877212753140190672">Hỏi về hình ảnh này</translation>
 <translation id="7877451762676714207">Lỗi máy chủ không xác định. Vui lòng thử lại hoặc liên hệ với quản trị viên máy chủ.</translation>
