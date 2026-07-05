@@ -125,10 +125,12 @@
 
   GeminiConsentConfiguration* consentConfig =
       [_mediator consentConfigurationForFirstRunType:_firstRunType];
-  _viewController = [[GeminiFirstRunWrapperViewController alloc]
-             initWithPromo:_mediator.shouldShowPromo
-              firstRunType:_firstRunType
-      consentConfiguration:consentConfig];
+  BOOL showPromo =
+      _mediator.shouldShowPromo && (_firstRunType != GeminiFirstRunType::kLive);
+  _viewController =
+      [[GeminiFirstRunWrapperViewController alloc] initWithPromo:showPromo
+                                                    firstRunType:_firstRunType
+                                            consentConfiguration:consentConfig];
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 
@@ -158,6 +160,7 @@
   _viewController = nil;
   _geminiHandler = nil;
   _helpCommandsHandler = nil;
+  [_mediator disconnect];
   _mediator = nil;
   _prefService = nil;
   _tracker = nil;

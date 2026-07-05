@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -269,4 +270,31 @@ TEST_F(GeminiFirstRunCoordinatorTest, ExternalAppStoreEventIPHWasTriggered) {
   [coordinator_ stop];
 
   EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
+}
+
+// Tests that starting the coordinator with kLive starts the Live FRE.
+TEST_F(GeminiFirstRunCoordinatorTest, TestLiveFirstRunStarts) {
+  base_view_controller_ = [[UIViewController alloc] init];
+  scoped_window_ = std::make_unique<ScopedKeyWindow>();
+  [scoped_window_->Get() setRootViewController:base_view_controller_];
+  [scoped_window_->Get() makeKeyAndVisible];
+
+  coordinator_ = [[GeminiFirstRunCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                  fromEntryPoint:gemini::EntryPoint::AIHub
+                    firstRunType:GeminiFirstRunType::kLive
+               completionHandler:nil];
+  [coordinator_ start];
+
+  EXPECT_TRUE(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^bool {
+        return base_view_controller_.presentedViewController != nil;
+      }));
+
+  UIViewController* presented = base_view_controller_.presentedViewController;
+  EXPECT_TRUE(
+      [presented isKindOfClass:[GeminiFirstRunWrapperViewController class]]);
+
+  [coordinator_ stop];
 }

@@ -104,8 +104,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (void)disconnect {
   if (_FRECompletion) {
-    _FRECompletion(NO);
+    void (^completion)(BOOL) = _FRECompletion;
     _FRECompletion = nil;
+    completion(NO);
   }
 }
 
@@ -244,8 +245,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (void)handleFRECompletion:(BOOL)success {
   if (_FRECompletion) {
-    _FRECompletion(success);
+    void (^completion)(BOOL) = _FRECompletion;
     _FRECompletion = nil;
+    completion(success);
   }
 }
 
