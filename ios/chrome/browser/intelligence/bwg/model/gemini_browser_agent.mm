@@ -1199,9 +1199,8 @@ void GeminiBrowserAgent::DismissFloaty() {
   processing_status_ = ios::provider::GeminiClientMode::kUnknown;
   elapsed_minimized_floaty_time_ = base::TimeTicks();
   entry_point_ = gemini::EntryPoint::Unknown;
-  ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden,
-                                       /*animated=*/false);
   UpdateGeminiLiveIconVisibility();
+  ios::provider::ResetGemini();
 }
 
 void GeminiBrowserAgent::ForceDismissFloaty() {
