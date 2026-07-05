@@ -129,6 +129,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2120620239521071941">Gailuko <ph name="ITEMS_COUNT" /> elementu ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="2121284319307530122">Exekuta ezazu berriro &amp;Chrome eguneratzeko</translation>
 <translation id="2123055963409958220">Lagundu Chrome hobetzen <ph name="BEGIN_LINK" />oraingo ezarpenen<ph name="END_LINK" /> berri emanda</translation>
+<translation id="2125838419757773031">Hautatu pantailako eremu bat bilatzeko</translation>
 <translation id="2126108037660393668">Deskargatutako fitxategia ezin izan da egiaztatu.</translation>
 <translation id="2128411189117340671">Kudeatu Chrome-ko profilak</translation>
 <translation id="2137162749895930932">Itxi itzultzeko pantaila</translation>
@@ -268,6 +269,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="3512495006767217696">Chrome-n integratuta dago pasahitz konplexuak sortzen, gordetzen eta automatikoki betetzen laguntzeko. Gehitu lasterbidea erraz atzitzeko</translation>
 <translation id="3539955434060988644">Ireki esteka Chrome-ko ezkutuko moduko leiho batean</translation>
 <translation id="354621070532799440">Gogorarazpena: Google-ren segurtasun-eginbide onenak poltsikoan</translation>
+<translation id="3547866758548131919">Sakatu Laburbildu botoia dokumentu hau Chrome-ko Gemini-rekin partekatzeko. Horrela, laburpen bizkor bat lortu ahalko duzu, eta galdera gehigarriak egin.</translation>
 <translation id="3576528680708590453">Sistemaren administratzailearen konfigurazioaren arabera, Google Chrome-k beste arakatzaile bat ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
 <translation id="3582972582564653026">Sinkronizatu eta pertsonalizatu Chrome gailu guztietan</translation>
 <translation id="3583751698304738917">Jadanik hasita daukazu saioa <ph name="USER_EMAIL_ADDRESS" /> gisa Chrome-ko beste profil batean</translation>
@@ -357,6 +359,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="4400772909124543403">Ez dago eguneratzerik erabilgarri</translation>
 <translation id="4427306783828095590">Babes handiagoa eskaintzen du phishingaren eta malwarearen aurka</translation>
 <translation id="4434353761996769206">Instalatzailearen errorea: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Partekatu dokumentu hau Chrome-ko Gemini-rekin laburpen bizkor bat lortzeko eta galdera gehigarriak egiteko</translation>
 <translation id="4450664632294415862">Chrome - Hasi saioa sarean - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Beste eragiketa bat ari da egiten Google Chrome. Saiatu berriro geroago.</translation>
 <translation id="4459234553906210702">Iragarkien neurketari esker, bisitatzen dituzun webguneek Chrome-ri informazioa eska diezaiokete. Informazio horren bidez, webguneek beren iragarkien errendimendua neur dezakete. Webguneen artean ahalik eta informazio gutxien transferituta mugatzen du iragarkien neurketak webgunearteko jarraipena.</translation>
@@ -791,6 +794,7 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="8601359445272098721">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak, "itzuli pantaila" botoia hautatuta.</translation>
 <translation id="8614913330719544658">Google Chrome-k ez du erantzuten. Berrabiarazi nahi duzu?</translation>
 <translation id="861702415419836452">Chrome-k kamera erabiltzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
+<translation id="8623450603356630491">Hasi Chrome saioa telefonoan</translation>
 <translation id="8624541899164515475">Ezarpenak, beste fitxa batean irekitzen da.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 minutu barru exekutatuko da Chrome berriro}other{# minutu barru exekutatuko da Chrome berriro}}</translation>
 <translation id="8637932705841171563">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren ezarpenetan</translation>

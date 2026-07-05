@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} ключ доступу}one{{count} ключ доступу}few{{count} ключы доступу}many{{count} ключоў доступу}other{{count} ключа доступу}}</translation>
 <translation id="1005023885865154304">Адкрыйце налады аўтазапаўнення пароляў</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
+<translation id="1013852467930342108">Live – гэта новая функцыя Gemini ў Chrome</translation>
 <translation id="1013952917065545813">Адсюль вы можаце адкрываць нядаўна закрытыя ўкладкі</translation>
 <translation id="1016495303386450659">Элемент абноўлены</translation>
 <translation id="1018804590490383958">Сканіраваць і запоўніць аўтаматычна</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Абагуленыя дыскі</translation>
 <translation id="2580306219079937316">Адкрыць налады перакладу</translation>
 <translation id="2583688836549072561">Група ўкладак "<ph name="GROUP_TITLE" />", колькасць укладак: <ph name="TABS_NUMBER" />, новае дзеянне.</translation>
+<translation id="2584994295315085351">Адкрываць новую ўкладку, калі вы вяртаецеся ў Chrome праз 4 гадзіны</translation>
 <translation id="2593272815202181319">Монашырынны</translation>
 <translation id="2601778637777010194">Адсочвайце зніжэнне цэн на тавары</translation>
 <translation id="2602372807870028932">Выбраная інфармацыя, захаваная на гэтай прыладзе, будзе выдалена</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">Тэма колеру вірыдыян</translation>
 <translation id="3759491607478608474">Абагульвайце з Gemini змесціва бягучай укладкі, каб атрымліваць больш рэлевантныя адказы</translation>
 <translation id="3762232513783804601">Распрацавана для iPad</translation>
+<translation id="3767529805486761639">Змяненне меню</translation>
 <translation id="3768725474733206671">Паўторна адкрыць апошнюю закрытую ўкладку</translation>
 <translation id="3779810277399252432">Няма падключэння да інтэрнэту.</translation>
 <translation id="3782614601387961027">Закрыць папярэджанне</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">Абнавіце браўзер</translation>
 <translation id="4021931095789478915">Дадаць ${url} у Спіс на прагляд</translation>
 <translation id="4028871427853484857">Захаваць ва ўліковым запісе…</translation>
-<translation id="4036529942385659684">Паказваць стартавую старонку пасля перыяду бяздзейнасці</translation>
 <translation id="4038354071007134711">На прыладзе няма праграм, у якіх можна адкрыць гэты файл.</translation>
 <translation id="4042870976416480368">Знайсці на старонцы</translation>
 <translation id="4045441967987592849">Зноў адкрыць</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">Адпраўка справаздачы аб збоях…</translation>
 <translation id="519528950056409240">Дазвол Кашальку абагульваць даныя</translation>
 <translation id="519530786644929958">Збой спампоўвання. Паўтарыць спробу нельга.</translation>
+<translation id="519620255540220054">Наладзіць галоўную старонку</translation>
 <translation id="5197255632782567636">Інтэрнэт</translation>
 <translation id="5200894869889836319">Наладжванне дазволаў</translation>
 <translation id="5203051773066903947">Увесці</translation>
@@ -1650,6 +1653,7 @@
 <translation id="6523575793810663688">Паказаць</translation>
 <translation id="6524082013156754186">Захаваць ва ўліковым запісе</translation>
 <translation id="6524918542306337007">Рэжым інкогніта недаступны</translation>
+<translation id="6525550806864373485">Змяніць меню</translation>
 <translation id="6527208859483186860">фон {position} з {total}</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6532106788206463496">Захаваць змены</translation>
@@ -1735,6 +1739,7 @@
 <translation id="6761393919622941301">Аўдыя</translation>
 <translation id="6765551480308401897">Не рабіць стандартным</translation>
 <translation id="6770452996697898492">[ЗАБРАНІРАВАНА]</translation>
+<translation id="6775952316617222141">Выкарыстоўваць рэжым Live ў Gemini ў Chrome</translation>
 <translation id="6779455296366983087">Даныя пра работу ў браўзеры будуць выдалены</translation>
 <translation id="6782531425936234573">Экспартаваць даныя</translation>
 <translation id="6791425686608802741">Націсніце "Дадаць укладку ў новую групу".</translation>

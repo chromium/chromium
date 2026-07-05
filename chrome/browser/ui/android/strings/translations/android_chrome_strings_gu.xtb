@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">કનેક્શન સુરક્ષિત નથી</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="2163089732491971196">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
+<translation id="2164015935042801524">ટૅબને ઊભી રીતે બતાવવા માટે અહીં રાઇટ ક્લિક કરો</translation>
 <translation id="2166228530126694506">વર્ઝન <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">છબીના વર્ણનોની સુવિધા બંધ છે</translation>
 <translation id="2172905120685242547">વિન્ડો બંધ કરીએ?</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">સાઇટ સ્ટોરેજ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> તરફથી</translation>
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
+<translation id="2329500425421091035">રજૂ કરી રહ્યાં છીએ Chromeમાં AI મોડ</translation>
 <translation id="2330186936255788117">વધુ બુકમાર્ક</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">વધુ પેજ પહેલેથી લોડ કરવામાં આવ્યા છે. જ્યારે અન્ય સાઇટ કે ઍપ દ્વારા વિનંતી કરવામાં આવે, ત્યારે પેજને Googleના સર્વર મારફતે પહેલેથી લોડ કરી શકાય છે.</translation>
 <translation id="2366554533468315977">આ વિકલ્પ માટે સમગ્ર વેબ પરથી કિંમતનો ઇતિહાસ</translation>
 <translation id="2367818124433749493">ડેવલપરના શૉર્ટકટ</translation>
+<translation id="2369058545741334020">વાંચન મોડમાં ખોલો</translation>
 <translation id="2385605401818128172">તમે એવી સાઇટ રિવ્યૂ કરી શકો જે ઘણા નોટિફિકેશન મોકલતી હોય અને ભવિષ્યમાં વધુ નોટિફિકેશન મોકલતા તેમને અટકાવી શકો</translation>
 <translation id="2386938421315164605">વિષયોને છુપાવો અને બતાવો</translation>
 <translation id="2390510615457643724">શું તમે <ph name="FILE_NAME" /><ph name="FILE_SIZE" />ને ફરી ડાઉનલોડ કરવા માગો છો?</translation>
@@ -597,6 +600,7 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" />ને ચકાસણી કરવા દો કે આ તમે જ છો</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB ઉપલબ્ધ</translation>
+<translation id="3547933853190131743">AI મોડ વડે શોધો</translation>
 <translation id="3549537543136628349">પહેલેથી લોડ કરેલા પેજ એન્ક્રિપ્ટેડ હોવાથી અને પેજને લિંક કરતી સાઇટ કે ઍપ, Googleની સાઇટ કે ઍપ હોવાથી, આ પેજને ખાનગી રીતે પહેલેથી લોડ કરતી વખતે Googleના સર્વરને નવી માહિતી મળતી નથી.</translation>
 <translation id="3549657413697417275">તમારો ઇતિહાસ શોધો</translation>
 <translation id="3557336313807607643">સંપર્કોમાં ઉમેરો</translation>
@@ -1966,12 +1970,14 @@
 <translation id="9001604755921395912">Chromeના છૂપા ટૅબમાં ખોલો</translation>
 <translation id="9010094279589497751">જ્યારે પણ તમને Geminiની જરૂર પડે, ત્યારે તેને ઝડપથી ખોલો</translation>
 <translation id="9012585441087414258">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રક્ષણ આપે છે. જો કોઈ પેજ કંઈપણ શંકાસ્પદ કરે છે, તો URL અને પેજ કન્ટેન્ટના બિટ Google Safe Browsingને મોકલવામાં આવે છે.</translation>
+<translation id="9014097371980259227">AI મોડ વડે શોધવામાં તમારી મદદ કરવા માટે અમુક ટૂલ ખસેડવામાં આવ્યા છે</translation>
 <translation id="9019199799064251516">કાર પ્રોફાઇલ લૉક વિના ચાલુ રાખીએ?</translation>
 <translation id="9022774213089566801">વારંવાર મુલાકાત લેવાયેલ</translation>
 <translation id="9022871169049522985">સાઇટ અને જાહેરાતકર્તાઓ તેમની જાહેરાતોના કાર્યપ્રદર્શનની માપણી કરી શકે છે</translation>
 <translation id="9024318700713112071">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="9027728231343310283"><ph name="SITE" />નો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="9035378196785279980">આમાં ખસેડો\u2026</translation>
+<translation id="904146253922032365">ટૅબને ઊભી રીતે બતાવવા માટે ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="9042893549633094279">પ્રાઇવસી અને સુરક્ષા</translation>
 <translation id="9047347135558855162">Chromeમાં ઝડપથી શોધ શરૂ કરો</translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>

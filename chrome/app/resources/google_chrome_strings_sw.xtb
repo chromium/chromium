@@ -129,6 +129,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2120620239521071941">Hatua hii itafuta vipengee <ph name="ITEMS_COUNT" /> kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Fungua tena ili Usasishe &amp;Chrome</translation>
 <translation id="2123055963409958220">Saidia kuboresha Chrome kwa kuripoti kuhusu <ph name="BEGIN_LINK" />mipangilio ya sasa<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Chagua sehemu ya skrini ili utafute</translation>
 <translation id="2126108037660393668">Faili iliyopakuliwa imeshindwa kuthibitishwa.</translation>
 <translation id="2128411189117340671">Dhibiti wasifu wa Chrome</translation>
 <translation id="2137162749895930932">Funga skrini ya kutafsiri</translation>
@@ -268,6 +269,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="3512495006767217696">Kimejumuishwa kwenye Chrome ili kukusaidia kubuni, kuhifadhi na kujaza kiotomatiki manenosiri thabiti. Weka njia ya mkato ili ufikie kwa urahisi</translation>
 <translation id="3539955434060988644">Fungua kiungo katika Dirisha la Faraghani la Chrome</translation>
 <translation id="354621070532799440">Kikumbusho: Vipengele bora vya usalama vya Google kiganjani mwako</translation>
+<translation id="3547866758548131919">Ruhusu Gemini kwenye Chrome ifikie hati hii kwa kubofya kitufe cha Andaa muhtasari ili upate muhtasari wa haraka na uulize maswali ya nyongeza</translation>
 <translation id="3576528680708590453">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Google Chrome ifungue kivinjari mbadala ili kufikia <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sawazisha na uweke mapendeleo kwenye Chrome katika vifaa vyako vyote</translation>
 <translation id="3583751698304738917">Tayari umeingia katika akaunti ukitumia <ph name="USER_EMAIL_ADDRESS" /> katika wasifu mwingine wa Chrome</translation>
@@ -358,6 +360,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="4400772909124543403">Hakuna sasisho linalopatikana</translation>
 <translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
 <translation id="4434353761996769206">Hitilafu ya kisakinishaji: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Ruhusu Gemini ifikie hati hii kwenye Chrome ili upate muhtasari wa haraka na uulize maswali ya nyongeza</translation>
 <translation id="4450664632294415862">Chrome - Kuingia katika Akaunti ya Mtandao - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Kuna shughuli nyingine zinaendelea kwenye Google Chrome. Tafadhali jaribu tena baadaye.</translation>
 <translation id="4459234553906210702">Upimaji wa tangazo huruhusu tovuti unazotembelea ziombe maelezo kutoka Chrome ambayo yanasaidia tovuti kupima ufanisi wa matangazo yao. Upimaji wa tangazo huzuia ufuatiliaji katika tovuti mbalimbali kwa kuhamisha maelezo machache kadiri iwezekanavyo miongoni mwa tovuti.</translation>
@@ -792,6 +795,7 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="8601359445272098721">Mpya! Unaweza kutafsiri matini na picha kwenye skrini kwa kuchagua kitufe cha "tafsiri skrini"</translation>
 <translation id="8614913330719544658">Google Chrome imelemazwa. Izindue upya sasa?</translation>
 <translation id="861702415419836452">Chrome inahitaji ruhusa ya kufikia kamera yako ili iunde ramani ya 3D ya mazingira yako</translation>
+<translation id="8623450603356630491">Ingia katika Chrome kwenye simu yako</translation>
 <translation id="8624541899164515475">Mipangilio, hufunguka katika kichupo kipya.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome itafunguka upya ndani ya dakika 1}other{Chrome itafunguka upya ndani ya dakika #}}</translation>
 <translation id="8637932705841171563">Ili uonyeshe dirisha lako, washa kinasa skrini katika Chrome kwenye Mipangilio ya Mfumo</translation>

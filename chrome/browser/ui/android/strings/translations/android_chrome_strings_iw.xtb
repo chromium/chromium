@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">החיבור אינו מאובטח</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2163089732491971196">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך</translation>
+<translation id="2164015935042801524">כדי להציג את הכרטיסיות לאורך, צריך ללחוץ לחיצה ימנית</translation>
 <translation id="2166228530126694506">גרסה <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">התכונה 'תיאורי תמונות' מושבתת</translation>
 <translation id="2172905120685242547">לסגור את החלון?</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">נתוני אתר מאוחסנים</translation>
 <translation id="2327445548174191329">מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
+<translation id="2329500425421091035">‏חדש: מצב AI ב-Chrome</translation>
 <translation id="2330186936255788117">עוד סימניות</translation>
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">‏יותר דפים נטענים מראש. השרתים של Google יכולים לטעון דפים מראש לפי בקשה של אתרים אחרים או אפליקציות אחרות.</translation>
 <translation id="2366554533468315977">היסטוריית המחירים של האפשרות הזו באינטרנט</translation>
 <translation id="2367818124433749493">קיצורי דרך למפתחים</translation>
+<translation id="2369058545741334020">פתיחה במצב קריאה</translation>
 <translation id="2385605401818128172">אפשר לבדוק אתרים ששולחים הרבה התראות ולמנוע מהם לשלוח עוד התראות בעתיד</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -327,6 +330,7 @@
 <translation id="2411239243988279592">‫<ph name="TAB_TITLE" />, כרטיסייה שנבחרה ומכילה תוכן שאפשר לשמוע</translation>
 <translation id="2413014528833954543">לא ניתן לבדוק את הסיסמאות במכשיר הזה</translation>
 <translation id="2414886740292270097">כהה</translation>
+<translation id="2415037988255164008">לשחזר את החלונות?</translation>
 <translation id="2421705177906985956">אין כרגע אתרים שאפשר להציג</translation>
 <translation id="2426805022920575512">בחירת חשבון אחר</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{סרטונים, סרטון אחד ברשימה}one{סרטונים, # סרטונים ברשימה}two{סרטונים, # סרטונים ברשימה}other{סרטונים, # סרטונים ברשימה}}</translation>
@@ -596,6 +600,7 @@
 <translation id="3524334353996115845">ניתן יהיה לאמת את זהותך באמצעות <ph name="ORIGIN" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>
 <translation id="3542235761944717775">‏‎<ph name="KILOBYTES" />KB זמינים</translation>
+<translation id="3547933853190131743">‏חיפוש במצב AI</translation>
 <translation id="3549537543136628349">‏הדפים שנטענים מראש מוצפנים, והאתר או האפליקציה שמקשרים לדפים האלה הם אתר או אפליקציה של Google, לכן השרתים של Google לא מקבלים מידע חדש כשמתבצעת טעינה מראש של הדפים האלה באופן פרטי.</translation>
 <translation id="3549657413697417275">חיפוש בהיסטוריה שלך</translation>
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
+<translation id="6565781844089373403">שחזור החלונות</translation>
 <translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="657177046675873214">כדי שהסימניות יופיעו בכל המכשירים, צריך להפעיל את האפשרות "סימניות" בהגדרות</translation>
 <translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>
@@ -1964,12 +1970,14 @@
 <translation id="9001604755921395912">‏פתיחה בכרטיסייה פרטית ב-Chrome</translation>
 <translation id="9010094279589497751">‏פתיחה מהירה של Gemini ברגע הנכון</translation>
 <translation id="9012585441087414258">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. אם בדף כלשהו מתבצעת פעולה חשודה, כתובות URL וקטעים מהתוכן בדף נשלחים אל הגלישה הבטוחה של Google.</translation>
+<translation id="9014097371980259227">‏כדי לעזור לך לחפש במצב AI, חלק מהכלים עברו למקום אחר</translation>
 <translation id="9019199799064251516">להמשיך בלי נעילת פרופיל במכונית?</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
 <translation id="9022871169049522985">אתרים ומפרסמים יכולים למדוד את ביצועי המודעות שלהם</translation>
 <translation id="9024318700713112071">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="9027728231343310283">ביטול ההרשאה לאתר <ph name="SITE" /></translation>
 <translation id="9035378196785279980">‏העברה אל\u2026</translation>
+<translation id="904146253922032365">כדי להציג את הכרטיסיות לאורך צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
 <translation id="9047347135558855162">‏חיפוש מהיר ב-Chrome</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>

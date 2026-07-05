@@ -127,6 +127,7 @@
 <translation id="2120620239521071941">Thao tác này sẽ xóa <ph name="ITEMS_COUNT" /> mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="2123055963409958220">Giúp cải thiện Chrome bằng cách báo cáo <ph name="BEGIN_LINK" />cài đặt hiện tại<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Chọn vùng trên màn hình để tìm kiếm</translation>
 <translation id="2126108037660393668">Không xác minh được tệp tải xuống.</translation>
 <translation id="2128411189117340671">Quản lý hồ sơ trên Chrome</translation>
 <translation id="2137162749895930932">Đóng màn hình dịch</translation>
@@ -266,6 +267,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3512495006767217696">Tích hợp sẵn trong Chrome để giúp bạn tạo, lưu và tự động điền mật khẩu mạnh. Thêm lối tắt để dễ dàng truy cập</translation>
 <translation id="3539955434060988644">Mở đường liên kết trong cửa sổ ẩn d&amp;anh của Chrome</translation>
 <translation id="354621070532799440">Lời nhắc: Các tính năng an toàn tốt nhất của Google ngay trên điện thoại của bạn</translation>
+<translation id="3547866758548131919">Nhấp vào nút Tóm tắt để chia sẻ tài liệu này với Gemini trong Chrome nhằm xem nhanh nội dung tổng quan và đặt các câu hỏi nối tiếp</translation>
 <translation id="3576528680708590453">Quản trị viên hệ thống của bạn đã định cấu hình Google Chrome để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Đồng bộ hoá và cá nhân hoá Chrome trên các thiết bị của bạn</translation>
 <translation id="3583751698304738917">Bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /> trong một hồ sơ Chrome khác</translation>
@@ -356,6 +358,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4400772909124543403">Hiện không có bản cập nhật nào</translation>
 <translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
 <translation id="4434353761996769206">Lỗi trình cài đặt: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Chia sẻ tài liệu này với Gemini trong Chrome để xem thông tin tổng quan nhanh và đặt các câu hỏi nối tiếp</translation>
 <translation id="4450664632294415862">Chrome – Đăng nhập vào mạng – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Một hoạt động khác trên Google Chrome đang diễn ra. Vui lòng thử lại sau.</translation>
 <translation id="4459234553906210702">Tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>
@@ -788,6 +791,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8601359445272098721">Mới! Bạn có thể dịch cả văn bản và hình ảnh trên màn hình bằng cách chọn nút "dịch màn hình"</translation>
 <translation id="8614913330719544658">Google Chrome không hồi đáp. Chạy lại ngay bây giờ?</translation>
 <translation id="861702415419836452">Chromium cần có quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
+<translation id="8623450603356630491">Đăng nhập vào Chrome trên điện thoại</translation>
 <translation id="8624541899164515475">Trang Cài đặt, mở trong thẻ mới.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sẽ khởi động lại sau 1 phút}other{Chrome sẽ khởi động lại sau # phút}}</translation>
 <translation id="8637932705841171563">Để chia sẻ cửa sổ, hãy cho phép Chrome ghi màn hình trong phần Cài đặt hệ thống</translation>

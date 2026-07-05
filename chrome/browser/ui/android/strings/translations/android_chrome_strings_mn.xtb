@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">Холболт аюултай байна</translation>
 <translation id="2149973817440762519">Хадгалагдсан хуудсыг засах</translation>
 <translation id="2163089732491971196">Google Бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
+<translation id="2164015935042801524">Табуудыг босоо байдлаар харуулахын тулд энд хулганын баруун талыг товшино уу</translation>
 <translation id="2166228530126694506">Хувилбар <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Зургийн тайлбар унтраалттай байна</translation>
 <translation id="2172905120685242547">Цонхыг хаах уу?</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">Сайтын сан</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" />-с</translation>
 <translation id="2328474416100889417">Хүн бүр “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд урилгын бүх холбоосыг унтраана</translation>
+<translation id="2329500425421091035">Chrome-н ХОУ-ы горимыг танилцуулж байна</translation>
 <translation id="2330186936255788117">Бусад хавчуурга</translation>
 <translation id="2332515770639153015">Сайжруулсан аюулгүй хөтөч асаалттай байна</translation>
 <translation id="233375395665273385">Устгаад, гарах</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">Илүү олон хуудсыг урьдчилан ачаалдаг. Бусад сайт, аппаас хүсэлт тавихад хуудаснуудыг Google-н серверүүдээр дамжуулан урьдчилан ачаалж магадгүй.</translation>
 <translation id="2366554533468315977">Энэ сонголтод зориулсан веб дээрх үнийн түүх</translation>
 <translation id="2367818124433749493">Хөгжүүлэгчийн товчлол</translation>
+<translation id="2369058545741334020">Уншлагын горимд нээх</translation>
 <translation id="2385605401818128172">Та олон мэдэгдэл илгээдэг сайтуудыг хянаж, ирээдүйд илүү олныг илгээхийг зогсоох боломжтой</translation>
 <translation id="2386938421315164605">Сэдвүүдийг нуух болон ил болгох</translation>
 <translation id="2390510615457643724">Та <ph name="FILE_NAME" /><ph name="FILE_SIZE" />-г дахин татахыг хүсэж байна уу?</translation>
@@ -597,6 +600,7 @@
 <translation id="3524334353996115845">Өөрийгөө мөн болохыг <ph name="ORIGIN" />-р баталгаажуулна уу</translation>
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> килобайт боломжтой</translation>
+<translation id="3547933853190131743">ХОУ-ы горимоор хайх</translation>
 <translation id="3549537543136628349">Урьдчилан ачаалсан хуудаснууд нь шифрлэгдсэн ба тухайн хуудаснуудтай холбож буй сайт, апп нь Google-н сайт, апп тул тэдгээр хуудсыг нууцлалтайгаар урьдчилан ачаалахад Google-н сервер шинэ мэдээлэл хүлээн авахгүй.</translation>
 <translation id="3549657413697417275">Түүхээ хайх</translation>
 <translation id="3557336313807607643">Харилцагчид нэмэх</translation>
@@ -1966,12 +1970,14 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9001604755921395912">Chrome-н нууцлалтай табд нээх</translation>
 <translation id="9010094279589497751">Gemini-г хэрэгтэй үедээ шуурхай нээгээрэй</translation>
 <translation id="9012585441087414258">Аюултай гэдэг нь мэдэгдсэн сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаална. Хэрэв хуудас ямар нэг сэжигтэй зүйл хийвэл URL болон хуудасны контентын багахан хэсгийг Google-н аюулгүй хөтчид илгээдэг.</translation>
+<translation id="9014097371980259227">ХОУ-ы горимоор хайхад тань туслахын тулд зарим хэрэгслийг зөөсөн</translation>
 <translation id="9019199799064251516">Автомашины профайлын түгжээгүйгээр үргэлжлүүлэх үү?</translation>
 <translation id="9022774213089566801">Байнга зочилдог</translation>
 <translation id="9022871169049522985">Сайтууд болон сурталчлагчид зарынхаа гүйцэтгэлийг хэмжих боломжтой</translation>
 <translation id="9024318700713112071">Chrome-г өгөгдмөлөөрөө тохируулна уу</translation>
 <translation id="9027728231343310283"><ph name="SITE" />-н зөвшөөрлийг цуцлахаа болих</translation>
 <translation id="9035378196785279980">Дараах руу зөөх\u2026</translation>
+<translation id="904146253922032365">Табуудыг босоо байдлаар харуулахын тулд хүрээд удаан дарна уу</translation>
 <translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>
 <translation id="9047347135558855162">Chrome-д түргэн хайж эхэлнэ үү</translation>
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>

@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} ключ доступа}one{{count} ключ доступа}few{{count} ключа доступа}many{{count} ключей доступа}other{{count} ключа доступа}}</translation>
 <translation id="1005023885865154304">Откройте настройки автозаполнения паролей.</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
+<translation id="1013852467930342108">Live – новая функция Gemini в Chrome</translation>
 <translation id="1013952917065545813">Здесь можно посмотреть недавно закрытые вкладки.</translation>
 <translation id="1016495303386450659">Обновлено</translation>
 <translation id="1018804590490383958">Сканировать и заполнять автоматически</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Общие диски</translation>
 <translation id="2580306219079937316">Открыть настройки перевода</translation>
 <translation id="2583688836549072561">Группа вкладок, <ph name="GROUP_TITLE" />, вкладок: <ph name="TABS_NUMBER" />, новые действия.</translation>
+<translation id="2584994295315085351">Открывать новую вкладку, когда вы возвращаетесь в Chrome через четыре часа</translation>
 <translation id="2593272815202181319">Моноширинный</translation>
 <translation id="2601778637777010194">Отслеживайте скидки на товары.</translation>
 <translation id="2602372807870028932">Будут удалены выбранные данные, сохраненные на этом устройстве.</translation>
@@ -803,8 +805,9 @@
 <translation id="3753618528540214374">Голубовато-зеленая тема</translation>
 <translation id="3759491607478608474">Чтобы получать более подходящие ответы, предоставьте Gemini доступ к контенту текущей вкладки.</translation>
 <translation id="3762232513783804601">Создан специально для iPad</translation>
+<translation id="3767529805486761639">Меню "Правка"</translation>
 <translation id="3768725474733206671">Открыть последнюю закрытую вкладку</translation>
-<translation id="3779810277399252432">Нет доступа к Интернету</translation>
+<translation id="3779810277399252432">Нет подключения к интернету</translation>
 <translation id="3782614601387961027">Скрыть предупреждение</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="380329542618494757">Имя</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">Обновите браузер</translation>
 <translation id="4021931095789478915">Добавить ${url} в список для чтения</translation>
 <translation id="4028871427853484857">Сохранить в аккаунте</translation>
-<translation id="4036529942385659684">Показывать начальную страницу после периода бездействия</translation>
 <translation id="4038354071007134711">Нет приложения, чтобы открыть этот файл.</translation>
 <translation id="4042870976416480368">Найти на странице</translation>
 <translation id="4045441967987592849">Открыть</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">Отправка отчета о сбое…</translation>
 <translation id="519528950056409240">Разрешите Кошельку передавать данные</translation>
 <translation id="519530786644929958">Ошибка скачивания. Повтор действия невозможен.</translation>
+<translation id="519620255540220054">Настройка главной страницы</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5200894869889836319">Параметры разрешений</translation>
 <translation id="5203051773066903947">Ввести</translation>
@@ -1650,6 +1653,7 @@
 <translation id="6523575793810663688">Подробнее</translation>
 <translation id="6524082013156754186">Сохранить в аккаунте</translation>
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
+<translation id="6525550806864373485">Меню "Правка"</translation>
 <translation id="6527208859483186860">фон номер {position} из общего числа {total}</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6532106788206463496">Сохранить</translation>
@@ -1735,6 +1739,7 @@
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6765551480308401897">Не использовать по умолчанию</translation>
 <translation id="6770452996697898492">[ЗАБРОНИРОВАНО]</translation>
+<translation id="6775952316617222141">Общаться с Gemini в Chrome, используя режим Live</translation>
 <translation id="6779455296366983087">Данные о работе в браузере будут удалены</translation>
 <translation id="6782531425936234573">Экспортировать данные</translation>
 <translation id="6791425686608802741">Выберите "Добавить вкладку в новую группу".</translation>

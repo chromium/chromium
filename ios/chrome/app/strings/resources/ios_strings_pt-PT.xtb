@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} chave de acesso}other{{count} chaves de acesso}}</translation>
 <translation id="1005023885865154304">Abra as definições do Preenchimento automático de palavras-passe</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">O Live é uma nova funcionalidade do Gemini no Chrome</translation>
 <translation id="1013952917065545813">Pode voltar aqui para reabrir separadores que tenha fechado recentemente.</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
 <translation id="1018804590490383958">Ler e preencher automaticamente</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Discos partilhados</translation>
 <translation id="2580306219079937316">Abra as definições de tradução</translation>
 <translation id="2583688836549072561">Grupo de separadores, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> separadores, nova atividade.</translation>
+<translation id="2584994295315085351">Abra um novo separador quando regressar ao Chrome após 4 horas</translation>
 <translation id="2593272815202181319">Monoespaço</translation>
 <translation id="2601778637777010194">Acompanhe as quedas de preços de produtos</translation>
 <translation id="2602372807870028932">Esta ação elimina as informações selecionadas guardadas neste dispositivo</translation>
@@ -888,7 +890,6 @@
 <translation id="4021447724486050609">Atualize o navegador</translation>
 <translation id="4021931095789478915">Adicione ${url} à Lista de leitura</translation>
 <translation id="4028871427853484857">Guardar na conta…</translation>
-<translation id="4036529942385659684">Mostrar página de início após período de inatividade</translation>
 <translation id="4038354071007134711">Nenhuma app neste disp. pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Localizar na página</translation>
 <translation id="4045441967987592849">Reabrir</translation>
@@ -1238,6 +1239,7 @@
 <translation id="518997337573684769">A enviar relatório de falhas…</translation>
 <translation id="519528950056409240">Permita que a Carteira partilhe dados</translation>
 <translation id="519530786644929958">A transferência falhou e não pode tentar novamente.</translation>
+<translation id="519620255540220054">Personalizar a página inicial</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opções para definir autorizações</translation>
 <translation id="5203051773066903947">Introduzir</translation>
@@ -1737,6 +1739,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6765551480308401897">Não predefinir</translation>
 <translation id="6770452996697898492">[RESERVADO]</translation>
+<translation id="6775952316617222141">Usar Live com o Gemini no Chrome</translation>
 <translation id="6779455296366983087">Os seus dados de navegação vão ser eliminados</translation>
 <translation id="6782531425936234573">Exportar dados</translation>
 <translation id="6791425686608802741">Toque em "Adicionar separador a novo grupo"</translation>
@@ -2256,6 +2259,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8534481786647257214">Publicação no Google+ concluído.</translation>
 <translation id="8535368836838588657">Mostrar palavra-passe</translation>
 <translation id="8540426897269305488">Iniciar sessão com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">Algo correu mal. Toque no botão Live para tentar aceder novamente ao Live.</translation>
 <translation id="8545276357312221485">Verifique as definições do navegador predefinido</translation>
 <translation id="854938212724803178">Tem 1 palavra-passe comprometida. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="8551311254462607218">Na barra de endereço, toque no ícone de câmara do Google Lens</translation>

@@ -263,6 +263,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2149968176347646218">La connexion n'est pas sécurisée</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2163089732491971196">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase de passe</translation>
+<translation id="2164015935042801524">Faites un clic droit ici pour afficher les onglets verticalement</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Les descriptions d'images sont désactivées</translation>
 <translation id="2172905120685242547">Fermer la fenêtre?</translation>
@@ -305,6 +306,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2323763861024343754">Stockage des sites</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et tous les liens d'invitation seront désactivés.</translation>
+<translation id="2329500425421091035">Voici le mode IA dans Chrome</translation>
 <translation id="2330186936255788117">Plus de favoris</translation>
 <translation id="2332515770639153015">Navigation sécurisée améliorée activée</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
@@ -317,6 +319,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2363734411417672757">Plus de pages sont préchargées. Les pages peuvent être préchargées par le biais des serveurs de Google lorsqu'elles sont demandées par d'autres sites.</translation>
 <translation id="2366554533468315977">Historique des prix sur le Web pour cette option</translation>
 <translation id="2367818124433749493">Raccourcis pour les développeurs</translation>
+<translation id="2369058545741334020">Ouvrir avec le mode de lecture</translation>
 <translation id="2385605401818128172">Vous pouvez examiner les sites qui envoient beaucoup de notifications et les empêcher d'en envoyer davantage à l'avenir</translation>
 <translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2390510615457643724">Voulez-vous télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de nouveau?</translation>
@@ -327,6 +330,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, onglet sélectionné avec son</translation>
 <translation id="2413014528833954543">Impossible de vérifier les mots de passe sur cet appareil</translation>
 <translation id="2414886740292270097">Foncé</translation>
+<translation id="2415037988255164008">Restaurer les fenêtres?</translation>
 <translation id="2421705177906985956">Aucun site à afficher pour le moment</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vidéos, 1 vidéo dans la liste}one{Vidéos, # vidéo dans la liste}other{Vidéos, # vidéos dans la liste}}</translation>
@@ -596,6 +600,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3524334353996115845">Laissez <ph name="ORIGIN" /> vérifier qu'il s'agit bien de vous</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> ko disponible(s)</translation>
+<translation id="3547933853190131743">Rechercher avec le mode IA</translation>
 <translation id="3549537543136628349">Comme les pages préchargées sont chiffrées et que le site ou l'appli qui renvoie à ces pages est un site ou une appli Google, les serveurs de Google ne reçoivent pas de nouveaux renseignements lors du préchargement privé de ces pages.</translation>
 <translation id="3549657413697417275">Rechercher dans votre historique</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
@@ -1338,6 +1343,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Utiliser Sogou pour les recherches</translation>
 <translation id="656065428026159829">En voir plus</translation>
+<translation id="6565781844089373403">Restaurer les fenêtres</translation>
 <translation id="6565959834589222080">Le Wi-Fi est utilisé lorsque c'est possible</translation>
 <translation id="657177046675873214">Pour accéder à vos favoris sur tous vos appareils, activez « Favoris » dans les paramètres.</translation>
 <translation id="6573096386450695060">Toujours autoriser</translation>
@@ -1964,12 +1970,14 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9001604755921395912">Ouvrir navig. privée Chrome</translation>
 <translation id="9010094279589497751">Ouvrez rapidement Gemini lorsque vous en avez besoin</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions qui sont réputés être dangereux. Si une page fait quelque chose de suspect, les URL et les éléments de contenu de la page sont envoyés à la navigation sécurisée Google.</translation>
+<translation id="9014097371980259227">Certains outils ont été déplacés pour vous aider à effectuer des recherches à l'aide du mode IA</translation>
 <translation id="9019199799064251516">Continuer sans verrouillage de profil du véhicule?</translation>
 <translation id="9022774213089566801">Fréquemment consultés</translation>
 <translation id="9022871169049522985">Les sites et les annonceurs peuvent mesurer la performance de leurs annonces</translation>
 <translation id="9024318700713112071">Définir Chrome comme navigateur par défaut</translation>
 <translation id="9027728231343310283">Annuler la révocation de l'autorisation de <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Déplacer vers\u2026</translation>
+<translation id="904146253922032365">Maintenez le doigt sur l'écran pour afficher les onglets verticalement</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9047347135558855162">Lancez rapidement une recherche dans Chrome</translation>
 <translation id="9050666287014529139">Phrase de passe</translation>

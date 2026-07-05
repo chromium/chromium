@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">ግንኙነትዎ ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="2149973817440762519">እልባት አርትዕ</translation>
 <translation id="2163089732491971196">በGoogle መለያዎ ውስጥ የChrome ውሂብን ለመጠቀም እና ለማስቀመጥ የእርስዎን የይለፍ ሐረግ ያስገቡ</translation>
+<translation id="2164015935042801524">ትሮችን በአቀባዊ ለማሳየት እዚህ በቀኝ ጠቅ ያድርጉ</translation>
 <translation id="2166228530126694506">ሥሪት <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">የምስል መግለጫዎች ጠፍተዋል</translation>
 <translation id="2172905120685242547">መስኮት ይዘጋ?</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">የጣቢያ ማከማቻ</translation>
 <translation id="2327445548174191329">ከ<ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">ሁሉም ሰው ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻን ያጣል እና ሁሉም የግብዣ አገናኞች ይጠፋሉ</translation>
+<translation id="2329500425421091035">የሰው ሠራሽ አስተውሎት ሁነታን በChrome ውስጥ በማስተዋወቅ ላይ</translation>
 <translation id="2330186936255788117">ተጨማሪ እልባቶች</translation>
 <translation id="2332515770639153015">የተሻሻለ የደህንነት አሰሳ በርቷል</translation>
 <translation id="233375395665273385">ሰርዝ እና ዘግተህ ውጣ</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">ተጨማሪ ገፆች ቅድሚያ ይጫናሉ። ገፆች በሌሎች ጣቢያዎች ሲጠየቁ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
 <translation id="2366554533468315977">በመላው ድር ላይ ለዚህ አማራጭ የሚሆን የዋጋ ታሪክ</translation>
 <translation id="2367818124433749493">የገንቢ አቋራጮች</translation>
+<translation id="2369058545741334020">በንባብ ሁነታ ውስጥ ይክፈቱ</translation>
 <translation id="2385605401818128172">ብዙ ማሳወቂያዎችን የሚልኩ ጣቢያዎችን መገምገም እና ወደፊት ተጨማሪ እንዳይልኩ ማቆም ይችላሉ</translation>
 <translation id="2386938421315164605">ርዕሶችን ደብቅ እና አትደብቅ</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />ን <ph name="FILE_SIZE" /> እንደገና ማውረድ ይፈልጋሉ?</translation>
@@ -327,6 +330,7 @@
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />፣ የተመረጠ የሚሰማ ትር</translation>
 <translation id="2413014528833954543">በዚህ መሣሪያ ላይ የይለፍ ቃሎችን መፈተሽ አልተቻለም</translation>
 <translation id="2414886740292270097">ጨለማ</translation>
+<translation id="2415037988255164008">መስኮት ወደነበረበት ይመለስ?</translation>
 <translation id="2421705177906985956">አሁን ምንም የሚታዩ ጣቢያዎች የሉም</translation>
 <translation id="2426805022920575512">ሌላ መለያ ይምረጡ</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{ቪድዮዎች፣ በዝርዝር ውስጥ 1 ቪድዮ}one{ቪድዮዎች፣ በዝርዝር ውስጥ # ቪድዮ}other{ቪድዮዎች፣ በዝርዝር ውስጥ # ቪድዮዎች}}</translation>
@@ -596,6 +600,7 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" /> እርስዎ መሆንዎን እንዲያረጋግጥ ይፍቀዱ</translation>
 <translation id="3527085408025491307">አቃፊ</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> ኪባ ይገኛል</translation>
+<translation id="3547933853190131743">በሰው ሠራሽ አስተውሎት ሁነታ ይፈልጉ</translation>
 <translation id="3549537543136628349">ቅድሚያ የተጫኑ ገፆች የተመሠጠሩ ስለሆኑ እና ከገፆቹ ጋር የሚያገናኘው ጣቢያ ወይም መተግበሪያ የGoogle ጣቢያ ወይም መተግበሪያ ስለሆነ እነዚህ ገፆች በግል ቅድሚያ ሲጫኑ የGoogle አገልጋዮች አዲስ መረጃ አይደርሳቸውም።</translation>
 <translation id="3549657413697417275">የራስዎን ታሪክ ይፈልጉ</translation>
 <translation id="3557336313807607643">ወደ እውቂያዎች አክል</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">ከSogou ጋር ይፈልጉ</translation>
 <translation id="656065428026159829">ተጨማሪ ይመልከቱ</translation>
+<translation id="6565781844089373403">መስኮቶችን ወደነበረበት መልስ</translation>
 <translation id="6565959834589222080">Wi-Fi የሚገኝ ሲሆን ሥራ ላይ ይውላል</translation>
 <translation id="657177046675873214">እልባቶችዎን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት፣ ቅንብሮች ውስጥ «እልባቶች» የሚለውን ያብሩ</translation>
 <translation id="6573096386450695060">ሁልጊዜ ፍቀድ</translation>
@@ -1964,12 +1970,14 @@
 <translation id="9001604755921395912">ማንነት በማያሳውቅ የChrome ትር ክፈት</translation>
 <translation id="9010094279589497751">Geminiን በሚፈልጉት ጊዜ በፍጥነት ይክፈቱት</translation>
 <translation id="9012585441087414258">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። አንድ ገጽ አጠራጣሪ የሆነ ነገር ካደረገ የገፁ ይዘት ዩአርኤሎች እና ቢቶች ወደ የGoogle ጥንቃቄ አሰሳ ይላካሉ።</translation>
+<translation id="9014097371980259227">በሰው ሠራሽ አስተውሎት ሁነታ እንዲፈልጉ ለማገዝ አንዳንድ መሣሪያዎች ተንቀሳቅሰዋል</translation>
 <translation id="9019199799064251516">ያለ መኪና የመገለጫ መቆለፊያ ይቀጥላሉ?</translation>
 <translation id="9022774213089566801">በተደጋጋሚነት የተጎበኙ</translation>
 <translation id="9022871169049522985">ጣቢያዎች እና ማስታወቂያ ሰሪዎች የማስታወቂያዎቻቸውን አፈጻጸም መለካት ይችላሉ።</translation>
 <translation id="9024318700713112071">Chromeን እንደ ነባሪ ያቀናብሩት</translation>
 <translation id="9027728231343310283"><ph name="SITE" />ን ቀልብስ</translation>
 <translation id="9035378196785279980">አንቀሳቅስ ወደ…</translation>
+<translation id="904146253922032365">ትሮችን በአቀባዊ ለማሳየት ነካ አድርገው ይያዙ</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>
 <translation id="9047347135558855162">በፍጥነት Chrome ውስጥ ፍለጋ ይጀምሩ</translation>
 <translation id="9050666287014529139">የይለፍ ሐረግ</translation>

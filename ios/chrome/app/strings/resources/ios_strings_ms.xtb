@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} kunci laluan}other{{count} kunci laluan}}</translation>
 <translation id="1005023885865154304">Buka tetapan Kata Laluan Autolengkap</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live ialah ciri baharu pada Gemini dalam Chrome</translation>
 <translation id="1013952917065545813">Anda boleh kembali ke sini untuk membuka semula tab yang baru anda tutup</translation>
 <translation id="1016495303386450659">Item dikemas kini</translation>
 <translation id="1018804590490383958">Imbas dan autolengkap</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Drive Dikongsi</translation>
 <translation id="2580306219079937316">Buka tetapan Translate</translation>
 <translation id="2583688836549072561">Kumpulan tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab, aktiviti baharu.</translation>
+<translation id="2584994295315085351">Buka tab baharu apabila anda kembali kepada Chrome selepas 4 jam</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Jejaki penurunan harga produk</translation>
 <translation id="2602372807870028932">Tindakan ini memadamkan maklumat yang dipilih yang disimpan pada peranti ini</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">Tema viridian</translation>
 <translation id="3759491607478608474">Kongsi kandungan tab semasa dengan Gemini untuk mendapatkan jawapan yang lebih berkaitan</translation>
 <translation id="3762232513783804601">Dibina untuk iPad Anda</translation>
+<translation id="3767529805486761639">Menu Edit</translation>
 <translation id="3768725474733206671">Buka Semula Tab Terakhir Ditutup</translation>
 <translation id="3779810277399252432">Tiada sambungan Internet.</translation>
 <translation id="3782614601387961027">Ketepikan amaran</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">Kemas kinikan Penyemak Imbas anda</translation>
 <translation id="4021931095789478915">Tambahkan ${url} pada senarai bacaan</translation>
 <translation id="4028871427853484857">Simpan dalam akaun…</translation>
-<translation id="4036529942385659684">Tunjukkan halaman mula selepas tempoh tidak aktif</translation>
 <translation id="4038354071007134711">Tiada aplikasi pada peranti ini yang dapat membuka fail itu.</translation>
 <translation id="4042870976416480368">Cari dalam Halaman</translation>
 <translation id="4045441967987592849">Buka semula</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">Menghantar laporan ranap…</translation>
 <translation id="519528950056409240">Benarkan Wallet berkongsi data</translation>
 <translation id="519530786644929958">Muat turun gagal dan tidak boleh dicuba semula.</translation>
+<translation id="519620255540220054">Sesuaikan halaman utama</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Pilihan untuk menetapkan kebenaran</translation>
 <translation id="5203051773066903947">Enter</translation>
@@ -1650,6 +1653,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6523575793810663688">Tunjukkan caranya</translation>
 <translation id="6524082013156754186">Simpan dalam akaun</translation>
 <translation id="6524918542306337007">Mod Inkognito Tidak Tersedia</translation>
+<translation id="6525550806864373485">Menu Edit</translation>
 <translation id="6527208859483186860">latar {position} daripada {total}</translation>
 <translation id="6527303717912515753">Kongsi</translation>
 <translation id="6532106788206463496">Simpan perubahan</translation>
@@ -1735,6 +1739,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Jangan Tetapkan sebagai Lalai</translation>
 <translation id="6770452996697898492">[TELAH DITEMPAH]</translation>
+<translation id="6775952316617222141">Gunakan Live dengan Gemini dalam Chrome</translation>
 <translation id="6779455296366983087">Data semakan imbas anda akan dipadamkan</translation>
 <translation id="6782531425936234573">Eksport data</translation>
 <translation id="6791425686608802741">Ketik "Tambahkan Tab pada Kumpulan Baharu"</translation>

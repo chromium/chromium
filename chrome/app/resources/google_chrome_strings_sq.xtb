@@ -129,6 +129,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2120620239521071941">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="2123055963409958220">Ndihmo në përmirësimin e Chrome duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Zgjidh rajonin e ekranit për të kërkuar</translation>
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
 <translation id="2128411189117340671">Menaxho profilet e Chrome</translation>
 <translation id="2137162749895930932">Mbyll ekranin e përkthimit</translation>
@@ -268,6 +269,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3512495006767217696">I integruar në Chrome për të të ndihmuar të krijosh, ruash dhe plotësosh automatikisht fjalëkalime të forta. Shto shkurtoren për qasje të lehtë</translation>
 <translation id="3539955434060988644">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="354621070532799440">Rikujtesë: Veçoritë më të mira të sigurisë të Google në xhepin tënd</translation>
+<translation id="3547866758548131919">Kliko te butoni "Përmblidh" për ta ndarë këtë dokument me Gemini në Chrome për të marrë një përmbledhje të shpejtë dhe për të bërë pyetje vijuese</translation>
 <translation id="3576528680708590453">Administratori i sistemit ka konfiguruar Google Chrome që të hapë një shfletues alternativ për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sinkronizo dhe personalizo Chrome nëpër pajisjet e tua</translation>
 <translation id="3583751698304738917">Je i identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /> në një profil tjetër të Chrome</translation>
@@ -357,6 +359,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4400772909124543403">Nuk ofrohet asnjë përditësim</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Ndaje këtë dokument me Gemini në Chrome për të marrë një përmbledhje të shpejtë dhe për të bërë pyetje vijuese</translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Një veprim tjetër në Google Chrome është në vazhdim. Provo përsëri më vonë.</translation>
 <translation id="4459234553906210702">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
@@ -789,6 +792,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="8601359445272098721">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd duke zgjedhur butonin "përkthe ekranin"</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="861702415419836452">Chrome ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
+<translation id="8623450603356630491">Identifikohu në Chrome në telefonin tënd</translation>
 <translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>
 <translation id="8637932705841171563">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chrome te "Cilësimet e sistemit"</translation>

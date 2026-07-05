@@ -263,6 +263,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2149968176347646218">Tilkoblingen er ikke sikker</translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2163089732491971196">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din</translation>
+<translation id="2164015935042801524">Høyreklikk her for å vise faner vertikalt</translation>
 <translation id="2166228530126694506">Versjon <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Bildebeskrivelser er av</translation>
 <translation id="2172905120685242547">Vil du lukke vinduet?</translation>
@@ -305,6 +306,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2323763861024343754">Nettstedslagring</translation>
 <translation id="2327445548174191329">Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alle mister tilgangen til fanegruppen «<ph name="GROUP_NAME" />» umiddelbart, og alle invitasjonslinker deaktiveres</translation>
+<translation id="2329500425421091035">Vi presenterer AI-modus i Chrome</translation>
 <translation id="2330186936255788117">Flere bokmerker</translation>
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
 <translation id="233375395665273385">Slett og logg av</translation>
@@ -317,6 +319,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2363734411417672757">Flere sider forhåndslastes. Sider kan bli forhåndslastet via Googles tjenere når andre nettsteder eller apper ber om det.</translation>
 <translation id="2366554533468315977">Prishistorikk for dette alternativet fra hele nettet</translation>
 <translation id="2367818124433749493">Utviklersnarveier</translation>
+<translation id="2369058545741334020">Åpne i lesemodus</translation>
 <translation id="2385605401818128172">Du kan gjennomgå nettsteder som sender mange varsler, og forhindre dem fra å sende flere fremover</translation>
 <translation id="2386938421315164605">Skjul emner og gjør dem synlige</translation>
 <translation id="2390510615457643724">Vil du laste ned <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> på nytt?</translation>
@@ -327,6 +330,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, valgt fane med lyd</translation>
 <translation id="2413014528833954543">Kan ikke sjekke passord på denne enheten</translation>
 <translation id="2414886740292270097">Mørk</translation>
+<translation id="2415037988255164008">Vil du gjenopprette vinduene?</translation>
 <translation id="2421705177906985956">Ingen nettsteder å vise akkurat nå</translation>
 <translation id="2426805022920575512">Velg en annen konto</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videoer, 1 video på listen}other{Videoer, # videoer på listen}}</translation>
@@ -596,6 +600,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3524334353996115845">La <ph name="ORIGIN" /> bekrefte at det er deg</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB er tilgjengelig</translation>
+<translation id="3547933853190131743">Søk med AI-modus</translation>
 <translation id="3549537543136628349">Siden de forhåndslastede sidene er krypterte og nettstedet eller appen som linker til sidene, er et Google-nettsted eller en Google-app, får ikke Googles tjenere noen ny informasjon ved privat forhåndslasting av disse sidene.</translation>
 <translation id="3549657413697417275">Søk i loggen</translation>
 <translation id="3557336313807607643">Legg til i kontakter</translation>
@@ -1338,6 +1343,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Søk med Sogou</translation>
 <translation id="656065428026159829">Se mer</translation>
+<translation id="6565781844089373403">Gjenopprett vinduer</translation>
 <translation id="6565959834589222080">Wifi brukes når det er tilgjengelig</translation>
 <translation id="657177046675873214">For å få bokmerkene dine på alle enhetene dine, slå på «Bokmerker» i innstillingene</translation>
 <translation id="6573096386450695060">Tillat alltid</translation>
@@ -1964,12 +1970,14 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9001604755921395912">Åpne på Chrome-inkognitofane</translation>
 <translation id="9010094279589497751">Åpne Gemini raskt når du trenger det</translation>
 <translation id="9012585441087414258">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Hvis en side gjør noe mistenkelig, blir nettadresser og deler av sideinnholdet sendt til Google Safe Browsing.</translation>
+<translation id="9014097371980259227">Noen verktøy er flyttet for å hjelpe deg med å søke med AI-modus</translation>
 <translation id="9019199799064251516">Vil du fortsette uten profillås for bilen?</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
 <translation id="9022871169049522985">Nettsteder og annonsører kan måle annonseresultater sine</translation>
 <translation id="9024318700713112071">Angi Chrome som standard</translation>
 <translation id="9027728231343310283">Angre <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytt til\u2026</translation>
+<translation id="904146253922032365">Trykk og hold for å vise faner vertikalt</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9047347135558855162">Start et søk raskt i Chrome</translation>
 <translation id="9050666287014529139">Passordfrase</translation>

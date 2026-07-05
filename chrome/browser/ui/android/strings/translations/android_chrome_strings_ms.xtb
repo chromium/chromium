@@ -263,6 +263,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2149968176347646218">Sambungan tidak selamat</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
 <translation id="2163089732491971196">Untuk menggunakan dan menyimpan data Chrome dalam Google Account anda, masukkan ungkapan laluan anda</translation>
+<translation id="2164015935042801524">Klik kanan di sini untuk menunjukkan tab secara menegak</translation>
 <translation id="2166228530126694506">Versi <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Perihalan imej dimatikan</translation>
 <translation id="2172905120685242547">Tutup tetingkap?</translation>
@@ -305,6 +306,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2323763861024343754">Storan tapak</translation>
 <translation id="2327445548174191329">Daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan semua pautan undangan akan dimatikan</translation>
+<translation id="2329500425421091035">Memperkenalkan AI Mode dalam Chrome</translation>
 <translation id="2330186936255788117">Lebih banyak penanda halaman</translation>
 <translation id="2332515770639153015">Penyemakan Imbas Selamat Dipertingkat dihidupkan</translation>
 <translation id="233375395665273385">Padamkan dan log keluar</translation>
@@ -317,6 +319,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2363734411417672757">Lagi halaman yang dipramuatkan. Halaman mungkin dipramuatkan melalui pelayan Google apabila diminta oleh laman atau apl lain.</translation>
 <translation id="2366554533468315977">Sejarah harga merentas web untuk pilihan ini</translation>
 <translation id="2367818124433749493">Pintasan pembangun</translation>
+<translation id="2369058545741334020">Buka dalam mod membaca</translation>
 <translation id="2385605401818128172">Anda boleh menyemak laman yang menghantar banyak pemberitahuan dan menghentikan laman tersebut daripada menghantar lebih banyak pemberitahuan pada masa hadapan</translation>
 <translation id="2386938421315164605">Sembunyikan dan nyahsembunyikan topik</translation>
 <translation id="2390510615457643724">Adakah anda ingin memuat turun <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> sekali lagi?</translation>
@@ -597,6 +600,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3524334353996115845">Benarkan <ph name="ORIGIN" /> mengesahkan itu anda</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tersedia</translation>
+<translation id="3547933853190131743">Cari dengan AI Mode</translation>
 <translation id="3549537543136628349">Oleh sebab halaman pramuat disulitkan dan pemautan laman atau apl kepada halaman tersebut ialah laman atau apl Google, pelayan Google tidak menerima maklumat baharu apabila mempramuatkan halaman ini secara peribadi.</translation>
 <translation id="3549657413697417275">Cari sejarah anda</translation>
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
@@ -1966,12 +1970,14 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9001604755921395912">Buka dalam tab Chrome Inkognito</translation>
 <translation id="9010094279589497751">Buka Gemini dengan pantas apabila anda memerlukan Gemini</translation>
 <translation id="9012585441087414258">Melindungi daripada laman, muat turun dan sambungan yang diketahui berbahaya. Jika terdapat tindakan halaman yang mencurigakan, URL dan bit kandungan halaman tersebut akan dihantar kepada Penyemakan Imbas Selamat Google.</translation>
+<translation id="9014097371980259227">Beberapa alatan telah dialihkan untuk membantu anda membuat carian dengan AI Mode</translation>
 <translation id="9019199799064251516">Teruskan tanpa kunci profil kereta?</translation>
 <translation id="9022774213089566801">Kerap dilawat</translation>
 <translation id="9022871169049522985">Laman dan pengiklan boleh mengukur prestasi iklan mereka</translation>
 <translation id="9024318700713112071">Tetapkan Chrome sebagai lalai anda</translation>
 <translation id="9027728231343310283">Buat asal <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Alihkan ke\u2026</translation>
+<translation id="904146253922032365">Sentuh dan tahan untuk menunjukkan tab secara menegak</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
 <translation id="9047347135558855162">Mulakan carian dalam Chrome dengan pantas</translation>
 <translation id="9050666287014529139">Frasa laluan</translation>

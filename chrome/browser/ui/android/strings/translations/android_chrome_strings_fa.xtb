@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">اتصال ایمن نیست</translation>
 <translation id="2149973817440762519">ویرایش نشانک</translation>
 <translation id="2163089732491971196">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، گذرعبارت خود را وارد کنید</translation>
+<translation id="2164015935042801524">برای نمایش عمودی زبانه‌ها، در اینجا کلیک‌راست کنید</translation>
 <translation id="2166228530126694506">نسخه <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">توضیحات تصویر خاموش است</translation>
 <translation id="2172905120685242547">پنجره بسته شود؟</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
 <translation id="2327445548174191329">از <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
+<translation id="2329500425421091035">‏معرفی «حالت هوشواره‌ای» در Chrome</translation>
 <translation id="2330186936255788117">نشانک‌های بیشتر</translation>
 <translation id="2332515770639153015">«مرور ایمن پیشرفته» روشن است</translation>
 <translation id="233375395665273385">حذف و خروج از سیستم</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">‏صفحات بیشتری پیش‌بارگیری می‌شوند. وقتی سایت‌ها یا برنامه‌های دیگر پیش‌بارگیری صفحه‌ها را درخواست می‌کنند، صفحه‌ها ممکن است ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
 <translation id="2366554533468315977">سابقه قیمت در سراسر وب برای این گزینه</translation>
 <translation id="2367818124433749493">میان‌برهای توسعه‌دهنده</translation>
+<translation id="2369058545741334020">باز کردن در «حالت خواندن»</translation>
 <translation id="2385605401818128172">می‌توانید سایت‌هایی را که اعلان‌های زیادی ارسال می‌کنند بررسی کنید و از ارسال اعلان‌های بیشتر در آینده جلوگیری کنید</translation>
 <translation id="2386938421315164605">پنهان و آشکار کردن موضوعات</translation>
 <translation id="2390510615457643724">می‌خواهید <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> دوباره بارگیری شود؟</translation>
@@ -597,6 +600,7 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" /> مجاز می‌شود هویت شما را تأیید کند</translation>
 <translation id="3527085408025491307">پوشه</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> کیلوبایت دردسترس است</translation>
+<translation id="3547933853190131743">جستجو با «حالت هوشواره‌ای»</translation>
 <translation id="3549537543136628349">‏ازآنجایی‌که صفحه‌های پیش‌بارگیری‌شده رمزگذاری می‌شوند و سایت یا برنامه پیونددهنده به آن صفحه‌ها یک برنامه یا سایت Google است، سرورهای Google هنگام پیش‌بارگیری خصوصی این صفحه‌ها اطلاعات جدیدی دریافت نمی‌کنند.</translation>
 <translation id="3549657413697417275">جستجو در سابقه</translation>
 <translation id="3557336313807607643">افزودن به مخاطبین</translation>
@@ -1847,7 +1851,7 @@
 <translation id="8460448946170646641">مرور کنترل‌های اصلی امنیت و حریم خصوصی</translation>
 <translation id="8460932807646981183">مدیریت موتورهای جستجو و جستجوی سایت</translation>
 <translation id="8465252176946159372">معتبر نیست</translation>
-<translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
+<translation id="8473863474539038330">نشانی‌ها و غیره</translation>
 <translation id="847433688444405067">پیمایش بین دستگاه‌ها</translation>
 <translation id="8477178913400731244">حذف داده‌ها</translation>
 <translation id="8481771036036087705">‏موافقت کردن با یافته‌های Chrome به‌صورت نیمه باز شده است</translation>
@@ -1966,12 +1970,14 @@
 <translation id="9001604755921395912">‏باز کردن در زبانه ناشناس Chrome</translation>
 <translation id="9010094279589497751">‏هر زمان که نیاز داشتید می‌توانید Gemini را به‌سرعت باز کنید</translation>
 <translation id="9012585441087414258">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. اگر صفحه‌ای کار مشکوکی انجام دهد، نشانی‌های وب و بیت‌های محتوای صفحه به «مرور ایمن Google» ارسال می‌شود.</translation>
+<translation id="9014097371980259227">برخی‌از ابزارها جابه‌جا شده‌اند تا به شما در جستجو با «حالت هوشواره‌ای» کمک کنند</translation>
 <translation id="9019199799064251516">بدون قفل نمایه خودرو ادامه می‌دهید؟</translation>
 <translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>
 <translation id="9022871169049522985">سایت‌ها و تبلیغ‌کنندگان می‌توانند عملکرد آگهی‌هایشان را بسنجند</translation>
 <translation id="9024318700713112071">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="9027728231343310283">واگرداندن <ph name="SITE" /></translation>
 <translation id="9035378196785279980">‏انتقال به\u2026</translation>
+<translation id="904146253922032365">برای نمایش عمودی زبانه‌ها، لمس کنید و نگه دارید</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>
 <translation id="9047347135558855162">‏شروع سریع جستجو در Chrome</translation>
 <translation id="9050666287014529139">‫گذرعبارت</translation>

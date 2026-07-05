@@ -37,6 +37,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="132092532143527429">Isprobajte sa Gemini-jem u Chromium-u</translation>
 <translation id="1324107359134968521">Chromium zahteva pristup Bluetooth-u da bi istraživao 
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Prijavite se u Chromium na telefonu</translation>
 <translation id="1330562121671411446">Otkriveni jezik</translation>
 <translation id="1330742950061766891">Koristite preporučena podešavanja pregledača Chromium</translation>
 <translation id="1342274909142618978">Izbriši i podatke iz Chromium-a (<ph name="URL" />)</translation>
@@ -108,6 +109,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="208726765006323911">Sledeći put kada otvorite Chromium iOS, videćete upit da isprobate <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Lozinke i drugi Chromium podaci koje ste sačuvali na Google nalogu biće uklonjeni sa ovog uređaja. Da biste ih ponovo koristili u Chromium-u, ponovo se prijavite.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi 1 minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}one{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}few{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}other{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}}</translation>
+<translation id="2125838419757773031">Izaberite deo ekrana za pretragu</translation>
 <translation id="2126108037660393668">Verifikacija preuzetog fajla nije uspela.</translation>
 <translation id="2135919691573380097">Prijavite ovaj sajt</translation>
 <translation id="2137162749895930932">Zatvorite ekran za prevođenje</translation>
@@ -140,6 +142,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2401032172288869980">Chromium-u su potrebne dozvole za kameru i mikrofon za ovaj sajt</translation>
 <translation id="2403703063067034158">Greška pri pokretanju: Trenutno je pokrenuta druga instanca podešavanja. Probajte ponovo kasnije.</translation>
 <translation id="2418322681019544463">Otvarajte linkove u Chromium-u iz bilo koje aplikacije i omogućite pristup pregledaču na traci zadataka</translation>
+<translation id="2425157128016763890">Kliknite na dugme Rezimiraj da biste podelili ovaj dokument sa Gemini-jem u Chromium-u radi brzog pregleda i postavljanja dodatnih pitanja</translation>
 <translation id="2440750600860946460">Pomoću <ph name="BEGIN_LINK" />Chromium alatki<ph name="END_LINK" /> možete bezbedno da pregledate i zadržite kontrolu</translation>
 <translation id="2451727308784734061">Koristite prečicu da biste brzo pristupali Menadžeru lozinki. Prečicu možete da premestite na početni ekran računara ili u pokretač aplikacija.</translation>
 <translation id="2478295928299953161">Chromium će se uskoro zatvoriti</translation>
@@ -690,6 +693,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8107060931443639922">Sledeći put kada otvorite Chromium na uređaju <ph name="DEVICE_TYPE" />, videćete upit da omogućite obaveštenja o praćenju cena.</translation>
 <translation id="8117908349476699973">Dobijajte obaveštenja o sniženju cena za artikle koji vas zanimaju pomoću aplikacije Chromium na telefonu</translation>
 <translation id="8118331347066725040">Pošaljite povratne informacije za pretragu pomoću Objektiva</translation>
+<translation id="8130609355518033382">Prilagodite Chromium sebi</translation>
 <translation id="8133124826068723441">Chromium OS ne može da sinhronizuje podatke jer Sinhronizacija nije dostupna za domen.</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
 <translation id="8161503455832158203">Otvorite Gemini u Chromium-u pomoću tasterske prečice.</translation>
@@ -753,6 +757,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="878572486461146056">Greška pri instalaciji: Administrator mreže je primenio smernice za grupu koje sprečavaju instalaciju: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt</translation>
 <translation id="8813277370772331957">Podseti me kasnije</translation>
+<translation id="8816416449795340678">Delite ovaj dokument sa Gemini-jem u Chromium-u da biste dobili brz pregled i postavljali dodatna pitanja</translation>
 <translation id="8818550178040858407">Želite li da se prijavite u Chromium?</translation>
 <translation id="8823401858233292222">Podesite Chromium kao podrazumevani pregledač i zakačite ga na traku zadataka</translation>
 <translation id="8826492472752484139">Kliknite na Menadžer lozinki</translation>

@@ -263,6 +263,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2163089732491971196">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña</translation>
+<translation id="2164015935042801524">Haz clic con el botón derecho aquí para mostrar las pestañas verticalmente</translation>
 <translation id="2166228530126694506">Versión <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Las descripciones de imágenes están desactivadas.</translation>
 <translation id="2172905120685242547">¿Deseas cerrar la ventana?</translation>
@@ -305,6 +306,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se desactivarán todos los vínculos de invitación</translation>
+<translation id="2329500425421091035">Presentamos el Modo IA en Chrome</translation>
 <translation id="2330186936255788117">Más favoritos</translation>
 <translation id="2332515770639153015">Se activó la Navegación segura mejorada</translation>
 <translation id="233375395665273385">Borrar y salir</translation>
@@ -317,6 +319,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2363734411417672757">Se precargan más páginas. Las páginas pueden precargarse por medio de servidores de Google cuando las solicitan otros sitios o apps.</translation>
 <translation id="2366554533468315977">Historial de precios en la Web para esta opción</translation>
 <translation id="2367818124433749493">Accesos directos para desarrolladores</translation>
+<translation id="2369058545741334020">Abrir en modo de lectura</translation>
 <translation id="2385605401818128172">Puedes revisar los sitios que envían muchas notificaciones y evitar que te envíen más en el futuro</translation>
 <translation id="2386938421315164605">Oculta y muestra temas.</translation>
 <translation id="2390510615457643724">¿Quieres descargar <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> de nuevo?</translation>
@@ -327,6 +330,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, pestaña con sonido seleccionada</translation>
 <translation id="2413014528833954543">No se pueden revisar las contraseñas en este dispositivo</translation>
 <translation id="2414886740292270097">Oscuro</translation>
+<translation id="2415037988255164008">¿Quieres restaurar las ventanas?</translation>
 <translation id="2421705177906985956">No hay sitios para mostrar en este momento</translation>
 <translation id="2426805022920575512">Seleccionar otra cuenta</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videos, 1 video en la lista}other{Videos, # videos en la lista}}</translation>
@@ -596,6 +600,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique tu identidad.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775">KB disponibles: <ph name="KILOBYTES" /></translation>
+<translation id="3547933853190131743">Buscar con el Modo IA</translation>
 <translation id="3549537543136628349">Debido a que las páginas precargadas están encriptadas, y que la app o el sitio vinculado a las páginas es una app o un sitio de Google, los servidores de Google no recibirán información nueva cuando se precarguen estas páginas de forma privada.</translation>
 <translation id="3549657413697417275">Buscar en el historial</translation>
 <translation id="3557336313807607643">Agregar a contactos</translation>
@@ -1338,6 +1343,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Buscar con Sogou</translation>
 <translation id="656065428026159829">Ver más</translation>
+<translation id="6565781844089373403">Restablecer ventanas</translation>
 <translation id="6565959834589222080">Se utilizará Wi-Fi cuando esté disponible.</translation>
 <translation id="657177046675873214">Para ver tus favoritos en todos tus dispositivos, activa “Favoritos” en la configuración</translation>
 <translation id="6573096386450695060">Permitir siempre</translation>
@@ -1964,12 +1970,14 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9001604755921395912">Abrir en Incógnito en Chrome</translation>
 <translation id="9010094279589497751">Abre Gemini rápidamente cuando lo necesites</translation>
 <translation id="9012585441087414258">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Si una página realiza alguna acción sospechosa, las URLs y los bits del contenido de la página se envían a la Navegación segura de Google.</translation>
+<translation id="9014097371980259227">Se movieron algunas herramientas para ayudarte a buscar con el Modo IA</translation>
 <translation id="9019199799064251516">¿Quieres continuar sin un bloqueo de perfil en el automóvil?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9022871169049522985">Los sitios y los anunciantes pueden medir el rendimiento de sus anuncios</translation>
 <translation id="9024318700713112071">Establece Chrome como navegador predeterminado</translation>
 <translation id="9027728231343310283">Deshacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
+<translation id="904146253922032365">Mantén presionado para mostrar las pestañas verticalmente</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9047347135558855162">Inicia rápidamente una búsqueda en Chrome</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>

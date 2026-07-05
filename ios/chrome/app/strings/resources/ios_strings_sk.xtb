@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} prístupový kľúč}few{{count} prístupové kľúče}many{{count} passkeys}other{{count} prístupových kľúčov}}</translation>
 <translation id="1005023885865154304">Otvorte nastavenia automatického dopĺňania hesiel</translation>
 <translation id="1005230401424685968">RRRR</translation>
+<translation id="1013852467930342108">Live je nová funkcia v Gemini v Chrome</translation>
 <translation id="1013952917065545813">Môžete sa sem vrátiť a znova otvoriť karty, ktoré ste nedávno zatvorili</translation>
 <translation id="1016495303386450659">Položka bola aktualizovaná</translation>
 <translation id="1018804590490383958">Naskenovať a automaticky doplniť</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Spoločné disky</translation>
 <translation id="2580306219079937316">Otvoriť nastavenia prekladu</translation>
 <translation id="2583688836549072561">Skupina kariet, <ph name="GROUP_TITLE" />, počet kariet: <ph name="TABS_NUMBER" />, nová aktivita.</translation>
+<translation id="2584994295315085351">Po návrate do Chromu po štyroch hodinách otvoriť novú kartu</translation>
 <translation id="2593272815202181319">Neproporcionálne</translation>
 <translation id="2601778637777010194">Sledujte poklesy cien výrobkov</translation>
 <translation id="2602372807870028932">Týmto odstránite vybrané informácie uložené v tomto zariadení</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">Modrozelený motív</translation>
 <translation id="3759491607478608474">Zdieľajte obsah aktuálnej karty s Gemini a získajte relevantnejšie odpovede</translation>
 <translation id="3762232513783804601">Vytvorené pre váš iPad</translation>
+<translation id="3767529805486761639">Ponuka Upraviť</translation>
 <translation id="3768725474733206671">Znova otvoriť poslednú zavretú kartu</translation>
 <translation id="3779810277399252432">Internetové pripojenie nie je k dispozícii.</translation>
 <translation id="3782614601387961027">Zavrieť varovanie</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">Aktualizujte si prehliadač</translation>
 <translation id="4021931095789478915">Pridanie ${url} do čitateľského zoznamu</translation>
 <translation id="4028871427853484857">Uložiť do účtu…</translation>
-<translation id="4036529942385659684">Po období nečinnosti zobrazovať úvodnú stránku</translation>
 <translation id="4038354071007134711">Tento súbor nedokáže otvoriť žiadna aplikácia na tomto zariadení.</translation>
 <translation id="4042870976416480368">Nájsť na stránke</translation>
 <translation id="4045441967987592849">Znova otvoriť</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">Odosiela sa report pádu…</translation>
 <translation id="519528950056409240">Povoľte Peňaženke zdieľať údaje</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
+<translation id="519620255540220054">Prispôsobiť domovskú stránku</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Možnosti nastavenia povolení</translation>
 <translation id="5203051773066903947">Zadať</translation>
@@ -1650,6 +1653,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6523575793810663688">Postup</translation>
 <translation id="6524082013156754186">Uložiť v účte</translation>
 <translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
+<translation id="6525550806864373485">Ponuka Upraviť</translation>
 <translation id="6527208859483186860">{position}. pozadie z {total}</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6532106788206463496">Uložiť zmeny</translation>
@@ -1735,6 +1739,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6765551480308401897">Nenastaviť ako predvolené</translation>
 <translation id="6770452996697898492">[REZERVOVANÉ]</translation>
+<translation id="6775952316617222141">Začať používať funkciu Live s Gemini v Chrome</translation>
 <translation id="6779455296366983087">Dáta prehliadania budú odstránené</translation>
 <translation id="6782531425936234573">Exportovať údaje</translation>
 <translation id="6791425686608802741">Klepnite na Pridať kartu do novej skupiny</translation>

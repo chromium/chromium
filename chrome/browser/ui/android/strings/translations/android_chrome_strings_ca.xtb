@@ -262,6 +262,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2149968176347646218">La connexió no és segura</translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2163089732491971196">Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya</translation>
+<translation id="2164015935042801524">Fes clic amb el botó dret aquí per mostrar les pestanyes en vertical</translation>
 <translation id="2166228530126694506">Versió <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Les descripcions de les imatges estan desactivades</translation>
 <translation id="2172905120685242547">Vols tancar la finestra?</translation>
@@ -304,6 +305,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2323763861024343754">Emmagatzematge del lloc web</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i es desactivaran tots els enllaços d'invitació</translation>
+<translation id="2329500425421091035">Presentem el mode IA a Chrome</translation>
 <translation id="2330186936255788117">Més adreces d'interès</translation>
 <translation id="2332515770639153015">La funció Navegació segura millorada està activada</translation>
 <translation id="233375395665273385">Suprimeix i tanca la sessió</translation>
@@ -316,6 +318,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2363734411417672757">Es precarreguen més pàgines. És possible que les pàgines es precarreguin a través dels servidors de Google quan altres aplicacions o llocs web ho sol·licitin.</translation>
 <translation id="2366554533468315977">Historial de preus al web per a aquesta opció</translation>
 <translation id="2367818124433749493">Dreceres per a desenvolupadors</translation>
+<translation id="2369058545741334020">Obre en mode de lectura</translation>
 <translation id="2385605401818128172">Pots revisar els llocs web que envien moltes notificacions i impedir que n'enviïn més en el futur</translation>
 <translation id="2386938421315164605">Amaga i deixa d'amagar els temes</translation>
 <translation id="2390510615457643724">Vols tornar a baixar <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
@@ -595,6 +598,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3524334353996115845">Permet que <ph name="ORIGIN" /> verifiqui la teva identitat</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibles</translation>
+<translation id="3547933853190131743">Cerca amb el mode IA</translation>
 <translation id="3549537543136628349">Com que les pàgines precarregades estan encriptades, i l'aplicació o el lloc web que hi enllaça és una aplicació o un lloc de Google, els servidors de Google no reben informació nova quan aquestes pàgines es precarreguen de manera privada.</translation>
 <translation id="3549657413697417275">Cerca a l'historial</translation>
 <translation id="3557336313807607643">Afegeix als contactes</translation>
@@ -1415,6 +1419,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6846298663435243399">S'està carregant…</translation>
 <translation id="6850409657436465440">La baixada encara està en curs</translation>
 <translation id="6850830437481525139">S'han tancat <ph name="TAB_COUNT" /> pestanyes</translation>
+<translation id="6852437757508328589">{NUM_RESULTS,plural, =1{S'ha trobat 1 resultat}other{S'han trobat # resultats}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Fitxers d'àudio, 1 fitxer d'àudio a la llista}other{Fitxers d'àudio, # fitxers d'àudio a la llista}}</translation>
 <translation id="685850645784703949">Discover de Google: desactivat</translation>
 <translation id="6864459304226931083">Baixa la imatge</translation>
@@ -1962,12 +1967,14 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9001604755921395912">Obre en una pestanya d'incògnit</translation>
 <translation id="9010094279589497751">Obre Gemini ràpidament quan el necessitis</translation>
 <translation id="9012585441087414258">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Si una pàgina fa res sospitós, els URL i els fragments de contingut de les pàgines s'envien a Navegació segura de Google.</translation>
+<translation id="9014097371980259227">Algunes eines s'han mogut per ajudar-te a fer cerques amb el mode IA</translation>
 <translation id="9019199799064251516">Vols continuar sense un bloqueig de perfil del cotxe?</translation>
 <translation id="9022774213089566801">Visitats amb freqüència</translation>
 <translation id="9022871169049522985">Els llocs web i els anunciants poden mesurar el rendiment dels seus anuncis</translation>
 <translation id="9024318700713112071">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="9027728231343310283">Desfés <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mou a\u2026</translation>
+<translation id="904146253922032365">Mantén premut per mostrar les pestanyes en vertical</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
 <translation id="9047347135558855162">Inicia una cerca ràpidament a Chrome</translation>
 <translation id="9050666287014529139">Frase de contrasenya</translation>

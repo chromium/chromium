@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} cod pas}zero{{count} codau pas}two{{count} god pas}few{{count} chod pas}many{{count} chod pas}other{{count} cod pas}}</translation>
 <translation id="1005023885865154304">Agorwch y gosodiadau Awtolenwi Cyfrineiriau</translation>
 <translation id="1005230401424685968">BBBB</translation>
+<translation id="1013852467930342108">Mae Live yn nodwedd newydd ar Gemini yn Chrome</translation>
 <translation id="1013952917065545813">Gallwch ddod yn ôl yma i ailagor tabiau rydych wedi'u cau yn ddiweddar</translation>
 <translation id="1016495303386450659">Diweddarwyd yr eitem</translation>
 <translation id="1018804590490383958">Sganio ac awtolenwi</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Gyriannau Cyffredin</translation>
 <translation id="2580306219079937316">Agor gosodiadau Translate</translation>
 <translation id="2583688836549072561">Grŵp tabiau, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> o dabiau, gweithgaredd newydd.</translation>
+<translation id="2584994295315085351">Agor tab newydd pan fyddwch yn dychwelyd i Chrome ar ôl 4 awr</translation>
 <translation id="2593272815202181319">Lled sefydlog</translation>
 <translation id="2601778637777010194">Olrhain gostyngiadau pris cynhyrchion</translation>
 <translation id="2602372807870028932">Mae hyn yn dileu gwybodaeth a ddewiswyd sydd wedi'i chadw ar y ddyfais hon</translation>
@@ -888,7 +890,6 @@
 <translation id="4021447724486050609">Diweddarwch eich porwr</translation>
 <translation id="4021931095789478915">Ychwanegu ${url} at y rhestr ddarllen</translation>
 <translation id="4028871427853484857">Cadw yn y cyfrif…</translation>
-<translation id="4036529942385659684">Dangos y dudalen gychwyn ar ôl cyfnod o anweithgarwch</translation>
 <translation id="4038354071007134711">Ni all unrhyw ap ar y ddyfais hon agor y ffeil.</translation>
 <translation id="4042870976416480368">Chwilio'r Dudalen</translation>
 <translation id="4045441967987592849">Ailagor</translation>
@@ -1238,6 +1239,7 @@
 <translation id="518997337573684769">Anfon adroddiad am y toriad…</translation>
 <translation id="519528950056409240">Caniatáu i Wallet rannu data</translation>
 <translation id="519530786644929958">Lawrlwytho wedi methu ac ni ellir rhoi cynni arall arni.</translation>
+<translation id="519620255540220054">Addasu'r dudalen hafan</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
 <translation id="5200894869889836319">Opsiynau ar gyfer gosod caniatadau</translation>
 <translation id="5203051773066903947">Dechrau</translation>
@@ -1737,6 +1739,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6761393919622941301">Sain</translation>
 <translation id="6765551480308401897">Peidio â Gwneud yn Ddiofyn</translation>
 <translation id="6770452996697898492">[ARCHEBWYD]</translation>
+<translation id="6775952316617222141">Defnyddiwch Live gyda Gemini yn Chrome</translation>
 <translation id="6779455296366983087">Bydd eich data pori yn cael eu dileu</translation>
 <translation id="6782531425936234573">Allforio data</translation>
 <translation id="6791425686608802741">Tapiwch "Ychwanegu Tab at Grŵp Newydd"</translation>

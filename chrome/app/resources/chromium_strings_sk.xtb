@@ -36,6 +36,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
 <translation id="132092532143527429">Vyskúšať s Gemini v prehliadači Chromium</translation>
 <translation id="1324107359134968521">Chromium potrebuje na preskúmanie zariadení s rozhraním Bluetooth prístup k rozhraniu Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Prihláste sa do prehliadača Chromium v telefóne</translation>
 <translation id="1330562121671411446">Rozpoznať jazyk</translation>
 <translation id="1330742950061766891">Používajte odporúčané nastavenia prehliadača Chromium</translation>
 <translation id="1342274909142618978">Odstrániť aj údaje z prehliadača Chromium (<ph name="URL" />)</translation>
@@ -107,6 +108,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="208726765006323911">Pri ďalšom otvorení prehliadača Chromium pre iOS sa zobrazí výzva na vyskúšanie funkcie <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Heslá a ďalšie údaje prehliadača Chromium, ktoré ste si uložili do účtu Google, budú z tohto zariadenia odstránené. Ak ich chcete opäť používať v prehliadači Chromium, znova sa prihláste.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať jednu minútu. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}few{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať # minúty. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}many{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať # minúty. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}other{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať # minút. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}}</translation>
+<translation id="2125838419757773031">Vyberte oblasť obrazovky na vyhľadávanie</translation>
 <translation id="2126108037660393668">Stiahnutý súbor sa nepodarilo overiť.</translation>
 <translation id="2135919691573380097">Nahlásenie tohto webu</translation>
 <translation id="2137162749895930932">Zavrieť obrazovku prekladu</translation>
@@ -139,6 +141,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2401032172288869980">Chromium vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
 <translation id="2403703063067034158">Chyba pri spustení: momentálne je spustená iná inštancia nastavenia. Skúste to neskôr.</translation>
 <translation id="2418322681019544463">Otvárajte odkazy v prehliadači Chromium z ľubovoľnej aplikácie a majte prehliadač k dispozícii na paneli aplikácií</translation>
+<translation id="2425157128016763890">Kliknutím na tlačidlo Zhrnúť zdieľajte tento dokument s Gemini v prehliadači Chromium, získajte rýchly prehľad a položte ďalšie otázky</translation>
 <translation id="2440750600860946460">Pomocou <ph name="BEGIN_LINK" />nástrojov prehliadača Chromium<ph name="END_LINK" /> môžete bezpečne prehliadať a mať všetko pod kontrolou</translation>
 <translation id="2451727308784734061">Pomocou odkazu rýchlo prejdete do Správcu hesiel. Odkaz môžete v počítači presunúť na plochu alebo do Spúšťača aplikácií.</translation>
 <translation id="2478295928299953161">Chromium sa čoskoro zavrie</translation>
@@ -753,6 +756,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="878572486461146056">Chyba inštalácie: správca siete uplatnil skupinové pravidlá, ktoré zabraňujú inštalácii: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu a mikrofónu</translation>
 <translation id="8813277370772331957">Pripomenúť neskôr</translation>
+<translation id="8816416449795340678">Zdieľajte tento dokument s Gemini v prehliadači Chromium, získajte rýchly prehľad a klaďte doplňujúce otázky</translation>
 <translation id="8818550178040858407">Chcete sa prihlásiť do prehliadača Chromium?</translation>
 <translation id="8823401858233292222">Nastavte si Chromium ako predvolený prehliadač a pripnite ho na panel aplikácií</translation>
 <translation id="8826492472752484139">Kliknite na položku Správca hesiel</translation>

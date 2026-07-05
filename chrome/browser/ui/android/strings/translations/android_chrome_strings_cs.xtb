@@ -263,6 +263,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2149968176347646218">Připojení není zabezpečené</translation>
 <translation id="2149973817440762519">Upravit záložku</translation>
 <translation id="2163089732491971196">Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, zadejte svou heslovou frázi</translation>
+<translation id="2164015935042801524">Kliknutím sem pravým tlačítkem zobrazíte karty svisle</translation>
 <translation id="2166228530126694506">Verze <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Popisy obrázků jsou vypnuté</translation>
 <translation id="2172905120685242547">Zavřít okno?</translation>
@@ -305,6 +306,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2323763861024343754">Úložiště webů</translation>
 <translation id="2327445548174191329">Ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
+<translation id="2329500425421091035">Představujeme režim AI v Chromu</translation>
 <translation id="2330186936255788117">Další záložky</translation>
 <translation id="2332515770639153015">Vylepšené Bezpečné prohlížení je zapnuté</translation>
 <translation id="233375395665273385">Vymazat a odhlásit se</translation>
@@ -317,6 +319,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2363734411417672757">Předběžně se načítá více stránek. Stránky, o které žádají jiné weby nebo aplikace, se mohou předběžně načíst prostřednictvím serverů Google.</translation>
 <translation id="2366554533468315977">Historie cen na webu pro tuto možnost</translation>
 <translation id="2367818124433749493">Zkratky pro vývojáře</translation>
+<translation id="2369058545741334020">Otevřít v režimu čtení</translation>
 <translation id="2385605401818128172">Můžete zkontrolovat weby, které odesílají velké množství oznámení, a zabránit jim v odesílání dalších</translation>
 <translation id="2386938421315164605">Skrýt a znovu zobrazit témata</translation>
 <translation id="2390510615457643724">Opravdu soubor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) chcete stáhnout znovu?</translation>
@@ -597,6 +600,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3524334353996115845">Umožnit webu <ph name="ORIGIN" /> ověřit vaši totožnost</translation>
 <translation id="3527085408025491307">Složka</translation>
 <translation id="3542235761944717775">Dostupné místo: <ph name="KILOBYTES" /> kB</translation>
+<translation id="3547933853190131743">Vyhledávání v režimu AI</translation>
 <translation id="3549537543136628349">Protože jsou předběžně načítané stránky zašifrované a weby nebo aplikace, které na ně odkazují, jsou weby nebo aplikace Google, servery Google při soukromém předběžném načítání těchto stránek neobdrží nové informace.</translation>
 <translation id="3549657413697417275">Prohledávat historii</translation>
 <translation id="3557336313807607643">Přidat do kontaktů</translation>
@@ -1966,12 +1970,14 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9001604755921395912">Otevřít na anonymní kartě v Chromu</translation>
 <translation id="9010094279589497751">Rychle Gemini otevřete, kdykoli potřebujete</translation>
 <translation id="9012585441087414258">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Pokud stránka provede něco podezřelého, odešlou se adresy URL a části obsahu stránky do Bezpečného prohlížení Google.</translation>
+<translation id="9014097371980259227">Některé nástroje byly přesunuty, aby vám pomohly vyhledávat pomocí režimu AI</translation>
 <translation id="9019199799064251516">Pokračovat bez zámku profilu auta?</translation>
 <translation id="9022774213089566801">Často navštěvované</translation>
 <translation id="9022871169049522985">Weby a inzerenti mohou měřit výkon svých reklam</translation>
 <translation id="9024318700713112071">Nastavte si Chrome jako výchozí prohlížeč</translation>
 <translation id="9027728231343310283">Vrátit web <ph name="SITE" /> zpět</translation>
 <translation id="9035378196785279980">Přesunout do\u2026</translation>
+<translation id="904146253922032365">Podržením zobrazíte karty svisle</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9047347135558855162">Rychlé zahájení vyhledávání v Chromu</translation>
 <translation id="9050666287014529139">Heslová fráze</translation>

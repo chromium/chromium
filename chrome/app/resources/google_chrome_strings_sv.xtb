@@ -129,6 +129,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> tas bort från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="2121284319307530122">Starta om för att uppdatera &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjälp oss att förbättra Chrome genom att rapportera <ph name="BEGIN_LINK" />dina aktuella inställningar<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Välj ett område på skärmen att söka efter</translation>
 <translation id="2126108037660393668">Den nedladdade filen gick inte att verifiera.</translation>
 <translation id="2128411189117340671">Hantera Chrome-profiler</translation>
 <translation id="2137162749895930932">Stäng översättningsskärmen</translation>
@@ -268,6 +269,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3512495006767217696">Inbyggt i Chrome för att hjälpa dig att skapa, spara och fylla i starka lösenord automatiskt. Lägg till genvägen för enkel åtkomst</translation>
 <translation id="3539955434060988644">Öppna länken i ett inko&amp;gnitofönster i Chrome</translation>
 <translation id="354621070532799440">Påminnelse: Googles bästa säkerhetsfunktioner i fickan</translation>
+<translation id="3547866758548131919">Klicka på knappen Sammanfatta för att dela det här dokumentet med Gemini i Chrome och få en snabb översikt och ställa följdfrågor</translation>
 <translation id="3576528680708590453">Systemadministratören har konfigurerat Google Chrome så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>
 <translation id="3582972582564653026">Synkronisera och anpassa Chrome på alla enheter du använder</translation>
 <translation id="3583751698304738917">Du är redan inloggad som <ph name="USER_EMAIL_ADDRESS" /> i en annan Chrome-profil</translation>
@@ -358,6 +360,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4400772909124543403">Det finns ingen tillgänglig uppdatering</translation>
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Dela det här dokumentet med Gemini i Chrome för att få en snabb översikt och ställa uppföljningsfrågor</translation>
 <translation id="4450664632294415862">Chrome – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annan process i Google Chrome pågår. Försök igen senare.</translation>
 <translation id="4459234553906210702">Genom annonsmätning kan webbplatser du besöker begära information från Chrome som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
@@ -792,6 +795,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="8601359445272098721">Nyhet! Du kan översätta både text och bilder på skärmen genom att välja knappen Översätt skärm</translation>
 <translation id="8614913330719544658">Google Chrome svarar inte. Vill du starta om nu?</translation>
 <translation id="861702415419836452">Du behöver ge Chrome behörighet att använda kameran om du vill skapa en 3D-karta över dina omgivningar</translation>
+<translation id="8623450603356630491">Logga in i Chrome på telefonen</translation>
 <translation id="8624541899164515475">Inställningar, öppnas på en ny flik.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Om en minut startas Chrome om}other{Om # minuter startas Chrome om}}</translation>
 <translation id="8637932705841171563">För att dela fönstret tillåter du skärminspelning för Chrome i systeminställningarna</translation>

@@ -263,6 +263,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2149968176347646218">Povezava ni varna</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2163089732491971196">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, vnesite geslo</translation>
+<translation id="2164015935042801524">Z desnim gumbom kliknite tukaj za navpični prikaz zavihkov</translation>
 <translation id="2166228530126694506">Različica <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Opisi slik so izklopljeni</translation>
 <translation id="2172905120685242547">Želite zapreti okno?</translation>
@@ -305,6 +306,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2323763861024343754">Shranjeni podatki splet. mesta</translation>
 <translation id="2327445548174191329">Od <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Vsi bodo takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in vse povezave do povabila bodo izklopljene</translation>
+<translation id="2329500425421091035">Predstavljamo način umetne inteligence v Chromu</translation>
 <translation id="2330186936255788117">Več zaznamkov</translation>
 <translation id="2332515770639153015">Izboljšano varno brskanje je vklopljeno</translation>
 <translation id="233375395665273385">Izbriši in se odjavi</translation>
@@ -317,6 +319,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2363734411417672757">Več strani je vnaprej naloženih. Strani so morda vnaprej naložene prek Googlovih strežnikov, ko tako zahtevajo druga spletna mesta ali aplikacije.</translation>
 <translation id="2366554533468315977">Zgodovina cen v spletu za to možnost</translation>
 <translation id="2367818124433749493">Bližnjice za razvijalce</translation>
+<translation id="2369058545741334020">Odpri v načinu za branje</translation>
 <translation id="2385605401818128172">Pregledate lahko spletna mesta, ki pošiljajo veliko obvestil, in preprečite, da bi v prihodnje pošiljala še več obvestil</translation>
 <translation id="2386938421315164605">Skrivanje in razkrivanje tem.</translation>
 <translation id="2390510615457643724">Ali želite znova prenesti datoteko <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
@@ -597,6 +600,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3524334353996115845">Naj <ph name="ORIGIN" /> preveri, da sta to vi.</translation>
 <translation id="3527085408025491307">Mapa</translation>
 <translation id="3542235761944717775">Na voljo: <ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">Iskanje z načinom umetne inteligence</translation>
 <translation id="3549537543136628349">Ker so vnaprej naložene strani šifrirane, spletno mesto ali aplikacija s povezavo do teh strani pa je Googlovo spletno mesto ali aplikacija, Googlovi strežniki ne prejmejo nobenega novega podatka ob zasebnem vnaprejšnjem nalaganju teh strani.</translation>
 <translation id="3549657413697417275">Iščite v svoji zgodovini</translation>
 <translation id="3557336313807607643">Dodaj med stike</translation>
@@ -1966,12 +1970,14 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9001604755921395912">Odpri na anonimnem zavihku v Chromu</translation>
 <translation id="9010094279589497751">Hitro odprite Geminija, ko ga potrebujete</translation>
 <translation id="9012585441087414258">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Če se na strani zgodi kaj sumljivega, se URL-ji in delčki vsebine strani pošljejo v Google Varno brskanje.</translation>
+<translation id="9014097371980259227">Nekatera orodja so bila premaknjena, da vam bodo v pomoč pri iskanju z načinom umetne inteligence</translation>
 <translation id="9019199799064251516">Želite nadaljevati brez zaklepanja profila za avtomobil?</translation>
 <translation id="9022774213089566801">Pogosto obiskano</translation>
 <translation id="9022871169049522985">Spletna mesta in oglaševalci lahko merijo uspešnost svojih oglasov.</translation>
 <translation id="9024318700713112071">Nastavite Chrome kot privzeto možnost</translation>
 <translation id="9027728231343310283">Razveljavitev za <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Premakni v \u2026</translation>
+<translation id="904146253922032365">Dotaknite se in pridržite za navpični prikaz zavihkov</translation>
 <translation id="9042893549633094279">Zasebnost in varnost</translation>
 <translation id="9047347135558855162">Hitro začnite iskanje v Chromu</translation>
 <translation id="9050666287014529139">Geslo</translation>

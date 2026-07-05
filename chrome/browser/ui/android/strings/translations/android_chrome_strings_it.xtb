@@ -263,6 +263,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2149968176347646218">La connessione non è sicura</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2163089732491971196">Per usare e salvare i dati di Chrome nel tuo Account Google, inserisci la tua passphrase</translation>
+<translation id="2164015935042801524">Fai clic con il tasto destro del mouse qui per mostrare le schede verticalmente</translation>
 <translation id="2166228530126694506">Versione <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Le descrizioni delle immagini sono disattivate</translation>
 <translation id="2172905120685242547">Chiudere la finestra?</translation>
@@ -305,6 +306,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
 <translation id="2327445548174191329">Da <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
+<translation id="2329500425421091035">Ti presentiamo AI Mode in Chrome</translation>
 <translation id="2330186936255788117">Altri preferiti</translation>
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
 <translation id="233375395665273385">Elimina ed esci</translation>
@@ -317,6 +319,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2363734411417672757">Vengono precaricate più pagine. Le pagine potrebbero essere precaricate tramite i server di Google quando richiesto da altri siti o app.</translation>
 <translation id="2366554533468315977">Cronologia dei prezzi sul web per questa opzione</translation>
 <translation id="2367818124433749493">Scorciatoie per sviluppatori</translation>
+<translation id="2369058545741334020">Apri in modalità Lettura</translation>
 <translation id="2385605401818128172">Puoi rivedere i siti che inviano molte notifiche e impedire loro di inviarne altre in futuro</translation>
 <translation id="2386938421315164605">Nascondi e mostra argomenti</translation>
 <translation id="2390510615457643724">Vuoi scaricare di nuovo <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
@@ -327,6 +330,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, scheda udibile selezionata</translation>
 <translation id="2413014528833954543">Impossibile controllare le password su questo dispositivo</translation>
 <translation id="2414886740292270097">Scuro</translation>
+<translation id="2415037988255164008">Ripristinare le finestre?</translation>
 <translation id="2421705177906985956">Nessun sito da mostrare al momento</translation>
 <translation id="2426805022920575512">Scegli un altro account</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, 1 video nell'elenco}other{Video, # video nell'elenco}}</translation>
@@ -596,6 +600,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3524334353996115845">Consenti a <ph name="ORIGIN" /> di verificare la tua identità</translation>
 <translation id="3527085408025491307">Cartella</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibili</translation>
+<translation id="3547933853190131743">Cerca con AI Mode</translation>
 <translation id="3549537543136628349">Poiché le pagine precaricate sono criptate e il sito o l'app che ti rimanda è un sito o app Google, i server di Google non ricevono nuove informazioni quando precaricano queste pagine privatamente.</translation>
 <translation id="3549657413697417275">Cerca nella cronologia</translation>
 <translation id="3557336313807607643">Aggiungi ai contatti</translation>
@@ -1338,6 +1343,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Ricerche con Sogou</translation>
 <translation id="656065428026159829">Mostra altri</translation>
+<translation id="6565781844089373403">Ripristina finestre</translation>
 <translation id="6565959834589222080">Viene utilizzata la rete Wi-Fi quando è disponibile</translation>
 <translation id="657177046675873214">Per trovare i tuoi preferiti su tutti i dispositivi, attiva l'opzione "Preferiti" nelle impostazioni</translation>
 <translation id="6573096386450695060">Consenti sempre</translation>
@@ -1964,12 +1970,14 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9001604755921395912">Apri in una scheda Incognito di Chrome</translation>
 <translation id="9010094279589497751">Apri rapidamente Gemini quando ti serve</translation>
 <translation id="9012585441087414258">Protezione da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura</translation>
+<translation id="9014097371980259227">Alcuni strumenti sono stati spostati per consentirti di effettuare ricerche con AI Mode</translation>
 <translation id="9019199799064251516">Vuoi continuare senza blocco del profilo dell'auto?</translation>
 <translation id="9022774213089566801">Più visitati</translation>
 <translation id="9022871169049522985">Siti e inserzionisti possono misurare il rendimento dei propri annunci</translation>
 <translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
 <translation id="9027728231343310283">Annulla <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Sposta in\u2026</translation>
+<translation id="904146253922032365">Tocca e tieni premuto per mostrare le schede verticalmente</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9047347135558855162">Avvia rapidamente una ricerca in Chrome</translation>
 <translation id="9050666287014529139">Passphrase</translation>

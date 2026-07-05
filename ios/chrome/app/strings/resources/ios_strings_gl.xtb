@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} clave de acceso}other{{count} claves de acceso}}</translation>
 <translation id="1005023885865154304">Abre a configuración de AutoFill Password (Autocompletar contrasinal)</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">Live é unha nova función de Gemini en Chrome</translation>
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
 <translation id="1018804590490383958">Escanear e autocompletar</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Unidades compartidas</translation>
 <translation id="2580306219079937316">Abrir a configuración do Tradutor</translation>
 <translation id="2583688836549072561">Grupo de pestanas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanas, actividade nova.</translation>
+<translation id="2584994295315085351">Abre unha pestana nova cando volvas a Chrome despois de 4 horas</translation>
 <translation id="2593272815202181319">Monoespazado</translation>
 <translation id="2601778637777010194">Fai un seguimento das baixadas de prezo de produtos</translation>
 <translation id="2602372807870028932">Eliminarase a información seleccionada gardada neste dispositivo</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">Tema verde esmeralda</translation>
 <translation id="3759491607478608474">Comparte o contido da pestana actual con Gemini para obter respostas máis relevantes</translation>
 <translation id="3762232513783804601">Deseñado para iPad</translation>
+<translation id="3767529805486761639">Menú Editar</translation>
 <translation id="3768725474733206671">Reabrir última pestana pechada</translation>
 <translation id="3779810277399252432">Non hai conexión a Internet.</translation>
 <translation id="3782614601387961027">Pechar advertencia</translation>
@@ -815,7 +818,7 @@
 <translation id="3813175908845379029">Suxestións útiles que facilitan e melloran a navegación</translation>
 <translation id="3818293389945649617">Buscar seguinte</translation>
 <translation id="3819183753496523827">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
-<translation id="3826034723896327540">Completárones as pestanas fixadas</translation>
+<translation id="3826034723896327540">Completáronse as pestanas fixadas</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 método de pago}other{# métodos de pago}}</translation>
 <translation id="3831560640878483188">Queres pechar a advertencia?</translation>
 <translation id="3832419617903252251">Contrasinal gardado só neste dispositivo</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">Actualizar o navegador</translation>
 <translation id="4021931095789478915">Engadir ${url} á lista de lectura</translation>
 <translation id="4028871427853484857">Gardar na conta…</translation>
-<translation id="4036529942385659684">Mostrar páxina de inicio despois dun período de inactividade</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
 <translation id="4045441967987592849">Volver abrir</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">Enviando informe de fallos…</translation>
 <translation id="519528950056409240">Permitir que Wallet comparta datos</translation>
 <translation id="519530786644929958">Erro na descarga. Non se pode volver tentar.</translation>
+<translation id="519620255540220054">Personalizar páxina de inicio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opcións para configurar permisos</translation>
 <translation id="5203051773066903947">Introducir</translation>
@@ -1650,6 +1653,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6523575793810663688">Ver como se fai</translation>
 <translation id="6524082013156754186">Gardar na conta</translation>
 <translation id="6524918542306337007">O modo de incógnito non está dispoñible</translation>
+<translation id="6525550806864373485">Menú Editar</translation>
 <translation id="6527208859483186860">fondo {position} de {total}</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6532106788206463496">Gardar cambios</translation>
@@ -1735,6 +1739,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Non definir como predeterminado</translation>
 <translation id="6770452996697898492">[RESERVADO]</translation>
+<translation id="6775952316617222141">Usar Live con Gemini en Chrome</translation>
 <translation id="6779455296366983087">Eliminaranse os teus datos de navegación</translation>
 <translation id="6782531425936234573">Exportar datos</translation>
 <translation id="6791425686608802741">Toca Engadir pestana ao grupo novo</translation>

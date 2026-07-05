@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} წვდომის გასაღები}other{{count} წვდომის გასაღები}}</translation>
 <translation id="1005023885865154304">გახსენით პაროლების ავტომატური შევსების პარამეტრები</translation>
 <translation id="1005230401424685968">წწწწ</translation>
+<translation id="1013852467930342108">Live არის ახალი ფუნქცია Gemini Chrome-ში</translation>
 <translation id="1013952917065545813">შეგიძლიათ დაბრუნდეთ აქ, რომ გახსნათ ჩანართები, რომლებიც ბოლო დროს დახურეთ</translation>
 <translation id="1016495303386450659">ელემენტი განახლებულია</translation>
 <translation id="1018804590490383958">სკანირება და ავტომატური შევსება</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">საზიარო Drive-ები</translation>
 <translation id="2580306219079937316">თარგმანის პარამეტრების გახსნა</translation>
 <translation id="2583688836549072561">ჩანართების ჯგუფი, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ჩანართი, ახალი აქტივობა.</translation>
+<translation id="2584994295315085351">გახსენით ახალი ჩანართი, როცა დაბრუნდებით Chrome-ში 4 საათის შემდეგ</translation>
 <translation id="2593272815202181319">ფიქსირებული სიგანის</translation>
 <translation id="2601778637777010194">პროდუქტების ფასების დაწევისთვის თვალის დევნება</translation>
 <translation id="2602372807870028932">ამ მოქმედებით წაიშლება ამ მოწყობილობაში შენახული არჩეული ინფორმაცია</translation>
@@ -888,7 +890,6 @@
 <translation id="4021447724486050609">განაახლეთ თქვენი ბრაუზერი</translation>
 <translation id="4021931095789478915">დაემატოს ${url} საკითხავ სიას</translation>
 <translation id="4028871427853484857">ანგარიშში შენახვა…</translation>
-<translation id="4036529942385659684">საწყისი გვერდის ჩვენება უმოქმედობის პერიოდის შემდეგ</translation>
 <translation id="4038354071007134711">ამ მოწყობილობაში არ არსებობს პროგრამა ფაილის გასახსნელად.</translation>
 <translation id="4042870976416480368">ძიება გვერდზე</translation>
 <translation id="4045441967987592849">ხელახლა გახსნა</translation>
@@ -1738,6 +1739,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6761393919622941301">აუდიო</translation>
 <translation id="6765551480308401897">არ გახდეს ნაგულისხმევი</translation>
 <translation id="6770452996697898492">[დაჯავშნილია]</translation>
+<translation id="6775952316617222141">დაიწყეთ Gemini-სთან პირდაპირი საუბარი Chrome-ში</translation>
 <translation id="6779455296366983087">თქვენ მიერ ვების დათვალიერების მონაცემები წაიშლება</translation>
 <translation id="6782531425936234573">მონაცემების ექსპორტი</translation>
 <translation id="6791425686608802741">შეეხეთ: „ჩანართის დამატება ახალ ჯგუფში“</translation>

@@ -127,6 +127,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2120620239521071941">Táto akcia odstráni zo zariadenia niekoľko položiek (počet: <ph name="ITEMS_COUNT" />). Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Znova spustiť a aktualizovať Chrome</translation>
 <translation id="2123055963409958220">Nahlásiť <ph name="BEGIN_LINK" />aktuálne nastavenia<ph name="END_LINK" /> a pomôcť tak zlepšiť Chrome</translation>
+<translation id="2125838419757773031">Vyberte oblasť obrazovky na vyhľadávanie</translation>
 <translation id="2126108037660393668">Stiahnutý súbor sa nepodarilo overiť.</translation>
 <translation id="2128411189117340671">Spravovať profily Chromu</translation>
 <translation id="2137162749895930932">Zavrieť obrazovku prekladu</translation>
@@ -266,6 +267,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="3512495006767217696">Je integrovaný v Chrome, aby vám pomáhal vytvárať, ukladať a automaticky dopĺňať silné heslá. Pridajte si odkaz na jednoduchý prístup.</translation>
 <translation id="3539955434060988644">Otvoriť odkaz v okne inko&amp;gnito Chromu</translation>
 <translation id="354621070532799440">Pripomenutie: najlepšie bezpečnostné funkcie Googlu vo vrecku</translation>
+<translation id="3547866758548131919">Kliknutím na tlačidlo Zhrnúť zdieľajte tento dokument s Gemini v Chrome, aby ste získali rýchly prehľad a mohli klásť ďalšie otázky</translation>
 <translation id="3576528680708590453">Správca systému nakonfiguroval Google Chrome, aby web <ph name="TARGET_URL_HOSTNAME" /> otváral v alternatívnom prehliadači.</translation>
 <translation id="3582972582564653026">Synchronizujte a prispôsobte si Chrome v rôznych zariadeniach</translation>
 <translation id="3583751698304738917">Ako <ph name="USER_EMAIL_ADDRESS" /> ste sa už prihlásili v inom profile Chromu</translation>
@@ -355,6 +357,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4400772909124543403">K dispozícii nie je žiadna aktualizácia</translation>
 <translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4434353761996769206">Chyba inštalátora: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Zdieľajte tento dokument s Gemini v Chrome, aby ste získali rýchly prehľad a mohli klásť doplňujúce otázky</translation>
 <translation id="4450664632294415862">Chrome – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">V prehliadači Google Chrome práve prebieha ďalšia operácia. Skúste to neskôr.</translation>
 <translation id="4459234553906210702">Meranie reklám umožňuje webom, ktoré navštívite, požadovať od Chromu údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>
@@ -789,6 +792,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="8601359445272098721">Novinka! Môžete prekladať text aj obrázky na obrazovke. Stačí vybrať tlačidlo Preložiť obrazovku.</translation>
 <translation id="8614913330719544658">Google Chrome nereaguje. Chcete ho spustiť znova?</translation>
 <translation id="861702415419836452">Chrome potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>
+<translation id="8623450603356630491">Prihláste sa do Chromu v telefóne</translation>
 <translation id="8624541899164515475">Nastavenia (otvoria sa na novej karte)</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sa reštartuje o 1 minútu}few{Chrome sa reštartuje o # minúty}many{Chrome sa reštartuje o # minúty}other{Chrome sa reštartuje o # minút}}</translation>
 <translation id="8637932705841171563">Ak chcete zdieľať okno, povoľte Chromu nahrávať obrazovku v nastaveniach systému</translation>

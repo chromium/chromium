@@ -263,6 +263,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2149968176347646218">Verbinding is niet beveiligd</translation>
 <translation id="2149973817440762519">Bookmark bewerken</translation>
 <translation id="2163089732491971196">Voer je wachtwoordzin in als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account</translation>
+<translation id="2164015935042801524">Klik hier met de rechtermuisknop om tabbladen verticaal te tonen</translation>
 <translation id="2166228530126694506">Versie <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Afbeeldingsbeschrijvingen staan uit</translation>
 <translation id="2172905120685242547">Venster sluiten?</translation>
@@ -305,6 +306,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2323763861024343754">Site-opslag</translation>
 <translation id="2327445548174191329">Van <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Iedereen raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en alle uitnodigingslinks worden uitgezet</translation>
+<translation id="2329500425421091035">Maak kennis met de AI-modus in Chrome</translation>
 <translation id="2330186936255788117">Meer bookmarks</translation>
 <translation id="2332515770639153015">De uitgebreide versie van Safe Browsing staat aan</translation>
 <translation id="233375395665273385">Verwijderen en uitloggen</translation>
@@ -317,6 +319,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2363734411417672757">Er worden meer pagina's vooraf geladen. Pagina's kunnen op verzoek van andere sites of apps vooraf worden geladen via de servers van Google.</translation>
 <translation id="2366554533468315977">Prijsgeschiedenis op internet voor deze optie</translation>
 <translation id="2367818124433749493">Snelkoppelingen voor ontwikkelaars</translation>
+<translation id="2369058545741334020">Openen in leesmodus</translation>
 <translation id="2385605401818128172">Je kunt sites checken die veel meldingen sturen en voorkomen dat ze in de toekomst meer sturen</translation>
 <translation id="2386938421315164605">Onderwerpen verbergen en zichtbaar maken</translation>
 <translation id="2390510615457643724">Wil je <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> opnieuw downloaden?</translation>
@@ -327,6 +330,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, geselecteerd tabblad met audio</translation>
 <translation id="2413014528833954543">Kan wachtwoorden op dit apparaat niet checken</translation>
 <translation id="2414886740292270097">Donker</translation>
+<translation id="2415037988255164008">Vensters herstellen?</translation>
 <translation id="2421705177906985956">Geen sites om nu te tonen</translation>
 <translation id="2426805022920575512">Een ander account kiezen</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video's, 1 video in lijst}other{Video's, # video's in lijst}}</translation>
@@ -596,6 +600,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3524334353996115845"><ph name="ORIGIN" /> laten verifiëren dat jij het bent</translation>
 <translation id="3527085408025491307">Map</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB beschikbaar</translation>
+<translation id="3547933853190131743">Zoeken met de AI-modus</translation>
 <translation id="3549537543136628349">Omdat de vooraf geladen pagina's versleuteld zijn en de site of app die naar de pagina's linkt een Google-site of -app is, krijgen Google-servers geen nieuwe informatie als deze pagina's privé vooraf worden geladen.</translation>
 <translation id="3549657413697417275">Zoek in je geschiedenis</translation>
 <translation id="3557336313807607643">Toevoegen aan contacten</translation>
@@ -1338,6 +1343,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Zoeken met Sogou</translation>
 <translation id="656065428026159829">Meer bekijken</translation>
+<translation id="6565781844089373403">Vensters herstellen</translation>
 <translation id="6565959834589222080">Wifi wordt gebruikt als dat beschikbaar is</translation>
 <translation id="657177046675873214">Als je al je bookmarks op al je apparaten wilt gebruiken, zet je in de instellingen de optie Bookmarks aan</translation>
 <translation id="6573096386450695060">Altijd toestaan</translation>
@@ -1964,12 +1970,14 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9001604755921395912">Openen in Chrome-incognitotabblad</translation>
 <translation id="9010094279589497751">Open Gemini snel wanneer je het nodig hebt</translation>
 <translation id="9012585441087414258">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als een pagina iets verdachts doet, worden URL's en delen van de paginacontent naar Google Safe Browsing gestuurd.</translation>
+<translation id="9014097371980259227">Sommige tools zijn verplaatst zodat je kunt zoeken met de AI-modus</translation>
 <translation id="9019199799064251516">Doorgaan zonder profielvergrendeling voor de auto?</translation>
 <translation id="9022774213089566801">Veelbezocht</translation>
 <translation id="9022871169049522985">Sites en adverteerders kunnen de prestaties van hun advertenties meten</translation>
 <translation id="9024318700713112071">Chrome instellen als je standaardbrowser</translation>
 <translation id="9027728231343310283">Actie voor <ph name="SITE" /> ongedaan maken</translation>
 <translation id="9035378196785279980">Verplaatsen naar\u2026</translation>
+<translation id="904146253922032365">Houd je vinger op het scherm om tabbladen verticaal te tonen</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
 <translation id="9047347135558855162">Start snel een zoekopdracht in Chrome</translation>
 <translation id="9050666287014529139">Wachtwoordzin</translation>

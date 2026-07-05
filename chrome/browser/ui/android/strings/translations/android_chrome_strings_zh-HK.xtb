@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">連線不安全</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2163089732491971196">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語</translation>
+<translation id="2164015935042801524">在此按一下右鍵即可直向顯示分頁</translation>
 <translation id="2166228530126694506">版本 <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">圖片描述功能已關閉</translation>
 <translation id="2172905120685242547">要關閉視窗嗎？</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而所有邀請連結亦將會關閉</translation>
+<translation id="2329500425421091035">為你介紹 Chrome 版 AI 模式</translation>
 <translation id="2330186936255788117">更多書籤</translation>
 <translation id="2332515770639153015">已啟用「強化安全瀏覽」功能</translation>
 <translation id="233375395665273385">刪除並登出</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">預先載入更多頁面。當其他網站或應用程式要求連結頁面時，系統可能會透過 Google 伺服器預先載入頁面。</translation>
 <translation id="2366554533468315977">此選項適用的網絡價格記錄</translation>
 <translation id="2367818124433749493">開發人員快速鍵</translation>
+<translation id="2369058545741334020">用閱讀模式開啟</translation>
 <translation id="2385605401818128172">你可以檢查傳送大量通知的網站，並禁止這些網站日後再傳送通知</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
@@ -327,6 +330,7 @@
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />，揀咗播緊音訊嘅分頁</translation>
 <translation id="2413014528833954543">無法查看此裝置上的密碼</translation>
 <translation id="2414886740292270097">灰暗</translation>
+<translation id="2415037988255164008">要還原視窗嗎？</translation>
 <translation id="2421705177906985956">目前沒有可顯示的網站</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{影片，清單中有 1 段影片}other{影片，清單中有 # 段影片}}</translation>
@@ -596,6 +600,7 @@
 <translation id="3524334353996115845">讓 <ph name="ORIGIN" /> 驗證您的身份</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3542235761944717775">可用空間：<ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">使用「AI 模式」搜尋</translation>
 <translation id="3549537543136628349">由於預先載入的頁面經過加密，且連至這些頁面的網站或應用程式為 Google 網站或應用程式，因此以私密方式預先載入這些頁面時，Google 伺服器不會接收新資料。</translation>
 <translation id="3549657413697417275">搜尋您的記錄</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">使用「搜狗」搜尋內容</translation>
 <translation id="656065428026159829">查看更多</translation>
+<translation id="6565781844089373403">還原視窗</translation>
 <translation id="6565959834589222080">有可用的 Wi-Fi 時使用 Wi-Fi</translation>
 <translation id="657177046675873214">如要將書籤同步到所有裝置，請在設定中開啟「書籤」</translation>
 <translation id="6573096386450695060">一律允許</translation>
@@ -1964,12 +1970,14 @@
 <translation id="9001604755921395912">在 Chrome 無痕式分頁中開啟</translation>
 <translation id="9010094279589497751">需要時快速開啟 Gemini</translation>
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
+<translation id="9014097371980259227">部分工具已移動，方便你使用「AI 模式」搜尋</translation>
 <translation id="9019199799064251516">要在不鎖定汽車設定檔的情況下繼續嗎？</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9022871169049522985">網站和廣告客戶可評估廣告的效益</translation>
 <translation id="9024318700713112071">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="9027728231343310283">復原 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="904146253922032365">按住即可直向顯示分頁</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9047347135558855162">迅速在 Chrome 中開始搜尋</translation>
 <translation id="9050666287014529139">複雜密碼</translation>

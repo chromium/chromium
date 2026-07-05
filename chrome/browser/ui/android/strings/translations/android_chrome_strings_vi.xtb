@@ -263,6 +263,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2149968176347646218">Đường kết nối không an toàn</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2163089732491971196">Để sử dụng và lưu dữ liệu Chrome vào Tài khoản Google của bạn, hãy nhập cụm mật khẩu</translation>
+<translation id="2164015935042801524">Nhấp chuột phải vào đây để hiện các thẻ theo chiều dọc</translation>
 <translation id="2166228530126694506">Phiên bản <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Tính năng mô tả hình ảnh đang tắt</translation>
 <translation id="2172905120685242547">Đóng cửa sổ?</translation>
@@ -305,6 +306,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2327445548174191329">Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Mọi người sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và tất cả đường liên kết của lời mời sẽ đều bị vô hiệu hoá</translation>
+<translation id="2329500425421091035">Giới thiệu về Chế độ AI trong Chrome</translation>
 <translation id="2330186936255788117">Các dấu trang khác</translation>
 <translation id="2332515770639153015">Tính năng Duyệt web an toàn có tăng cường bảo vệ đang bật</translation>
 <translation id="233375395665273385">Xoá và đăng xuất</translation>
@@ -317,6 +319,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2363734411417672757">Sẽ có nhiều trang được tải trước hơn. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được các trang web hoặc ứng dụng khác yêu cầu.</translation>
 <translation id="2366554533468315977">Giá trên Internet theo thời gian cho lựa chọn này</translation>
 <translation id="2367818124433749493">Lối tắt cho nhà phát triển</translation>
+<translation id="2369058545741334020">Mở ở chế độ đọc</translation>
 <translation id="2385605401818128172">Bạn có thể xem xét các trang web gửi nhiều thông báo và ngăn các trang web đó gửi thêm thông báo trong tương lai</translation>
 <translation id="2386938421315164605">Ẩn và hiện chủ đề</translation>
 <translation id="2390510615457643724">Bạn có muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống lần nữa?</translation>
@@ -597,6 +600,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3524334353996115845">Cho phép <ph name="ORIGIN" /> xác minh danh tính của bạn</translation>
 <translation id="3527085408025491307">Thư mục</translation>
 <translation id="3542235761944717775">Còn <ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">Tìm kiếm bằng Chế độ AI</translation>
 <translation id="3549537543136628349">Vì các trang tải trước đã được mã hoá và ứng dụng hoặc trang web có đường liên kết đến các trang này là ứng dụng Google hoặc trang web tạo bằng Google Sites, nên các máy chủ của Google không nhận được thông tin mới khi tải trước các trang này ở chế độ riêng tư.</translation>
 <translation id="3549657413697417275">Tìm kiếm trong nhật ký duyệt web</translation>
 <translation id="3557336313807607643">Thêm vào danh bạ</translation>
@@ -1690,7 +1694,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7859988229622350291">Không bao giờ dịch</translation>
 <translation id="7866213166286285359">Nhấp vào đây để chọn dịch trang</translation>
 <translation id="7875915731392087153">Tạo email</translation>
-<translation id="7876243839304621966">Xóa tất cả</translation>
+<translation id="7876243839304621966">Xoá tất cả</translation>
 <translation id="7886917304091689118">Đang chạy trong Chrome</translation>
 <translation id="7887174313503389866">Xem hướng dẫn về các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật. Để có thêm lựa chọn, hãy chuyển đến từng phần cài đặt cụ thể.</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Tổ chức của bạn đã chặn 1 tệp tải xuống}other{Tổ chức của bạn đã chặn # tệp tải xuống}}</translation>
@@ -1966,12 +1970,14 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9001604755921395912">Mở trong thẻ Chrome ẩn danh</translation>
 <translation id="9010094279589497751">Nhanh chóng mở Gemini khi bạn cần</translation>
 <translation id="9012585441087414258">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Nếu một trang có hoạt động đáng ngờ, thì URL và một phần nội dung của trang sẽ được gửi tới dịch vụ Duyệt web An toàn của Google.</translation>
+<translation id="9014097371980259227">Một số công cụ đã được di chuyển để giúp bạn tìm kiếm bằng Chế độ AI</translation>
 <translation id="9019199799064251516">Tiếp tục mà không cần khoá hồ sơ ô tô?</translation>
 <translation id="9022774213089566801">Truy cập thường xuyên</translation>
 <translation id="9022871169049522985">Các trang web và nhà quảng cáo có thể đo lường hiệu suất quảng cáo của họ</translation>
 <translation id="9024318700713112071">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="9027728231343310283">Khôi phục quyền cho <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Chuyển đến\u2026</translation>
+<translation id="904146253922032365">Chạm và giữ để hiện các thẻ theo chiều dọc</translation>
 <translation id="9042893549633094279">Quyền riêng tư và bảo mật</translation>
 <translation id="9047347135558855162">Nhanh chóng bắt đầu tìm kiếm trong Chrome</translation>
 <translation id="9050666287014529139">Cụm mật khẩu</translation>

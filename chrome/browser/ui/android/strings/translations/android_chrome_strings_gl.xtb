@@ -263,6 +263,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2149968176347646218">A conexión non é segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2163089732491971196">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso</translation>
+<translation id="2164015935042801524">Fai clic co botón dereito aquí para mostrar as pestanas en vertical</translation>
 <translation id="2166228530126694506">Versión <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">As descricións das imaxes están desactivadas</translation>
 <translation id="2172905120685242547">Queres pechar a ventá?</translation>
@@ -305,6 +306,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"; ademais, desactivaranse todas as ligazóns de invitación</translation>
+<translation id="2329500425421091035">Presentamos o modo IA en Chrome</translation>
 <translation id="2330186936255788117">Máis marcadores</translation>
 <translation id="2332515770639153015">Está activada a función Navegación segura mellorada</translation>
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
@@ -317,6 +319,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2363734411417672757">Precargaranse máis páxinas. As páxinas poden precargarse a través dos servidores de Google cando o solicitan outros sitios ou aplicacións.</translation>
 <translation id="2366554533468315977">Historial de prezos na Web para esta opción</translation>
 <translation id="2367818124433749493">Atallos de programación</translation>
+<translation id="2369058545741334020">Abrir en modo de lectura</translation>
 <translation id="2385605401818128172">Podes revisar os sitios que envían moitas notificacións e impedir que o sigan facendo no futuro</translation>
 <translation id="2386938421315164605">Ocultar e mostrar temas</translation>
 <translation id="2390510615457643724">Queres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de novo?</translation>
@@ -597,6 +600,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique a túa identidade</translation>
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3542235761944717775">Almacenamento dispoñible: <ph name="KILOBYTES" /> kB</translation>
+<translation id="3547933853190131743">Buscar co modo IA</translation>
 <translation id="3549537543136628349">Como as páxinas precargadas están encriptadas e o sitio ou aplicación á que están vinculadas é de Google, os nosos servidores non reciben información nova cando as precargan de forma privada.</translation>
 <translation id="3549657413697417275">Buscar no historial</translation>
 <translation id="3557336313807607643">Engadir a contactos</translation>
@@ -1966,12 +1970,14 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9001604755921395912">Abrir en incógnito en Chrome</translation>
 <translation id="9010094279589497751">Abre rapidamente Gemini cando o necesites</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
+<translation id="9014097371980259227">Algunhas ferramentas cambiaron de lugar para axudarche a facer buscas co modo IA</translation>
 <translation id="9019199799064251516">Queres continuar sen un bloqueo de perfil do coche?</translation>
 <translation id="9022774213089566801">Visitas frecuentes</translation>
 <translation id="9022871169049522985">Os sitios e os anunciantes poden medir o rendemento dos seus anuncios</translation>
 <translation id="9024318700713112071">Define Chrome como o navegador predeterminado.</translation>
 <translation id="9027728231343310283">Desfacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
+<translation id="904146253922032365">Mantén premido para mostrar as pestanas en vertical</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9047347135558855162">Inicia unha busca rápida en Chrome</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>

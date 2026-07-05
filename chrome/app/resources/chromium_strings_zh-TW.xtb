@@ -30,9 +30,11 @@
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶自動登入 Chromium</translation>
 <translation id="1287534462498555020">在手機上安裝 Chromium</translation>
 <translation id="1290883685122687410">設定錯誤：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
+<translation id="1312200348844120300">這張插圖說明如何使用圖片搜尋查詢產品</translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
 <translation id="132092532143527429">試用 Chromium 內建的 Gemini</translation>
 <translation id="1324107359134968521">Chromium 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">在手機上登入 Chromium</translation>
 <translation id="1330562121671411446">偵測語言</translation>
 <translation id="1330742950061766891">使用 Chromium 建議的瀏覽器設定</translation>
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
@@ -91,6 +93,7 @@
 <translation id="1951406923938785464">這不是常有人下載的檔案類型，可能有危險，因此 Chromium 已禁止下載</translation>
 <translation id="1953553007165777902">下載中… 還剩 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="1966382378801805537">Chromium 無法偵測或設定預設瀏覽器</translation>
+<translation id="197326043290947695">運用「圖片搜尋」，瀏覽更便利</translation>
 <translation id="1990262977744080398">瞭解 Chromium 封鎖某些檔案的原因 (在新分頁中開啟)</translation>
 <translation id="1999715455684970349">讓 Chromium 軟體保持最新狀態。如果停用或停止這項服務，Chromium 軟體就無法保持最新狀態。這樣一來，假如有安全漏洞，可能無法修正。Chromium 的功能也可能無法正常運作。如果這項服務沒有用於任何 Chromium 軟體，就會自行解除安裝。</translation>
 <translation id="2008474315282236005">登出後，系統會將 1 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
@@ -103,6 +106,7 @@
 <translation id="208726765006323911">下次開啟 iOS 版 Chromium 時，系統會提示你試用「<ph name="FEATURE_NAME" />」。</translation>
 <translation id="2099452623287920103">Google 帳戶中儲存的密碼和其他 Chromium 資料將從這部裝置上移除。如要在 Chromium 中再次使用這些資料，請重新登入。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{貴機構會在 Chromium 閒置 1 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}other{貴機構會在 Chromium 閒置 # 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}}</translation>
+<translation id="2125838419757773031">選取畫面上的區域即可搜尋</translation>
 <translation id="2126108037660393668">下載的檔案驗證失敗。</translation>
 <translation id="2135919691573380097">檢舉這個網站</translation>
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
@@ -135,6 +139,7 @@
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="2403703063067034158">啟動時發生錯誤：目前正在執行其他設定作業，請稍後再試。</translation>
 <translation id="2418322681019544463">使用 Chromium 開啟任何應用程式中的連結，並將瀏覽器固定在工作列，方便隨時使用</translation>
+<translation id="2425157128016763890">點選「摘要」按鈕，即可與 Chromium 內建 Gemini 分享這份文件，快速取得內容總覽並提出後續問題</translation>
 <translation id="2440750600860946460">有了 <ph name="BEGIN_LINK" />Chromium 的工具<ph name="END_LINK" />，你可以放心瀏覽網路、掌控全局</translation>
 <translation id="2451727308784734061">使用捷徑快速前往密碼管理工具。你可以將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>
@@ -233,6 +238,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">要切換至現有的 Chromium 設定檔嗎？</translation>
 <translation id="3412460710772753638">在這部裝置的密碼管理工具中更新</translation>
+<translation id="3423442168617177595">Chromium 內建這項功能，能幫你建立、儲存及自動填入高強度密碼。建議新增捷徑，方便隨時使用</translation>
 <translation id="3455907671758333080">在手機上使用 Chromium，享有更全面的安全瀏覽強化防護功能</translation>
 <translation id="3461644266919055473">打造個人專屬的 Chromium...</translation>
 <translation id="3474745554856756813">登出後，系統會將 <ph name="ITEMS_COUNT" /> 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
@@ -282,6 +288,7 @@
 <translation id="3975724895399328945">關於 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">關於 Chromium OS</translation>
 <translation id="4010059961270896984">你造訪網站時，Chromium 會透過隱私權伺服器隱藏你的 IP 位址，再將經過模糊處理的部分網址傳送給 <ph name="BEGIN_LINK" />Google 安全瀏覽<ph name="END_LINK" />。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
+<translation id="4016217212818346953">使用密碼管理工具確保安全</translation>
 <translation id="4019629340646866719">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="4022972681110646219">翻譯這個畫面</translation>
 <translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
@@ -499,6 +506,7 @@
 <translation id="6400112897226594999">電腦螢幕畫面中的 Chromium 標誌。</translation>
 <translation id="6403826409255603130">Chromium 網路瀏覽器開啟網頁和執行應用程式的速度十分迅速。除了迅速、穩定且易於使用之外，Chromium 的內建惡意軟體與網路釣魚防護功能，可讓你安心悠遊網路。</translation>
 <translation id="6414624068245092115">請驗證身分，確保你隨時可以將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料</translation>
+<translation id="6417332166651156371">這張簡化示意圖呈現 Chromium 的密碼管理工具進入點</translation>
 <translation id="642132557830635295">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作</translation>
 <translation id="6436260184216827876">「圖片搜尋」無法使用，請稍後再試。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium OS</translation>
@@ -590,6 +598,7 @@
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7213008767289637091">將 Chromium 保留在 Dock 上，隨時都能快速存取</translation>
 <translation id="7213407614656404070">你只要在訊息、文件和其他應用程式中點選連結，即可透過 Chromium 開啟</translation>
+<translation id="7216228761061470870">在電腦上使用圖片搜尋時，網頁標題、網址和內容 (包括 PDF) 都會傳送到伺服器</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7252276985725323153">立即開始瀏覽：Chromium 現在可以在 Windows 啟動時開啟。</translation>
 <translation id="7274695763216404502">已固定！之後可以透過工具列再次使用圖片搜尋</translation>
@@ -743,6 +752,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="878572486461146056">安裝錯誤：網路管理員採用的「群組原則」不允許安裝應用程式：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium 需要相關權限，才能讓這個網站使用你的攝影機和麥克風</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
+<translation id="8816416449795340678">與 Chromium 內建 Gemini 分享這份文件，就能快速取得摘要並提出後續問題</translation>
 <translation id="8818550178040858407">要登入 Chromium 嗎？</translation>
 <translation id="8823401858233292222">將 Chromium 設為預設瀏覽器，並固定到工作列</translation>
 <translation id="8826492472752484139">按一下「密碼管理工具」</translation>

@@ -263,6 +263,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2149968176347646218">Nid yw'r cysylltiad yn ddiogel</translation>
 <translation id="2149973817440762519">Golygu Nod Tudalen</translation>
 <translation id="2163089732491971196">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, rhowch eich cyfrinymadrodd</translation>
+<translation id="2164015935042801524">De-gliciwch yma i ddangos tabiau'n fertigol</translation>
 <translation id="2166228530126694506">Fersiwn <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Mae'r disgrifiadau lluniau wedi'u diffodd</translation>
 <translation id="2172905120685242547">Cau'r ffenestr?</translation>
@@ -305,6 +306,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2323763861024343754">Storfa gwefan</translation>
 <translation id="2327445548174191329">O <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, a bydd yr holl ddolenni gwahoddiad yn cael eu diffodd</translation>
+<translation id="2329500425421091035">Cyflwyno Dull AI yn Chrome</translation>
 <translation id="2330186936255788117">Rhagor o nodau tudalen</translation>
 <translation id="2332515770639153015">Mae Gwell Pori'n Ddiogel ymlaen</translation>
 <translation id="233375395665273385">Dileu ac allgofnodi</translation>
@@ -317,6 +319,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2363734411417672757">Mae rhagor o dudalennau'n cael eu rhaglwytho. Gellir rhaglwytho tudalennau drwy weinyddion Google pan ofynnir amdanynt gan wefannau neu apiau eraill.</translation>
 <translation id="2366554533468315977">Hanes prisiau ar draws y we ar gyfer yr opsiwn hwn</translation>
 <translation id="2367818124433749493">Llwybrau byr datblygwr</translation>
+<translation id="2369058545741334020">Agor yn y modd darllen</translation>
 <translation id="2385605401818128172">Gallwch adolygu gwefannau sy'n anfon llawer o hysbysiadau a'u hatal rhag anfon rhagor yn y dyfodol</translation>
 <translation id="2386938421315164605">Cuddio a datguddio pynciau</translation>
 <translation id="2390510615457643724">Ydych chi am lawrlwytho <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> eto?</translation>
@@ -598,6 +601,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3524334353996115845">Gadael i <ph name="ORIGIN" /> wirio mai chi sydd yno</translation>
 <translation id="3527085408025491307">Ffolder</translation>
 <translation id="3542235761944717775">Mae <ph name="KILOBYTES" /> KB ar gael</translation>
+<translation id="3547933853190131743">Chwilio gyda'r Dull AI</translation>
 <translation id="3549537543136628349">Oherwydd bod y tudalennau sydd wedi'u rhaglwytho wedi'u hamgryptio, a bod y wefan neu'r ap sy'n cysylltu â'r tudalennau yn wefan neu ap Google, nid yw gweinyddion Google yn derbyn gwybodaeth newydd wrth raglwytho'r tudalennau hyn yn breifat.</translation>
 <translation id="3549657413697417275">Chwilio eich hanes</translation>
 <translation id="3557336313807607643">Ychwanegu at gysylltiadau</translation>
@@ -1967,12 +1971,14 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="9001604755921395912">Agor mewn tab Anhysbys Chrome</translation>
 <translation id="9010094279589497751">Agor Gemini yn gyflym pan fydd ei angen arnoch</translation>
 <translation id="9012585441087414258">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Os yw tudalen yn gwneud rhywbeth amheus, anfonir cyfeiriadau URL a darnau o gynnwys tudalen i Bori'n Ddiogel gyda Google.</translation>
+<translation id="9014097371980259227">Mae rhai offer wedi symud i'ch helpu i chwilio gyda'r Dull AI</translation>
 <translation id="9019199799064251516">Parhau heb glo proffil car?</translation>
 <translation id="9022774213089566801">Ymwelir yn aml</translation>
 <translation id="9022871169049522985">Gall gwefannau a hysbysebwyr fesur perfformiad eu hysbysebion</translation>
 <translation id="9024318700713112071">Gosod Chrome fel porwr diofyn</translation>
 <translation id="9027728231343310283">Dadwneud <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Symud i\u2026</translation>
+<translation id="904146253922032365">Pwyswch a daliwch i ddangos tabiau'n fertigol</translation>
 <translation id="9042893549633094279">Preifatrwydd a diogelwch</translation>
 <translation id="9047347135558855162">Dechrau chwiliad yn Chrome yn gyflym</translation>
 <translation id="9050666287014529139">Cyfrinymadrodd</translation>

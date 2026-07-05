@@ -128,6 +128,7 @@
 <translation id="2120620239521071941">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="2121284319307530122">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromeને બહેતર બનાવવામાં સહાય કરો</translation>
+<translation id="2125838419757773031">શોધવા માટે સ્ક્રીનનો વિસ્તાર પસંદ કરો</translation>
 <translation id="2126108037660393668">ડાઉનલોડ કરેલી ફાઇલની ચકાસણી નિષ્ફળ થઈ.</translation>
 <translation id="2128411189117340671">Chrome પ્રોફાઇલ મેનેજ કરો</translation>
 <translation id="2137162749895930932">અનુવાદ સ્ક્રીન બંધ કરો</translation>
@@ -267,6 +268,7 @@
 <translation id="3512495006767217696">સશક્ત પાસવર્ડ બનાવવામાં, સાચવવામાં અને ઑટોમૅટિક રીતે ભરવામાં તમારી મદદ કરવા માટે Chromeમાં બિલ્ટ ઇન છે. સરળ ઍક્સેસ માટે શૉર્ટકટ ઉમેરો</translation>
 <translation id="3539955434060988644">Chrome Inco&amp;gnito વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="354621070532799440">રિમાઇન્ડર: Googleની શ્રેષ્ઠ સલામતી સુવિધાઓ તમારા ખિસ્સામાં</translation>
+<translation id="3547866758548131919">ઝડપી ઓવરવ્યૂ મેળવવા અને ફૉલોઅપ પ્રશ્નો પૂછવા માટે, આ દસ્તાવેજને Gemini in Chrome સાથે શેર કરવા માટે સારાંશ આપો બટન પર ક્લિક કરો</translation>
 <translation id="3576528680708590453">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Google Chromeને વૈકલ્પિક બ્રાઉઝર ખોલવા માટે ગોઠવેલું છે.</translation>
 <translation id="3582972582564653026">તમારા બધા ડિવાઇસ પર Chromeને સિંક કરો અને મનગમતું બનાવો</translation>
 <translation id="3583751698304738917">તમે પહેલેથી Chromeની અન્ય પ્રોફાઇલમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન થયા છો</translation>
@@ -357,6 +359,7 @@
 <translation id="4400772909124543403">કોઈ અપડેટ ઉપલબ્ધ નથી</translation>
 <translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
 <translation id="4434353761996769206">ઇન્સ્ટૉલરની ભૂલ <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">ઝડપી ઓવરવ્યૂ મેળવવા અને ફૉલોઅપ પ્રશ્નો પૂછવા માટે, આ દસ્તાવેજને Gemini in Chrome સાથે શેર કરો</translation>
 <translation id="4450664632294415862">Chrome - નેટવર્ક સાઇન ઇન - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome પર બીજી ક્રિયા ચાલુ છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="4459234553906210702">Ad measurement તમે જેની મુલાકાત લો છો તે સાઇટને Chrome પાસેથી માહિતીની વિનંતી કરવાની મંજૂરી આપે છે, જે સાઇટને તેની જાહેરાતોનું કાર્યપ્રદર્શન માપવામાં સહાય કરે છે. Ad measurement સાઇટ વચ્ચે શક્ય તેટલી ઓછી માહિતી ટ્રાન્સફર કરીને, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરે છે.</translation>
@@ -791,6 +794,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8601359445272098721">નવું! "સ્ક્રીનનો અનુવાદ કરો" બટન પસંદ કરીને તમે તમારી સ્ક્રીન પર ટેક્સ્ટ અને છબીઓનો અનુવાદ કરી શકો છો</translation>
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="861702415419836452">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>
+<translation id="8623450603356630491">તમારા ફોન પર Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="8624541899164515475">સેટિંગ, નવા ટૅબમાં ખૂલે છે.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 મિનિટમાં ફરીથી લૉન્ચ થશે}one{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}other{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="8637932705841171563">તમારી વિન્ડો શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chrome માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો</translation>

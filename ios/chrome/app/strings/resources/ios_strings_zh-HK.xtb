@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} 個密鑰}other{{count} 個密鑰}}</translation>
 <translation id="1005023885865154304">開啟「自動填入密碼」設定</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live 係 Chrome 版 Gemini 嘅新功能</translation>
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">已更新項目</translation>
 <translation id="1018804590490383958">掃瞄並自動填入</translation>
@@ -233,7 +234,7 @@
 <translation id="1740650426894359238">切換至其他設定檔</translation>
 <translation id="1741219894094057085">智能手錶</translation>
 <translation id="1743244221910283364">捨棄變更</translation>
-<translation id="1744234754703485302">「管理付款方式」已完成！</translation>
+<translation id="1744234754703485302">「管理付款方法」已完成！</translation>
 <translation id="1748975028205587434">選取檔案</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="174998178145075354">{count,plural, =1{鍵盤上方顯示 {count} 個地址選項。}other{鍵盤上方顯示 {count} 個地址選項。}}</translation>
@@ -400,7 +401,7 @@
 <translation id="2273327106802955778">[更多] 選單</translation>
 <translation id="2287614783861766820">{count,plural, =1{此地址將會從此裝置上刪除。}other{這些地址將會從此裝置上刪除。}}</translation>
 <translation id="2295236662082735391">長按網頁上的圖片，即可使用 Gemini 編輯</translation>
-<translation id="2296360194694387941">「使用 Chrome 內建 Gemini」已完成！</translation>
+<translation id="2296360194694387941">「使用 Chrome 版 Gemini」已完成！</translation>
 <translation id="2297989278479054870">登出後，系統會將 Google 帳戶中的書籤、密碼和其他資料從此裝置移除。</translation>
 <translation id="2299218006564889602">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具。</translation>
 <translation id="2306265833370324042">顯示 <ph name="SEARCH_ENGINE_NAME" /> 詳情</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">共用雲端硬碟</translation>
 <translation id="2580306219079937316">開翻譯設定</translation>
 <translation id="2583688836549072561">分頁群組，<ph name="GROUP_TITLE" />，<ph name="TABS_NUMBER" /> 個分頁，新活動。</translation>
+<translation id="2584994295315085351">4 小時後返回 Chrome 時開啟新分頁</translation>
 <translation id="2593272815202181319">等寬</translation>
 <translation id="2601778637777010194">追蹤產品的減價資訊</translation>
 <translation id="2602372807870028932">此操作會刪除儲存在此裝置上的所選資料</translation>
@@ -648,7 +650,7 @@
 <translation id="3177338796769255211">登入帳戶即可在任何裝置上存取自己的書籤及其他內容</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3183362380688692618">新分頁群組…</translation>
-<translation id="3185760469172949183">「相機搜尋」已完成！</translation>
+<translation id="3185760469172949183">「透過相機搜尋」已完成！</translation>
 <translation id="3186796054637504691">清除記錄和網站資料</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="3208260410153224535">你的機構已關閉登入功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
@@ -754,7 +756,7 @@
 <translation id="3565012355885596568">無法載入圖片</translation>
 <translation id="3565930036634619844">分頁。<ph name="NUMBER_OF_TABS" /> 個分頁入面嘅第 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3567168891086460374">儲存其他方式</translation>
-<translation id="3567446754270467567">「安全瀏覽強化防護功能」已完成！</translation>
+<translation id="3567446754270467567">「強化安全瀏覽」已完成！</translation>
 <translation id="3572503683475187385">發起新對話時，系統會與 Gemini 分享目前分頁。與 Gemini 分享分頁時，分頁內容和網址會傳送至 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">在你的 Google 帳戶中</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
@@ -888,7 +890,6 @@
 <translation id="4021447724486050609">更新瀏覽器</translation>
 <translation id="4021931095789478915">將 ${url} 新增至閱讀清單</translation>
 <translation id="4028871427853484857">儲存在帳戶中…</translation>
-<translation id="4036529942385659684">閒置一段時間後顯示起始頁面</translation>
 <translation id="4038354071007134711">此裝置上沒有可開啟該檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中搜尋</translation>
 <translation id="4045441967987592849">重開</translation>
@@ -897,7 +898,7 @@
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
 <translation id="4054290211988862686">選擇檔案</translation>
 <translation id="4070132839822635162">不要登入</translation>
-<translation id="4072473499345702662">前往「升級」頁面</translation>
+<translation id="4072473499345702662">前往「升級」功能頁面</translation>
 <translation id="4092655288299341041">顯示說明</translation>
 <translation id="4095483462103784441">建立新分頁群組</translation>
 <translation id="4099756562043439968">設定提醒</translation>
@@ -1111,7 +1112,7 @@
 <translation id="479628432297359449">要停止下載嗎？</translation>
 <translation id="4796496140132859135">分頁群組，收埋咗。</translation>
 <translation id="4802185666270672526">隱藏「切換至桌面版網站」</translation>
-<translation id="4802678077012980341">「密碼安全檢查」完成！</translation>
+<translation id="4802678077012980341">「密碼安全檢查」已完成！</translation>
 <translation id="4803185665210547709">由您的機構管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">以繪圖、突顯或輕按的方式選取要搜尋的內容，無需離開分頁亦能取得搜尋結果</translation>
@@ -1238,6 +1239,7 @@
 <translation id="518997337573684769">正在傳送當機報告…</translation>
 <translation id="519528950056409240">允許「錢包」分享資料</translation>
 <translation id="519530786644929958">下載失敗且無法重試。</translation>
+<translation id="519620255540220054">自訂首頁</translation>
 <translation id="5197255632782567636">互聯網</translation>
 <translation id="5200894869889836319">設定權限選項</translation>
 <translation id="5203051773066903947">輸入</translation>
@@ -1737,6 +1739,7 @@
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6765551480308401897">不要指定為預設</translation>
 <translation id="6770452996697898492">[已預約]</translation>
+<translation id="6775952316617222141">使用 Chrome 版 Gemini Live</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6782531425936234573">匯出資料</translation>
 <translation id="6791425686608802741">輕按 [將分頁加入新群組]</translation>
@@ -2163,7 +2166,7 @@
 <translation id="8233237502828137700">關閉橫額宣傳</translation>
 <translation id="823339794112333264">開麥克風</translation>
 <translation id="8250920743982581267">文件</translation>
-<translation id="8252980988000695656">「Google 智慧鏡頭」已完成！</translation>
+<translation id="8252980988000695656">「Google 智能鏡頭」已完成！</translation>
 <translation id="8258734532103758067">我已匯出資料</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8261506727792406068">刪除</translation>
@@ -2254,6 +2257,7 @@
 <translation id="8534481786647257214">已在 Google+ 上發佈。</translation>
 <translation id="8535368836838588657">顯示密碼</translation>
 <translation id="8540426897269305488">用 <ph name="CELL_ACCESSIBILITY_LABEL" /> 登入</translation>
+<translation id="8542331710562073430">發生問題，輕按「Live」按鈕即可再嘗試進入 Live。</translation>
 <translation id="8545276357312221485">檢查預設瀏覽器設定</translation>
 <translation id="854938212724803178">你有 1 個密碼被盜用。請立即修正以確保安全。</translation>
 <translation id="8551311254462607218">輕按網址列中的「Google 智能鏡頭」相機圖示</translation>

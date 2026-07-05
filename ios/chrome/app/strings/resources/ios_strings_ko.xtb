@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{패스키 {count}개}other{패스키 {count}개}}</translation>
 <translation id="1005023885865154304">비밀번호 자동 완성 설정 열기</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live는 Chrome의 Gemini에 새로 추가된 기능입니다</translation>
 <translation id="1013952917065545813">여기에 다시 돌아와 최근에 닫았던 탭을 다시 열 수 있습니다.</translation>
 <translation id="1016495303386450659">북마크가 업데이트되었습니다.</translation>
 <translation id="1018804590490383958">스캔 및 자동 완성</translation>
@@ -148,6 +149,7 @@
 <translation id="147982357559798527">변경됨</translation>
 <translation id="1483493594462132177">보내기</translation>
 <translation id="1486096554574027028">비밀번호 검색</translation>
+<translation id="1486593497476255523">탭 그룹이 완료되었습니다.</translation>
 <translation id="1491277525950327607">설정을 전환하려면 두 번 탭하세요.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1497590942294823549">메뉴 → 비밀번호 관리자</translation>
@@ -232,6 +234,7 @@
 <translation id="1740650426894359238">다른 프로필로 전환</translation>
 <translation id="1741219894094057085">스마트시계</translation>
 <translation id="1743244221910283364">변경사항 취소</translation>
+<translation id="1744234754703485302">결제 수단 관리가 완료되었습니다.</translation>
 <translation id="1748975028205587434">파일 선택</translation>
 <translation id="1749733017156547309">비밀번호를 입력해야 합니다.</translation>
 <translation id="174998178145075354">{count,plural, =1{키보드 위에 주소 옵션 {count}개가 있습니다.}other{키보드 위에 주소 옵션 {count}개가 있습니다.}}</translation>
@@ -358,6 +361,7 @@
 <translation id="2155663190508912427">1개월 후 삭제</translation>
 <translation id="2161446265348023004">열려 있는 다른 창으로 전환</translation>
 <translation id="2164946989711475905">로그인…</translation>
+<translation id="2165110345209765380">AI 모드로 검색이 완료되었습니다.</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2180338296831857171">주소 삭제</translation>
 <translation id="218350106843433823">비밀번호 및 패스키 자동 완성</translation>
@@ -397,6 +401,7 @@
 <translation id="2273327106802955778">더보기 메뉴</translation>
 <translation id="2287614783861766820">{count,plural, =1{이 주소가 이 기기에서 삭제됩니다.}other{이 주소가 이 기기에서 삭제됩니다.}}</translation>
 <translation id="2295236662082735391">웹에서 이미지를 길게 눌러 Gemini로 수정하세요.</translation>
+<translation id="2296360194694387941">Chrome의 Gemini 사용이 완료되었습니다.</translation>
 <translation id="2297989278479054870">로그아웃하면 Google 계정의 북마크, 비밀번호 등이 이 기기에서 삭제됩니다.</translation>
 <translation id="2299218006564889602">비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> 세부정보 표시</translation>
@@ -479,6 +484,7 @@
 <translation id="2579713773888829241">공유 드라이브</translation>
 <translation id="2580306219079937316">번역 설정 열기</translation>
 <translation id="2583688836549072561">탭 그룹, <ph name="GROUP_TITLE" />, 탭 <ph name="TABS_NUMBER" />개, 새 활동</translation>
+<translation id="2584994295315085351">4시간 후 Chrome으로 돌아오면 새 탭 열기</translation>
 <translation id="2593272815202181319">고정폭</translation>
 <translation id="2601778637777010194">제품 가격 인하 추적</translation>
 <translation id="2602372807870028932">선택된 정보가 이 기기에서 삭제됩니다</translation>
@@ -644,6 +650,7 @@
 <translation id="3177338796769255211">모든 기기에서 내 북마크 등을 사용하려면 로그인하세요</translation>
 <translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
 <translation id="3183362380688692618">새 탭 그룹...</translation>
+<translation id="3185760469172949183">카메라로 검색이 완료되었습니다.</translation>
 <translation id="3186796054637504691">방문 기록 및 웹사이트 데이터 지우기</translation>
 <translation id="3190736958609431397">추적 취소</translation>
 <translation id="3208260410153224535">조직에서 로그인을 사용 중지했습니다. 새 북마크, 비밀번호 등이 이 기기에만 저장됩니다.</translation>
@@ -712,6 +719,7 @@
 <translation id="3459644598174926977">Gemini Live 대화로 페이지에 관해 질문하고, 소리 내어 브레인스토밍하고, 대화를 주고받을 수 있습니다.</translation>
 <translation id="3462768334899086950">저장되지 않은 파일이 삭제되고 현재 탭이 닫힙니다</translation>
 <translation id="3464194322481586217">가격을 추적할 수 없습니다.</translation>
+<translation id="346831467152294287">비밀번호 및 자동 완성이 완료되었습니다.</translation>
 <translation id="3469117812148449995">비밀번호 저장 옵션</translation>
 <translation id="3472469028191701821">새 탭에서 열기</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{사이트 또는 앱 {COUNT}개}other{사이트 및 앱 {COUNT}개}}</translation>
@@ -748,6 +756,7 @@
 <translation id="3565012355885596568">이미지를 로드할 수 없습니다</translation>
 <translation id="3565930036634619844">탭. <ph name="NUMBER_OF_TABS" />개 중 <ph name="TAB_INDEX" />번째.</translation>
 <translation id="3567168891086460374">다른 방법으로 저장</translation>
+<translation id="3567446754270467567">향상된 세이프 브라우징이 완료되었습니다.</translation>
 <translation id="3572503683475187385">새 채팅을 시작하면 현재 탭이 Gemini와 공유됩니다. Gemini와 탭을 공유하면 탭의 콘텐츠와 URL이 Google로 전송됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">내 Google 계정에서</translation>
 <translation id="3575234738189584619">렌즈로 검색</translation>
@@ -796,6 +805,7 @@
 <translation id="3753618528540214374">비리디언 테마</translation>
 <translation id="3759491607478608474">더 관련성 높은 대답을 얻으려면 Gemini와 현재 탭 콘텐츠를 공유하세요</translation>
 <translation id="3762232513783804601">iPad를 위한 웹브라우저</translation>
+<translation id="3767529805486761639">수정 메뉴</translation>
 <translation id="3768725474733206671">마지막으로 닫은 탭 다시 열기</translation>
 <translation id="3779810277399252432">인터넷에 연결되어 있지 않습니다.</translation>
 <translation id="3782614601387961027">경고 닫기</translation>
@@ -808,6 +818,7 @@
 <translation id="3813175908845379029">탐색을 더 쉽고 편리하게 만드는 유용한 추천입니다</translation>
 <translation id="3818293389945649617">다음 찾기</translation>
 <translation id="3819183753496523827">오프라인 상태입니다. 인터넷 연결을 확인한 후 다시 시도해 보세요.</translation>
+<translation id="3826034723896327540">탭 고정이 완료되었습니다.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{결제 수단 1개}other{결제 수단 #개}}</translation>
 <translation id="3831560640878483188">경고를 닫으시겠습니까?</translation>
 <translation id="3832419617903252251">비밀번호가 이 기기에만 저장됨</translation>
@@ -879,7 +890,6 @@
 <translation id="4021447724486050609">브라우저 업데이트</translation>
 <translation id="4021931095789478915">읽기 목록에 ${url} 추가</translation>
 <translation id="4028871427853484857">계정에 저장…</translation>
-<translation id="4036529942385659684">활동이 없으면 시작 페이지 표시</translation>
 <translation id="4038354071007134711">파일을 열 수 있는 애플리케이션이 기기에 없습니다.</translation>
 <translation id="4042870976416480368">페이지에서 찾기</translation>
 <translation id="4045441967987592849">다시 열기</translation>
@@ -888,6 +898,7 @@
 <translation id="4049507953662678203">네트워크에 연결되었는지 확인한 후 다시 시도해 주세요.</translation>
 <translation id="4054290211988862686">파일 선택</translation>
 <translation id="4070132839822635162">로그인하지 않음</translation>
+<translation id="4072473499345702662">Level Up으로 이동</translation>
 <translation id="4092655288299341041">도움말 표시</translation>
 <translation id="4095483462103784441">새 탭 그룹 만들기</translation>
 <translation id="4099756562043439968">리마인더 설정</translation>
@@ -1030,6 +1041,7 @@
 <translation id="4578835633387306383">사용 설정…</translation>
 <translation id="4580621046861724270">일부 북마크가 저장되지 않음</translation>
 <translation id="4580716718466706433">'비밀번호 관리자'로 이동합니다.</translation>
+<translation id="4584778196791098089">시크릿 모드가 완료되었습니다.</translation>
 <translation id="4585751637295612750">새 탭을 열어 질문에 추가하세요.</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4592672037257622855">{count,plural, =1{페이지가 읽기 목록에 추가됨}other{페이지 {count}장이 읽기 목록에 추가됨}}</translation>
@@ -1100,6 +1112,7 @@
 <translation id="479628432297359449">다운로드를 중지하시겠습니까?</translation>
 <translation id="4796496140132859135">탭 그룹. 접혀 있습니다.</translation>
 <translation id="4802185666270672526">데스크톱 사이트 요청 숨기기</translation>
+<translation id="4802678077012980341">비밀번호 진단이 완료되었습니다.</translation>
 <translation id="4803185665210547709">조직에서 관리합니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">검색하려는 항목을 그리거나 강조 표시하거나 탭하여 선택하면 탭을 벗어나지 않고 결과를 얻을 수 있습니다</translation>
@@ -1226,6 +1239,7 @@
 <translation id="518997337573684769">비정상 종료 보고서를 보내는 중…</translation>
 <translation id="519528950056409240">월렛에서 데이터 공유 허용</translation>
 <translation id="519530786644929958">다운로드가 실패했으며 다시 시도할 수 없습니다.</translation>
+<translation id="519620255540220054">맞춤 홈페이지 만들기</translation>
 <translation id="5197255632782567636">인터넷</translation>
 <translation id="5200894869889836319">권한 설정 옵션</translation>
 <translation id="5203051773066903947">입력</translation>
@@ -1309,6 +1323,7 @@
 <translation id="5482922178977937393">관심사를 토대로 뉴스, 스포츠 등에 대한 알림을 받으시겠습니까?</translation>
 <translation id="5483838506518938965">준비 완료</translation>
 <translation id="5487521232677179737">인터넷 사용 기록 삭제</translation>
+<translation id="5491208689472430746">빠른 삭제가 완료되었습니다.</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5499648645977734083">결제 수단 관리…</translation>
 <translation id="5501346139932663133">Google 앱</translation>
@@ -1638,6 +1653,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6523575793810663688">방법 보기</translation>
 <translation id="6524082013156754186">계정에 저장</translation>
 <translation id="6524918542306337007">시크릿 모드를 사용할 수 없음</translation>
+<translation id="6525550806864373485">수정 메뉴</translation>
 <translation id="6527208859483186860">{total}개 중 {position}번째 배경</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6532106788206463496">변경사항 저장</translation>
@@ -1723,6 +1739,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6761393919622941301">오디오</translation>
 <translation id="6765551480308401897">기본값으로 설정 안함</translation>
 <translation id="6770452996697898492">[예약됨]</translation>
+<translation id="6775952316617222141">Chrome의 Gemini와 Live로 대화하기</translation>
 <translation id="6779455296366983087">인터넷 사용 기록이 삭제됩니다</translation>
 <translation id="6782531425936234573">데이터 내보내기</translation>
 <translation id="6791425686608802741">'새 그룹에 탭 추가'를 탭합니다.</translation>
@@ -2151,6 +2168,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8233237502828137700">배너 프로모션 닫기</translation>
 <translation id="823339794112333264">마이크 켜기</translation>
 <translation id="8250920743982581267">문서</translation>
+<translation id="8252980988000695656">Google 렌즈가 완료되었습니다.</translation>
 <translation id="8258734532103758067">데이터를 내보냈습니다</translation>
 <translation id="8258999165172757081">추가됨</translation>
 <translation id="8261506727792406068">삭제</translation>
@@ -2241,6 +2259,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8534481786647257214">Google+ 게시가 완료되었습니다.</translation>
 <translation id="8535368836838588657">비밀번호 표시</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />(으)로 로그인</translation>
+<translation id="8542331710562073430">문제가 발생했습니다. Live 버튼을 탭하여 다시 Live로 전환해 보세요</translation>
 <translation id="8545276357312221485">기본 브라우저 설정 확인</translation>
 <translation id="854938212724803178">유출된 비밀번호가 1개 있습니다. 안전을 위해 지금 문제를 해결하세요.</translation>
 <translation id="8551311254462607218">주소 표시줄에서 Google 렌즈 카메라 아이콘을 탭합니다.</translation>

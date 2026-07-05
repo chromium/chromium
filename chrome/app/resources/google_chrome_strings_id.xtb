@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Luncurkan kembali untuk Mengupdate &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu Chrome jadi lebih baik dengan melaporkan <ph name="BEGIN_LINK" />setelan saat ini<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Pilih bagian layar yang akan ditelusuri</translation>
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>
 <translation id="2128411189117340671">Kelola profil Chrome</translation>
 <translation id="2137162749895930932">Tutup layar terjemahan</translation>
@@ -264,6 +265,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3512495006767217696">Diintegrasikan dalam Chrome untuk membantu Anda membuat, menyimpan, dan mengisi otomatis sandi kuat. Tambahkan pintasan untuk memudahkan akses</translation>
 <translation id="3539955434060988644">Buka link di jendela Samaran Chrome</translation>
 <translation id="354621070532799440">Pengingat: Fitur keamanan terbaik Google ada di genggaman Anda</translation>
+<translation id="3547866758548131919">Klik tombol Ringkas untuk membagikan dokumen ini ke Gemini di Chrome guna mendapatkan ringkasan cepat dan mengajukan pertanyaan lanjutan</translation>
 <translation id="3576528680708590453">Administrator sistem Anda telah mengonfigurasi Google Chrome untuk membuka browser alternatif guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Menyinkronkan dan mempersonalisasi Chrome di perangkat Anda</translation>
 <translation id="3583751698304738917">Anda sudah login sebagai <ph name="USER_EMAIL_ADDRESS" /> di profil Chrome lain</translation>
@@ -354,6 +356,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4400772909124543403">Tidak ada update yang tersedia</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Bagikan dokumen ini ke Gemini di Chrome untuk mendapatkan ringkasan singkat dan mengajukan pertanyaan lanjutan</translation>
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Operasi lain di Google Chrome sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="4459234553906210702">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
@@ -782,6 +785,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="8601359445272098721">Baru! Anda dapat menerjemahkan teks dan gambar di layar dengan memilih tombol "terjemahkan layar"</translation>
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
+<translation id="8623450603356630491">Login ke Chrome di ponsel Anda</translation>
 <translation id="8624541899164515475">Setelan, terbuka di tab baru.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 menit}other{Chrome akan diluncurkan ulang dalam # menit}}</translation>
 <translation id="8637932705841171563">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem</translation>

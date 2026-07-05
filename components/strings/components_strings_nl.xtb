@@ -14,7 +14,6 @@
 <translation id="1021753677514347426">Dit probleem doet zich voor als gevolg van een certificaat dat jij of iemand anders heeft geïnstalleerd op je apparaat. Het certificaat staat erom bekend dat het wordt gebruikt voor netwerkmonitoring en -onderschepping en wordt niet vertrouwd door Chromium. Hoewel er ook legitieme certificaten bestaan, bijvoorbeeld op een school- of zakelijk netwerk, wil Chromium zeker weten dat je begrijpt wat er gebeurt, ook als je het niet kunt tegenhouden. Monitoring kan plaatsvinden in elke browser of app met toegang tot internet.</translation>
 <translation id="1024111578869940408">Aanvallers maken sites soms na door wijzigingen in het webadres aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="1024913885641459127">Productreviews en prijsvergelijkingen</translation>
-<translation id="1025174656774447058">Geopende tabbladen automatisch delen voor dit gesprek?</translation>
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil grote gegevens permanent op je apparaat opslaan</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Geen}=1{Van 1 site. Hiermee word je uitgelogd bij de meeste sites. }other{Van # sites. Hiermee word je uitgelogd bij de meeste sites. }}</translation>
@@ -26,6 +25,7 @@
 <translation id="1038106730571050514">Suggesties bekijken</translation>
 <translation id="1038168778161626396">Alleen coderen</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
+<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Bericht voor taakblad</translation>
 <translation id="1044897699341250361">Wat dit betekent</translation>
 <translation id="1046350918013988591">Kortingsbonnen en kortingen</translation>
@@ -314,6 +314,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1463793142714244641">Timesharing en vakantiehuizen</translation>
 <translation id="1465457928007067810">IBAN opgeslagen in je Google-account</translation>
 <translation id="1467432559032391204">Links</translation>
+<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Meer bekijken</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Voer 3 of meer woorden in om schrijfhulp te krijgen</translation>
@@ -1125,6 +1126,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="271663710482723385">Druk op |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om het volledige scherm te sluiten</translation>
 <translation id="2717336592027046789">Rol</translation>
 <translation id="2718207025093645426">Er is geen beleid geladen voor een beheerde gebruiker of beheerd apparaat.</translation>
+<translation id="271850739643214113">Je Pix-account is gekoppeld aan Google Pay</translation>
 <translation id="2719233594187778789">Niet-unieke URL genegeerd: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Verzoek geslaagd</translation>
 <translation id="2722622039067384533">Woonkamermeubilair</translation>
@@ -1213,6 +1215,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="290376772003165898">Is deze pagina niet in het <ph name="LANGUAGE" />?</translation>
 <translation id="2904180982022726666">De limieten van je organisatie voor wat je kunt delen</translation>
+<translation id="2905065304080706507">Als deze functie aanstaat, deelt Chrome relevante tabbladen in dit venster om je relevantere reacties te geven.</translation>
 <translation id="2905107382358353958">Melding over nieuwe betaalinstelling</translation>
 <translation id="2909946352844186028">Er is een netwerkwijziging gedetecteerd.</translation>
 <translation id="2910062169995917863">Sessie is verlopen</translation>
@@ -1236,6 +1239,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Tabblad van je andere apparaat</translation>
 <translation id="2930577230479659665">Bijsnijden na elke kopie</translation>
+<translation id="2931453528659195355">Winkelgegevens beheren</translation>
 <translation id="2933624813161016821">Reliëffolie</translation>
 <translation id="2935726091208500473">je tabbladen delen</translation>
 <translation id="293796669683825859">Reacties</translation>
@@ -1411,6 +1415,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vraagt toestemming om gegevens permanent op je apparaat op te slaan</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
+<translation id="3196902089458890316">Altijd relevante tabbladen delen voor betere reacties?</translation>
 <translation id="3197136577151645743">Kan vragen of deze site mag weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de informatie die je synchroniseert te beheren in de Chrome-instellingen</translation>
 <translation id="3203025201812691413">De URL mag niet leeg zijn</translation>
@@ -1448,6 +1453,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3237427677128462778">Kan de kaart niet in Google Wallet opslaan</translation>
 <translation id="3238395604961564389">Link openen in incognitovenster</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om het uiterlijk van je browser aan te passen</translation>
+<translation id="3243131902823383230"><ph name="MANUFACTURER" /> laptop</translation>
 <translation id="3243650379537999343">Tekenen</translation>
 <translation id="3248329428895535435">Niet tonen op deze site</translation>
 <translation id="3249102948665905108">Bestandsupload naar <ph name="CLOUD_PROVIDER" /> is afgerond met fouten</translation>
@@ -1494,7 +1500,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3325568918769906282">in aflopende volgorde</translation>
 <translation id="3325662270238538525">Recente bestandstoegang en -aanpassingen, waaronder bestandsnamen, digitale vingerafdrukken van de bestandscontent, downloadbron en metadata</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
-<translation id="3330483197654063678">Als deze functie aanstaat, deelt Chrome geopende tabbladen in dit venster om je relevantere reacties te geven.</translation>
 <translation id="3333762389743153920">Niet geschikt als virtuele kaart</translation>
 <translation id="3338095232262050444">Beveiligd</translation>
 <translation id="333839153442689579">High-intensity interval training (HIIT)</translation>
@@ -1560,6 +1565,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="343474037147570563">Bestanden die je uploadt of bijvoegt, worden voor analyse naar Google Cloud of derden gestuurd. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
 <translation id="3435557549311968410">Doorlopend (kort)</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
+<translation id="3436125638121079308">Relevante tabbladen automatisch delen voor betere reacties in dit gesprek?</translation>
 <translation id="3438509337461223476">Geopende tabbladen automatisch delen in elk gesprek</translation>
 <translation id="3440783957068352691">vierkant</translation>
 <translation id="3441653493275994384">Beeldscherm</translation>
@@ -1620,6 +1626,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Scherm (gepagineerd)</translation>
 <translation id="3541016556608204104">Meer informatie over Chrome Enterprise Connectors</translation>
+<translation id="3542005451565251757">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt en je Geavanceerde beveiliging hebt aangezet in de Android-instellingen. <ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">Kaartafbeelding</translation>
 <translation id="3542768452570884558">Link openen in nieuw venster</translation>
 <translation id="3543597750097719865">X9.62 ECDSA-handtekening met SHA-512</translation>
@@ -1691,7 +1698,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3641116835972736297">American football</translation>
 <translation id="3642196846309122856">Probeer je bestanden opnieuw te downloaden</translation>
 <translation id="3642638418806704195">App:</translation>
-<translation id="3644768007456662469">Icoon voor betalingsitem</translation>
 <translation id="3647286794400715637">Elke URL-tekenreeks moet 1 of 2 URL's bevatten.</translation>
 <translation id="3647400963805615193">Knop Chrome-tip sluiten, druk op Enter om te sluiten, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Validatie geslaagd</translation>
@@ -1723,6 +1729,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3681841880472207951">Quicktime-video</translation>
 <translation id="3687920599421452763">Bestelauto's en minibestelauto's</translation>
 <translation id="3693327506115126094">Kies hoe je wilt bevestigen dat jij het bent</translation>
+<translation id="3693516565203081475">Een betaalmethode kiezen</translation>
 <translation id="3698353241727597930">Je beheerder heeft ingesteld dat <ph name="FILES" /> worden opgeslagen in je door het bedrijf beheerde <ph name="CLOUD_STORAGE" />-opslag. Deze bestanden kunnen worden gemonitord, gecontroleerd en bewaard als je ze verwijdert.</translation>
 <translation id="3698629142018988477">Knop Site maken. Activeer deze om snel een nieuwe site in Google Sites te maken.</translation>
 <translation id="3700094625653511150">Ga naar <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om opties voor achteraf betalen te verbergen</translation>
@@ -1778,6 +1785,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3761718714832595332">Status verbergen</translation>
 <translation id="3763752038825281594">Je hebt <ph name="PERMISSION" /> eerder niet toegestaan voor deze site</translation>
 <translation id="3765588406864124894">Mailbox 9</translation>
+<translation id="3766505784424699541">Krijg meer op maat gemaakte reacties door relevante tabbladen in dit venster automatisch te delen als ze gerelateerd zijn aan dit gesprek.</translation>
 <translation id="3767485424735936570">Deze content kopiëren en plakken in <ph name="VM_NAME" /> wordt afgeraden op basis van het beheerdersbeleid</translation>
 <translation id="3769584711865378220"><ph name="URL" /> wil de locatietoegang wijzigen van geschat in exact</translation>
 <translation id="3772211998634047851">Papier (gebonden)</translation>
@@ -1863,6 +1871,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3901925938762663762">De pas is verlopen</translation>
 <translation id="390391808978419508">Time-out bij openen</translation>
 <translation id="3905894480064208252">{0,plural, =1{Bestand kan niet worden overgezet}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden overgezet}}</translation>
+<translation id="3906022360148923497">Icoon van betaalmethode</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Meer informatie over ingesloten content</translation>
@@ -2083,6 +2092,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="422722221769396062">Thuisbezorging door restaurants</translation>
 <translation id="4230204356098880324">Kan vragen of deze site je camera mag gebruiken en bewegen</translation>
 <translation id="4231448684371260244">8 x 13 inch</translation>
+<translation id="4234996384188431444">Betaal met Pix zonder van app te wisselen in Google Chrome</translation>
 <translation id="4239799716689808527">Labels</translation>
 <translation id="424063167283213501">Known Traveler Number opslaan</translation>
 <translation id="4241830393007970744">Aanvallers op de site die je probeerde te bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoorden, telefoonnummers of creditcardnummers openbaar maakt.</translation>
@@ -2099,6 +2109,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4255487295905690262">Je krijgt e-mailmeldingen bij een prijsdaling op een site.</translation>
 <translation id="425582637250725228">Wijzigingen die je hebt aangebracht, worden mogelijk niet opgeslagen.</translation>
 <translation id="4258748452823770588">Onjuiste handtekening</translation>
+<translation id="4258927999980634471">Relevante tabbladen automatisch delen voor dit gesprek?</translation>
 <translation id="4260407128682690669">Synchroniseer je geschiedenis en tabbladen met <ph name="ACCOUNT_EMAIL" /> om de geschiedenis van je andere apparaten te krijgen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="4265635050210404830">Je klantenkaarten</translation>
 <translation id="4265872034478892965">Toegestaan door je beheerder</translation>
@@ -2166,6 +2177,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4340810192899866471">Importeren vanuit json</translation>
 <translation id="4340982228985273705">Deze computer is niet gedetecteerd als een zakelijk beheerde computer. Overeenkomstig het beleid kunnen alleen automatisch extensies worden geïnstalleerd die worden gehost in de Chrome Web Store. De update-URL van de Chrome Web Store is <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Attractieparken</translation>
+<translation id="4344194909635300809">Paginatitels en URL's worden naar Google gestuurd en kunnen door mensen worden beoordeeld</translation>
 <translation id="4346670990181948854">Reisinformatie · Voertuigen</translation>
 <translation id="4348834659292907206">De verbinding met <ph name="SITE" /> is niet beveiligd</translation>
 <translation id="4349365535725594680">Kan vertrouwelijke content niet delen</translation>
@@ -2173,6 +2185,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4350629523305688469">Multifunctionele lade</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
 <translation id="4355383636893709732">ChromeOS-update voor Android-apps</translation>
+<translation id="4357577888320640139">Relevante tabbladen automatisch delen in elk gesprek?</translation>
 <translation id="4358059973562876591">De gespecificeerde templates worden misschien niet toegepast door een fout met het beleid DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Betaalmethoden beheren...</translation>
 <translation id="4359160567981085931">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome kan je laten zien wat je nu kunt doen. Klik op 'Account beschermen' om je wachtwoord te wijzigen en Google te laten weten dat je account mogelijk gevaar loopt.</translation>
@@ -2208,6 +2221,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Wachtwoorden kunnen worden verwijderd in de beheerinstellingen</translation>
 <translation id="4424024547088906515">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chrome. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
+<translation id="4425137053900958839">Vertrouw op het gemak en de beveiliging van Pix</translation>
 <translation id="4425750422187370446">Sportkleding</translation>
 <translation id="443121186588148776">Seriële poort</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> heeft je inlogcertificaat niet geaccepteerd of er is geen inlogcertificaat geleverd.</translation>
@@ -2283,6 +2297,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4557573143631562971">Woningverzekeringen</translation>
 <translation id="4558551763791394412">Probeer je extensies uit te zetten.</translation>
 <translation id="4566017918361049074">Buitenactiviteiten</translation>
+<translation id="4568572491321119037">Identiteitskaart updaten in Google Wallet</translation>
 <translation id="4569155249847375786">Geverifieerd</translation>
 <translation id="4570008401337135432">Tekstuitlijning</translation>
 <translation id="457875822857220463">Bezorging</translation>
@@ -2361,6 +2376,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4705573018059932476">Je hebt ervoor gekozen om te verifiëren met <ph name="AUTHENTICATOR" /> op sites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over hoe je betaalt opgeslagen. Hiervoor kun je <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Je verbinding is onderbroken</translation>
 <translation id="4708276642004148190">Watervoorziening en -behandeling</translation>
+<translation id="4710249055485272920">Kan deze informatie niet vinden</translation>
 <translation id="4711628883879888561">Samenwerken aan tabbladgroep</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Je hebt geen rechten om deze site te bezoeken</translation>
@@ -2372,6 +2388,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4726672564094551039">Beleid opnieuw laden</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4729147136006144950">Liefdadigheid en filantropie</translation>
+<translation id="4730773064303503917">Pix naar vrienden en bedrijven sturen via Wallet</translation>
 <translation id="4730977633786878901">Reviews</translation>
 <translation id="4731638775147756694">Deze app is geblokkeerd door je beheerder</translation>
 <translation id="4732860731866514038">Taalpakket voor <ph name="LANGUAGE" /> downloaden… <ph name="PERCENT" />%</translation>
@@ -2656,6 +2673,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5157504274688344097">Groothandels en warenhuizen</translation>
 <translation id="5158275234811857234">Omslag</translation>
 <translation id="5159010409087891077">Pagina openen in een nieuw incognitovenster (⇧⌘N)</translation>
+<translation id="5160781056848005130">Je helpt ons verbeterd automatisch invullen te verbeteren door gegevens te delen met Google</translation>
 <translation id="5161334686036120870">Onderwerp:</translation>
 <translation id="5161506081086828129">Stapeleenheid 9</translation>
 <translation id="5164537320435517152">Bestanden over <ph name="MINUTES" /> min verwijderen</translation>
@@ -2757,6 +2775,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5323501626199324454">Beheren in je Google-account</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5329858041417644019">Je browser wordt niet beheerd.</translation>
+<translation id="5330451136755214328"><ph name="MANUFACTURER" /> computer</translation>
 <translation id="5331585574693522196">Instellen als standaard</translation>
 <translation id="5332219387342487447">Verzendmethode</translation>
 <translation id="5332769172018416402">Bericht sturen</translation>
@@ -2795,6 +2814,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5386426401304769735">De certificaatketen voor deze site bevat een certificaat dat is ondertekend met SHA-1.</translation>
 <translation id="5391010642126249196">Je bezocht deze website</translation>
+<translation id="5391030615542642809"><ph name="MANUFACTURER" /> apparaat</translation>
 <translation id="5391306025131596142">Geschiedenispagina &amp;openen</translation>
 <translation id="539203134595252721">Tafeltennis</translation>
 <translation id="5392506727170022660">Metaal (zijdeglans)</translation>
@@ -3011,6 +3031,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5707154300732650394">Je traject hervatten</translation>
 <translation id="57094364128775171">Sterk wachtwoord voorstellen…</translation>
 <translation id="570953204696852961">Rood 3</translation>
+<translation id="5710907191777451677">Vraag het Gemini in Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Dierenartsen</translation>
 <translation id="5715150588940290235">Opgeslagen beveiligingscodes verwijderen?</translation>
@@ -3053,6 +3074,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5765072501007116331">Selecteer een adres om bezorgingsmethoden en vereisten te bekijken</translation>
 <translation id="57689295674415555">Virtueel kaartnummer niet ingevuld?</translation>
 <translation id="5773286975255318081">Zoals gebruikersnamen van profielen en browserversies</translation>
+<translation id="5774897849666641211">Vragen stellen over dit tabblad</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="577804500166306874">Resultaat laden</translation>
 <translation id="5781136890105823427">Experiment staat aan</translation>
@@ -3392,6 +3414,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6302546952464230349">Informatie over het recht <ph name="PERMISSION_NAME" /> tonen</translation>
 <translation id="6304398603974202180">Multimediasoftware</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is niet bereikbaar.</translation>
+<translation id="6305834316918845109">Als je een verzoek voor verbeterd automatisch invullen typt, registreert Chrome hoe je de functie gebruikt, bijvoorbeeld of je suggesties voor automatisch invullen accepteert, bewerkt of negeert</translation>
 <translation id="6306713302480826305">Dit adres wordt verwijderd van dit apparaat en je andere ingelogde apparaten</translation>
 <translation id="6307968763353904914">Je bank biedt nu geen virtuele kaarten voor deze betaalmethode aan. Je kunt je <ph name="CARD_LABEL" /> wel gebruiken om online te betalen.</translation>
 <translation id="6311410654831092784">Kaartpapier</translation>
@@ -3529,6 +3552,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6494750904506170417">pop-ups en omleidingen</translation>
 <translation id="6495664197699704593">Dit wachtwoord wordt alleen opgeslagen op dit apparaat. Als je het op je andere apparaten wilt gebruiken, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Als je een andere service voor automatisch invullen wilt gebruiken in Chrome, kies je je provider voor automatisch invullen in de Android-instellingen</translation>
+<translation id="6496531801333278234">Gevonden door Personal Intelligence. Je kunt je informatie beheren in de instellingen.</translation>
 <translation id="6499038740797743453">Wachtwoord opnieuw instellen?</translation>
 <translation id="6502510275417601303">Melding over nieuwe betaalinstelling is gesloten</translation>
 <translation id="6502991525169604759">Zonder jouw wijzigingen</translation>
@@ -3642,6 +3666,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6689271823431384964">Chrome biedt aan je kaarten in je Google-account op te slaan omdat je bent ingelogd. Je kunt dit wijzigen in de instellingen. De naam van de kaarthouder is afkomstig uit je account.</translation>
 <translation id="6690688090329768424"><ph name="PROXY_INVALID_DESTINATION" /> is geen geldig bestemmingspatroon.</translation>
 <translation id="6691397311652656001">Maak meer dan <ph name="REQUIRED_FREE_DISK_SPACE" /> ruimte vrij</translation>
+<translation id="6692006953064648573">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt en je deelneemt aan Geavanceerde beveiliging van Google. <ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om in het Google-account naar je apparaat te zoeken</translation>
 <translation id="6695428916538794739">Actie- en avonturenfilms</translation>
 <translation id="6696424331653607346">Reisgidsen en reisverslagen</translation>
@@ -3752,7 +3777,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6874604403660855544">&amp;Opnieuw toevoegen</translation>
 <translation id="6875873347995743859">Naar de assistent sturen</translation>
 <translation id="6875894866901426843">Je beheerder verwijdert je lokale bestanden, inclusief bestanden in de prullenbak, op <ph name="DATE_TIME" />.</translation>
-<translation id="6880812263216766325">Altijd geopende tabbladen delen voor betere reacties?</translation>
 <translation id="6880941331070119097">Dure optie</translation>
 <translation id="6881240511396774766">Snel een nieuw Google-document maken</translation>
 <translation id="6883221904761970440">Blad voor beveiligde verificatie van betalingsgegevens is gesloten</translation>
@@ -4009,7 +4033,6 @@ Aanvullende informatie:
 <translation id="7257453341537973799">Loopbaanbronnen en -planning</translation>
 <translation id="725866823122871198">Er kan geen privéverbinding met <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tot stand worden gebracht, omdat de datum en tijd van de computer (<ph name="DATE_AND_TIME" />) onjuist zijn.</translation>
 <translation id="7260075294900977274">Een nieuwe slimme map waarmee je al je winkelpagina's op één plek kunt opslaan en automatisch prijzen kunt volgen, prijsinzichten kunt krijgen en meer.</translation>
-<translation id="7264942008235065057">Deze site blijft geblokkeerd omdat je Geavanceerde beveiliging van Google gebruikt. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adres is alleen beschikbaar op dit apparaat</translation>
 <translation id="7266094331715305887">apps op apparaat</translation>
 <translation id="7269151392155523061">De snelkoppeling kan niet gelijk zijn aan het zoekwoord van de zoekaggregator dat is gedefinieerd door <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4036,6 +4059,7 @@ Aanvullende informatie:
 <translation id="7310392214323165548">Het apparaat wordt zeer binnenkort opnieuw opgestart</translation>
 <translation id="7311244614769792472">Geen resultaten gevonden</translation>
 <translation id="7313107491291103073">Je organisatie heeft deze site gemarkeerd omdat die misschien een beleid schendt.</translation>
+<translation id="7313260329718515829">De verzoeken die naar Personal Intelligence met Gemini worden gestuurd, worden geanalyseerd om automatisch invullen te verbeteren</translation>
 <translation id="7316521168101843192">Bestand opslaan in Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hulp bij verbinding maken</translation>
@@ -4111,6 +4135,7 @@ Aanvullende informatie:
 <translation id="7418620734632363981">Programmeren</translation>
 <translation id="7419091773564635591">Computers en elektronica</translation>
 <translation id="7419106976560586862">Profielpad</translation>
+<translation id="742088698616475957"><ph name="MANUFACTURER" /> desktop</translation>
 <translation id="7421067045979951561">protocolhandlers</translation>
 <translation id="7422347648202898039">Labels (beveiliging)</translation>
 <translation id="7423283032694727565">Knop Cookies beheren. Activeer deze om je cookievoorkeuren te beheren in de Chrome-instellingen.</translation>
@@ -4163,7 +4188,6 @@ Aanvullende informatie:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> controleert of je in aanmerking komt (dit heeft geen invloed op je kredietscore). Als je aanvraag wordt goedgekeurd, biedt <ph name="BNPL_ISSUER_NAME" /> betalingsplannen waaruit je kunt kiezen en kun je je aankoop afronden.</translation>
 <translation id="7489392576326061356">Shampoos en conditioners</translation>
 <translation id="7489919936111034362">Je Google Drive-opslag is vol</translation>
-<translation id="7490026840522163531">Geopende tabbladen automatisch delen in elk gesprek?</translation>
 <translation id="7495528107193238112">Deze content is geblokkeerd. Neem contact op met de site-eigenaar om het probleem op te lossen.</translation>
 <translation id="749865518782565832">Loodgieter</translation>
 <translation id="7499188644237027195">Als je aankopen doet in Chrome, zie je eWallet en Pix als opties</translation>
@@ -4228,6 +4252,7 @@ Aanvullende informatie:
 <translation id="7575207903026901870">Suggestieknop verwijderen, druk op Enter om deze suggestie te verwijderen</translation>
 <translation id="7575800019233204241">'Je verbinding is niet privé' of '&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;' of '&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;' of '&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;' of 'SSL-certificaatfout'</translation>
 <translation id="7575887283389198269">Mobiele telefoons</translation>
+<translation id="7579113844074980463"><ph name="MANUFACTURER" /> tablet</translation>
 <translation id="7579442726219254162">Onbekende variabele <ph name="VARIABLE" /> in de beheerde configuratie van <ph name="APPLICATION_ID" />.</translation>
 <translation id="7581199239021537589">Beeldverschuiving Y van zijde 2</translation>
 <translation id="7582602800368606489">Snel een nieuwe afspraak in Google Agenda maken</translation>
@@ -4484,6 +4509,7 @@ Aanvullende informatie:
 <translation id="7966803981046576691">Type taakaccount</translation>
 <translation id="7967477318370169806">Beleggingsfondsen</translation>
 <translation id="7967636097426665267">Communicatieapparatuur</translation>
+<translation id="7967973398323409409">De informatie die je automatisch invult, wordt door niemand gezien</translation>
 <translation id="79682505114836835">De waarde <ph name="VALUE" /> is een ongeldige hexadecimale kleur.</translation>
 <translation id="7968982339740310781">Details bekijken</translation>
 <translation id="7972714317346275248">PKCS nr. 1 SHA-384 met RSA-versleuteling</translation>
@@ -5024,7 +5050,6 @@ Aanvullende informatie:
 <translation id="8861482055962701239">Kan deze informatie niet opslaan in je Google Wallet. De informatie is opgeslagen in Chrome op dit apparaat. Chrome biedt je aan de informatie op te slaan in Wallet als je het de volgende keer gebruikt.</translation>
 <translation id="8863218129525348270">Sla je kaart op je apparaat op, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="8864939224504814334">Pakken en zakelijke kleding</translation>
-<translation id="8865650218866129025">Geopende tabbladen automatisch delen voor betere reacties in dit gesprek?</translation>
 <translation id="8866132857352163524">Soundtracks</translation>
 <translation id="8866481888320382733">Fout bij het parseren van beleidsinstellingen</translation>
 <translation id="8866928039507595380">Vouwen</translation>
@@ -5144,9 +5169,11 @@ Aanvullende informatie:
 <translation id="9063800855227801443">Kan geen opname van vertrouwelijke content maken</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9065745800631924235">Zoekopdracht <ph name="TEXT" /> in de geschiedenis</translation>
+<translation id="9066116644715286230">{NUM_TABS,plural, =1{Details over tabblad delen. 1 tabblad van {WEBSITE_LIST_STR} delen}other{Details over tabblad delen. {NUM_TABS} tabbladen van {WEBSITE_LIST_STR} delen}}</translation>
 <translation id="90695670378604968">Plastic (mat)</translation>
 <translation id="9069693763241529744">Geblokkeerd door een extensie</translation>
 <translation id="9073799351042754113">Je hebt ervoor gekozen beveiligingswaarschuwingen voor deze site uit te zetten.</translation>
+<translation id="907426083053157749"><ph name="MANUFACTURER" /> telefoon</translation>
 <translation id="9075717835386447447">Bruin 1</translation>
 <translation id="9078170656887151974">De URL en content van de pagina worden gedeeld met Google om suggesties te bieden en deze functie te verbeteren. Je kunt op elk moment van gedachten veranderen en <ph name="LEARN_MORE" />.</translation>
 <translation id="9078912659001679888">Blenders en sapcentrifuges</translation>

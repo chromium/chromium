@@ -129,6 +129,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="2120620239521071941">Lokhu kuzosusa izinto ezingu-<ph name="ITEMS_COUNT" /> kusuka kule divayisi. kuze uthole idatha yakho emuva kwesikhathi, ngena ngemvume ku-Chrome njengo-<ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Qalisa kabusha ukuze Ubuyekeze i-&amp;Chrome</translation>
 <translation id="2123055963409958220">Siza ukwenza i-Chrome ibengcono ngokubika <ph name="BEGIN_LINK" />izilungiselelo zamanje<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Khetha isifunda sesikrini ukuze useshe</translation>
 <translation id="2126108037660393668">Ifayela elidawunilodiwe aliphumelelanga lapho liqinisekiswa.</translation>
 <translation id="2128411189117340671">Phatha amaphrofayela e-Chrome</translation>
 <translation id="2137162749895930932">Vala isikrini sokuhumusha</translation>
@@ -268,6 +269,7 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3512495006767217696">Yakhelwe kuChrome ukuze ikusize usungule, ulondoloze, futhi ugcwalise ngokuzenzekelayo amaphasiwedi aqinile. Faka isinqamuleli ukuze ufinyelele kalula</translation>
 <translation id="3539955434060988644">Vula ilinki kuwindi leChrome Inco&amp;gnito</translation>
 <translation id="354621070532799440">Isikhumbuzi: Izakhi zokuphepha ezihamba phambili zeGoogle ephaketheni lakho</translation>
+<translation id="3547866758548131919">Chofoza inkinobho ethi Finyeza ukuze wabelane ngale dokhumenti neGemini kuChrome ukuze uthole iqoqa elisheshayo futhi ubuze imibuzo yokulandelela</translation>
 <translation id="3576528680708590453">Umlawuli wakho wesistimu ulungise i-Google Chrome ukuvula esinye isiphequluli ikufinyelela i-<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Vumelanisa uphinde wenze kube ngeyakho i-Chrome kumadivayisi akho onkana</translation>
 <translation id="3583751698304738917">Usuvele ungene ngemvume njengo-<ph name="USER_EMAIL_ADDRESS" /> kwenye iphrofayela ye-Chrome</translation>
@@ -357,6 +359,7 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="4400772909124543403">Asikho isibuyekezo esitholakalayo</translation>
 <translation id="4427306783828095590">Isivikelo esithuthukisiwe senza okuningi ukuvimba ubugebengu bokweba imininingwane ebucayi kanye uhlelo olungayilungele ikhompyutha</translation>
 <translation id="4434353761996769206">Iphutha lesifaki: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Yabelana ngale dokhumenti ngeGemini kuChrome ukuze uthole amazwibela asheshayo futhi ubuze imibuzo elandelayo</translation>
 <translation id="4450664632294415862">I-Chrome - Inethiwekhi Yokungena ngemvume - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Okunye ukusebenza ku-Google Chrome kuyenzeka manje. Sicela uzame futhi emuva kwesikhathi.</translation>
 <translation id="4459234553906210702">Isilinganiso sesikhangiso sivumela amasayithi owavakashelayo ukuba acele ulwazi ku-Chrome olusiza isayithi ukukala ukusebenza kwezikhangiso zawo. Isilinganiso sesikhangiso sikhawulela ukulandelela indawo yonke ngokudlulisa ulwazi oluncane ngangokunokwenzeka phakathi kwamasayithi.</translation>
@@ -791,6 +794,7 @@ Amabhukhimakhi amasha awakwazi ukulondolozwa e-akhawuntini yakho uze usule amany
 <translation id="8601359445272098721">Okusha! Ungahumusha kokubili umbhalo nezithombe esikrinini sakho ngokukhetha inkinobho ethi "humusha isikrini"</translation>
 <translation id="8614913330719544658">I-Google Chrome ayiphenduli. Qalisa kabusha manje?</translation>
 <translation id="861702415419836452">I-Chrome idinga imvume yokufinyelela kwikhamera yakho ukudala imephu engu-3D yendawo yakho ekuzungezile</translation>
+<translation id="8623450603356630491">Ngena ngemvume kuChrome efonini yakho</translation>
 <translation id="8624541899164515475">Amasethingi, avuleka kuthebhu entsha.</translation>
 <translation id="8625237574518804553">{0,plural, =1{I-Chrome izoqalisa kabusha kuminithi elingu-1}one{I-Chrome izoqalisa kabusha kumaminithi angu-#}other{I-Chrome izoqalisa kabusha kumaminithi angu-#}}</translation>
 <translation id="8637932705841171563">Ukuze wabelane ngewindi lakho, vumela ukurekhodwa kwesikrini kweChrome Kumasethingi Ohlelo.</translation>

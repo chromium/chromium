@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{‫{count} پاس کی}other{‫{count} پاس کیز}}</translation>
 <translation id="1005023885865154304">'پاس ورڈز آٹو فل کریں' کی ترتیبات کھولیں</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">‏‫Chrome میں Gemini پر لائیو ایک نئی خصوصیت ہے</translation>
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
 <translation id="1018804590490383958">اسکین کریں اور آٹو فل کریں</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">مشترکہ ڈرائیوز</translation>
 <translation id="2580306219079937316">ترجمہ کی ترتیبات کھولیں</translation>
 <translation id="2583688836549072561">ٹیب گروپ، <ph name="GROUP_TITLE" />، <ph name="TABS_NUMBER" /> ٹیبز، نئی سرگرمی۔</translation>
+<translation id="2584994295315085351">‏‫4 گھنٹے کے بعد Chrome پر واپس آنے پر ایک نیا ٹیب کھولیں</translation>
 <translation id="2593272815202181319">مونو اسپیس</translation>
 <translation id="2601778637777010194">پروڈکٹس کی قیمتوں میں کمی کو ٹریک کریں</translation>
 <translation id="2602372807870028932">اس سے اس آلے پر محفوظ کردہ منتخب معلومات حذف ہو جاتی ہے</translation>
@@ -888,7 +890,6 @@
 <translation id="4021447724486050609">اپنے براؤزر کو اپ ڈیٹ کریں</translation>
 <translation id="4021931095789478915">‏پڑھنے کی فہرست میں ‎${url} شامل کریں</translation>
 <translation id="4028871427853484857">اکاؤنٹ میں محفوظ کریں…</translation>
-<translation id="4036529942385659684">غیر فعالیت کی مدت کے بعد اسٹارٹ صفحہ دکھائیں</translation>
 <translation id="4038354071007134711">اس آلہ پر کوئی ایپلیکیشن اس فائل کو نہیں کھول سکتی ہے۔</translation>
 <translation id="4042870976416480368">صفحہ میں تلاش کریں</translation>
 <translation id="4045441967987592849">دوبارہ کھولیں</translation>
@@ -1238,6 +1239,7 @@
 <translation id="518997337573684769">کریش کی رپورٹ بھیج رہا ہے…</translation>
 <translation id="519528950056409240">والٹ کو ڈیٹا کا اشتراک کرنے کی اجازت دیں</translation>
 <translation id="519530786644929958">ڈاؤن لوڈ کرنے میں ناکام اور دوبارہ کوشش نہیں کی جا سکتی۔</translation>
+<translation id="519620255540220054">ہوم صفحہ کو حسب ضرورت بنائیں</translation>
 <translation id="5197255632782567636">انٹرنیٹ</translation>
 <translation id="5200894869889836319">اجازتیں سیٹ کرنے کے لیے اختیارات</translation>
 <translation id="5203051773066903947">Enter</translation>
@@ -1737,6 +1739,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6761393919622941301">آڈیو</translation>
 <translation id="6765551480308401897">ڈیفالٹ نہ بنائیں</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
+<translation id="6775952316617222141">‏‫Chrome میں Gemini کے ساتھ لائیو جائیں</translation>
 <translation id="6779455296366983087">آپ کا براؤزنگ ڈیٹا حذف کر دیا جائے گا</translation>
 <translation id="6782531425936234573">ڈیٹا برآمد کریں</translation>
 <translation id="6791425686608802741">"نئے گروپ میں ٹیب شامل کریں" پر تھپتھپائیں</translation>

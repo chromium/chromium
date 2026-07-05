@@ -263,6 +263,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2149968176347646218">Anslutningen är inte säker</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2163089732491971196">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt Google-konto</translation>
+<translation id="2164015935042801524">Högerklicka här för att visa flikar vertikalt</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Bildbeskrivningar har inaktiverats</translation>
 <translation id="2172905120685242547">Vill du stänga fönstret?</translation>
@@ -305,6 +306,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2323763861024343754">Webbplatslagring</translation>
 <translation id="2327445548174191329">Från <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
+<translation id="2329500425421091035">Vi presenterar AI-läget i Chrome</translation>
 <translation id="2330186936255788117">Fler bokmärken</translation>
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
@@ -317,6 +319,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2363734411417672757">Fler sidor läses in i förväg. Sidor kan läsas in i förväg via Googles servrar när de begärs av andra webbplatser eller appar.</translation>
 <translation id="2366554533468315977">Prishistorik på webben för den här produkten</translation>
 <translation id="2367818124433749493">Kortkommandon för utvecklare</translation>
+<translation id="2369058545741334020">Öppna i läsläge</translation>
 <translation id="2385605401818128172">Du kan granska webbplatser som skickar många aviseringar och hindra dem från att skicka fler i framtiden</translation>
 <translation id="2386938421315164605">Dölj och visa ämnen</translation>
 <translation id="2390510615457643724">Vill du ladda ned <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
@@ -327,6 +330,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, vald flik med ljud</translation>
 <translation id="2413014528833954543">Det går inte att kontrollera lösenord på den här enheten</translation>
 <translation id="2414886740292270097">Mörk</translation>
+<translation id="2415037988255164008">Vill du återställa fönster?</translation>
 <translation id="2421705177906985956">Det finns inga webbplatser att visa just nu</translation>
 <translation id="2426805022920575512">Välj ett annat konto</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videor, 1 video i listan}other{Videor, # videor i listan}}</translation>
@@ -596,6 +600,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3524334353996115845">Tillåt att <ph name="ORIGIN" /> verifierar din identitet</translation>
 <translation id="3527085408025491307">Mapp</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB tillgängligt</translation>
+<translation id="3547933853190131743">Sök med AI-läge</translation>
 <translation id="3549537543136628349">Google får ingen ny information när de här sidorna läses in privat i förväg, eftersom de förinlästa sidorna är krypterade och webbplatsen eller appen som länkar till sidorna är en Google-webbplats eller -app.</translation>
 <translation id="3549657413697417275">Sök i historik</translation>
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
@@ -1339,6 +1344,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Sök med Sogou</translation>
 <translation id="656065428026159829">Visa fler</translation>
+<translation id="6565781844089373403">Återställ fönster</translation>
 <translation id="6565959834589222080">wifi används när det är tillgängligt</translation>
 <translation id="657177046675873214">Aktivera Bokmärken i inställningarna om du vill få tillgång till dina bokmärken på alla dina enheter</translation>
 <translation id="6573096386450695060">Tillåt alltid</translation>
@@ -1965,12 +1971,14 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9001604755921395912">Öppna i Chrome-inkognitoflik</translation>
 <translation id="9010094279589497751">Öppna Gemini snabbt när du behöver den</translation>
 <translation id="9012585441087414258">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. Om något misstänkt händer på en sida skickas webbadresser och delar av sidinnehållet till Google Säker webbsökning.</translation>
+<translation id="9014097371980259227">Vissa verktyg har flyttats så att du kan söka med AI-läget</translation>
 <translation id="9019199799064251516">Vill du fortsätta utan ett profillås i bilen?</translation>
 <translation id="9022774213089566801">Mest besökta</translation>
 <translation id="9022871169049522985">Webbplatser och annonsörer kan mäta annonsernas resultat</translation>
 <translation id="9024318700713112071">Ställ in Chrome som standardwebbläsare</translation>
 <translation id="9027728231343310283">Ångra <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytta till\u2026</translation>
+<translation id="904146253922032365">Tryck länge för att visa flikar vertikalt</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="9047347135558855162">Starta snabbt en sökning i Chrome</translation>
 <translation id="9050666287014529139">Lösenfras</translation>

@@ -128,6 +128,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2120620239521071941">Cette action aura pour effet de supprimer <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relancer et mettre à jour &amp;Chrome</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Chrome en nous signalant vos <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Sélectionner une zone de l'écran pour lancer une recherche</translation>
 <translation id="2126108037660393668">Échec de validation du fichier téléchargé.</translation>
 <translation id="2128411189117340671">Gérer les profils Chrome</translation>
 <translation id="2137162749895930932">Fermer l'écran de traduction</translation>
@@ -267,6 +268,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="3512495006767217696">Intégré à Chrome pour vous aider à créer, enregistrer et saisir automatiquement des mots de passe sécurisés. Ajoutez le raccourci pour y accéder facilement.</translation>
 <translation id="3539955434060988644">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="354621070532799440">Rappel : Les meilleures fonctionnalités de sécurité de Google dans votre poche</translation>
+<translation id="3547866758548131919">Cliquer sur le bouton Résumer pour partager ce document avec Gemini dans Chrome afin d'obtenir un aperçu rapide et de poser des questions complémentaires</translation>
 <translation id="3576528680708590453">Votre administrateur système a configuré Google Chrome pour que <ph name="TARGET_URL_HOSTNAME" /> s'ouvre dans un autre navigateur.</translation>
 <translation id="3582972582564653026">Synchroniser et personnaliser Chrome sur vos appareils</translation>
 <translation id="3583751698304738917">Vous êtes déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /> dans un autre profil Chrome</translation>
@@ -357,6 +359,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4400772909124543403">Aucune mise à jour disponible</translation>
 <translation id="4427306783828095590">La protection renforcée assure une meilleure protection contre l'hameçonnage et les logiciels malveillants</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Partagez ce document avec Gemini dans Chrome pour obtenir un aperçu rapide et poser des questions complémentaires</translation>
 <translation id="4450664632294415862">Chrome - Connexion au réseau - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Une autre opération est en cours dans Google Chrome. Veuillez réessayer ultérieurement.</translation>
 <translation id="4459234553906210702">Ad measurement permet aux sites que vous consultez de demander à Chrome des informations qui les aident à mesurer les performances de leurs annonces. Cette API limite le suivi intersites en transférant le minimum d'informations entre les sites.</translation>
@@ -791,6 +794,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
 <translation id="861702415419836452">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer un plan 3D de votre environnement</translation>
+<translation id="8623450603356630491">Connectez-vous à Chrome sur votre téléphone</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome va être relancé dans 1 minute}one{Chrome va être relancé dans # minute}other{Chrome va être relancé dans # minutes}}</translation>
 <translation id="8637932705841171563">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chrome dans les réglages système</translation>

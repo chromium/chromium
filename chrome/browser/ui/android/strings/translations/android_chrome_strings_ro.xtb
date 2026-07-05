@@ -263,6 +263,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2149968176347646218">Conexiunea nu este sigură</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
 <translation id="2163089732491971196">Pentru a folosi și a salva datele Chrome în Contul Google, introdu expresia de acces</translation>
+<translation id="2164015935042801524">Dă clic dreapta aici pentru a afișa filele pe verticală</translation>
 <translation id="2166228530126694506">Versiunea <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Descrierile imaginilor sunt dezactivate</translation>
 <translation id="2172905120685242547">Închizi fereastra?</translation>
@@ -305,6 +306,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2323763861024343754">Stocarea site-urilor</translation>
 <translation id="2327445548174191329">Din <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și toate linkurile de invitație vor fi dezactivate</translation>
+<translation id="2329500425421091035">Îți prezentăm Modul AI în Chrome</translation>
 <translation id="2330186936255788117">Mai multe marcaje</translation>
 <translation id="2332515770639153015">Navigarea sigură îmbunătățită este activată</translation>
 <translation id="233375395665273385">Șterge și deconectează-te</translation>
@@ -317,6 +319,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2363734411417672757">Mai multe pagini sunt preîncărcate. Este posibil ca paginile să fie preîncărcate prin serverele Google atunci când alte site-uri sau aplicații solicită acest lucru.</translation>
 <translation id="2366554533468315977">Istoricul prețurilor de pe web pentru această opțiune</translation>
 <translation id="2367818124433749493">Comenzi rapide pentru dezvoltatori</translation>
+<translation id="2369058545741334020">Deschide în modul de citire</translation>
 <translation id="2385605401818128172">Poți să examinezi site-urile care trimit multe notificări și să le împiedici să trimită altele în viitor</translation>
 <translation id="2386938421315164605">Ascunde și reafișează subiecte</translation>
 <translation id="2390510615457643724">Vrei să descarci din nou <ph name="FILE_NAME" /> de <ph name="FILE_SIZE" />?</translation>
@@ -597,6 +600,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3524334353996115845">Permite ca <ph name="ORIGIN" /> să-ți verifice identitatea</translation>
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB disponibili</translation>
+<translation id="3547933853190131743">Caută cu Modul AI</translation>
 <translation id="3549537543136628349">Întrucât paginile preîncărcate sunt criptate, iar site-ul sau aplicația conectată la pagini este un site sau o aplicație Google, serverele Google nu primesc informații noi la preîncărcarea în mod privat a acestor pagini.</translation>
 <translation id="3549657413697417275">Caută în istoricul tău</translation>
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
@@ -1966,12 +1970,14 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="9001604755921395912">Deschide într-o filă Chrome incognito</translation>
 <translation id="9010094279589497751">Deschide rapid Gemini când ai nevoie</translation>
 <translation id="9012585441087414258">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Dacă o pagină face ceva suspect, adresele URL și fragmente din conținutul paginii sunt trimise la Navigarea sigură Google.</translation>
+<translation id="9014097371980259227">Unele instrumente s-au mutat pentru a te ajuta să cauți cu Modul AI</translation>
 <translation id="9019199799064251516">Continui fără o blocare a profilului pentru mașină?</translation>
 <translation id="9022774213089566801">Accesate frecvent</translation>
 <translation id="9022871169049522985">Site-urile și advertiserii pot măsura performanța anunțurilor lor</translation>
 <translation id="9024318700713112071">Setează Chrome ca prestabilit</translation>
 <translation id="9027728231343310283">Anulează <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mută în\u2026</translation>
+<translation id="904146253922032365">Atinge lung pentru a afișa filele pe verticală</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
 <translation id="9047347135558855162">Începe rapid o căutare în Chrome</translation>
 <translation id="9050666287014529139">Expresie de acces</translation>

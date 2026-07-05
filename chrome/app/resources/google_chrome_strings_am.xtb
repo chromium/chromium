@@ -129,6 +129,7 @@
 <translation id="2120620239521071941">ይሄ <ph name="ITEMS_COUNT" /> ንጥሎችን ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chrome ይግቡ።</translation>
 <translation id="2121284319307530122">&amp;Chromeን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />የአሁኖቹን ቅንብሮች<ph name="END_LINK" /> ሪፖርት በማድረግ Chromium የተሻለ እንዲሆን ያግዙ።</translation>
+<translation id="2125838419757773031">ለመፈለግ የማያ ገጽ ክልል ይምረጡ</translation>
 <translation id="2126108037660393668">የወረደው ፋይል ማረጋገጫን አላለፈም።</translation>
 <translation id="2128411189117340671">የChrome መገለጫዎችን ያስተዳድሩ</translation>
 <translation id="2137162749895930932">የመተርጎሚያ ማያ ገፅን ዝጋ</translation>
@@ -268,6 +269,7 @@
 <translation id="3512495006767217696">ጠንካራ የይለፍ ቃላትን ለመፍጠር፣ ለማስቀመጥ እና በራስ-ሰር ለመሙላት እንዲያግዝዎ ወደ Chrome የተገነባ። ለቀላል መዳረሻ አቋራጩን ያክሉ</translation>
 <translation id="3539955434060988644">አገናኝ በChrome ማን&amp;ነት የማያሳውቅ መስኮት ውስጥ ክፈት</translation>
 <translation id="354621070532799440">አስታዋሽ፦ የGoogle ምርጥ የደኅንነት ባህሪያት በኪስዎ ውስጥ</translation>
+<translation id="3547866758548131919">ፈጣን አጠቃላይ ዕይታ ለማግኘት እና የክትትል ጥያቄዎችን ለመጠየቅ ይህን ሰነድ ለGemini በChrome ውስጥ ለማጋራት አጠቃላይ አድርግ የሚለውን አዝራር ጠቅ ያድርጉ</translation>
 <translation id="3576528680708590453">የአርስዎ የስርዓት አስተዳዳሪ <ph name="TARGET_URL_HOSTNAME" />ን ለመድረስ Google Chrome ተለዋጭ አሳሽ እንዲከፍት አዋቅሮታል።</translation>
 <translation id="3582972582564653026">Chromeን በመላ መሣሪያዎችዎ ላይ ያስምሩ እና ግላዊነት ያላብሱ</translation>
 <translation id="3583751698304738917">አስቀድመው በሌላ የChrome መገለጫ እንደ <ph name="USER_EMAIL_ADDRESS" /> ገብተዋል</translation>
@@ -358,6 +360,7 @@
 <translation id="4400772909124543403">ምንም ዝማኔ አይገኝም</translation>
 <translation id="4427306783828095590">የተሻሻለ ጥበቃ ማስገር እና ተንኮል-አዘል ዌር ለማገድ የበለጠ ይሠራል</translation>
 <translation id="4434353761996769206">የጫኚ ስህተት፦ <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">ፈጣን አጠቃላይ ዕይታ ለማግኘት እና ተከታይ ጥያቄዎችን ለመጠየቅ ይህን ሰነድ በGemini በChrome ውስጥ ያጋሩ</translation>
 <translation id="4450664632294415862">Chrome - በአውታረ መረብ ወደ መለያ መግባት - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">በGoogle Chrome ላይ ሌላ ሥርዓተ ክወና በሂደት ላይ ነው። እባክዎ በኋላ ላይ እንደገና ይሞክሩ።</translation>
 <translation id="4459234553906210702">የማስታወቂያ ልኬት እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም የሚለካው ጣቢያ የሚያግዘውን መረጃ ከChrome እንዲጠይቁ ያስችላቸዋል። የማስታወቂያ ልኬት በተቻለ መጠን ትንሽ መረጃን በጣቢያዎች መካከል በማስተላለፍ የጣቢያ ተሻጋሪ ክትትልን ይገድባል።</translation>
@@ -792,6 +795,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8601359445272098721">አዲስ! «ማያ ገፅ ተርጉም» የሚለውን ቁልፍ በመምረጥ ሁለቱንም ጽሁፍ እና ምስሎች በማያ ገፁ ላይ መተርጎም ይችላሉ</translation>
 <translation id="8614913330719544658">Google Chrome መልስ አይሰጥም። አሁን ዳግም ይጀምር?</translation>
 <translation id="861702415419836452">Chrome የዙሪያዎ 3ል ካርታ መፍጠር እንዲችል ካሜራዎን የመድረስ ፈቃድ ያስፈልገዋል</translation>
+<translation id="8623450603356630491">ስልክዎ ላይ ወደ Chrome ይግቡ</translation>
 <translation id="8624541899164515475">ቅንብሮች፣ በአዲስ ትር ውስጥ ይከፈታል።</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome በ1 ደቂቃ ውስጥ ዳግም ይጀመራል}one{Chrome በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}other{Chrome በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}}</translation>
 <translation id="8637932705841171563">መስኮትዎን ለማጋራት በሥርዓት ምርጫዎች ውስጥ ለChrome የማያ ገፅ መቅረጽን ይፍቀዱ</translation>

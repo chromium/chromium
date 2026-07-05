@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2163089732491971196">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令</translation>
+<translation id="2164015935042801524">右键点击此处即可垂直显示标签页</translation>
 <translation id="2166228530126694506">版本 <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">“图片说明”功能已关闭</translation>
 <translation id="2172905120685242547">关闭窗口？</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">网站存储数据</translation>
 <translation id="2327445548174191329">来自<ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
+<translation id="2329500425421091035">Chrome 迎来 AI 模式</translation>
 <translation id="2330186936255788117">更多书签</translation>
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">预加载更多网页。被其他网站或应用请求的网页可能会通过 Google 服务器预加载。</translation>
 <translation id="2366554533468315977">此选项的网上历史价格</translation>
 <translation id="2367818124433749493">开发者快捷键</translation>
+<translation id="2369058545741334020">在阅读模式下打开</translation>
 <translation id="2385605401818128172">您可以查看发送大量通知的网站，并阻止它们日后继续发送通知</translation>
 <translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
 <translation id="2390510615457643724">您想再次下载 <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) 吗？</translation>
@@ -327,6 +330,7 @@
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />，已选择的标签页，正在播放音频</translation>
 <translation id="2413014528833954543">无法在此设备上检查密码</translation>
 <translation id="2414886740292270097">深色调</translation>
+<translation id="2415037988255164008">要恢复窗口吗？</translation>
 <translation id="2421705177906985956">目前没有可显示的网站</translation>
 <translation id="2426805022920575512">选择其他账号</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{视频，列表中有 1 个视频}other{视频，列表中有 # 个视频}}</translation>
@@ -596,6 +600,7 @@
 <translation id="3524334353996115845">让 <ph name="ORIGIN" /> 验证您的身份</translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3542235761944717775">可用空间：<ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">使用 AI 模式搜索</translation>
 <translation id="3549537543136628349">由于预加载的网页均已加密，并且链接到这些网页的网站或应用是一个 Google 网站或应用，因此当以私密方式预加载这些网页时，Google 服务器不会收到新信息。</translation>
 <translation id="3549657413697417275">搜索您的历史记录</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">改用搜狗搜索</translation>
 <translation id="656065428026159829">查看更多</translation>
+<translation id="6565781844089373403">恢复窗口</translation>
 <translation id="6565959834589222080">当 Wi-Fi 可用时使用 Wi-Fi</translation>
 <translation id="657177046675873214">如要将书签同步到所有设备上，请在设置中开启“书签”</translation>
 <translation id="6573096386450695060">一律允许</translation>
@@ -1962,12 +1968,14 @@
 <translation id="9001604755921395912">在 Chrome 无痕式标签页中打开</translation>
 <translation id="9010094279589497751">随时随需快速打开 Gemini</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
+<translation id="9014097371980259227">部分工具的位置有所调整，助您利用 AI 模式开启搜索新体验</translation>
 <translation id="9019199799064251516">不设置车载设备个人资料锁定就继续吗？</translation>
 <translation id="9022774213089566801">经常访问</translation>
 <translation id="9022871169049522985">网站和广告主可以衡量其广告的效果</translation>
 <translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
 <translation id="9027728231343310283">重新授权 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="904146253922032365">轻触并按住即可垂直显示标签页</translation>
 <translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9047347135558855162">在 Chrome 中快速发起搜索</translation>
 <translation id="9050666287014529139">密码</translation>

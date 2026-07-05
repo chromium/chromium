@@ -140,6 +140,7 @@
 <translation id="2401032172288869980">O Chromium precisa da permissão de acesso ao microfone e à câmera para este site</translation>
 <translation id="2403703063067034158">Erro de inicialização: outra instância de configuração está sendo executada. Tente de novo mais tarde.</translation>
 <translation id="2418322681019544463">Clicar em links de qualquer app vai abri-los no Chromium, e você poderá acessar o navegador com mais rapidez na barra de tarefas.</translation>
+<translation id="2425157128016763890">Clique no botão Resumir para compartilhar este documento com o Gemini no Chromium, assim você recebe uma visão geral rápida e pode fazer perguntas complementares</translation>
 <translation id="2440750600860946460">Com as <ph name="BEGIN_LINK" />ferramentas do Chromium<ph name="END_LINK" />, você pode navegar com segurança e ficar no controle</translation>
 <translation id="2451727308784734061">Use o atalho para acessar rapidamente o Gerenciador de senhas. Você pode mover o atalho para a tela inicial ou para o Acesso rápido aos apps do seu computador.</translation>
 <translation id="2478295928299953161">O Chromium será fechado em breve</translation>
@@ -684,6 +685,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8107060931443639922">Na próxima vez que você abrir o Chromium no seu <ph name="DEVICE_TYPE" />, vai aparecer uma mensagem para ativar os alertas de monitoramento de preços.</translation>
 <translation id="8117908349476699973">Receba alertas de redução no preço de itens do seu interesse com o app Chromium no seu celular</translation>
 <translation id="8118331347066725040">Enviar feedback sobre a pesquisa com o Lens</translation>
+<translation id="8130609355518033382">Deixe o Chromium do seu jeito</translation>
 <translation id="8133124826068723441">O ChromiumOS não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8161503455832158203">Abra o Gemini no Chromium com um atalho do teclado.</translation>
@@ -747,6 +749,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">O Chromium precisa de permissão para este site acessar sua câmera e seu microfone</translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
+<translation id="8816416449795340678">Compartilhe este documento com o Gemini no Chromium para obter uma visão geral rápida e fazer perguntas complementares</translation>
 <translation id="8818550178040858407">Fazer login no Chromium?</translation>
 <translation id="8823401858233292222">Definir o Chromium como navegador padrão e fixar na barra de tarefas</translation>
 <translation id="8826492472752484139">Clique em "Gerenciador de senhas"</translation>

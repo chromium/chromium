@@ -263,6 +263,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2149968176347646218">Lidhja nuk është e sigurt</translation>
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2163089732491971196">Për të përdorur dhe për të ruajtur të dhënat e Chrome në "Llogarinë tënde të Google", fut frazën tënde të kalimit</translation>
+<translation id="2164015935042801524">Kliko me butonin djathtas këtu për t'i shfaqur skedat vertikalisht</translation>
 <translation id="2166228530126694506">Versioni <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Përshkrimet e imazheve janë joaktive</translation>
 <translation id="2172905120685242547">Të mbyllet dritarja?</translation>
@@ -305,6 +306,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2323763861024343754">Hapësira ruajtëse e sajtit</translation>
 <translation id="2327445548174191329">Nga <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Të gjithë do të humbasin menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe të gjitha lidhjet e ftesave do të çaktivizohen</translation>
+<translation id="2329500425421091035">Prezantojmë "Modalitetin e IA-së" në Chrome</translation>
 <translation id="2330186936255788117">Më shumë faqeshënues</translation>
 <translation id="2332515770639153015">"Shfletimi i sigurt i përmirësuar" është aktiv</translation>
 <translation id="233375395665273385">Fshi dhe dil</translation>
@@ -317,6 +319,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2363734411417672757">Ngarkohen paraprakisht më shumë faqe. Faqet mund të ngarkohen paraprakisht nëpërmjet serverëve të Google kur kërkohen nga sajte ose aplikacione të tjera.</translation>
 <translation id="2366554533468315977">Historiku i çmimeve nëpër ueb për këtë opsion</translation>
 <translation id="2367818124433749493">Shkurtoret e zhvilluesit</translation>
+<translation id="2369058545741334020">Hape në modalitetin e leximit</translation>
 <translation id="2385605401818128172">Mund t'i rishikosh sajtet që dërgojnë shumë njoftime dhe t'i ndalosh që të mos dërgojnë më në të ardhmen</translation>
 <translation id="2386938421315164605">Fshih dhe shfaq temat</translation>
 <translation id="2390510615457643724">Do ta shkarkosh <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) sërish?</translation>
@@ -597,6 +600,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3524334353996115845">Lejo që <ph name="ORIGIN" /> të verifikojë që je ti</translation>
 <translation id="3527085408025491307">Dosje</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB në dispozicion</translation>
+<translation id="3547933853190131743">Kërko me "Modalitetin e IA-së"</translation>
 <translation id="3549537543136628349">Për shkak se faqet e ngarkuara paraprakisht janë të enkriptuara dhe lidhja e sajtit ose aplikacionit te faqet është një sajt ose aplikacion i Google, serverët e Google nuk marrin informacione të reja kur ngarkojnë paraprakisht këto faqe në mënyrë private.</translation>
 <translation id="3549657413697417275">Kërko në historikun tënd</translation>
 <translation id="3557336313807607643">Shto te kontaktet</translation>
@@ -1966,12 +1970,14 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9001604755921395912">Hape në skedë "të fshehtë" në Chrome</translation>
 <translation id="9010094279589497751">Hap me shpejtësi Gemini kur të të nevojitet</translation>
 <translation id="9012585441087414258">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Nëse një faqe bën diçka të dyshimtë, URL-të dhe pjesët e përmbajtjes së faqes dërgohen te "Shfletimi i sigurt i Google".</translation>
+<translation id="9014097371980259227">Disa vegla janë zhvendosur për të të ndihmuar të kërkosh me "Modalitetin e IA-së"</translation>
 <translation id="9019199799064251516">Të vazhdohet pa një kyçje të profilit të makinës?</translation>
 <translation id="9022774213089566801">Të vizituara shpesh</translation>
 <translation id="9022871169049522985">Sajtet dhe reklamuesit mund të matin performancën e reklamave të tyre</translation>
 <translation id="9024318700713112071">Cakto Chrome si parazgjedhje</translation>
 <translation id="9027728231343310283">Zhbëj <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Zhvendose te\u2026</translation>
+<translation id="904146253922032365">Prek dhe mbaj shtypur për t'i shfaqur skedat vertikalisht</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9047347135558855162">Fillo me shpejtësi një kërkim në Chrome</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>

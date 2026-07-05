@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">Dadurch werden <ph name="ITEMS_COUNT" /> Elemente von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="2121284319307530122">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Aktuelle Einstellungen<ph name="END_LINK" /> übermitteln und so helfen, Chrome zu verbessern</translation>
+<translation id="2125838419757773031">Bereich des Bildschirms auswählen, um zu suchen</translation>
 <translation id="2126108037660393668">Die heruntergeladene Datei konnte nicht verifiziert werden.</translation>
 <translation id="2128411189117340671">Chrome-Profile verwalten</translation>
 <translation id="2137162749895930932">Bildschirm „Übersetzen“ schließen</translation>
@@ -264,6 +265,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3512495006767217696">Der Passwortmanager ist direkt in Chrome eingebunden und kann für dich starke Passwörter erstellen, speichern und automatisch eintragen. Füge die Verknüpfung hinzu, um einfacher darauf zuzugreifen.</translation>
 <translation id="3539955434060988644">Link in Inkognitofenster in Chrome öffnen</translation>
 <translation id="354621070532799440">Erinnerung: Die besten Sicherheitsfunktionen von Google in deiner Hosentasche</translation>
+<translation id="3547866758548131919">Klicke auf den Button „Zusammenfassen“, um dieses Dokument mit Gemini in Chrome zu teilen und eine schnelle Übersicht zu erhalten sowie weiterführende Fragen zu stellen</translation>
 <translation id="3576528680708590453">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="TARGET_URL_HOSTNAME" /> in einem alternativen Browser geöffnet wird.</translation>
 <translation id="3582972582564653026">Chrome auf allen deinen Geräten synchronisieren und personalisieren</translation>
 <translation id="3583751698304738917">Du bist in einem anderen Chrome-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet.</translation>
@@ -353,6 +355,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4400772909124543403">Es ist kein Update verfügbar</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4434353761996769206">Installationsfehler: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Du kannst dieses Dokument mit Gemini in Chrome teilen, um eine schnelle Übersicht zu erhalten und weiterführende Fragen zu stellen</translation>
 <translation id="4450664632294415862">Chrome – Netzwerkanmeldung – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">In Google Chrome wird eine andere Aktion durchgeführt. Bitte versuche es später noch einmal.</translation>
 <translation id="4459234553906210702">Mithilfe der Anzeigenanalyse können von dir besuchte Websites Informationen von Chrome anfordern, mit denen sie die Leistung ihrer Werbung analysieren können. Durch die Anzeigenanalyse wird das websiteübergreifende Tracking eingeschränkt, indem so wenig Informationen wie möglich zwischen Websites ausgetauscht werden.</translation>
@@ -783,6 +786,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8601359445272098721">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen, indem du den Button „Bildschirm übersetzen“ auswählst</translation>
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
+<translation id="8623450603356630491">Auf deinem Smartphone in Chrome anmelden</translation>
 <translation id="8624541899164515475">Einstellungen, werden in neuem Tab geöffnet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
 <translation id="8637932705841171563">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen</translation>

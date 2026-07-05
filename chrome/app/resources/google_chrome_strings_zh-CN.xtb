@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="2121284319307530122">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="2123055963409958220">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chrome</translation>
+<translation id="2125838419757773031">选择屏幕区域即可搜索</translation>
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
 <translation id="2128411189117340671">管理 Chrome 个人资料</translation>
 <translation id="2137162749895930932">关闭翻译屏幕</translation>
@@ -264,6 +265,7 @@
 <translation id="3512495006767217696">内置于 Chrome 中，可帮助您创建、保存和自动填充安全系数高的密码。添加快捷方式，访问更轻松</translation>
 <translation id="3539955434060988644">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="354621070532799440">温馨提示：Google 顶级安全防护，随身守护</translation>
+<translation id="3547866758548131919">点击“总结”按钮，即可与 Chrome 中的 Gemini 分享此文档，快速获取内容概览并进行追问</translation>
 <translation id="3576528680708590453">您的系统管理员已将 Google Chrome 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="3582972582564653026">在所有设备上同步并设置个性化的 Chrome</translation>
 <translation id="3583751698304738917">您已在另一份 Chrome 个人资料中使用 <ph name="USER_EMAIL_ADDRESS" /> 登录</translation>
@@ -353,6 +355,7 @@
 <translation id="4400772909124543403">没有可用的更新</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">与 Chrome 中的 Gemini 分享此文档，快速了解概要并追问相关问题</translation>
 <translation id="4450664632294415862">Chrome - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在执行另一项操作，请稍后重试。</translation>
 <translation id="4459234553906210702">借助 Ad measurement，您访问的网站可向 Chrome 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
@@ -783,6 +786,7 @@
 <translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
 <translation id="8614913330719544658">Google Chrome 未响应。是否立即重新启动？</translation>
 <translation id="861702415419836452">Chrome 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
+<translation id="8623450603356630491">在手机上登录 Chrome</translation>
 <translation id="8624541899164515475">“设置”页面，在新标签页中打开。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 将在 1 分钟后重新启动}other{Chrome 将在 # 分钟后重新启动}}</translation>
 <translation id="8637932705841171563">若要共享窗口，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>

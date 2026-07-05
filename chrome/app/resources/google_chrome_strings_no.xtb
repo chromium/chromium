@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">Dette sletter <ph name="ITEMS_COUNT" /> elementer fra denne enheten. For å hente dataene dine igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="2123055963409958220">Bidra til å gjøre Chrome bedre ved å rapportere de <ph name="BEGIN_LINK" />nåværende innstillingene<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Velg et område på skjermen for å søke</translation>
 <translation id="2126108037660393668">Kunne ikke bekrefte den nedlastede filen.</translation>
 <translation id="2128411189117340671">Administrer Chrome-profiler</translation>
 <translation id="2137162749895930932">Lukk oversettelsesskjermen</translation>
@@ -264,6 +265,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="3512495006767217696">Integrert i Chrome for å hjelpe deg med å opprette, lagre og autofylle sterke passord. Legg til snarveien for å få enkel tilgang</translation>
 <translation id="3539955434060988644">Åpne linken i et inkognitovindu i Chrome</translation>
 <translation id="354621070532799440">Påminnelse: Googles beste sikkerhetsfunksjoner rett i lommen</translation>
+<translation id="3547866758548131919">Klikk på Oppsummer-knappen for å dele dette dokumentet med Gemini i Chrome, få en rask oversikt og stille oppfølgingsspørsmål</translation>
 <translation id="3576528680708590453">Systemadministratoren din har konfigurert at Google Chrome skal åpne <ph name="TARGET_URL_HOSTNAME" /> i en annen nettleser.</translation>
 <translation id="3582972582564653026">Synkroniser og gi Chrome et personlig preg på alle enhetene dine</translation>
 <translation id="3583751698304738917">Du er allerede logget på som <ph name="USER_EMAIL_ADDRESS" /> i en annen Chrome-profil</translation>
@@ -354,6 +356,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="4400772909124543403">Ingen oppdatering er tilgjengelig</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="4434353761996769206">Installasjonsfeil: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Del dette dokumentet med Gemini i Chrome for å få en rask oversikt og stille oppfølgingsspørsmål</translation>
 <translation id="4450664632294415862">Chrome – nettverkspålogging – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annen handling er i gang på Google Chrome. Prøv på nytt senere.</translation>
 <translation id="4459234553906210702">Med annonsemålinger kan nettsteder du besøker, spørre Chrome om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
@@ -784,6 +787,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="8601359445272098721">Nyhet! Du kan oversette både tekst og bilder på skjermen ved å velge «Oversett skjermen»-knappen</translation>
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du starte på nytt nå?</translation>
 <translation id="861702415419836452">Chrome trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
+<translation id="8623450603356630491">Logg på Chrome på telefonen</translation>
 <translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome startes på nytt om 1 minutt}other{Chrome startes på nytt om # minutter}}</translation>
 <translation id="8637932705841171563">For å dele vinduet, tillat skjermopptak for Chrome i Systeminnstillinger</translation>

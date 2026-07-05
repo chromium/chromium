@@ -263,6 +263,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2149968176347646218">Bağlantı güvenli değil</translation>
 <translation id="2149973817440762519">Yer İşaretini Düzenle</translation>
 <translation id="2163089732491971196">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin</translation>
+<translation id="2164015935042801524">Sekmeleri dikey olarak göstermek için burayı sağ tıklayın</translation>
 <translation id="2166228530126694506">Sürüm <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Resim açıklamaları kapalı</translation>
 <translation id="2172905120685242547">Pencere kapatılsın mı?</translation>
@@ -305,6 +306,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2323763861024343754">Site depolama alanı</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ile başlayan fiyatlarla</translation>
 <translation id="2328474416100889417">Herkes "<ph name="GROUP_NAME" />" sekme grubuna erişimini anında kaybeder ve tüm davet bağlantıları devre dışı bırakılır</translation>
+<translation id="2329500425421091035">Chrome'da AI Modu ile Tanışın</translation>
 <translation id="2330186936255788117">Daha fazla yer işareti</translation>
 <translation id="2332515770639153015">Gelişmiş Güvenli Tarama açık</translation>
 <translation id="233375395665273385">Sil ve oturumu kapat</translation>
@@ -317,6 +319,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2363734411417672757">Daha fazla sayfa önceden yüklenir. Diğer siteler veya uygulamalar istediğinde sayfalar Google sunucuları aracılığıyla önceden yüklenebilir.</translation>
 <translation id="2366554533468315977">Bu seçenek için web genelindeki fiyat geçmişi</translation>
 <translation id="2367818124433749493">Geliştirici kısayolları</translation>
+<translation id="2369058545741334020">Okuma modunda aç</translation>
 <translation id="2385605401818128172">Çok fazla bildirim gönderen siteleri inceleyebilir ve bu sitelerin gelecekte bildirim göndermesini engelleyebilirsiniz</translation>
 <translation id="2386938421315164605">Konuları gizle ve göster</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" /> dosyasını tekrar indirmek istiyor musunuz?</translation>
@@ -327,6 +330,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, Ses Çalan Seçili Sekme</translation>
 <translation id="2413014528833954543">Bu cihazda şifreler kontrol edilemiyor</translation>
 <translation id="2414886740292270097">Koyu</translation>
+<translation id="2415037988255164008">Pencereler geri yüklensin mi?</translation>
 <translation id="2421705177906985956">Şu anda gösterilecek site yok</translation>
 <translation id="2426805022920575512">Başka hesap seç</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videolar, listede 1 video var}other{Videolar, listede # video var}}</translation>
@@ -596,6 +600,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3524334353996115845"><ph name="ORIGIN" /> kaynağının sizi doğrulamasına izin verin</translation>
 <translation id="3527085408025491307">Klasör</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB kullanılabilir</translation>
+<translation id="3547933853190131743">AI Modu ile arama yap</translation>
 <translation id="3549537543136628349">Önceden yüklenmiş sayfalar şifrelenmiş ve sayfalara bağlantı veren site ya da uygulama bir Google sitesi veya uygulaması olduğundan Google sunucuları bu sayfaları gizli olarak önceden yüklerken yeni bilgi almaz.</translation>
 <translation id="3549657413697417275">Geçmişinizde arayın</translation>
 <translation id="3557336313807607643">Kişilere ekle</translation>
@@ -1338,6 +1343,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Sogou ile arama</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>
+<translation id="6565781844089373403">Pencereleri geri yükle</translation>
 <translation id="6565959834589222080">Mevcut olduğunda kablosuz bağlantı kullanılır</translation>
 <translation id="657177046675873214">Yer işaretlerinizi tüm cihazlarınızda almak için ayarlarda "Yer İşaretleri"ni açın</translation>
 <translation id="6573096386450695060">Her zaman izin ver</translation>
@@ -1964,12 +1970,14 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9001604755921395912">Gizli Chrome sekmesinde aç</translation>
 <translation id="9010094279589497751">İhtiyacınız olduğunda Gemini'ı hızlıca açın</translation>
 <translation id="9012585441087414258">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir sayfa şüpheli işlem gerçekleştirirse URL'ler ve sayfa içeriğinin bir kısmı Google Güvenli Tarama'ya gönderilir.</translation>
+<translation id="9014097371980259227">Bazı araçlar, AI Modu ile arama yapmanıza yardımcı olmak için taşındı</translation>
 <translation id="9019199799064251516">Arabada profil kilidi olmadan devam edilsin mi?</translation>
 <translation id="9022774213089566801">Sık ziyaret edilenler</translation>
 <translation id="9022871169049522985">Siteler ve reklamverenler, reklamlarının performansını ölçebilir</translation>
 <translation id="9024318700713112071">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> sitesinin iznini geri al</translation>
 <translation id="9035378196785279980">Şuraya taşı:\u2026</translation>
+<translation id="904146253922032365">Sekmeleri dikey olarak göstermek için dokunup basılı tutun</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>
 <translation id="9047347135558855162">Chrome'da hızlıca arama işlemi başlatın</translation>
 <translation id="9050666287014529139">Parola</translation>

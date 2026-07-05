@@ -30,10 +30,12 @@
 <translation id="126567311906253476">Saat login ke layanan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, Anda dapat login otomatis ke Chromium dengan akun yang sama</translation>
 <translation id="1287534462498555020">Dapatkan Chromium di ponsel</translation>
 <translation id="1290883685122687410">Kesalahan saat penyiapan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
+<translation id="1312200348844120300">Ilustrasi yang menunjukkan cara menggunakan Penelusuran Gambar untuk mencari produk</translation>
 <translation id="1315551408014407711">Siapkan profil Chromium baru Anda</translation>
 <translation id="132092532143527429">Coba dengan Gemini di Chromium</translation>
 <translation id="1324107359134968521">Chromium memerlukan akses Bluetooth untuk menjelajah 
  perangkat Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Login ke Chromium di ponsel Anda</translation>
 <translation id="1330562121671411446">Deteksi bahasa</translation>
 <translation id="1330742950061766891">Gunakan setelan browser yang direkomendasikan Chromium</translation>
 <translation id="1342274909142618978">Hapus juga data dari Chromium (<ph name="URL" />)</translation>
@@ -92,6 +94,7 @@
 <translation id="1951406923938785464">Chromium memblokir download ini karena jenis file tersebut tidak biasa didownload dan mungkin berbahaya</translation>
 <translation id="1953553007165777902">Mendownload... <ph name="MINUTE" /> menit lagi</translation>
 <translation id="1966382378801805537">Chromium tidak dapat menentukan atau menyetel browser default</translation>
+<translation id="197326043290947695">Jelajahi lebih cerdas dengan Penelusuran Gambar</translation>
 <translation id="1990262977744080398">Pelajari alasan Chromium memblokir beberapa file, terbuka di tab baru</translation>
 <translation id="1999715455684970349">Menjaga software Google Anda tetap update. Jika layanan ini dinonaktifkan atau dihentikan, software Chromium Anda tidak akan terus diupdate, yang berarti kerentanan keamanan yang mungkin terjadi tidak dapat diperbaiki dan fitur mungkin tidak berfungsi. Layanan ini akan otomatis di-uninstal jika tidak ada software Chromium yang menggunakannya.</translation>
 <translation id="2008474315282236005">Tindakan ini akan menghapus 1 item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -104,6 +107,7 @@
 <translation id="208726765006323911">Anda akan melihat perintah untuk mencoba <ph name="FEATURE_NAME" /> saat berikutnya Anda membuka Chromium iOS.</translation>
 <translation id="2099452623287920103">Sandi dan data Chromium Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chromium, login kembali.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
+<translation id="2125838419757773031">Pilih bagian layar yang akan ditelusuri</translation>
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>
 <translation id="2135919691573380097">Laporkan situs ini</translation>
 <translation id="2137162749895930932">Tutup layar terjemahan</translation>
@@ -136,6 +140,7 @@
 <translation id="2401032172288869980">Chromium memerlukan izin mikrofon dan kamera untuk situs ini</translation>
 <translation id="2403703063067034158">Error saat sistem dimulai: instance penyiapan lain sedang berjalan, coba lagi nanti.</translation>
 <translation id="2418322681019544463">Buka link di Chromium dari aplikasi apa pun dan buat browser tetap dapat diakses di taskbar Anda</translation>
+<translation id="2425157128016763890">Klik tombol Ringkas untuk membagikan dokumen ini ke Gemini di Chromium guna mendapatkan ringkasan cepat dan mengajukan pertanyaan lanjutan</translation>
 <translation id="2440750600860946460">Dengan <ph name="BEGIN_LINK" />alat dari Chromium<ph name="END_LINK" />, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="2451727308784734061">Gunakan pintasan Anda untuk mengakses Pengelola Sandi dengan cepat. Anda dapat memindahkan pintasan ke layar utama atau peluncur aplikasi di komputer.</translation>
 <translation id="2478295928299953161">Chromium akan segera ditutup</translation>
@@ -234,6 +239,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Beralih ke profil Chromium yang sudah ada?</translation>
 <translation id="3412460710772753638">Di Pengelola Sandi di perangkat ini</translation>
+<translation id="3423442168617177595">Diintegrasikan dalam Chromium untuk membantu Anda membuat, menyimpan, dan mengisi otomatis sandi kuat. Tambahkan pintasan untuk memudahkan akses</translation>
 <translation id="3455907671758333080">Manfaatkan Safe Browsing yang Disempurnakan dengan Chromium di ponsel</translation>
 <translation id="3461644266919055473">Personalisasi Chromium untuk Anda...</translation>
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -283,6 +289,7 @@
 <translation id="3975724895399328945">Tentang &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Tentang ChromiumOS</translation>
 <translation id="4010059961270896984">Saat Anda membuka situs, Chromium akan mengirimkan bagian URL yang di-obfuscate ke <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs melakukan hal yang mencurigakan, URL lengkap dan bit konten halaman juga akan dikirim.</translation>
+<translation id="4016217212818346953">Tetap aman dengan Pengelola Sandi</translation>
 <translation id="4019629340646866719">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Terjemahkan layar</translation>
 <translation id="4023601594785368013">Bahasa asli: <ph name="LANGUAGE" /></translation>
@@ -502,6 +509,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6400112897226594999">Logo Chromium di dalam layar komputer.</translation>
 <translation id="6403826409255603130">Chromium adalah browser web yang menjalankan halaman web dan aplikasi dengan kecepatan kilat. Browser ini cepat, stabil, dan mudah digunakan. Jelajahi web lebih aman dengan perlindungan dari software perusak dan phishing yang tertanam di dalam Chromium.</translation>
 <translation id="6414624068245092115">Untuk memastikan Anda selalu dapat menggunakan dan menyimpan data Chromium di Akun Google Anda, verifikasi diri Anda</translation>
+<translation id="6417332166651156371">Gambar sederhana yang menampilkan titik entri Pengelola Sandi di Chromium</translation>
 <translation id="642132557830635295">Chromium berjalan lebih cepat dan fitur yang menggunakan JavaScript akan berfungsi sebagaimana mestinya</translation>
 <translation id="6436260184216827876">Penelusuran Gambar tidak tersedia. Coba lagi nanti.</translation>
 <translation id="6442900851116057561">Mulai ulang ChromiumOS</translation>
@@ -593,6 +601,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="7196312274710523067">Tidak dapat meluncurkan Chromium. Harap coba lagi.</translation>
 <translation id="7213008767289637091">Simpan Chromium di Dok untuk mengaksesnya dengan cepat kapan saja</translation>
 <translation id="7213407614656404070">Gunakan Chromium kapan pun Anda mengklik link di pesan, dokumen, dan aplikasi lainnya</translation>
+<translation id="7216228761061470870">Saat Anda menggunakan Penelusuran Gambar di desktop, judul halaman, URL, dan konten, termasuk PDF, akan dikirim ke server</translation>
 <translation id="7223968959479464213">Pengelola Tugas - Chromium</translation>
 <translation id="7252276985725323153">Langsung menjelajahi internet: Chromium kini dapat diluncurkan saat Windows dimulai.</translation>
 <translation id="7274695763216404502">Disematkan. Gunakan Penelusuran Gambar lagi dari toolbar</translation>
@@ -680,6 +689,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8107060931443639922">Saat lain kali membuka Chromium di <ph name="DEVICE_TYPE" />, Anda akan melihat perintah untuk mengaktifkan notifikasi pemantauan harga.</translation>
 <translation id="8117908349476699973">Dapatkan notifikasi penurunan harga untuk item yang Anda minati dengan aplikasi Chromium di ponsel Anda</translation>
 <translation id="8118331347066725040">Kirim masukan untuk penelusuran dengan Lens</translation>
+<translation id="8130609355518033382">Personalisasi Chromium Anda</translation>
 <translation id="8133124826068723441">ChromiumOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="813913629614996137">Memulai...</translation>
 <translation id="8161503455832158203">Buka Gemini di Chromium dengan pintasan keyboard.</translation>
@@ -743,6 +753,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="878572486461146056">Error penginstalan: Administrator jaringan Anda telah menerapkan Kebijakan Grup yang mencegah penginstalan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
 <translation id="8813277370772331957">Ingatkan saya nanti</translation>
+<translation id="8816416449795340678">Bagikan dokumen ini ke Gemini di Chromium untuk mendapatkan ringkasan singkat dan mengajukan pertanyaan lanjutan</translation>
 <translation id="8818550178040858407">Login ke Chromium?</translation>
 <translation id="8823401858233292222">Jadikan Chromium sebagai browser default dan sematkan ke taskbar</translation>
 <translation id="8826492472752484139">Klik “Pengelola Sandi”</translation>

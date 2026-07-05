@@ -129,6 +129,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2120620239521071941">Hiermee worden <ph name="ITEMS_COUNT" /> items verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Opnieuw starten om &amp;Chrome te updaten</translation>
 <translation id="2123055963409958220">Help Chrome beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>
+<translation id="2125838419757773031">Selecteer een schermgedeelte om te zoeken</translation>
 <translation id="2126108037660393668">De verificatie van het gedownloade bestand is mislukt.</translation>
 <translation id="2128411189117340671">Chrome-profielen beheren</translation>
 <translation id="2137162749895930932">Scherm voor vertalen sluiten</translation>
@@ -268,6 +269,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3512495006767217696">Geïntegreerd in Chrome om je te helpen sterke wachtwoorden te maken, op te slaan en automatisch in te vullen. Voeg de snelkoppeling toe voor makkelijke toegang</translation>
 <translation id="3539955434060988644">Link openen in een Chrome-inco&amp;gnitovenster</translation>
 <translation id="354621070532799440">Herinnering: de beste beveiligingsfuncties van Google in je broekzak</translation>
+<translation id="3547866758548131919">Klik op de knop Samenvatten om dit document te delen met Gemini in Chrome voor een snel overzicht en om follow-upvragen te stellen</translation>
 <translation id="3576528680708590453">Je systeembeheerder heeft Google Chrome geconfigureerd om een alternatieve browser te openen voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Chrome op al je apparaten synchroniseren en personaliseren</translation>
 <translation id="3583751698304738917">Je bent al ingelogd als <ph name="USER_EMAIL_ADDRESS" /> bij een ander Chrome-profiel</translation>
@@ -357,6 +359,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4400772909124543403">Er is geen update beschikbaar</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
 <translation id="4434353761996769206">Fout met installatieprogramma: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Deel dit document met Gemini in Chrome om een snel overzicht te krijgen en follow-upvragen te stellen</translation>
 <translation id="4450664632294415862">Chrome - Inloggen op netwerk - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Er wordt een andere bewerking in Google Chrome uitgevoerd. Probeer het later opnieuw.</translation>
 <translation id="4459234553906210702">Via Advertentiemeting kunnen sites die je bezoekt Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Advertentiemeting beperkt tracking op meerdere sites door zo min mogelijk informatie over te dragen tussen sites.</translation>
@@ -789,6 +792,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="8601359445272098721">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen door de knop Scherm vertalen te selecteren</translation>
 <translation id="8614913330719544658">Google Chrome reageert niet meer. Nu opnieuw starten?</translation>
 <translation id="861702415419836452">Chrome heeft toegangsrechten voor de camera nodig om een 3D-kaart van je omgeving te maken.</translation>
+<translation id="8623450603356630491">Inloggen bij Chrome op je telefoon</translation>
 <translation id="8624541899164515475">Instellingen, wordt geopend in een nieuw tabblad.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wordt over één minuut opnieuw gestart}other{Chrome wordt over # minuten opnieuw gestart}}</translation>
 <translation id="8637932705841171563">Als je je venster wilt delen, sta je schermopname voor Chrome toe in Systeeminstellingen</translation>

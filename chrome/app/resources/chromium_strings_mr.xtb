@@ -36,6 +36,7 @@
 <translation id="132092532143527429">Chromium मधील Gemini वापरून पहा</translation>
 <translation id="1324107359134968521">ब्लूटूथ डिव्हाइस एक्सप्लोर करण्यासाठी Chromium ला 
  ब्लूटूथ चा ॲक्सेस हवा आहे. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">तुमच्या फोनवर Chromium मध्ये साइन इन करा</translation>
 <translation id="1330562121671411446">भाषा डिटेक्ट करा</translation>
 <translation id="1330742950061766891">Chromium ची शिफारस केलेली ब्राउझर सेटिंग्ज वापरा</translation>
 <translation id="1342274909142618978">तसेच Chromium मधून डेटा हटवा (<ph name="URL" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="208726765006323911">तुम्ही पुढील वेळी Chromium iOS उघडल्यावर, तुम्हाला <ph name="FEATURE_NAME" /> वापरून पाहण्यासाठी प्रॉम्प्ट दिसेल.</translation>
 <translation id="2099452623287920103">तुम्ही तुमच्या Google खाते मध्ये सेव्ह केलेले तुमचे पासवर्ड आणि इतर Chromium डेटा या डिव्हाइसवरून काढून टाकला जाईल. त्या गोष्टी Chromium मध्ये पुन्हा वापरण्यासाठी, पुन्हा साइन इन करा.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium १ मिनिटासाठी वापरले जात नाही, तेव्हा तुमची संस्था आपोआप ब्राउझिंग डेटा हटवते. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो. तुमचे टॅब खुले राहतील.}other{Chromium # मिनिटांसाठी वापरले जात नाही, तेव्हा तुमची संस्था आपोआप ब्राउझिंग डेटा हटवते. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो. तुमचे टॅब खुले राहतील.}}</translation>
+<translation id="2125838419757773031">शोधण्यासाठी स्क्रीनवरील भाग निवडा</translation>
 <translation id="2126108037660393668">डाउनलोड झालेल्या फाइलची पडताळणी करता आली नाही.</translation>
 <translation id="2135919691573380097">या साइटची तक्रार करा</translation>
 <translation id="2137162749895930932">भाषांतर स्क्रीन बंद करा</translation>
@@ -139,6 +141,7 @@
 <translation id="2401032172288869980">Chromium ला या साइटसाठी कॅमेरा आणि मायक्रोफोनची परवानगी आवश्यक आहे</translation>
 <translation id="2403703063067034158">स्टार्टअप एरर: सेटअपचे दुसरे इंस्टन्स सध्या सुरू आहे, कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2418322681019544463">कोणत्याही अ‍ॅपवरून Chromium मध्ये लिंक उघडा आणि तुमच्या टास्कबारवर ब्राउझर अ‍ॅक्सेस करण्यायोग्य ठेवा</translation>
+<translation id="2425157128016763890">त्वरित अवलोकन मिळवण्यासाठी आणि फॉलो-अप प्रश्न विचारण्यासाठी हा दस्तऐवज Chromium मधील Gemini सोबत शेअर करण्याकरिता सारांश द्या बटणावर क्लिक करा</translation>
 <translation id="2440750600860946460">तुम्ही <ph name="BEGIN_LINK" />Chromium ची टूल<ph name="END_LINK" /> वापरून सुरक्षितरीत्या ब्राउझ करू शकता आणि तुमचा डेटा नियंत्रित करू शकता</translation>
 <translation id="2451727308784734061">Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="2478295928299953161">Chromium लवकरच बंद होईल</translation>
@@ -199,7 +202,7 @@
 <translation id="3068187312562070417">इतर Chromium प्रोफाइल</translation>
 <translation id="3068290154869370196">एक्स्टेंशन ही अ‍ॅड-ऑन असतात, ज्यांद्वारे तुम्ही Chromium कस्टमाइझ करू शकता. एक्स्टेंशन वापरून तुम्ही Chromium ला तुम्हाला हवे तसे कस्टमाइझ करू शकता. यामुळे तुम्हाला सुव्यवस्थित राहण्यापासून तुमची दैनंदिन कामे सुलभ करण्यापर्यंत मदत मिळते.</translation>
 <translation id="3068515742935458733">Google कडे क्रॅश अहवाल आणि <ph name="UMA_LINK" /> पाठवून Chromium अधिक चांगले करण्यात मदत करा</translation>
-<translation id="3071024987058544609">फिरतीवर असताना Google ची सुरक्षितता सोबत घेऊन जाण्यासाठी Chromium अ‍ॅप वापरा</translation>
+<translation id="3071024987058544609">फिरतीवर असताना Google ची सुरक्षितता मिळवण्यासाठी Chromium अ‍ॅप वापरा</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB device was being accessed by one or more Chromium extensions}=1{१ USB डिव्हाइस हे एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# USB डिव्हाइस ही एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="3095811995836568724">Chromium इतिहास</translation>
 <translation id="3103660991484857065">संग्रहण अनकॉम्प्रेस करण्यास इन्स्टॉलर अयशस्वी. कृपया Chromium पुन्हा डाउनलोड करा.</translation>
@@ -753,6 +756,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="878572486461146056">इंस्टॉलसंबंधित एरर: तुमच्या नेटवर्क अ‍ॅडमिनिस्ट्रेटरने गट धोरण लागू केले आहे, जे इंस्टॉलेशन प्रतिबंधित करते: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">या साइटसाठी Chromium ला तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="8813277370772331957">मला नंतर आठवण करून द्या</translation>
+<translation id="8816416449795340678">त्वरित अवलोकन मिळवण्यासाठी आणि फॉलो-अप प्रश्न विचारण्यासाठी हा दस्तऐवज Chromium मधील Gemini सोबत शेअर करा</translation>
 <translation id="8818550178040858407">Chromium मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="8823401858233292222">Chromium ला डीफॉल्ट ब्राउझर बनवा आणि टास्कबारवर पिन करा</translation>
 <translation id="8826492472752484139">“Password Manager” वर क्लिक करा</translation>
@@ -775,7 +779,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
             <ph name="LINE_BREAKS" />
             बुकमार्क, इतिहास आणि सेव्ह केलेल्या पासवर्डवर परिणाम होणार नाही.</translation>
 <translation id="897581876605952338">Chromium Enterprise लोगो</translation>
-<translation id="8980139959902937527">तुमच्या <ph name="DEVICE_TYPE" /> वरील Chromium अ‍ॅप वापरून फिरतीवर असताना Google ची सुरक्षितता सोबत ठेवा</translation>
+<translation id="8980139959902937527">तुमच्या <ph name="DEVICE_TYPE" /> वरील Chromium अ‍ॅप वापरून फिरतीवर असताना Google ची सुरक्षितता मिळवा</translation>
 <translation id="8981150672034878610">तुमची प्रोफाइल उघडताना काहीतरी चुकल्यामुळे Chromium सुरू करू शकत नाही. Chromium रीस्टार्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="8988036198400390003">Chromium ची प्रोफाइल व्यवस्थापित करा</translation>
 <translation id="9018218886431812662">इंस्टॉलेशन पूर्ण झाले</translation>

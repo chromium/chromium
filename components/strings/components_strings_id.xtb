@@ -14,7 +14,6 @@
 <translation id="1021753677514347426">Masalah ini terjadi karena sertifikat yang diinstal di perangkat oleh Anda atau orang lain. Sertifikat ini diketahui sebagai sertifikat yang digunakan untuk memantau dan melakukan intersepsi jaringan dan tidak dipercaya oleh Chromium. Walau terdapat beberapa kasus pemantauan yang sah, seperti pada jaringan sekolah atau perusahaan, Chromium ingin memastikan Anda menyadari terjadinya masalah tersebut, meskipun Anda tidak dapat menghentikannya. Pemantauan dapat terjadi di browser atau aplikasi yang mengakses web.</translation>
 <translation id="1024111578869940408">Penyerang terkadang meniru situs dengan membuat perubahan yang sulit terlihat pada alamat web.</translation>
 <translation id="1024913885641459127">Ulasan Produk &amp; Perbandingan Harga</translation>
-<translation id="1025174656774447058">Otomatis bagikan tab terbuka untuk rangkaian pesan ini?</translation>
 <translation id="102916930470544692">Kunci sandi</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ingin menyimpan data berukuran besar di perangkat Anda secara permanen</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs. Anda akan logout dari sebagian besar situs. }other{Dari # situs. Anda akan logout dari sebagian besar situs. }}</translation>
@@ -26,6 +25,7 @@
 <translation id="1038106730571050514">Tampilkan saran</translation>
 <translation id="1038168778161626396">Khusus Penyandi</translation>
 <translation id="1038842779957582377">nama tidak diketahui</translation>
+<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Pesan lembar tugas</translation>
 <translation id="1044897699341250361">Apa artinya</translation>
 <translation id="1046350918013988591">Kupon &amp; Penawaran Diskon</translation>
@@ -314,6 +314,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1463793142714244641">Properti Hak Guna &amp; Liburan</translation>
 <translation id="1465457928007067810">IBAN disimpan ke Akun Google Anda</translation>
 <translation id="1467432559032391204">Kiri</translation>
+<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Tampilkan lebih banyak</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Masukkan 3 kata atau lebih untuk mendapatkan bantuan penulisan</translation>
@@ -1126,6 +1127,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="271663710482723385">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk keluar dari mode layar penuh</translation>
 <translation id="2717336592027046789">Gulungan</translation>
 <translation id="2718207025093645426">Pengguna atau perangkat terkelola tidak memuat kebijakan.</translation>
+<translation id="271850739643214113">Akun Pix Anda berhasil ditautkan ke Google Pay</translation>
 <translation id="2719233594187778789">URL tidak unik yang diabaikan: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Permintaan berhasil</translation>
 <translation id="2722622039067384533">Furnitur Ruang Keluarga</translation>
@@ -1214,6 +1216,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="290376772003165898">Halaman tidak dalam bahasa <ph name="LANGUAGE" />?</translation>
 <translation id="2904180982022726666">Organisasi membatasi apa saja yang dapat Anda bagikan</translation>
+<translation id="2905065304080706507">Saat diaktifkan, Chrome akan membagikan tab yang relevan di jendela ini untuk membantu Anda mendapatkan respons yang lebih relevan.</translation>
 <translation id="2905107382358353958">Notifikasi tentang setelan pembayaran baru</translation>
 <translation id="2909946352844186028">Perubahan jaringan terdeteksi.</translation>
 <translation id="2910062169995917863">Waktu sesi habis</translation>
@@ -1237,6 +1240,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}}</translation>
 <translation id="2930531075747147366">Tab dari Perangkat Anda yang Lain</translation>
 <translation id="2930577230479659665">Trim setelah setiap set tercetak</translation>
+<translation id="2931453528659195355">Kelola info belanja</translation>
 <translation id="2933624813161016821">Foil Emboss</translation>
 <translation id="2935726091208500473">membagikan tab Anda</translation>
 <translation id="293796669683825859">Komentar</translation>
@@ -1415,6 +1419,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3194737229810486521"><ph name="URL" /> ingin menyimpan data di perangkat Anda secara permanen</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> di <ph name="SERVER_NAME" /></translation>
+<translation id="3196902089458890316">Selalu bagikan tab yang relevan untuk mendapatkan respons yang lebih baik?</translation>
 <translation id="3197136577151645743">Dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="3203025201812691413">URL harus diisi</translation>
@@ -1452,6 +1457,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3237427677128462778">Tidak dapat menyimpan ke Google Wallet</translation>
 <translation id="3238395604961564389">Buka Link di Jendela Samaran</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk menyesuaikan tampilan browser Anda</translation>
+<translation id="3243131902823383230">Laptop <ph name="MANUFACTURER" /></translation>
 <translation id="3243650379537999343">Gambar</translation>
 <translation id="3248329428895535435">Jangan tampilkan di situs ini</translation>
 <translation id="3249102948665905108">Proses upload file ke <ph name="CLOUD_PROVIDER" /> selesai dengan error</translation>
@@ -1498,7 +1504,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3325568918769906282">dalam urutan menurun</translation>
 <translation id="3325662270238538525">Akses dan perubahan file terbaru, termasuk nama file, sidik jari digital konten file, sumber download, dan metadata</translation>
 <translation id="3329013043687509092">Saturasi</translation>
-<translation id="3330483197654063678">Saat diaktifkan, Chrome akan membagikan tab terbuka di jendela ini untuk membantu Anda mendapatkan respons yang lebih relevan.</translation>
 <translation id="3333762389743153920">Tidak memenuhi syarat untuk kartu virtual</translation>
 <translation id="3338095232262050444">Aman</translation>
 <translation id="333839153442689579">Latihan Interval Intensitas Tinggi</translation>
@@ -1564,6 +1569,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="343474037147570563">File yang Anda upload atau lampirkan akan dikirimkan ke Google Cloud atau pihak ketiga untuk dianalisis. Misalnya, file mungkin dipindai untuk mendeteksi data sensitif atau malware dan mungkin disimpan berdasarkan kebijakan perusahaan serta dapat dilihat oleh administrator Anda.</translation>
 <translation id="3435557549311968410">Berkelanjutan (Singkat)</translation>
 <translation id="3435738964857648380">Keamanan</translation>
+<translation id="3436125638121079308">Otomatis bagikan tab yang relevan untuk mendapatkan respons yang lebih baik di rangkaian pesan ini?</translation>
 <translation id="3438509337461223476">Bagikan tab terbuka yang relevan secara otomatis di setiap rangkaian pesan</translation>
 <translation id="3440783957068352691">persegi</translation>
 <translation id="3441653493275994384">Layar</translation>
@@ -1624,6 +1630,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3537165859691846083">Surat Plus</translation>
 <translation id="353816159217417898">Sablon (Paged)</translation>
 <translation id="3541016556608204104">Selengkapnya tentang Chrome Enterprise Connectors</translation>
+<translation id="3542005451565251757">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS dan Anda telah mengaktifkan Perlindungan Lanjutan di setelan Android. <ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">Gambar kartu</translation>
 <translation id="3542768452570884558">Buka Link di Jendela Baru</translation>
 <translation id="3543597750097719865">Tanda tangan X9.62 ECDSA dengan SHA-512</translation>
@@ -1696,7 +1703,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3641116835972736297">Sepak Bola Amerika</translation>
 <translation id="3642196846309122856">Coba download file lagi</translation>
 <translation id="3642638418806704195">Aplikasi:</translation>
-<translation id="3644768007456662469">Ikon Item Pembayaran</translation>
 <translation id="3647286794400715637">Setiap entri string URL harus berisi antara 1 hingga 2 URL.</translation>
 <translation id="3647400963805615193">Tombol Tutup Tips Chrome, tekan Enter untuk menutup, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Validasi berhasil</translation>
@@ -1728,6 +1734,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3681841880472207951">Video Quicktime</translation>
 <translation id="3687920599421452763">Van &amp; Minivan</translation>
 <translation id="3693327506115126094">Pilih cara memverifikasi diri Anda</translation>
+<translation id="3693516565203081475">Pilih metode pembayaran</translation>
 <translation id="3698353241727597930">Administrator Anda telah mengonfigurasi untuk menyimpan <ph name="FILES" /> di penyimpanan <ph name="CLOUD_STORAGE" /> yang dikelola perusahaan Anda. File ini dapat dipantau, diaudit, dan dipertahankan saat Anda menghapusnya.</translation>
 <translation id="3698629142018988477">Tombol Buat situs, aktifkan untuk membuat situs baru di Google Sites dengan cepat</translation>
 <translation id="3700094625653511150">Untuk menyembunyikan opsi bayar nanti, buka <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
@@ -1783,6 +1790,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3761718714832595332">Sembunyikan status</translation>
 <translation id="3763752038825281594">Anda sebelumnya tidak mengizinkan <ph name="PERMISSION" /> untuk situs ini</translation>
 <translation id="3765588406864124894">Kotak surat 9</translation>
+<translation id="3766505784424699541">Dapatkan respons yang lebih disesuaikan dengan otomatis membagikan tab yang relevan di jendela ini jika tab tersebut terkait dengan rangkaian pesan ini.</translation>
 <translation id="3767485424735936570">Menyalin dan menempelkan konten ini ke <ph name="VM_NAME" /> tidak direkomendasikan oleh kebijakan administrator</translation>
 <translation id="3769584711865378220"><ph name="URL" /> ingin mengubah akses lokasi dari perkiraan ke presisi</translation>
 <translation id="3772211998634047851">Kertas (Bond)</translation>
@@ -1868,6 +1876,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3901925938762663762">Kartu telah habis masa berlakunya</translation>
 <translation id="390391808978419508">Waktu pembukaan habis</translation>
 <translation id="3905894480064208252">{0,plural, =1{File diblokir agar tidak dapat ditransfer}other{<ph name="FILE_COUNT" /> file diblokir agar tidak dapat ditransfer}}</translation>
+<translation id="3906022360148923497">Ikon instrumen pembayaran</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Pelajari konten sematan lebih lanjut</translation>
@@ -2089,6 +2098,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="422722221769396062">Layanan Pesan-Antar Makanan Restoran</translation>
 <translation id="4230204356098880324">Dapat meminta untuk menggunakan &amp; menggerakkan kamera Anda</translation>
 <translation id="4231448684371260244">8 x 13 inci (20 x 33 cm)</translation>
+<translation id="4234996384188431444">Bayar dengan Pix tanpa perlu beralih aplikasi di Google Chrome</translation>
 <translation id="4239799716689808527">Label</translation>
 <translation id="424063167283213501">Simpan Known Traveler Number</translation>
 <translation id="4241830393007970744">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software atau mengungkapkan hal-hal seperti sandi, nomor telepon, atau nomor kartu kredit Anda.</translation>
@@ -2105,6 +2115,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4255487295905690262">Anda akan mendapatkan peringatan email jika ada diskon di situs mana pun.</translation>
 <translation id="425582637250725228">Perubahan yang Anda lakukan mungkin tidak disimpan.</translation>
 <translation id="4258748452823770588">Tanda tangan salah</translation>
+<translation id="4258927999980634471">Otomatis bagikan tab yang relevan untuk rangkaian pesan ini?</translation>
 <translation id="4260407128682690669">Untuk mengakses histori Anda dari perangkat lain, sinkronkan histori dan tab Anda ke <ph name="ACCOUNT_EMAIL" />. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="4265635050210404830">Kartu loyalitas Anda</translation>
 <translation id="4265872034478892965">Diizinkan oleh administrator</translation>
@@ -2172,6 +2183,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4340810192899866471">Impor dari JSON</translation>
 <translation id="4340982228985273705">Komputer ini tidak terdeteksi sebagai dikelola perusahaan sehingga kebijakan hanya dapat secara otomatis menginstal ekstensi yang dihosting di Chrome Webstore. URL update Chrome Webstore-nya adalah "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Taman Bertema</translation>
+<translation id="4344194909635300809">Judul halaman dan URL dikirim ke Google dan mungkin ditinjau secara manual</translation>
 <translation id="4346670990181948854">Info perjalanan · Kendaraan</translation>
 <translation id="4348834659292907206">Koneksi ke <ph name="SITE" /> tidak aman</translation>
 <translation id="4349365535725594680">Tidak dapat membagikan konten rahasia</translation>
@@ -2179,6 +2191,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4350629523305688469">Baki Multifungsi</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ingin memindai perangkat Bluetooth di sekitar. Perangkat berikut telah ditemukan:</translation>
 <translation id="4355383636893709732">Update ChromeOS untuk aplikasi Android</translation>
+<translation id="4357577888320640139">Otomatis bagikan tab yang relevan di setiap rangkaian pesan?</translation>
 <translation id="4358059973562876591">Template yang telah Anda tentukan mungkin tidak diterapkan karena terjadi error dengan kebijakan DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Kelola metode pembayaran...</translation>
 <translation id="4359160567981085931">Anda baru saja memasukkan sandi ke situs tidak jujur. Chrome dapat membantu. Untuk mengubah sandi dan memberi tahu Google bahwa akun Anda mungkin berisiko, klik Lindungi Akun.</translation>
@@ -2214,6 +2227,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Sandi dapat dihapus di setelan pengelolaannya</translation>
 <translation id="4424024547088906515">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh Chrome. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
+<translation id="4425137053900958839">Nikmati semua kenyamanan dan keamanan yang dapat diandalkan dari Pix</translation>
 <translation id="4425750422187370446">Pakaian Atletik</translation>
 <translation id="443121186588148776">Port serial</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> tidak menerima sertifikat masuk Anda, atau sertifikat masuk mungkin tidak diberikan.</translation>
@@ -2289,6 +2303,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4557573143631562971">Asuransi Rumah</translation>
 <translation id="4558551763791394412">Coba nonaktifkan ekstensi.</translation>
 <translation id="4566017918361049074">Luar ruangan</translation>
+<translation id="4568572491321119037">Perbarui kartu identitas di Google Wallet</translation>
 <translation id="4569155249847375786">Terverifikasi</translation>
 <translation id="4570008401337135432">Perataan teks</translation>
 <translation id="457875822857220463">Pengiriman</translation>
@@ -2367,6 +2382,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4705573018059932476">Anda memilih verifikasi dengan <ph name="AUTHENTICATOR" /> di situs yang menggunakan <ph name="PROVIDER_ORIGIN" />. Penyedia ini mungkin telah menyimpan informasi tentang cara Anda membayar dan Anda dapat <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Koneksi Anda terganggu</translation>
 <translation id="4708276642004148190">Pasokan &amp; Pengolahan Air</translation>
+<translation id="4710249055485272920">Tidak dapat menemukan info ini</translation>
 <translation id="4711628883879888561">Berkolaborasi di grup tab</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Anda tidak memiliki izin untuk membuka situs ini</translation>
@@ -2378,6 +2394,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4726672564094551039">Muat ulang kebijakan</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4729147136006144950">Amal &amp; Filantropi</translation>
+<translation id="4730773064303503917">Kirim Pix ke teman dan bisnis menggunakan Wallet</translation>
 <translation id="4730977633786878901">Ulasan</translation>
 <translation id="4731638775147756694">Aplikasi ini telah diblokir oleh administrator Anda</translation>
 <translation id="4732860731866514038">Mendownload paket bahasa <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
@@ -2662,6 +2679,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5157504274688344097">Pedagang Grosir &amp; Pusat Perbelanjaan</translation>
 <translation id="5158275234811857234">Sampul</translation>
 <translation id="5159010409087891077">Buka halaman dalam jendela Samaran baru (⇧⌘N)</translation>
+<translation id="5160781056848005130">Anda membantu meningkatkan kualitas isi otomatis yang ditingkatkan dengan membagikan data ke Google</translation>
 <translation id="5161334686036120870">Subjek:</translation>
 <translation id="5161506081086828129">Tempat kertas 9</translation>
 <translation id="5164537320435517152">Hapus file dalam <ph name="MINUTES" /> menit</translation>
@@ -2763,6 +2781,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5323501626199324454">Kelola di Akun Google Anda</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5329858041417644019">Browser Anda tidak dikelola</translation>
+<translation id="5330451136755214328">Komputer <ph name="MANUFACTURER" /></translation>
 <translation id="5331585574693522196">Jadikan Default</translation>
 <translation id="5332219387342487447">Metode Pengiriman</translation>
 <translation id="5332769172018416402">Tanyakan lewat pesan</translation>
@@ -2801,6 +2820,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5386426401304769735">Rantai sertifikat untuk situs ini berisi sertifikat yang ditandatangani menggunakan SHA-1.</translation>
 <translation id="5391010642126249196">Anda membukanya</translation>
+<translation id="5391030615542642809">Perangkat <ph name="MANUFACTURER" /></translation>
 <translation id="5391306025131596142">&amp;Buka halaman histori</translation>
 <translation id="539203134595252721">Tenis Meja</translation>
 <translation id="5392506727170022660">Logam (Semi-Kilap)</translation>
@@ -3017,6 +3037,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5707154300732650394">Lanjutkan perjalanan Anda</translation>
 <translation id="57094364128775171">Sarankan sandi yang kuat…</translation>
 <translation id="570953204696852961">Merah 3</translation>
+<translation id="5710907191777451677">Coba tanya Gemini di Chrome</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Dokter hewan</translation>
 <translation id="5715150588940290235">Hapus kode keamanan yang tersimpan?</translation>
@@ -3059,6 +3080,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5765072501007116331">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>
 <translation id="57689295674415555">Nomor kartu virtual tidak diisi?</translation>
 <translation id="5773286975255318081">Seperti nama pengguna profil &amp; versi browser</translation>
+<translation id="5774897849666641211">Ajukan pertanyaan tentang tab ini</translation>
 <translation id="5776313857861697733">Prioritas</translation>
 <translation id="577804500166306874">Memuat hasil</translation>
 <translation id="5781136890105823427">Eksperimen diaktifkan</translation>
@@ -3399,6 +3421,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6302546952464230349">Tampilkan detail izin <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software Multimedia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> tidak dapat dijangkau.</translation>
+<translation id="6305834316918845109">Saat Anda mengetik permintaan untuk isi otomatis yang ditingkatkan, Chrome mencatat cara Anda menggunakan fitur tersebut, seperti apakah Anda menerima, mengedit, atau mengabaikan saran isi otomatis</translation>
 <translation id="6306713302480826305">Alamat ini akan dihapus dari perangkat ini dan perangkat lain yang Anda gunakan untuk login</translation>
 <translation id="6307968763353904914">Bank Anda saat ini tidak dapat menawarkan kartu virtual untuk metode pembayaran ini, tetapi Anda tetap dapat menggunakan <ph name="CARD_LABEL" /> untuk melakukan pembayaran online.</translation>
 <translation id="6311410654831092784">Stok Kartu</translation>
@@ -3536,6 +3559,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6494750904506170417">pop-up dan pengalihan</translation>
 <translation id="6495664197699704593">Sandi ini hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Untuk menggunakan layanan isi otomatis lain di Chrome, pilih penyedia isi otomatis Anda di setelan Android</translation>
+<translation id="6496531801333278234">Ditemukan oleh Kecerdasan Personal. Anda dapat mengelola info Anda di setelan.</translation>
 <translation id="6499038740797743453">Reset sandi?</translation>
 <translation id="6502510275417601303">Notifikasi tentang setelan pembayaran baru ditutup</translation>
 <translation id="6502991525169604759">Tanpa perubahan dari Anda</translation>
@@ -3649,6 +3673,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6689271823431384964">Chrome menawarkan untuk menyimpan informasi kartu ke Akun Google Anda karena Anda sedang login. Anda dapat mengubah perilaku ini di setelan. Nama pemegang kartu berasal dari akun Anda.</translation>
 <translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" bukan pola tujuan yang valid.</translation>
 <translation id="6691397311652656001">Kosongkan lebih dari <ph name="REQUIRED_FREE_DISK_SPACE" /> ruang penyimpanan</translation>
+<translation id="6692006953064648573">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS dan Anda termasuk dalam Program Perlindungan Lanjutan Google. <ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk Menemukan perangkat Anda di Akun Google</translation>
 <translation id="6695428916538794739">Film Aksi &amp; Petualangan</translation>
 <translation id="6696424331653607346">Panduan &amp; Catatan Perjalanan</translation>
@@ -3759,7 +3784,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6874604403660855544">&amp;Ulangi penambahan</translation>
 <translation id="6875873347995743859">Kirim ke asisten</translation>
 <translation id="6875894866901426843">Administrator akan menghapus file lokal Anda, termasuk file di Sampah, pada <ph name="DATE_TIME" />.</translation>
-<translation id="6880812263216766325">Selalu bagikan tab terbuka untuk mendapatkan respons yang lebih baik?</translation>
 <translation id="6880941331070119097">Opsi harga tinggi</translation>
 <translation id="6881240511396774766">Buat Dokumen Google baru dengan cepat</translation>
 <translation id="6883221904761970440">Sheet autentikasi kredensial pembayaran aman ditutup</translation>
@@ -4014,7 +4038,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7257453341537973799">Sumber Daya &amp; Perencanaan Karier</translation>
 <translation id="725866823122871198">Sambungan pribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak dapat dibuat karena tanggal dan waktu (<ph name="DATE_AND_TIME" />) komputer Anda tidak benar.</translation>
 <translation id="7260075294900977274">Folder cerdas baru yang membantu Anda menyimpan semua halaman belanja di satu tempat, dan otomatis memantau harga, mendapatkan analisis harga, dan lainnya</translation>
-<translation id="7264942008235065057">Situs ini akan tetap diblokir karena Anda termasuk dalam Program Perlindungan Lanjutan Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Alamat hanya tersedia di perangkat ini</translation>
 <translation id="7266094331715305887">aplikasi di perangkat</translation>
 <translation id="7269151392155523061">Pintasan tidak boleh sama dengan kata kunci agregator penelusuran yang ditentukan oleh <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4041,6 +4064,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7310392214323165548">Perangkat akan segera dimulai ulang</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
 <translation id="7313107491291103073">Organisasi Anda telah menandai situs ini karena mungkin melanggar kebijakan.</translation>
+<translation id="7313260329718515829">Permintaan yang dikirim ke Kecerdasan Personal dengan Gemini dianalisis untuk meningkatkan kualitas fitur isi otomatis</translation>
 <translation id="7316521168101843192">Menyimpan file ke Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bantuan Koneksi</translation>
@@ -4116,6 +4140,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7418620734632363981">Pemrograman</translation>
 <translation id="7419091773564635591">Komputer &amp; Elektronik</translation>
 <translation id="7419106976560586862">Jalur Profil</translation>
+<translation id="742088698616475957">Desktop <ph name="MANUFACTURER" /></translation>
 <translation id="7421067045979951561">pengendali protokol</translation>
 <translation id="7422347648202898039">Label (Keamanan)</translation>
 <translation id="7423283032694727565">Tombol Kelola cookie, aktifkan untuk mengelola preferensi cookie Anda di setelan Chrome</translation>
@@ -4168,7 +4193,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> akan memeriksa kelayakan Anda (tindakan ini tidak akan memengaruhi skor kredit Anda). Jika disetujui, <ph name="BNPL_ISSUER_NAME" /> akan menyediakan paket pembayaran yang dapat Anda pilih sehingga pembelian dapat diselesaikan.</translation>
 <translation id="7489392576326061356">Sampo &amp; Kondisioner</translation>
 <translation id="7489919936111034362">Penyimpanan Google Drive Anda sudah penuh</translation>
-<translation id="7490026840522163531">Otomatis bagikan tab terbuka di setiap rangkaian pesan?</translation>
 <translation id="7495528107193238112">Konten ini diblokir. Hubungi pemilik situs untuk memperbaiki masalah.</translation>
 <translation id="749865518782565832">Pekerjaan Saluran Air</translation>
 <translation id="7499188644237027195">Saat Anda melakukan pembelian di Chrome, lihat eWallet dan Pix sebagai opsi</translation>
@@ -4233,6 +4257,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7575207903026901870">Hapus tombol Saran, tekan Enter untuk menghapus saran ini</translation>
 <translation id="7575800019233204241">"Koneksi tidak bersifat pribadi" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" atau "SSL certificate error"</translation>
 <translation id="7575887283389198269">Ponsel</translation>
+<translation id="7579113844074980463">Tablet <ph name="MANUFACTURER" /></translation>
 <translation id="7579442726219254162">Variabel tidak dikenal "<ph name="VARIABLE" />" di konfigurasi terkelola "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Perpindahan image Y sisi 2</translation>
 <translation id="7582602800368606489">Buat acara baru di Google Kalender dengan cepat</translation>
@@ -4489,6 +4514,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7966803981046576691">Jenis akun tugas</translation>
 <translation id="7967477318370169806">Reksa Dana</translation>
 <translation id="7967636097426665267">Peralatan Komunikasi</translation>
+<translation id="7967973398323409409">Info yang Anda isi otomatis tidak akan dilihat oleh siapa pun</translation>
 <translation id="79682505114836835">Nilai "<ph name="VALUE" />" adalah warna hex yang tidak valid.</translation>
 <translation id="7968982339740310781">Lihat detail</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Enkripsi RSA</translation>
@@ -5027,7 +5053,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8861482055962701239">Tidak dapat menyimpan info ini ke Google Wallet Anda. Sebaliknya, info tersebut disimpan ke Chrome di perangkat ini. Chrome akan menawarkan untuk menyimpannya ke Wallet saat Anda menggunakannya lagi.</translation>
 <translation id="8863218129525348270">Agar selanjutnya dapat melakukan pembayaran lebih cepat, simpan kartu Anda ke perangkat</translation>
 <translation id="8864939224504814334">Setelan &amp; Pakaian Bisnis</translation>
-<translation id="8865650218866129025">Otomatis bagikan tab terbuka untuk mendapatkan respons yang lebih baik di rangkaian pesan ini?</translation>
 <translation id="8866132857352163524">Soundtrack</translation>
 <translation id="8866481888320382733">Kesalahan saat menguraikan setelan kebijakan</translation>
 <translation id="8866928039507595380">Lipatan</translation>
@@ -5147,9 +5172,11 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9063800855227801443">Tidak dapat menangkap konten rahasia</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065745800631924235">penelusuran <ph name="TEXT" /> dari histori</translation>
+<translation id="9066116644715286230">{NUM_TABS,plural, =1{Detail berbagi tab. Berbagi 1 tab dari {WEBSITE_LIST_STR}}other{Detail berbagi tab. Berbagi {NUM_TABS} tab dari {WEBSITE_LIST_STR}}}</translation>
 <translation id="90695670378604968">Plastik (Matte)</translation>
 <translation id="9069693763241529744">Diblokir oleh ekstensi</translation>
 <translation id="9073799351042754113">Anda telah memilih untuk menonaktifkan peringatan keamanan untuk situs ini.</translation>
+<translation id="907426083053157749">Ponsel <ph name="MANUFACTURER" /></translation>
 <translation id="9075717835386447447">Sawo Matang 1</translation>
 <translation id="9078170656887151974">Untuk memberikan saran dan meningkatkan kualitas fitur ini, URL dan konten halaman dibagikan ke Google. Anda dapat mengubahnya kapan saja dan <ph name="LEARN_MORE" />.</translation>
 <translation id="9078912659001679888">Blender &amp; Pembuat Jus</translation>

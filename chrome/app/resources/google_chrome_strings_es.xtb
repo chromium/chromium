@@ -129,6 +129,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2120620239521071941">Se eliminarán <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Genera un informe de la <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudar a mejorar Chrome</translation>
+<translation id="2125838419757773031">Selecciona una zona de la pantalla para buscar</translation>
 <translation id="2126108037660393668">No se ha podido verificar el archivo descargado.</translation>
 <translation id="2128411189117340671">Gestionar perfiles de Chrome</translation>
 <translation id="2137162749895930932">Cerrar la pantalla de traducción</translation>
@@ -268,6 +269,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3512495006767217696">Integrado en Chrome para ayudarte a crear, guardar y autocompletar contraseñas seguras. Añade el acceso directo para acceder fácilmente.</translation>
 <translation id="3539955434060988644">Abrir enlace en una ventana de incó&amp;gnito de Chrome</translation>
 <translation id="354621070532799440">Recordatorio: Las mejores funciones de seguridad de Google en tu bolsillo</translation>
+<translation id="3547866758548131919">Haz clic en el botón Resumir para compartir este documento con Gemini en Chrome, obtener un resumen rápido y hacer preguntas de seguimiento</translation>
 <translation id="3576528680708590453">El administrador del sistema ha configurado Google Chrome para que abra otro navegador al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincroniza y personaliza Chrome en todos tus dispositivos</translation>
 <translation id="3583751698304738917">Ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chrome</translation>
@@ -358,6 +360,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="4400772909124543403">No hay actualizaciones disponibles</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y malware.</translation>
 <translation id="4434353761996769206">Error del instalador: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Comparte este documento con Gemini en Chrome para obtener un resumen rápido y hacer preguntas de seguimiento</translation>
 <translation id="4450664632294415862">Chrome, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en curso en Google Chrome. Vuelve a intentarlo más tarde.</translation>
 <translation id="4459234553906210702">La medición de anuncios permite a los sitios que visitas pedir a Chrome información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
@@ -792,6 +795,7 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8601359445272098721">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla seleccionando el botón Traducir pantalla.</translation>
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="861702415419836452">Para crear un mapa 3D de tu entorno, Chrome necesita permiso para acceder a tu cámara</translation>
+<translation id="8623450603356630491">Inicia sesión en Chrome en tu teléfono</translation>
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se reiniciará dentro de 1 minuto}other{Chrome se reiniciará dentro de # minutos}}</translation>
 <translation id="8637932705841171563">Para compartir tu ventana, permite la grabación de pantalla de Chrome en Ajustes del sistema</translation>

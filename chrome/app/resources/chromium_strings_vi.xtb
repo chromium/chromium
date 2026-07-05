@@ -35,6 +35,7 @@
 <translation id="132092532143527429">Dùng thử với Gemini trong Chromium</translation>
 <translation id="1324107359134968521">Chromium cần có quyền truy cập Bluetooth để tìm 
  các thiết bị Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Đăng nhập vào Chromium trên điện thoại</translation>
 <translation id="1330562121671411446">Phát hiện ngôn ngữ</translation>
 <translation id="1330742950061766891">Sử dụng các chế độ cài đặt của trình duyệt được Chromium đề xuất</translation>
 <translation id="1342274909142618978">Cũng xoá dữ liệu khỏi Chromium (<ph name="URL" />)</translation>
@@ -106,6 +107,7 @@
 <translation id="208726765006323911">Lần tới, khi mở Chromium iOS, bạn sẽ thấy lời nhắc dùng thử <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Mật khẩu và các dữ liệu khác trên Chromium mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chromium, hãy đăng nhập lại.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau 1 phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}other{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau # phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}}</translation>
+<translation id="2125838419757773031">Chọn vùng trên màn hình để tìm kiếm</translation>
 <translation id="2126108037660393668">Không xác minh được tệp tải xuống.</translation>
 <translation id="2135919691573380097">Báo cáo trang web này</translation>
 <translation id="2137162749895930932">Đóng màn hình dịch</translation>
@@ -138,6 +140,7 @@
 <translation id="2401032172288869980">Chromium cần có quyền truy cập máy ảnh và micrô đối với trang web này</translation>
 <translation id="2403703063067034158">Lỗi khi khởi động: một phiên bản thiết lập khác đang chạy, vui lòng thử lại sau.</translation>
 <translation id="2418322681019544463">Mở đường liên kết trong Chromium từ ứng dụng bất kỳ và giữ cho trình duyệt luôn xuất hiện trên thanh tác vụ</translation>
+<translation id="2425157128016763890">Nhấp vào nút Tóm tắt để chia sẻ tài liệu này với Gemini trong Chromium nhằm xem nhanh nội dung tổng quan và đặt các câu hỏi nối tiếp</translation>
 <translation id="2440750600860946460">Với <ph name="BEGIN_LINK" />các công cụ của Chromium<ph name="END_LINK" />, bạn có thể duyệt web an toàn và luôn nắm quyền kiểm soát</translation>
 <translation id="2451727308784734061">Sử dụng lối tắt để nhanh chóng truy cập vào Trình quản lý mật khẩu. Bạn có thể di chuyển lối tắt đến màn hình chính hoặc trình chạy ứng dụng của máy tính.</translation>
 <translation id="2478295928299953161">Chromium sắp đóng</translation>
@@ -752,6 +755,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="878572486461146056">Lỗi cài đặt: Quản trị viên mạng của bạn đã áp dụng Chính sách nhóm ngăn chặn hoạt động cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium cần có quyền truy cập vào máy ảnh và micrô của bạn cho trang web này</translation>
 <translation id="8813277370772331957">Nhắc tôi sau</translation>
+<translation id="8816416449795340678">Chia sẻ tài liệu này với Gemini trong Chromium để xem thông tin tổng quan nhanh và đặt các câu hỏi nối tiếp</translation>
 <translation id="8818550178040858407">Bạn muốn đăng nhập vào Chromium?</translation>
 <translation id="8823401858233292222">Đặt Chromium làm trình duyệt mặc định và ghim vào thanh tác vụ</translation>
 <translation id="8826492472752484139">Nhấp vào "Trình quản lý mật khẩu"</translation>

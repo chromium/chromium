@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} ключ за достъп}other{{count} ключа за достъп}}</translation>
 <translation id="1005023885865154304">Отваряне на настройките за автоматично попълване на паролите</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
+<translation id="1013852467930342108">Live е нова функция в Gemini в Chrome</translation>
 <translation id="1013952917065545813">Можете да се върнете тук, за да отворите отново разделите, които сте затворили наскоро</translation>
 <translation id="1016495303386450659">Елементът е актуализиран</translation>
 <translation id="1018804590490383958">Сканиране и автоматично попълване</translation>
@@ -148,6 +149,7 @@
 <translation id="147982357559798527">Променено</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1486096554574027028">Търсене в паролите</translation>
+<translation id="1486593497476255523">Задачата за групи раздели е изпълнена!</translation>
 <translation id="1491277525950327607">Докоснете двукратно за превключване на настройката</translation>
 <translation id="1492417797159476138">Вече запазихте това потребителско име за този сайт</translation>
 <translation id="1497590942294823549">Меню → Мениджър на паролите</translation>
@@ -232,6 +234,7 @@
 <translation id="1740650426894359238">Превключване към друг потребителски профил</translation>
 <translation id="1741219894094057085">Смартчасовник</translation>
 <translation id="1743244221910283364">Отхвърляне на промените</translation>
+<translation id="1744234754703485302">Задачата за управление на начините на плащане е изпълнена!</translation>
 <translation id="1748975028205587434">Избиране на файл</translation>
 <translation id="1749733017156547309">Изисква се парола</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} опция за адрес е налице над клавиатурата ви.}other{{count} опции за адрес са налице над клавиатурата ви.}}</translation>
@@ -358,6 +361,7 @@
 <translation id="2155663190508912427">Изтриване след 1 месец</translation>
 <translation id="2161446265348023004">Превключване към отворения прозорец</translation>
 <translation id="2164946989711475905">Вход…</translation>
+<translation id="2165110345209765380">Задачата за търсене с режима с AI е изпълнена!</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="2180338296831857171">Изтриване на адресите</translation>
 <translation id="218350106843433823">Автоматично попълване на пароли и ключове за достъп</translation>
@@ -397,6 +401,7 @@
 <translation id="2273327106802955778">Меню „Още“</translation>
 <translation id="2287614783861766820">{count,plural, =1{Този адрес ще бъде изтрит от това устройство.}other{Тези адреси ще бъдат изтрити от това устройство.}}</translation>
 <translation id="2295236662082735391">Натиснете продължително изображение в мрежата, за да го редактирате с Gemini</translation>
+<translation id="2296360194694387941">Задачата за използване на Gemini в Chrome е изпълнена!</translation>
 <translation id="2297989278479054870">След като излезете от профила си, отметките, паролите и др. в профила ви в Google ще бъдат премахнати от това устройство.</translation>
 <translation id="2299218006564889602">Паролите ви се шифроват на устройството ви, преди да бъдат запазени в мениджъра на паролите в Google.</translation>
 <translation id="2306265833370324042">Показване на подробностите за <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -479,6 +484,7 @@
 <translation id="2579713773888829241">Споделени дискове</translation>
 <translation id="2580306219079937316">Отваряне на настройките за Преводач</translation>
 <translation id="2583688836549072561">Група раздели „<ph name="GROUP_TITLE" />“, съдържа <ph name="TABS_NUMBER" /> раздела, нова активност.</translation>
+<translation id="2584994295315085351">Отваряне на нов раздел, когато се върнете в Chrome след 4 часа</translation>
 <translation id="2593272815202181319">Непропорционален</translation>
 <translation id="2601778637777010194">Проследяване на пониженията на цените на продукти</translation>
 <translation id="2602372807870028932">Избраната информация, запазена на това устройство, ще бъде изтрита</translation>
@@ -644,6 +650,7 @@
 <translation id="3177338796769255211">Влезте в профила си, за да имате достъп до своите отметки и др. на всичките си устройства</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
 <translation id="3183362380688692618">Нова група раздели...</translation>
+<translation id="3185760469172949183">Задачата за търсене с камерата е изпълнена!</translation>
 <translation id="3186796054637504691">Clear History and Website Data</translation>
 <translation id="3190736958609431397">Спиране на проследяването</translation>
 <translation id="3208260410153224535">Организацията ви изключи функцията за влизане в профил. Новите отметки, пароли и др. ще се запазват само на това устройство.</translation>
@@ -712,6 +719,7 @@
 <translation id="3459644598174926977">Активирайте „Live с Gemini“, за да задавате въпроси за дадена страница, да генерирате идеи на глас и да разговаряте с Gemini.</translation>
 <translation id="3462768334899086950">Това означава, че ще загубите незапазения си файл и текущите раздели</translation>
 <translation id="3464194322481586217">Следенето на цената не бе успешно.</translation>
+<translation id="346831467152294287">Задачата в „Пароли и автоматично попълване“ е изпълнена!</translation>
 <translation id="3469117812148449995">Опции за запазване на паролата</translation>
 <translation id="3472469028191701821">Отваря се в нов раздел</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{за {COUNT} сайт или приложение}other{за {COUNT} сайта и приложения}}</translation>
@@ -748,6 +756,7 @@
 <translation id="3565012355885596568">Изображенията не се заредиха</translation>
 <translation id="3565930036634619844">Раздел. <ph name="TAB_INDEX" /> от <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Запазване по друг начин</translation>
+<translation id="3567446754270467567">Задачата за подобрената защита от Безопасно сърфиране е изпълнена!</translation>
 <translation id="3572503683475187385">Текущият раздел се споделя с Gemini, когато започнете нов разговор. Когато споделите раздел с Gemini, съдържанието и URL адресът му се изпращат до Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">В профила ви в Google</translation>
 <translation id="3575234738189584619">Търсене с Обектив</translation>
@@ -809,6 +818,7 @@
 <translation id="3813175908845379029">Полезни предложения, които подобряват и улесняват сърфирането</translation>
 <translation id="3818293389945649617">Търсене на следващото</translation>
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
+<translation id="3826034723896327540">Задачата за фиксиране на раздели е изпълнена!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 начин на плащане}other{# начина на плащане}}</translation>
 <translation id="3831560640878483188">Отхвърляне на предупреждението</translation>
 <translation id="3832419617903252251">Паролата е запазена само на това устройство</translation>
@@ -880,7 +890,6 @@
 <translation id="4021447724486050609">Актуализиране на браузъра ви</translation>
 <translation id="4021931095789478915">Добавяне на ${url} към списъка за четене</translation>
 <translation id="4028871427853484857">Запазване в профила…</translation>
-<translation id="4036529942385659684">Показване на началната страница след период на неактивност</translation>
 <translation id="4038354071007134711">Няма приложение, което може да отвори файла.</translation>
 <translation id="4042870976416480368">Търсене в страницата</translation>
 <translation id="4045441967987592849">Повторно отваряне</translation>
@@ -889,6 +898,7 @@
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
 <translation id="4054290211988862686">Избор на файл</translation>
 <translation id="4070132839822635162">Без влизане в профила</translation>
+<translation id="4072473499345702662">Към Level Up</translation>
 <translation id="4092655288299341041">Показване на помощна информация</translation>
 <translation id="4095483462103784441">Създаване на нова група раздели</translation>
 <translation id="4099756562043439968">Задаване на напомняне</translation>
@@ -1031,6 +1041,7 @@
 <translation id="4578835633387306383">Включване на…</translation>
 <translation id="4580621046861724270">Някои отметки не са запазени</translation>
 <translation id="4580716718466706433">Към Мениджър на пароли</translation>
+<translation id="4584778196791098089">Задачата за преминаване в режим „инкогнито“ е изпълнена!</translation>
 <translation id="4585751637295612750">Отворете нов раздел, за да го добавите към въпроса си</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4592672037257622855">{count,plural, =1{Страницата бе добавена към списъка ви за четене}other{{count} страници бяха добавени към списъка ви за четене}}</translation>
@@ -1101,6 +1112,7 @@
 <translation id="479628432297359449">Искате ли да спрете изтеглянето?</translation>
 <translation id="4796496140132859135">Група раздели. Свита.</translation>
 <translation id="4802185666270672526">Скриване на „Заявка за настолния сайт“</translation>
+<translation id="4802678077012980341">Задачата за проверка на паролите е изпълнена!</translation>
 <translation id="4803185665210547709">Управлява се от организацията ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Оградете, откройте или докоснете, за да изберете нещо, което искате да потърсите, и да получите резултати, без да напускате раздела си.</translation>
@@ -1227,6 +1239,7 @@
 <translation id="518997337573684769">Сигналът за срив се изпраща…</translation>
 <translation id="519528950056409240">Разрешаване на Wallet да споделя данни</translation>
 <translation id="519530786644929958">Изтеглянето не успя и не може да бъде повторено.</translation>
+<translation id="519620255540220054">Персонализиране на началната страница</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5200894869889836319">Опции за задаване на разрешения</translation>
 <translation id="5203051773066903947">Въведете</translation>
@@ -1310,6 +1323,7 @@
 <translation id="5482922178977937393">Искате ли да получавате известия за новини, спорт и др. въз основа на интересите си?</translation>
 <translation id="5483838506518938965">Готови сте</translation>
 <translation id="5487521232677179737">Изчиств. на данните</translation>
+<translation id="5491208689472430746">Задачата за бързо изтриване е изпълнена!</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5499648645977734083">Управление на начините на плащане…</translation>
 <translation id="5501346139932663133">Приложения от Google</translation>
@@ -1725,6 +1739,7 @@
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6765551480308401897">Без задаване като основен браузър</translation>
 <translation id="6770452996697898492">[РЕЗЕРВИРАНО]</translation>
+<translation id="6775952316617222141">Използване на Live с Gemini в Chrome</translation>
 <translation id="6779455296366983087">Данните за сърфирането ви ще бъдат изтрити</translation>
 <translation id="6782531425936234573">Експортиране на данни</translation>
 <translation id="6791425686608802741">Докоснете „Добавяне на раздела към нова група“</translation>
@@ -2153,6 +2168,7 @@
 <translation id="8233237502828137700">Затваряне на банера за популяризиране</translation>
 <translation id="823339794112333264">Включване на микрофона</translation>
 <translation id="8250920743982581267">Документи</translation>
+<translation id="8252980988000695656">Задачата в Google Обектив е изпълнена!</translation>
 <translation id="8258734532103758067">Експортирах данните си</translation>
 <translation id="8258999165172757081">Добавено</translation>
 <translation id="8261506727792406068">Изтриване</translation>

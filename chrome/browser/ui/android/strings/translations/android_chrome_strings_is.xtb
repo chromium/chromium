@@ -263,6 +263,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2149968176347646218">Tengingin er ekki örugg</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2163089732491971196">Sláðu inn aðgangsorðið þitt til að nota og vista Chrome-gögn á Google-reikningnum þínum</translation>
+<translation id="2164015935042801524">Hægrismelltu hér til að sýna flipa lóðrétt</translation>
 <translation id="2166228530126694506">Útgáfa <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Slökkt er á lýsingum mynda</translation>
 <translation id="2172905120685242547">Loka glugga?</translation>
@@ -305,6 +306,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2323763861024343754">Geymsla vefsvæða</translation>
 <translation id="2327445548174191329">Frá <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og slökkt verður á öllum boðstenglum</translation>
+<translation id="2329500425421091035">Við kynnum gervigreindarstillingu í Chrome</translation>
 <translation id="2330186936255788117">Fleiri bókamerki</translation>
 <translation id="2332515770639153015">Kveikt er á enn öruggari vefskoðun</translation>
 <translation id="233375395665273385">Eyða og skrá út</translation>
@@ -317,6 +319,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2363734411417672757">Fleiri síðum er forhlaðið. Síður kunna að vera forhlaðnar á Google-þjónum þegar önnur vefsvæði eða forrit biðja um það.</translation>
 <translation id="2366554533468315977">Verðferill þessa valkosts á vefnum</translation>
 <translation id="2367818124433749493">Flýtileiðir forritara</translation>
+<translation id="2369058545741334020">Opna í lesstillingu</translation>
 <translation id="2385605401818128172">Þú getur farið yfir vefsvæði sem senda margar tilkynningar og komið í veg fyrir frekari sendingar</translation>
 <translation id="2386938421315164605">Fela og sýna umfjöllunarefni</translation>
 <translation id="2390510615457643724">Viltu sækja <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> aftur?</translation>
@@ -327,6 +330,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, valinn flipi með hljóði</translation>
 <translation id="2413014528833954543">Ekki tókst að athuga aðgangsorð í þessu tæki</translation>
 <translation id="2414886740292270097">Dökkt</translation>
+<translation id="2415037988255164008">Endurheimta glugga?</translation>
 <translation id="2421705177906985956">Engin vefsvæði til að birta eins og er.</translation>
 <translation id="2426805022920575512">Velja annan reikning</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vídeó, 1 vídeó á lista}one{Vídeó, # vídeó á lista}other{Vídeó, # vídeó á lista}}</translation>
@@ -596,6 +600,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3524334353996115845">Leyfa <ph name="ORIGIN" /> að staðfesta að þetta sért þú</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tiltæk</translation>
+<translation id="3547933853190131743">Leita með gervigreindarstillingu</translation>
 <translation id="3549537543136628349">Þar sem forhlaðnar síður eru dulkóðaðar og vefsvæðið eða forritið sem er tengt við síðurnar er í eigu Google geta Google-þjónar ekki móttekið nýjar upplýsingar þegar síðunum er forhlaðið í lokaðri stillingu.</translation>
 <translation id="3549657413697417275">Leita í ferlinum</translation>
 <translation id="3557336313807607643">Bæta við tengiliði</translation>
@@ -1338,6 +1343,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Leita með Sogou</translation>
 <translation id="656065428026159829">Sjá meira</translation>
+<translation id="6565781844089373403">Endurheimta glugga</translation>
 <translation id="6565959834589222080">Wi-Fi er notað þegar það er í boði</translation>
 <translation id="657177046675873214">Kveiktu á „Bókamerki“ í stillingunum til að sjá bókamerkin þín í öllum tækjunum þínum</translation>
 <translation id="6573096386450695060">Leyfa alltaf</translation>
@@ -1964,12 +1970,14 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="9001604755921395912">Opna í huliðsflipa í Chrome</translation>
 <translation id="9010094279589497751">Opnaðu Gemini þegar þú þarft á því að halda</translation>
 <translation id="9012585441087414258">Vernda þig gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Ef grunsamleg virkni greinist á síðu eru vefslóðir og hlutar af innihaldi síðna sendir í örugga vefskoðun Google.</translation>
+<translation id="9014097371980259227">Sum verkfæri hafa verið færð til að auðvelda þér að leita í gervigreindarstillingu</translation>
 <translation id="9019199799064251516">Halda áfram án þess að nota prófíllás bílsins?</translation>
 <translation id="9022774213089566801">Oft skoðað</translation>
 <translation id="9022871169049522985">Vefsvæði og auglýsendur geta mælt árangur auglýsinga sinna</translation>
 <translation id="9024318700713112071">Stilltu Chrome sem sjálfgefinn vafra</translation>
 <translation id="9027728231343310283">Afturkalla <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytja í\u2026</translation>
+<translation id="904146253922032365">Haltu inni til að sýna flipa lóðrétt</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
 <translation id="9047347135558855162">Leitaðu í Chrome í einum grænum</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>

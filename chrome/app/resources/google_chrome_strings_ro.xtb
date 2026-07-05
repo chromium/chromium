@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">Astfel, se vor șterge <ph name="ITEMS_COUNT" /> elemente de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuie la îmbunătățirea browserului Chrome raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Selectează regiunea ecranului pentru căutare</translation>
 <translation id="2126108037660393668">Fișierul descărcat nu a putut fi verificat.</translation>
 <translation id="2128411189117340671">Gestionează profilurile Chrome</translation>
 <translation id="2137162749895930932">Închide ecranul de traducere</translation>
@@ -264,6 +265,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3512495006767217696">Încorporat în Chrome pentru a te ajuta să creezi, să salvezi și să completezi automat parole puternice. Adaugă comanda rapidă pentru acces ușor</translation>
 <translation id="3539955434060988644">Deschide linkul într-o fereastră Chrome inco&amp;gnito</translation>
 <translation id="354621070532799440">Memento: cele mai bune funcții de siguranță de la Google la îndemână</translation>
+<translation id="3547866758548131919">Dă clic pe butonul Rezumă pentru a trimite acest document la Gemini în Chrome pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
 <translation id="3576528680708590453">Administratorul sistemului a configurat Google Chrome astfel încât să deschidă un browser secundar pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincronizează și personalizează Chrome pe toate dispozitivele</translation>
 <translation id="3583751698304738917">Te-ai conectat deja ca <ph name="USER_EMAIL_ADDRESS" /> în alt profil Chrome</translation>
@@ -354,6 +356,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4400772909124543403">Nu este disponibilă nicio actualizare</translation>
 <translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
 <translation id="4434353761996769206">Eroare în programul de instalare: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Trimite acest document la Gemini în Chrome pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
 <translation id="4450664632294415862">Chrome – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4459234553906210702">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
@@ -784,6 +787,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8601359445272098721">Nou! Poți traduce atât textul, cât și imaginile de pe ecran selectând butonul Tradu ecranul</translation>
 <translation id="8614913330719544658">Google Chrome nu mai răspunde. Îl repornești acum?</translation>
 <translation id="861702415419836452">Chrome are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
+<translation id="8623450603356630491">Conectează-te la Chrome pe telefon</translation>
 <translation id="8624541899164515475">Setări, se deschide într-o filă nouă.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se va relansa într-un minut}few{Chrome se va relansa în # minute}other{Chrome se va relansa în # de minute}}</translation>
 <translation id="8637932705841171563">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>

@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} klucz dostępu}few{{count} klucze dostępu}many{{count} kluczy dostępu}other{{count} klucza dostępu}}</translation>
 <translation id="1005023885865154304">Otwórz ustawienia autouzupełniania haseł</translation>
 <translation id="1005230401424685968">RRRR</translation>
+<translation id="1013852467930342108">Live to nowa funkcja w Gemini w Chrome</translation>
 <translation id="1013952917065545813">Możesz wrócić tu później, by ponownie otworzyć ostatnio zamknięte karty</translation>
 <translation id="1016495303386450659">Zaktualizowano element</translation>
 <translation id="1018804590490383958">Zeskanuj i wypełnij automatycznie</translation>
@@ -148,6 +149,7 @@
 <translation id="147982357559798527">Zmieniono</translation>
 <translation id="1483493594462132177">Wyślij</translation>
 <translation id="1486096554574027028">Szukaj haseł</translation>
+<translation id="1486593497476255523">Grupy kart – ukończono.</translation>
 <translation id="1491277525950327607">Kliknij dwukrotnie, by zmienić ustawienie</translation>
 <translation id="1492417797159476138">Ta nazwa użytkownika została już zapisana w tej witrynie</translation>
 <translation id="1497590942294823549">Menu → Menedżer haseł</translation>
@@ -232,6 +234,7 @@
 <translation id="1740650426894359238">Przełącz na inny profil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Odrzuć zmiany</translation>
+<translation id="1744234754703485302">Zarządzanie formami płatności – ukończono.</translation>
 <translation id="1748975028205587434">Wybierz plik</translation>
 <translation id="1749733017156547309">Hasło jest wymagane</translation>
 <translation id="174998178145075354">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja adresu.}few{Nad klawiaturą dostępne są {count} opcje adresu.}many{Nad klawiaturą dostępnych jest {count} opcji adresu.}other{Nad klawiaturą dostępne jest {count} opcji adresu.}}</translation>
@@ -358,6 +361,7 @@
 <translation id="2155663190508912427">Usuń za miesiąc</translation>
 <translation id="2161446265348023004">Przełącz na otwarte okno</translation>
 <translation id="2164946989711475905">Zaloguj się…</translation>
+<translation id="2165110345209765380">Wyszukiwanie w Trybie AI – ukończono.</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2180338296831857171">Usuń adresy</translation>
 <translation id="218350106843433823">Autouzupełnianie haseł i kluczy dostępu</translation>
@@ -397,6 +401,7 @@
 <translation id="2273327106802955778">Menu Więcej</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
 <translation id="2295236662082735391">Przytrzymaj obraz na stronie, aby zacząć go edytować w Gemini</translation>
+<translation id="2296360194694387941">Korzystanie z Gemini w Chrome – ukończono.</translation>
 <translation id="2297989278479054870">Po wylogowaniu z tego urządzenia zostaną usunięte zakładki, hasła i inne ustawienia na koncie Google.</translation>
 <translation id="2299218006564889602">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu.</translation>
 <translation id="2306265833370324042">Pokaż szczegóły <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -479,6 +484,7 @@
 <translation id="2579713773888829241">Dyski współdzielone</translation>
 <translation id="2580306219079937316">Otwórz ustawienia tłumacza</translation>
 <translation id="2583688836549072561">Grupa kart, <ph name="GROUP_TITLE" />, liczba kart: <ph name="TABS_NUMBER" />, nowa aktywność.</translation>
+<translation id="2584994295315085351">Otwórz nową kartę, gdy wrócisz do Chrome po 4 godzinach</translation>
 <translation id="2593272815202181319">Stała szerokość znaków</translation>
 <translation id="2601778637777010194">Śledź obniżki cen produktów</translation>
 <translation id="2602372807870028932">Spowoduje to usunięcie wybranych informacji zapisanych na tym urządzeniu</translation>
@@ -644,6 +650,7 @@
 <translation id="3177338796769255211">Zaloguj się, aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
 <translation id="3183362380688692618">Nowa grupa kart…</translation>
+<translation id="3185760469172949183">Wyszukiwanie za pomocą aparatu – ukończono.</translation>
 <translation id="3186796054637504691">Wyczyść historię i dane witryn</translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="3208260410153224535">Twoja organizacja wyłączyła logowanie się. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
@@ -712,6 +719,7 @@
 <translation id="3459644598174926977">Rozmawiaj w trybie Live z Gemini, aby zadawać pytania o stronę, przeprowadzać burzę mózgów i prowadzić dyskusje.</translation>
 <translation id="3462768334899086950">Oznacza to, że utracisz niezapisany plik i bieżące karty</translation>
 <translation id="3464194322481586217">Wystąpił błąd monitorowania ceny.</translation>
+<translation id="346831467152294287">Hasła i autouzupełnianie – ukończono.</translation>
 <translation id="3469117812148449995">Opcje zapisania hasła</translation>
 <translation id="3472469028191701821">Otwiera się w nowej karcie</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{do {COUNT} witryny lub aplikacji}few{do {COUNT} witryn i aplikacji}many{do {COUNT} witryn i aplikacji}other{do {COUNT} witryny i aplikacji}}</translation>
@@ -748,6 +756,7 @@
 <translation id="3565012355885596568">Nie udało się załadować obrazów</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Zapisz w inny sposób</translation>
+<translation id="3567446754270467567">Ulepszone bezpieczne przeglądanie – ukończono.</translation>
 <translation id="3572503683475187385">Gdy rozpoczynasz nowy czat, bieżąca karta jest udostępniana Gemini. Gdy udostępniasz kartę Gemini, jej zawartość i adres URL są wysyłane do Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Twoim koncie Google</translation>
 <translation id="3575234738189584619">Szukaj za pomocą Obiektywu</translation>
@@ -796,6 +805,7 @@
 <translation id="3753618528540214374">Motyw turkusowy</translation>
 <translation id="3759491607478608474">Udostępnij Gemini zawartość bieżącej karty, aby otrzymywać trafniejsze odpowiedzi</translation>
 <translation id="3762232513783804601">Dla Twojego iPada</translation>
+<translation id="3767529805486761639">Edytuj menu</translation>
 <translation id="3768725474733206671">Otwórz ostatnio zamkniętą kartę</translation>
 <translation id="3779810277399252432">Brak połączenia z internetem.</translation>
 <translation id="3782614601387961027">Zamknij ostrzeżenie</translation>
@@ -808,6 +818,7 @@
 <translation id="3813175908845379029">Przydatne sugestie, dzięki którym przeglądanie jest przyjemniejsze i łatwiejsze</translation>
 <translation id="3818293389945649617">Znajdź następny</translation>
 <translation id="3819183753496523827">Jesteś offline. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
+<translation id="3826034723896327540">Przypinanie kart – ukończono.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 forma płatności}few{# formy płatności}many{# form płatności}other{# formy płatności}}</translation>
 <translation id="3831560640878483188">Zamknąć ostrzeżenie?</translation>
 <translation id="3832419617903252251">Hasło zostało zapisane tylko na tym urządzeniu</translation>
@@ -879,7 +890,6 @@
 <translation id="4021447724486050609">Zaktualizuj przeglądarkę</translation>
 <translation id="4021931095789478915">Dodaj ${url} do listy Do przeczytania</translation>
 <translation id="4028871427853484857">Zapisz na koncie…</translation>
-<translation id="4036529942385659684">Pokaż stronę startową po okresie bezczynności</translation>
 <translation id="4038354071007134711">Nie masz aplikacji, która może otworzyć ten plik.</translation>
 <translation id="4042870976416480368">Znajdź na stronie</translation>
 <translation id="4045441967987592849">Otwórz ponownie</translation>
@@ -888,6 +898,7 @@
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="4054290211988862686">Wybierz plik</translation>
 <translation id="4070132839822635162">Nie loguj się</translation>
+<translation id="4072473499345702662">Przejdź do funkcji Level Up</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4095483462103784441">Utwórz nową grupę kart</translation>
 <translation id="4099756562043439968">Ustaw przypomnienie</translation>
@@ -1030,6 +1041,7 @@
 <translation id="4578835633387306383">Włącz…</translation>
 <translation id="4580621046861724270">Niektóre zakładki nie zostały zapisane</translation>
 <translation id="4580716718466706433">Otwórz „Menedżera haseł”</translation>
+<translation id="4584778196791098089">Włączanie trybu incognito – ukończono.</translation>
 <translation id="4585751637295612750">Otwórz nową kartę, aby dodać ją do pytania</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4592672037257622855">{count,plural, =1{Dodano stronę do listy Do przeczytania}few{Dodano {count} strony do listy Do przeczytania}many{Dodano {count} stron do listy Do przeczytania}other{Dodano {count} strony do listy Do przeczytania}}</translation>
@@ -1100,6 +1112,7 @@
 <translation id="479628432297359449">Czy zatrzymać pobieranie?</translation>
 <translation id="4796496140132859135">Grupa kart. Zwinięta.</translation>
 <translation id="4802185666270672526">Ukryj opcję Wersja na komputer</translation>
+<translation id="4802678077012980341">Sprawdzanie haseł – ukończono.</translation>
 <translation id="4803185665210547709">Zarządzana przez Twoją organizację.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Rysuj, zaznaczaj lub klikaj, aby wybrać to, czego szukasz, i zobaczyć wyniki bez opuszczania karty</translation>
@@ -1226,6 +1239,7 @@
 <translation id="518997337573684769">Wysyłam raport o awarii…</translation>
 <translation id="519528950056409240">Zezwól Portfelowi na udostępnianie danych</translation>
 <translation id="519530786644929958">Pobieranie się nie udało i nie można go powtórzyć.</translation>
+<translation id="519620255540220054">Dostosuj stronę główną</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opcje ustawiania uprawnień</translation>
 <translation id="5203051773066903947">Wpisz</translation>
@@ -1309,6 +1323,7 @@
 <translation id="5482922178977937393">Czy chcesz otrzymywać powiadomienia o wiadomościach, wydarzeniach sportowych i inne na podstawie Twoich zainteresowań?</translation>
 <translation id="5483838506518938965">Wszystko gotowe</translation>
 <translation id="5487521232677179737">Wyczyść dane</translation>
+<translation id="5491208689472430746">Szybkie usuwanie – ukończono.</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5499648645977734083">Zarządzaj formami płatności…</translation>
 <translation id="5501346139932663133">Aplikacje Google</translation>
@@ -1638,6 +1653,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6523575793810663688">Pokaż jak</translation>
 <translation id="6524082013156754186">Zapisz na koncie</translation>
 <translation id="6524918542306337007">Tryb incognito jest niedostępny</translation>
+<translation id="6525550806864373485">Edytuj menu</translation>
 <translation id="6527208859483186860">tło {position} z {total}</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
 <translation id="6532106788206463496">Zapisz zmiany</translation>
@@ -1723,6 +1739,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6761393919622941301">Dźwięk</translation>
 <translation id="6765551480308401897">Nie ustawiaj jako domyślnego</translation>
 <translation id="6770452996697898492">[ZAREZERWOWANO]</translation>
+<translation id="6775952316617222141">Korzystanie z trybu Live w Gemini w Chrome</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6782531425936234573">Eksportuj dane</translation>
 <translation id="6791425686608802741">Kliknij „Dodaj kartę do nowej grupy”</translation>
@@ -2151,6 +2168,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8233237502828137700">Zamknij baner promocyjny</translation>
 <translation id="823339794112333264">Włącz mikrofon</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
+<translation id="8252980988000695656">Obiektyw Google – ukończono.</translation>
 <translation id="8258734532103758067">Dane zostały wyeksportowane</translation>
 <translation id="8258999165172757081">Dodano</translation>
 <translation id="8261506727792406068">Usuń</translation>
@@ -2241,6 +2259,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8534481786647257214">Post w Google+ opublikowany.</translation>
 <translation id="8535368836838588657">Pokaż hasło</translation>
 <translation id="8540426897269305488">Zaloguj się przez <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">Coś poszło nie tak. Kliknij przycisk Live, aby spróbować ponownie włączyć tryb Live.</translation>
 <translation id="8545276357312221485">Sprawdź ustawienia przeglądarki domyślnej</translation>
 <translation id="854938212724803178">Masz 1 przejęte hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="8551311254462607218">Na pasku adresu kliknij ikonę aparatu Obiektywu Google</translation>

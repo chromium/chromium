@@ -37,6 +37,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="132092532143527429">Jaribu ukitumia Gemini kwenye Chromium</translation>
 <translation id="1324107359134968521">Chromium inahitaji ruhusa ya kufikia Bluetooth ili kugundua 
  vifaa vyenye Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Ingia katika Chromium kwenye simu yako</translation>
 <translation id="1330562121671411446">Tambua lugha</translation>
 <translation id="1330742950061766891">Tumia mipangilio ya kivinjari inayopendekezwa na Chromium</translation>
 <translation id="1342274909142618978">Futa pia data kutoka Chromium (<ph name="URL" />)</translation>
@@ -108,6 +109,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="208726765006323911">Utaona kidokezo cha kujaribu <ph name="FEATURE_NAME" /> utakapofungua Chromium kwenye kifaa cha iOS tena.</translation>
 <translation id="2099452623287920103">Manenosiri na data yako nyingine ya Chromium uliyohifadhi kwenye Akaunti yako ya Google itaondolewa kwenye kifaa hiki. Ili uzitumie tena kwenye Chromium, ingia tena katika akaunti.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Shirika lako hufuta kiotomatiki data ya kuvinjari Chromium isipotumika kwa dakika 1. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako havitafungwa.}other{Shirika lako hufuta kiotomatiki data ya kuvinjari Chromium isipotumika kwa dakika #. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako havitafungwa.}}</translation>
+<translation id="2125838419757773031">Chagua sehemu ya skrini ili utafute</translation>
 <translation id="2126108037660393668">Faili iliyopakuliwa imeshindwa kuthibitishwa.</translation>
 <translation id="2135919691573380097">Ripoti tovuti hii</translation>
 <translation id="2137162749895930932">Funga skrini ya kutafsiri</translation>
@@ -140,6 +142,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2401032172288869980">Chromium inahitaji ruhusa ya kufikia kamera na maikrofoni kwa ajili ya tovuti hii</translation>
 <translation id="2403703063067034158">Hitilafu ya kuwasha: tukio jingine la uwekaji mipangilio linaendelea kwa sasa, tafadhali jaribu tena baadaye.</translation>
 <translation id="2418322681019544463">Fungua viungo katika Chromium kwenye programu yoyote na ufanye kivinjari kiweze kufikiwa kwenye upauzana wako</translation>
+<translation id="2425157128016763890">Ruhusu Gemini kwenye Chromium ifikie hati hii kwa kubofya kitufe cha Andaa muhtasari ili upate muhtasari wa haraka na uulize maswali ya nyongeza</translation>
 <translation id="2440750600860946460">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chromium<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
 <translation id="2451727308784734061">Tumia njia yako ya mkato ili ufikie Kidhibiti cha Manenosiri kwa haraka. Unaweza kuhamishia njia yako ya mkato kwenye skrini ya kwanza ya kompyuta yako au kifungua programu.</translation>
 <translation id="2478295928299953161">Chromium itafungwa hivi karibuni</translation>
@@ -690,6 +693,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8107060931443639922">Utakapofungua Chromium tena kwenye <ph name="DEVICE_TYPE" /> yako, utaona kidokezo cha kuwasha arifa za ufuatiliaji wa bei.</translation>
 <translation id="8117908349476699973">Pata arifa za punguzo la bei ya bidhaa zinazokuvutia ukitumia programu ya Chromium kwenye simu yako</translation>
 <translation id="8118331347066725040">Tuma maoni ya kutafuta ukitumia Lenzi</translation>
+<translation id="8130609355518033382">Tumia Chromium inavyokufaa</translation>
 <translation id="8133124826068723441">Mfumo wa Uendeshaji wa Chromium haukusawazisha data yako kwa sababu Usawazishaji haupatikani kwa kikoa chako.</translation>
 <translation id="813913629614996137">Inaanzisha…</translation>
 <translation id="8161503455832158203">Tumia mikato ya kibodi kufungua Gemini kwenye Chromium.</translation>
@@ -753,6 +757,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="878572486461146056">Hitilafu ya kisakinishaji: Msimamizi wa mtandao wako ameweka Sera ya Jumla inayozuia usakinishaji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium inahitaji ruhusa ya kufikia kamera na maikrofoni yako katika tovuti hii</translation>
 <translation id="8813277370772331957">Nikumbushe baadaye</translation>
+<translation id="8816416449795340678">Ruhusu Gemini ifikie hati hii kwenye Chromium ili upate muhtasari wa haraka na uulize maswali ya nyongeza</translation>
 <translation id="8818550178040858407">Ungependa kuingia katika akaunti kwenye Chromium?</translation>
 <translation id="8823401858233292222">Fanya Chromium iwe kivinjari chaguomsingi na uibandike kwenye upauzana</translation>
 <translation id="8826492472752484139">Bofya “Kidhibiti cha Manenosiri”</translation>

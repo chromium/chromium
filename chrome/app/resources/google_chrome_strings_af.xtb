@@ -129,6 +129,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2120620239521071941">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
 <translation id="2121284319307530122">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="2123055963409958220">Help om Chrome te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
+<translation id="2125838419757773031">Kies deel van die skerm om te deursoek</translation>
 <translation id="2126108037660393668">Die afgelaaide lêer kon nie geverifieer word nie.</translation>
 <translation id="2128411189117340671">Bestuur Chrome-profiele</translation>
 <translation id="2137162749895930932">Maak vertaalskerm toe</translation>
@@ -268,6 +269,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3512495006767217696">Ingebou in Chrome om jou te help om sterk wagwoorde te skep, te stoor en te outovul. Voeg die kortpad by vir maklike toegang</translation>
 <translation id="3539955434060988644">Maak skakel in Chrome Inco&amp;gnito-venster oop</translation>
 <translation id="354621070532799440">Onthounota: Google se beste veiligheidkenmerke in jou sak</translation>
+<translation id="3547866758548131919">Klik die Som Op-knoppie om hierdie dokument met Gemini in Chrome te deel om ’n vinnige oorsig te kry en opvolgvrae te vra</translation>
 <translation id="3576528680708590453">Jou stelseladministrateur het Google Chrome opgestel om 'n alternatiewe blaaier oop te maak om na <ph name="TARGET_URL_HOSTNAME" /> toe te gaan.</translation>
 <translation id="3582972582564653026">Sinkroniseer en personaliseer Chrome op al jou toestelle</translation>
 <translation id="3583751698304738917">Jy het reeds in ’n ander Chrome-profiel as <ph name="USER_EMAIL_ADDRESS" /> aangemeld</translation>
@@ -358,6 +360,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="4400772909124543403">Geen opdatering is beskikbaar nie</translation>
 <translation id="4427306783828095590">Verbeterde beskerming doen meer om uitvissing en wanware te blokkeer</translation>
 <translation id="4434353761996769206">Installeerderfout: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Deel hierdie dokument met Gemini in Chrome om ’n vinnige oorsig te kry en opvolgvrae te vra</translation>
 <translation id="4450664632294415862">Chrome – Netwerkaanmelding – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">'n Ander handeling in Google Chrome vind tans plaas. Probeer asseblief later weer.</translation>
 <translation id="4459234553906210702">Advertensiemeting stel werwe wat jy besoek in staat om inligting van Chrome af te versoek wat die werf help om die werkverrigting van hul advertensies te meet. Advertensiemeting beperk oorkruiswerfnasporing deur so min inligting moontlik tussen werwe oor te dra.</translation>
@@ -792,6 +795,7 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="8601359445272098721">Nuut! Jy kan sowel teks as prente op jou skerm vertaal deur die “vertaal skerm”-knoppie te kies</translation>
 <translation id="8614913330719544658">Google Chrome reageer nie. Herbegin nou?</translation>
 <translation id="861702415419836452">Chrome moet toestemming hê om toegang te kry tot jou kamera om 'n 3D-kaart van jou omgewing te skep</translation>
+<translation id="8623450603356630491">Meld aan by Chrome op jou foon</translation>
 <translation id="8624541899164515475">Instellings; maak in nuwe oortjie oop.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sal oor 1 minuut herbegin}other{Chrome sal oor # minute herbegin}}</translation>
 <translation id="8637932705841171563">Om jou venster te deel, moet jy skermopname vir Chrome in Stelselinstellings toelaat.</translation>

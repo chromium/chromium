@@ -127,6 +127,7 @@
 <translation id="2120620239521071941">Veicot šo darbību, no šīs ierīces tiks dzēsts(-i) <ph name="ITEMS_COUNT" /> vienums(-i). Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chrome kā <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="2123055963409958220">Palīdziet uzlabot pārlūku Chrome, ziņojot par <ph name="BEGIN_LINK" />pašreizējiem iestatījumiem<ph name="END_LINK" />.</translation>
+<translation id="2125838419757773031">Lai meklētu, atlasiet ekrāna apgabalu</translation>
 <translation id="2126108037660393668">Neizdevās verificēt lejupielādēto failu.</translation>
 <translation id="2128411189117340671">Pārvaldīt Chrome profilus</translation>
 <translation id="2137162749895930932">Aizvērt tulkošanas ekrānu</translation>
@@ -266,6 +267,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="3512495006767217696">Iebūvēts pārlūkā Chrome, lai palīdzētu jums izveidot, saglabāt un automātiski aizpildīt drošas paroles. Pievienojiet saīsni, lai varētu ērti piekļūt.</translation>
 <translation id="3539955434060988644">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
 <translation id="354621070532799440">Atgādinājums: Google labākās drošības funkcijas vienmēr par rokai</translation>
+<translation id="3547866758548131919">Noklikšķiniet uz pogas Apkopot, lai kopīgotu šo dokumentu ar Gemini pārlūkā Chrome, iegūtu īsu kopsavilkumu un uzdotu papildu jautājumus.</translation>
 <translation id="3576528680708590453">Sistēmas administrators ir konfigurējis pārlūku Google Chrome, lai vietne <ph name="TARGET_URL_HOSTNAME" /> tiktu atvērta papildu pārlūkā.</translation>
 <translation id="3582972582564653026">Chrome sinhronizēšana un personalizēšana visās jūsu ierīcēs</translation>
 <translation id="3583751698304738917">Ar kontu <ph name="USER_EMAIL_ADDRESS" /> jau esat pierakstījies citā Chrome profilā</translation>
@@ -355,6 +357,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4400772909124543403">Neviens atjauninājums nav pieejams.</translation>
 <translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
 <translation id="4434353761996769206">Instalēšanas kļūda: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Kopīgojiet šo dokumentu ar Gemini pārlūkā Chrome, lai iegūtu īsu kopsavilkumu un uzdotu papildu jautājumus.</translation>
 <translation id="4450664632294415862">Chrome — pierakstīšanās vietnē — <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Tiek veikta cita darbība pārlūkā Google Chrome. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4459234553906210702">Reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
@@ -787,6 +790,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8601359445272098721">Jaunums! Atlasot pogu “Tulkot ekrānu”, varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="8614913330719544658">Google Chrome nereaģē. Vai restartēt to tūlīt?</translation>
 <translation id="861702415419836452">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti</translation>
+<translation id="8623450603356630491">Pierakstieties pārlūkā Chrome savā tālrunī</translation>
 <translation id="8624541899164515475">Iestatījumi; tiks atvērta jauna cilne.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Pārlūks Chrome pēc 1 minūtes tiks restartēts}zero{Pārlūks Chrome pēc # minūtēm tiks restartēts}one{Pārlūks Chrome pēc # minūtes tiks restartēts}other{Pārlūks Chrome pēc # minūtēm tiks restartēts}}</translation>
 <translation id="8637932705841171563">Lai kopīgotu logu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chrome.</translation>

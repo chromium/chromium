@@ -129,6 +129,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2120620239521071941">Þetta mun eyða <ph name="ITEMS_COUNT" /> atriðum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="2121284319307530122">Endurræstu til að uppfæra &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjálpa til við að gera Google Chrome betra með því að tilkynna um <ph name="BEGIN_LINK" />núverandi stillingar<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Veldu svæði á skjánum til að leita á</translation>
 <translation id="2126108037660393668">Ekki tókst að staðfesta skrána sem var sótt.</translation>
 <translation id="2128411189117340671">Stjórna Chrome-prófílum</translation>
 <translation id="2137162749895930932">Loka hnappinum „þýða skjá“</translation>
@@ -268,6 +269,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="3512495006767217696">Innbyggt í Chrome til að auðvelda þér að búa til, vista og færa sjálfkrafa inn traust aðgangsorð. Bættu flýtileiðinni við til að hafa greiðan aðgang</translation>
 <translation id="3539955434060988644">Opna tengil í huliðsglugga í Chrome</translation>
 <translation id="354621070532799440">Áminning: Bestu öryggiseiginleikar Google í vasanum</translation>
+<translation id="3547866758548131919">Smelltu á hnappinn „Taka saman“ til að deila þessu skjali með Gemini í Chrome til að fá snöggt yfirlit og spyrja frekari spurninga</translation>
 <translation id="3576528680708590453">Kerfisstjórinn hefur stillt Google Chrome á að opna annan vafra fyrir <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Samstilltu Chrome á milli tækja og gerðu það að þínu</translation>
 <translation id="3583751698304738917">Þú ert þegar skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" /> á öðrum Chrome-prófíl</translation>
@@ -358,6 +360,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4400772909124543403">Engin uppfærsla er tiltæk</translation>
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4434353761996769206">Uppsetningarvilla: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Deildu þessu skjali með Gemini í Chrome til að fá fljótlegt yfirlit og spyrja frekari spurninga</translation>
 <translation id="4450664632294415862">Chrome – innskráning á net – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Önnur aðgerð er í gangi í Google Chrome. Reyndu aftur síðar.</translation>
 <translation id="4459234553906210702">Auglýsingamælingar gera vefsvæðum sem þú opnar kleift að biðja Chrome um upplýsingar sem hjálpa vefsvæðinu að mæla afköst auglýsinga þess. Auglýsingamælingar takmarka rakningu á milli vefsvæða með því að flytja eins lítið magn upplýsinga á milli vefsvæða og mögulegt er.</translation>
@@ -791,6 +794,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8601359445272098721">Nýtt! Þú getur þýtt bæði texta og myndir á skjánum þínum með því að velja hnappinn „þýða skjá“</translation>
 <translation id="8614913330719544658">Google Chrome svarar ekki. Endurræsa núna?</translation>
 <translation id="861702415419836452">Chrome þarf leyfi til að nota myndavélina til að búa til þrívíddarkort af umhverfinu</translation>
+<translation id="8623450603356630491">Skráðu þig inn á Chrome í símanum þínum</translation>
 <translation id="8624541899164515475">Stillingar, opnast í nýjum flipa.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verður endurræst eftir 1 mínútu}one{Chrome verður endurræst eftir # mínútu}other{Chrome verður endurræst eftir # mínútur}}</translation>
 <translation id="8637932705841171563">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila glugganum þínum</translation>

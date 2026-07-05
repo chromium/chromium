@@ -263,6 +263,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2149968176347646218">Ühendus ei ole turvaline</translation>
 <translation id="2149973817440762519">Muuda järjehoidjat</translation>
 <translation id="2163089732491971196">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool</translation>
+<translation id="2164015935042801524">Paremklõpsake siin, et kuvada vahelehed vertikaalselt.</translation>
 <translation id="2166228530126694506">Versioon <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Pildikirjeldused on välja lülitatud</translation>
 <translation id="2172905120685242547">Kas sulgeda aken?</translation>
@@ -305,6 +306,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2323763861024343754">Saidi salvestusruum</translation>
 <translation id="2327445548174191329">Seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Kõik kasutajad kaotavad vahelehegrupile „<ph name="GROUP_NAME" />“ kohe juurdepääsu ja kõik kutselingid lülitatakse välja</translation>
+<translation id="2329500425421091035">Tutvustame Chrome'is AI-režiimi</translation>
 <translation id="2330186936255788117">Rohkem järjehoidjaid</translation>
 <translation id="2332515770639153015">Täiustatud ohutu sirvimine on sisse lülitatud</translation>
 <translation id="233375395665273385">Kustuta ja logi välja</translation>
@@ -317,6 +319,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2363734411417672757">Rohkem lehti eellaaditakse. Lehed võidakse eellaadida Google'i serverite kaudu, kui muud saidid või rakendused seda taotlevad.</translation>
 <translation id="2366554533468315977">Selle valiku hinnaajalugu kogu veebis</translation>
 <translation id="2367818124433749493">Arendaja tööriistade otseteed</translation>
+<translation id="2369058545741334020">Ava lugemisrežiimis</translation>
 <translation id="2385605401818128172">Saate üle vaadata saidid, mis saadavad palju märguandeid, ja takistada nende saatmist tulevikus</translation>
 <translation id="2386938421315164605">Teemade peitmine ja peidust välja toomine</translation>
 <translation id="2390510615457643724">Kas soovite faili <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) uuesti alla laadida?</translation>
@@ -327,6 +330,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, valitud kuuldav vaheleht</translation>
 <translation id="2413014528833954543">Selles seadmes ei saa paroole kontrollida</translation>
 <translation id="2414886740292270097">Tume</translation>
+<translation id="2415037988255164008">Kas taastada aknad?</translation>
 <translation id="2421705177906985956">Praegu ei ole kuvamiseks ühtegi saiti</translation>
 <translation id="2426805022920575512">Vali muu konto</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videod, loendis on 1 video}other{Videod, loendis on # videot}}</translation>
@@ -596,6 +600,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3524334353996115845">Lubage teenusel <ph name="ORIGIN" /> teie isik kinnitada</translation>
 <translation id="3527085408025491307">Kaust</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB on saadaval</translation>
+<translation id="3547933853190131743">Otsing AI-režiimis</translation>
 <translation id="3549537543136628349">Kuna eellaaditud saidid on krüpteeritud ja lehtedele linkiv sait või rakendus on Google'i sait või rakendus, ei võta Google'i serverid nende lehtede privaatsel eellaadimisel vastu uut teavet.</translation>
 <translation id="3549657413697417275">Otsige oma ajaloost</translation>
 <translation id="3557336313807607643">Lisa kontaktidesse</translation>
@@ -1338,6 +1343,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Otsi teenusega Sogou</translation>
 <translation id="656065428026159829">Kuva rohkem</translation>
+<translation id="6565781844089373403">Taasta aknad</translation>
 <translation id="6565959834589222080">WiFi-t kasutatakse siis, kui see on saadaval</translation>
 <translation id="657177046675873214">Järjehoidjate nägemiseks kõigis oma seadmetes lülitage seadetes sisse valik „Järjehoidjad“</translation>
 <translation id="6573096386450695060">Luba alati</translation>
@@ -1964,12 +1970,14 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="9001604755921395912">Ava Chrome'i inkognito vahelehel</translation>
 <translation id="9010094279589497751">Avage Gemini kiiresti just siis, kui seda vajate.</translation>
 <translation id="9012585441087414258">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui leht teeb midagi kahtlast, saadetakse URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
+<translation id="9014097371980259227">Mõned tööriistad on teisaldatud, et saaksite AI-režiimis otsida.</translation>
 <translation id="9019199799064251516">Kas jätkata ilma auto profiililukuta?</translation>
 <translation id="9022774213089566801">Sageli külastatud</translation>
 <translation id="9022871169049522985">Saidid ja reklaamijad saavad mõõta oma reklaamide toimivust</translation>
 <translation id="9024318700713112071">Määrake Chrome vaikebrauseriks</translation>
 <translation id="9027728231343310283">Võta <ph name="SITE" /> tagasi</translation>
 <translation id="9035378196785279980">Teisalda kohta\u2026</translation>
+<translation id="904146253922032365">Vahelehtede vertikaalselt kuvamiseks puudutage pikalt.</translation>
 <translation id="9042893549633094279">Privaatsus ja turvalisus</translation>
 <translation id="9047347135558855162">Kiirotsing Chrome'is</translation>
 <translation id="9050666287014529139">Parool</translation>

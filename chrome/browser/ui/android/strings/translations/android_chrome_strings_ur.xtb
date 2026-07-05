@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">کنکشن محفوظ نہیں ہے</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2163089732491971196">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کرنے اور اسے محفوظ کرنے کیلئے، اپنا پاس فریز درج کریں</translation>
+<translation id="2164015935042801524">ٹیبز کو عمودی طور پر دکھانے کے لیے یہاں دائیں کلک کریں</translation>
 <translation id="2166228530126694506">ورژن <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">تصویر کی تفصیلات آف ہیں</translation>
 <translation id="2172905120685242547">ونڈو کو بند کر دیں؟</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">سائٹ اسٹوریج</translation>
 <translation id="2327445548174191329">‫<ph name="DEVICE_NAME" /> سے</translation>
 <translation id="2328474416100889417">ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور شامل ہونے کے تمام لنکس آف کر دئے جائیں گے</translation>
+<translation id="2329500425421091035">‏‫Chrome میں AI وضع کا تعارف</translation>
 <translation id="2330186936255788117">مزید بُک مارکس</translation>
 <translation id="2332515770639153015">بہتر کردہ محفوظ براؤزنگ آن ہے</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">‏مزید صفحات پیشگی لوڈ کردہ ہیں۔ دیگر سائٹس یا ایپس کے ذریعے درخواست کیے جانے پر صفحات کو Google سرورز کے ذریعے پیشگی لوڈ کیا جا سکتا ہے۔</translation>
 <translation id="2366554533468315977">اس اختیار کیلئے ویب پر قیمت کی سرگزشت</translation>
 <translation id="2367818124433749493">ڈویلپر شارٹ کٹس</translation>
+<translation id="2369058545741334020">‏Reading Mode میں کھولیں</translation>
 <translation id="2385605401818128172">آپ ان سائٹس کا جائزہ لے سکتے ہیں جو بہت زیادہ اطلاعات بھیجتی ہیں اور انہیں مستقبل میں مزید بھیجنے سے روک سکتے ہیں</translation>
 <translation id="2386938421315164605">موضوعات کو پوشیدہ کریں اور پوشیدگی ختم کریں</translation>
 <translation id="2390510615457643724">کیا آپ <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> کو دوبارہ ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
@@ -597,6 +600,7 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" /> کو توثیق کرنے دیں کہ یہ آپ ہیں</translation>
 <translation id="3527085408025491307">فولڈر</translation>
 <translation id="3542235761944717775">‏<ph name="KILOBYTES" /> KB دستیاب ہے</translation>
+<translation id="3547933853190131743">‏‫AI وضع کے ساتھ تلاش کریں</translation>
 <translation id="3549537543136628349">‏چونکہ پیشگی لوڈ کردہ صفحات مرموز کردہ ہیں اور صفحات سے لنک سائٹ یا ایپ Google سائٹ یا ایپ ہے اس لیے ان صفحات کو نجی طور پر پیشگی لوڈ کرنے پر Google سرورز کو نئی معلومات موصول نہیں ہوتی ہے۔</translation>
 <translation id="3549657413697417275">اپنی سرگزشت تلاش کریں</translation>
 <translation id="3557336313807607643">رابطوں میں شامل کریں</translation>
@@ -1966,12 +1970,14 @@
 <translation id="9001604755921395912">‏پوشیدگی Chrome ٹیب میں کھولیں</translation>
 <translation id="9010094279589497751">‏ضرورت پڑنے پر Gemini کو جلدی سے کھولیں</translation>
 <translation id="9012585441087414258">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ صفحے میں کچھ مشکوک لگنے پر، صفحے کے مواد کے کچھ حصے اور URLs کو Google محفوظ براؤزنگ پر بھیجا جاتا ہے۔</translation>
+<translation id="9014097371980259227">‏‫AI وضع کے ساتھ تلاش کرنے میں آپ کی مدد کرنے کے لیے کچھ ٹولز کو منتقل کر دیا گیا ہے</translation>
 <translation id="9019199799064251516">کار پروفائل لاک کے بغیر جاری رکھیں؟</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
 <translation id="9022871169049522985">سائٹس اور مشتہرین اپنے اشتہارات کی کارکردگی کی پیمائش کر سکتے ہیں</translation>
 <translation id="9024318700713112071">‏Chrome کو بطور ڈیفالٹ سیٹ کریں</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> کالعدم کریں</translation>
 <translation id="9035378196785279980">‏اس میں منتقل کریں\u2026</translation>
+<translation id="904146253922032365">ٹیبز کو عمودی طور پر دکھانے کے لیے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>
 <translation id="9047347135558855162">‏‫Chrome میں جلدی سے تلاش شروع کریں</translation>
 <translation id="9050666287014529139">پاس فریز</translation>

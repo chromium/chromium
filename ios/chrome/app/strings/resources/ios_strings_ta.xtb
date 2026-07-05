@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} கடவுச்சாவி}other{{count} கடவுச்சாவிகள்}}</translation>
 <translation id="1005023885865154304">கடவுச்சொற்களைத் தானாக நிரப்புவதற்கான அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live என்பது Chromeமில் Geminiயின் புதிய அம்சமாகும்</translation>
 <translation id="1013952917065545813">சமீபத்தில் மூடிய தாவல்களை இங்கே மீண்டும் திறக்கலாம்</translation>
 <translation id="1016495303386450659">புத்தகக்குறி புதுப்பிக்கப்பட்டது</translation>
 <translation id="1018804590490383958">ஸ்கேன் செய்து தானாக நிரப்பு</translation>
@@ -148,7 +149,7 @@
 <translation id="147982357559798527">மாற்றப்பட்டது</translation>
 <translation id="1483493594462132177">அனுப்பு</translation>
 <translation id="1486096554574027028">கடவுச்சொற்களைத் தேடு</translation>
-<translation id="1486593497476255523">பக்கக் குழுக்கள் நிறைவடைந்தன!</translation>
+<translation id="1486593497476255523">பக்கக் குழுக்கள் முடிந்தது!</translation>
 <translation id="1491277525950327607">அமைப்பை நிலைமாற்ற, இருமுறை தட்டவும்</translation>
 <translation id="1492417797159476138">இந்தத் தளத்தில் இந்தப் பயனர்பெயரை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="1497590942294823549">மெனு → Password Manager</translation>
@@ -233,7 +234,7 @@
 <translation id="1740650426894359238">வேறொரு சுயவிவரத்திற்கு மாறுதல்</translation>
 <translation id="1741219894094057085">ஸ்மார்ட் வாட்ச்</translation>
 <translation id="1743244221910283364">மாற்றங்களை நிராகரி</translation>
-<translation id="1744234754703485302">பேமெண்ட் முறைகளை நிர்வகித்தல் நிறைவடைந்தது!</translation>
+<translation id="1744234754703485302">பேமெண்ட் முறைகளை நிர்வகித்தல் முடிந்தது!</translation>
 <translation id="1748975028205587434">ஃபைலைத் தேர்ந்தெடு</translation>
 <translation id="1749733017156547309">கடவுச்சொல் தேவை</translation>
 <translation id="174998178145075354">{count,plural, =1{முகவரிக்கான {count} விருப்பம் உங்கள் கீபோர்டுக்கு மேலே காட்டப்படுகிறது.}other{முகவரிக்கான {count} விருப்பங்கள் உங்கள் கீபோர்டுக்கு மேலே காட்டப்படுகின்றன.}}</translation>
@@ -360,7 +361,7 @@
 <translation id="2155663190508912427">1 மாதத்தில் நீக்கு</translation>
 <translation id="2161446265348023004">திறந்திருக்கும் சாளரத்திற்குச் செல்</translation>
 <translation id="2164946989711475905">உள்நுழை…</translation>
-<translation id="2165110345209765380">AI மோட் மூலம் தேடுதல் நிறைவடைந்தது!</translation>
+<translation id="2165110345209765380">AI மோட் மூலம் தேடுதல் முடிந்தது!</translation>
 <translation id="2175927920773552910">QR குறியீடு</translation>
 <translation id="2180338296831857171">முகவரிகளை நீக்கு</translation>
 <translation id="218350106843433823">கடவுச்சொற்களையும் கடவுச்சாவிகளையும் தானாக நிரப்புதல்</translation>
@@ -400,7 +401,7 @@
 <translation id="2273327106802955778">மேலும் விருப்பங்களுக்கான மெனு</translation>
 <translation id="2287614783861766820">{count,plural, =1{இந்தச் சாதனத்தில் இருந்து இந்த முகவரி நீக்கப்படும்.}other{இந்தச் சாதனத்தில் இருந்து இந்த முகவரிகள் நீக்கப்படும்.}}</translation>
 <translation id="2295236662082735391">Gemini மூலம் எடிட் செய்ய இணையத்தில் உள்ள படத்தை நீண்ட நேரம் அழுத்தவும்</translation>
-<translation id="2296360194694387941">'Chromeமில் Gemini' பயன்படுத்துதல் நிறைவடைந்தது!</translation>
+<translation id="2296360194694387941">'Chromeமில் Gemini' பயன்படுத்துதல் முடிந்தது!</translation>
 <translation id="2297989278479054870">நீங்கள் வெளியேறிய பிறகு உங்கள் Google கணக்கில் உள்ள புக்மார்க்குகள், கடவுச்சொற்கள் போன்றவை இந்தச் சாதனத்தில் இருந்து அகற்றப்படும்.</translation>
 <translation id="2299218006564889602">Google கடவுச்சொல் நிர்வாகியில் சேமிக்கப்படுவதற்கு முன்பு உங்கள் சாதனத்தில் கடவுச்சொற்கள் என்க்ரிப்ஷன் செய்யப்படுகின்றன.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> விவரங்களைக் காட்டும்</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">பகிர்ந்த டிரைவ்கள்</translation>
 <translation id="2580306219079937316">Translate அமைப்புகளைத் திறக்கும்</translation>
 <translation id="2583688836549072561">பக்கக் குழு, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> பக்கங்கள், புதிய செயல்பாடு.</translation>
+<translation id="2584994295315085351">4 மணிநேரத்திற்குப் பிறகு Chromeமிற்குத் திரும்பும்போது புதிய பக்கத்தைத் திற</translation>
 <translation id="2593272815202181319">மோனோஸ்பேஸ்</translation>
 <translation id="2601778637777010194">தயாரிப்புகளுக்கான விலைக் குறைப்புகளைக் கண்காணிக்கலாம்</translation>
 <translation id="2602372807870028932">இந்தச் சாதனத்தில் சேமிக்கப்பட்டுள்ள குறிப்பிட்ட தகவல்களை இது நீக்கும்</translation>
@@ -648,7 +650,7 @@
 <translation id="3177338796769255211">புக்மார்க்குகள் மற்றும் பலவற்றை உங்கள் சாதனங்கள் எல்லாவற்றிலும் பெற உள்நுழையுங்கள்</translation>
 <translation id="3181954750937456830">பாதுகாப்பு உலாவல் (ஆபத்தான தளங்களிலிருந்து உங்களையும் சாதனத்தையும் பாதுகாக்கும்)</translation>
 <translation id="3183362380688692618">புதிய பக்கக் குழு...</translation>
-<translation id="3185760469172949183">கேமரா மூலம் தேடுதல் நிறைவடைந்தது!</translation>
+<translation id="3185760469172949183">கேமரா மூலம் தேடுதல் முடிந்தது!</translation>
 <translation id="3186796054637504691">பதிவுகளையும் இணையதளத் தரவையும் அழி</translation>
 <translation id="3190736958609431397">கண்காணிப்பதை நிறுத்து</translation>
 <translation id="3208260410153224535">உள்நுழைவதை உங்கள் நிறுவனம் முடக்கியுள்ளது. புதிய புக்மார்க்குகள், கடவுச்சொற்கள் போன்ற அனைத்தும் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும்.</translation>
@@ -717,7 +719,7 @@
 <translation id="3459644598174926977">Gemini உடன் லைவில் ஒரு இணையப் பக்கம் குறித்துக் கேட்கலாம், யோசனைகளைக் கலந்தாலோசிக்கலாம், தொடர்ந்து உரையாடலாம்.</translation>
 <translation id="3462768334899086950">அதாவது, சேமிக்கப்படாத ஃபைலையும் தற்போதைய பக்கங்களையும் இழப்பீர்கள்</translation>
 <translation id="3464194322481586217">விலையைக் கண்காணிக்க முடியவில்லை.</translation>
-<translation id="346831467152294287">கடவுச்சொற்கள் மற்றும் தானாக நிரப்புதல் நிறைவடைந்தது!</translation>
+<translation id="346831467152294287">கடவுச்சொற்கள், தானாக நிரப்புதல் முடிந்தது!</translation>
 <translation id="3469117812148449995">கடவுச்சொல்லைச் சேமிப்பதற்கான விருப்பங்கள்</translation>
 <translation id="3472469028191701821">புதிய பக்கத்தில் திறக்கும்</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} தளம் அல்லது ஆப்ஸுக்கு}other{{COUNT} தளங்கள் அல்லது ஆப்ஸுக்கு}}</translation>
@@ -754,7 +756,7 @@
 <translation id="3565012355885596568">படங்களை ஏற்ற முடியவில்லை</translation>
 <translation id="3565930036634619844">பக்கம். <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">வேறு வழியில் சேமி</translation>
-<translation id="3567446754270467567">மேம்பட்ட பாதுகாப்பான பிரவுசிங் நிறைவடைந்தது!</translation>
+<translation id="3567446754270467567">மேம்பட்ட பாதுகாப்பான பிரவுசிங் முடிந்தது!</translation>
 <translation id="3572503683475187385">நீங்கள் புதிதாக உரையாடலைத் தொடங்கும்போது தற்போதைய பக்கம் Geminiயுடன் பகிரப்படும். பக்கம் Geminiயுடன் பகிரப்படும்போது, அவற்றின் உள்ளடக்கமும் URLலும் Googleளுக்கு அனுப்பப்படும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">உங்கள் Google கணக்கில்</translation>
 <translation id="3575234738189584619">Lens மூலம் தேடலாம்</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">விரிடியன் தீம்</translation>
 <translation id="3759491607478608474">கூடுதல் தொடர்புடைய பதில்களைப் பெற, தற்போதைய பக்கத்தின் உள்ளடக்கத்தை Gemini உடன் பகிருங்கள்</translation>
 <translation id="3762232513783804601">iPadக்காக உருவாக்கப்பட்டது</translation>
+<translation id="3767529805486761639">மெனுவைத் திருத்து</translation>
 <translation id="3768725474733206671">கடைசியாக மூடிய பக்கத்தைத் திற</translation>
 <translation id="3779810277399252432">இணைய இணைப்பு இல்லை.</translation>
 <translation id="3782614601387961027">எச்சரிக்கையை நிராகரி</translation>
@@ -815,7 +818,7 @@
 <translation id="3813175908845379029">பிரவுஸிங்கை இன்னும் சிறப்பானதாகவும் சுலபமானதாகவும் மாற்றக்கூடிய உதவிகரமான பரிந்துரைகள்</translation>
 <translation id="3818293389945649617">அடுத்ததைக் கண்டுபிடி</translation>
 <translation id="3819183753496523827">ஆஃப்லைனில் உள்ளீர்கள். இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
-<translation id="3826034723896327540">பக்கங்கள் பின் செய்யப்பட்டன!</translation>
+<translation id="3826034723896327540">பக்கத்தைப் பின்செய்தல் முடிந்தது!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 பேமெண்ட் முறை}other{# பேமெண்ட் முறைகள்}}</translation>
 <translation id="3831560640878483188">எச்சரிக்கையை நிராகரிக்கவா?</translation>
 <translation id="3832419617903252251">கடவுச்சொல் இந்தச் சாதனத்தில் மட்டும் சேமிக்கப்பட்டது</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">பிரவுசரைப் புதுப்பியுங்கள்</translation>
 <translation id="4021931095789478915">${url} ஐ வாசிப்புப் பட்டியலில் சேருங்கள்</translation>
 <translation id="4028871427853484857">கணக்கில் சேமி…</translation>
-<translation id="4036529942385659684">செயலற்ற நிலைக்குச் சென்றதும் தொடக்கப் பக்கத்தைக் காட்டு</translation>
 <translation id="4038354071007134711">ஃபைலைத் திறக்கக்கூடிய ஆப்ஸ் சாதனத்தில் இல்லை.</translation>
 <translation id="4042870976416480368">பக்கத்தில் கண்டறிக</translation>
 <translation id="4045441967987592849">மீண்டும் திற</translation>
@@ -1039,7 +1041,7 @@
 <translation id="4578835633387306383">ஆன் செய்…</translation>
 <translation id="4580621046861724270">சில புக்மார்க்குகள் சேமிக்கப்படவில்லை</translation>
 <translation id="4580716718466706433">"Password Manager" பக்கத்திற்குச் செல்லவும்</translation>
-<translation id="4584778196791098089">மறைநிலை மோடுக்குச் செல்வது நிறைவடைந்தது!</translation>
+<translation id="4584778196791098089">மறைநிலை மோடுக்குச் செல்வது முடிந்தது!</translation>
 <translation id="4585751637295612750">உங்கள் கேள்வியில் சேர்க்க புதிய பக்கத்தைத் திறக்கலாம்</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{வாசிப்புப் பட்டியலில் பக்கம் சேர்க்கப்பட்டது}other{வாசிப்புப் பட்டியலில் {count} பக்கங்கள் சேர்க்கப்பட்டன}}</translation>
@@ -1110,7 +1112,7 @@
 <translation id="479628432297359449">பதிவிறக்கத்தை நிறுத்தவா?</translation>
 <translation id="4796496140132859135">பக்கக் குழு. சுருக்கப்பட்டது.</translation>
 <translation id="4802185666270672526">‘டெஸ்க்டாப் தளத்தைக் கேள்’ என்பதை மறை</translation>
-<translation id="4802678077012980341">கடவுச்சொல் சரிபார்ப்பு நிறைவடைந்தது!</translation>
+<translation id="4802678077012980341">கடவுச்சொல் சரிபார்ப்பு முடிந்தது!</translation>
 <translation id="4803185665210547709">உங்கள் நிறுவனம் நிர்வகிக்கிறது.
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">நீங்கள் தேட விரும்புவதைத் தட்டியோ, ஹைலைட் செய்தோ, அதன்மீது வரைந்தோ அதைத் தேர்ந்தெடுத்து நீங்கள் இருக்கும் பக்கத்திலிருந்து வெளியேறாமலேயே முடிவுகளைப் பெறலாம்</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">சிதைவு அறிக்கையை அனுப்புகிறது…</translation>
 <translation id="519528950056409240">தரவைப் பகிர Walletடை அனுமதித்தல்</translation>
 <translation id="519530786644929958">பதிவிறக்க முடியவில்லை, இதை மீண்டும் முயல முடியாது.</translation>
+<translation id="519620255540220054">முகப்புப் பக்கத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="5197255632782567636">இணையம்</translation>
 <translation id="5200894869889836319">அனுமதிகளை அமைப்பதற்கான விருப்பங்கள்</translation>
 <translation id="5203051773066903947">உள்ளிடுங்கள்</translation>
@@ -1320,7 +1323,7 @@
 <translation id="5482922178977937393">செய்திகள், விளையாட்டு மற்றும் பலவற்றுக்கு உங்கள் ஆர்வங்களின் அடிப்படையில் அறிவிப்புகளைப் பெற விரும்புகிறீர்களா?</translation>
 <translation id="5483838506518938965">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்</translation>
 <translation id="5487521232677179737">தரவை அழி</translation>
-<translation id="5491208689472430746">விரைவாக நீக்குதல் நிறைவடைந்தது!</translation>
+<translation id="5491208689472430746">விரைவாக நீக்குதல் முடிந்தது!</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="5499648645977734083">பேமெண்ட் முறைகளை நிர்வகியுங்கள்…</translation>
 <translation id="5501346139932663133">Google ஆப்ஸ்</translation>
@@ -1650,6 +1653,7 @@
 <translation id="6523575793810663688">எப்படி என்று காட்டு</translation>
 <translation id="6524082013156754186">கணக்கில் சேமி</translation>
 <translation id="6524918542306337007">மறைநிலைப் பயன்முறையைப் பயன்படுத்த முடியாது</translation>
+<translation id="6525550806864373485">மெனுவைத் திருத்து</translation>
 <translation id="6527208859483186860">{total}ல் {position}வது பின்புலம்</translation>
 <translation id="6527303717912515753">பகிர்</translation>
 <translation id="6532106788206463496">மாற்றங்களைச் சேமி</translation>
@@ -1735,6 +1739,7 @@
 <translation id="6761393919622941301">ஆடியோ</translation>
 <translation id="6765551480308401897">இயல்பாக அமைக்காதே</translation>
 <translation id="6770452996697898492">[முன்பதிவு செய்யப்பட்டது]</translation>
+<translation id="6775952316617222141">Chromeமில் Geminiயுடன் Liveவில் உரையாடலாம்</translation>
 <translation id="6779455296366983087">உங்கள் உலாவிய தரவு அழிக்கப்படும்</translation>
 <translation id="6782531425936234573">தரவை எக்ஸ்போர்ட் செய்</translation>
 <translation id="6791425686608802741">"புதிய குழுவில் பக்கத்தைச் சேர்" என்பதைத் தட்டவும்</translation>
@@ -2163,7 +2168,7 @@
 <translation id="8233237502828137700">பேனர் புரோமோவை மூடும்</translation>
 <translation id="823339794112333264">மைக்ரோஃபோனை ஆன் செய்யும்</translation>
 <translation id="8250920743982581267">ஆவணங்கள்</translation>
-<translation id="8252980988000695656">Google Lens நிறைவடைந்தது!</translation>
+<translation id="8252980988000695656">Google Lens முடிந்தது!</translation>
 <translation id="8258734532103758067">எனது தரவை ஏற்றிவிட்டேன்</translation>
 <translation id="8258999165172757081">சேர்க்கப்பட்டது</translation>
 <translation id="8261506727792406068">நீக்கு</translation>

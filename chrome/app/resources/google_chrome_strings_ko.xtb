@@ -129,6 +129,7 @@
 <translation id="2120620239521071941">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="2121284319307530122">다시 실행하여 Chrome 업데이트</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chrome 개선에 참여</translation>
+<translation id="2125838419757773031">화면의 영역을 선택하여 검색하세요</translation>
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
 <translation id="2128411189117340671">Chrome 프로필 관리</translation>
 <translation id="2137162749895930932">번역 화면 닫기</translation>
@@ -268,6 +269,7 @@
 <translation id="3512495006767217696">Google 비밀번호 관리자는 안전한 비밀번호를 만들고, 저장하고, 자동 완성할 수 있도록 Chrome에 내장되어 있습니다. 바로가기를 추가하여 간편하게 액세스하세요.</translation>
 <translation id="3539955434060988644">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="354621070532799440">알림: 주머니에 쏙 들어가는 Google 최고의 안전 기능</translation>
+<translation id="3547866758548131919">요약 버튼을 클릭하여 Chrome의 Gemini와 이 문서를 공유하고 간략한 개요를 확인한 후 후속 질문을 하세요.</translation>
 <translation id="3576528680708590453">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 다른 브라우저를 실행하도록 Chrome을 구성했습니다.</translation>
 <translation id="3582972582564653026">모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
 <translation id="3583751698304738917">이미 다른 Chrome 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>
@@ -357,6 +359,7 @@
 <translation id="4400772909124543403">사용 가능한 업데이트가 없습니다</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4434353761996769206">설치 프로그램 오류: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Chrome의 Gemini와 이 문서를 공유하여 간략한 개요를 확인하고 후속 질문을 하세요</translation>
 <translation id="4450664632294415862">Chrome - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Chrome에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4459234553906210702">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
@@ -791,6 +794,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8601359445272098721">New! '화면 번역' 버튼을 선택하여 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
 <translation id="8614913330719544658">Chrome이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="861702415419836452">Chrome에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
+<translation id="8623450603356630491">휴대전화에서 Chrome에 로그인하기</translation>
 <translation id="8624541899164515475">설정, 새 탭에서 열립니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="8637932705841171563">창을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>

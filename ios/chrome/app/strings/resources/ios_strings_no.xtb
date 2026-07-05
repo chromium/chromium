@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} passnøkkel}other{{count} passnøkler}}</translation>
 <translation id="1005023885865154304">Åpne innstillingene for autofylling av passord</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
+<translation id="1013852467930342108">Live er en ny funksjon i Gemini i Chrome</translation>
 <translation id="1013952917065545813">Du kan komme tilbake hit for å gjenåpne faner du nylig har lukket</translation>
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
 <translation id="1018804590490383958">Skann og fyll ut automatisk</translation>
@@ -148,6 +149,7 @@
 <translation id="147982357559798527">Endret</translation>
 <translation id="1483493594462132177">Send</translation>
 <translation id="1486096554574027028">Søk i passord</translation>
+<translation id="1486593497476255523">Fanegruppene er fullført.</translation>
 <translation id="1491277525950327607">Dobbelttrykk for å slå innstillingen av/på</translation>
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
 <translation id="1497590942294823549">Meny → Passordlagring</translation>
@@ -232,6 +234,7 @@
 <translation id="1740650426894359238">Bytt til en annen profil</translation>
 <translation id="1741219894094057085">Smart Watch</translation>
 <translation id="1743244221910283364">Forkast endringene</translation>
+<translation id="1744234754703485302">Administrering av betalingsmåter er fullført.</translation>
 <translation id="1748975028205587434">Velg den aktuelle filen</translation>
 <translation id="1749733017156547309">Et passord kreves</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} alternativ for adresse er tilgjengelig over tastaturet.}other{{count} alternativer for adresse er tilgjengelige over tastaturet.}}</translation>
@@ -358,6 +361,7 @@
 <translation id="2155663190508912427">Slett etter 1 måned</translation>
 <translation id="2161446265348023004">Bytt til åpent vindu</translation>
 <translation id="2164946989711475905">Logg på…</translation>
+<translation id="2165110345209765380">Søket med AI-modus er fullført.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2180338296831857171">Slett adressene</translation>
 <translation id="218350106843433823">Autofyll passord og passnøkler</translation>
@@ -397,6 +401,7 @@
 <translation id="2273327106802955778">Mer-menyen</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enheten.}other{Disse adressene slettes fra denne enheten.}}</translation>
 <translation id="2295236662082735391">Trykk lenge på et bilde på nettet for å redigere det med Gemini</translation>
+<translation id="2296360194694387941">Bruk Gemini i Chrome er fullført.</translation>
 <translation id="2297989278479054870">Når du logger av, fjernes blant annet bokmerkene og passordene i Google-kontoen din fra denne enheten.</translation>
 <translation id="2299218006564889602">Passordene dine krypteres på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="2306265833370324042">Vis <ph name="SEARCH_ENGINE_NAME" />-detaljer</translation>
@@ -479,6 +484,7 @@
 <translation id="2579713773888829241">Delte disker</translation>
 <translation id="2580306219079937316">Åpne innstillingene for oversettelse</translation>
 <translation id="2583688836549072561">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner, ny aktivitet.</translation>
+<translation id="2584994295315085351">Åpne en ny fane når du kommer tilbake til Chrome etter 4 timer</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Spor avslag for produkter</translation>
 <translation id="2602372807870028932">Dette sletter den valgte informasjonen som er lagret på denne enheten</translation>
@@ -644,6 +650,7 @@
 <translation id="3177338796769255211">Logg på for å få blant annet bokmerkene dine på alle enhetene dine</translation>
 <translation id="3181954750937456830">Safe Browsing (beskytter deg og enheten din mot farlige nettsteder)</translation>
 <translation id="3183362380688692618">Ny fanegruppe ...</translation>
+<translation id="3185760469172949183">Søket med kameraet er fullført.</translation>
 <translation id="3186796054637504691">Slett logg og nettsteddata</translation>
 <translation id="3190736958609431397">Slutt å spore</translation>
 <translation id="3208260410153224535">Organisasjonen din har slått av pålogging. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
@@ -712,6 +719,7 @@
 <translation id="3459644598174926977">Bruk Live-modus med Gemini for å stille spørsmål om siden, tenke høyt og snakke sammen.</translation>
 <translation id="3462768334899086950">Dette betyr at du vil miste den ulagrede filen og de nåværende fanene.</translation>
 <translation id="3464194322481586217">Kunne ikke spore prisen.</translation>
+<translation id="346831467152294287">Passord og autofyll er fullført.</translation>
 <translation id="3469117812148449995">Alternativer for lagring av passord</translation>
 <translation id="3472469028191701821">Åpnes i en ny fane</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{For {COUNT} nettsted eller app}other{for {COUNT} nettsteder og apper}}</translation>
@@ -748,6 +756,7 @@
 <translation id="3565012355885596568">Kunne ikke laste inn bilder</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lagre annerledes</translation>
+<translation id="3567446754270467567">Safe Browsing med økt beskyttelse er fullført.</translation>
 <translation id="3572503683475187385">Den aktive fanen deles med Gemini når du starter en ny chat. Når du deler en fane med Gemini, sendes innholdet og nettadressen til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
@@ -809,6 +818,7 @@
 <translation id="3813175908845379029">Nyttige forslag som gjør surfingen enklere og bedre</translation>
 <translation id="3818293389945649617">Finn neste</translation>
 <translation id="3819183753496523827">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
+<translation id="3826034723896327540">Fanene er festet.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 betalingsmåte}other{# betalingsmåter}}</translation>
 <translation id="3831560640878483188">Vil du lukke varselet?</translation>
 <translation id="3832419617903252251">Passordet er bare lagret på denne enheten</translation>
@@ -880,7 +890,6 @@
 <translation id="4021447724486050609">Oppdater nettleseren</translation>
 <translation id="4021931095789478915">Legg til ${url} på leselisten</translation>
 <translation id="4028871427853484857">Lagre i kontoen…</translation>
-<translation id="4036529942385659684">Vis startsiden etter en periode med inaktivitet</translation>
 <translation id="4038354071007134711">Ingen apper på denne enheten kan åpne filen.</translation>
 <translation id="4042870976416480368">Finn på siden</translation>
 <translation id="4045441967987592849">Gjenåpne</translation>
@@ -889,6 +898,7 @@
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
 <translation id="4054290211988862686">Velg fil</translation>
 <translation id="4070132839822635162">Ikke logg på</translation>
+<translation id="4072473499345702662">Gå til Level Up</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4095483462103784441">Opprett en ny fanegruppe</translation>
 <translation id="4099756562043439968">Angi en påminnelse</translation>
@@ -1031,6 +1041,7 @@
 <translation id="4578835633387306383">Slå på…</translation>
 <translation id="4580621046861724270">Noen bokmerker er ikke lagret</translation>
 <translation id="4580716718466706433">Gå til «Passordlagring»</translation>
+<translation id="4584778196791098089">Inkognitomodus er fullført.</translation>
 <translation id="4585751637295612750">Åpne en ny fane for å legge den til i spørsmålet ditt</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
 <translation id="4592672037257622855">{count,plural, =1{Siden er lagt til på leselisten din}other{{count} sider er lagt til på leselisten din}}</translation>
@@ -1101,6 +1112,7 @@
 <translation id="479628432297359449">Vil du stoppe nedlastingen?</translation>
 <translation id="4796496140132859135">Fanegruppe. Skjult.</translation>
 <translation id="4802185666270672526">Skjul Be om datamaskinversjonen av nettstedet</translation>
+<translation id="4802678077012980341">Passordsjekken er fullført.</translation>
 <translation id="4803185665210547709">Administreres av organisasjonen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Tegn, marker eller trykk for å velge noe du vil søke etter, og få resultater uten å forlate fanen</translation>
@@ -1227,6 +1239,7 @@
 <translation id="518997337573684769">Sender krasjrapport …</translation>
 <translation id="519528950056409240">Tillat at Wallet deler data</translation>
 <translation id="519530786644929958">Nedlastingen mislyktes. Det er ikke mulig å prøve på nytt.</translation>
+<translation id="519620255540220054">Tilpass startsiden</translation>
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5200894869889836319">Alternativer for konfigurering av tillatelser</translation>
 <translation id="5203051773066903947">Skriv inn</translation>
@@ -1310,6 +1323,7 @@
 <translation id="5482922178977937393">Vil du ha varsler om nyheter, sport med mer basert på interessene dine?</translation>
 <translation id="5483838506518938965">Du er klar</translation>
 <translation id="5487521232677179737">Slett data</translation>
+<translation id="5491208689472430746">Hurtigsletting er fullført.</translation>
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5499648645977734083">Administrer betalingsmåter…</translation>
 <translation id="5501346139932663133">Google-apper</translation>
@@ -1725,6 +1739,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6765551480308401897">Ikke gjør til standard</translation>
 <translation id="6770452996697898492">[BESTILT]</translation>
+<translation id="6775952316617222141">Bruk Live med Gemini i Chrome</translation>
 <translation id="6779455296366983087">Nettlesingsdataene dine blir slettet</translation>
 <translation id="6782531425936234573">Eksporter data</translation>
 <translation id="6791425686608802741">Trykk på «Legg til fane i ny gruppe»</translation>
@@ -2153,6 +2168,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8233237502828137700">Lukk bannerpromoteringen</translation>
 <translation id="823339794112333264">Slå på mikrofonen</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
+<translation id="8252980988000695656">Google Lens er fullført.</translation>
 <translation id="8258734532103758067">Jeg har eksportert dataene mine</translation>
 <translation id="8258999165172757081">Lagt til</translation>
 <translation id="8261506727792406068">Slett</translation>
@@ -2243,6 +2259,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8534481786647257214">Google+-innlegget er fullført.</translation>
 <translation id="8535368836838588657">Vis passordet</translation>
 <translation id="8540426897269305488">Logg på med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">Noe gikk galt. Trykk på Live-knappen for å prøve å starte samtalen igjen.</translation>
 <translation id="8545276357312221485">Kontroller standardinnstillingene for nettleseren</translation>
 <translation id="854938212724803178">Du har ett passord som er utsatt for sikkerhetsbrudd. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="8551311254462607218">Trykk på Google Lens-kameraikonet i adressefeltet.</translation>

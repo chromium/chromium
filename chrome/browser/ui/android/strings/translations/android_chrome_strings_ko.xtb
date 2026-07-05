@@ -263,6 +263,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2149968176347646218">연결이 안전하지 않음</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2163089732491971196">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
+<translation id="2164015935042801524">여기에서 마우스 오른쪽 버튼으로 클릭하여 세로로 탭 표시</translation>
 <translation id="2166228530126694506">버전 <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2172905120685242547">창을 닫으시겠습니까?</translation>
@@ -305,6 +306,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2323763861024343754">사이트 저장공간</translation>
 <translation id="2327445548174191329">출처: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
+<translation id="2329500425421091035">Chrome의 AI 모드 소개</translation>
 <translation id="2330186936255788117">북마크 더보기</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
@@ -317,6 +319,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2363734411417672757">더 많은 페이지가 미리 로드됩니다. 다른 사이트 또는 앱에서 요청하면 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
 <translation id="2366554533468315977">이 옵션의 웹 전반 가격 변동 내역</translation>
 <translation id="2367818124433749493">개발자 단축키</translation>
+<translation id="2369058545741334020">읽기 모드로 열기</translation>
 <translation id="2385605401818128172">알림을 많이 보내는 사이트를 검토하고, 향후 알림을 보내지 못하도록 할 수 있습니다.</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
@@ -327,6 +330,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, 선택되고 청취 가능한 탭</translation>
 <translation id="2413014528833954543">이 기기에서 비밀번호를 확인할 수 없음</translation>
 <translation id="2414886740292270097">어둡게</translation>
+<translation id="2415037988255164008">창을 복원하시겠습니까?</translation>
 <translation id="2421705177906985956">지금 표시할 사이트가 없습니다.</translation>
 <translation id="2426805022920575512">다른 계정 선택</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{동영상, 목록에 있는 동영상 1개}other{동영상, 목록에 있는 동영상 #개}}</translation>
@@ -596,6 +600,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3524334353996115845"><ph name="ORIGIN" />에서 본인 여부를 확인하도록 허용합니다.</translation>
 <translation id="3527085408025491307">폴더</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" />KB 사용 가능</translation>
+<translation id="3547933853190131743">AI 모드로 검색</translation>
 <translation id="3549537543136628349">미리 로드된 페이지는 암호화되어 있으며, 페이지로 연결하는 사이트 또는 앱이 Google 사이트 또는 앱이므로 이러한 페이지를 비공개로 미리 로드할 때 Google 서버에 새로운 정보가 수신되지 않습니다.</translation>
 <translation id="3549657413697417275">방문 기록 검색</translation>
 <translation id="3557336313807607643">주소록에 추가</translation>
@@ -1338,6 +1343,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Sogou로 검색</translation>
 <translation id="656065428026159829">더보기</translation>
+<translation id="6565781844089373403">창 복원</translation>
 <translation id="6565959834589222080">가능한 경우 Wi-Fi가 사용됨</translation>
 <translation id="657177046675873214">어느 기기에서나 내 북마크를 사용하려면 설정에서 ‘북마크’를 사용 설정하세요.</translation>
 <translation id="6573096386450695060">항상 허용</translation>
@@ -1964,12 +1970,14 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9001604755921395912">시크릿 모드 Chrome 탭에서 열기</translation>
 <translation id="9010094279589497751">필요할 때 빠르게 Gemini를 여세요.</translation>
 <translation id="9012585441087414258">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 페이지에서 의심스러운 작업을 수행하면 URL 및 페이지 콘텐츠 일부가 Google 세이프 브라우징으로 전송됩니다.</translation>
+<translation id="9014097371980259227">AI 모드로 검색할 수 있도록 일부 도구가 이동되었습니다</translation>
 <translation id="9019199799064251516">자동차 프로필 잠금 없이 계속하시겠습니까?</translation>
 <translation id="9022774213089566801">자주 방문한 웹사이트</translation>
 <translation id="9022871169049522985">사이트 및 광고주가 광고 실적을 측정할 수 있습니다.</translation>
 <translation id="9024318700713112071">Chrome을 기본 브라우저로 설정</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> 실행취소</translation>
 <translation id="9035378196785279980">다음으로 이동\u2026</translation>
+<translation id="904146253922032365">길게 터치하여 세로로 탭 표시</translation>
 <translation id="9042893549633094279">개인 정보 보호 및 보안</translation>
 <translation id="9047347135558855162">Chrome에서 빠르게 검색 시작</translation>
 <translation id="9050666287014529139">암호</translation>

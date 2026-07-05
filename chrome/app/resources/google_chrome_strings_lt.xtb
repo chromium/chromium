@@ -129,6 +129,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2120620239521071941">Atlikus šį veiksmą, iš šio įrenginio bus ištrinta tiek elementų: <ph name="ITEMS_COUNT" />. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Paleisti iš naujo atnaujinant „&amp;Chrome“</translation>
 <translation id="2123055963409958220">Padėkite tobulinti „Chrome“ pateikę ataskaitą apie <ph name="BEGIN_LINK" />dabartinius nustatymus<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Pasirinkite ekrano sritį, kurioje norite ieškoti</translation>
 <translation id="2126108037660393668">Nepavyko patvirtinti atsisiųsto failo.</translation>
 <translation id="2128411189117340671">Tvarkyti „Chrome“ profilius</translation>
 <translation id="2137162749895930932">Uždaryti vertimo ekraną</translation>
@@ -268,6 +269,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="3512495006767217696">Integruota į „Chrome“, kad galėtumėte kurti, išsaugoti ir automatiškai užpildyti sudėtingus slaptažodžius. Pridėkite šaukinį, kad galėtumėte lengvai pasiekti.</translation>
 <translation id="3539955434060988644">Atidaryti nuorodą „Chrome“ inko&amp;gnito lange</translation>
 <translation id="354621070532799440">Priminimas: geriausios „Google“ saugos funkcijos jūsų kišenėje</translation>
+<translation id="3547866758548131919">Spustelėkite mygtuką „Apibendrinti“, kad bendrintumėte šį dokumentą su „Gemini“ naršyklėje „Chrome“ ir gautumėte trumpą apžvalgą bei užduotumėte papildomų klausimų</translation>
 <translation id="3576528680708590453">Sistemos administratorius sukonfigūravo „Google Chrome“ atidaryti alternatyvią naršyklę, norint pasiekti <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sinchronizuokite ir suasmeninkite „Chrome“ skirtinguose įrenginiuose</translation>
 <translation id="3583751698304738917">Jau esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" /> kitame „Chrome“ profilyje</translation>
@@ -358,6 +360,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="4400772909124543403">Naujinių nėra</translation>
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
 <translation id="4434353761996769206">Diegimo programos klaida: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Bendrinkite šį dokumentą su „Gemini“ naršyklėje „Chrome“, kad gautumėte trumpą apžvalgą ir užduotumėte papildomų klausimų</translation>
 <translation id="4450664632294415862">„Chrome“ – prisijungimas prie tinklo – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4458462641685292929">Vykdoma kita „Google Chrome“ operacija. Vėliau bandykite dar kartą.</translation>
 <translation id="4459234553906210702">Skelbimų vertinimas leidžia svetainėms, kuriose lankotės, prašyti „Chrome“ informacijos, padedančios įvertinti savo skelbimų našumą. Skelbimų vertinimas apriboja veiklos skirtingose svetainėse stebėjimą tarp svetainių perduodant kaip įmanoma mažiau informacijos.</translation>
@@ -792,6 +795,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8601359445272098721">Naujiena! Galite versti tekstą ir vaizdus ekrane pasirinkę mygtuką „Išversti ekrano turinį“</translation>
 <translation id="8614913330719544658">„Google Chrome“ neatsako. Paleisti iš naujo dabar?</translation>
 <translation id="861702415419836452">„Chrome“ reikia leidimo naudoti fotoaparatą jūsų aplinkos 3D žemėlapiui kurti</translation>
+<translation id="8623450603356630491">Prisijunkite prie „Chrome“ telefone</translation>
 <translation id="8624541899164515475">Nustatymai, atidaroma naujame skirtuke.</translation>
 <translation id="8625237574518804553">{0,plural, =1{„Chrome“ bus paleista iš naujo po 1 minutės}one{„Chrome“ bus paleista iš naujo po # minutės}few{„Chrome“ bus paleista iš naujo po # minučių}many{„Chrome“ bus paleista iš naujo po # minutės}other{„Chrome“ bus paleista iš naujo po # minučių}}</translation>
 <translation id="8637932705841171563">Jei norite bendrinti langą, sistemos nustatymuose leiskite įrašyti „Chrome“ ekrano vaizdą</translation>

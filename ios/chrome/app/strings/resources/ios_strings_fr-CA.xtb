@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} clé d'accès}one{{count} clé d'accès}other{{count} clés d'accès}}</translation>
 <translation id="1005023885865154304">Ouvrir les paramètres de remplissage automatique des mots de passe</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1013852467930342108">Live est une nouvelle fonctionnalité de Gemini dans Chrome</translation>
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez fermés récemment</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
 <translation id="1018804590490383958">Balayer et remplir automatiquement</translation>
@@ -148,6 +149,7 @@
 <translation id="147982357559798527">Modifié</translation>
 <translation id="1483493594462132177">Envoi</translation>
 <translation id="1486096554574027028">Recherche de mots de passe</translation>
+<translation id="1486593497476255523">La tâche Groupes d'onglets a bien été effectuée!</translation>
 <translation id="1491277525950327607">Touchez deux fois pour activer ou désactiver le paramètre</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1497590942294823549">Menu → Gestionnaire de mots de passe</translation>
@@ -232,6 +234,7 @@
 <translation id="1740650426894359238">Passer à un autre profil</translation>
 <translation id="1741219894094057085">Montre intelligente</translation>
 <translation id="1743244221910283364">Supprimer les modifications</translation>
+<translation id="1744234754703485302">La gestion des modes de paiement a bien été terminée!</translation>
 <translation id="1748975028205587434">Sélectionner votre fichier</translation>
 <translation id="1749733017156547309">Veuillez entrer un mot de passe</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} option d'adresse accessible au-dessus de votre clavier.}one{{count} option d'adresse accessible au-dessus de votre clavier.}other{{count} options d'adresse accessibles au-dessus de votre clavier.}}</translation>
@@ -358,6 +361,7 @@
 <translation id="2155663190508912427">Supprimer le fichier dans 1 mois</translation>
 <translation id="2161446265348023004">Retourner à la fenêtre ouverte</translation>
 <translation id="2164946989711475905">Se connecter…</translation>
+<translation id="2165110345209765380">La recherche avec le mode IA a bien été effectuée!</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2180338296831857171">Supprimer les adresses</translation>
 <translation id="218350106843433823">Remplissage automatique des mots de passe et des clés d'accès</translation>
@@ -397,6 +401,7 @@
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Ces adresses seront supprimées de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
 <translation id="2295236662082735391">Maintenez le doigt sur une image sur le Web pour la modifier avec Gemini</translation>
+<translation id="2296360194694387941">L'utilisation de Gemini dans Chrome a bien été terminée!</translation>
 <translation id="2297989278479054870">Après la déconnexion, les favoris, les mots de passe et plus encore de votre compte Google seront retirés de cet appareil.</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le gestionnaire de mots de passe Google.</translation>
 <translation id="2306265833370324042">Afficher les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -479,6 +484,7 @@
 <translation id="2579713773888829241">Disques partagés</translation>
 <translation id="2580306219079937316">Ouvrir les paramètres de Traduction</translation>
 <translation id="2583688836549072561">Nouvelle activité dans le groupe d'onglets <ph name="GROUP_TITLE" /> comprenant <ph name="TABS_NUMBER" /> onglets.</translation>
+<translation id="2584994295315085351">Ouvrir un nouvel onglet lorsque vous revenez à Chrome après quatre heures</translation>
 <translation id="2593272815202181319">Espace simple</translation>
 <translation id="2601778637777010194">Suivez les baisses de prix des produits</translation>
 <translation id="2602372807870028932">Cette action supprime les infos sélectionnées enregistrées sur cet appareil</translation>
@@ -644,6 +650,7 @@
 <translation id="3177338796769255211">Connectez-vous pour accéder à vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="3181954750937456830">Navigation sécurisée (vous protège, vous et votre appareil, des sites dangereux)</translation>
 <translation id="3183362380688692618">Nouveau groupe d'onglets…</translation>
+<translation id="3185760469172949183">La tâche de recherche avec l'appareil photo a bien été effectuée!</translation>
 <translation id="3186796054637504691">Effacer l'historique et les données du site Web</translation>
 <translation id="3190736958609431397">Annuler le suivi</translation>
 <translation id="3208260410153224535">Votre organisation a désactivé la connexion. Les nouveaux favoris, mots de passe et plus ne seront enregistrés que sur cet appareil.</translation>
@@ -712,6 +719,7 @@
 <translation id="3459644598174926977">Accédez à la fonctionnalité Live avec Gemini pour poser des questions sur une page, faire du remue-méninges à haute voix et discuter.</translation>
 <translation id="3462768334899086950">Cela signifie que vous perdrez votre fichier non enregistré et vos onglets actuels</translation>
 <translation id="3464194322481586217">Impossible d'effectuer le suivi du prix.</translation>
+<translation id="346831467152294287">La tâche Mots de passe et Remplissage automatique a bien été effectuée!</translation>
 <translation id="3469117812148449995">Options d'enregistrement du mot de passe</translation>
 <translation id="3472469028191701821">S'ouvre dans un nouvel onglet</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou application}one{pour {COUNT} sites ou applications}other{pour {COUNT} sites et applications}}</translation>
@@ -748,6 +756,7 @@
 <translation id="3565012355885596568">Impossible de charger les images</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Enregistrer autrement</translation>
+<translation id="3567446754270467567">La tâche de navigation sécurisée améliorée a bien été terminée!</translation>
 <translation id="3572503683475187385">L'onglet actuel est partagé avec Gemini lorsque vous démarrez un nouveau clavardage. Lorsque vous partagez un onglet avec Gemini, son URL et son contenu sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
 <translation id="3575234738189584619">Rechercher avec Lentille</translation>
@@ -796,6 +805,7 @@
 <translation id="3753618528540214374">Thème viridien</translation>
 <translation id="3759491607478608474">Partagez le contenu de l'onglet actuel avec Gemini pour obtenir des réponses plus pertinentes</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
+<translation id="3767529805486761639">Menu Édition</translation>
 <translation id="3768725474733206671">Rouvrir le dernier onglet fermé</translation>
 <translation id="3779810277399252432">Pas de connexion Internet.</translation>
 <translation id="3782614601387961027">Ignorer l'avertissement</translation>
@@ -808,6 +818,7 @@
 <translation id="3813175908845379029">Des suggestions utiles qui rendent la navigation meilleure et plus facile</translation>
 <translation id="3818293389945649617">Rechercher le suivant</translation>
 <translation id="3819183753496523827">Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez.</translation>
+<translation id="3826034723896327540">La tâche Épingler les onglets a bien été effectuée!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 mode de paiement}one{# mode de paiement}other{# modes de paiement}}</translation>
 <translation id="3831560640878483188">Ignorer l'avertissement?</translation>
 <translation id="3832419617903252251">Mot de passe enregistré uniquement sur cet appareil</translation>
@@ -879,7 +890,6 @@
 <translation id="4021447724486050609">Mettre à jour votre navigateur</translation>
 <translation id="4021931095789478915">Ajouter ${url} à la Liste de lecture</translation>
 <translation id="4028871427853484857">Enregistrer dans le compte…</translation>
-<translation id="4036529942385659684">Afficher la page de démarrage après une période d'inactivité</translation>
 <translation id="4038354071007134711">Auc. app. sur cet appareil ne peut ouv. le fichier</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
 <translation id="4045441967987592849">Rouvrir</translation>
@@ -888,6 +898,7 @@
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4054290211988862686">Sélectionner un fichier</translation>
 <translation id="4070132839822635162">Ne pas se connecter</translation>
+<translation id="4072473499345702662">Accéder au niveau supérieur</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4095483462103784441">Créer un nouveau groupe d'onglets</translation>
 <translation id="4099756562043439968">Créer un rappel</translation>
@@ -1030,6 +1041,7 @@
 <translation id="4578835633387306383">Activer…</translation>
 <translation id="4580621046861724270">Certains favoris n'ont pas été enregistrés</translation>
 <translation id="4580716718466706433">Accédez à « Gestionnaire de mots de passe »</translation>
+<translation id="4584778196791098089">La tâche de navigation privée a bien été terminée!</translation>
 <translation id="4585751637295612750">Ouvrez un nouvel onglet pour l'ajouter à votre question</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Page ajoutée à votre Liste de lecture}one{{count} page ajoutée à votre Liste de lecture}other{{count} pages ajoutées à votre Liste de lecture}}</translation>
@@ -1100,6 +1112,7 @@
 <translation id="479628432297359449">Arrêter le téléchargement?</translation>
 <translation id="4796496140132859135">Groupe d'onglets. Réduit.</translation>
 <translation id="4802185666270672526">Masquer Voir le site pour ordinateurs</translation>
+<translation id="4802678077012980341">La vérification de mot de passe a bien été effectuée!</translation>
 <translation id="4803185665210547709">Géré par votre organisation.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Dessinez, mettez en évidence ou touchez tout ce que vous voulez rechercher et obtenez des résultats sans quitter votre onglet</translation>
@@ -1226,6 +1239,7 @@
 <translation id="518997337573684769">Envoi du rapport de plantage en cours…</translation>
 <translation id="519528950056409240">Autorisez Portefeuille à partager des données</translation>
 <translation id="519530786644929958">Le téléchargement a échoué et ne peut pas être réessayé.</translation>
+<translation id="519620255540220054">Personnaliser la page d'accueil</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Options pour définir les autorisations</translation>
 <translation id="5203051773066903947">Entrée</translation>
@@ -1309,6 +1323,7 @@
 <translation id="5482922178977937393">Souhaitez-vous recevoir des notifications sur les actualités, les sports et bien plus encore en fonction de vos centres d'intérêt?</translation>
 <translation id="5483838506518938965">Tout est prêt</translation>
 <translation id="5487521232677179737">Effacer les données</translation>
+<translation id="5491208689472430746">La suppression rapide a bien été effectuée!</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5499648645977734083">Gérer les modes de paiement…</translation>
 <translation id="5501346139932663133">Applis Google</translation>
@@ -1638,6 +1653,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6523575793810663688">Afficher la marche à suivre</translation>
 <translation id="6524082013156754186">Enregistrer dans le compte</translation>
 <translation id="6524918542306337007">Le mode de navigation privée n'est pas offert</translation>
+<translation id="6525550806864373485">Menu Édition</translation>
 <translation id="6527208859483186860">Arrière-plan {position} sur {total}</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6532106788206463496">Enregistrer les modifications</translation>
@@ -1723,6 +1739,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Ne pas définir par défaut</translation>
 <translation id="6770452996697898492">[RÉSERVÉ]</translation>
+<translation id="6775952316617222141">Utiliser Live avec Gemini dans Chrome</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6782531425936234573">Exporter les données</translation>
 <translation id="6791425686608802741">Cliquez sur « Ajouter un onglet au nouveau groupe »</translation>
@@ -2151,6 +2168,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8233237502828137700">Fermer la bannière promotionnelle</translation>
 <translation id="823339794112333264">Activer le microphone</translation>
 <translation id="8250920743982581267">Documents</translation>
+<translation id="8252980988000695656">La tâche Lentille Google a bien été effectuée!</translation>
 <translation id="8258734532103758067">J'ai exporté mes données</translation>
 <translation id="8258999165172757081">Ajouté</translation>
 <translation id="8261506727792406068">Supprimer</translation>
@@ -2241,6 +2259,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8534481786647257214">Message Google+ terminé.</translation>
 <translation id="8535368836838588657">Afficher le mot de passe</translation>
 <translation id="8540426897269305488">Se connecter avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">Un problème est survenu. Touchez le bouton Live pour réessayer de passer à Live.</translation>
 <translation id="8545276357312221485">Vérifier les paramètres de votre navigateur par défaut</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Réglez ce problème maintenant pour rester en sécurité.</translation>
 <translation id="8551311254462607218">Dans la barre d'adresse, touchez l'icône de l'appareil photo Lentille Google</translation>

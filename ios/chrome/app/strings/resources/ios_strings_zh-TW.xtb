@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} 組密碼金鑰}other{{count} 組密碼金鑰}}</translation>
 <translation id="1005023885865154304">開啟「自動填入密碼」設定</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live 是 Chrome 內建 Gemini 的新功能</translation>
 <translation id="1013952917065545813">你可以回到這裡重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">項目已更新</translation>
 <translation id="1018804590490383958">掃描並自動填入</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">共用雲端硬碟</translation>
 <translation id="2580306219079937316">開啟翻譯設定</translation>
 <translation id="2583688836549072561"><ph name="GROUP_TITLE" />分頁群組，內含 <ph name="TABS_NUMBER" /> 個分頁，有新活動。</translation>
+<translation id="2584994295315085351">若在 4 小時後返回 Chrome，即開啟新分頁</translation>
 <translation id="2593272815202181319">等寬</translation>
 <translation id="2601778637777010194">追蹤產品降價資訊</translation>
 <translation id="2602372807870028932">這樣會刪除儲存在這部裝置的所選資訊</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">鉻綠色主題</translation>
 <translation id="3759491607478608474">與 Gemini 分享目前分頁的內容，取得更貼近需求的回答</translation>
 <translation id="3762232513783804601">專為 iPad 量身打造</translation>
+<translation id="3767529805486761639">編輯選單</translation>
 <translation id="3768725474733206671">重新開啟最近關閉的分頁</translation>
 <translation id="3779810277399252432">沒有網際網路連線。</translation>
 <translation id="3782614601387961027">忽略警告</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">更新瀏覽器</translation>
 <translation id="4021931095789478915">將 ${url} 加入閱讀清單</translation>
 <translation id="4028871427853484857">儲存到帳戶…</translation>
-<translation id="4036529942385659684">閒置一段時間後顯示開始頁面</translation>
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="4045441967987592849">重新開啟</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">正在傳送當機報告…</translation>
 <translation id="519528950056409240">允許錢包分享資料</translation>
 <translation id="519530786644929958">下載失敗且無法重試。</translation>
+<translation id="519620255540220054">自訂首頁</translation>
 <translation id="5197255632782567636">網際網路</translation>
 <translation id="5200894869889836319">權限設定選項</translation>
 <translation id="5203051773066903947">輸入</translation>
@@ -1650,6 +1653,7 @@
 <translation id="6523575793810663688">顯示操作說明</translation>
 <translation id="6524082013156754186">儲存到帳戶</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
+<translation id="6525550806864373485">編輯選單</translation>
 <translation id="6527208859483186860">第 {position} 個背景，共 {total} 個</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6532106788206463496">儲存變更</translation>
@@ -1735,6 +1739,7 @@
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6765551480308401897">不要指定為預設</translation>
 <translation id="6770452996697898492">[已預約]</translation>
+<translation id="6775952316617222141">在 Chrome 中使用 Gemini Live</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6782531425936234573">匯出資料</translation>
 <translation id="6791425686608802741">輕觸「將分頁加入新群組」</translation>
@@ -2254,6 +2259,7 @@
 <translation id="8534481786647257214">已順利發布到 Google+。</translation>
 <translation id="8535368836838588657">顯示密碼</translation>
 <translation id="8540426897269305488">登入：<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">發生錯誤，請輕觸「Live」按鈕，再次嘗試開啟 Live 對話。</translation>
 <translation id="8545276357312221485">檢查預設瀏覽器設定</translation>
 <translation id="854938212724803178">你有 1 組密碼外洩，請立即修正確保安全。</translation>
 <translation id="8551311254462607218">輕觸網址列中的 Google 智慧鏡頭相機圖示</translation>

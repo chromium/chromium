@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} giriş açarı}other{{count} giriş açarı}}</translation>
 <translation id="1005023885865154304">Parolların avtomatik doldurulması ayarlarını açın</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Chrome-da Gemini-da Canlı yeni funksiyadır</translation>
 <translation id="1013952917065545813">Bura qayıdaraq son zamanlarda bağladığınız tabları yenidən aça bilərsiniz</translation>
 <translation id="1016495303386450659">Element yeniləndi</translation>
 <translation id="1018804590490383958">Skanlayın və avtomatik doldurun</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Paylaşılmış disklər</translation>
 <translation id="2580306219079937316">Tərcümə ayarlarını açın</translation>
 <translation id="2583688836549072561">Tab qrupu, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab, yeni fəaliyyət.</translation>
+<translation id="2584994295315085351">4 saat sonra Chrome-a qayıtdığınız zaman yeni tab açın</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Məhsullar üzrə qiymətin düşməsini izləyin</translation>
 <translation id="2602372807870028932">Beləliklə, bu cihazda yadda saxlanılmış seçilmiş məlumatlar silinir</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">Yaşılımtıl mavi tema</translation>
 <translation id="3759491607478608474">Daha uyğun cavablar almaq üçün cari tab kontentini Gemini ilə paylaşın</translation>
 <translation id="3762232513783804601">iPad'iniz üçün hazırlanıb</translation>
+<translation id="3767529805486761639">Menyunu redaktə edin</translation>
 <translation id="3768725474733206671">Son Bağlanmış Tabı yenidən açın</translation>
 <translation id="3779810277399252432">İnternet bağlantısı yoxdur.</translation>
 <translation id="3782614601387961027">Xəbərdarlığı ötürün</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">Brauzeri güncəlləyin</translation>
 <translation id="4021931095789478915">Oxu siyahısına ${url} əlavə edin</translation>
 <translation id="4028871427853484857">Hesabda yadda saxlayın…</translation>
-<translation id="4036529942385659684">Fəaliyyətsizlik müddətindən sonra başlanğıc səhifəsini göstərin</translation>
 <translation id="4038354071007134711">Bu cihazdakı heç bir tətbiq faylı aça bilmir.</translation>
 <translation id="4042870976416480368">Səhifədə tapın</translation>
 <translation id="4045441967987592849">Yenidən açın</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">Xəta haqqında hesabatın göndərilməsi…</translation>
 <translation id="519528950056409240">Pulqabının datanı paylaşmasına icazə verin</translation>
 <translation id="519530786644929958">Endirmə uğursuz oldu və yenidən cəhd etmək mümkün deyil.</translation>
+<translation id="519620255540220054">Əsas səhifəni fərdiləşdirin</translation>
 <translation id="5197255632782567636">internet</translation>
 <translation id="5200894869889836319">İcazələri ayarlamaq üçün seçimlər</translation>
 <translation id="5203051773066903947">Enter</translation>
@@ -1650,6 +1653,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6523575793810663688">İstifadə qaydasını göstərin</translation>
 <translation id="6524082013156754186">Hesabda yadda saxlayın</translation>
 <translation id="6524918542306337007">Anonim rejim əlçatan deyil</translation>
+<translation id="6525550806864373485">Menyunu redaktə edin</translation>
 <translation id="6527208859483186860">{position}/{total} fon</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
 <translation id="6532106788206463496">Dəyişiklikləri yadda saxlayın</translation>
@@ -1735,6 +1739,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Defolt etməyin</translation>
 <translation id="6770452996697898492">[REZERV EDİLDİ]</translation>
+<translation id="6775952316617222141">Chrome-da Gemini ilə Canlı funksiyasından istifadə edin</translation>
 <translation id="6779455296366983087">Baxış datası silinəcək</translation>
 <translation id="6782531425936234573">Datanı eksport edin</translation>
 <translation id="6791425686608802741">"Yeni qrupa tab əlavə edin" üzərinə toxunun</translation>

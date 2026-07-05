@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} криптографски клуч}one{{count} криптографски клуч}other{{count} криптографски клуча}}</translation>
 <translation id="1005023885865154304">Отворете ги поставките за автоматско пополнување лозинки</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1013852467930342108">Live е нова функција на Gemini во Chrome</translation>
 <translation id="1013952917065545813">Може да се вратите тука и повторно да ги отворите картичките што сте ги затвориле неодамна</translation>
 <translation id="1016495303386450659">Ставката е ажурирана</translation>
 <translation id="1018804590490383958">Скенирајте и пополнувајте автоматски</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">Споделени простори</translation>
 <translation id="2580306219079937316">Отвори ги поставките за преведување</translation>
 <translation id="2583688836549072561">Група картички, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> картички, нова активност.</translation>
+<translation id="2584994295315085351">Отворете нова картичка кога ќе се вратите во Chrome по 4 часа</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Следете ги намалувањата на цените на производите</translation>
 <translation id="2602372807870028932">Ова ги брише избраните податоци зачувани на уредов</translation>
@@ -888,7 +890,6 @@
 <translation id="4021447724486050609">Ажурирајте го вашиот прелистувач</translation>
 <translation id="4021931095789478915">Додајте ${url} во „Список за читање“</translation>
 <translation id="4028871427853484857">Зачувај во сметката…</translation>
-<translation id="4036529942385659684">Прикажи ја почетната страница по период на неактивност</translation>
 <translation id="4038354071007134711">Ниедна апликација на уредот не може да ја отвори датотеката.</translation>
 <translation id="4042870976416480368">Пронајдете на страницата</translation>
 <translation id="4045441967987592849">Отвори повторно</translation>
@@ -1238,6 +1239,7 @@
 <translation id="518997337573684769">Се испраќа извештај за пад…</translation>
 <translation id="519528950056409240">Дозволете ѝ на Wallet да споделува податоци</translation>
 <translation id="519530786644929958">Преземањето не успеа и не може да се повтори.</translation>
+<translation id="519620255540220054">Приспособете ја почетната страница</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5200894869889836319">Опции за поставување дозволи</translation>
 <translation id="5203051773066903947">Внесете</translation>
@@ -1737,6 +1739,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6765551480308401897">Не поставувај го како стандарден</translation>
 <translation id="6770452996697898492">[РЕЗЕРВИРАНО]</translation>
+<translation id="6775952316617222141">Користете ја Live со Gemini во Chrome</translation>
 <translation id="6779455296366983087">Податоци од прелистување ќе се избришат</translation>
 <translation id="6782531425936234573">Извези ги податоците</translation>
 <translation id="6791425686608802741">Допрете „Додајте картичка во нова група“</translation>

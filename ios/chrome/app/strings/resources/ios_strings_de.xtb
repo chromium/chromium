@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{{count} Passkey}other{{count} Passkeys}}</translation>
 <translation id="1005023885865154304">Passworteinstellungen für Autofill öffnen</translation>
 <translation id="1005230401424685968">JJJJ</translation>
+<translation id="1013852467930342108">Gemini Live ist eine neue Funktion von Gemini in Chrome</translation>
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
 <translation id="1018804590490383958">Scannen und automatisch ausfüllen</translation>
@@ -148,6 +149,7 @@
 <translation id="147982357559798527">Geändert</translation>
 <translation id="1483493594462132177">Senden</translation>
 <translation id="1486096554574027028">Passwörter suchen</translation>
+<translation id="1486593497476255523">Tabgruppen abgeschlossen.</translation>
 <translation id="1491277525950327607">Zum Aktivieren bzw. Deaktivieren doppeltippen</translation>
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1497590942294823549">Menü → Passwortmanager</translation>
@@ -232,6 +234,7 @@
 <translation id="1740650426894359238">Zu einem anderen Profil wechseln</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Änderungen verwerfen</translation>
+<translation id="1744234754703485302">Zahlungsmethoden verwalten abgeschlossen.</translation>
 <translation id="1748975028205587434">Datei auswählen</translation>
 <translation id="1749733017156547309">Es ist ein Passwort erforderlich</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} Adresse oben auf der Tastatur verfügbar.}other{{count} verschiedene Adressen oben auf der Tastatur verfügbar.}}</translation>
@@ -358,6 +361,7 @@
 <translation id="2155663190508912427">In 1 Monat löschen</translation>
 <translation id="2161446265348023004">Zu offenem Fenster wechseln</translation>
 <translation id="2164946989711475905">Anmelden…</translation>
+<translation id="2165110345209765380">Suche mit KI-Modus abgeschlossen.</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2180338296831857171">Adressen löschen</translation>
 <translation id="218350106843433823">Passwörter und Passkeys automatisch ausfüllen lassen</translation>
@@ -397,6 +401,7 @@
 <translation id="2273327106802955778">Menü "Mehr"</translation>
 <translation id="2287614783861766820">{count,plural, =1{Diese Adresse wird von diesem Gerät gelöscht.}other{Diese Adressen werden von diesem Gerät gelöscht.}}</translation>
 <translation id="2295236662082735391">Bild im Web lange gedrückt halten, um es mit Gemini zu bearbeiten</translation>
+<translation id="2296360194694387941">Verwenden von „Gemini in Chrome“ abgeschlossen.</translation>
 <translation id="2297989278479054870">Nach der Abmeldung werden Lesezeichen, Passwörter und weitere Daten in deinem Google-Konto von diesem Gerät entfernt.</translation>
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden.</translation>
 <translation id="2306265833370324042">Details für <ph name="SEARCH_ENGINE_NAME" /> anzeigen</translation>
@@ -644,6 +649,7 @@
 <translation id="3177338796769255211">Melde dich an, damit du deine Lesezeichen und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
 <translation id="3183362380688692618">Neue Tabgruppe…</translation>
+<translation id="3185760469172949183">Suche mit der Kamera abgeschlossen.</translation>
 <translation id="3186796054637504691">Verlauf und Websitedaten löschen</translation>
 <translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="3208260410153224535">Deine Organisation hat die Anmeldung deaktiviert. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
@@ -712,6 +718,7 @@
 <translation id="3459644598174926977">Du kannst ganz natürliche Unterhaltungen mit Gemini Live führen, um Fragen zu einer Seite zu stellen oder Ideen zu sammeln.</translation>
 <translation id="3462768334899086950">Das bedeutet, dass deine ungespeicherte Datei und deine aktuellen Tabs verloren gehen</translation>
 <translation id="3464194322481586217">Preis kann nicht beobachtet werden.</translation>
+<translation id="346831467152294287">Passwörter und Autofill abgeschlossen.</translation>
 <translation id="3469117812148449995">Optionen zum Speichern von Passwörtern</translation>
 <translation id="3472469028191701821">Wird in neuem Tab geöffnet</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{für {COUNT} Website oder App}other{für {COUNT} Websites oder Apps}}</translation>
@@ -738,7 +745,7 @@
 <translation id="3530206579861815432">Auf deinen synchronisierten Geräten siehst du schnell deine geöffneten und kürzlich geschlossenen Tabs.</translation>
 <translation id="3530767473765895035">Konten auf diesem Gerät verwalten…</translation>
 <translation id="3533436815740441613">Neuer Tab</translation>
-<translation id="3534738261102690620">Gemini fragen</translation>
+<translation id="3534738261102690620">Frag Gemini</translation>
 <translation id="3540141921715814660">Zu Lesezeichen hinzufügen</translation>
 <translation id="3546122170015471515">Maps-Vorabversion auf Google.com</translation>
 <translation id="3547356470684043247">Kundenbewertungen und ‑rezensionen zu Produkten, Dienstleistungen oder Angeboten lesen, um fundiertere Entscheidungen zu treffen</translation>
@@ -748,6 +755,7 @@
 <translation id="3565012355885596568">Bilder konnten nicht geladen werden</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> von <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Anders speichern</translation>
+<translation id="3567446754270467567">Erweitertes Safe Browsing abgeschlossen.</translation>
 <translation id="3572503683475187385">Der aktuelle Tab wird mit Gemini geteilt, wenn du einen neuen Chat startest. Inhalte und URLs geteilter Tabs werden an Google gesendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Im Google-Konto</translation>
 <translation id="3575234738189584619">Mit Lens suchen</translation>
@@ -796,6 +804,7 @@
 <translation id="3753618528540214374">Blaugrünes Design</translation>
 <translation id="3759491607478608474">Inhalte des aktuellen Tabs mit Gemini teilen, um relevantere Antworten zu erhalten</translation>
 <translation id="3762232513783804601">Für dein iPad entwickelt</translation>
+<translation id="3767529805486761639">Menü bearbeiten</translation>
 <translation id="3768725474733206671">Zuletzt geschlossenen Tab wieder öffnen</translation>
 <translation id="3779810277399252432">Keine Internetverbindung</translation>
 <translation id="3782614601387961027">Warnung schließen</translation>
@@ -808,6 +817,7 @@
 <translation id="3813175908845379029">Hilfreiche Vorschläge, die das Surfen verbessern und vereinfachen</translation>
 <translation id="3818293389945649617">Nächste Übereinstimmung suchen</translation>
 <translation id="3819183753496523827">Du bist offline. Prüfe die Internetverbindung und versuche es noch einmal.</translation>
+<translation id="3826034723896327540">Tabs anpinnen abgeschlossen.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 Zahlungsmethode}other{# Zahlungsmethoden}}</translation>
 <translation id="3831560640878483188">Warnung schließen?</translation>
 <translation id="3832419617903252251">Passwort nur auf diesem Gerät gespeichert</translation>
@@ -879,7 +889,6 @@
 <translation id="4021447724486050609">Browser aktualisieren</translation>
 <translation id="4021931095789478915">${url} zur Leseliste hinzufügen</translation>
 <translation id="4028871427853484857">Im Konto speichern…</translation>
-<translation id="4036529942385659684">Startseite nach einer Zeit der Inaktivität anzeigen</translation>
 <translation id="4038354071007134711">Keine App zum Öffnen der Datei auf diesem Gerät</translation>
 <translation id="4042870976416480368">Auf Seite suchen</translation>
 <translation id="4045441967987592849">Noch einmal öffnen</translation>
@@ -888,6 +897,7 @@
 <translation id="4049507953662678203">Überprüfe deiner Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="4054290211988862686">Datei auswählen</translation>
 <translation id="4070132839822635162">Nicht anmelden</translation>
+<translation id="4072473499345702662">Zu „Level Up“</translation>
 <translation id="4092655288299341041">Hilfe anzeigen</translation>
 <translation id="4095483462103784441">Neue Tabgruppe erstellen</translation>
 <translation id="4099756562043439968">Erinnerung einrichten</translation>
@@ -1030,6 +1040,7 @@
 <translation id="4578835633387306383">Aktivieren…</translation>
 <translation id="4580621046861724270">Einige Lesezeichen wurden nicht gespeichert</translation>
 <translation id="4580716718466706433">Rufe den Passwortmanager auf</translation>
+<translation id="4584778196791098089">Inkognitomodus abgeschlossen.</translation>
 <translation id="4585751637295612750">Neuen Tab öffnen, um ihn zur Frage hinzuzufügen</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Seite wurde deiner Leseliste hinzugefügt}other{{count} Seiten wurden deiner Leseliste hinzugefügt}}</translation>
@@ -1100,6 +1111,7 @@
 <translation id="479628432297359449">Download beenden?</translation>
 <translation id="4796496140132859135">Tabgruppe. Minimiert.</translation>
 <translation id="4802185666270672526">„Desktopwebsite anfordern“ ausblenden</translation>
+<translation id="4802678077012980341">Passwortcheck abgeschlossen.</translation>
 <translation id="4803185665210547709">Von deiner Organisation verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Zeichne, markiere oder tippe, um etwas auszuwählen, nach dem du suchen möchtest – du erhältst Ergebnisse, ohne den Tab zu verlassen</translation>
@@ -1226,6 +1238,7 @@
 <translation id="518997337573684769">Absturzbericht wird gesendet…</translation>
 <translation id="519528950056409240">Wallet erlauben, Daten weiterzugeben</translation>
 <translation id="519530786644929958">Der Download ist fehlgeschlagen und kann nicht wiederholt werden.</translation>
+<translation id="519620255540220054">Startseite anpassen</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Optionen zum Festlegen von Berechtigungen</translation>
 <translation id="5203051773066903947">Eingeben</translation>
@@ -1309,6 +1322,7 @@
 <translation id="5482922178977937393">Möchtest du auf deine Interessen abgestimmte Benachrichtigungen zu aktuellen Nachrichten, Sport und mehr erhalten?</translation>
 <translation id="5483838506518938965">Fertig!</translation>
 <translation id="5487521232677179737">Daten löschen</translation>
+<translation id="5491208689472430746">Schnelllöschung abgeschlossen.</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5499648645977734083">Zahlungsmethoden verwalten…</translation>
 <translation id="5501346139932663133">Google-Apps</translation>
@@ -1319,7 +1333,7 @@
 <translation id="5524590039848017563">Button für die minimierte Toolbar in der primären Toolbar</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
 <translation id="5532545557415295622">Dialogfeld für Zeitüberschreitung bei Inaktivität</translation>
-<translation id="5547868626772433490">Gemini fragen</translation>
+<translation id="5547868626772433490">Frag Gemini</translation>
 <translation id="5548760955356983418">Mit Handoff kannst du auf diesem Gerät auf einer Website stöbern und dann einfach auf deinem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock deines Macs angezeigt.
 
 Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert sein und deine Geräte müssen dasselbe iCloud-Konto verwenden.</translation>
@@ -1638,6 +1652,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6523575793810663688">Anleitung</translation>
 <translation id="6524082013156754186">Im Konto speichern</translation>
 <translation id="6524918542306337007">Inkognitomodus ist nicht verfügbar</translation>
+<translation id="6525550806864373485">Menü bearbeiten</translation>
 <translation id="6527208859483186860">Hintergrund {position} von {total}</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6532106788206463496">Änderungen speichern</translation>
@@ -1723,6 +1738,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6765551480308401897">Nicht als Standard festlegen</translation>
 <translation id="6770452996697898492">[GEBUCHT]</translation>
+<translation id="6775952316617222141">Live-Funktion in Chrome verwenden</translation>
 <translation id="6779455296366983087">Deine Browserdaten werden gelöscht</translation>
 <translation id="6782531425936234573">Daten exportieren</translation>
 <translation id="6791425686608802741">Tippe auf „Tab neuer Gruppe hinzufügen“</translation>
@@ -2151,6 +2167,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8233237502828137700">Werbebanner schließen</translation>
 <translation id="823339794112333264">Mikrofon einschalten</translation>
 <translation id="8250920743982581267">Dokumente</translation>
+<translation id="8252980988000695656">Google Lens abgeschlossen.</translation>
 <translation id="8258734532103758067">Ich habe meine Daten exportiert</translation>
 <translation id="8258999165172757081">Hinzugefügt</translation>
 <translation id="8261506727792406068">Löschen</translation>
@@ -2241,6 +2258,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8534481786647257214">Google+ Beitrag gepostet</translation>
 <translation id="8535368836838588657">Passwort einblenden</translation>
 <translation id="8540426897269305488">Mit <ph name="CELL_ACCESSIBILITY_LABEL" /> anmelden</translation>
+<translation id="8542331710562073430">Ein Fehler ist aufgetreten. Tippe auf den Button „Gemini Live“, um es noch einmal zu versuchen.</translation>
 <translation id="8545276357312221485">Einstellungen für Standardbrowser prüfen</translation>
 <translation id="854938212724803178">Du hast 1 kompromittiertes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="8551311254462607218">Tippe in der Adressleiste auf das Google Lens-Kamerasymbol</translation>

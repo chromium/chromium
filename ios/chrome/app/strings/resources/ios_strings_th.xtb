@@ -4,6 +4,7 @@
 <translation id="1004825134262590729">{count,plural, =1{พาสคีย์ {count} รายการ}other{พาสคีย์ {count} รายการ}}</translation>
 <translation id="1005023885865154304">เปิดการตั้งค่าการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="1005230401424685968">ปปปป</translation>
+<translation id="1013852467930342108">Live เป็นฟีเจอร์ใหม่ใน Gemini ใน Chrome</translation>
 <translation id="1013952917065545813">คุณกลับมาที่นี่เพื่อเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้</translation>
 <translation id="1016495303386450659">อัปเดตรายการแล้ว</translation>
 <translation id="1018804590490383958">สแกนและป้อนข้อความอัตโนมัติ</translation>
@@ -483,6 +484,7 @@
 <translation id="2579713773888829241">ไดรฟ์ที่แชร์</translation>
 <translation id="2580306219079937316">เปิดการตั้งค่าการแปลภาษา</translation>
 <translation id="2583688836549072561">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> แท็บ, กิจกรรมใหม่</translation>
+<translation id="2584994295315085351">เปิดแท็บใหม่เมื่อกลับมาที่ Chrome หลังจากผ่านไป 4 ชั่วโมง</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">ติดตามการลดราคาผลิตภัณฑ์</translation>
 <translation id="2602372807870028932">การดำเนินการนี้จะลบข้อมูลที่เลือกซึ่งบันทึกไว้ในอุปกรณ์นี้</translation>
@@ -803,6 +805,7 @@
 <translation id="3753618528540214374">ธีมสีวอรีเดียน</translation>
 <translation id="3759491607478608474">แชร์เนื้อหาของแท็บปัจจุบันกับ Gemini เพื่อรับคำตอบที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="3762232513783804601">สร้างมาเพื่อ iPad ของคุณ</translation>
+<translation id="3767529805486761639">เมนูแก้ไข</translation>
 <translation id="3768725474733206671">เปิดแท็บที่ปิดไปล่าสุดอีกครั้ง</translation>
 <translation id="3779810277399252432">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="3782614601387961027">ปิดคำเตือน</translation>
@@ -887,7 +890,6 @@
 <translation id="4021447724486050609">อัปเดตเบราว์เซอร์ของคุณ</translation>
 <translation id="4021931095789478915">เพิ่ม ${url} ลงในเรื่องรออ่าน</translation>
 <translation id="4028871427853484857">บันทึกในบัญชี…</translation>
-<translation id="4036529942385659684">แสดงหน้าเริ่มต้นหลังจากไม่มีการใช้งานเป็นระยะเวลาหนึ่ง</translation>
 <translation id="4038354071007134711">ไม่มีแอปพลิเคชันใดบนอุปกรณ์นี้ที่สามารถเปิดไฟล์ได้</translation>
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="4045441967987592849">เปิดอีกครั้ง</translation>
@@ -1237,6 +1239,7 @@
 <translation id="518997337573684769">กำลังส่งรายงานข้อขัดข้อง…</translation>
 <translation id="519528950056409240">อนุญาตให้ Wallet แชร์ข้อมูล</translation>
 <translation id="519530786644929958">ดาวน์โหลดไม่สำเร็จและลองอีกครั้งไม่ได้</translation>
+<translation id="519620255540220054">ปรับแต่งหน้าแรก</translation>
 <translation id="5197255632782567636">อินเทอร์เน็ต</translation>
 <translation id="5200894869889836319">ตัวเลือกในการตั้งค่าสิทธิ์</translation>
 <translation id="5203051773066903947">ป้อน</translation>
@@ -1650,6 +1653,7 @@
 <translation id="6523575793810663688">แสดงวิธีการ</translation>
 <translation id="6524082013156754186">บันทึกในบัญชี</translation>
 <translation id="6524918542306337007">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
+<translation id="6525550806864373485">เมนูแก้ไข</translation>
 <translation id="6527208859483186860">พื้นหลัง {position} จาก {total}</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6532106788206463496">บันทึกการเปลี่ยนแปลง</translation>
@@ -1735,6 +1739,7 @@
 <translation id="6761393919622941301">เสียง</translation>
 <translation id="6765551480308401897">ไม่ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="6770452996697898492">[จองแล้ว]</translation>
+<translation id="6775952316617222141">ใช้ฟีเจอร์ Live กับ Gemini ใน Chrome</translation>
 <translation id="6779455296366983087">ข้อมูลการท่องเว็บจะถูกลบ</translation>
 <translation id="6782531425936234573">ส่งออกข้อมูล</translation>
 <translation id="6791425686608802741">แตะ "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
@@ -2254,6 +2259,7 @@
 <translation id="8534481786647257214">โพสต์ใน Google+ แล้ว</translation>
 <translation id="8535368836838588657">แสดงรหัสผ่าน</translation>
 <translation id="8540426897269305488">ลงชื่อเข้าใช้ด้วย <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">เกิดข้อผิดพลาด แตะปุ่ม Live เพื่อลองใช้ฟีเจอร์ Live อีกครั้ง</translation>
 <translation id="8545276357312221485">ตรวจสอบการตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
 <translation id="854938212724803178">คุณมีรหัสผ่านที่ถูกละเมิด 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="8551311254462607218">ในแถบที่อยู่ ให้แตะไอคอนกล้อง Google Lens</translation>

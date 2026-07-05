@@ -263,6 +263,7 @@
 <translation id="2149968176347646218">Веза није безбедна</translation>
 <translation id="2149973817440762519">Измените обележивач</translation>
 <translation id="2163089732491971196">Да бисте користили и чували Chrome податке на Google налогу, унесите приступну фразу</translation>
+<translation id="2164015935042801524">Кликните овде десним тастером да бисте вертикално приказали картице</translation>
 <translation id="2166228530126694506">Верзија <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Описи слика су искључени</translation>
 <translation id="2172905120685242547">Желите да затворите прозор?</translation>
@@ -305,6 +306,7 @@
 <translation id="2323763861024343754">Меморијски простор за сајт</translation>
 <translation id="2327445548174191329">Извор: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и сви линкови позивнице ће бити искључени</translation>
+<translation id="2329500425421091035">Представљамо AI режим у Chrome-у</translation>
 <translation id="2330186936255788117">Још обележивача</translation>
 <translation id="2332515770639153015">Побољшано безбедно прегледање је укључено</translation>
 <translation id="233375395665273385">Избриши и одјави ме</translation>
@@ -317,6 +319,7 @@
 <translation id="2363734411417672757">Више страница се предучитава. Странице могу да буду предучитане преко Google сервера када то затраже други сајтови или апликације.</translation>
 <translation id="2366554533468315977">Историја цена широм веба за ову опцију</translation>
 <translation id="2367818124433749493">Пречице за програмере</translation>
+<translation id="2369058545741334020">Отвори у режиму за читање</translation>
 <translation id="2385605401818128172">Можете да прегледате сајтове који шаљу много обавештења и спречите их да убудуће шаљу још обавештења</translation>
 <translation id="2386938421315164605">Сакријте и откријте теме</translation>
 <translation id="2390510615457643724">Да ли желите поново да преузмете фајл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -597,6 +600,7 @@
 <translation id="3524334353996115845">Омогућите да <ph name="ORIGIN" /> потврди да сте то ви</translation>
 <translation id="3527085408025491307">Фолдер</translation>
 <translation id="3542235761944717775">Доступно је <ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">Претражујте помоћу AI режима</translation>
 <translation id="3549537543136628349">Пошто су предучитане странице шифроване, а сајт или апликација који води до страница је Google сајт или апликација, Google сервери не добијају нове информације када приватно предучитавају те странице.</translation>
 <translation id="3549657413697417275">Претражите своју историју</translation>
 <translation id="3557336313807607643">Додај у контакте</translation>
@@ -1423,7 +1427,7 @@ Google налог можда има друге облике историје п�
 <translation id="685850645784703949">Google Discover – искључено</translation>
 <translation id="6864459304226931083">Преузми слику</translation>
 <translation id="686490460830618322">Табела са филтерима апликација</translation>
-<translation id="6865313869410766144">Подаци Аутоматског попуњавања за обрасце</translation>
+<translation id="6865313869410766144">Подаци за аутоматско попуњавање образаца</translation>
 <translation id="6867400383614725881">Нова картица без архивирања</translation>
 <translation id="686899695320434745">Адресе нису шифроване помоћу приступне фразе. То вам омогућава да их користите у другим Google услугама.</translation>
 <translation id="6870625088374152862">Пријављени сте као <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1966,12 +1970,14 @@ Google налог можда има друге облике историје п�
 <translation id="9001604755921395912">Chrome картица без архивирања</translation>
 <translation id="9010094279589497751">Брзо отворите Gemini када вам затреба</translation>
 <translation id="9012585441087414258">Штити вас од сајтова, преузимања и додатака за које се зна да су штетни. Ако страница уради нешто сумњиво, URL-ови и делови садржаја странице се шаљу у Google безбедно прегледање.</translation>
+<translation id="9014097371980259227">Неке алатке смо преместили да бисте лакше претраживали помоћу AI режима</translation>
 <translation id="9019199799064251516">Желите да наставите без закључавања профила за аутомобил?</translation>
 <translation id="9022774213089566801">Често посећивано</translation>
 <translation id="9022871169049522985">Сајтови и оглашавачи могу да мере учинак својих огласа</translation>
 <translation id="9024318700713112071">Подесите Chrome као подразумевани прегледач</translation>
 <translation id="9027728231343310283">Опозови <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Преместите у\u2026</translation>
+<translation id="904146253922032365">Додирните и задржите да бисте вертикално приказали картице</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
 <translation id="9047347135558855162">Брзо започните претрагу у Chrome-у</translation>
 <translation id="9050666287014529139">Приступна фраза</translation>

@@ -263,6 +263,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2149968176347646218">Veza nije bezbedna</translation>
 <translation id="2149973817440762519">Izmenite obeleživač</translation>
 <translation id="2163089732491971196">Da biste koristili i čuvali Chrome podatke na Google nalogu, unesite pristupnu frazu</translation>
+<translation id="2164015935042801524">Kliknite ovde desnim tasterom da biste vertikalno prikazali kartice</translation>
 <translation id="2166228530126694506">Verzija <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Opisi slika su isključeni</translation>
 <translation id="2172905120685242547">Želite da zatvorite prozor?</translation>
@@ -305,6 +306,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i svi linkovi pozivnice će biti isključeni</translation>
+<translation id="2329500425421091035">Predstavljamo AI režim u Chrome-u</translation>
 <translation id="2330186936255788117">Još obeleživača</translation>
 <translation id="2332515770639153015">Poboljšano bezbedno pregledanje je uključeno</translation>
 <translation id="233375395665273385">Izbriši i odjavi me</translation>
@@ -317,6 +319,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2363734411417672757">Više stranica se predučitava. Stranice mogu da budu predučitane preko Google servera kada to zatraže drugi sajtovi ili aplikacije.</translation>
 <translation id="2366554533468315977">Istorija cena širom veba za ovu opciju</translation>
 <translation id="2367818124433749493">Prečice za programere</translation>
+<translation id="2369058545741334020">Otvori u režimu za čitanje</translation>
 <translation id="2385605401818128172">Možete da pregledate sajtove koji šalju mnogo obaveštenja i sprečite ih da ubuduće šalju još obaveštenja</translation>
 <translation id="2386938421315164605">Sakrijte i otkrijte teme</translation>
 <translation id="2390510615457643724">Da li želite ponovo da preuzmete fajl <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -597,6 +600,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3524334353996115845">Omogućite da <ph name="ORIGIN" /> potvrdi da ste to vi</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775">Dostupno je <ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">Pretražujte pomoću AI režima</translation>
 <translation id="3549537543136628349">Pošto su predučitane stranice šifrovane, a sajt ili aplikacija koji vodi do stranica je Google sajt ili aplikacija, Google serveri ne dobijaju nove informacije kada privatno predučitavaju te stranice.</translation>
 <translation id="3549657413697417275">Pretražite svoju istoriju</translation>
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
@@ -1423,7 +1427,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="685850645784703949">Google Discover – isključeno</translation>
 <translation id="6864459304226931083">Preuzmi sliku</translation>
 <translation id="686490460830618322">Tabela sa filterima aplikacija</translation>
-<translation id="6865313869410766144">Podaci Automatskog popunjavanja za obrasce</translation>
+<translation id="6865313869410766144">Podaci za automatsko popunjavanje obrazaca</translation>
 <translation id="6867400383614725881">Nova kartica bez arhiviranja</translation>
 <translation id="686899695320434745">Adrese nisu šifrovane pomoću pristupne fraze. To vam omogućava da ih koristite u drugim Google uslugama.</translation>
 <translation id="6870625088374152862">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1966,12 +1970,14 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9001604755921395912">Chrome kartica bez arhiviranja</translation>
 <translation id="9010094279589497751">Brzo otvorite Gemini kada vam zatreba</translation>
 <translation id="9012585441087414258">Štiti vas od sajtova, preuzimanja i dodataka za koje se zna da su štetni. Ako stranica uradi nešto sumnjivo, URL-ovi i delovi sadržaja stranice se šalju u Google bezbedno pregledanje.</translation>
+<translation id="9014097371980259227">Neke alatke smo premestili da biste lakše pretraživali pomoću AI režima</translation>
 <translation id="9019199799064251516">Želite da nastavite bez zaključavanja profila za automobil?</translation>
 <translation id="9022774213089566801">Često posećivano</translation>
 <translation id="9022871169049522985">Sajtovi i oglašavači mogu da mere učinak svojih oglasa</translation>
 <translation id="9024318700713112071">Podesite Chrome kao podrazumevani pregledač</translation>
 <translation id="9027728231343310283">Opozovi <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Premestite u\u2026</translation>
+<translation id="904146253922032365">Dodirnite i zadržite da biste vertikalno prikazali kartice</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9047347135558855162">Brzo započnite pretragu u Chrome-u</translation>
 <translation id="9050666287014529139">Pristupna fraza</translation>

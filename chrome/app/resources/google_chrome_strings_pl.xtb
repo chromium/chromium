@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">Spowoduje to usunięcie <ph name="ITEMS_COUNT" /> elementów z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Uruchom ponownie, aby zaktualizować &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomóż udoskonalić Chrome, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Wybierz obszar ekranu do przeszukania</translation>
 <translation id="2126108037660393668">Weryfikacja pobranego pliku zakończyła się niepowodzeniem.</translation>
 <translation id="2128411189117340671">Zarządzaj profilami Chrome</translation>
 <translation id="2137162749895930932">Zamknij ekran tłumaczenia</translation>
@@ -264,6 +265,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3512495006767217696">Jest wbudowany w Chrome i ułatwi Ci tworzenie, zapisywanie oraz autouzupełnianie silnych haseł. Dodaj skrót, aby mieć łatwy dostęp.</translation>
 <translation id="3539955434060988644">Otwórz link w oknie inco&amp;gnito Chrome</translation>
 <translation id="354621070532799440">Przypomnienie: najlepsze funkcje bezpieczeństwa Google na wyciągnięcie ręki</translation>
+<translation id="3547866758548131919">Kliknij przycisk Podsumuj, aby udostępnić ten dokument Gemini w Chrome, uzyskać szybki przegląd i zadać dodatkowe pytania</translation>
 <translation id="3576528680708590453">Administrator systemu skonfigurował Google Chrome w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>
 <translation id="3582972582564653026">Synchronizuj dane Chrome i korzystaj z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="3583751698304738917">Jesteś już zalogowany(-a) jako <ph name="USER_EMAIL_ADDRESS" /> w innym profilu Chrome</translation>
@@ -353,6 +355,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4400772909124543403">Brak dostępnych aktualizacji</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Udostępnij ten dokument Gemini w Chrome, aby uzyskać szybki przegląd i zadać dodatkowe pytania</translation>
 <translation id="4450664632294415862">Chrome – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="4459234553906210702">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chrome o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
@@ -783,6 +786,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="8601359445272098721">Nowość! Możesz przetłumaczyć tekst i obrazy na ekranie, klikając przycisk „Przetłumacz ekran”</translation>
 <translation id="8614913330719544658">Przeglądarka Google Chrome nie odpowiada. Uruchomić ją teraz ponownie?</translation>
 <translation id="861702415419836452">Aby utworzyć mapę 3D Twojego otoczenia, Chrome potrzebuje uprawnień dostępu do kamery</translation>
+<translation id="8623450603356630491">Zaloguj się w Chrome na telefonie</translation>
 <translation id="8624541899164515475">Ustawienia, otwierają się w nowej karcie.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome uruchomi się ponownie za minutę}few{Chrome uruchomi się ponownie za # minuty}many{Chrome uruchomi się ponownie za # minut}other{Chrome uruchomi się ponownie za # minuty}}</translation>
 <translation id="8637932705841171563">Aby udostępnić okno, pozwól Chrome na nagrywanie ekranu w ustawieniach systemu</translation>

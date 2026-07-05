@@ -263,6 +263,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2149968176347646218">Koneksi tidak aman</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2163089732491971196">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, masukkan frasa sandi</translation>
+<translation id="2164015935042801524">Klik kanan di sini untuk menampilkan tab secara vertikal</translation>
 <translation id="2166228530126694506">Versi <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Deskripsi gambar nonaktif</translation>
 <translation id="2172905120685242547">Tutup jendela?</translation>
@@ -305,6 +306,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2323763861024343754">Penyimpanan situs</translation>
 <translation id="2327445548174191329">Dari <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Semua orang akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan semua link undangan akan dinonaktifkan</translation>
+<translation id="2329500425421091035">Memperkenalkan Mode AI di Chrome</translation>
 <translation id="2330186936255788117">Bookmark lainnya</translation>
 <translation id="2332515770639153015">Safe Browsing yang Disempurnakan aktif</translation>
 <translation id="233375395665273385">Hapus dan logout</translation>
@@ -317,6 +319,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2363734411417672757">Lebih banyak halaman akan dipramuat. Halaman mungkin dipramuat melalui server Google saat diminta oleh situs atau aplikasi lain.</translation>
 <translation id="2366554533468315977">Histori harga di seluruh web untuk opsi ini</translation>
 <translation id="2367818124433749493">Pintasan developer</translation>
+<translation id="2369058545741334020">Buka dalam mode baca</translation>
 <translation id="2385605401818128172">Anda dapat meninjau situs yang mengirim banyak notifikasi dan mencegahnya untuk mengirim lebih banyak notifikasi pada masa mendatang</translation>
 <translation id="2386938421315164605">Sembunyikan dan perlihatkan topik</translation>
 <translation id="2390510615457643724">Ingin mendownload <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> lagi?</translation>
@@ -327,6 +330,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, Tab Bersuara yang Dipilih</translation>
 <translation id="2413014528833954543">Tidak dapat memeriksa sandi di perangkat ini</translation>
 <translation id="2414886740292270097">Gelap</translation>
+<translation id="2415037988255164008">Pulihkan jendela?</translation>
 <translation id="2421705177906985956">Saat ini tidak ada situs untuk ditampilkan</translation>
 <translation id="2426805022920575512">Pilih akun lain</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, 1 video dalam daftar}other{Video, # video dalam daftar}}</translation>
@@ -596,6 +600,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3524334353996115845">Izinkan <ph name="ORIGIN" /> memverifikasi diri Anda</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tersedia</translation>
+<translation id="3547933853190131743">Telusuri dengan Mode AI</translation>
 <translation id="3549537543136628349">Karena halaman yang dipramuat terenkripsi dan situs atau aplikasi yang ditautkan ke halaman tersebut adalah situs atau aplikasi Google, server Google tidak menerima informasi baru saat melakukan pramuat halaman ini secara pribadi.</translation>
 <translation id="3549657413697417275">Telusuri histori penggunaan</translation>
 <translation id="3557336313807607643">Tambahkan ke kontak</translation>
@@ -1338,6 +1343,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Menelusuri menggunakan Sogou</translation>
 <translation id="656065428026159829">Lihat lebih banyak</translation>
+<translation id="6565781844089373403">Pulihkan jendela</translation>
 <translation id="6565959834589222080">Wi-Fi akan digunakan jika tersedia</translation>
 <translation id="657177046675873214">Agar bookmark tersedia di semua perangkat Anda, aktifkan “Bookmark” di setelan</translation>
 <translation id="6573096386450695060">Selalu izinkan</translation>
@@ -1964,12 +1970,14 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9001604755921395912">Buka di tab Chrome Samaran</translation>
 <translation id="9010094279589497751">Buka Gemini dengan cepat saat Anda membutuhkannya</translation>
 <translation id="9012585441087414258">Melindungi dari situs, download, dan ekstensi yang diketahui berbahaya. Jika halaman melakukan hal yang mencurigakan, URL dan contoh kecil konten halaman akan dikirim ke Google Safe Browsing.</translation>
+<translation id="9014097371980259227">Beberapa alat telah dipindahkan untuk membantu Anda menelusuri dengan Mode AI</translation>
 <translation id="9019199799064251516">Lanjutkan tanpa kunci profil mobil?</translation>
 <translation id="9022774213089566801">Sering dikunjungi</translation>
 <translation id="9022871169049522985">Situs dan pengiklan dapat mengukur performa iklannya</translation>
 <translation id="9024318700713112071">Setel Chrome sebagai browser default</translation>
 <translation id="9027728231343310283">Urungkan <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Pindahkan ke\u2026</translation>
+<translation id="904146253922032365">Sentuh lama untuk menampilkan tab secara vertikal</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
 <translation id="9047347135558855162">Mulai penelusuran dengan cepat di Chrome</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>

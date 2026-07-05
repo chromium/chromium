@@ -129,6 +129,7 @@
 <translation id="2120620239521071941">Esta acción eliminará <ph name="ITEMS_COUNT" /> elementos deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>
+<translation id="2125838419757773031">Seleccionar unha rexión da pantalla para facer unha busca</translation>
 <translation id="2126108037660393668">Produciuse un erro ao verificar o ficheiro descargado.</translation>
 <translation id="2128411189117340671">Xestionar perfís de Chrome</translation>
 <translation id="2137162749895930932">Pechar a pantalla de tradución</translation>
@@ -268,6 +269,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3512495006767217696">Integrado en Chrome para axudarche a crear, gardar e autocompletar contrasinais seguros. Engade o atallo para acceder facilmente</translation>
 <translation id="3539955434060988644">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="354621070532799440">Recordatorio: As mellores funcións de seguranza de Google no teu peto</translation>
+<translation id="3547866758548131919">Facer clic no botón Resumir para compartir este documento con Gemini en Chrome e obter un resumo rápido, así como para facer consultas adicionais</translation>
 <translation id="3576528680708590453">A persoa que administra o teu sistema configurou Google Chrome para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincroniza e personaliza Chrome nos teus dispositivos</translation>
 <translation id="3583751698304738917">Xa tes a sesión iniciada como <ph name="USER_EMAIL_ADDRESS" /> noutro perfil de Chrome</translation>
@@ -358,6 +360,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4400772909124543403">Non hai ningunha actualización dispoñible</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="4434353761996769206">Produciuse un erro co instalador: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4437295824090654417">Comparte este documento con Gemini en Chrome para obter un resumo rápido e facer preguntas de seguimento</translation>
 <translation id="4450664632294415862">Chrome (inicio de sesión, <ph name="PAGE_TITLE" />)</translation>
 <translation id="4458462641685292929">Hai outra operación en Google Chrome que está en curso. Téntao de novo máis tarde.</translation>
 <translation id="4459234553906210702">A medición dos anuncios permite que os sitios que visites lle soliciten a Chrome información que lles axude a medir o rendemento dos seus anuncios. Ademais, restrinxe o seguimento en varios sitios, dado que se transfire a menor cantidade posible de información entre eles.</translation>
@@ -792,6 +795,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="8601359445272098721">Novidade! Podes traducir texto e imaxes na túa pantalla co botón Traducir pantalla</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso de acceso á cámara co fin de crear un mapa 3D do que te rodea</translation>
+<translation id="8623450603356630491">Iniciar sesión en Chrome no teléfono</translation>
 <translation id="8624541899164515475">Configuración (ábrese nunha pestana nova).</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome reiniciarase en 1 minuto}other{Chrome reiniciarase en # minutos}}</translation>
 <translation id="8637932705841171563">Para compartir a ventá, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome</translation>
