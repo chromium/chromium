@@ -7901,34 +7901,6 @@
             ]
         }
     ],
-    "CriticalUserJourneyService": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "probability": "1.0"
-                    },
-                    "enable_features": [
-                        "ClearBrowsingHistoryJourney",
-                        "CriticalUserJourneyService",
-                        "HappinessTrackingSurveysForClearBrowsingHistory",
-                        "HappinessTrackingSurveysForDownloadJourney",
-                        "HappinessTrackingSurveysForPinExtensionJourney",
-                        "PinExtensionJourney",
-                        "ViewDownloadedFileFromAppMenuJourney",
-                        "ViewDownloadedFileJourney"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosBatterySaver": [
         {
             "platforms": [
