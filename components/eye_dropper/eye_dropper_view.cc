@@ -406,6 +406,7 @@ EyeDropperView::~EyeDropperView() {
   pre_dispatch_handler_.reset();
   if (widget_) {
     widget_->RemoveObserver(this);
+    widget_->CloseNow();
     widget_.reset();
   }
   delegate_.reset();
