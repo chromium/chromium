@@ -540,6 +540,30 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             sideUiContainer.setWidth(newSideUiWidth);
         }
 
+        // Trigger a synchronous measure and layout pass to apply the new SideUiSpecs to the layout
+        // before we notify SideUiContainers and SideUiObservers.
+        //
+        // This guarantees the actual layout properties are in sync with the new SideUiSpecs
+        // received by SideUiContainers and SideUiObservers.
+        //
+        // Layout synchronization is also important to support multiple UI update requests in
+        // quick succession. For example, GLiC browser tests (in C++) can:
+        // (1) disable animations,
+        // (2) open the side panel, then
+        // (3) immediately close the side panel.
+        //
+        // Without the synchronous measure and layout pass, (3) can happen before Android's
+        // asynchronous layout pass actually opens the side panel for (2) (i.e., applying the
+        // SideUiSpecs for (2)). Then during the UI update flow for (3), updateUiInternal()
+        // will see the side panel already has 0 width, skip the update, and fail to notify GLiC of
+        // the "closed" event.
+        //
+        // Running a synchronous pass here has little to no overall performance impact since the
+        // mAnchorContainerParent subtree will definitely be changed at this point. The synchronous
+        // pass just does the work sooner, and the subsequent asynchronous pass scheduled by the
+        // Android framework will skip this subtree.
+        ViewUtils.triggerSynchronousMeasureAndLayout(mAnchorContainerParent);
+
         notifyContainersOnUiUpdateCompleted(currentSideUiSpecs, newSideUiSpecs);
         mSideUiObserverNotifier.notifySideUiSpecsChanged(newSideUiSpecs);
     }
