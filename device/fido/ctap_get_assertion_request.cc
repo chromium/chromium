@@ -364,6 +364,10 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
     extensions.emplace(kExtensionPRF, std::move(prf));
   }
 
+  if (request.cmtg_key) {
+    extensions.emplace(kExtensionCmtgKey, true);
+  }
+
   if (!extensions.empty()) {
     cbor_map[cbor::Value(4)] = cbor::Value(std::move(extensions));
   }

@@ -10739,4 +10739,52 @@ TEST_F(AuthenticatorImplTest, InactiveRenderFrameHost) {
   EXPECT_FALSE(authenticator.is_connected());
 }
 
+TEST_F(AuthenticatorImplTest, CmtgKeyEndToEnd) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  // Configure device with CMTG support.
+  device::VirtualCtap2Device::Config config;
+  config.cmtg_key_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  // Create credential with CMTG extension.
+  PublicKeyCredentialCreationOptionsPtr create_options =
+      GetTestPublicKeyCredentialCreationOptions();
+  create_options->cmtg_key = true;
+  MakeCredentialResult create_result =
+      AuthenticatorMakeCredential(std::move(create_options));
+  ASSERT_EQ(create_result.status, AuthenticatorStatus::SUCCESS);
+  ASSERT_TRUE(create_result.response->cmtg_key);
+  const std::vector<uint8_t> initial_cmtg_key =
+      create_result.response->cmtg_key->cmtg_key;
+  const std::vector<uint8_t> credential_id =
+      create_result.response->info->raw_id;
+
+  // Get an assertion with the same CMTG key.
+  PublicKeyCredentialRequestOptionsPtr get_options1 =
+      GetTestPublicKeyCredentialRequestOptions();
+  get_options1->allow_credentials[0].id = credential_id;
+  get_options1->extensions->cmtg_key = true;
+  GetAssertionResult get_result1 =
+      AuthenticatorGetAssertion(std::move(get_options1));
+  ASSERT_EQ(get_result1.status, AuthenticatorStatus::SUCCESS);
+  ASSERT_TRUE(get_result1.response->extensions->cmtg_key);
+  EXPECT_EQ(get_result1.response->extensions->cmtg_key->cmtg_key,
+            initial_cmtg_key);
+
+  // Trigger generation of a new CMTG key on next assertion.
+  virtual_device_factory_->mutable_state()
+      ->generate_new_cmtg_key_on_next_assertion = true;
+  PublicKeyCredentialRequestOptionsPtr get_options2 =
+      GetTestPublicKeyCredentialRequestOptions();
+  get_options2->allow_credentials[0].id = credential_id;
+  get_options2->extensions->cmtg_key = true;
+  GetAssertionResult get_result2 =
+      AuthenticatorGetAssertion(std::move(get_options2));
+  ASSERT_EQ(get_result2.status, AuthenticatorStatus::SUCCESS);
+  ASSERT_TRUE(get_result2.response->extensions->cmtg_key);
+  EXPECT_NE(get_result2.response->extensions->cmtg_key->cmtg_key,
+            initial_cmtg_key);
+}
+
 }  // namespace content

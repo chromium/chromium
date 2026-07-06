@@ -74,6 +74,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool hmac_secret_support = false;
     bool hmac_secret_mc_support = false;
     bool prf_support = false;
+    bool cmtg_key_support = false;
     bool large_blob_support = false;
     // large_blob_extension_support indicates support for the single-extension
     // form of largeBlob. This form is implemented by hybrid authenticators and

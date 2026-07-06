@@ -145,6 +145,41 @@ void ReturnCtap2Response(
                                        data.value_or(std::vector<uint8_t>{}))));
 }
 
+// Returns a PrivateKey corresponding to the COSE algorithm identifier. Returns
+// nullptr if an unknown algorithm is passed.
+std::unique_ptr<VirtualFidoDevice::PrivateKey> FreshKeyForCoseAlg(
+    int32_t algorithm) {
+  if (algorithm == static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256)) {
+    return VirtualFidoDevice::PrivateKey::FreshP256Key();
+  } else if (algorithm ==
+             static_cast<int32_t>(CoseAlgorithmIdentifier::kRs256)) {
+    return VirtualFidoDevice::PrivateKey::FreshRSAKey();
+  } else if (algorithm ==
+             static_cast<int32_t>(CoseAlgorithmIdentifier::kEdDSA)) {
+    return VirtualFidoDevice::PrivateKey::FreshEd25519Key();
+  } else if (algorithm == static_cast<int32_t>(
+                              CoseAlgorithmIdentifier::kInvalidForTesting)) {
+    return VirtualFidoDevice::PrivateKey::FreshInvalidForTestingKey();
+  }
+  return nullptr;
+}
+
+CmtgKeyResponse MakeCmtgKeyResponse(
+    VirtualFidoDevice::PrivateKey& cmtg_key,
+    base::span<const uint8_t> signature_buffer) {
+  std::vector<uint8_t> cmtg_sig = cmtg_key.Sign(signature_buffer);
+  std::unique_ptr<PublicKey> cmtg_pub_key = cmtg_key.GetPublicKey();
+  return CmtgKeyResponse(cmtg_pub_key->cose_key_bytes, std::move(cmtg_sig));
+}
+
+void AttachCmtgKeyToAuthenticatorDataExtensions(
+    const VirtualFidoDevice::PrivateKey& cmtg_key,
+    cbor::Value::MapValue& extensions_map) {
+  auto cmtg_pub_key = cmtg_key.GetPublicKey();
+  extensions_map.emplace(cbor::Value(device::kExtensionCmtgKey),
+                         cbor::Value(cmtg_pub_key->cose_key_bytes));
+}
+
 std::vector<uint8_t> ConstructSignatureBuffer(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash) {
@@ -162,7 +197,8 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
     bool enterprise_attestation_requested,
     std::optional<LargeBlobSupportType> large_blob_type,
     bool prf_enabled,
-    std::optional<std::vector<uint8_t>> prf_results) {
+    std::optional<std::vector<uint8_t>> prf_results,
+    std::optional<CmtgKeyResponse> cmtg_key) {
   std::unique_ptr<OpaqueAttestationStatement> attestation_statement;
   if (!signature.empty()) {
     cbor::Value::MapValue attestation_map;
@@ -191,6 +227,7 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
   make_credential_response.large_blob_type = large_blob_type;
   make_credential_response.prf_enabled = prf_enabled;
   make_credential_response.prf_results = std::move(prf_results);
+  make_credential_response.cmtg_key = std::move(cmtg_key);
   return AsCTAPStyleCBORBytes(make_credential_response);
 }
 
@@ -485,6 +522,11 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
     unsigned_extension_outputs.emplace(kExtensionLargeBlob,
                                        std::move(large_blob_ext));
   }
+  if (response.cmtg_key) {
+    unsigned_extension_outputs.emplace(
+        cbor::Value(device::kExtensionCmtgKey),
+        cbor::Value(response.cmtg_key->signature));
+  }
   if (!unsigned_extension_outputs.empty()) {
     response_map.emplace(8, cbor::Value(std::move(unsigned_extension_outputs)));
   }
@@ -688,6 +730,10 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (config.min_pin_length_extension_support) {
     extensions.emplace_back(device::kExtensionMinPINLength);
+  }
+
+  if (config.cmtg_key_support) {
+    extensions.emplace_back(device::kExtensionCmtgKey);
   }
 
   if (!extensions.empty()) {
@@ -1165,26 +1211,17 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       continue;
     }
 
-    switch (param.algorithm) {
-      case static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256):
-        private_key = PrivateKey::FreshP256Key();
-        break;
-      case static_cast<int32_t>(CoseAlgorithmIdentifier::kRs256):
-        private_key = PrivateKey::FreshRSAKey();
-        break;
-      case static_cast<int32_t>(CoseAlgorithmIdentifier::kEdDSA):
-        private_key = PrivateKey::FreshEd25519Key();
-        break;
-      case static_cast<int32_t>(CoseAlgorithmIdentifier::kInvalidForTesting):
-        if (!advertised) {
-          // Uniquely, the kInvalidForTesting algorithm has to be explicitly
-          // enabled. Setting an empty |advertised_algorithms| doesn't do it.
-          continue;
-        }
-        private_key = PrivateKey::FreshInvalidForTestingKey();
-        break;
+    if (param.algorithm ==
+            static_cast<int32_t>(CoseAlgorithmIdentifier::kInvalidForTesting) &&
+        !advertised) {
+      // Uniquely, the kInvalidForTesting algorithm has to be explicitly
+      // enabled. Setting an empty |advertised_algorithms| doesn't do it.
+      continue;
     }
-    break;
+    private_key = FreshKeyForCoseAlg(param.algorithm);
+    if (private_key) {
+      break;
+    }
   }
 
   if (!private_key) {
@@ -1224,6 +1261,21 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
     extensions_map.emplace(cbor::Value(kExtensionHmacSecret),
                            cbor::Value(true));
+  }
+
+  std::unique_ptr<PrivateKey> cmtg_key;
+  if (request.cmtg_key) {
+    if (!config_.cmtg_key_support) {
+      DLOG(ERROR)
+          << "Rejecting makeCredential due to unexpected cmtgKey extension";
+      return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
+    }
+    if (!mutable_state()->simulate_cmtg_key_failure) {
+      // CMTG keys must use the same algorithm as the WebAuthn credential.
+      auto cred_pub_key = private_key->GetPublicKey();
+      cmtg_key = FreshKeyForCoseAlg(cred_pub_key->algorithm);
+      AttachCmtgKeyToAuthenticatorDataExtensions(*cmtg_key, extensions_map);
+    }
   }
 
   const bool prf_enabled = request.prf;
@@ -1465,12 +1517,18 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
                registration.large_blob_key->size());
   }
 
+  std::optional<CmtgKeyResponse> cmtg_key_response;
+  if (cmtg_key) {
+    cmtg_key_response = MakeCmtgKeyResponse(*cmtg_key, sign_buffer);
+    registration.cmtg_keys.emplace_back(std::move(cmtg_key));
+  }
+
   StoreNewKey(key_handle, std::move(registration));
 
   *response = ConstructMakeCredentialResponse(
       std::move(attestation_cert), sig, std::move(authenticator_data),
       enterprise_attestation_requested, supports_large_blob, prf_enabled,
-      std::move(prf_results));
+      std::move(prf_results), std::move(cmtg_key_response));
   return CtapDeviceResponseCode::kSuccess;
 }
 
@@ -1667,6 +1725,39 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
           registration.second->cred_blob.value_or(std::vector<uint8_t>()));
     }
 
+    PrivateKey* selected_cmtg_key = nullptr;
+    if (request.cmtg_key) {
+      if (!config_.cmtg_key_support) {
+        return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
+      }
+      if (registration.second->selected_cmtg_key_index >=
+          registration.second->cmtg_keys.size()) {
+        // Default to the first key if the CMTG key index is out of bounds.
+        registration.second->selected_cmtg_key_index = 0;
+      }
+      if (!mutable_state()->simulate_cmtg_key_failure) {
+        if (mutable_state()->generate_new_cmtg_key_on_next_assertion ||
+            registration.second->cmtg_keys.empty()) {
+          // Create a new CMTG key.
+          auto cred_pub_key = registration.second->private_key->GetPublicKey();
+          std::unique_ptr<PrivateKey> new_cmtg_key =
+              FreshKeyForCoseAlg(cred_pub_key->algorithm);
+          registration.second->cmtg_keys.emplace_back(std::move(new_cmtg_key));
+          mutable_state()->generate_new_cmtg_key_on_next_assertion = false;
+          registration.second->selected_cmtg_key_index =
+              registration.second->cmtg_keys.size() - 1;
+        }
+        if (!registration.second->cmtg_keys.empty()) {
+          selected_cmtg_key =
+              registration.second->cmtg_keys
+                  .at(registration.second->selected_cmtg_key_index)
+                  .get();
+          AttachCmtgKeyToAuthenticatorDataExtensions(*selected_cmtg_key,
+                                                     extensions_map);
+        }
+      }
+    }
+
     std::optional<cbor::Value> extensions;
     if (!extensions_map.empty()) {
       extensions.emplace(std::move(extensions_map));
@@ -1699,6 +1790,11 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     AuthenticatorGetAssertionResponse assertion(
         std::move(authenticator_data), signature,
         FidoTransportProtocol::kUsbHumanInterfaceDevice);
+
+    if (selected_cmtg_key) {
+      assertion.cmtg_key =
+          MakeCmtgKeyResponse(*selected_cmtg_key, signature_buffer);
+    }
 
     bool include_credential;
     switch (config_.include_credential_in_assertion_response) {

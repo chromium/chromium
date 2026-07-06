@@ -22,6 +22,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_supported_options.h"
+#include "device/fido/cmtg_key_response.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/public/features.h"
@@ -33,6 +34,25 @@ namespace device {
 namespace {
 
 constexpr size_t kResponseCodeLength = 1;
+
+std::optional<CmtgKeyResponse> ParseCmtgKeyResponse(
+    const cbor::Value& signature_value,
+    const std::optional<cbor::Value>& auth_extensions) {
+  if (!signature_value.is_bytestring()) {
+    return std::nullopt;
+  }
+  if (!auth_extensions || !auth_extensions->is_map()) {
+    return std::nullopt;
+  }
+  const auto& ext_map = auth_extensions->GetMap();
+  const auto public_key_it = ext_map.find(cbor::Value(kExtensionCmtgKey));
+  if (public_key_it == ext_map.end() ||
+      !public_key_it->second.is_bytestring()) {
+    return std::nullopt;
+  }
+  return CmtgKeyResponse(public_key_it->second.GetBytestring(),
+                         signature_value.GetBytestring());
+}
 
 ProtocolVersion ConvertStringToProtocolVersion(std::string_view version) {
   if (version == kCtap2Version || version == kCtap2_1Version ||
@@ -196,6 +216,13 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
             response.large_blob_type = LargeBlobSupportType::kExtension;
           }
         }
+      } else if (extension_name == device::kExtensionCmtgKey) {
+        response.cmtg_key = ParseCmtgKeyResponse(
+            map_it.second,
+            response.attestation_object.authenticator_data().extensions());
+        if (!response.cmtg_key) {
+          return std::nullopt;
+        }
       }
     }
   }
@@ -332,6 +359,12 @@ std::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
                   original_size_it->second.GetUnsigned()));
         } else {
           // No other pattern of members is allowed.
+          return std::nullopt;
+        }
+      } else if (extension_name == kExtensionCmtgKey) {
+        response.cmtg_key = ParseCmtgKeyResponse(
+            map_it.second, response.authenticator_data.extensions());
+        if (!response.cmtg_key) {
           return std::nullopt;
         }
       }

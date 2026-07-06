@@ -177,6 +177,11 @@ std::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
         if (!request.hmac_secret_mc) {
           return std::nullopt;
         }
+      } else if (extension_name == kExtensionCmtgKey) {
+        if (!extension.second.is_bool()) {
+          return std::nullopt;
+        }
+        request.cmtg_key = extension.second.GetBool();
       } else if (extension_name == kExtensionPRF) {
         if (!extension.second.is_map()) {
           return std::nullopt;
@@ -355,6 +360,10 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
 
   if (request.large_blob_key) {
     extensions[cbor::Value(kExtensionLargeBlobKey)] = cbor::Value(true);
+  }
+
+  if (request.cmtg_key) {
+    extensions[cbor::Value(kExtensionCmtgKey)] = cbor::Value(true);
   }
 
   if (request.cred_protect) {

@@ -90,6 +90,10 @@ bool ValidateResponseExtensions(
       if (!request.get_cred_blob || !it.second.is_bytestring()) {
         return false;
       }
+    } else if (ext_name == kExtensionCmtgKey) {
+      if (!request.cmtg_key || !it.second.is_bytestring()) {
+        return false;
+      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;

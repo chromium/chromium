@@ -282,6 +282,10 @@ bool ValidateResponseExtensions(
       if (!request.min_pin_length_requested || !it.second.is_unsigned()) {
         return false;
       }
+    } else if (ext_name == kExtensionCmtgKey) {
+      if (!request.cmtg_key || !it.second.is_bytestring()) {
+        return false;
+      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;
