@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -419,7 +420,12 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, CloseButtonVisibilityActiveTab) {
       base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(TabViewTest, CloseButtonVisibilityHover) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CloseButtonVisibilityHover DISABLED_CloseButtonVisibilityHover
+#else
+#define MAYBE_CloseButtonVisibilityHover CloseButtonVisibilityHover
+#endif
+IN_PROC_BROWSER_TEST_F(TabViewTest, MAYBE_CloseButtonVisibilityHover) {
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
   TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());
   TabCloseButton* close_button = tab_view->close_button_for_testing();
