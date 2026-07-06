@@ -61,8 +61,11 @@ export class ExperimentalOptInApp {
 
   constructor() {
     this.webview_ = getRequiredElement<chrome.webviewTag.WebView>('webview');
-    this.webview_.setAttribute('minwidth', String(defaultWidth));
-    this.webview_.setAttribute('maxwidth', String(defaultWidth));
+    // Allow a small margin of error (±2px) around the target width to prevent
+    // subpixel rounding or zoom differences from failing the webview's internal
+    // size-changed checks and collapsing the layout.
+    this.webview_.setAttribute('minwidth', String(defaultWidth - 2));
+    this.webview_.setAttribute('maxwidth', String(defaultWidth + 2));
 
     this.errorPanel_ = getRequiredElement('errorPanel');
     this.errorIcon_ = getRequiredElement('errorIcon');
