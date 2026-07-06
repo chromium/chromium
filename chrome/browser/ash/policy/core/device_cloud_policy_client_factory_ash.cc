@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
