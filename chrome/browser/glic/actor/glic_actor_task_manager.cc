@@ -106,6 +106,8 @@ GlicActorClientSession::GlicActorClientSession(
       journal_handler_(
           std::make_unique<GlicActorJournalHandler>(manager->profile())) {
   receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&GlicActorClientSession::Unbind, base::Unretained(this)));
   actor_client_.Bind(std::move(client));
   // Unretained is safe because the subscription cancels the callback when
   // this is destroyed.
@@ -1234,8 +1236,10 @@ void GlicActorClientSession::AutofillSuggestionDialogOnFormConfirmed(
 }
 
 void GlicActorClientSession::Unbind() {
-  CHECK_EQ(manager_->session_.get(), this);
-  manager_->UnbindSession();
+  // Avoid reentrancy.
+  if (manager_->session_.get() == this) {
+    manager_->UnbindSession();
+  }
 }
 
 void GlicActorTaskManager::Bind(
