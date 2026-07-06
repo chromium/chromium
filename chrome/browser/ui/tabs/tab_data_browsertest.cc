@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
@@ -42,9 +43,8 @@ namespace tabs {
 class TabDataObserverBrowserTest : public InProcessBrowserTest {
  public:
   TabDataObserverBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature},
-        {features::kWebContentsDiscard});
+    scoped_feature_list_.InitAndEnableFeature(
+        data_sharing::features::kDataSharingFeature);
   }
 
   void SetUpOnMainThread() override {
@@ -451,7 +451,36 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
   EXPECT_TRUE(data1.collaboration_messaging);
 }
 
-IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
+class TabDataObserverDiscardBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  TabDataObserverDiscardBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features{
+        data_sharing::features::kDataSharingFeature};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(features::kWebContentsDiscard);
+    } else {
+      disabled_features.push_back(features::kWebContentsDiscard);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(WebContentsDiscard,
+                         TabDataObserverDiscardBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(TabDataObserverDiscardBrowserTest,
                        ThumbnailRefreshesOnTabDiscard) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("example.com", "/title1.html"),
@@ -472,9 +501,11 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
       UserPerformanceTuningManager::GetInstance();
   user_performance_tuning_manager->DiscardPageForTesting(
       tab_interface->GetContents());
-  // The thumbnail should be updated after discard because the original
-  // ThumbnailTabHelper is destroyed and a new one is created.
-  EXPECT_NE(original_thumbnail, tab_data_observer->tab_data().thumbnail);
+  // When WebContentsDiscard is disabled, the thumbnail should be updated after
+  // discard because the original ThumbnailTabHelper is destroyed and a new one
+  // is created.
+  EXPECT_EQ(original_thumbnail == tab_data_observer->tab_data().thumbnail,
+            base::FeatureList::IsEnabled(features::kWebContentsDiscard));
 }
 
 }  // namespace tabs

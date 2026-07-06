@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -36,7 +37,14 @@ constexpr auto TabHandleMatches = [](const PageNode* handle) {
   };
 };
 
-class TabPageDecoratorTest : public GraphTestHarness {
+class TabPageDecoratorTest : public GraphTestHarness,
+                             public ::testing::WithParamInterface<bool> {
+ public:
+  TabPageDecoratorTest() {
+    scoped_feature_list_.InitWithFeatureState(::features::kWebContentsDiscard,
+                                              GetParam());
+  }
+
  protected:
   void SetUp() override {
     GraphTestHarness::SetUp();
@@ -48,9 +56,14 @@ class TabPageDecoratorTest : public GraphTestHarness {
   }
 
   std::unique_ptr<MockObserver> observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TabPageDecoratorTest, TestBecomesTabAndRemoval) {
+INSTANTIATE_TEST_SUITE_P(WebContentsDiscard,
+                         TabPageDecoratorTest,
+                         ::testing::Bool());
+
+TEST_P(TabPageDecoratorTest, TestBecomesTabAndRemoval) {
   using ::testing::Truly;
 
   ::testing::InSequence seq;
@@ -84,7 +97,7 @@ TEST_F(TabPageDecoratorTest, TestBecomesTabAndRemoval) {
   EXPECT_FALSE(weak_handle);
 }
 
-TEST_F(TabPageDecoratorTest, TestDiscarding) {
+TEST_P(TabPageDecoratorTest, TestDiscarding) {
   using ::testing::Truly;
 
   ::testing::InSequence seq;

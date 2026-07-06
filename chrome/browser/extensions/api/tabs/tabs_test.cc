@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/memory/ref_counted.h"
@@ -82,6 +83,7 @@
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/base_window.h"
 #include "ui/base/ozone_buildflags.h"
@@ -5482,62 +5484,72 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GroupSingleTabInSplitView) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-class ExtensionTabsWebContentsDiscardDisabledTest : public ExtensionTabsTest {
+class ExtensionTabsDiscardTest : public ExtensionTabsTest,
+                                 public ::testing::WithParamInterface<bool> {
  public:
-  ExtensionTabsWebContentsDiscardDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kWebContentsDiscard);
+  ExtensionTabsDiscardTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kWebContentsDiscard,
+                                              GetParam());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsWebContentsDiscardDisabledTest,
-                       OnReplacedEvent) {
+INSTANTIATE_TEST_SUITE_P(WebContentsDiscard,
+                         ExtensionTabsDiscardTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ExtensionTabsDiscardTest, DiscardEvent) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"({
-    "name": "onReplaced Test",
+    "name": "Discard Event Test",
     "version": "1.0",
     "manifest_version": 3,
     "background": {
       "service_worker": "background.js"
     }
   })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.tabs.create({"url": "about:blank"}, function(tab) {
-      chrome.tabs.onReplaced.addListener(function(new_tab_id, old_tab_id) {
-        if (old_tab_id === tab.id && new_tab_id !== tab.id) {
-          chrome.test.sendMessage("success");
-        } else {
-          chrome.test.sendMessage("failure");
-        }
-      });
-      chrome.test.sendMessage("ready");
-    });
-  )");
 
-  ExtensionTestMessageListener ready_listener("ready");
+  std::string event_name;
+  std::string event_listener;
+  if (base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    event_name = "onUpdated";
+    event_listener = R"(
+        function(tab_id, change_info, updated_tab) {
+          if (tab_id === created_tab.id && change_info.discarded === true) {
+            chrome.test.sendMessage("success");
+          }
+          // Ignore extra non-matching updates.
+        }
+                     )";
+  } else {
+    event_name = "onReplaced";
+    event_listener = R"(
+        function(new_tab_id, old_tab_id) {
+          if (old_tab_id === created_tab.id && new_tab_id !== created_tab.id) {
+            chrome.test.sendMessage("success");
+          } else {
+            chrome.test.sendMessage("failure");
+          }
+        }
+                     )";
+  }
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     absl::StrFormat(R"(
+      chrome.tabs.create({"url": "about:blank"}, function(created_tab) {
+        chrome.tabs.%s.addListener(%s);
+        chrome.tabs.discard(created_tab.id);
+      });
+                                     )",
+                                     event_name, event_listener));
+
   ExtensionTestMessageListener success_listener("success");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // Wait for the JS to create the tab and attach its listener.
-  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
-
-  // Do the replacement on the last tab (the one the extension just created).
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  int target_index = tab_strip_model->count() - 1;
-
-  auto new_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(
-          browser()->profile(),
-          content::SiteInstance::Create(browser()->profile())));
-
-  auto old_contents = tab_strip_model->DiscardWebContentsAt(
-      target_index, std::move(new_contents));
-
-  // Wait for the JS test to catch the event and send "success".
+  // Wait for the JS to discard the tab, catch the event and send "success".
   ASSERT_TRUE(success_listener.WaitUntilSatisfied());
 }
 
