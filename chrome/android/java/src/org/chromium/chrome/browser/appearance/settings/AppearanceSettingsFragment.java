@@ -69,6 +69,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public void onDestroy() {
         super.onDestroy();
 
@@ -184,6 +185,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                         });
     }
 
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     private void initBookmarkBarPrefForDevicePreference() {
         // Similar to UserPrefs above, we must have both an observer of changes to the device prefs,
         // as well as the ability to set the device prefs via the toggle, since the value can be

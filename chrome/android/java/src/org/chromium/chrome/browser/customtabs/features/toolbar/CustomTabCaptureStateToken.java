@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 
 import java.util.Objects;

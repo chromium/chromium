@@ -40,7 +40,6 @@ public final class StartupLatencyInjector {
 
     private void busyWait() {
         UptimeMillisTimer timer = new UptimeMillisTimer();
-        while (mBusyWaitDurationMillis.compareTo(timer.getElapsedMillis()) >= 0)
-            ;
+        while (mBusyWaitDurationMillis.compareTo(timer.getElapsedMillis()) >= 0) {}
     }
 }

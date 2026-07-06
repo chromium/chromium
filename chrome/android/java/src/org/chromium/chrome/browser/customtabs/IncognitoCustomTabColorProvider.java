@@ -21,10 +21,10 @@ public final class IncognitoCustomTabColorProvider implements ColorProvider {
 
     public IncognitoCustomTabColorProvider(Context context) {
         assert context != null;
-        mToolbarColor =
-                mBottomBarColor =
-                        mNavigationBarColor =
-                                ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ true);
+        int themeColor = ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ true);
+        mToolbarColor = themeColor;
+        mBottomBarColor = themeColor;
+        mNavigationBarColor = themeColor;
     }
 
     @Override

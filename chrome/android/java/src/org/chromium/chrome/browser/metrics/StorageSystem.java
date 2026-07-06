@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;

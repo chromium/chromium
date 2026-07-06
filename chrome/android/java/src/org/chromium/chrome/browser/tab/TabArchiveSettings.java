@@ -77,6 +77,7 @@ public class TabArchiveSettings {
      *
      * @param prefsManager The {@link SharedPreferencesManager} used to read/write settings.
      */
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public TabArchiveSettings(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
         ContextUtils.getAppSharedPreferences()
@@ -84,6 +85,7 @@ public class TabArchiveSettings {
     }
 
     /** Destroys the object, unregistering observers. */
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public void destroy() {
         ContextUtils.getAppSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(mPrefsListener);

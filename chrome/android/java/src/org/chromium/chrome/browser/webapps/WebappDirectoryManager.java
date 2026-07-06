@@ -40,7 +40,7 @@ public class WebappDirectoryManager {
 
         new BackgroundOnlyAsyncTask<>() {
             @Override
-            protected final Void doInBackground() {
+            protected Void doInBackground() {
                 recordNumberOfStaleWebApkUpdateRequestFiles();
                 FileUtils.recursivelyDeleteFile(
                         getBaseWebappDirectory(ContextUtils.getApplicationContext()),

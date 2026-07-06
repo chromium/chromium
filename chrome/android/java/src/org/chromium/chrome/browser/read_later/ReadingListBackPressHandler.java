@@ -8,8 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -18,6 +16,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
