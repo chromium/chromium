@@ -112,6 +112,11 @@ class MockUnexportableKeyService : public UnexportableKeyService {
               GetCreationTime,
               (UnexportableKeyId key_id),
               (const, override));
+
+  // Delegates all unconfigured mock calls to the real `service`.
+  // `service` must outlive this mock. Use `testing::Mock::VerifyAndClear()`
+  // to clear the state and stop delegating.
+  void DelegateToService(UnexportableKeyService& service);
 };
 
 }  // namespace unexportable_keys
