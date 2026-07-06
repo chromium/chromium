@@ -44,7 +44,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
@@ -65,6 +64,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 
 using testing::_;
@@ -810,9 +810,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Enter to "Save anyway".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_RETURN, /*control=*/false,
-      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  ui::test::EventGenerator(
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow())
+      .PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
+  // Run loop to process asynchronous widget closure triggered by key event.
+  base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kScreenshotWarnProceededUMA,
@@ -882,9 +884,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Enter to "Cancel".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_ESCAPE, /*control=*/false,
-      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  ui::test::EventGenerator(
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow())
+      .PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  // Run loop to process asynchronous widget closure triggered by key event.
+  base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kScreenshotWarnProceededUMA,
@@ -1025,9 +1029,11 @@ class DlpContentManagerAshScreenShareBrowserTest
   void DismissDialog(bool allow) {
     ASSERT_EQ(helper_->ActiveWarningDialogsCount(), 1);
     ui::KeyboardCode key = allow ? ui::VKEY_RETURN : ui::VKEY_ESCAPE;
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-        browser(), key, /*control=*/false,
-        /*shift=*/false, /*alt=*/false, /*command=*/false));
+    ui::test::EventGenerator(
+        browser()->GetWindow()->GetNativeWindow()->GetRootWindow())
+        .PressAndReleaseKey(key, ui::EF_NONE);
+    // Run loop to process asynchronous widget closure triggered by key event.
+    base::RunLoop().RunUntilIdle();
   }
 
   // Blocks the test execution to wait for a screen share to be resumed.

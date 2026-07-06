@@ -97,7 +97,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -138,6 +137,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -168,6 +168,7 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #endif
 
 namespace {
@@ -3281,8 +3282,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Exception: VKEY_ZOOM maps to ash::AcceleratorAction::kToggleFullscreen
 #if BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      helper()->app_browser(), ui::VKEY_ZOOM, false, false, false, false));
+  ui::test::EventGenerator(
+      helper()->app_browser()->GetWindow()->GetNativeWindow()->GetRootWindow())
+      .PressAndReleaseKey(ui::VKEY_ZOOM, ui::EF_NONE);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
 #endif

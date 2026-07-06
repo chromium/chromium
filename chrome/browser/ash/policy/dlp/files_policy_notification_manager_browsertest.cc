@@ -48,9 +48,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -59,8 +59,10 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace policy {
@@ -503,9 +505,9 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
   testing::Mock::VerifyAndClearExpectations(&cb);
   EXPECT_CALL(cb, Run(/*user_justification=*/std::optional<std::u16string>(),
                       /*should_proceed=*/true));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_RETURN, /*control=*/false,
-      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  ui::test::EventGenerator(
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow())
+      .PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
 
   // Skip the warning timeout. Shouldn't do anything.
   testing::Mock::VerifyAndClearExpectations(&cb);

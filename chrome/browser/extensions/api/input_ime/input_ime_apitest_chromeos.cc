@@ -6,8 +6,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -19,8 +19,10 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/test/event_generator.h"
 
 namespace extensions {
 
@@ -114,9 +116,9 @@ IN_PROC_BROWSER_TEST_F(InputImeApiTest, WakeWorkerAfterShutdown) {
 
   // Type a lowercase "j" character into the text box and confirm it's in the
   // text field.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_J, /*control=*/false,
-      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  ui::test::EventGenerator(
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow())
+      .PressAndReleaseKey(ui::VKEY_J, ui::EF_NONE);
 
   {
     SCOPED_TRACE(
