@@ -1281,16 +1281,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testOnlyExpectedPreferencesAllSites() {
-        checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, CLEAR_BROWSING_DATA_LINK);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
-    public void testOnlyExpectedPreferencesAllSites_ContainmentEnabled() {
         checkPreferencesForCategory(
                 SiteSettingsCategory.Type.ALL_SITES, CLEAR_BROWSING_DATA_LINK_WITH_CONTAINMENT);
     }
@@ -1491,9 +1482,8 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
-    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287320
+    @DisabledTest(message = "https://crbug.com/433576895")
     public void testExpectedExceptionsStorageAccess() {
         createStorageAccessExceptions();
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
@@ -1514,8 +1504,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
-    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
+    @DisabledTest(message = "https://crbug.com/433576895")
     public void testResetExceptionGroupStorageAccess() {
         createStorageAccessExceptions();
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
@@ -1559,8 +1548,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
-    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
+    @DisabledTest(message = "https://crbug.com/433576895")
     public void testBlockExceptionGroupStorageAccess() {
         createStorageAccessExceptions();
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.STORAGE_ACCESS);
@@ -2353,8 +2341,6 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
-    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
-    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testChangeGeolocationWithOptions() {
         String url = "https://example.com";
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);

@@ -48,6 +48,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UserActionTester;
@@ -313,8 +314,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
-    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
+    @DisabledTest(message = "https://crbug.com/433576895")
     public void testBlockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
