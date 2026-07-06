@@ -12,7 +12,8 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -245,9 +246,9 @@ void SigninHelper::OnOAuth2RevokeTokenCompleted(
 }
 
 bool SigninHelper::IsInitialPrimaryAccount() {
-  return user_manager::UserManager::Get()
-             ->GetPrimaryUser()
-             ->GetAccountId()
+  return session_manager::SessionManager::Get()
+             ->GetPrimarySession()
+             ->account_id()
              .GetGaiaId() == GaiaId(account_key_.id());
 }
 

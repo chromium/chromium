@@ -39,11 +39,11 @@
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -531,7 +531,7 @@ void InlineLoginHandlerImpl::GetDeviceId(const base::ListValue& args) {
 
   user_manager::KnownUser known_user{g_browser_process->local_state()};
   const AccountId& device_account_id =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
   ResolveJavascriptCallback(
       callback_id,
       ::ash::GetDeviceId(known_user, device_account_id, initial_email_));
