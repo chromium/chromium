@@ -582,4 +582,8 @@ public class LocationBarLayout extends ConstraintLayout {
     View getNavigateButton() {
         return mNavigateButton;
     }
+
+    View getDeleteButton() {
+        return mDeleteButton;
+    }
 }

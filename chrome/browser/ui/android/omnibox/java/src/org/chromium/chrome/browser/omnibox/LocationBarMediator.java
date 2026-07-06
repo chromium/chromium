@@ -498,6 +498,7 @@ class LocationBarMediator
         List<SelectableView> selectableViews =
                 List.of(
                         urlBarSelectableView,
+                        wrapSelectableView(mLocationBarLayout.getDeleteButton()),
                         autocompleteSelectableView,
                         wrapSelectableView(
                                 mLocationBarLayout.findViewById(R.id.fusebox_plus_button)),

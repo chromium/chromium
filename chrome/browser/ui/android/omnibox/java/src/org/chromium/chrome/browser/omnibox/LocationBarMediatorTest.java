@@ -240,6 +240,7 @@ public class LocationBarMediatorTest {
     @Mock private OmniboxSuggestionsDropdown mDropdown;
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock private View mUrlBar;
+    @Mock private View mDeleteButton;
     @Mock private View mMicButton;
     @Mock private View mNavigateButton;
     @Mock private View mPlusButton;
@@ -411,6 +412,7 @@ public class LocationBarMediatorTest {
                 .setupSuggestionsListShowAnimation();
 
         doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
+        doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
         doReturn(mPlusButton).when(mLocationBarLayout).findViewById(R.id.fusebox_plus_button);
         doReturn(mMicButton).when(mLocationBarLayout).getMicButton();
         doReturn(mNavigateButton).when(mLocationBarLayout).getNavigateButton();
@@ -456,6 +458,7 @@ public class LocationBarMediatorTest {
                         /* scrimHandler= */ null,
                         mExactMatchUrlSupplier);
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
+        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mPlusButton).when(mLocationBarTablet).findViewById(R.id.fusebox_plus_button);
         doReturn(mMicButton).when(mLocationBarTablet).getMicButton();
         doReturn(mNavigateButton).when(mLocationBarTablet).getNavigateButton();
@@ -3459,10 +3462,13 @@ public class LocationBarMediatorTest {
 
         doReturn(View.VISIBLE).when(mUrlBar).getVisibility();
         doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         LocationBarSelectionController selectionController =
                 mMediator.getSelectionControllerForTesting();
         assertEquals(1, selectionController.getPosition().intValue());
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        assertEquals(2, selectionController.getPosition().intValue());
         verify(mAutocompleteCoordinator).selectFirstItem();
         assertTrue(selectionController.isAutocompleteSelected());
 
@@ -3470,7 +3476,7 @@ public class LocationBarMediatorTest {
                 .when(mAutocompleteCoordinator)
                 .handleKeyEvent(KeyEvent.KEYCODE_TAB, mKeyEvent);
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
-        assertEquals(1, selectionController.getPosition().intValue());
+        assertEquals(2, selectionController.getPosition().intValue());
         assertTrue(selectionController.isAutocompleteSelected());
 
         doReturn(KeyEvent.KEYCODE_ENTER).when(mKeyEvent).getKeyCode();
@@ -3488,14 +3494,14 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mAutocompleteCoordinator).isLastItemSelected();
         when(mAutocompleteCoordinator.getSelectedIndex()).thenReturn(1, 2);
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
-        assertEquals(2, selectionController.getPosition().intValue());
+        assertEquals(3, selectionController.getPosition().intValue());
         assertFalse(selectionController.isAutocompleteSelected());
         verify(mAutocompleteCoordinator).resetSelection();
 
         doReturn(false).when(mKeyEvent).hasNoModifiers();
         doReturn(true).when(mKeyEvent).hasModifiers(KeyEvent.META_SHIFT_ON);
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
-        assertEquals(1, selectionController.getPosition().intValue());
+        assertEquals(2, selectionController.getPosition().intValue());
         verify(mAutocompleteCoordinator).selectFirstItem();
         assertTrue(selectionController.isAutocompleteSelected());
 
@@ -3504,6 +3510,6 @@ public class LocationBarMediatorTest {
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         assertFalse(selectionController.isAutocompleteSelected());
         verify(mAutocompleteCoordinator, times(2)).resetSelection();
-        assertEquals(0, selectionController.getPosition().intValue());
+        assertEquals(1, selectionController.getPosition().intValue());
     }
 }
