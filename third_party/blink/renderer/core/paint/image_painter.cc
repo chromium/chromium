@@ -117,11 +117,13 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
 
 void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
                                  const PhysicalOffset& paint_offset) {
-  const PhysicalSize content_size = layout_image_.PhysicalContentBoxSize();
+  const PhysicalRect content_rect =
+      layout_image_.PhysicalContentBoxRect() + paint_offset;
   bool has_image = layout_image_.ImageResource()->HasImage();
   if (has_image) {
-    if (content_size.IsEmpty())
+    if (content_rect.IsEmpty()) {
       return;
+    }
     if (paint_info.IsPrivacyPreserving() &&
         !layout_image_.ImageResource()->IsCorsSameOrigin()) {
       return;
@@ -129,16 +131,13 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
   } else {
     if (paint_info.phase == PaintPhase::kSelectionDragImage)
       return;
-    if (content_size.width <= 2 || content_size.height <= 2) {
+    if (content_rect.size.width <= 2 || content_rect.size.height <= 2) {
       return;
     }
   }
 
-  PhysicalRect content_rect(
-      paint_offset + layout_image_.PhysicalContentBoxOffset(), content_size);
-
-  PhysicalRect paint_rect = layout_image_.ReplacedContentRect();
-  paint_rect.offset += paint_offset;
+  const PhysicalRect paint_rect =
+      layout_image_.ReplacedContentRect() + paint_offset;
 
   // If |overflow| is supported for replaced elements, paint the complete image
   // and the painting will be clipped based on overflow value by clip paint

@@ -137,10 +137,10 @@ void OverscrollAreaTracker::OpenArea(Element* overscroll_area) {
     return;
   }
 
-  const auto& second_data = container_data->at(1);
-  gfx::PointF scroll_origin(scrollable_area->ScrollOrigin());
-  gfx::RectF target_rect = second_data.rect;
-  PhysicalSize box_size = overscroll_area_object->PhysicalContentBoxSize();
+  const gfx::PointF scroll_origin(scrollable_area->ScrollOrigin());
+  const gfx::RectF target_rect = container_data->at(1).rect;
+  const PhysicalSize box_size =
+      overscroll_area_object->PhysicalContentBoxRect().size;
 
   float min_x_offset = std::min(target_rect.x() - scroll_origin.x(), 0.f);
   float min_y_offset = std::min(target_rect.y() - scroll_origin.y(), 0.f);

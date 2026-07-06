@@ -3892,11 +3892,6 @@ PhysicalOffset LayoutBox::PhysicalContentBoxOffset() const {
   return PhysicalContractedBoxRect(kContractToContentEdge).offset;
 }
 
-PhysicalSize LayoutBox::PhysicalContentBoxSize() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToContentEdge).size;
-}
-
 ShapeOutsideInfo* LayoutBox::GetShapeOutsideInfo() const {
   NOT_DESTROYED();
   return ShapeOutsideInfo::Info(*this);

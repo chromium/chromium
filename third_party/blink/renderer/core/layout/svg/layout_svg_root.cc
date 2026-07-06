@@ -157,7 +157,7 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
   base::AutoReset<const PhysicalSize*> reset(&new_content_size_,
                                              &content_rect.size, nullptr);
 
-  const PhysicalSize old_content_size = PhysicalContentBoxSize();
+  const PhysicalSize old_content_size = PhysicalContentBoxRect().size;
 
   // Whether we have a self-painting layer depends on whether there are
   // compositing descendants (see: |HasCompositingDescendants()| which is called
@@ -475,7 +475,7 @@ gfx::RectF LayoutSVGRoot::ViewBoxRect() const {
 
 gfx::SizeF LayoutSVGRoot::ViewportSize() const {
   const PhysicalSize& viewport_size =
-      new_content_size_ ? *new_content_size_ : PhysicalContentBoxSize();
+      new_content_size_ ? *new_content_size_ : PhysicalContentBoxRect().size;
   const float zoom = SvgObjectZoomWillBeNoZoom(StyleRef());
   return gfx::SizeF(viewport_size.width / zoom, viewport_size.height / zoom);
 }

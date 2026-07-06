@@ -50,9 +50,7 @@ void LayoutImageReplacement::PaintReplaced(
                                                     paint_info.phase)) {
       return;
     }
-    PhysicalSize content_size = PhysicalContentBoxSize();
-    PhysicalRect content_rect(paint_offset + PhysicalContentBoxOffset(),
-                              content_size);
+    const PhysicalRect content_rect = PhysicalContentBoxRect() + paint_offset;
     DrawingRecorder recorder(paint_info.context, *this, paint_info.phase,
                              ToEnclosingRect(content_rect));
     paint_info.context.FillRect(

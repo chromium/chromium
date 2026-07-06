@@ -289,8 +289,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalRect PhysicalContentBoxRect() const;
   // Get the content box left/top edge.
   PhysicalOffset PhysicalContentBoxOffset() const;
-  // Get the content box size.
-  PhysicalSize PhysicalContentBoxSize() const;
 
   // The content box converted to absolute coords (taking transforms into
   // account).
