@@ -78,14 +78,20 @@ class OptimizationGuideAnnotationIndexClient : public AnnotationIndexClient {
   // Log router for the internals page.
   raw_ptr<MultistepFilterLogRouter> log_router_;
 
-  // Callback invoked by `OptimizationGuideDecider` when queried for
-  // `FILTER_TASKS_SUPPORTED`. Parses `metadata`, logs the result to
-  // `log_router_`, and invokes `callback` with the supported tasks (or an
-  // empty vector on failure).
+  // Callbacks invoked by `OptimizationGuideDecider` when queried for
+  // optimization types. Parses `metadata`, logs the result to `log_router_`,
+  // and invokes `callback` with the result.
   void OnFilterTasksSupportedDecision(
       const GURL& url,
       int64_t navigation_id,
       base::OnceCallback<void(std::vector<std::string>)> callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
+  void OnFilterExtractAttributesDecision(
+      const GURL& url,
+      int64_t navigation_id,
+      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 

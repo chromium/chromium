@@ -43,6 +43,27 @@ constexpr int64_t kTestNavigationId = 12345;
 constexpr char kTestUrl[] = "https://example.com/test";
 constexpr char kTestTaskType1[] = "TASK_TYPE_1";
 constexpr char kTestTaskType2[] = "TASK_TYPE_2";
+constexpr char kTestTaskTypeShopping[] = "SHOPPING";
+constexpr char kTestAttributeKey[] = "key";
+constexpr char kTestAttributeValue[] = "value";
+constexpr char kGetSupportedTasksResponseUrl[] =
+    "type.googleapis.com/multistep_filter.GetSupportedTasksResponse";
+constexpr char kExtractTaskAttributesResponseUrl[] =
+    "type.googleapis.com/multistep_filter.ExtractTaskAttributesResponse";
+
+OptimizationMetadata CreateOptimizationMetadata(const Any& any_metadata) {
+  OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  return metadata;
+}
+
+OptimizationMetadata CreateMalformedOptimizationMetadata(
+    std::string_view type_url) {
+  Any any_metadata;
+  any_metadata.set_type_url(type_url);
+  any_metadata.set_value("kInvalidProtobufBytes");
+  return CreateOptimizationMetadata(any_metadata);
+}
 
 class OptimizationGuideAnnotationIndexClientTest : public testing::Test {
  public:
@@ -53,12 +74,12 @@ class OptimizationGuideAnnotationIndexClientTest : public testing::Test {
   ~OptimizationGuideAnnotationIndexClientTest() override = default;
 
  protected:
-  void SetupFilterTasksSupportedDeciderResponse(
+  void SetupOptimizationGuideDeciderResponse(
       OptimizationGuideDecision decision,
+      OptimizationType optimization_type,
       const OptimizationMetadata& metadata) {
     EXPECT_CALL(mock_decider_,
-                CanApplyOptimization(GURL(kTestUrl),
-                                     OptimizationType::FILTER_TASKS_SUPPORTED,
+                CanApplyOptimization(GURL(kTestUrl), optimization_type,
                                      A<OptimizationGuideDecisionCallback>()))
         .WillOnce(WithArgs<2>(
             [decision, metadata](OptimizationGuideDecisionCallback callback) {
@@ -88,10 +109,11 @@ TEST_F(OptimizationGuideAnnotationIndexClientTest,
   std::vector<std::string> expected_tasks = {kTestTaskType1, kTestTaskType2};
   GetSupportedTasksResponse response_proto =
       CreateSupportedTasksResponse(expected_tasks);
-  OptimizationMetadata metadata;
-  metadata.set_any_metadata(AnyWrapProto(response_proto));
-  SetupFilterTasksSupportedDeciderResponse(OptimizationGuideDecision::kTrue,
-                                           metadata);
+  OptimizationMetadata metadata =
+      CreateOptimizationMetadata(AnyWrapProto(response_proto));
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kTrue,
+      OptimizationType::FILTER_TASKS_SUPPORTED, metadata);
 
   base::test::TestFuture<std::vector<std::string>> future;
   client_->GetSupportedTasks(GURL(kTestUrl), future.GetCallback(),
@@ -102,8 +124,9 @@ TEST_F(OptimizationGuideAnnotationIndexClientTest,
 
 TEST_F(OptimizationGuideAnnotationIndexClientTest,
        GetSupportedTasks_FalseDecision_ReturnsEmptyVector) {
-  SetupFilterTasksSupportedDeciderResponse(OptimizationGuideDecision::kFalse,
-                                           OptimizationMetadata());
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kFalse,
+      OptimizationType::FILTER_TASKS_SUPPORTED, OptimizationMetadata());
 
   base::test::TestFuture<std::vector<std::string>> future;
   client_->GetSupportedTasks(GURL(kTestUrl), future.GetCallback(),
@@ -114,8 +137,9 @@ TEST_F(OptimizationGuideAnnotationIndexClientTest,
 
 TEST_F(OptimizationGuideAnnotationIndexClientTest,
        GetSupportedTasks_NoMetadata_ReturnsEmptyVector) {
-  SetupFilterTasksSupportedDeciderResponse(OptimizationGuideDecision::kTrue,
-                                           OptimizationMetadata());
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kTrue,
+      OptimizationType::FILTER_TASKS_SUPPORTED, OptimizationMetadata());
 
   base::test::TestFuture<std::vector<std::string>> future;
   client_->GetSupportedTasks(GURL(kTestUrl), future.GetCallback(),
@@ -126,14 +150,11 @@ TEST_F(OptimizationGuideAnnotationIndexClientTest,
 
 TEST_F(OptimizationGuideAnnotationIndexClientTest,
        GetSupportedTasks_MalformedMetadata_ReturnsEmptyVector) {
-  OptimizationMetadata metadata;
-  Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/multistep_filter.GetSupportedTasksResponse");
-  any_metadata.set_value("invalid_protobuf_bytes");
-  metadata.set_any_metadata(any_metadata);
-  SetupFilterTasksSupportedDeciderResponse(OptimizationGuideDecision::kTrue,
-                                           metadata);
+  OptimizationMetadata metadata =
+      CreateMalformedOptimizationMetadata(kGetSupportedTasksResponseUrl);
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kTrue,
+      OptimizationType::FILTER_TASKS_SUPPORTED, metadata);
 
   base::test::TestFuture<std::vector<std::string>> future;
   client_->GetSupportedTasks(GURL(kTestUrl), future.GetCallback(),
@@ -155,11 +176,77 @@ TEST_F(OptimizationGuideAnnotationIndexClientTest,
 }
 
 TEST_F(OptimizationGuideAnnotationIndexClientTest,
-       ExtractFilterAnnotationTriggersCallback) {
-  base::test::TestFuture<std::optional<FilterAnnotation>> future;
+       ExtractFilterAnnotation_ValidMetadata_ReturnsAnnotation) {
+  ExtractTaskAttributesResponse response_proto =
+      CreateExtractTaskAttributesResponse(
+          kTestTaskTypeShopping, {{kTestAttributeKey, kTestAttributeValue}});
+  OptimizationMetadata metadata =
+      CreateOptimizationMetadata(AnyWrapProto(response_proto));
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kTrue,
+      OptimizationType::FILTER_EXTRACT_ATTRIBUTES, metadata);
 
+  base::test::TestFuture<std::optional<FilterAnnotation>> future;
   client_->ExtractFilterAnnotation(GURL(kTestUrl), future.GetCallback(),
                                    kTestNavigationId);
+
+  std::optional<FilterAnnotation> annotation = future.Take();
+  ASSERT_TRUE(annotation.has_value());
+  EXPECT_EQ(annotation->task_type, kTestTaskTypeShopping);
+  ASSERT_EQ(annotation->attributes.size(), 1u);
+  EXPECT_EQ(annotation->attributes[0].key, kTestAttributeKey);
+  EXPECT_EQ(annotation->attributes[0].value, kTestAttributeValue);
+}
+
+TEST_F(OptimizationGuideAnnotationIndexClientTest,
+       ExtractFilterAnnotation_FalseDecision_ReturnsNullopt) {
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kFalse,
+      OptimizationType::FILTER_EXTRACT_ATTRIBUTES, OptimizationMetadata());
+
+  base::test::TestFuture<std::optional<FilterAnnotation>> future;
+  client_->ExtractFilterAnnotation(GURL(kTestUrl), future.GetCallback(),
+                                   kTestNavigationId);
+
+  EXPECT_EQ(future.Take(), std::nullopt);
+}
+
+TEST_F(OptimizationGuideAnnotationIndexClientTest,
+       ExtractFilterAnnotation_NoMetadata_ReturnsNullopt) {
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kTrue,
+      OptimizationType::FILTER_EXTRACT_ATTRIBUTES, OptimizationMetadata());
+
+  base::test::TestFuture<std::optional<FilterAnnotation>> future;
+  client_->ExtractFilterAnnotation(GURL(kTestUrl), future.GetCallback(),
+                                   kTestNavigationId);
+
+  EXPECT_EQ(future.Take(), std::nullopt);
+}
+
+TEST_F(OptimizationGuideAnnotationIndexClientTest,
+       ExtractFilterAnnotation_MalformedMetadata_ReturnsNullopt) {
+  OptimizationMetadata metadata =
+      CreateMalformedOptimizationMetadata(kExtractTaskAttributesResponseUrl);
+  SetupOptimizationGuideDeciderResponse(
+      OptimizationGuideDecision::kTrue,
+      OptimizationType::FILTER_EXTRACT_ATTRIBUTES, metadata);
+
+  base::test::TestFuture<std::optional<FilterAnnotation>> future;
+  client_->ExtractFilterAnnotation(GURL(kTestUrl), future.GetCallback(),
+                                   kTestNavigationId);
+
+  EXPECT_EQ(future.Take(), std::nullopt);
+}
+
+TEST_F(OptimizationGuideAnnotationIndexClientTest,
+       ExtractFilterAnnotation_NullDecider_ReturnsNullopt) {
+  auto client = std::make_unique<OptimizationGuideAnnotationIndexClient>(
+      /*optimization_guide_decider=*/nullptr, /*log_router=*/nullptr);
+
+  base::test::TestFuture<std::optional<FilterAnnotation>> future;
+  client->ExtractFilterAnnotation(GURL(kTestUrl), future.GetCallback(),
+                                  kTestNavigationId);
 
   EXPECT_EQ(future.Take(), std::nullopt);
 }
