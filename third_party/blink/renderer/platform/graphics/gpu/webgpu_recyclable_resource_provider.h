@@ -24,7 +24,6 @@
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
@@ -36,7 +35,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace cc {
-class AnimatedImageFrameIndexMap;
 class PaintCanvas;
 }  // namespace cc
 
@@ -56,11 +54,9 @@ class RasterInterface;
 namespace blink {
 
 class CanvasImageProvider;
-class CanvasResourceProviderDelegate;
 
 class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     : public CanvasMemoryDumpClient,
-      public MemoryManagedPaintRecorder::Client,
       public CanvasResourceSharedImage::Client,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
@@ -73,16 +69,14 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      CanvasResourceProviderDelegate* delegate = nullptr);
+      gpu::SharedImageUsageSet shared_image_usage_flags);
   static std::unique_ptr<WebGpuRecyclableResourceProvider> CreateForWebGPU(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata,
-      gpu::SharedImageUsageSet shared_image_usage_flags = {},
-      CanvasResourceProviderDelegate* delegate = nullptr);
+      gpu::SharedImageUsageSet shared_image_usage_flags = {});
   WebGpuRecyclableResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,
@@ -90,34 +84,20 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       const gfx::ColorSpace&,
       const gfx::HDRMetadata&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      CanvasResourceProviderDelegate*);
+      gpu::SharedImageUsageSet shared_image_usage_flags);
   ~WebGpuRecyclableResourceProvider() override;
 
   void ClearUnusedResources();
-  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool IsSingleBuffered() const;
 
   bool IsGpuContextLost() const;
 
   CanvasImageProvider* GetOrCreateImageProvider();
-  void SetAnimatedImageFrameIndexes(
-      scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
 
   gfx::Size Size() const { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
-  const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
   SkAlphaType GetAlphaType() const { return alpha_type_; }
-  CanvasSnapshotInfo GetInfo() const {
-    return {
-        .alpha_type = GetAlphaType(),
-        .color_space = GetColorSpace(),
-        .hdr_metadata = GetHdrMetadata(),
-        .format = GetSharedImageFormat(),
-        .size = Size(),
-    };
-  }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -128,10 +108,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   base::ByteSize EstimatedSizeInBytes() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
-
-  // MemoryManagedPaintRecorder::Client implementation.
-  void RecordingCleared() override;
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
   void EnsureWriteAccess();
   void EndWriteAccess();
@@ -189,9 +165,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
 
   base::WeakPtr<WebGpuRecyclableResourceProvider> CreateWeakPtr();
 
-  static void NotifyGpuContextLostTask(
-      base::WeakPtr<WebGpuRecyclableResourceProvider>);
-
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
@@ -222,7 +195,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   const SkAlphaType alpha_type_;
   const gfx::ColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
-  const raw_ptr<CanvasResourceProviderDelegate> delegate_;
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;

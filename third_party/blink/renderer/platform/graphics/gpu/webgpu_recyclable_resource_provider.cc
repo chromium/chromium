@@ -53,8 +53,7 @@ WebGpuRecyclableResourceProvider::Create(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate) {
+    gpu::SharedImageUsageSet shared_image_usage_flags) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -143,7 +142,7 @@ WebGpuRecyclableResourceProvider::Create(
 
   auto provider = std::make_unique<WebGpuRecyclableResourceProvider>(
       size, format, alpha_type, color_space, hdr_metadata,
-      context_provider_wrapper, shared_image_usage_flags, delegate);
+      context_provider_wrapper, shared_image_usage_flags);
 
   return provider->IsValid() ? std::move(provider) : nullptr;
 }
@@ -155,8 +154,7 @@ WebGpuRecyclableResourceProvider::CreateForWebGPU(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate) {
+    gpu::SharedImageUsageSet shared_image_usage_flags) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   // The SharedImages created by this provider serve as a means of import/export
   // between VideoFrames/canvas and WebGPU, e.g.:
@@ -170,8 +168,7 @@ WebGpuRecyclableResourceProvider::CreateForWebGPU(
       size, format, alpha_type, color_space, hdr_metadata,
       std::move(context_provider_wrapper),
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-      delegate);
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
 }
 
 WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
@@ -181,14 +178,12 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate)
+    gpu::SharedImageUsageSet shared_image_usage_flags)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
-      delegate_(delegate),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
@@ -305,11 +300,6 @@ bool WebGpuRecyclableResourceProvider::IsValid() const {
   return !IsGpuContextLost();
 }
 
-gpu::SharedImageUsageSet
-WebGpuRecyclableResourceProvider::GetSharedImageUsageFlags() const {
-  return image_pool_->GetImageInfo().usage;
-}
-
 void WebGpuRecyclableResourceProvider::EnsureWriteAccess() {
   DCHECK(resource_);
   DCHECK(resource_->HasOneRef() || IsSingleBuffered())
@@ -338,14 +328,6 @@ void WebGpuRecyclableResourceProvider::OnContextLost() {
     return;
   }
   ClearUnusedResources();
-  // Notify the owner of this resource provider that the GPU context was
-  // lost. The call is done in a separate task, so that the owner can delete
-  // this resource provider if needed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &WebGpuRecyclableResourceProvider::NotifyGpuContextLostTask,
-          CreateWeakPtr()));
   notified_context_lost_ = true;
 }
 
@@ -353,16 +335,6 @@ void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
   canvas_image_provider_.reset();
   if (image_pool_) {
     image_pool_->Clear();
-  }
-}
-
-void WebGpuRecyclableResourceProvider::NotifyGpuContextLostTask(
-    base::WeakPtr<WebGpuRecyclableResourceProvider> provider) {
-  if (provider && provider->delegate_) {
-    // Move `provider` as hint that it shouldn't be reused after this point.
-    // The `delegate` owns the provider and can delete it in
-    // `NotifyGpuContextLost()`.
-    std::move(provider)->delegate_->NotifyGpuContextLost();
   }
 }
 
@@ -409,12 +381,6 @@ bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
   auto* raster_interface = RasterInterface();
   return !raster_interface ||
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
-}
-
-void WebGpuRecyclableResourceProvider::SetAnimatedImageFrameIndexes(
-    scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes) {
-  CHECK(canvas_image_provider_);
-  canvas_image_provider_->SetAnimatedImageFrameIndexes(indexes);
 }
 
 bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer() {
@@ -711,15 +677,6 @@ void WebGpuRecyclableResourceProvider::OnMemoryDump(
 
 size_t WebGpuRecyclableResourceProvider::GetSize() const {
   return base::checked_cast<size_t>(EstimatedSizeInBytes().InBytes());
-}
-
-void WebGpuRecyclableResourceProvider::RecordingCleared() {}
-
-void WebGpuRecyclableResourceProvider::InitializeForRecording(
-    cc::PaintCanvas* canvas) const {
-  if (delegate_) {
-    delegate_->InitializeForRecording(canvas);
-  }
 }
 
 }  // namespace blink
