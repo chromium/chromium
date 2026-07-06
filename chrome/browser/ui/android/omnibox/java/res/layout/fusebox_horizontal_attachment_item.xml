@@ -12,6 +12,7 @@ found in the LICENSE file.
     android:gravity="center_horizontal"
     android:clickable="true"
     android:focusable="true"
+    android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"
     android:importantForAccessibility="yes">
 
     <FrameLayout

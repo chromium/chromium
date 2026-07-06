@@ -20,38 +20,33 @@ found in the LICENSE file.
         android:id="@+id/fusebox_add_current_tab"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
+        android:layout_weight="1"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_pick_tabs_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
+        android:layout_weight="1"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_camera_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
+        android:layout_weight="1"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_pick_picture_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
+        android:layout_weight="1"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_pick_file_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
+        android:layout_weight="1"/>
 </LinearLayout>
