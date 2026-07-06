@@ -252,6 +252,19 @@ void MultistepFilterService::OnUrlAllowedForExtraction(
       navigation_id);
 }
 
+void MultistepFilterService::OnExtractionFinished(
+    std::optional<UrlFilterSuggestion> applied_suggestion,
+    std::string host,
+    int64_t navigation_id,
+    std::optional<FilterAnnotation> annotation) {
+  LogSuggestionApplicationOutcome(log_router_, navigation_id, host,
+                                  applied_suggestion, annotation);
+  if (observer_for_test_) {
+    observer_for_test_->OnExtractionFinished(
+        annotation ? std::optional(annotation->id) : std::nullopt);
+  }
+}
+
 void MultistepFilterService::GenerateFilterSuggestions(
     int64_t navigation_id,
     const GURL& url,
@@ -300,17 +313,13 @@ void MultistepFilterService::OnUrlAllowedForSuggestion(
       navigation_id);
 }
 
-void MultistepFilterService::OnExtractionFinished(
-    std::optional<UrlFilterSuggestion> applied_suggestion,
-    std::string host,
-    int64_t navigation_id,
-    std::optional<FilterAnnotation> annotation) {
-  LogSuggestionApplicationOutcome(log_router_, navigation_id, host,
-                                  applied_suggestion, annotation);
+void MultistepFilterService::OnSuggestionGenerated(
+    base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+    std::optional<UrlFilterSuggestion> suggestion) {
   if (observer_for_test_) {
-    observer_for_test_->OnExtractionFinished(
-        annotation ? std::optional(annotation->id) : std::nullopt);
+    observer_for_test_->OnSuggestionGenerated(suggestion);
   }
+  std::move(callback).Run(std::move(suggestion));
 }
 
 void MultistepFilterService::DeleteAnnotationsForTask(
@@ -321,15 +330,6 @@ void MultistepFilterService::DeleteAnnotationsForTask(
       std::string(task_type),
       base::BindOnce(&LogAnnotationsExpired, log_router_, navigation_id,
                      std::string(host)));
-}
-
-void MultistepFilterService::OnSuggestionGenerated(
-    base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-    std::optional<UrlFilterSuggestion> suggestion) {
-  if (observer_for_test_) {
-    observer_for_test_->OnSuggestionGenerated(suggestion);
-  }
-  std::move(callback).Run(std::move(suggestion));
 }
 
 bool MultistepFilterService::HasUserProvidedConsent(int64_t navigation_id,

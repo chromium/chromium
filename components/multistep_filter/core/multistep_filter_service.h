@@ -121,24 +121,19 @@ class MultistepFilterService : public KeyedService,
  private:
   friend class MultistepFilterServiceTestApi;
 
-  // Callback for when an annotation is extracted.
-  void OnExtractionFinished(
-      std::optional<UrlFilterSuggestion> applied_suggestion,
-      std::string host,
-      int64_t navigation_id,
-      std::optional<FilterAnnotation> annotation);
-
-  // Callback for when a suggestion is generated.
-  void OnSuggestionGenerated(
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-      std::optional<UrlFilterSuggestion> suggestion);
-
   // Callback for when `GetSupportedTaskForUrl` finishes for extraction.
   void OnUrlAllowedForExtraction(
       const GURL& url,
       int64_t navigation_id,
       std::optional<UrlFilterSuggestion> applied_suggestion,
       std::vector<std::string> supported_task_types);
+
+  // Callback for when an annotation is extracted.
+  void OnExtractionFinished(
+      std::optional<UrlFilterSuggestion> applied_suggestion,
+      std::string host,
+      int64_t navigation_id,
+      std::optional<FilterAnnotation> annotation);
 
   // Callback for when `GetSupportedTaskForUrl` finishes for suggestion
   // generation.
@@ -147,6 +142,11 @@ class MultistepFilterService : public KeyedService,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
       int64_t navigation_id,
       std::vector<std::string> supported_task_types);
+
+  // Callback for when a suggestion is generated.
+  void OnSuggestionGenerated(
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      std::optional<UrlFilterSuggestion> suggestion);
 
   // Checks if the user has provided consent (signed in, URL-keyed data
   // collection enabled, and history sync enabled), and logs the eligibility
