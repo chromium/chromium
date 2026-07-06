@@ -156,3 +156,48 @@ source_set("unit_tests") {
     "//components/passage_embeddings/core:test_support",
   ]
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "ai_data_keyed_service_browsertest.cc",
+      "ai_semantic_embedder_browsertest.cc",
+    ]
+
+    deps = [
+      ":ai",
+      ":test_support",
+      "//base",
+      "//chrome/browser/actor:test_support",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/passage_embeddings/core:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "ai_on_device_interactive_uitest.cc" ]
+
+    deps = [
+      ":ai",
+      ":test_support",
+      "//base",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/embedder_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+}

@@ -2185,6 +2185,7 @@ if (!is_android) {
       "//chrome/browser/actor/ui:browser_tests",
       "//chrome/browser/affiliations",
       "//chrome/browser/ai",
+      "//chrome/browser/ai:browser_tests",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service:test_support",
@@ -3170,8 +3171,6 @@ if (!is_android) {
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
-      "../browser/ai/ai_data_keyed_service_browsertest.cc",
-      "../browser/ai/ai_semantic_embedder_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_apitest.cc",
       "../browser/media/audio_ducker_browsertest.cc",
       "../browser/media/autoplay_metrics_browsertest.cc",
@@ -9149,7 +9148,6 @@ if (!is_android && !is_chromeos_device) {
 
     sources = [
       "../browser/about_flags_browsertest.cc",
-      "../browser/ai/ai_on_device_interactive_uitest.cc",
       "../browser/browser_keyevents_interactive_uitest.cc",
       "../browser/chrome_render_widget_host_interactive_uitest.cc",
       "../browser/controlled_frame/controlled_frame_interactive_uitest.cc",
@@ -9273,6 +9271,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/actor:test_support",
       "//chrome/browser/actor/ui:interactive_ui_tests",
       "//chrome/browser/actor/ui/task_list_bubble:interactive_ui_tests",
+      "//chrome/browser/ai:interactive_ui_tests",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
