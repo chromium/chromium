@@ -7,3 +7,6 @@
 -ChromeBrowsingDataRemoverDelegateOriginTrialsTest.*
 -ChromeBrowsingDataRemoverDelegateTest.AllTypesAreGettingDeleted
 -ChromeBrowsingDataRemoverDelegateTest.RemovePersistentIsolatedOrigins
+
+# TODO(crbug.com/531590779): Flaky path pollution on android-desktop.
+-DownloadTargetDeterminerTest.NotifyExtensionsSuggestedPathWithPrompt
