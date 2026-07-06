@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_simple_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
@@ -119,12 +121,14 @@ class AudioCallback : public AudioIOCallback {
     frames_processed_ += frames_to_process;
     last_latency_ = delay;
     glitch_accumulator_.Add(glitch_info);
+    render_call_count_++;
   }
 
   MOCK_METHOD(void, OnRenderError, (), (final));
 
   AudioCallback() = default;
   int frames_processed_ = 0;
+  int render_call_count_ = 0;
   media::AudioGlitchInfo::Accumulator glitch_accumulator_;
   base::TimeDelta last_latency_;
 };
@@ -364,6 +368,129 @@ TEST_F(AudioDestinationTest, NoUnderrunsWithOutputBufferBypass) {
             unsigned{0});
   EXPECT_EQ((audio_destination->GetPushPullFIFOStateForTest()).underflow_count,
             unsigned{0});
+}
+
+// Verifies that orphaned render tasks posted to the worklet thread before the
+// destination is stopped do not trigger premature wakeup or unexpected
+// terminations when the destination is restarted.
+TEST_F(AudioDestinationTest, BypassOutputBufferingOrphanedTask) {
+  base::test::TaskEnvironment task_environment;
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "WebAudioBypassOutputBuffering", true);
+  ScopedTestingPlatformSupport<TestPlatform> platform;
+  platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
+                                     kDefaultHardwareBufferSize);
+
+  // Configure mock device expectations. The mock Stop() must sleep to
+  // simulate the real audio thread joining, preventing the stop event from
+  // being reset before the simulated audio thread wakes up.
+  EXPECT_CALL(platform->web_audio_device(), Start).Times(2);
+  EXPECT_CALL(platform->web_audio_device(), Stop)
+      .Times(2)
+      .WillRepeatedly([]() {
+        base::PlatformThread::Sleep(base::Milliseconds(250));
+      });
+
+  const std::optional<float> context_sample_rate = 44100;
+  scoped_refptr<AudioDestination> audio_destination = CreateAudioDestination(
+      context_sample_rate,
+      WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
+
+  // Use a TestSimpleTaskRunner for the worklet so we can control when tasks
+  // run.
+  auto worklet_task_runner =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  audio_destination->SetWorkletTaskRunner(worklet_task_runner);
+
+  auto audio_bus = media::AudioBus::Create(
+      Platform::Current()->AudioHardwareOutputChannels(),
+      audio_destination->FramesPerBuffer());
+
+  // Start the destination.
+  audio_destination->Start();
+
+  // Run Render() on a separate simulated audio thread using NonMainThread.
+  std::unique_ptr<NonMainThread> audio_thread =
+      NonMainThread::CreateThread(
+          ThreadCreationParams(ThreadType::kTestThread));
+
+  base::WaitableEvent render_finished_event;
+
+  // Post Render() to the audio thread. It will block in WaitMany() because
+  // the worklet task runner hasn't executed the RequestRenderWait task yet.
+  audio_thread->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AudioDestination> destination,
+             media::AudioBus* bus, base::WaitableEvent* event) {
+            destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
+                                media::AudioGlitchInfo(), bus);
+            event->Signal();
+          },
+          audio_destination, audio_bus.get(), &render_finished_event));
+
+  // Give the audio thread a moment to block.
+  base::PlatformThread::Sleep(base::Milliseconds(250));
+
+  // Verify that the task has been posted to the worklet task runner.
+  EXPECT_EQ(worklet_task_runner->NumPendingTasks(), 1u);
+
+  // Now, call Stop() on the main thread. This will signal the stop event,
+  // causing the audio thread's Render() call to unblock and return.
+  audio_destination->Stop();
+
+  // Wait for the audio thread to finish the Render() call.
+  render_finished_event.Wait();
+
+  // The orphaned task is still in the worklet_task_runner queue.
+  EXPECT_EQ(worklet_task_runner->NumPendingTasks(), 1u);
+
+  // Now, restart the destination.
+  audio_destination->SetWorkletTaskRunner(worklet_task_runner);
+  audio_destination->Start();
+
+  base::WaitableEvent second_render_finished_event;
+
+  // Post a new Render() call to the audio thread.
+  audio_thread->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AudioDestination> destination,
+             media::AudioBus* bus, base::WaitableEvent* event) {
+            destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
+                                media::AudioGlitchInfo(), bus);
+            event->Signal();
+          },
+          audio_destination, audio_bus.get(), &second_render_finished_event));
+
+  // Give it a moment to block the audio thread.
+  base::PlatformThread::Sleep(base::Milliseconds(250));
+
+  // The queue now contains:
+  // 1. The orphaned task from the previous session.
+  // 2. The new task from the second Render() call.
+  EXPECT_EQ(worklet_task_runner->NumPendingTasks(), 2u);
+
+  // Run the pending tasks.
+  // - Without the fix: The orphaned task runs, executes RequestRenderWait,
+  //   and signals the wait event. This wakes up the audio thread early,
+  //   which finds insufficient frames in the FIFO and crashes (CHECK_GE).
+  // - With the fix: The orphaned task detects the session ID mismatch and
+  //   discards itself without signaling. Then the new task runs, renders
+  //   frames, and signals the event, allowing Render() to complete safely.
+  worklet_task_runner->RunPendingTasks();
+
+  // Wait for the audio thread to complete the second Render().
+  second_render_finished_event.Wait();
+
+  // Verify that only the second session's task executed.
+  // - Without the fix: 8 renders (orphaned task + new task,
+  //   each doing 4 quantums).
+  // - With the fix: 4 renders (only new task, doing 4 quantums).
+  EXPECT_EQ(callback_.render_call_count_, 4);
+
+  // Clean up.
+  audio_destination->Stop();
 }
 
 }  // namespace

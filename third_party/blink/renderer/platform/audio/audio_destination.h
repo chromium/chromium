@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_H_
 
+#include <atomic>
 #include <memory>
 #include <optional>
 
@@ -183,7 +184,8 @@ class PLATFORM_EXPORT AudioDestination final
                          base::TimeDelta delay,
                          base::TimeTicks delay_timestamp,
                          const media::AudioGlitchInfo& glitch_info,
-                         base::TimeTicks request_timestamp);
+                         base::TimeTicks request_timestamp,
+                         uint32_t session_id);
 
   // Returns true if it was able to provide audio, false otherwise (this would
   // happen if and only if rendering is stopping or stopped.
@@ -193,6 +195,7 @@ class PLATFORM_EXPORT AudioDestination final
                      base::TimeTicks delay_timestamp,
                      const media::AudioGlitchInfo& glitch_info,
                      base::TimeTicks request_timestamp,
+                     uint32_t session_id,
                      bool has_fifo_underrun_occurred = false);
 
   // Provide input to the resampler (if used).
@@ -281,6 +284,11 @@ class PLATFORM_EXPORT AudioDestination final
 
   const bool is_output_buffer_bypassed_ = false;
   bool state_change_underrun_in_bypass_mode_ = false;
+
+  // Incremented on every Start() to identify tasks from the current session.
+  // uint32 is safe because overflow requires over 100,000 years of typical
+  // usage.
+  std::atomic<uint32_t> session_id_ = 0;
 };
 
 }  // namespace blink

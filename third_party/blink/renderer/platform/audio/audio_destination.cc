@@ -176,7 +176,9 @@ int AudioDestination::Render(base::TimeDelta delay,
           CrossThreadBindOnce(
               &AudioDestination::RequestRenderWait, WrapRefCounted(this),
               number_of_frames, frames_to_render, delay, delay_timestamp,
-              glitch_info, /*request_timestamp=*/base::TimeTicks::Now()));
+              glitch_info, /*request_timestamp=*/base::TimeTicks::Now(),
+              session_id_.load(std::memory_order_relaxed)));
+
       if (posted_successfully) {
         TRACE_EVENT0("webaudio", "AudioDestination::Render waiting");
         base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
@@ -213,7 +215,8 @@ int AudioDestination::Render(base::TimeDelta delay,
       // Otherwise use the single-thread rendering.
       state_change_underrun_in_bypass_mode_ = !RequestRender(
           number_of_frames, frames_to_render, delay, delay_timestamp,
-          glitch_info, /*request_timestamp=*/base::TimeTicks::Now());
+          glitch_info, /*request_timestamp=*/base::TimeTicks::Now(),
+          session_id_.load(std::memory_order_relaxed));
     }
 
     const uint32_t frames_after_render = fifo_->FramesAvailable();
@@ -263,6 +266,7 @@ int AudioDestination::Render(base::TimeDelta delay,
                             result.frames_to_render, delay, delay_timestamp,
                             combined_glitch_info,
                             /*request_timestamp=*/base::TimeTicks::Now(),
+                            session_id_.load(std::memory_order_relaxed),
                             has_fifo_underrun_occurred));
   } else {
     // Otherwise use the single-thread rendering.
@@ -274,7 +278,8 @@ int AudioDestination::Render(base::TimeDelta delay,
     delay += audio_utilities::FramesToTime(number_of_frames,
                                            web_audio_device_->SampleRate());
     RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp,
-                  glitch_info, /*request_timestamp=*/base::TimeTicks::Now());
+                  glitch_info, /*request_timestamp=*/base::TimeTicks::Now(),
+                  session_id_.load(std::memory_order_relaxed));
   }
   return number_of_frames;
 }
@@ -568,7 +573,10 @@ void AudioDestination::SetDeviceState(DeviceState state) {
   DCHECK(IsMainThread());
   base::AutoLock locker(device_state_lock_);
 
-  device_state_ = state;
+  if (device_state_ != state) {
+    device_state_ = state;
+    session_id_.fetch_add(1, std::memory_order_release);
+  }
 }
 
 void AudioDestination::RequestRenderWait(
@@ -577,10 +585,18 @@ void AudioDestination::RequestRenderWait(
     base::TimeDelta delay,
     base::TimeTicks delay_timestamp,
     const media::AudioGlitchInfo& glitch_info,
-    base::TimeTicks request_timestamp) {
-  state_change_underrun_in_bypass_mode_ =
-      !RequestRender(frames_requested, frames_to_render, delay, delay_timestamp,
-                     glitch_info, request_timestamp);
+    base::TimeTicks request_timestamp,
+    uint32_t session_id) {
+  if (session_id != session_id_.load(std::memory_order_acquire)) {
+    return;
+  }
+  bool success = RequestRender(frames_requested, frames_to_render, delay,
+                               delay_timestamp, glitch_info, request_timestamp,
+                               session_id);
+  if (session_id != session_id_.load(std::memory_order_acquire)) {
+    return;
+  }
+  state_change_underrun_in_bypass_mode_ = !success;
   output_buffer_bypass_wait_event_.Signal();
 }
 
@@ -590,11 +606,27 @@ bool AudioDestination::RequestRender(size_t frames_requested,
                                      base::TimeTicks delay_timestamp,
                                      const media::AudioGlitchInfo& glitch_info,
                                      base::TimeTicks request_timestamp,
+                                     uint32_t session_id,
                                      bool has_fifo_underrun_occurred) {
   base::TimeTicks start_timestamp = base::TimeTicks::Now();
   uma_reporter_.AddRequestRenderGapDuration(start_timestamp -
                                             request_timestamp);
   base::AutoTryLock locker(device_state_lock_);
+
+  // The state might be changing by ::Stop() call. If the state is locked, do
+  // not touch the below.
+  if (!locker.is_acquired()) {
+    return false;
+  }
+
+  // Discard tasks from previous play/pause or suspend/resume sessions.
+  if (session_id != session_id_.load(std::memory_order_relaxed)) {
+    return false;
+  }
+
+  if (device_state_ != DeviceState::kRunning) {
+    return false;
+  }
 
   TRACE_EVENT("webaudio", "AudioDestination::RequestRender", "frames_requested",
               frames_requested, "frames_to_render", frames_to_render,
@@ -603,15 +635,6 @@ bool AudioDestination::RequestRender(size_t frames_requested,
               "playout_delay (ms)", delay.InMillisecondsF(), "delay (frames)",
               fifo_->FramesAvailable());
 
-  // The state might be changing by ::Stop() call. If the state is locked, do
-  // not touch the below.
-  if (!locker.is_acquired()) {
-    return false;
-  }
-
-  if (device_state_ != DeviceState::kRunning) {
-    return false;
-  }
 
   metric_reporter_.BeginTrace();
 
