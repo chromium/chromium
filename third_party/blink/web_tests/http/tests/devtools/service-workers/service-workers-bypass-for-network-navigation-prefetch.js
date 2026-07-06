@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 // From `forceSpeculationRules()` in
 // third_party/blink/web_tests/external/wpt/speculation-rules/prefetch/resources/utils.sub.js
@@ -52,12 +53,12 @@ async function testNavigation(url) {
   // Prefetch the URL (served by the ServiceWorker).
   // TODO(https://crbug.com/438478667): Currently the 'bypass-service-worker' is
   // anyway not honored by speculation rules prefetch.
-  Common.Settings.settingForTest('bypass-service-worker').set(false);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('bypass-service-worker').set(false);
   await forceSpeculationRules(scope);
 
   // Navigate to the URL (served by the network), i.e. the prefetched result
   // shouldn't be used.
-  Common.Settings.settingForTest('bypass-service-worker').set(true);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('bypass-service-worker').set(true);
   await testNavigation(scope);
 
   TestRunner.completeTest();

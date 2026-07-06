@@ -7,6 +7,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the console can preserve log messages across navigations. Bug 53359\n`);
@@ -16,10 +17,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   consoleModel.addMessage(new SDK.ConsoleModel.ConsoleMessage(
       TestRunner.runtimeModel, Protocol.Log.LogEntrySource.Other,
       Protocol.Log.LogEntryLevel.Info, 'PASS'));
-  Common.Settings.settingForTest('preserve-console-log').set(true);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('preserve-console-log').set(true);
   TestRunner.reloadPage(async function() {
     await ConsoleTestRunner.dumpConsoleMessages();
-    Common.Settings.settingForTest('preserve-console-log').set(false);
+    Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('preserve-console-log').set(false);
     TestRunner.completeTest();
   });
 })();

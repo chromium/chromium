@@ -7,6 +7,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as Elements from 'devtools/panels/elements/elements.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(
@@ -50,7 +51,7 @@ import * as Elements from 'devtools/panels/elements/elements.js';
       var shadowDiv = children[0];
       TestRunner.addResult('User-agent shadow DOM hidden:');
       Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv).then(() => {
-        Common.Settings.settingForTest('show-ua-shadow-dom').set(true);
+        Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('show-ua-shadow-dom').set(true);
         TestRunner.addResult('User-agent shadow DOM shown:');
         Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv);
       });

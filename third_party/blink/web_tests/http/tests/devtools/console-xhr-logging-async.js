@@ -8,6 +8,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as Console from 'devtools/panels/console/console.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(
@@ -20,7 +21,7 @@ import * as Console from 'devtools/panels/console/console.js';
   }
 
   function step1() {
-    Common.Settings.settingForTest('monitoring-xhr-enabled').set(true);
+    Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('monitoring-xhr-enabled').set(true);
     makeRequest(() => {
       TestRunner.deprecatedRunAfterPendingDispatches(async () => {
         TestRunner.addResult('XHR with logging enabled: ');
@@ -34,7 +35,7 @@ import * as Console from 'devtools/panels/console/console.js';
   }
 
   function step2() {
-    Common.Settings.settingForTest('monitoring-xhr-enabled').set(false);
+    Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('monitoring-xhr-enabled').set(false);
     makeRequest(() => {
       TestRunner.deprecatedRunAfterPendingDispatches(async () => {
         TestRunner.addResult('XHR with logging disabled: ');

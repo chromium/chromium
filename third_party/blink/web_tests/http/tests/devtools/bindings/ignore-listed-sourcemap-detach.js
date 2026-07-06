@@ -9,6 +9,7 @@ import * as Common from 'devtools/core/common/common.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests that ignore-listed sourcemaps properly detach on reload crbug.com/888688`);
@@ -18,7 +19,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   TestRunner.addSniffer(Workspace.IgnoreListManager.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step1);
   var frameworkRegexString = '.*';
-  Common.Settings.settingForTest('skip-stack-frames-pattern').set('.*');
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('skip-stack-frames-pattern').set('.*');
 
   async function step1() {
     TestRunner.addResult('Evaluating script with source map');

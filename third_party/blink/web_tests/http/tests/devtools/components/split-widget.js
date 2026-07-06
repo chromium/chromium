@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests how split widget saving to settings works.\n`);
@@ -37,7 +38,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     TestRunner.addResult(
         '    Sidebar size = ' + sidebarSize + ', showMode = ' + splitWidget.showMode() + ', ' + orientation);
     TestRunner.addResult(
-        '    Setting value: ' + JSON.stringify(Common.Settings.settingForTest(splitWidget.setting.name).get()));
+        '    Setting value: ' + JSON.stringify(Main.MainImpl.MainImpl.universeForTest.settings.settingForTest(splitWidget.setting.name).get()));
   }
 
   function testSplitWidgetSizes(useFraction, shouldSaveShowMode) {

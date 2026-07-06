@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests console.log() anchor location when the skip-stack-frames feature is enabled.\n`);
@@ -20,7 +21,7 @@ import * as Common from 'devtools/core/common/common.js';
   `);
 
   var frameworkRegexString = '/framework\\.js$';
-  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   TestRunner.evaluateInPage('runLogs()');
   TestRunner.deprecatedRunAfterPendingDispatches(callback);

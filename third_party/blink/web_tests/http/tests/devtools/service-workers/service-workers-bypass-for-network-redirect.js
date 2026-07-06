@@ -8,6 +8,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests "Bypass for network" checkbox with redirection doesn't cause crash.\n`);
@@ -22,7 +23,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
   UI.InspectorView.InspectorView.instance().showPanel('sources')
       .then(function() {
-        Common.Settings.settingForTest('bypass-service-worker').set(true);
+        Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('bypass-service-worker').set(true);
         let callback;
         const promise = new Promise((fulfill) => callback = fulfill);
         ConsoleTestRunner.addConsoleSniffer(message => {

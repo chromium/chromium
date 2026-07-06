@@ -7,6 +7,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in the Elements sidebar panel.\n`);
@@ -105,7 +106,7 @@ import * as Common from 'devtools/core/common/common.js';
       setupNormalPath();
   `);
 
-  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(false);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('show-event-listeners-for-ancestors').set(false);
   ElementsTestRunner.selectNodeWithId('inspectedNode', step1);
 
   function step1() {

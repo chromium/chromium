@@ -8,6 +8,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Verify that JavaScript sourcemap enabling and disabling adds/removes sourcemap sources.\n`);
@@ -16,7 +17,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
-  Common.Settings.moduleSetting('js-source-maps-enabled').set(true);
+  Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('js-source-maps-enabled').set(true);
   TestRunner.addScriptTag('resources/sourcemap-script.js');
   await TestRunner.waitForUISourceCode('sourcemap-typescript.ts');
 
@@ -24,11 +25,11 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('disableJSSourceMaps');
-  Common.Settings.moduleSetting('js-source-maps-enabled').set(false);
+  Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('js-source-maps-enabled').set(false);
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('enableJSSourceMaps');
-  Common.Settings.moduleSetting('js-source-maps-enabled').set(true);
+  Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('js-source-maps-enabled').set(true);
   await TestRunner.waitForUISourceCode('sourcemap-typescript.ts'),
       SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 

@@ -8,6 +8,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   // This await is necessary for evaluateInPagePromise to produce accurate line numbers.
@@ -20,8 +21,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
           makeSimpleXHR(method, url, false);
       }
   `);
-  Common.Settings.settingForTest('console-group-similar').set(false);
-  Common.Settings.settingForTest('monitoring-xhr-enabled').set(true);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('console-group-similar').set(false);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('monitoring-xhr-enabled').set(true);
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
@@ -47,7 +48,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
-  Common.Settings.settingForTest('monitoring-xhr-enabled').set(false);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('monitoring-xhr-enabled').set(false);
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(
@@ -29,7 +30,7 @@ import * as Common from 'devtools/core/common/common.js';
       }
   `);
 
-  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(true);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('show-event-listeners-for-ancestors').set(true);
   TestRunner.evaluateInPage('setupEventListeners()', step1);
 
   function step1() {

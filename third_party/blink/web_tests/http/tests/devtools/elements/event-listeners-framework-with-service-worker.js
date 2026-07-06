@@ -12,6 +12,7 @@ import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debugger.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in Sources panel when service worker is present.\n`);
@@ -27,7 +28,7 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
       </body>
     `);
 
-  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(false);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('show-event-listeners-for-ancestors').set(false);
   var scriptURL = 'http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-empty.js';
   var scope = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope1/';
 

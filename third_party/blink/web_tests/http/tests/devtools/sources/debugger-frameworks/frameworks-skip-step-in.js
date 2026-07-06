@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests the skip stack frames feature when stepping.\n`);
@@ -66,7 +67,7 @@ import * as Common from 'devtools/core/common/common.js';
   var frameworkRegexString = '/framework\\.js$';
   var totalDebuggerStatements = 6;
 
-  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
+  Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   SourcesTestRunner.setQuiet(true);
   SourcesTestRunner.startDebuggerTest(step1);
