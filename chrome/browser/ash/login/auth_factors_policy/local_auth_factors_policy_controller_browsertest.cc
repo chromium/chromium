@@ -21,11 +21,11 @@
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -155,7 +155,8 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   }
 
   Profile* GetProfile(const AccountId& account_id) {
-    return ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+    return Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
   }
 
   const LoginManagerMixin::TestUserInfo local_password_and_pin_user_{
