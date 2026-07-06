@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/win/windows_version.h"
 #include "ui/gl/gl_features.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/vsync_thread_win_dcomp.h"
 #include "ui/gl/vsync_thread_win_dxgi.h"
 
@@ -111,22 +112,37 @@ void VSyncThreadWin::OnResume() {
 
 void VSyncThreadWin::WaitForVSync() {
   base::TimeDelta vsync_interval;
+  bool should_sleep = false;
 
-  const base::TimeTicks wait_for_vsync_start_time = base::TimeTicks::Now();
-  bool wait_succeeded = WaitForVSyncImpl(&vsync_interval);
-  const base::TimeDelta wait_for_vsync_elapsed_time =
-      base::TimeTicks::Now() - wait_for_vsync_start_time;
+  if (auto fake_interval = switches::GetFakeVsyncIntervalFromCommandLine()) {
+    // Skip the real hardware wait entirely, for either derived class
+    // (VSyncThreadWinDXGI's vblank wait or VSyncThreadWinDComp's compositor
+    // clock wait), and pace via Sleep() at the fake rate instead. Observers
+    // are still notified through the same path a real vsync signal would
+    // use below.
+    vsync_interval = *fake_interval;
+    should_sleep = true;
+  } else {
+    const base::TimeTicks wait_for_vsync_start_time = base::TimeTicks::Now();
+    bool wait_succeeded = WaitForVSyncImpl(&vsync_interval);
+    const base::TimeDelta wait_for_vsync_elapsed_time =
+        base::TimeTicks::Now() - wait_for_vsync_start_time;
 
-  // WaitForVBlank and DCompositionWaitForCompositorClock returns very early
-  // instead of waiting until vblank when the monitor goes to sleep or is
-  // unplugged (nothing to present due to desktop occlusion). We use 1ms as
-  // a threshhold for the duration of the wait functions and fallback to
-  // Sleep() if it returns before that. This could happen during normal
-  // operation for the first call after the vsync thread becomes non-idle,
-  // but it shouldn't happen often.
-  constexpr auto kVBlankIntervalThreshold = base::Milliseconds(1);
-  if (!wait_succeeded ||
-      wait_for_vsync_elapsed_time < kVBlankIntervalThreshold) {
+    // WaitForVBlank and DCompositionWaitForCompositorClock returns very early
+    // instead of waiting until vblank when the monitor goes to sleep or is
+    // unplugged (nothing to present due to desktop occlusion). We use 1ms as
+    // a threshold for the duration of the wait functions and fallback to
+    // Sleep() if it returns before that. This could happen during normal
+    // operation for the first call after the vsync thread becomes non-idle,
+    // but it shouldn't happen often.
+    constexpr auto kVBlankIntervalThreshold = base::Milliseconds(1);
+    if (!wait_succeeded ||
+        wait_for_vsync_elapsed_time < kVBlankIntervalThreshold) {
+      should_sleep = true;
+    }
+  }
+
+  if (should_sleep) {
     TRACE_EVENT0("gpu", "WaitForVSync Sleep");
     base::Time::ActivateHighResolutionTimer(true);
     Sleep(static_cast<DWORD>(vsync_interval.InMillisecondsRoundedUp()));

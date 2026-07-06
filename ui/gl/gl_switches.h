@@ -9,9 +9,13 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_export.h"
 
@@ -94,6 +98,21 @@ GL_EXPORT extern const base::span<const char* const>
 
 #if BUILDFLAG(IS_ANDROID)
 GL_EXPORT extern const char kDisableAndroidNativeFenceSyncForTesting[];
+#endif
+
+#if BUILDFLAG(IS_WIN)
+// Report a fake vsync rate (in Hz) instead of the real display refresh rate,
+// skipping the wait on the real hardware vsync signal. E.g.
+// --fake-vsync-rate=240 paces BeginFrames as if the display were 240Hz,
+// regardless of what it actually supports, while still feeding the same
+// BeginFrame path a real vsync signal would. Implemented for Windows only;
+// other platforms will get equivalent support in the future.
+GL_EXPORT extern const char kFakeVsyncRate[];
+
+// Returns the fake vsync interval requested via kFakeVsyncRate on the
+// command line, or nullopt if the switch isn't present or isn't a valid
+// positive rate.
+GL_EXPORT std::optional<base::TimeDelta> GetFakeVsyncIntervalFromCommandLine();
 #endif
 
 }  // namespace switches
