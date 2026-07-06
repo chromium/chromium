@@ -268,8 +268,6 @@ void SyncLoadContext::OnCompletedRequest(
   response_->should_collapse_initiator = status.should_collapse_initiator;
   response_->cors_error = status.cors_error_status;
   response_->head->encoded_data_length = status.encoded_data_length.InBytes();
-  // TODO(crbug.com/448661443): Remove unneeded DCHECK.
-  DCHECK_GE(status.encoded_body_length.InBytes(), 0u);
   response_->head->encoded_body_length = network::mojom::EncodedBodyLength::New(
       status.encoded_body_length.InBytes());
   if ((blob_response_started_ && !blob_finished_) || body_handle_.is_valid()) {

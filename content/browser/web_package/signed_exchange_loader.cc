@@ -365,12 +365,10 @@ void SignedExchangeLoader::NotifyClientOnCompleteIfReady() {
   status.error_code = *decoded_body_read_result_;
   status.completion_time = base::TimeTicks::Now();
   status.encoded_data_length = outer_response_length_info_->encoded_data_length;
-  // TODO(crbug.com/448661443): Clean up unneeded temporary.
-  base::ByteSize encoded_body_length =
-      outer_response_length_info_->decoded_body_length;
+  status.encoded_body_length = outer_response_length_info_->decoded_body_length;
   // ByteSize::operator-= will CHECK if the result becomes negative.
-  encoded_body_length -= signed_exchange_handler_->GetExchangeHeaderLength();
-  status.encoded_body_length = encoded_body_length;
+  status.encoded_body_length -=
+      signed_exchange_handler_->GetExchangeHeaderLength();
   status.decoded_body_length = body_data_pipe_adapter_->TransferredBytes();
 
   if (ssl_info_) {
