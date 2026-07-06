@@ -152,8 +152,10 @@ void SelectionEditor::SetSelectionAndEndTyping(
         old_focus && old_focus->GetLayoutObject()
             ? old_focus->GetLayoutObject()->ContainingBlockForTextOverflow()
             : nullptr;
+    // Editable-only: non-editable content keeps its ellipsis
+    // (crbug.com/526471153).
     LayoutObject* new_style_owner =
-        new_focus && new_focus->GetLayoutObject()
+        new_focus && new_focus->GetLayoutObject() && IsEditable(*new_focus)
             ? new_focus->GetLayoutObject()->ContainingBlockForTextOverflow()
             : nullptr;
 
