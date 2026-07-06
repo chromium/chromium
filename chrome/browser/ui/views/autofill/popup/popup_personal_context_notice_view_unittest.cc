@@ -125,5 +125,30 @@ TEST_F(PopupPersonalContextNoticeViewTest,
   generator().ClickLeftButton();
 }
 
+// Tests that clicking the settings link triggers `OnSettingsLinkClicked`.
+TEST_F(PopupPersonalContextNoticeViewTest, ClickSettingsLink) {
+  ShowView();
+
+  // Ensure the child views are laid out in the widget.
+  widget().LayoutRootViewIfNecessary();
+
+  views::StyledLabel* description = view().description_for_testing();
+  views::Link* settings_link = description->GetFirstLinkForTesting();
+  ASSERT_NE(settings_link, nullptr);
+
+  // The link must not be natively focusable so that it does not steal focus
+  // from the search bar/input field.
+  EXPECT_EQ(settings_link->GetFocusBehavior(),
+            views::View::FocusBehavior::NEVER);
+
+  // Since `chrome::ShowSettingsSubPageForProfile` is not mockable, we verify
+  // that `OnSettingsLinkClicked` was triggered by checking the only other thing
+  // in the method - that the controller was queried for its WebContents.
+  EXPECT_CALL(controller(), GetWebContents()).Times(testing::AtLeast(1));
+
+  generator().MoveMouseTo(settings_link->GetBoundsInScreen().CenterPoint());
+  generator().ClickLeftButton();
+}
+
 }  // namespace
 }  // namespace autofill

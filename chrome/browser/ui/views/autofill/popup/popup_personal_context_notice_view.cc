@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_personal_context_notice_view.h"
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -17,11 +20,13 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace autofill {
 
@@ -99,7 +104,7 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
   size_t link_start = title_text.length() + context_text.length();
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PopupPersonalContextNoticeView::OnSettingsButtonClicked,
+          &PopupPersonalContextNoticeView::OnSettingsLinkClicked,
           base::Unretained(this)));
   description_->AddStyleRange(gfx::Range(link_start, full_text_length),
                               link_style);
@@ -124,8 +129,42 @@ void PopupPersonalContextNoticeView::OnGotItButtonClicked() {
   }
 }
 
-void PopupPersonalContextNoticeView::OnSettingsButtonClicked() {
-  // TODO(crbug.com/520188717): Route to new Chrome settings once available.
+void PopupPersonalContextNoticeView::OnSettingsLinkClicked() {
+  if (!controller_ || !controller_->GetWebContents()) {
+    return;
+  }
+  Profile* profile = Profile::FromBrowserContext(
+      controller_->GetWebContents()->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+  chrome::ShowSettingsSubPageForProfile(profile,
+                                        chrome::kSuggestionsFromGeminiSubPage);
+}
+
+views::Link* PopupPersonalContextNoticeView::GetSettingsLink() const {
+  if (!description_) {
+    return nullptr;
+  }
+  for (views::View* child : description_->children()) {
+    if (views::IsViewClass<views::Link>(child)) {
+      return views::AsViewClass<views::Link>(child);
+    }
+  }
+  return nullptr;
+}
+
+void PopupPersonalContextNoticeView::Layout(views::View::PassKey pass_key) {
+  LayoutSuperclass<PopupRowView>(this);
+
+  // Because `description_` (a `StyledLabel`) creates its link child lazily
+  // during layout, we must wait until after `LayoutSuperclass` runs to find
+  // the link and set its focus behavior to `NEVER`. This prevents clicking the
+  // link from stealing native focus from the search bar/input field.
+  auto* link = GetSettingsLink();
+  if (link) {
+    link->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  }
 }
 
 gfx::Size PopupPersonalContextNoticeView::GetMinimumSize() const {

@@ -13,6 +13,7 @@
 
 namespace views {
 class MdTextButton;
+class Link;
 class StyledLabel;
 }
 
@@ -49,9 +50,15 @@ class PopupPersonalContextNoticeView : public PopupRowView {
   void OnGotItButtonClicked();
 
   // Opens personal context settings for autofill in Chrome settings.
-  void OnSettingsButtonClicked();
+  void OnSettingsLinkClicked();
+
+  // Returns the link element inside of `description_`.
+  views::Link* GetSettingsLink() const;
 
   // views::View:
+  // Configures child views (such as the settings link) that are lazily created
+  // during the layout pass of `description_`.
+  void Layout(views::View::PassKey pass_key) override;
   // Returns a minimum size with a width of `kMinimumWidth` to keep the notice
   // content readable.
   gfx::Size GetMinimumSize() const override;
