@@ -338,6 +338,8 @@ BASE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization,
 
 BASE_FEATURE(kPageActionsMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAiModePageActionOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationEnableAll,
                    &kPageActionsMigration,

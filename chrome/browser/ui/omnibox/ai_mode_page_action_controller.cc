@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -295,21 +296,29 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
     page_action_controller->SetShowTrailingIcon(kActionAiMode, has_user_input);
   }
 
+  ImageCacheKey key{config->id, GURL(config->favicon_url).spec()};
+
+  if (base::FeatureList::IsEnabled(features::kAiModePageActionOptimization) &&
+      cached_image_model_.has_value() && cached_image_key_ == key) {
+    ShowAndOverrideImage(*cached_image_model_, key,
+                         config->id == SearchEngineType::SEARCH_ENGINE_GOOGLE
+                             ? IconSource::kVectorIcon
+                             : IconSource::kMemoryFaviconCache);
+    return;
+  }
+
   if (config->id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
-    ShowAndOverrideImage(
-        ui::ImageModel::FromImageGenerator(
-            base::BindRepeating([](const ui::ColorProvider* color_provider) {
-              return gfx::CreateVectorIcon(
-                  features::IsRoundedIconsEnabled()
-                      ? omnibox::kSearchSparkIcon
-                      : omnibox::kSearchSparkOldIcon,
-                  GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
-                  color_provider->GetColor(kColorOmniboxIconForegroundTonal));
-            }),
-            gfx::Size(
-                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
-                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize))),
-        IconSource::kVectorIcon);
+    ui::ImageModel image_model = ui::ImageModel::FromImageGenerator(
+        base::BindRepeating([](const ui::ColorProvider* color_provider) {
+          return gfx::CreateVectorIcon(
+              features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                                : omnibox::kSearchSparkOldIcon,
+              GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+              color_provider->GetColor(kColorOmniboxIconForegroundTonal));
+        }),
+        gfx::Size(GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                  GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize)));
+    ShowAndOverrideImage(image_model, key, IconSource::kVectorIcon);
 
   } else {
     GURL favicon_url(config->favicon_url);
@@ -323,7 +332,7 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
     // `image` will be empty if not cached. In which case, let
     // `OnFaviconFetchedLocally()` handle visibility and the image.
     if (!image.IsEmpty()) {
-      ShowAndOverrideImage(SizedImageModel(image),
+      ShowAndOverrideImage(SizedImageModel(image), key,
                            IconSource::kMemoryFaviconCache);
     }
   }
@@ -340,8 +349,13 @@ void AiModePageActionController::Hide(IconSource source) {
 
 void AiModePageActionController::ShowAndOverrideImage(
     const ui::ImageModel& image_model,
+    const ImageCacheKey& key,
     IconSource source) {
   base::UmaHistogramEnumeration(kIconSourceHistogram, source);
+  if (base::FeatureList::IsEnabled(features::kAiModePageActionOptimization)) {
+    cached_image_model_ = image_model;
+    cached_image_key_ = key;
+  }
   if (page_actions::PageActionController* page_action_controller =
           GetPageActionController(*bwi_)) {
     page_action_controller->OverrideImage(kActionAiMode, image_model);
@@ -370,6 +384,7 @@ void AiModePageActionController::OnFaviconFetchedLocally(
     return;
   }
   ShowAndOverrideImage(SizedImageModel(favicon),
+                       ImageCacheKey{config->id, favicon_url.spec()},
                        IconSource::kDiskDbFaviconCache);
 }
 
@@ -420,6 +435,7 @@ void AiModePageActionController::OnFaviconFetchedFromNetwork(
 
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   ShowAndOverrideImage(SizedImageModel(gfx::Image(image_skia)),
+                       ImageCacheKey{config->id, favicon_url.spec()},
                        IconSource::kNetworkFetch);
 }
 

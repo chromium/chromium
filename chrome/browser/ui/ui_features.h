@@ -296,6 +296,10 @@ BASE_DECLARE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization);
 // actions.
 BASE_DECLARE_FEATURE(kPageActionsMigration);
 
+// Gates the optimization for AI Mode page action to reduce mouse pressed
+// latency.
+BASE_DECLARE_FEATURE(kAiModePageActionOptimization);
+
 // For development only, set this to enable all page actions.
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationEnableAll);
 
