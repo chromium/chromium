@@ -11,7 +11,7 @@ import type {SplitNewTabPageAppElement} from './app.js';
 
 export function getHtml(this: SplitNewTabPageAppElement) {
   return html`<!--_html_template_start_-->
-<div id="header">
+<div id="header" ?hidden="${this.allEligibleTabs_.length === 0}">
   <cr-icon-button id="closeButton"
       iron-icon="tab-search:close"
       title="$i18n{splitViewCloseButtonAriaLabel}"
@@ -23,20 +23,6 @@ export function getHtml(this: SplitNewTabPageAppElement) {
       fit-to-visible-bounds manual-mode>
     $i18n{splitViewCloseButtonAriaLabel}
   </cr-tooltip>
-  ${
-      this.allEligibleTabs_.length === 0 ? html`
-        <picture>
-          <source media="(prefers-color-scheme: dark)"
-              srcset="./split_view/images/empty_dark.svg">
-          <img id="product-logo" srcset="./split_view/images/empty.svg" alt="">
-        </picture>
-      ` :
-                                           html``}
-  <h1 class="title">${this.title_}</h1>
-  ${
-      this.allEligibleTabs_.length === 0 ?
-          html`<div class="body">$i18n{splitViewEmptyBody}</div>` :
-          html``}
 </div>
 <div class="tab-list" ?hidden="${this.allEligibleTabs_.length === 0}">
   <selectable-lazy-list id="splitTabsList" class="scroller"
