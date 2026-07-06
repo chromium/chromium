@@ -23,6 +23,8 @@ BASE_FEATURE_PARAM(bool,
                    &kCentralizedInfoBarFramework,
                    false);
 
+BASE_FEATURE_PARAM(bool, kMigratedPdf, &kCentralizedInfoBarFramework, false);
+
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
@@ -30,6 +32,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedCollectedCookies;
     case InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE:
       return &kMigratedInstallerDownloader;
+    case InfoBarDelegate::PDF_INFOBAR_DELEGATE:
+      return &kMigratedPdf;
     default:
       return nullptr;
   }

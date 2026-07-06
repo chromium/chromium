@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -64,7 +67,21 @@ class PdfInfoBarControllerTest : public testing::Test {
     AddTab();
     infobars::ContentInfoBarManager::CreateForWebContents(
         tab_strip_model_->GetActiveWebContents());
+
+    // `BrowserInfoBarManager::From()` will return `nullptr` (false) if a global
+    // `BrowserInfoBarManager` has not yet been instantiated for the testing
+    // browser process (e.g., if this is the first test setup in the process, or
+    // if it was previously cleared in `TearDown()`). In that case, we
+    // instantiate and own one for the duration of the test.
+    if (!infobars::BrowserInfoBarManager::From(
+            TestingBrowserProcess::GetGlobal())) {
+      owned_browser_infobar_manager_ =
+          std::make_unique<infobars::BrowserInfoBarManager>(
+              TestingBrowserProcess::GetGlobal());
+    }
   }
+
+  void TearDown() override { owned_browser_infobar_manager_.reset(); }
 
   void SetBrowserType(BrowserWindowInterface::Type type) {
     ON_CALL(*browser_window_interface_, GetType)
@@ -121,6 +138,8 @@ class PdfInfoBarControllerTest : public testing::Test {
   const std::unique_ptr<TabStripModel> tab_strip_model_;
   const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
+  std::unique_ptr<infobars::BrowserInfoBarManager>
+      owned_browser_infobar_manager_;
 };
 
 // Show the infobar if the feature is enabled, the browser type is normal, and
@@ -166,6 +185,27 @@ TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfDefaultIsPolicyControlled) {
 TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfDefaultBrowserPromptShown) {
   PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(true);
   EXPECT_FALSE(
+      DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
+                     shell_integration::DefaultWebClientState::NOT_DEFAULT));
+}
+
+TEST_F(PdfInfoBarControllerTest, MaybeShowInfoBarCallbackMigrated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      infobars::kCentralizedInfoBarFramework, {{"kMigratedPdf", "true"}});
+
+  auto* browser_infobar_manager =
+      infobars::BrowserInfoBarManager::From(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(browser_infobar_manager);
+
+  auto spec = infobars::InfoBarSpec::Builder(
+                  infobars::InfoBarDelegate::PDF_INFOBAR_DELEGATE)
+                  .SetMessageText(u"Modern PDF Infobar")
+                  .SetScope(infobars::InfoBarScope::kTab)
+                  .Build();
+  browser_infobar_manager->Register(std::move(spec));
+
+  EXPECT_TRUE(
       DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
                      shell_integration::DefaultWebClientState::NOT_DEFAULT));
 }

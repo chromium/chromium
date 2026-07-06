@@ -16,16 +16,6 @@ class InfoBar;
 
 namespace pdf::infobar {
 
-// Potential user interactions with the PDF infobar.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Exposed for testing.
-enum class PdfInfoBarUserInteraction {
-  kAccepted = 0,
-  kDismissed = 1,
-  kIgnored = 2,
-  kMaxValue = kIgnored,
-};
-
 // The PDF infobar offers to set Chrome as the default PDF viewer. This class
 // customizes its appearance and behavior.
 class PdfInfoBarDelegate : public ConfirmInfoBarDelegate {

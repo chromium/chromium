@@ -7,11 +7,8 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,91 +21,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/native_ui_types.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/installer/util/shell_util.h"
-#include "ui/aura/window.h"
-#include "ui/views/win/hwnd_util.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace pdf::infobar {
-namespace {
-
-#if BUILDFLAG(IS_WIN)
-// Potential results of showing the Windows settings UI to set Chrome as the
-// default PDF viewer.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(PdfInfoBarSettingsResult)
-enum class PdfInfoBarSettingsResult {
-  // The settings UI was purposely not shown. This is unexpected, and indicates
-  // that the infobar was shown when setting Chrome as default was inappropriate
-  // (e.g., when Chrome is already the default).
-  kNotShown = 0,
-  // The settings UI was shown and Chrome was set as default PDF viewer.
-  kSuccess = 1,
-  // The settings UI was shown, but Chrome wasn't set as default.
-  kSuccessNoChange = 2,
-  // The fallback settings UI was shown and Chrome was set as default.
-  kFallback = 3,
-  // The fallback settings UI was shown, but Chrome wasn't set as default.
-  kFallbackNoChange = 4,
-  // The settings UI failed to open.
-  kError = 5,
-  kMaxValue = kError
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PdfInfoBarSettingsResult)
-
-void RecordSettingsResultHistogram(PdfInfoBarSettingsResult result) {
-  base::UmaHistogramEnumeration("PDF.InfoBar.SettingsResult", result);
-}
-
-// Emit a histogram recording the result of opening the Windows settings UI. If
-// it was opened successfully, check whether Chrome has been set as the default
-// PDF viewer and emit that to the histogram.
-void RecordSettingsResult(ShellUtil::ShowSystemUIResult result) {
-  auto record_settings_result = base::BindOnce(
-      [](ShellUtil::ShowSystemUIResult result) {
-        switch (result) {
-          case ShellUtil::ShowSystemUIResult::kNotShown: {
-            RecordSettingsResultHistogram(PdfInfoBarSettingsResult::kNotShown);
-            break;
-          }
-          case ShellUtil::ShowSystemUIResult::kError: {
-            RecordSettingsResultHistogram(PdfInfoBarSettingsResult::kError);
-            break;
-          }
-          case ShellUtil::ShowSystemUIResult::kSuccess: {
-            RecordSettingsResultHistogram(
-                shell_integration::IsDefaultHandlerForFileExtension(".pdf")
-                    ? PdfInfoBarSettingsResult::kSuccess
-                    : PdfInfoBarSettingsResult::kSuccessNoChange);
-            break;
-          }
-          case ShellUtil::ShowSystemUIResult::kFallback: {
-            RecordSettingsResultHistogram(
-                shell_integration::IsDefaultHandlerForFileExtension(".pdf")
-                    ? PdfInfoBarSettingsResult::kFallback
-                    : PdfInfoBarSettingsResult::kFallbackNoChange);
-          }
-        }
-      },
-      result);
-  // Check whether Chrome has been set as default after a short delay, to wait
-  // for the user to interact with the settings UI (while the "Select a default
-  // app for .pdf files" pop-up only returns after it closes, the fallback
-  // "Default apps" page returns right after opening).
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      std::move(record_settings_result), base::Seconds(30));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
-void RecordUserInteractionHistogram(PdfInfoBarUserInteraction interaction) {
-  base::UmaHistogramEnumeration("PDF.InfoBar.UserInteraction", interaction);
-}
-
-}  // namespace
 
 // static
 infobars::InfoBar* PdfInfoBarDelegate::Create(
@@ -122,7 +35,8 @@ infobars::InfoBar* PdfInfoBarDelegate::Create(
 
 PdfInfoBarDelegate::~PdfInfoBarDelegate() {
   if (!action_taken_) {
-    RecordUserInteractionHistogram(PdfInfoBarUserInteraction::kIgnored);
+    PdfInfoBarController::RecordUserInteractionHistogram(
+        PdfInfoBarUserInteraction::kIgnored);
   }
 }
 
@@ -152,31 +66,20 @@ std::u16string PdfInfoBarDelegate::GetButtonLabel(InfoBarButton button) const {
 
 bool PdfInfoBarDelegate::Accept() {
   action_taken_ = true;
-  RecordUserInteractionHistogram(PdfInfoBarUserInteraction::kAccepted);
+  PdfInfoBarController::RecordUserInteractionHistogram(
+      PdfInfoBarUserInteraction::kAccepted);
 
-#if BUILDFLAG(IS_MAC)
-  shell_integration::SetAsDefaultHandlerForUTType("com.adobe.pdf");
-#elif BUILDFLAG(IS_WIN)
-  auto* window =
-      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar())
-          ->GetTopLevelNativeWindow();
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ShellUtil::ShowSetDefaultForFileExtensionSystemUI,
-                     base::PathService::CheckedGet(base::FILE_EXE),
-                     base::wcstring_view(L".pdf"),
-                     views::HWNDForNativeWindow(window)),
-      base::BindOnce(&RecordSettingsResult));
-#else
-#error PdfInfoBarDelegate should only be created on Windows or MacOS
-#endif
+  content::WebContents* web_contents =
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
+  PdfInfoBarController::SetAsDefaultPdfHandler(web_contents);
+
   return ConfirmInfoBarDelegate::Accept();
 }
 
 void PdfInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
-  RecordUserInteractionHistogram(PdfInfoBarUserInteraction::kDismissed);
+  PdfInfoBarController::RecordUserInteractionHistogram(
+      PdfInfoBarUserInteraction::kDismissed);
   ConfirmInfoBarDelegate::InfoBarDismissed();
 }
 

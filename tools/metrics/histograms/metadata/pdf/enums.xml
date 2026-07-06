@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Error">The settings UI failed to open.</int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/pdf/infobar/pdf_infobar_delegate.cc:PdfInfoBarSettingsResult) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h:PdfInfoBarSettingsResult) -->
 
 <!-- LINT.IfChange(PDFInfoBarUserInteraction) -->
 
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/pdf/infobar/pdf_infobar_delegate.h:PdfInfoBarUserInteraction) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h:PdfInfoBarUserInteraction) -->
 
 <!-- LINT.IfChange(PDFInk2StrokeBrushSize) -->
 
