@@ -459,8 +459,12 @@ void SourceBufferState::MarkEndOfStream() {
     bool old_parsing_media_segment = parsing_media_segment_;
     parsing_media_segment_ = true;
 
+    DCHECK(!new_configs_possible_);
+    new_configs_possible_ = true;
+
     stream_parser_->MarkEndOfStream();
 
+    new_configs_possible_ = false;
     timestamp_offset_during_append_ = nullptr;
     parsing_media_segment_ = old_parsing_media_segment;
   }

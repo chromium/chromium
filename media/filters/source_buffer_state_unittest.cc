@@ -414,4 +414,23 @@ TEST_F(SourceBufferStateTest, SetAppendWindowUpdatesEndOfStreamBoundaries) {
   sbs->MarkEndOfStream();
 }
 
+TEST_F(SourceBufferStateTest, MarkEndOfStreamAllowsNewConfigs) {
+  std::unique_ptr<SourceBufferState> sbs =
+      CreateAndInitSourceBufferState("vp8");
+
+  // Verify that MarkEndOfStream triggers the end-of-stream action on
+  // the stream parser, and that during this call, new configs can be
+  // emitted.
+  EXPECT_CALL(*mock_stream_parser_, MarkEndOfStream())
+      .WillOnce(InvokeWithoutArgs([&] {
+        std::unique_ptr<MediaTracks> tracks(new MediaTracks());
+        AddVideoTrack(tracks, VideoCodec::kVP8, 1);
+        EXPECT_FOUND_CODEC_NAME(Video, "vp8");
+        EXPECT_CALL(*this, MediaTracksUpdatedMock(_));
+        EXPECT_TRUE(new_config_cb_.Run(std::move(tracks)));
+      }));
+
+  sbs->MarkEndOfStream();
+}
+
 }  // namespace media
