@@ -16,14 +16,14 @@ InterpolationValue MaybeConvertCSSValue(const CSSValue& value,
                                         const CSSProperty& property,
                                         GeometryBox geometry_box,
                                         CoordBox coord_box) {
+  const ShapeReferenceBox box = {geometry_box, coord_box};
   InterpolationValue result =
-      basic_shape_interpolation_functions::MaybeConvertCSSValue(
-          value, property, geometry_box, coord_box, ShapeBox::kMarginBox);
+      basic_shape_interpolation_functions::MaybeConvertCSSValue(value, property,
+                                                                box);
   if (result) {
     return result;
   }
-  return CSSShapeInterpolationType::MaybeConvertCSSValue(
-      value, property, geometry_box, coord_box);
+  return CSSShapeInterpolationType::MaybeConvertCSSValue(value, property, box);
 }
 
 InterpolationValue MaybeConvertBasicShape(const BasicShape* shape,
@@ -34,14 +34,15 @@ InterpolationValue MaybeConvertBasicShape(const BasicShape* shape,
   if (!shape) {
     return nullptr;
   }
+  const ShapeReferenceBox box = {geometry_box, coord_box};
   switch (shape->GetType()) {
     case BasicShape::kStylePathType:
     case BasicShape::kStyleShapeType:
-      return CSSShapeInterpolationType::MaybeConvertBasicShape(
-          shape, property, zoom, geometry_box, coord_box);
+      return CSSShapeInterpolationType::MaybeConvertBasicShape(shape, property,
+                                                               zoom, box);
     default:
       return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-          shape, property, zoom, geometry_box, coord_box, ShapeBox::kMarginBox);
+          shape, property, zoom, box);
   }
 }
 
