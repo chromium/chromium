@@ -2,7 +2,7 @@ Name: Fluent assertions for Java
 Short Name: google-truth
 URL: https://github.com/google/truth
 Version: N/A
-Revision: 14f5cfd604f2889c673c512d9bf549a2b6f1234c
+Revision: 5a279c3f2fde3fc48355db1a3fef37501dd89477
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
