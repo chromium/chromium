@@ -19,12 +19,28 @@
 
 namespace disk_cache {
 
-class SqlSharedCacheIsolatedDatabaseTest : public testing::Test {
+class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool> {
  public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "WalEnabled" : "WalDisabled";
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    feature_list_.InitAndEnableFeature(
-        net::features::kRendererAccessibleHttpCache);
+    if (GetParam()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{net::features::kRendererAccessibleHttpCache,
+            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
+              "true"}}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{net::features::kRendererAccessibleHttpCache,
+            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
+              "false"}}}},
+          {});
+    }
   }
 
  protected:
@@ -33,7 +49,12 @@ class SqlSharedCacheIsolatedDatabaseTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitSuccess) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         SqlSharedCacheIsolatedDatabaseTest,
+                         testing::Bool(),
+                         &SqlSharedCacheIsolatedDatabaseTest::DescribeParams);
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitSuccess) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   EXPECT_TRUE(db.Init().has_value());
@@ -43,7 +64,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitSuccess) {
   EXPECT_TRUE(base::PathExists(expected_file));
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitFailureForTesting) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitFailureForTesting) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   db.SetSimulateDbFailureForTesting(true);
@@ -51,7 +72,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitFailureForTesting) {
             SqlSharedCacheIsolatedDatabase::Error::kFailedForTesting);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitFailedToOpenVfsFileSet) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitFailedToOpenVfsFileSet) {
   constexpr std::string_view kNik = "nik";
   SqlSharedCacheDbId db_id(1);
 
@@ -72,7 +93,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitFailedToOpenVfsFileSet) {
   }
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitializeAndNikMismatch) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitializeAndNikMismatch) {
   constexpr std::string_view kNik1 = "nik1";
   constexpr std::string_view kNik2 = "nik2";
   SqlSharedCacheDbId db_id(1);
@@ -120,7 +141,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, InitializeAndNikMismatch) {
   }
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, InsertAndReadSuccess) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, InsertAndReadSuccess) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());
@@ -141,7 +162,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, InsertAndReadSuccess) {
   EXPECT_EQ(read_buffer->span(), body->span());
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, WriteBodyAndRead) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, WriteBodyAndRead) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());
@@ -165,7 +186,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, WriteBodyAndRead) {
   EXPECT_EQ(read_buffer->span(), body_chunk->span());
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, ReadNotReady) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadNotReady) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());
@@ -183,7 +204,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, ReadNotReady) {
             SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, ReadKeyMismatch) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadKeyMismatch) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());
@@ -203,7 +224,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, ReadKeyMismatch) {
             SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, InsertBodyTooLarge) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, InsertBodyTooLarge) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());
@@ -218,7 +239,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, InsertBodyTooLarge) {
             SqlSharedCacheIsolatedDatabase::Error::kBodyTooLarge);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, WriteBodyInvalidRange) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, WriteBodyInvalidRange) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());
@@ -244,7 +265,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, WriteBodyInvalidRange) {
             SqlSharedCacheIsolatedDatabase::Error::kInvalidWriteRange);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, ReadInvalidRange) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadInvalidRange) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());
@@ -266,7 +287,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest, ReadInvalidRange) {
             SqlSharedCacheIsolatedDatabase::Error::kInvalidReadRange);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest,
+TEST_P(SqlSharedCacheIsolatedDatabaseTest,
        WriteBodyMultipleChunksAndReadAcross) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
@@ -297,7 +318,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseTest,
   EXPECT_EQ(read_buffer->span(), base::span<const uint8_t>({3, 4, 5, 6, 7, 8}));
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseTest, ReadBeyondWrittenBody) {
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadBeyondWrittenBody) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
   ASSERT_TRUE(db.Init().has_value());

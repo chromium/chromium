@@ -19,6 +19,7 @@
 #include "components/sqlite_vfs/client.h"
 #include "components/sqlite_vfs/sqlite_sandboxed_vfs.h"
 #include "components/sqlite_vfs/vfs_utils.h"
+#include "net/base/features.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database_queries.h"
 #include "sql/database.h"
@@ -44,15 +45,16 @@ std::unique_ptr<SqlSharedCacheIsolatedDatabase::DatabaseAssets>
 SqlSharedCacheIsolatedDatabase::DatabaseAssets::MaybeCreate(
     const base::FilePath& directory,
     SqlSharedCacheDbId shared_cache_db_id) {
-  ASSIGN_OR_RETURN(auto pending_file_set,
-                   sqlite_vfs::MakePendingFileSet(
-                       sqlite_vfs::Client::kSharedCacheIsolated, directory,
-                       base::FilePath::FromASCII(base::StrCat(
-                           {kSqlBackendSharedCacheIsolatedFileNamePrefix,
+  ASSIGN_OR_RETURN(
+      auto pending_file_set,
+      sqlite_vfs::MakePendingFileSet(
+          sqlite_vfs::Client::kSharedCacheIsolated, directory,
+          base::FilePath::FromASCII(
+              base::StrCat({kSqlBackendSharedCacheIsolatedFileNamePrefix,
                             base::NumberToString(*shared_cache_db_id)})),
-                       /*single_connection=*/false,
-                       /*journal_mode_wal=*/false),
-                   [](auto) { return nullptr; });
+          /*single_connection=*/false,
+          net::features::kRendererAccessibleHttpCacheWalMode.Get()),
+      [](auto) { return nullptr; });
   ASSIGN_OR_RETURN(auto vfs_file_set,
                    sqlite_vfs::SqliteVfsFileSet::Bind(
                        sqlite_vfs::Client::kSharedCacheIsolated,

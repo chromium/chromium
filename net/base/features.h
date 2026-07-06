@@ -153,6 +153,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheZstdCompression);
 // Enables the Renderer-Accessible HTTP Cache (crbug.com/473666511), an
 // experimental feature allowing renderers direct access to the HTTP cache.
 NET_EXPORT BASE_DECLARE_FEATURE(kRendererAccessibleHttpCache);
+// Enables Write-Ahead Logging (WAL) mode for the Renderer-Accessible HTTP
+// Cache.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kRendererAccessibleHttpCacheWalMode);
 
 // If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
 // globally reachable check will use the port number specified by

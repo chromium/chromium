@@ -21,12 +21,29 @@
 
 namespace disk_cache {
 
-class SqlSharedCacheIsolatedDatabaseReaderTest : public testing::Test {
+class SqlSharedCacheIsolatedDatabaseReaderTest
+    : public testing::TestWithParam<bool> {
  public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "WalEnabled" : "WalDisabled";
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    feature_list_.InitAndEnableFeature(
-        net::features::kRendererAccessibleHttpCache);
+    if (GetParam()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{net::features::kRendererAccessibleHttpCache,
+            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
+              "true"}}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{net::features::kRendererAccessibleHttpCache,
+            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
+              "false"}}}},
+          {});
+    }
   }
 
  protected:
@@ -71,7 +88,13 @@ class SqlSharedCacheIsolatedDatabaseReaderTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SqlSharedCacheIsolatedDatabaseReaderTest, ReadReady) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SqlSharedCacheIsolatedDatabaseReaderTest,
+    testing::Bool(),
+    &SqlSharedCacheIsolatedDatabaseReaderTest::DescribeParams);
+
+TEST_P(SqlSharedCacheIsolatedDatabaseReaderTest, ReadReady) {
   const std::string key_str = "0/0/https://example.com/ready";
   const std::string header_data = "This is header data.";
   const std::string body_data = "This is a ready body.";
@@ -89,7 +112,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseReaderTest, ReadReady) {
   EXPECT_EQ(base::as_string_view(read_body), body_data);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseReaderTest, ReadNotReady) {
+TEST_P(SqlSharedCacheIsolatedDatabaseReaderTest, ReadNotReady) {
   const std::string key_str = "0/0/https://example.com/not-ready";
   const std::string header_data = "Header for not ready.";
   const std::string body_data = "This is not ready.";
@@ -101,7 +124,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseReaderTest, ReadNotReady) {
   EXPECT_FALSE(response.has_value());
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseReaderTest, ReadEmptyHeader) {
+TEST_P(SqlSharedCacheIsolatedDatabaseReaderTest, ReadEmptyHeader) {
   const std::string key_str = "0/0/https://example.com/empty-header";
   const std::string header_data = "";
   const std::string body_data = "Body with empty header.";
@@ -119,7 +142,7 @@ TEST_F(SqlSharedCacheIsolatedDatabaseReaderTest, ReadEmptyHeader) {
   EXPECT_EQ(base::as_string_view(read_body), body_data);
 }
 
-TEST_F(SqlSharedCacheIsolatedDatabaseReaderTest, ReadEmptyBody) {
+TEST_P(SqlSharedCacheIsolatedDatabaseReaderTest, ReadEmptyBody) {
   const std::string key_str = "0/0/https://example.com/empty-body";
   const std::string header_data = "Header with empty body.";
   const std::string body_data = "";
