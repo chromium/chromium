@@ -239,6 +239,11 @@ public class TestBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public @StringRes int getSheetHiddenAccessibilityStringId() {
+        return android.R.string.copy;
+    }
+
+    @Override
     public boolean canBeSuppressed(BottomSheetContent nextContent) {
         return mCanSuppressInAnyState;
     }

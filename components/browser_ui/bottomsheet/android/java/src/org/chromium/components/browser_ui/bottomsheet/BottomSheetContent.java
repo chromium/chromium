@@ -327,6 +327,21 @@ public interface BottomSheetContent {
     int getSheetClosedAccessibilityStringId();
 
     /**
+     * @return The resource id of the string announced when the sheet is hidden. This is typically
+     *     the name of your feature followed by 'hidden' (e.g. 'Tab bottom sheet hidden').
+     *     <p><b>Important note on screen reader deduplication:</b> By default, this falls back to
+     *     {@link #getSheetClosedAccessibilityStringId()}, which is also announced when entering the
+     *     peeking state. If your bottom sheet supports peeking and can be dismissed from peek to
+     *     hidden, you <b>must</b> override this method to return a distinct string ID from your
+     *     closed/peek string. Otherwise, Android screen readers (e.g., TalkBack) will treat the
+     *     consecutive identical strings as duplicate announcements and silently drop the speech
+     *     when transitioning from peek to hidden.
+     */
+    default @StringRes int getSheetHiddenAccessibilityStringId() {
+        return getSheetClosedAccessibilityStringId();
+    }
+
+    /**
      * @param nextContent The content that is requesting to be shown.
      * @return True if this content should hide when another content is requested to be shown.
      */

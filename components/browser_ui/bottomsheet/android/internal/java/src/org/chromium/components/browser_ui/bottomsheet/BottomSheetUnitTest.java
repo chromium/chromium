@@ -127,6 +127,17 @@ public class BottomSheetUnitTest {
         mActivity.finish();
     }
 
+    private void setupBottomSheetStrings(int openStringId, int closeStringId) {
+        if (openStringId != 0) {
+            doReturn(openStringId).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+            doReturn(openStringId).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
+        }
+        if (closeStringId != 0) {
+            doReturn(closeStringId).when(mSheetContent).getSheetHiddenAccessibilityStringId();
+            doReturn(closeStringId).when(mSheetContent).getSheetClosedAccessibilityStringId();
+        }
+    }
+
     @Test
     @Config(qualifiers = "sw600dp")
     public void testAppHeaderHeightChanged_SwitchToDesktopWindow() {
@@ -317,9 +328,9 @@ public class BottomSheetUnitTest {
         // Return 0.5 for half height to make the min height 100 (container height is 200)
         doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
         doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        doReturn(R.string.bottom_sheet_accessibility_description)
-                .when(mSheetContent)
-                .getSheetClosedAccessibilityStringId();
+        setupBottomSheetStrings(
+                R.string.bottom_sheet_accessibility_description,
+                R.string.bottom_sheet_accessibility_description);
         doReturn(new View(mActivity)).when(mSheetContent).getContentView();
         mBottomSheet.showContent(mSheetContent);
 
@@ -343,9 +354,9 @@ public class BottomSheetUnitTest {
         doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
         doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
         doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        doReturn(R.string.bottom_sheet_accessibility_description)
-                .when(mSheetContent)
-                .getSheetClosedAccessibilityStringId();
+        setupBottomSheetStrings(
+                R.string.bottom_sheet_accessibility_description,
+                R.string.bottom_sheet_accessibility_description);
         doReturn(new View(mActivity)).when(mSheetContent).getContentView();
         mBottomSheet.showContent(mSheetContent);
 
@@ -472,8 +483,7 @@ public class BottomSheetUnitTest {
         doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
         doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
         doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(mSheetContent);
         mBottomSheet.setSheetState(SheetState.HALF, false);
@@ -505,8 +515,7 @@ public class BottomSheetUnitTest {
         doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
         doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
         doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(mSheetContent);
         mBottomSheet.setSheetState(SheetState.HALF, false);
@@ -551,8 +560,7 @@ public class BottomSheetUnitTest {
         doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
         doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
         doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(mSheetContent);
         mBottomSheet.setSheetState(SheetState.HALF, false);
@@ -598,8 +606,7 @@ public class BottomSheetUnitTest {
     public void testUpdateA11yPaneTitle() {
         int openStringId = android.R.string.ok;
         int closedStringId = android.R.string.cancel;
-        doReturn(openStringId).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
-        doReturn(closedStringId).when(mSheetContent).getSheetClosedAccessibilityStringId();
+        setupBottomSheetStrings(openStringId, closedStringId);
 
         mBottomSheet.showContent(mSheetContent);
 
@@ -629,8 +636,7 @@ public class BottomSheetUnitTest {
         // Configure content to be resizable.
         doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
         doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(mSheetContent);
         mBottomSheet.setSheetState(SheetState.HALF, false);
@@ -655,8 +661,7 @@ public class BottomSheetUnitTest {
         doReturn(new View(mActivity)).when(newContent).getContentView();
         doReturn(0.5f).when(newContent).getHalfHeightRatio();
         doReturn((float) HeightMode.DEFAULT).when(newContent).getFullHeightRatio();
-        doReturn(android.R.string.ok).when(newContent).getSheetHalfHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(newContent).getSheetFullHeightAccessibilityStringId();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(newContent);
 

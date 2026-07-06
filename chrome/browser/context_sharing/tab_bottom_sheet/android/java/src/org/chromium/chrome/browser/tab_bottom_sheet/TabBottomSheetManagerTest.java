@@ -534,6 +534,14 @@ public class TabBottomSheetManagerTest {
         when(otherContent.getBackPressStateChangedSupplier()).thenReturn(alwaysFalse);
         View otherView = ThreadUtils.runOnUiThreadBlocking(() -> new View(mActivity));
         when(otherContent.getContentView()).thenReturn(otherView);
+        when(otherContent.getSheetClosedAccessibilityStringId())
+                .thenReturn(R.string.tab_bottom_sheet_closed);
+        when(otherContent.getSheetHiddenAccessibilityStringId())
+                .thenReturn(R.string.tab_bottom_sheet_closed);
+        when(otherContent.getSheetHalfHeightAccessibilityStringId())
+                .thenReturn(R.string.tab_bottom_sheet_half_height);
+        when(otherContent.getSheetFullHeightAccessibilityStringId())
+                .thenReturn(R.string.tab_bottom_sheet_full_height);
 
         // Request showing the other content. This will suppress the Tab Bottom Sheet.
         ThreadUtils.runOnUiThreadBlocking(
