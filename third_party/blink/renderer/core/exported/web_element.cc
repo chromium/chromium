@@ -30,6 +30,8 @@
 
 #include "third_party/blink/public/web/web_element.h"
 
+#include <optional>
+
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -112,20 +114,23 @@ bool HasPresentationalRole(const Element& element) {
          EqualIgnoringAsciiCase(role, keywords::kPresentation);
 }
 
-bool HasUnavailableAriaAncestorInclusive(const Element& element) {
+std::optional<WebElementInteractionDisallowedReason>
+GetAriaInteractionDisallowedReason(const Element& element) {
   for (const Node* node = &element; node;
        node = node->ParentOrShadowHostNode()) {
     const Element* ancestor = DynamicTo<Element>(node);
     if (!ancestor) {
       continue;
     }
-    if (AriaBoolAttr(*ancestor, html_names::kAriaDisabledAttr) ||
-        AriaBoolAttr(*ancestor, html_names::kAriaHiddenAttr)) {
-      return true;
+    if (AriaBoolAttr(*ancestor, html_names::kAriaDisabledAttr)) {
+      return WebElementInteractionDisallowedReason::kAriaDisabled;
+    }
+    if (AriaBoolAttr(*ancestor, html_names::kAriaHiddenAttr)) {
+      return WebElementInteractionDisallowedReason::kAriaHidden;
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -280,29 +285,30 @@ void WebElement::Click() {
   element->DispatchSimulatedClick(nullptr);
 }
 
-bool WebElement::IsEffectivelyDisabledOrInert() {
+std::optional<WebElementInteractionDisallowedReason>
+WebElement::InteractionDisallowedReason() {
   Element* element = Unwrap<Element>();
   if (const auto* form_control =
           blink::DynamicTo<HTMLFormControlElement>(element)) {
     if (form_control->IsDisabledFormControl()) {
-      return true;
+      return WebElementInteractionDisallowedReason::kDisabled;
     }
   }
 
-  // Target availability depends on computed style, including inherited inert
-  // state from native modal dialogs and pointer event handling, so refresh the
-  // style tree before reading it.
+  // Interaction-disallowed state depends on computed style, including
+  // inherited inert state from native modal dialogs and pointer event handling,
+  // so refresh the style tree before reading it.
   element->GetDocument().UpdateStyleAndLayoutTree();
   if (!element->GetLayoutObject()) {
-    return true;
+    return WebElementInteractionDisallowedReason::kNoLayoutObject;
   }
 
   if (const ComputedStyle* style = element->GetComputedStyle()) {
     if (style->IsInert()) {
-      return true;
+      return WebElementInteractionDisallowedReason::kInert;
     }
     if (style->UsedPointerEvents() == EPointerEvents::kNone) {
-      return true;
+      return WebElementInteractionDisallowedReason::kPointerEventsNone;
     }
   }
 
@@ -312,8 +318,16 @@ bool WebElement::IsEffectivelyDisabledOrInert() {
   // rejecting targets outside any visible dialog's flat-tree subtree. Clicking
   // outside native modal dialogs is already handled by checking for inertness.
   // See https://crrev.com/c/8007486 for a prototype implementation.
-  return HasUnavailableAriaAncestorInclusive(*element) ||
-         HasPresentationalRole(*element);
+  if (std::optional<WebElementInteractionDisallowedReason> aria_reason =
+          GetAriaInteractionDisallowedReason(*element)) {
+    return aria_reason;
+  }
+
+  if (HasPresentationalRole(*element)) {
+    return WebElementInteractionDisallowedReason::kRolePresentationOrNone;
+  }
+
+  return std::nullopt;
 }
 
 bool WebElement::SimulateAccessibilityClick() {
@@ -329,13 +343,13 @@ bool WebElement::SimulateAccessibilityClick() {
     return false;
   }
 
-  if (IsEffectivelyDisabledOrInert()) {
+  if (InteractionDisallowedReason().has_value()) {
     return false;
   }
 
-  // This is a target-scoped lifecycle update. The availability preflight above
-  // only needs current style-tree state, but content-visibility and display
-  // locks can still leave this element without current layout data.
+  // This is a target-scoped lifecycle update. The interaction-disallowed
+  // preflight above only needs current style-tree state, but content-visibility
+  // and display locks can still leave this element without current layout data.
   // Accessibility-style activation needs current target layout before it sends
   // trusted simulated input events.
   document.UpdateStyleAndLayoutTreeForElement(element,

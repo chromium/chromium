@@ -5,6 +5,7 @@
 #include "third_party/blink/public/web/web_element.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -295,85 +296,94 @@ TEST_F(WebElementTest, SimulateAccessibilityClickDoesNotMoveFocus) {
   EXPECT_EQ(initially_focused, GetDocument().FocusedElement());
 }
 
-TEST_F(WebElementTest, IsEffectivelyDisabledOrInertDetectsUnavailableStates) {
+TEST_F(WebElementTest, InteractionDisallowedReasonDetectsDisallowedStates) {
   struct TestCase {
     const char* html;
-    bool expected_unavailable;
+    std::optional<WebElementInteractionDisallowedReason> expected_reason;
   };
 
   const TestCase test_cases[] = {
-      {"<button id=testElement>Target</button>", false},
-      {"<button id=testElement disabled>Target</button>", true},
+      {"<button id=testElement>Target</button>", std::nullopt},
+      {"<button id=testElement disabled>Target</button>",
+       WebElementInteractionDisallowedReason::kDisabled},
       {"<fieldset disabled><button id=testElement>Target</button></fieldset>",
-       true},
-      {"<button id=testElement style='display:none'>Target</button>", true},
-      {"<div id=testElement style='display:contents'>Target</div>", true},
+       WebElementInteractionDisallowedReason::kDisabled},
+      {"<button id=testElement style='display:none'>Target</button>",
+       WebElementInteractionDisallowedReason::kNoLayoutObject},
+      {"<div id=testElement style='display:contents'>Target</div>",
+       WebElementInteractionDisallowedReason::kNoLayoutObject},
       {"<button id=testElement style='pointer-events:none'>Target</button>",
-       true},
-      {"<div inert><button id=testElement>Target</button></div>", true},
+       WebElementInteractionDisallowedReason::kPointerEventsNone},
+      {"<div inert><button id=testElement>Target</button></div>",
+       WebElementInteractionDisallowedReason::kInert},
       {"<div aria-disabled=true><button id=testElement>Target</button></div>",
-       true},
+       WebElementInteractionDisallowedReason::kAriaDisabled},
       {"<div aria-hidden=' true '><button id=testElement>Target</button></div>",
-       true},
+       WebElementInteractionDisallowedReason::kAriaHidden},
       {R"HTML(
         <div role=dialog aria-modal=true>Modal</div>
         <button id=testElement>Target</button>
       )HTML",
-       false},
+       std::nullopt},
       {R"HTML(
         <div role=alertdialog>Alert dialog</div>
         <button id=testElement>Target</button>
       )HTML",
-       false},
-      {"<button id=testElement aria-disabled=false>Target</button>", false},
-      {"<button id=testElement aria-hidden=false>Target</button>", false},
+       std::nullopt},
+      {"<button id=testElement aria-disabled=false>Target</button>",
+       std::nullopt},
+      {"<button id=testElement aria-hidden=false>Target</button>",
+       std::nullopt},
       {R"HTML(
         <div role=dialog aria-modal=true>
           <button id=testElement>Target</button>
         </div>
       )HTML",
-       false},
+       std::nullopt},
       {R"HTML(
         <div role=dialog aria-modal=false>Modeless</div>
         <button id=testElement>Target</button>
       )HTML",
-       false},
+       std::nullopt},
       {R"HTML(
         <div role=alertdialog aria-modal=false>Modeless alert dialog</div>
         <button id=testElement>Target</button>
       )HTML",
-       false},
+       std::nullopt},
       {R"HTML(
         <div role=dialog aria-modal=true hidden>Hidden modal template</div>
         <button id=testElement>Target</button>
       )HTML",
-       false},
+       std::nullopt},
       {R"HTML(
         <div role=alertdialog style='display:none'>Hidden alert dialog</div>
         <button id=testElement>Target</button>
       )HTML",
-       false},
+       std::nullopt},
       {R"HTML(
         <div role=dialog aria-modal=true aria-hidden=true>Hidden modal</div>
         <button id=testElement>Target</button>
       )HTML",
-       false},
-      {"<div id=testElement role=none>Target</div>", true},
-      {"<div id=testElement role=presentation>Target</div>", true},
-      {"<div id=testElement role=' none '>Target</div>", true},
+       std::nullopt},
+      {"<div id=testElement role=none>Target</div>",
+       WebElementInteractionDisallowedReason::kRolePresentationOrNone},
+      {"<div id=testElement role=presentation>Target</div>",
+       WebElementInteractionDisallowedReason::kRolePresentationOrNone},
+      {"<div id=testElement role=' none '>Target</div>",
+       WebElementInteractionDisallowedReason::kRolePresentationOrNone},
       // Multiple ARIA roles are intentionally not supported by this helper.
-      {"<div id=testElement role='none button'>Target</div>", false},
+      {"<div id=testElement role='none button'>Target</div>", std::nullopt},
   };
 
   for (const auto& test_case : test_cases) {
     InsertHTML(String(test_case.html));
-    EXPECT_EQ(test_case.expected_unavailable,
-              TestElement().IsEffectivelyDisabledOrInert())
+    EXPECT_EQ(test_case.expected_reason,
+              TestElement().InteractionDisallowedReason())
         << test_case.html;
   }
 }
 
-TEST_F(WebElementTest, SimulateAccessibilityClickRejectsUnavailableTarget) {
+TEST_F(WebElementTest, SimulateAccessibilityClickRejectsDisallowedTarget) {
   const char* test_cases[] = {
       "<button id=testElement disabled>Target</button>",
       "<button id=testElement style='display:none'>Target</button>",
@@ -387,7 +397,7 @@ TEST_F(WebElementTest, SimulateAccessibilityClickRejectsUnavailableTarget) {
   for (const char* html : test_cases) {
     InsertHTML(String(html));
     // The click helper should fail closed for targets that actor policy treats
-    // as unavailable. Callers can use IsEffectivelyDisabledOrInert() directly
+    // as disallowed. Callers can use InteractionDisallowedReason() directly
     // when they need a pre-dispatch reason.
     EXPECT_FALSE(TestElement().SimulateAccessibilityClick()) << html;
   }

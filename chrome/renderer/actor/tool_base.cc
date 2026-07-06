@@ -158,9 +158,10 @@ WebElementAuthorBarrierReason GetWebElementAuthorBarrierReason(
   // prototype at crrev.com/c/8007486.
 
   // Blink folds native modal background inertness, pointer-events:none,
-  // aria-hidden, and similar target availability into this cheap check.
+  // aria-hidden, and similar interaction-disallowed states into this cheap
+  // check.
   // Modeless dialog elements stay interactive and are not barriers here.
-  if (element.IsEffectivelyDisabledOrInert()) {
+  if (element.InteractionDisallowedReason().has_value()) {
     return WebElementAuthorBarrierReason::kInert;
   }
 

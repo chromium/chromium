@@ -199,7 +199,8 @@ ToolBase::ResolveResult ClickTool::ResolveValidatedClickTarget(
     }
     if (occlusion_mode ==
             TargetOcclusionMode::kAllowOccludedForDirectActivation &&
-        !element.IsNull() && element.IsEffectivelyDisabledOrInert()) {
+        !element.IsNull() &&
+        element.InteractionDisallowedReason().has_value()) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kElementDisabled,
                      /*requires_page_stabilization=*/false,
