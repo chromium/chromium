@@ -17,6 +17,7 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/renderer_host/browsing_context_group_swap.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -88,9 +89,9 @@ class ContaminationDelayBrowserTest : public ContentBrowserTest {
   void set_response_delay(base::TimeDelta delay) { response_delay_ = delay; }
 
   void Prefetch(const GURL& url) {
+    auto* rfh = shell()->web_contents()->GetPrimaryMainFrame();
     auto* prefetch_document_manager =
-        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-            shell()->web_contents()->GetPrimaryMainFrame());
+        PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh);
     auto candidate = blink::mojom::SpeculationCandidate::New();
     candidate->url = url;
     candidate->action = blink::mojom::SpeculationAction::kPrefetch;
@@ -102,13 +103,9 @@ class ContaminationDelayBrowserTest : public ContentBrowserTest {
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
     candidates.push_back(std::move(candidate));
     prefetch_document_manager->ProcessCandidates(candidates);
-    ASSERT_TRUE(base::test::RunUntil([&] {
-      return prefetch_document_manager->GetReferringPageMetrics()
-                 .prefetch_successful_count >= 1;
-    })) << "timed out waiting for prefetch to complete ("
-        << prefetch_document_manager->GetReferringPageMetrics()
-               .prefetch_attempted_count
-        << " attempted)";
+    test::TestPrefetchWatcher watcher;
+    watcher.WaitUntilPrefetchResponseCompleted(
+        static_cast<RenderFrameHostImpl*>(rfh)->GetDocumentToken(), url);
   }
 
  private:

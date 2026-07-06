@@ -221,9 +221,7 @@ class TestPrefetchService final : public PrefetchService {
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
 };
 
-// Helper for testing prefetching-side (i.e. not serving-side) metrics including
-// "PrefetchProxy.Prefetch.*" UMAs, `PrefetchReferringPageMetrics` and
-// Preloading_Attempt UKMs.
+// Helper for testing prefetching-side (i.e. not serving-side) metrics.
 class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
  public:
   PrefetchingMetricsTestBase();

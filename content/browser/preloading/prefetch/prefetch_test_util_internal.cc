@@ -18,7 +18,6 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
-#include "content/public/browser/prefetch_metrics.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/cookies/site_for_cookies.h"
@@ -642,14 +641,6 @@ void PrefetchingMetricsTestBase::ExpectPrefetchNoNetErrorOrResponseReceived(
   ExpectPrefetchResponseReceivedNotRecorded();
   ExpectPrefetchCompleteNotRecorded();
 
-  if (!browser_initiated_prefetch) {
-    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-        PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-    EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-    EXPECT_EQ(referring_page_metrics->prefetch_eligible_count,
-              is_eligible ? 1 : 0);
-    EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
-  }
 }
 
 void PrefetchingMetricsTestBase::ExpectPrefetchNotEligible(
@@ -693,12 +684,6 @@ void PrefetchingMetricsTestBase::ExpectPrefetchFailedNetError(
                                         1);
 
   if (!browser_initiated_prefetch) {
-    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-        PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-    EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-    EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-    EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
-
     ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                           .failure = ToPreloadingFailureReason(
                               PrefetchStatus::kPrefetchFailedNetError),
@@ -714,11 +699,6 @@ void PrefetchingMetricsTestBase::ExpectPrefetchFailedAfterResponseReceived(
   ExpectPrefetchResponseReceivedRecorded(expected_response_code);
   ExpectPrefetchCompleteRecorded(expected_body_length);
 
-  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
   histogram_tester().ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
                                         expected_prefetch_status, 1);
@@ -734,11 +714,6 @@ void PrefetchingMetricsTestBase::ExpectPrefetchSuccess(
   ExpectPrefetchResponseReceivedRecorded();
   ExpectPrefetchCompleteRecorded(expected_body_length);
 
-  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
 
   ExpectCorrectUkmLogs({.is_accurate = is_accurate, .eagerness = eagerness});
 }

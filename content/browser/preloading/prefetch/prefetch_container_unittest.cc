@@ -867,18 +867,12 @@ TEST_P(PrefetchContainerTest, EligibilityCheck) {
   prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
 
-  EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
-                .prefetch_eligible_count,
-            1);
 
   // Add a redirect, register a callback for it, and then mark it as eligible.
   prefetch_container->SimulatePrefetchRedirectedForTest(kTestUrl2);
 
   // Referring page metrics is only incremented for the original prefetch URL
   // and not any redirects.
-  EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
-                .prefetch_eligible_count,
-            1);
 }
 
 TEST_P(PrefetchContainerTest, IneligibleRedirect) {
@@ -895,9 +889,6 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
   prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
 
-  EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
-                .prefetch_eligible_count,
-            1);
 
   // Receives an ineligible redirect.
   prefetch_container->SimulatePrefetchRedirectedForTest(
@@ -905,9 +896,6 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
 
   // Ineligible redirects are treated as failed prefetches, and not ineligible
   // prefetches.
-  EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
-                .prefetch_eligible_count,
-            1);
   EXPECT_EQ(prefetch_container->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchFailedIneligibleRedirect);
 }
