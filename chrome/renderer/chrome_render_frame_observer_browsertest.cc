@@ -7,14 +7,17 @@
 #include <string>
 #include <tuple>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
@@ -25,6 +28,8 @@
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
+#include "components/variations/variations_switches.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -121,6 +126,16 @@ class ChromeRenderFrameObserverTest : public ChromeRenderViewTest {
 
  protected:
   FakeContentTranslateDriver fake_translate_driver_;
+};
+
+class ChromeRenderFrameObserverWithBenchmarkingTest
+    : public ChromeRenderFrameObserverTest {
+ public:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        variations::switches::kEnableBenchmarkingApi);
+    ChromeRenderFrameObserverTest::SetUp();
+  }
 };
 
 TEST_F(ChromeRenderFrameObserverTest, CapturePageTextCalled) {
@@ -241,4 +256,127 @@ TEST_F(ChromeRenderFrameObserverTest, OptGuideGetsText) {
 
   EXPECT_EQ(u"foo", consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
+}
+
+TEST_F(ChromeRenderFrameObserverTest, BenchmarkingUndefinedByDefault) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome === 'undefined' || typeof chrome.benchmarking === "
+      u"'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome === 'undefined' || typeof chrome.Interval === "
+      u"'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+}
+
+TEST_F(ChromeRenderFrameObserverWithBenchmarkingTest, BenchmarkingEnabled) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome !== 'undefined' && typeof chrome.benchmarking !== "
+      u"'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+}
+
+TEST_F(ChromeRenderFrameObserverWithBenchmarkingTest, BenchmarkingMethods) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  // Check isSingleProcess
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.isSingleProcess === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // Check getRendererPid
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.getRendererPid === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // Check getRendererMainTid
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.getRendererMainTid === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // Verify they return correct types/values
+  int pid = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"chrome.benchmarking.getRendererPid()", &pid));
+  EXPECT_EQ(static_cast<int>(base::GetCurrentProcId()), pid);
+
+  int tid = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"chrome.benchmarking.getRendererMainTid()", &tid));
+  EXPECT_EQ(
+      base::PlatformThread::CurrentId().truncate_to_int32_for_display_only(),
+      tid);
+
+  int is_single_process = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"chrome.benchmarking.isSingleProcess() ? 1 : 0", &is_single_process));
+  int expected_is_single_process =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess)
+          ? 1
+          : 0;
+  EXPECT_EQ(expected_is_single_process, is_single_process);
+
+  // Check getMarkFunctions
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.getMarkFunctions === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"var marks = chrome.benchmarking.getMarkFunctions();"
+      u"typeof marks === 'object' && "
+      u"typeof marks.start === 'object' && "
+      u"typeof marks.stop === 'object' && "
+      u"typeof marks.start.function === 'function' && "
+      u"typeof marks.stop.function === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+}
+
+TEST_F(ChromeRenderFrameObserverWithBenchmarkingTest, BenchmarkingInterval) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  // Check hiResTime exists
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.hiResTime === 'function' ? 1 : 0", &result));
+  EXPECT_EQ(1, result);
+
+  // Check chrome.Interval exists
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.Interval === 'function' ? 1 : 0", &result));
+  EXPECT_EQ(1, result);
+
+  // Test chrome.Interval functionality
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"var interval = new chrome.Interval();"
+      u"interval.start();"
+      u"interval.stop();"
+      u"var delta = interval.microseconds();"
+      u"delta >= 0 ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // Test that hiResTime returns increasing values
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"var t1 = chrome.benchmarking.hiResTime();"
+      u"var t2 = chrome.benchmarking.hiResTime();"
+      u"t2 >= t1 ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
 }

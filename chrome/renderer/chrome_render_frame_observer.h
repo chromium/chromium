@@ -100,6 +100,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void DidCreateNewDocument() override;
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidClearWindowObject() override;
+  void DidCreateScriptContext(v8::Local<v8::Context> context,
+                              int32_t world_id) override;
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void OnDestruct() override;
   void WillDetach(blink::DetachReason detach_reason) override;

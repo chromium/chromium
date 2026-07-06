@@ -51,8 +51,8 @@ static_library("renderer") {
   configs = []
   configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
   sources = [
-    "benchmarking_extension.cc",
-    "benchmarking_extension.h",
+    "benchmarking_bindings.cc",
+    "benchmarking_bindings.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
     "chrome_content_renderer_client.cc",

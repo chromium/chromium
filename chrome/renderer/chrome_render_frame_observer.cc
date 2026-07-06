@@ -13,6 +13,7 @@
 #include <set>
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -31,6 +32,7 @@
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/page_stability_monitor_delegate.h"
 #include "chrome/renderer/actor/tool_executor.h"
+#include "chrome/renderer/benchmarking_bindings.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/media/media_feeds.h"
 #include "chrome/renderer/process_state.h"
@@ -45,6 +47,7 @@
 #include "components/page_content_annotations/content/renderer/page_stability_monitor.h"
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_util.h"
+#include "components/variations/variations_switches.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/buildflags.h"
@@ -361,6 +364,15 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   guest_view::SlimWebViewBindings::MaybeInstall(*render_frame());
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+}
+
+void ChromeRenderFrameObserver::DidCreateScriptContext(
+    v8::Local<v8::Context> context,
+    int32_t world_id) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarkingApi)) {
+    BenchmarkingBindings::Install(context);
+  }
 }
 
 void ChromeRenderFrameObserver::DidMeaningfulLayout(

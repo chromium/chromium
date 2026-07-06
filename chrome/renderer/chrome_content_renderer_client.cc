@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -50,7 +51,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/renderer_resources.h"
-#include "chrome/renderer/benchmarking_extension.h"
+#include "chrome/renderer/benchmarking_bindings.h"
 #include "chrome/renderer/browser_exposed_renderer_interfaces.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
@@ -458,10 +459,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
       extensions_v8::LoadTimesExtension::Get());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(variations::switches::kEnableBenchmarkingApi)) {
-    blink::WebScriptController::RegisterExtension(
-        extensions_v8::BenchmarkingExtension::Get());
-  }
 
   if (command_line->HasSwitch(switches::kEnableNetBenchmarking)) {
     blink::WebScriptController::RegisterExtension(
@@ -1510,6 +1507,10 @@ void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
           context_proxy, v8_context, service_worker_version_id,
           service_worker_scope, script_url, service_worker_token);
 #endif
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarkingApi)) {
+    BenchmarkingBindings::Install(v8_context);
+  }
 }
 
 void ChromeContentRendererClient::DidStartServiceWorkerContextOnWorkerThread(
