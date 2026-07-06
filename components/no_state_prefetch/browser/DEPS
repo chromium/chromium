@@ -24,5 +24,6 @@ specific_include_rules = {
   # RenderFrameHost accessor instead).
   ".*_unittest\.cc": [
     "+services/network/public/cpp",
+    "+services/network/public/mojom",
   ],
 }

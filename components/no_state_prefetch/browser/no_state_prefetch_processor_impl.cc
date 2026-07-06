@@ -56,6 +56,19 @@ void NoStatePrefetchProcessorImpl::Start(
     return;
   }
 
+  // The referrer is supplied by the renderer and is forwarded to the prefetch
+  // navigation, so it must be same-origin with the initiator that bound this
+  // receiver.
+  if (!attributes->referrer->url.is_empty() &&
+      !initiator_origin_.IsSameOriginWith(attributes->referrer->url)) {
+    receiver_.ReportBadMessage("NSPPI_INVALID_REFERRER_ORIGIN");
+    // The above ReportBadMessage() closes |receiver_| but does not trigger its
+    // disconnect handler, so we need to call the handler explicitly
+    // here to do some necessary work.
+    Abandon();
+    return;
+  }
+
   // Start() must be called only one time.
   if (link_trigger_id_) {
     receiver_.ReportBadMessage("NSPPI_START_TWICE");
