@@ -158,14 +158,25 @@ static void CompleteURLs(DocumentFragment& fragment, const String& base_url) {
 
   KURL parsed_base_url(base_url);
 
+  if (parsed_base_url.ProtocolIsJavaScript()) {
+    return;
+  }
+
   for (Element& element : ElementTraversal::DescendantsOf(fragment)) {
     AttributeCollection attributes = element.Attributes();
     // AttributeCollection::iterator end = attributes.end();
     for (const auto& attribute : attributes) {
-      if (element.IsURLAttribute(attribute) && !attribute.Value().empty())
-        changes.push_back(AttributeChange(
-            &element, attribute.GetName(),
-            KURL(parsed_base_url, attribute.Value()).GetString()));
+      if (element.IsURLAttribute(attribute) && !attribute.Value().empty()) {
+        // Defense-in-depth: never resolve a URL attribute into a
+        // "javascript:" URL. Not reachable from current callers, since the
+        // parser strips such attributes when scripting content is disallowed.
+        KURL completed_url(parsed_base_url, attribute.Value());
+        if (completed_url.ProtocolIsJavaScript()) {
+          continue;
+        }
+        changes.push_back(AttributeChange(&element, attribute.GetName(),
+                                          completed_url.GetString()));
+      }
     }
   }
 

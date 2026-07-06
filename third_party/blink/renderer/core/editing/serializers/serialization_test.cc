@@ -224,6 +224,31 @@ TEST_F(SerializationTest, StrictlyProcessedMarkupStripsScriptingAttributes) {
       StrictlyProcessedMarkup(markup));
 }
 
+TEST_F(SerializationTest,
+       StrictlyProcessedFragmentDoesNotResolveToJavaScriptURL) {
+  const String base_url = "javascript:alert(1)//";
+  const String markup =
+      "<a href='#x'>link</a>"
+      "<img src='image.png'>";
+
+  DocumentFragment* fragment =
+      CreateStrictlyProcessedFragmentFromMarkupWithContext(
+          GetDocument(), markup, 0, markup.length(), base_url);
+  ASSERT_TRUE(fragment);
+  const auto* anchor = To<Element>(fragment->firstChild());
+  ASSERT_TRUE(anchor);
+  EXPECT_FALSE(
+      ProtocolIsJavaScript(anchor->getAttribute(html_names::kHrefAttr)));
+  const auto* image = To<Element>(anchor->nextSibling());
+  ASSERT_TRUE(image);
+  EXPECT_FALSE(ProtocolIsJavaScript(image->getAttribute(html_names::kSrcAttr)));
+
+  const String final_markup = CreateStrictlyProcessedMarkupWithContext(
+      GetDocument(), markup, 0, markup.length(), base_url, kIncludeNode,
+      ResolveUrls::kAll);
+  EXPECT_EQ(kNotFound, final_markup.find("javascript:")) << final_markup;
+}
+
 // Regression test for https://crbug.com/40840595
 TEST_F(SerializationTest, CSSFontFaceLoadCrash) {
   const String markup =
