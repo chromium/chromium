@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Cfm.Artemis.EnqueuedPayloadSize" units="bytes"
-    expires_after="2026-08-01">
+    expires_after="2027-08-01">
   <owner>ntsirakis@google.com</owner>
   <owner>kdgwill@google.com</owner>
   <owner>core-devices@google.com</owner>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Cfm.Artemis.LoggerServiceResponse"
-    enum="CfmArtemisLoggerResponse" expires_after="2026-08-01">
+    enum="CfmArtemisLoggerResponse" expires_after="2027-08-01">
   <owner>ntsirakis@google.com</owner>
   <owner>kdgwill@google.com</owner>
   <owner>core-devices@google.com</owner>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Cfm.Artemis.NumberOfRetriesBeforeSuccessfulEnqueue"
-    units="retries" expires_after="2026-08-01">
+    units="retries" expires_after="2027-08-01">
   <owner>ntsirakis@google.com</owner>
   <owner>kdgwill@google.com</owner>
   <owner>core-devices@google.com</owner>
@@ -164,7 +164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Cfm.Artemis.PayloadQueueSize" units="payloads"
-    expires_after="2026-08-01">
+    expires_after="2027-08-01">
   <owner>ntsirakis@google.com</owner>
   <owner>kdgwill@google.com</owner>
   <owner>core-devices@google.com</owner>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Cfm.Artemis.SetupStatus" enum="CfmArtemisSetupStatus"
-    expires_after="2026-08-01">
+    expires_after="2027-08-01">
   <owner>ntsirakis@google.com</owner>
   <owner>kdgwill@google.com</owner>
   <owner>core-devices@google.com</owner>
@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Cfm.Artemis.TimeSinceLastSuccessfulEnqueue" units="ms"
-    expires_after="2026-08-01">
+    expires_after="2027-08-01">
   <owner>ntsirakis@google.com</owner>
   <owner>kdgwill@google.com</owner>
   <owner>core-devices@google.com</owner>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Cfm.Artemis.TimeWaitedBeforeEnqueueRetry" units="ms"
-    expires_after="2026-08-01">
+    expires_after="2027-08-01">
   <owner>ntsirakis@google.com</owner>
   <owner>kdgwill@google.com</owner>
   <owner>core-devices@google.com</owner>
