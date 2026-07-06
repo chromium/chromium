@@ -125,6 +125,19 @@ enum TimeEnum {
   kLastHour,
   kMax,
 };
+std::string ToString(TimeEnum delete_begin_time) {
+  switch (delete_begin_time) {
+    case TimeEnum::kDefault:
+      return "kDefault";
+    case TimeEnum::kLastHour:
+      return "kLastHour";
+    case TimeEnum::kStart:
+      return "kStart";
+    case TimeEnum::kMax:
+      return "kMax";
+  }
+  NOTREACHED();
+}
 
 base::Time TimeEnumToTime(TimeEnum time) {
   switch (time) {
@@ -1149,19 +1162,59 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   TestEmptySiteData("FileSystem", GetParam());
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, IndexedDbDeletion) {
-  TestSiteData("IndexedDb", GetParam());
+// Run IndexedDB tests with both SQLite and LevelDB.
+class BrowsingDataRemoverIndexedDbBrowserTest
+    : public BrowsingDataRemoverBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<TimeEnum, /*is_sqlite_enabled=*/bool>> {
+ public:
+  BrowsingDataRemoverIndexedDbBrowserTest() {
+    indexed_db_feature_list_.InitWithFeatureState(
+        features::kIdbSqliteBackingStore, std::get<1>(GetParam()));
+  }
+
+  TimeEnum GetDeleteBeginTime() const { return std::get<0>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList indexed_db_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    BrowsingDataRemoverIndexedDbBrowserTest,
+    testing::Combine(testing::Values(TimeEnum::kDefault, TimeEnum::kLastHour),
+                     /*is_sqlite_enabled=*/testing::Bool()),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        BrowsingDataRemoverIndexedDbBrowserTest::ParamType>& info) {
+      TimeEnum delete_begin_time;
+      bool is_sqlite_enabled;
+      std::tie(delete_begin_time, is_sqlite_enabled) = info.param;
+
+      std::string description = ToString(delete_begin_time);
+      if (is_sqlite_enabled) {
+        description += "_SQLite";
+      } else {
+        description += "_LevelDB";
+      }
+      return description;
+    });
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverIndexedDbBrowserTest,
+                       IndexedDbDeletion) {
+  TestSiteData("IndexedDb", GetDeleteBeginTime());
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverIndexedDbBrowserTest,
                        IndexedDbIncognitoDeletion) {
   UseIncognitoBrowser();
-  TestSiteData("IndexedDb", GetParam());
+  TestSiteData("IndexedDb", GetDeleteBeginTime());
 }
 
 // Test that empty indexed dbs are deleted correctly.
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, EmptyIndexedDb) {
-  TestEmptySiteData("IndexedDb", GetParam());
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverIndexedDbBrowserTest,
+                       EmptyIndexedDb) {
+  TestEmptySiteData("IndexedDb", GetDeleteBeginTime());
 }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -1600,14 +1653,5 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TimeEnum::kDefault, TimeEnum::kLastHour),
     [](const ::testing::TestParamInfo<
         BrowsingDataRemoverBrowserTestP::ParamType>& info) {
-      switch (info.param) {
-        case TimeEnum::kDefault:
-          return "kDefault";
-        case TimeEnum::kLastHour:
-          return "kLastHour";
-        case TimeEnum::kStart:
-          return "kStart";
-        case TimeEnum::kMax:
-          return "kMax";
-      }
+      return ToString(info.param);
     });
