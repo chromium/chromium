@@ -113,6 +113,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kGlicPreviouslyNotAllowed, false);
 
   registry->RegisterDictionaryPref(prefs::kGlicGeminiEnterpriseSettings);
+  registry->RegisterIntegerPref(
+      prefs::kGlicLastProfileReadyState,
+      static_cast<int>(glic::mojom::ProfileReadyState::kReady));
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

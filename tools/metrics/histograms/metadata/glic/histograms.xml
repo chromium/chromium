@@ -2386,6 +2386,19 @@ chromium-metrics-reviews@google.com.
   <token key="Suffix" variants="ProfileEnablementSuffix"/>
 </histogram>
 
+<histogram name="Glic.ProfileEnablement.RecoveredFromState"
+    enum="GlicProfileReadyState" expires_after="2027-06-30">
+  <owner>birnie@google.com</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Logged when a user actively attempts to interact with Glic (e.g. by clicking
+    the toolbar button, pressing the keyboard shortcut, or invoking via context
+    menu) and the interaction succeeds because Glic has successfully recovered
+    to kReady from a previously unhealthy/disabled state. Records the specific
+    unhealthy state the user's profile recovered from.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ProfileEnablement.TimeToEnabledFromStartup" units="ms"
     expires_after="2026-11-29">
   <owner>dewittj@chromium.org</owner>

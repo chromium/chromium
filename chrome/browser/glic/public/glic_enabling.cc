@@ -357,6 +357,14 @@ void RecordAnchoredDespiteEligibilityReasonsWith(
   }
 }
 
+mojom::ProfileReadyState GetSanitizedProfileReadyState(int state_val) {
+  if (state_val >= 0 &&
+      state_val <= static_cast<int>(mojom::ProfileReadyState::kMaxValue)) {
+    return static_cast<mojom::ProfileReadyState>(state_val);
+  }
+  return mojom::ProfileReadyState::kUnknownError;
+}
+
 }  // namespace
 
 // static
@@ -1207,6 +1215,10 @@ GlicEnabling::GlicEnabling(
                 "function call does not violate the 'no virtual functions in "
                 "constructors' style guide rule. Consider a 2-phase setup");
   last_experimental_triggering_state_ = GetExperimentalTriggeringState();
+  int pref_state =
+      profile_->GetPrefs()->GetInteger(prefs::kGlicLastProfileReadyState);
+  last_profile_ready_state_ = GetSanitizedProfileReadyState(pref_state);
+  MaybeNotifyProfileReadyStateChanged();
 }
 GlicEnabling::~GlicEnabling() = default;
 
@@ -1558,14 +1570,14 @@ void GlicEnabling::UpdateEnabledStatus() {
   }
   enable_changed_callback_list_.Notify();
   show_settings_page_changed_callback_list_.Notify();
-  profile_ready_state_changed_callback_list_.Notify();
+  MaybeNotifyProfileReadyStateChanged();
   MaybeNotifyExperimentalTriggeringStateChanged();
 }
 
 void GlicEnabling::UpdateConsentStatus() {
   consent_changed_callback_list_.Notify();
   show_settings_page_changed_callback_list_.Notify();
-  profile_ready_state_changed_callback_list_.Notify();
+  MaybeNotifyProfileReadyStateChanged();
   MaybeNotifyExperimentalTriggeringStateChanged();
 }
 
@@ -1574,6 +1586,45 @@ void GlicEnabling::MaybeNotifyExperimentalTriggeringStateChanged() {
   if (new_state != last_experimental_triggering_state_) {
     last_experimental_triggering_state_ = new_state;
     experimental_triggering_state_changed_callback_list_.Notify();
+  }
+}
+
+void GlicEnabling::MaybeNotifyProfileReadyStateChanged() {
+  mojom::ProfileReadyState new_state = GetProfileReadyState(profile_);
+  if (new_state != last_profile_ready_state_) {
+    last_profile_ready_state_ = new_state;
+    // Only update the persisted pref if Glic is NOT in a ready state.
+    // This allows the pref to hold onto the last observed unhealthy state
+    // until it's cleared on user interaction.
+    if (new_state != mojom::ProfileReadyState::kReady) {
+      profile_->GetPrefs()->SetInteger(prefs::kGlicLastProfileReadyState,
+                                       static_cast<int>(new_state));
+    }
+  }
+
+  profile_ready_state_changed_callback_list_.Notify();
+}
+
+void GlicEnabling::MaybeRecordRecoveryOnInteraction() {
+  mojom::ProfileReadyState current_state = GetProfileReadyState(profile_);
+  if (current_state != mojom::ProfileReadyState::kReady) {
+    return;
+  }
+
+  int last_state_val =
+      profile_->GetPrefs()->GetInteger(prefs::kGlicLastProfileReadyState);
+  mojom::ProfileReadyState last_state =
+      GetSanitizedProfileReadyState(last_state_val);
+
+  if (last_state != mojom::ProfileReadyState::kReady) {
+    base::UmaHistogramEnumeration("Glic.ProfileEnablement.RecoveredFromState",
+                                  last_state);
+
+    // Clear/reset the persisted preference so we don't log it again on next
+    // clicks.
+    profile_->GetPrefs()->SetInteger(
+        prefs::kGlicLastProfileReadyState,
+        static_cast<int>(mojom::ProfileReadyState::kReady));
   }
 }
 

@@ -208,6 +208,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Same as IsReadyForProfile, but returns a more detailed state.
   static mojom::ProfileReadyState GetProfileReadyState(Profile* profile);
 
+  // If Glic has recovered to a ready state since the last check, logs the
+  // previous unhealthy state as a recovery outcome on user interaction.
+  void MaybeRecordRecoveryOnInteraction();
+
   // Whether the profile is in the Glic tiered rollout population.
   static bool IsEligibleForGlicTieredRollout(Profile* profile);
 
@@ -563,6 +567,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   void UpdateEnabledStatus();
   void UpdateConsentStatus();
 
+  void MaybeNotifyProfileReadyStateChanged();
+
 #if BUILDFLAG(IS_CHROMEOS)
   static bool IsChromeOSProfileEligible(Profile* profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -606,6 +612,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       subscription_eligibility_service_observation_{this};
   syncer::DeviceInfo::GlicExperimentalTriggeringState
       last_experimental_triggering_state_;
+  mojom::ProfileReadyState last_profile_ready_state_;
 };
 
 }  // namespace glic

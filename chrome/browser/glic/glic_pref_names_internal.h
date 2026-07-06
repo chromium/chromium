@@ -28,6 +28,9 @@ inline constexpr char kGlicOnboardingStatus[] = "glic.onboarding_status";
 inline constexpr char kGlicLastInvokedTime[] = "glic.last_invoked_time";
 inline constexpr char kGlicLastPromptTime[] = "glic.last_prompt_time";
 
+// Integer pref storing the last observed ProfileReadyState.
+inline constexpr char kGlicLastProfileReadyState[] =
+    "glic.profile_enablement.last_ready_state";
 }  // namespace glic::prefs
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_INTERNAL_H_

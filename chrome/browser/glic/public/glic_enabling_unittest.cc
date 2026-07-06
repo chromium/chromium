@@ -2040,5 +2040,212 @@ TEST_F(GlicEnablingAnchorEntryPointCountryTest,
                   base::Bucket(Reason::kPrimaryAccountNotCapable, 1)))));
 }
 
+class GlicEnablingRecoveryMetricsTest
+    : public GlicEnablingProfileReadyStateTestBase {};
+
+TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromSignInRequired) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicShowForSignedOut);
+
+  // 1. Initial state: Ready (since primary account is capable and signed in)
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+
+  base::HistogramTester histogram_tester;
+
+  // 2. Transition to kSignInRequired by clearing the primary account
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS we cannot clear primary account easily, so we skip
+  // kSignInRequired tests on ChromeOS.
+#else
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  identity_test_env->ClearPrimaryAccount();
+
+  // Verify we are in kSignInRequired
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kSignInRequired);
+
+  // 3. Recover by signing back in
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  // Verify we transitioned back to kReady
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+
+  // Verify metric is not logged yet in the background
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    0);
+
+  // 4. Trigger user interaction to log the recovery metric
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true)
+      ->enabling()
+      .MaybeRecordRecoveryOnInteraction();
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.ProfileEnablement.RecoveredFromState",
+      mojom::ProfileReadyState::kSignInRequired, 1);
+
+  // Subsequent interactions should not log it again
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true)
+      ->enabling()
+      .MaybeRecordRecoveryOnInteraction();
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    1);
+#endif
+}
+
+TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromIneligibleAccount) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kGlicAnchorEntryPointForOnboardedUsers);
+
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicCompletedFre,
+      static_cast<int>(glic::prefs::FreStatus::kCompleted));
+
+  // 1. Initial state: Ready
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+
+  base::HistogramTester histogram_tester;
+
+  // 2. Transition to kIneligibleAccount by disabling capabilities
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info =
+      identity_test_env->identity_manager()->FindExtendedAccountInfoByAccountId(
+          identity_test_env->identity_manager()->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin));
+  {
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_can_use_model_execution_features(false);
+    signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                        account_info);
+  }
+
+  // Verify we are in kIneligibleAccount
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kIneligibleAccount);
+
+  // 3. Recover by enabling capabilities
+  {
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_can_use_model_execution_features(true);
+    signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                        account_info);
+  }
+
+  // Verify we transitioned back to kReady
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+
+  // Verify metric is not logged yet in the background
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    0);
+
+  // 4. Trigger user interaction to log the recovery metric
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true)
+      ->enabling()
+      .MaybeRecordRecoveryOnInteraction();
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.ProfileEnablement.RecoveredFromState",
+      mojom::ProfileReadyState::kIneligibleAccount, 1);
+
+  // Subsequent interactions should not log it again
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true)
+      ->enabling()
+      .MaybeRecordRecoveryOnInteraction();
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    1);
+}
+
+TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromLocationMismatch) {
+  // 1. Destroy the existing GlicKeyedService instance.
+  glic::GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return glic::GlicKeyedServiceFactory::GetInstance()
+            ->BuildServiceInstanceForBrowserContext(context);
+      }));
+
+  // 2. Set the "last ready state" pref to kLocationMismatch to simulate that
+  // Glic was in a location mismatch state in the previous session.
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicLastProfileReadyState,
+      static_cast<int>(mojom::ProfileReadyState::kLocationMismatch));
+
+  base::HistogramTester histogram_tester;
+
+  // 3. Trigger service construction by passing create=true. The constructor
+  // loads the pref (kLocationMismatch) and sets up state.
+  glic::GlicKeyedService* service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                         /*create=*/true);
+
+  // Verify we transitioned back to kReady
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+
+  // Verify metric is not logged yet on initialization
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    0);
+
+  // 4. Trigger user interaction to log the recovery metric
+  service->enabling().MaybeRecordRecoveryOnInteraction();
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.ProfileEnablement.RecoveredFromState",
+      mojom::ProfileReadyState::kLocationMismatch, 1);
+
+  // Subsequent interactions should not log it again
+  service->enabling().MaybeRecordRecoveryOnInteraction();
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    1);
+}
+
+TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromDisabledByAdmin) {
+  // 1. Destroy the existing GlicKeyedService instance.
+  glic::GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return glic::GlicKeyedServiceFactory::GetInstance()
+            ->BuildServiceInstanceForBrowserContext(context);
+      }));
+
+  // 2. Set the "last ready state" pref to kDisabledByAdmin to simulate that
+  // Glic was disabled by policy in the previous session.
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicLastProfileReadyState,
+      static_cast<int>(mojom::ProfileReadyState::kDisabledByAdmin));
+
+  base::HistogramTester histogram_tester;
+
+  // 3. Trigger service construction by passing create=true. The constructor
+  // loads the pref (kDisabledByAdmin) and sets up state.
+  glic::GlicKeyedService* service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                         /*create=*/true);
+
+  // Verify metric is not logged yet on initialization
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    0);
+
+  // 4. Trigger user interaction to log the recovery metric
+  service->enabling().MaybeRecordRecoveryOnInteraction();
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.ProfileEnablement.RecoveredFromState",
+      mojom::ProfileReadyState::kDisabledByAdmin, 1);
+
+  // Subsequent interactions should not log it again
+  service->enabling().MaybeRecordRecoveryOnInteraction();
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
+                                    1);
+}
 }  // namespace
 }  // namespace glic

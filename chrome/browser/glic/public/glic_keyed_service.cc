@@ -243,6 +243,7 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
     return;
   }
 
+  enabling().MaybeRecordRecoveryOnInteraction();
   instance_coordinator().Toggle(
       bwi ? bwi : GetActiveGlicEligibleBrowser(profile_), prevent_close,
       source);
@@ -285,6 +286,7 @@ base::WeakPtr<GlicInstance> GlicKeyedService::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+  enabling().MaybeRecordRecoveryOnInteraction();
   return static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
       .InvokeWithAutoSubmit(auto_submit_passkey, std::move(options),
                             std::move(auto_submit_options));
@@ -292,6 +294,7 @@ base::WeakPtr<GlicInstance> GlicKeyedService::InvokeWithAutoSubmit(
 
 base::WeakPtr<GlicInstance> GlicKeyedService::Invoke(
     GlicInvokeOptions options) {
+  enabling().MaybeRecordRecoveryOnInteraction();
   return static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
       .Invoke(std::move(options));
 }
