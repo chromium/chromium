@@ -1113,8 +1113,9 @@ suite('ComposeboxVoiceSearch', () => {
 
         const queryArgs = await searchboxHandler.whenCalled(
             'queryAutocompleteWithSuggestInventory');
-        assertEquals('refresh suggestions', queryArgs[0]);
-        assertFalse(queryArgs[1]);  // verify preventInlineAutocomplete is false
+        assertEquals(composeboxElement.activeQueryId, queryArgs[0]);
+        assertEquals('refresh suggestions', queryArgs[1]);
+        assertFalse(queryArgs[2]);  // verify preventInlineAutocomplete is false
       });
 
   test(

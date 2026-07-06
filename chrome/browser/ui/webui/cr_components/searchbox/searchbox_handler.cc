@@ -754,6 +754,7 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
 
 searchbox::mojom::AutocompleteResultPtr
 SearchboxHandler::CreateAutocompleteResult(
+    int32_t query_id,
     const std::u16string& input,
     const AutocompleteResult& result,
     const OmniboxEditModel* edit_model,
@@ -761,7 +762,7 @@ SearchboxHandler::CreateAutocompleteResult(
     const PrefService* prefs,
     const TemplateURLService* turl_service) const {
   return searchbox::mojom::AutocompleteResult::New(
-      result.sequence_id(), input,
+      query_id, result.sequence_id(), input,
       CreateSuggestionGroupsMap(result, edit_model, prefs,
                                 result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, edit_model, bookmark_model,
@@ -1070,19 +1071,22 @@ void SearchboxHandler::OnFocusChanged(bool focused) {
   }
 }
 
-void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
+void SearchboxHandler::QueryAutocomplete(int32_t query_id,
+                                         const std::u16string& input,
                                          bool prevent_inline_autocomplete,
                                          uint32_t cursor_position) {
   QueryAutocompleteWithSuggestInventory(
-      input, prevent_inline_autocomplete, cursor_position,
+      query_id, input, prevent_inline_autocomplete, cursor_position,
       omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT);
 }
 
 void SearchboxHandler::QueryAutocompleteWithSuggestInventory(
+    int32_t query_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
     omnibox::SuggestInventory suggest_inventory) {
+  current_query_id_ = query_id;
   // This shouldn't happen, but, e.g., users may do unintended actions in the
   // developer console and crashing with a `CHECK()` doesn't seem warranted.
   cursor_position =
@@ -1489,13 +1493,13 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
     page_->AutocompleteResultChanged(CreateAutocompleteResult(
-        autocomplete_controller()->input().text(),
+        current_query_id_, autocomplete_controller()->input().text(),
         autocomplete_controller()->result(), nullptr,
         BookmarkModelFactory::GetForBrowserContext(profile_),
         profile_->GetPrefs(), client()->GetTemplateURLService()));
   } else {
     page_->AutocompleteResultChanged(CreateAutocompleteResult(
-        autocomplete_controller()->input().text(),
+        current_query_id_, autocomplete_controller()->input().text(),
         autocomplete_controller()->result(), edit_model(),
         BookmarkModelFactory::GetForBrowserContext(profile_),
         profile_->GetPrefs(),

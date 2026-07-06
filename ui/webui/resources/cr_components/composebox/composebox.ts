@@ -784,8 +784,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (this.submitting) {
       return;
     }
-    if (this.lastQueriedInput === null ||
-        this.lastQueriedInput.trimStart() !== result.input) {
+    if (result.queryId !== this.activeQueryId) {
       return;
     }
 

@@ -261,9 +261,7 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override isAutocompleteResultStale(result: AutocompleteResult): boolean {
-    return (!!this.lastQueriedInput &&
-            this.lastQueriedInput.trimStart() !== result.input) ||
-        !result.matches.length;
+    return super.isAutocompleteResultStale(result) || !result.matches.length;
   }
 
   //========================================================================

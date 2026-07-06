@@ -1219,6 +1219,7 @@ import * as testSupport from './test_support.js';
           const matches = [createSearchMatchForTesting()];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 input: '',
                 matches,
               }));

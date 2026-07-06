@@ -171,6 +171,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   private focusAnimationFrameId_: number|null = null;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
+    queryId: -1,
     input: '',
     suggestionGroupsMap: {},
     matches: Array(5).fill(null).map(() => createGhostMatch()),

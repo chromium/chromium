@@ -617,6 +617,7 @@ suite('NewTabPageRealboxNextTest', () => {
 
     testProxy.callbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
         }));
@@ -652,6 +653,7 @@ suite('NewTabPageRealboxNextTest', () => {
 
     testProxy.callbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
         }));

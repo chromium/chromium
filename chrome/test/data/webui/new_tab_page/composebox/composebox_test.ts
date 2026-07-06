@@ -244,6 +244,7 @@ suite('NewTabPageComposeboxTest', () => {
         [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: testProxy.element.activeQueryId,
           input: 'some text',
           matches,
         }));
@@ -491,6 +492,7 @@ suite('NewTabPageComposeboxTest', () => {
         ];
         testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
             createAutocompleteResultForTesting({
+              queryId: testProxy.element.activeQueryId,
               matches,
             }));
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
@@ -539,6 +541,7 @@ suite('NewTabPageComposeboxTest', () => {
             ];
             testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                 createAutocompleteResultForTesting({
+                  queryId: testProxy.element.activeQueryId,
                   matches,
                 }));
             await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
@@ -620,6 +623,7 @@ suite('NewTabPageComposeboxTest', () => {
           [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
       testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
           createAutocompleteResultForTesting({
+            queryId: testProxy.element.activeQueryId,
             input: 'test',
             matches,
           }));
@@ -651,6 +655,7 @@ suite('NewTabPageComposeboxTest', () => {
           [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
       testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
           createAutocompleteResultForTesting({
+            queryId: testProxy.element.activeQueryId,
             input: 'test',
             matches: matches,
           }));

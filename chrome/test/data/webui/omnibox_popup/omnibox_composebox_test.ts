@@ -185,6 +185,7 @@ suite('OmniboxComposeboxTest', () => {
     ];
     testProxy.page.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: omniboxComposebox.activeQueryId,
           matches: matches,
         }));
     await testProxy.page.$.flushForTesting();
@@ -196,6 +197,7 @@ suite('OmniboxComposeboxTest', () => {
     // Set empty results.
     testProxy.page.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: omniboxComposebox.activeQueryId,
           matches: [],
         }));
     await testProxy.page.$.flushForTesting();
@@ -690,6 +692,7 @@ suite('OmniboxComposeboxTest', () => {
         [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
     testProxy.page.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: omniboxComposebox.activeQueryId,
           input: 'test',
           matches,
         }));
@@ -1253,6 +1256,7 @@ suite('OmniboxComposeboxTest', () => {
     ];
     testProxy.page.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: omniboxComposebox.activeQueryId,
           matches: matches,
         }));
     await testProxy.page.$.flushForTesting();
@@ -1299,6 +1303,7 @@ suite('OmniboxComposeboxTest', () => {
         ];
         testProxy.page.autocompleteResultChanged(
             createAutocompleteResultForTesting({
+              queryId: omniboxComposebox.activeQueryId,
               matches: matches,
             }));
         await testProxy.page.$.flushForTesting();
@@ -1828,6 +1833,7 @@ suite('OmniboxComposeboxTest', () => {
       omniboxComposebox.haveReceivedSynchronousAutocompleteResponse = true;
       testProxy.page.autocompleteResultChanged(
           createAutocompleteResultForTesting({
+            queryId: omniboxComposebox.activeQueryId,
             input: 'tes',
             smartComposeInlineHint: hint,
           }));
@@ -1881,6 +1887,7 @@ suite('OmniboxComposeboxTest', () => {
                 true;
             testProxy.page.autocompleteResultChanged(
                 createAutocompleteResultForTesting({
+                  queryId: omniboxComposebox.activeQueryId,
                   input: 'tes.',
                   smartComposeInlineHint: hint,
                 }));
@@ -1930,6 +1937,7 @@ suite('OmniboxComposeboxTest', () => {
                 true;
             testProxy.page.autocompleteResultChanged(
                 createAutocompleteResultForTesting({
+                  queryId: omniboxComposebox.activeQueryId,
                   input: 'tes.',
                   smartComposeInlineHint: hint,
                 }));
@@ -1964,6 +1972,7 @@ suite('OmniboxComposeboxTest', () => {
           omniboxComposebox.haveReceivedSynchronousAutocompleteResponse = true;
           testProxy.page.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: omniboxComposebox.activeQueryId,
                 input: 'test',
                 smartComposeInlineHint: hint,
               }));

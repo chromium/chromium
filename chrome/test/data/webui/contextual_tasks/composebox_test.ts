@@ -635,8 +635,8 @@ suite('ContextualTasksComposeboxTest', () => {
     const calls = mockSearchboxPageHandler.getArgs(
         'queryAutocompleteWithSuggestInventory');
     const lastCall = calls[calls.length - 1];
-    assertEquals('new query', lastCall[0]);
-    assertEquals(SuggestInventory.kDefault, lastCall[3]);
+    assertEquals('new query', lastCall[1]);
+    assertEquals(SuggestInventory.kDefault, lastCall[4]);
   });
 
   test('inputEnabled attribute reflected on composebox', async () => {
@@ -2038,6 +2038,7 @@ suite('ContextualTasksComposeboxTest', () => {
                       'result-changed', innerComposebox);
               searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: parts.innerComposebox.activeQueryId,
                     input: testQuery,
                     matches: [createAutocompleteMatch({fillIntoEdit: 'm1'})],
                   }));
@@ -2067,6 +2068,7 @@ suite('ContextualTasksComposeboxTest', () => {
               // The response input does not match the last queried input.
               searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: parts.innerComposebox.activeQueryId + 1,
                     input: 'stale',
                     matches: [createAutocompleteMatch()],
                   }));
@@ -2091,6 +2093,7 @@ suite('ContextualTasksComposeboxTest', () => {
               // shown; one match is a noncanned AIM suggestion.
               searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: parts.innerComposebox.activeQueryId,
                     input: '',
                     matches: [
                       createAutocompleteMatch({isNoncannedAimSuggestion: true}),
@@ -2116,6 +2119,7 @@ suite('ContextualTasksComposeboxTest', () => {
               // A noncanned AIM suggestion first surfaces the link.
               searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: parts.innerComposebox.activeQueryId,
                     input: '',
                     matches: [
                       createAutocompleteMatch({isNoncannedAimSuggestion: true}),
@@ -2129,6 +2133,7 @@ suite('ContextualTasksComposeboxTest', () => {
               // Ordinary results clear it; the wrapper keeps no residual link.
               searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: parts.innerComposebox.activeQueryId,
                     input: '',
                     matches: [
                       createAutocompleteMatch(),
@@ -2157,6 +2162,7 @@ suite('ContextualTasksComposeboxTest', () => {
           simulateUserInput(inputElement, testQuery);
           searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: parts.innerComposebox.activeQueryId,
                 input: testQuery,
                 matches: [
                   createAutocompleteMatch({fillIntoEdit: 'match 1'}),

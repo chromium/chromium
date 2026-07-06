@@ -56,6 +56,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 matches: matches,
               }));
           await microtasksFinished();
@@ -88,6 +89,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 matches: matches,
               }));
           await microtasksFinished();
@@ -132,6 +134,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 matches: matches,
               }));
           await microtasksFinished();
@@ -194,6 +197,7 @@ enum Attributes {
               ];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     matches: matches,
                   }));
               await microtasksFinished();
@@ -240,6 +244,7 @@ enum Attributes {
               ];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     matches: matches,
                     input: 'Test',
                   }));
@@ -291,6 +296,7 @@ enum Attributes {
               ];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     matches: matches,
                     input: 'Test',
                   }));
@@ -318,6 +324,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 matches: matches,
               }));
           assertTrue(await areMatchesShowing(
@@ -342,6 +349,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 input: 'awesome',
                 matches: typedMatches,
               }));
@@ -386,6 +394,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 matches: matches,
               }));
           assertTrue(await areMatchesShowing(
@@ -420,6 +429,7 @@ enum Attributes {
               ];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     input: '',
                     matches: matches,
                   }));
@@ -448,6 +458,7 @@ enum Attributes {
               // Simulate stale Mojo update arriving after click
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     input: '',
                     matches: matches,
                   }));
@@ -484,7 +495,8 @@ enum Attributes {
             createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-              createAutocompleteResultForTesting({matches}));
+              createAutocompleteResultForTesting(
+                  {queryId: testProxy.element.activeQueryId, matches}));
           await microtasksFinished();
           assertTrue(await areMatchesShowing(
               testProxy.element, testProxy.searchboxCallbackRouterRemote));
@@ -550,6 +562,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 matches: matches,
                 input: 'Test',
               }));
@@ -632,6 +645,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 matches: matches,
               }));
 
@@ -723,6 +737,7 @@ enum Attributes {
               ];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     matches: matches,
                   }));
 
@@ -809,6 +824,7 @@ enum Attributes {
               ];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     input: testProxy.element.getInputElement()
                                .inputElement.value.trimStart(),
                     matches,
@@ -845,6 +861,7 @@ enum Attributes {
               ];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     input: '',
                     matches: matches,
                   }));
@@ -901,6 +918,7 @@ enum Attributes {
               })];
               testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
                   createAutocompleteResultForTesting({
+                    queryId: testProxy.element.activeQueryId,
                     input: '',
                     matches: matches,
                   }));
@@ -924,6 +942,7 @@ enum Attributes {
           ];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 input: '',
                 matches,
                 suggestionGroupsMap: {},
@@ -1010,6 +1029,7 @@ enum Attributes {
           testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 input: 'smart ',
                 matches: [],
                 smartComposeInlineHint: 'compose',
@@ -1042,6 +1062,7 @@ enum Attributes {
           testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 input: 'smart ',
                 matches: [],
                 smartComposeInlineHint: 'compose',
@@ -1087,6 +1108,7 @@ enum Attributes {
           testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
               createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
                 input: 'awesome',
                 matches: matches,
                 smartComposeInlineHint: 'compose',
