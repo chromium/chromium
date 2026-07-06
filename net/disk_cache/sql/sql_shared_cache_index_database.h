@@ -91,7 +91,6 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIndexDatabase {
 
   const base::FilePath database_path_;
   sql::Database db_;
-  sql::MetaTable meta_table_;
   bool simulate_db_failure_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -127,8 +127,9 @@ SqlSharedCacheIndexDatabase::InitializeInternal() {
   }
 
   // Initialize the meta table.
-  if (!meta_table_.Init(&db_, kSharedCacheIndexDatabaseCurrentVersion,
-                        kSharedCacheIndexDatabaseCompatibleVersion)) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(&db_, kSharedCacheIndexDatabaseCurrentVersion,
+                       kSharedCacheIndexDatabaseCompatibleVersion)) {
     return base::unexpected(Error::kFailedToInitializeMetaTable);
   }
 
