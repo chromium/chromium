@@ -4100,7 +4100,8 @@ NOINLINE void BlockLayoutAlgorithm::SetupLineClamp() {
   if (Style().HasLineClamp() && !Node().IsMulticolContainer()) {
     if (!line_clamp_data_.data.IsLineClampContext()) {
       LayoutUnit clamp_bfc_offset = kIndefiniteSize;
-      if (Style().MaxLines().HasAutoKeyword()) {
+      if (RuntimeEnabledFeatures::CSSLineClampEnabled() &&
+          Style().MaxLines().HasAutoKeyword()) {
         clamp_bfc_offset = ChildAvailableSize().block_size;
         if (clamp_bfc_offset == kIndefiniteSize) {
           const MinMaxSizes sizes = ComputeInitialMinMaxBlockSizes(
