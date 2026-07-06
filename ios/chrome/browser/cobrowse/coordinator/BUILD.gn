@@ -38,6 +38,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",

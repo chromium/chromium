@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_filter.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
@@ -285,10 +287,27 @@ class AssistantAIMUIStateProvider
 - (void)assistantAIMViewController:(AssistantAIMViewController*)viewController
        didShowKeyboardWithDuration:(NSTimeInterval)duration
                              curve:(UIViewAnimationCurve)curve {
-  [_containerHandler
-      animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
-                               duration:duration
-                                  curve:curve];
+  // Only expand the assistant sheet if the focused field (main responder) is
+  // inside the main view.
+  UIView* responder = base::apple::ObjCCast<UIView>(GetFirstResponder());
+  if (!responder.window) {
+    return;
+  }
+
+  UIView* containerView = _viewController.view;
+  UIView* relevantView = responder;
+
+  while (relevantView) {
+    if ([relevantView isDescendantOfView:containerView]) {
+      [_containerHandler
+          animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
+                                   duration:duration
+                                      curve:curve];
+      return;
+    }
+
+    relevantView = relevantView.superview;
+  }
 }
 
 - (void)assistantAIMViewControllerDidHideKeyboard:
