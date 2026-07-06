@@ -459,7 +459,6 @@ source_set("chrome_egtest_bundle_main+eg2") {
     "//base",
     "//base:i18n",
     "//ios/testing:test_expectations",
-    "//ios/testing:test_expectations_metadata",
     "//third_party/grpc:grpc++",
     "//ui/base",
   ]

@@ -14,8 +14,13 @@
 @end
 
 namespace {
-TestExpectations* g_current_expectations = nil;
+TestExpectations* g_shared_instance = nil;
 }  // namespace
+
+@interface TestExpectations ()
+- (instancetype)initWithFilePath:(NSString*)path;
+- (instancetype)initWithContent:(NSString*)content;
+@end
 
 @implementation TestExpectations {
   NSMutableDictionary<NSString*, TestExpectationEntry*>* _expectations;
@@ -27,24 +32,25 @@ TestExpectations* g_current_expectations = nil;
   NSString* _content;
 }
 
-+ (instancetype)expectationsWithFilePath:(NSString*)path {
+- (instancetype)initWithFilePath:(NSString*)path {
   NSError* error = nil;
   NSString* content = [NSString stringWithContentsOfFile:path
                                                 encoding:NSUTF8StringEncoding
                                                    error:&error];
-  if (error) {
-    NSLog(@"Error reading expectations file at %@: %@", path, error);
-    return nil;
+  CHECK(content && !error) << "Error reading expectations file at " << path
+                           << ": " << error;
+  return [self initWithContent:content];
+}
+
++ (instancetype)sharedInstance {
+  if (!g_shared_instance) {
+    NSBundle* bundle = [NSBundle bundleForClass:[TestExpectations class]];
+    NSString* path = [bundle pathForResource:@"test_expectations"
+                                      ofType:@"txt"];
+    CHECK(path) << "Failed to find test_expectations.txt in bundle " << bundle;
+    g_shared_instance = [[TestExpectations alloc] initWithFilePath:path];
   }
-  return [[TestExpectations alloc] initWithContent:content];
-}
-
-+ (instancetype)currentExpectations {
-  return g_current_expectations;
-}
-
-+ (void)setCurrentExpectations:(TestExpectations*)expectations {
-  g_current_expectations = expectations;
+  return g_shared_instance;
 }
 
 - (instancetype)initWithContent:(NSString*)content {
@@ -115,10 +121,7 @@ TestExpectations* g_current_expectations = nil;
                                @"\\s+)?(\\S+)\\s+\\[([^\\]]+)\\](?:\\s*#.*)?$"
                                                 options:0
                                                   error:&error];
-  if (error) {
-    NSLog(@"Failed to compile regex: %@", error);
-    return;
-  }
+  CHECK(!error) << "Failed to compile regex: " << error;
 
   NSArray<NSString*>* lines = [content componentsSeparatedByString:@"\n"];
   for (NSString* line in lines) {
@@ -251,6 +254,16 @@ TestExpectations* g_current_expectations = nil;
   if (_content) {
     [self parseExpectations:_content];
   }
+}
+
++ (instancetype)sharedInstanceForTesting:(NSString*)content {
+  CHECK(g_shared_instance == nil);
+  g_shared_instance = [[TestExpectations alloc] initWithContent:content];
+  return g_shared_instance;
+}
+
++ (void)resetForTesting {
+  g_shared_instance = nil;
 }
 
 @end

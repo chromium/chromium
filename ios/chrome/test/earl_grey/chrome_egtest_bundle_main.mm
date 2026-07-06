@@ -169,17 +169,6 @@ class TestMain {
   DCHECK(!_testMain);
   _testMain = std::make_unique<TestMain>();
 
-  // Explicitly load and set test expectations.
-  NSString* path = [testBundle pathForResource:@"test_expectations"
-                                        ofType:@"txt"];
-  if (path) {
-    TestExpectations* expectations =
-        [TestExpectations expectationsWithFilePath:path];
-    [TestExpectations setCurrentExpectations:expectations];
-  } else {
-    NSLog(@"Warning: test_expectations.txt not found in bundle %@", testBundle);
-  }
-
   // Ensure that //ios/web and the bulk of //ios/chrome/browser are not compiled
   // into the test module. This is hard to assert at compile time, due to
   // transitive dependencies, but at runtime it's easy to check if certain key

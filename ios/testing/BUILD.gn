@@ -120,7 +120,10 @@ source_set("test_expectations") {
     "test_expectations.h",
     "test_expectations.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":test_expectations_metadata",
+    "//base",
+  ]
 }
 
 test("ios_testing_unittests") {

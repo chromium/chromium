@@ -25,7 +25,7 @@
             [NSCharacterSet characterSetWithCharactersInString:@"]"]];
   }
 
-  TestExpectationEntry* expectation = [[TestExpectations currentExpectations]
+  TestExpectationEntry* expectation = [[TestExpectations sharedInstance]
       expectationEntryForTestCase:className
                        methodName:methodName];
   if (expectation) {

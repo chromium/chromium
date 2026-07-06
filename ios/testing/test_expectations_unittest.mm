@@ -8,12 +8,22 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-using TestExpectationsTest = PlatformTest;
+class TestExpectationsTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    [TestExpectations resetForTesting];
+  }
+  void TearDown() override {
+    [TestExpectations resetForTesting];
+    PlatformTest::TearDown();
+  }
+};
 
 TEST_F(TestExpectationsTest, ParseSimpleExpectation) {
   NSString* content = @"MyTestCase/testMethod [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"iOS"]];
 
   TestExpectationEntry* entry =
@@ -31,7 +41,7 @@ TEST_F(TestExpectationsTest, ParseWithBugIdentifier) {
   NSString* content = @"crbug.com/12345 MyTestCase/testMethod [ Failure ]\n"
                       @"b/98765 MyTestCase/testOtherMethod [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"iOS"]];
 
   TestExpectationEntry* entry =
@@ -52,7 +62,7 @@ TEST_F(TestExpectationsTest, ParseWithMatchingTags) {
   NSString* content = @"[ iOS26 Simulator ] MyTestCase/testMethod [ Failure ]\n"
                       @"[ iOS18 ] MyTestCase/testOtherMethod [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations
       setOverrideActiveTagsForTesting:[NSSet setWithObjects:@"iOS", @"iOS26",
                                                             @"Simulator", nil]];
@@ -69,7 +79,7 @@ TEST_F(TestExpectationsTest, ParseWithMatchingTags) {
 TEST_F(TestExpectationsTest, ClassLevelExpectation) {
   NSString* content = @"MyTestCase [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"iOS"]];
 
   EXPECT_TRUE([expectations expectationEntryForTestCase:@"MyTestCase"
@@ -82,7 +92,7 @@ TEST_F(TestExpectationsTest, ClassLevelExpectation) {
 TEST_F(TestExpectationsTest, Normalization) {
   NSString* content = @"MyTestCase.testMethod [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"iOS"]];
 
   EXPECT_TRUE([expectations expectationEntryForTestCase:@"MyTestCase"
@@ -95,7 +105,7 @@ TEST_F(TestExpectationsTest, CommentsAndBlankLines) {
       @"\n"
       @"crbug.com/123 MyTestCase/testMethod [ Failure ] # inline comment\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"iOS"]];
 
   TestExpectationEntry* entry =
@@ -110,7 +120,7 @@ TEST_F(TestExpectationsTest, CaseInsensitiveMatching) {
       @"[ ios26 simulator ] MyTestCase/testMethod1 [ failure ]\n"
       @"[ 23f5067a ] MyTestCase/testMethod2 [ FAILURE ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations
       setOverrideActiveTagsForTesting:[NSSet setWithObjects:@"iOS26",
                                                             @"Simulator",
@@ -127,7 +137,7 @@ TEST_F(TestExpectationsTest, MinorAndPatchOSVersionMatching) {
                       @"[ iOS18.2.1 ] MyTestCase/testMethod2 [ Failure ]\n"
                       @"[ iOS18.3 ] MyTestCase/testMethod3 [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations
       setOverrideActiveTagsForTesting:[NSSet setWithObjects:@"iOS", @"iOS18",
                                                             @"iOS18.2",
@@ -145,7 +155,7 @@ TEST_F(TestExpectationsTest, BuildNumberMatching) {
   NSString* content = @"[ 17F42 ] MyTestCase/testMethod1 [ Failure ]\n"
                       @"[ 18A5301 ] MyTestCase/testMethod2 [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations
       setOverrideActiveTagsForTesting:[NSSet setWithObjects:@"iOS26", @"17F42",
                                                             nil]];
@@ -160,7 +170,7 @@ TEST_F(TestExpectationsTest, IPadIPhoneTagsMatching) {
   NSString* content = @"[ ipad ] MyTestCase/testMethod1 [ Failure ]\n"
                       @"[ iphone ] MyTestCase/testMethod2 [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
 
   // Test with 'ipad' tag.
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"ipad"]];
@@ -183,7 +193,7 @@ TEST_F(TestExpectationsTest, SkipExpectation) {
                       @"crbug.com/98765 MyTestCase/testMethod2 [ Skip ]\n"
                       @"MyTestCase/testMethod3 [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"ios"]];
 
   // testMethod1: Skip -> outReason is "NotABug"
@@ -207,7 +217,7 @@ TEST_F(TestExpectationsTest, CrashExpectation) {
                       @"crbug.com/54321 MyTestCase/testMethod2 [ Crash ]\n"
                       @"MyTestCase/testMethod3 [ Failure ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"ios"]];
 
   // testMethod1: Crash -> outReason is "NotABug"
@@ -232,7 +242,7 @@ TEST_F(TestExpectationsTest, MultipleExpectationsCombinations) {
       @"crbug.com/222 MyTestCase/testMethod2 [ Pass Failure Crash ]\n"
       @"crbug.com/333 MyTestCase/testMethod3 [ Pass Crash ]\n";
   TestExpectations* expectations =
-      [[TestExpectations alloc] initWithContent:content];
+      [TestExpectations sharedInstanceForTesting:content];
   [expectations setOverrideActiveTagsForTesting:[NSSet setWithObject:@"ios"]];
 
   // testMethod1: Failure Crash
