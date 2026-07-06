@@ -30,43 +30,30 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/web_applications:app_id_helpers",
-    "//chrome/browser/web_applications:iwa_types",
-    "//chrome/browser/web_applications/isolated_web_apps/runtime_data",
+    "//components/content_settings/core/browser",
     "//components/web_package",
     "//components/webapps/browser",
     "//components/webapps/common",
     "//components/webapps/isolated_web_apps/download",
     "//components/webapps/isolated_web_apps/types",
     "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 
   deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser:chrome_content_browser_client_parts",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications:app_id_helpers",
     "//chrome/common",
     "//chrome/common:buildflags",
-    "//chrome/common:constants",
     "//components/base32",
-    "//components/content_settings/core/browser",
-    "//components/permissions",
-    "//components/policy/core/browser",
-    "//components/policy/core/common",
-    "//components/prefs",
-    "//components/webapps/isolated_web_apps:iwa_client",
     "//components/webapps/isolated_web_apps:scheme",
     "//components/webapps/isolated_web_apps/bundle_operations",
-    "//components/webapps/isolated_web_apps/identity",
-    "//components/webapps/isolated_web_apps/service",
     "//crypto",
-    "//net",
-    "//services/data_decoder/public/cpp",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
   ]
 
   assert_no_deps = [ "//chrome/browser/web_applications" ]
@@ -81,5 +68,59 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
       "policy/isolated_web_app_cache_client.cc",
       "policy/isolated_web_app_cache_client.h",
     ]
+  }
+}
+
+source_set("isolated_web_apps") {
+  sources = [
+    "chrome_content_browser_client_isolated_web_apps_part.cc",
+    "chrome_content_browser_client_isolated_web_apps_part.h",
+    "chrome_iwa_client.cc",
+    "chrome_iwa_client.h",
+    "isolated_web_app_error_page.cc",
+    "isolated_web_app_error_page.h",
+    "isolated_web_app_throttle.cc",
+    "isolated_web_app_throttle.h",
+    "iwa_permissions_policy_cache.cc",
+    "iwa_permissions_policy_cache.h",
+    "runtime_init.cc",
+    "runtime_init.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:chrome_content_browser_client_parts",
+    "//chrome/browser/web_applications",
+    "//components/web_package",
+    "//components/webapps/isolated_web_apps:iwa_client",
+    "//components/webapps/isolated_web_apps/service",
+    "//components/webapps/isolated_web_apps/types",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+
+  deps = [
+    ":isolated_web_apps_no_pwa_core_deps",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications/isolated_web_apps/runtime_data",
+    "//chrome/common",
+    "//components/strings:components_strings_grit",
+    "//components/webapps/common",
+    "//components/webapps/isolated_web_apps:scheme",
+    "//components/webapps/isolated_web_apps/identity",
+    "//components/webapps/isolated_web_apps/key_distribution",
+    "//components/webapps/isolated_web_apps/public",
+    "//components/webapps/isolated_web_apps/url_loading",
+    "//net",
+    "//services/network/public/cpp",
+    "//ui/base",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
 }
