@@ -49,7 +49,8 @@ constexpr char kVerifyScannerClientId[] = "ZeroconfScannerChecker";
 // to be excluded in IsRotateAlternate().
 constexpr char kEpsonNoFlipModels[] =
     "\\b("
-    "AM-C400"
+    "AM-C10000"
+    "|AM-C400"
     "|AM-C4000"
     "|AM-C5000"
     "|AM-C550"
