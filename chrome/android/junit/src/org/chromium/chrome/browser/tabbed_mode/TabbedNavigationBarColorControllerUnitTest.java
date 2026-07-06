@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
@@ -59,7 +58,6 @@ import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = BaseRobolectricTestRunner.MIN_SDK)
-@DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
 public class TabbedNavigationBarColorControllerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -125,6 +123,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
 
         mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
+        runColorUpdateAnimation();
         assertTrue(
                 "Should be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -135,6 +134,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
 
         mNavColorController.onBottomAttachedColorChanged(null, false, false);
+        runColorUpdateAnimation();
         assertFalse(
                 "Should no longer be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -155,6 +155,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
         mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
+        runColorUpdateAnimation();
         assertTrue(
                 "Should be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -163,6 +164,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
         mNavColorController.onBottomAttachedColorChanged(null, false, false);
+        runColorUpdateAnimation();
         assertFalse(
                 "Should no longer be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -200,8 +202,9 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertTrue(
                 "Should be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
-        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.RED));
-        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarDividerColor(eq(NAV_DIVIDER_COLOR));
+        verify(mEdgeToEdgeSystemBarColorHelper, atLeastOnce()).setNavigationBarColor(eq(Color.RED));
+        verify(mEdgeToEdgeSystemBarColorHelper, atLeastOnce())
+                .setNavigationBarDividerColor(eq(NAV_DIVIDER_COLOR));
 
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
         mNavColorController.onBottomAttachedColorChanged(null, false, false);
@@ -282,10 +285,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testNavBarColorAnimationsEdgeToEdgeEverywhere() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
@@ -309,9 +309,6 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-    })
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testNavBarColorAnimationsEdgeToEdgeBottomChin() {
         mNavColorController.setIsBottomChinEnabledForTesting(true);
@@ -335,62 +332,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         verifyColorAnimationSteps(colorsArgumentCaptor.getAllValues());
     }
 
-    // Disable the dedicated feature flag.
     @Test
-    @DisableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
-    @Config(sdk = 30) // Min version needed for e2e everywhere
-    public void testNavBarColorAnimationsDisabled() {
-        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
-        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
-
-        mNavColorController.updateActiveTabForTesting();
-        runColorUpdateAnimation();
-        // Verify that our starting nav bar color is blue.
-        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.BLUE));
-
-        Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
-        // Change nav bar color to red.
-        mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
-        runColorUpdateAnimation();
-
-        // After clearing invocations and changing the nav bar color, verify that
-        // setNavigationBarColor is called exactly once with Color.RED since animations are
-        // disabled.
-        verify(mEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(eq(Color.RED));
-        verify(mEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(anyInt());
-    }
-
-    // Disable the two cached params.
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION
-                + ":disable_bottom_chin_color_animation/true/disable_edge_to_edge_layout_color_animation/true"
-    })
-    public void testNavBarColorAnimationsCachedParamsDisabled() {
-        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
-        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
-
-        mNavColorController.updateActiveTabForTesting();
-        runColorUpdateAnimation();
-        // Verify that our starting nav bar color is blue.
-        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.BLUE));
-
-        Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
-        // Change nav bar color to red.
-        mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
-        runColorUpdateAnimation();
-
-        // After clearing invocations and changing the nav bar color, verify that
-        // setNavigationBarColor is called exactly once with Color.RED since animations are
-        // disabled.
-        verify(mEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(eq(Color.RED));
-        verify(mEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(anyInt());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-    })
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testHideNavBarDuringOmniboxSwipe() {
         mNavColorController.setIsBottomChinEnabledForTesting(true);

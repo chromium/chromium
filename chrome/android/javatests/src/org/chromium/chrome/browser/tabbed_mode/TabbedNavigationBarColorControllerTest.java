@@ -9,11 +9,9 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.animation.ValueAnimator;
@@ -367,9 +365,6 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-    })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
@@ -385,41 +380,13 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     public void testNavBarColorAnimationsEdgeToEdgeEverywhere() throws InterruptedException {
         initialize();
         testNavBarColorAnimations();
-    }
-
-    // Disable the dedicated feature flag.
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
-    public void testNavBarColorAnimationsFeatureFlagDisabled() {
-        initialize();
-
-        Assume.assumeTrue(
-                "E2E not applicable.",
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivityTestRule.getActivity()));
-        testNavBarColorAnimationsDisabled();
-    }
-
-    // Disable the two cached params.
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION
-                + ":disable_bottom_chin_color_animation/true/disable_edge_to_edge_layout_color_animation/true"
-    })
-    public void testNavBarColorAnimationsCachedParamsDisabled() {
-        initialize();
-        testNavBarColorAnimationsDisabled();
     }
 
     private void enterFullscreen(FullscreenToggleObserver observer, WebContents webContents)
@@ -471,33 +438,6 @@ public class TabbedNavigationBarColorControllerTest {
         public void onExitFullscreen(Tab tab) {
             mOnExitFullscreenHelper.notifyCalled();
         }
-    }
-
-    private void testNavBarColorAnimationsDisabled() {
-        assertThat(mTabbedNavigationBarColorController).isNotNull();
-
-        // Create spies from real instances and inject the spies back.
-        EdgeToEdgeSystemBarColorHelper spyEdgeToEdgeSystemBarColorHelper =
-                Mockito.spy(mEdgeToEdgeSystemBarColorHelper);
-
-        mTabbedNavigationBarColorController.setEdgeToEdgeSystemBarColorHelperForTesting(
-                spyEdgeToEdgeSystemBarColorHelper);
-
-        Mockito.clearInvocations(spyEdgeToEdgeSystemBarColorHelper);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mTabbedNavigationBarColorController.onBottomAttachedColorChanged(
-                            Color.RED, false, false);
-                });
-
-        // Verify that setNavigationBarColor is called exactly once with Color.RED since animations
-        // are disabled.
-        verify(spyEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(eq(Color.RED));
-
-        // Since animations are disabled, setNavigationBarColor should not be called with any other
-        // colors other than Color.RED.
-        verify(spyEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(anyInt());
     }
 
     private void testNavBarColorAnimations() {

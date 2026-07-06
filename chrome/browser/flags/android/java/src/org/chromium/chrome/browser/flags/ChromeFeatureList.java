@@ -540,7 +540,6 @@ public abstract class ChromeFeatureList {
     public static final String MULTI_INSTANCE_SHARED_PREFS_MIGRATION =
             "MultiInstanceSharedPrefsMigration";
     public static final String MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED = "MvcUpdateViewWhenModelChanged";
-    public static final String NAV_BAR_COLOR_ANIMATION = "NavBarColorAnimation";
     // Enabled by syncer::kNewTabPageCustomizationThemeSync on C++ side.
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC =
             "NewTabPageCustomizationThemeSync";
@@ -1103,8 +1102,6 @@ public abstract class ChromeFeatureList {
                     MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED,
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sNavBarColorAnimation =
-            newCachedFlag(NAV_BAR_COLOR_ANIMATION, /* defaultValue= */ true);
     public static final CachedFlag sNewTabPageCustomizationThemeSync =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC, /* defaultValue= */ false);
     public static final CachedFlag sNewTabPageCustomizationV2 =
@@ -1381,7 +1378,6 @@ public abstract class ChromeFeatureList {
                     sMoveToFrontInLaunchIntentDispatcher,
                     sMultiInstanceSharedPrefsMigration,
                     sMvcUpdateViewWhenModelChanged,
-                    sNavBarColorAnimation,
                     sNewTabPageCustomizationThemeSync,
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
@@ -1741,25 +1737,6 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     DEFAULT_BROWSER_PROMO_ENTRY_POINT, "show_app_menu_item", true);
 
-    /**
-     * Cached param whether we disable animations for color changes to the edge-to-edge bottom chin.
-     */
-    public static final BooleanCachedFeatureParam
-            sNavBarColorAnimationDisableBottomChinColorAnimation =
-                    newBooleanCachedFeatureParam(
-                            NAV_BAR_COLOR_ANIMATION, "disable_bottom_chin_color_animation", false);
-
-    /**
-     * Cached param whether we disable animations for color changes to the navigation bar for the
-     * edge-to-edge layout used in edge-to-edge-everywhere.
-     */
-    public static final BooleanCachedFeatureParam
-            sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation =
-                    newBooleanCachedFeatureParam(
-                            NAV_BAR_COLOR_ANIMATION,
-                            "disable_edge_to_edge_layout_color_animation",
-                            false);
-
     public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowColorPicker =
             newBooleanCachedFeatureParam(NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_color_picker", false);
 
@@ -2014,8 +1991,6 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesReselectLaxQuery,
                     sMostVisitedTilesReselectLaxRef,
                     sMostVisitedTilesReselectLaxSchemeHost,
-                    sNavBarColorAnimationDisableBottomChinColorAnimation,
-                    sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
                     sNewTabPageCustomizationV2DailyRefreshThresholdMs,
                     sNewTabPageCustomizationV2EnableLogs,
                     sNewTabPageCustomizationV2ForceShowTipBottomSheet,

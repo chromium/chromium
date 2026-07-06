@@ -6002,10 +6002,6 @@ inline constexpr char kMigrateAccountManagerDelegateDescription[] =
     "Enables a refactoring of the Account Manager Delegate to use "
     "PlatformAccounts";
 
-inline constexpr char kNavBarColorAnimationName[] = "NavBarColorAnimation";
-inline constexpr char kNavBarColorAnimationDescription[] =
-    "Enables animations for color changes to the OS navigation bar.";
-
 inline constexpr char kAndroidNavigationBlurTransitionAnimationName[] =
     "Blur transition animation for cross-site navigations";
 inline constexpr char kAndroidNavigationBlurTransitionAnimationDescription[] =
