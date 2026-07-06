@@ -17,7 +17,7 @@ found in the LICENSE file.
     so the inner image button is marked as not important for accessibility.
     -->
     <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/menu_button"
+        android:id="@+id/bottom_bar_menu_image_button"
         android:background="@null"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -44,7 +44,7 @@ public class BottomBarAppMenu extends FrameLayout implements TintObserver {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mMenuImageButton = findViewById(R.id.menu_button);
+        mMenuImageButton = findViewById(R.id.bottom_bar_menu_image_button);
         mBottomUpdateBadgeView = findViewById(R.id.menu_badge);
     }
 

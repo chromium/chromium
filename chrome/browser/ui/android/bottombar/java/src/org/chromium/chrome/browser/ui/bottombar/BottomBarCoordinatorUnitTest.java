@@ -211,7 +211,7 @@ public class BottomBarCoordinatorUnitTest {
     public void testInitialization_withAppMenu_bindsAppMenu() {
         verify(mActionRegistry, times(1)).get(ActionId.APP_MENU);
 
-        View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
+        View menuButton = mCoordinator.getView().findViewById(R.id.menu_button);
         assertNotNull(menuButton);
         assertEquals(true, menuButton.getTag(R.id.is_bottom_bar_menu_anchor));
     }
@@ -224,7 +224,7 @@ public class BottomBarCoordinatorUnitTest {
     public void testInitialization_withAppMenuAndBadge_accessibilityClassName() {
         verify(mActionRegistry, times(1)).get(ActionId.APP_MENU);
 
-        View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
+        View menuButton = mCoordinator.getView().findViewById(R.id.menu_button);
         assertNotNull(menuButton);
         assertTrue(menuButton instanceof BottomBarAppMenu);
         assertEquals(Button.class.getName(), menuButton.getAccessibilityClassName().toString());
@@ -235,7 +235,7 @@ public class BottomBarCoordinatorUnitTest {
     public void testInitialization_withoutAppMenu_doesNotBindAppMenu() {
         verify(mActionRegistry, never()).get(ActionId.APP_MENU);
 
-        View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
+        View menuButton = mCoordinator.getView().findViewById(R.id.menu_button);
         assertNull(menuButton);
     }
 

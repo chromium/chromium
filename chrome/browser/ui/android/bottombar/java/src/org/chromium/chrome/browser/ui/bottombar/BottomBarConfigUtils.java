@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.base.DeviceInfo;
@@ -78,11 +80,9 @@ public class BottomBarConfigUtils {
         return isNtpWithBottomBar(tab, context);
     }
 
-    private static boolean isNtpWithBottomBar(Tab tab, Context context) {
-        return tab.getNativePage() != null
-                && "newtab".equals(tab.getNativePage().getHost())
-                && isBottomBarEnabled(context)
-                && !shouldDisableOnNtp();
+    /** Whether the given tab is a regular NTP (excludes incognito). */
+    public static boolean isRegularNtp(@Nullable Tab tab) {
+        return isNtp(tab) && !assumeNonNull(tab).isIncognito();
     }
 
     /** Whether to always use the filled GLIC icon. */
@@ -98,5 +98,18 @@ public class BottomBarConfigUtils {
     /** Whether to bypass geofencing country check for AI Mode. */
     public static boolean bypassAimGeofencing() {
         return ChromeFeatureList.sAndroidBottomBarBypassAimGeofencing.getValue();
+    }
+
+    private static boolean isNtpWithBottomBar(Tab tab, Context context) {
+        return isNtp(tab)
+                && isBottomBarEnabled(context)
+                && (tab.isIncognito() || !shouldDisableOnNtp());
+    }
+
+    /** Whether the given tab is any NTP (regular or incognito). */
+    private static boolean isNtp(@Nullable Tab tab) {
+        return tab != null
+                && tab.getNativePage() != null
+                && "newtab".equals(tab.getNativePage().getHost());
     }
 }

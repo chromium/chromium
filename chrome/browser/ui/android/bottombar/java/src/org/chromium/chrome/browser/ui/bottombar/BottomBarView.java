@@ -176,4 +176,26 @@ public class BottomBarView extends LinearLayout {
                 return null;
         }
     }
+
+    /**
+     * Inflates all ViewStubs in the bottom bar for testing purposes. This respects configuration
+     * flags, so it will not inflate buttons that should not be present in the current configuration
+     * (e.g., Home or App Menu).
+     */
+    public void inflateAllStubsForTesting() {
+        if (BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled()) {
+            mHomeContainer.inflateStub();
+        }
+        mExtraContainer.inflateStub();
+        mNewTabContainer.inflateStub();
+        mTabSwitcherContainer.inflateStub();
+        if (BottomBarConfigUtils.shouldIncludeAppMenuButton()) {
+            if (!mAppMenuContainer.hasTargetView()) {
+                if (BottomBarConfigUtils.shouldShowAppMenuUpdateBadge()) {
+                    mAppMenuContainer.setStubLayoutResource(R.layout.bottom_bar_app_menu_template);
+                }
+                mAppMenuContainer.inflateStub();
+            }
+        }
+    }
 }

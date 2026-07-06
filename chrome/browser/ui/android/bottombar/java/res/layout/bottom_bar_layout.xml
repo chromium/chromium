@@ -91,7 +91,7 @@ found in the LICENSE file.
         android:layout_weight="1">
         <ViewStub
             android:id="@+id/app_menu_stub"
-            android:inflatedId="@+id/app_menu_button"
+            android:inflatedId="@+id/menu_button"
             android:layout_width="@dimen/toolbar_button_width"
             android:layout_height="match_parent"
             android:layout_gravity="center"
