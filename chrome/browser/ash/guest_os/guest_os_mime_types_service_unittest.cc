@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -56,7 +57,13 @@ class GuestOsMimeTypesServiceTest : public testing::Test {
           mime_types[i];
     }
     service_->UpdateMimeTypes(mime_types_list);
-    task_environment_.RunUntilIdle();
+    // The whole batch is committed in one posted update, so once the first
+    // mapping is visible to GetMimeType() the rest are too.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return service_->GetMimeType(
+                 base::FilePath("test." + file_extensions.front()), vm_name,
+                 container_name) == mime_types.front();
+    }));
   }
 
   std::string GetMimeType(const std::string& filename) {
