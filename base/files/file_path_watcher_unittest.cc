@@ -969,8 +969,7 @@ TEST_F(FilePathWatcherTest, MAYBE_MoveParent) {
   // We should only get notified on `subdir_delegate` of its creation.
   ASSERT_TRUE(CreateDirectory(subdir));
   subdir_event_expecter.AddExpectedEventForPath(subdir);
-  // TODO(crbug.com/40263777): Expect that no events are fired on the
-  // file delegate.
+  file_delegate.SpinAndExpectNoEvents();
   subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 
   ASSERT_TRUE(WriteFile(file, "content"));
