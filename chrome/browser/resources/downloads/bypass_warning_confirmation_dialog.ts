@@ -44,9 +44,12 @@ export class DownloadsBypassWarningConfirmationDialogElement extends
   static override get properties() {
     return {
       fileName: {type: String},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   accessor fileName: string = '';
 
   wasConfirmed(): boolean {

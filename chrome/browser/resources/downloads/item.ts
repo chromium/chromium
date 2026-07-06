@@ -78,6 +78,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   static override get properties() {
     return {
+      webuiRoundedIconsEnabled_: {type: Boolean},
       data: {type: Object},
       completelyOnDisk_: {type: Boolean},
       shouldLinkFilename_: {type: Boolean},
@@ -118,6 +119,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private accessor displayType_: DisplayType = DisplayType.NORMAL;
   private accessor completelyOnDisk_: boolean = true;
   protected accessor shouldLinkFilename_: boolean = true;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   override overrideCustomEquivalent: boolean = true;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -676,7 +679,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     if (this.data) {
       switch (this.displayType_) {
         case DisplayType.DANGEROUS:
-          return 'downloads:dangerous';
+          return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'downloads:dangerous-filled' :
+              'downloads:dangerous-old';
         case DisplayType.INSECURE:
         case DisplayType.UNVERIFIED:
         case DisplayType.SUSPICIOUS:
@@ -742,7 +747,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
     }
     if (this.isDangerous_) {
-      return 'downloads:dangerous';
+      return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'downloads:dangerous-filled' :
+          'downloads:dangerous-old';
     }
     if (!this.useFileIcon_) {
       return 'cr:insert-drive-file';

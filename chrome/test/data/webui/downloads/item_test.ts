@@ -203,7 +203,8 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertEquals(
-        'downloads:dangerous', item.shadowRoot.querySelector('cr-icon')!.icon);
+        'downloads:dangerous-old',
+        item.shadowRoot.querySelector('cr-icon')!.icon);
     assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'red',
@@ -217,7 +218,8 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertEquals(
-        'downloads:dangerous', item.shadowRoot.querySelector('cr-icon')!.icon);
+        'downloads:dangerous-old',
+        item.shadowRoot.querySelector('cr-icon')!.icon);
     assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'red',
