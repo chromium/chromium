@@ -24,6 +24,7 @@
 
 namespace blink {
 
+class DOMWrapperWorld;
 class ExecutionContext;
 class HIDDeviceFilter;
 class HIDDeviceRequestOptions;
@@ -90,9 +91,54 @@ class MODULES_EXPORT HID : public EventTarget,
                           RegisteredEventListener&) override;
 
  private:
-  // Returns the HIDDevice matching |info| from |device_cache_|. If the device
-  // is not in the cache, a new device is created and added to the cache.
-  HIDDevice* GetOrCreateDevice(device::mojom::blink::HidDeviceInfoPtr info);
+  friend class HIDTestHelper;
+  // Helper class to wrap a world-specific HIDDevice cache.
+  // Used when `WebHIDWorldIsolatedCache` feature is enabled to isolate
+  // HIDDevice instances per DOMWrapperWorld.
+  class HIDDeviceCache final : public GarbageCollected<HIDDeviceCache> {
+   public:
+    HIDDeviceCache() = default;
+    HIDDeviceCache(const HIDDeviceCache&) = delete;
+    HIDDeviceCache& operator=(const HIDDeviceCache&) = delete;
+    HIDDeviceCache(HIDDeviceCache&&) = delete;
+    HIDDeviceCache& operator=(HIDDeviceCache&&) = delete;
+
+    void Trace(Visitor* visitor) const;
+    HeapHashMap<String, WeakMember<HIDDevice>>& DeviceCache() {
+      return device_cache_;
+    }
+
+   private:
+    HeapHashMap<String, WeakMember<HIDDevice>> device_cache_;
+  };
+
+  HeapHashMap<String, WeakMember<HIDDevice>>& GetOrCreateWorldDeviceCache(
+      DOMWrapperWorld& world);
+
+  // Gets or creates a HIDDevice instance in the cache specific to `world`.
+  HIDDevice* GetOrCreateDevice(
+      DOMWrapperWorld& world,
+      const device::mojom::blink::HidDeviceInfoPtr& info);
+  // Helper that extracts the DOMWrapperWorld from `ScriptState` and calls the
+  // world-specific GetOrCreateDevice overload.
+  HIDDevice* GetOrCreateDevice(
+      ScriptState*,
+      const device::mojom::blink::HidDeviceInfoPtr& info);
+  // Legacy fallback: gets or creates a device using the shared, non-isolated
+  // cache (used when `WebHIDWorldIsolatedCache` is disabled).
+  HIDDevice* GetOrCreateDevice(
+      const device::mojom::blink::HidDeviceInfoPtr& info);
+
+  // Helper to dispatch connect/disconnect events to all relevant worlds.
+  void DispatchConnectionEvent(
+      const AtomicString& event_type,
+      device::mojom::blink::HidDeviceInfoPtr device_info);
+
+  // Updates the device info in all world-specific caches that contain it.
+  // Returns true if the device was found and updated in at least one cache.
+  // This is only used when `WebHIDWorldIsolatedCache` is enabled.
+  bool UpdateDeviceIfCached(
+      const device::mojom::blink::HidDeviceInfoPtr& device_info);
 
   // Opens a connection to HidService, or does nothing if the connection is
   // already open.
@@ -112,6 +158,17 @@ class MODULES_EXPORT HID : public EventTarget,
       receiver_;
   HeapHashSet<Member<HIDDeviceResolver>> get_devices_promises_;
   HeapHashSet<Member<HIDDeviceResolver>> request_device_promises_;
+  // Map of V8 worlds to their respective HIDDeviceCache.
+  // Used when `WebHIDWorldIsolatedCache` is enabled to ensure only one
+  // HIDDevice instance represents each HID device inside a single global object
+  // per world.
+  HeapHashMap<WeakMember<DOMWrapperWorld>, Member<HIDDeviceCache>>
+      device_caches_;
+
+  // Map of device GUIDs to HIDDevice objects.
+  // Legacy fallback: used when `WebHIDWorldIsolatedCache` is disabled.
+  // Ensures only one HIDDevice instance represents each HID device inside a
+  // single global object globally (shared across all worlds).
   HeapHashMap<String, WeakMember<HIDDevice>> device_cache_;
   std::optional<FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle>
       feature_handle_for_scheduler_;

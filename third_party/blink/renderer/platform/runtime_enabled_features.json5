@@ -7032,6 +7032,13 @@
       public: true,
     },
     {
+      // Restricts the sharing of HIDDevice instances across different V8
+      // worlds (e.g., main world and isolated worlds) to prevent cross-world
+      // leaks.
+      name: "WebHIDWorldIsolatedCache",
+      status: "stable",
+    },
+    {
       name: "WebIdentityDigitalCredentials",
       public: true,
       status: "stable",

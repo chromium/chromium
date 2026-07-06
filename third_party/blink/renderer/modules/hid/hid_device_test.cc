@@ -6,6 +6,15 @@
 
 #include "services/device/public/mojom/hid.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/hid/hid.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -158,6 +167,133 @@ TEST(HIDDeviceTest, unitDefinition) {
   EXPECT_EQ(0, item->unitFactorTemperatureExponent());
   EXPECT_EQ(0, item->unitFactorCurrentExponent());
   EXPECT_EQ(0, item->unitFactorLuminousIntensityExponent());
+}
+
+class HIDTestHelper {
+ public:
+  static HIDDevice* GetOrCreateDevice(
+      HID* hid,
+      ScriptState* script_state,
+      const device::mojom::blink::HidDeviceInfoPtr& info) {
+    return hid->GetOrCreateDevice(script_state, info);
+  }
+  static size_t CacheSize(HID* hid) { return hid->device_caches_.size(); }
+  static size_t CacheSizeForWorld(HID* hid, DOMWrapperWorld& world) {
+    auto it = hid->device_caches_.find(&world);
+    if (it != hid->device_caches_.end()) {
+      return it->value->DeviceCache().size();
+    }
+    return 0;
+  }
+  static size_t DefaultCacheSize(HID* hid) { return hid->device_cache_.size(); }
+};
+
+// Verifies that when WebHIDWorldIsolatedCache is enabled, HIDDevice
+// instances are cached per-world. Requesting the same device GUID in different
+// worlds (main vs. isolated) must return different C++ objects.
+TEST(HIDTest, WorldIsolatedCache) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  // Enable feature
+  ScopedWebHIDWorldIsolatedCacheForTest feature_helper(true);
+
+  Navigator* navigator = scope.GetFrame().DomWindow()->navigator();
+  HID* hid = HID::hid(*navigator);
+  ASSERT_TRUE(hid);
+
+  // Create main world script state
+  ScriptState* main_script_state = scope.GetScriptState();
+  DOMWrapperWorld& main_world = main_script_state->World();
+  EXPECT_TRUE(main_world.IsMainWorld());
+
+  // Create isolated world
+  DOMWrapperWorld* isolated_world =
+      DOMWrapperWorld::EnsureIsolatedWorld(isolate, 1);
+  EXPECT_TRUE(isolated_world->IsIsolatedWorld());
+
+  scope.GetFrame().GetWindowProxy(*isolated_world);  // Force initialization
+  ScriptState* isolated_script_state =
+      ToScriptState(&scope.GetFrame(), *isolated_world);
+  ASSERT_TRUE(isolated_script_state);
+
+  // Create device info representing a physical device
+  auto info = device::mojom::blink::HidDeviceInfo::New();
+  info->guid = "test-guid";
+  info->physical_device_id = "phys-id";
+
+  // GetOrCreateDevice in main world
+  HIDDevice* device_main =
+      HIDTestHelper::GetOrCreateDevice(hid, main_script_state, info);
+  ASSERT_TRUE(device_main);
+
+  // GetOrCreateDevice in isolated world with the same info
+  HIDDevice* device_isolated =
+      HIDTestHelper::GetOrCreateDevice(hid, isolated_script_state, info);
+  ASSERT_TRUE(device_isolated);
+
+  // They should be different C++ objects
+  EXPECT_NE(device_main, device_isolated);
+
+  // Cache sizes should be updated
+  EXPECT_EQ(HIDTestHelper::CacheSize(hid), 2U);
+  EXPECT_EQ(HIDTestHelper::CacheSizeForWorld(hid, main_world), 1U);
+  EXPECT_EQ(HIDTestHelper::CacheSizeForWorld(hid, *isolated_world), 1U);
+  EXPECT_EQ(HIDTestHelper::DefaultCacheSize(hid), 0U);
+}
+
+// Verifies that when WebHIDWorldIsolatedCache is disabled, the cache
+// falls back to the legacy behavior where requesting the same device GUID in
+// different worlds returns the exact same C++ object.
+TEST(HIDTest, WorldIsolatedCacheDisabled) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  // Disable feature
+  ScopedWebHIDWorldIsolatedCacheForTest feature_helper(false);
+
+  Navigator* navigator = scope.GetFrame().DomWindow()->navigator();
+  HID* hid = HID::hid(*navigator);
+  ASSERT_TRUE(hid);
+
+  // Create main world script state
+  ScriptState* main_script_state = scope.GetScriptState();
+  DOMWrapperWorld& main_world = main_script_state->World();
+  EXPECT_TRUE(main_world.IsMainWorld());
+
+  // Create isolated world
+  DOMWrapperWorld* isolated_world =
+      DOMWrapperWorld::EnsureIsolatedWorld(isolate, 1);
+  EXPECT_TRUE(isolated_world->IsIsolatedWorld());
+
+  scope.GetFrame().GetWindowProxy(*isolated_world);  // Force initialization
+  ScriptState* isolated_script_state =
+      ToScriptState(&scope.GetFrame(), *isolated_world);
+  ASSERT_TRUE(isolated_script_state);
+
+  // Create device info representing a physical device
+  auto info = device::mojom::blink::HidDeviceInfo::New();
+  info->guid = "test-guid";
+  info->physical_device_id = "phys-id";
+
+  // GetOrCreateDevice in main world
+  HIDDevice* device_main =
+      HIDTestHelper::GetOrCreateDevice(hid, main_script_state, info);
+  ASSERT_TRUE(device_main);
+
+  // GetOrCreateDevice in isolated world with the same info
+  HIDDevice* device_isolated =
+      HIDTestHelper::GetOrCreateDevice(hid, isolated_script_state, info);
+  ASSERT_TRUE(device_isolated);
+
+  // They should be the same C++ object
+  EXPECT_EQ(device_main, device_isolated);
+
+  // Cache sizes should be updated
+  EXPECT_EQ(HIDTestHelper::CacheSize(hid), 0U);
+  EXPECT_EQ(HIDTestHelper::DefaultCacheSize(hid), 1U);
 }
 
 }  // namespace blink
