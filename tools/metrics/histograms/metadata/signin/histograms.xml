@@ -2024,6 +2024,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.GaiaAuthFetcherIOS.CookiesState"
+    enum="SigninGaiaAuthFetcherIOSCookiesState" expires_after="2026-12-27">
+  <owner>msarda@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <summary>
+    Records whether the requests started from GaiaAuthFetcher include secure and
+    insecure cookies. This is required to investigate the issue
+    crbug.com/531646858.
+
+    Only logged on iOS.
+  </summary>
+</histogram>
+
 <histogram name="Signin.GaiaCookieManager.Logout"
     enum="SigninGaiaCookieManagerLogout" expires_after="never">
 <!-- expires-never: monitors logout requests to http://accounts.google.com/Logout endpoint -->

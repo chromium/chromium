@@ -818,6 +818,11 @@ inline constexpr char kFullscreenTransitionSpeedDescription[] =
     "When enabled, the speed of the fullscreen' transition is "
     "increased-decreased.";
 
+inline constexpr char kGaiaAuthFetcherDontSendSIDCookiesName[] =
+    "GaiaAuthFetcher should not send SID and LSID cookie";
+inline constexpr char kGaiaAuthFetcherDontSendSIDCookiesDescription[] =
+    "When enabled, GaiaAuthFetcher should not send SID and LSID cookies";
+
 inline constexpr char kGeminiActorName[] = "Gemini Actor";
 inline constexpr char kGeminiActorDescription[] = "Enables the Gemini Actor.";
 

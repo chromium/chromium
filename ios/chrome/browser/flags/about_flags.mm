@@ -2871,6 +2871,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kEnableBulkDataEntryConnectorIOS)},
+    {"gaia-auth-fetcher-dont-send-sid-cookies",
+     flag_descriptions::kGaiaAuthFetcherDontSendSIDCookiesName,
+     flag_descriptions::kGaiaAuthFetcherDontSendSIDCookiesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         switches::kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

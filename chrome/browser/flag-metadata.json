@@ -5116,6 +5116,16 @@
     "expiry_milestone": 145
   },
   {
+    "name": "gaia-auth-fetcher-dont-send-sid-cookies",
+    "owners": [
+      "msarda@google.com",
+      "alexilin@chromium.org",
+      "bsazonov@chromium.org",
+      "chrome-signin-team@google.com"
+    ],
+    "expiry_milestone": 158
+  },
+  {
     "name": "game-dashboard-utilities",
     "owners": [
       "khayak@google.com",

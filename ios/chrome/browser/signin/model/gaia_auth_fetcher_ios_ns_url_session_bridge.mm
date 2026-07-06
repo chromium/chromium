@@ -9,13 +9,61 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/ios/ios_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/chrome_connected_header_helper.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/net/cookies/system_cookie_util.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
+
+namespace {
+const char kSIDCookieName[] = "SID";
+const char kLSIDCookieName[] = "LSID";
+
+// These values are persisted to logs in histogram
+// `Signin.GaiaAuthFetcherIOS.CookiesState`. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class AuthFetcherCookiesState {
+  kNoCookies = 0,
+  kCookiesAllInsecure = 1,
+  kCookiesAllSecure = 2,
+  kCookiesSecureAndInsecure = 3,
+  kMaxValue = kCookiesSecureAndInsecure
+};
+
+AuthFetcherCookiesState ComputeNewAuthFetcherCookiesState(
+    const net::CanonicalCookie& cookie,
+    AuthFetcherCookiesState old_state) {
+  if (cookie.SecureAttribute()) {
+    switch (old_state) {
+      case AuthFetcherCookiesState::kNoCookies:
+        return AuthFetcherCookiesState::kCookiesAllSecure;
+      case AuthFetcherCookiesState::kCookiesAllInsecure:
+        return AuthFetcherCookiesState::kCookiesSecureAndInsecure;
+      case AuthFetcherCookiesState::kCookiesAllSecure:
+        return AuthFetcherCookiesState::kCookiesAllSecure;
+      case AuthFetcherCookiesState::kCookiesSecureAndInsecure:
+        return AuthFetcherCookiesState::kCookiesSecureAndInsecure;
+    }
+  } else {
+    switch (old_state) {
+      case AuthFetcherCookiesState::kNoCookies:
+        return AuthFetcherCookiesState::kCookiesAllInsecure;
+      case AuthFetcherCookiesState::kCookiesAllSecure:
+        return AuthFetcherCookiesState::kCookiesSecureAndInsecure;
+      case AuthFetcherCookiesState::kCookiesAllInsecure:
+        return AuthFetcherCookiesState::kCookiesAllInsecure;
+      case AuthFetcherCookiesState::kCookiesSecureAndInsecure:
+        return AuthFetcherCookiesState::kCookiesSecureAndInsecure;
+    }
+  }
+}
+
+}  // namespace
 
 #pragma mark - GaiaAuthFetcherIOSNSURLSessionBridge::Request
 
@@ -216,6 +264,8 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies(
                       }];
   NSMutableArray* http_cookies = [[NSMutableArray alloc]
       initWithCapacity:cookies_with_access_results.size()];
+
+  AuthFetcherCookiesState cookies_state = AuthFetcherCookiesState::kNoCookies;
   for (const auto& cookie_with_access_result : cookies_with_access_results) {
     // `CHROME_CONNECTED` cookie is attached to all web requests to Google web
     // properties. Requests initiated from the browser services (e.g.
@@ -224,9 +274,36 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies(
         signin::kChromeConnectedCookieName) {
       continue;
     }
+
+    // Update the state each time a new cookie is processed.
+    cookies_state = ComputeNewAuthFetcherCookiesState(
+        cookie_with_access_result.cookie, cookies_state);
+
+    // Per crbug.com/524874495#comment#13, starting with iOS 27, under unknown
+    // conditions, insecure cookies are no longer sent by iOS both from calls
+    // from WKWebView and from NSURLSession. This means that requests no longer
+    // nclude the SID cookie (which is insecure), but they include the LSID
+    // cookie. This breaks the cookie servers-side validatation.
+    //
+    // As a temporary workaround, avoid sending the SID and LSID cookies on
+    // these requests.
+    //
+    // TODO(crbug.com/531646858) Remove this workaround once the server updates
+    // the validation logic for SID and LSID cookies.
+    if (base::ios::IsRunningOnIOS27OrLater() &&
+        base::FeatureList::IsEnabled(
+            switches::kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher)) {
+      if ((cookie_with_access_result.cookie.Name() == kSIDCookieName) ||
+          (cookie_with_access_result.cookie.Name() == kLSIDCookieName)) {
+        continue;
+      }
+    }
+
     [http_cookies addObject:net::SystemCookieFromCanonicalCookie(
                                 cookie_with_access_result.cookie)];
   }
+  base::UmaHistogramEnumeration("Signin.GaiaAuthFetcherIOS.CookiesState",
+                                cookies_state);
   [url_session_.configuration.HTTPCookieStorage
       storeCookies:http_cookies
            forTask:url_session_data_task_];
