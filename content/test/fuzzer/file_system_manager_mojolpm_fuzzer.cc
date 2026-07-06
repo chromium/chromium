@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -179,9 +175,10 @@ void FileSystemManagerTestcase::SetUpOnUIThread(
     content::ChildProcessId process_id(i + 1);
 
     p->Add(process_id, &browser_context_);
-    file_system_manager_impls_[i] = std::make_unique<FileSystemManagerImpl>(
-        p->CreateHandle(process_id), file_system_context_,
-        blob_storage_context_);
+    UNSAFE_TODO(file_system_manager_impls_[i]) =
+        std::make_unique<FileSystemManagerImpl>(p->CreateHandle(process_id),
+                                                file_system_context_,
+                                                blob_storage_context_);
   }
 
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
@@ -199,7 +196,7 @@ void FileSystemManagerTestcase::TearDown(base::OnceClosure done_closure) {
 void FileSystemManagerTestcase::TearDownOnIOThread(
     base::OnceClosure done_closure) {
   for (size_t i = 0; i < kNumRenderers; i++) {
-    file_system_manager_impls_[i].reset();
+    UNSAFE_TODO(file_system_manager_impls_[i]).reset();
   }
 
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
@@ -271,8 +268,9 @@ void FileSystemManagerTestcase::AddFileSystemManagerImpl(
     mojo::PendingReceiver<::blink::mojom::FileSystemManager>&& receiver) {
   // Int value of `RenderProcessId` corresponds to the index of that process in
   // the array.
-  file_system_manager_impls_[static_cast<int>(render_process_id)]->BindReceiver(
-      storage_key_proto::Convert(storage_key), std::move(receiver));
+  UNSAFE_TODO(file_system_manager_impls_[static_cast<int>(render_process_id)])
+      ->BindReceiver(storage_key_proto::Convert(storage_key),
+                     std::move(receiver));
 }
 
 static void AddFileSystemManagerInstance(
