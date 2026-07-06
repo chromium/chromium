@@ -21,13 +21,13 @@ enum class AIPrototypingFeature : NSInteger;
 // Initializes the view controller for a given `feature`.
 - (instancetype)initForFeature:(AIPrototypingFeature)feature;
 
+@optional
+
 // Updates the page's response field with `response`.
 - (void)updateResponseField:(NSString*)response;
 
 // Enable submit buttons, and style them accordingly.
 - (void)enableSubmitButtons;
-
-@optional
 
 // Updates the view controller with the raw bytes (in base64) of the
 // PageContext proto, if supported.

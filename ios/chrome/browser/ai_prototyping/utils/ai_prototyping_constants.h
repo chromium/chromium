@@ -32,6 +32,8 @@ enum class AIPrototypingFeature : NSInteger {
   kActorTools,
   // Represents the APC extraction feature.
   kAPC,
+  // Represents the UI Catalog feature.
+  kUICatalog,
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_AI_PROTOTYPING_CONSTANTS_H_

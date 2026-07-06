@@ -16,6 +16,8 @@ source_set("ui") {
     "ai_prototyping_mutator.h",
     "ai_prototyping_tab_organization_view_controller.h",
     "ai_prototyping_tab_organization_view_controller.mm",
+    "ai_prototyping_ui_catalog_view_controller.h",
+    "ai_prototyping_ui_catalog_view_controller.mm",
     "ai_prototyping_view_controller.h",
     "ai_prototyping_view_controller.mm",
     "ai_prototyping_view_controller_protocol.h",

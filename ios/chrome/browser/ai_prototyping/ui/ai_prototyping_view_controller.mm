@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_freeform_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_tab_organization_view_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_ui_catalog_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -41,6 +42,8 @@
         arrayWithObjects:
             [[AIPrototypingFreeformViewController alloc]
                 initForFeature:AIPrototypingFeature::kFreeform],
+            [[AIPrototypingUICatalogNavigationController alloc]
+                initForFeature:AIPrototypingFeature::kUICatalog],
             [[AIPrototypingTabOrganizationViewController alloc]
                 initForFeature:AIPrototypingFeature::kSmartTabGrouping],
             [[AIPrototypingCalendarViewController alloc]
