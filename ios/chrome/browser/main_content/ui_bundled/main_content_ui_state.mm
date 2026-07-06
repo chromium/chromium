@@ -119,7 +119,8 @@
   // UIScrollView does not sent a `-scrollViewDidEndDecelerating:` signal after
   // pixel alignments, so the state should not be considered decelerating if the
   // target content offset is less than a pixel away from the current value.
-  CGFloat singlePixel = 1.0 / [UIScreen mainScreen].scale;
+  CGFloat scale = panGesture.view.traitCollection.displayScale ?: 2;
+  CGFloat singlePixel = 1.0 / scale;
   CGFloat delta = std::abs(self.state.yContentOffset - target.y);
   if (delta > singlePixel) {
     self.state.decelerating = YES;

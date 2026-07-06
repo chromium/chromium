@@ -57,7 +57,9 @@ TEST_F(MainContentUIStateUpdaterTest, BroadcastScrollingAndDragging) {
 // Tests that pixel alignment don't count as residual deceleration.
 TEST_F(MainContentUIStateUpdaterTest, IgnorePixelAligntment) {
   UIPanGestureRecognizer* pan = [[UIPanGestureRecognizer alloc] init];
-  const CGFloat kSinglePixel = 1.0 / [UIScreen mainScreen].scale;
+  UIView* view = [[UIView alloc] init];
+  [view addGestureRecognizer:pan];
+  const CGFloat kSinglePixel = 1.0 / view.traitCollection.displayScale;
   const CGPoint kUnalignedOffset = CGPointMake(0.0, kSinglePixel / 2.0);
   ASSERT_FALSE(state().scrolling);
   ASSERT_FALSE(state().dragging);
