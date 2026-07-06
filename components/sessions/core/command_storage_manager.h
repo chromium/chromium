@@ -133,6 +133,8 @@ class SESSIONS_EXPORT CommandStorageManager {
   base::Value ToDebugValue() const;
 #endif  // DCHECK_IS_ON()
 
+  base::FilePath GetBackendDirectoryForTesting(bool is_encrypted);
+
  private:
   friend class CommandStorageManagerTestHelper;
 

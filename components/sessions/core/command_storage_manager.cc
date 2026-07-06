@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -28,6 +29,7 @@
 #include "components/sessions/core/command_storage_features.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_command.h"
+#include "components/sessions/core/session_constants.h"
 
 namespace sessions {
 namespace {
@@ -199,6 +201,18 @@ CommandStorageManager::CommandStorageManager(
     os_crypt_async->GetInstance(base::BindOnce(
         &CommandStorageManager::OnEncryptorReady, weak_factory_.GetWeakPtr(),
         /*start_time=*/base::TimeTicks::Now()));
+  } else if (GetEncryptSessionStorageStage() ==
+             EncryptSessionStorageStage::kClearOnly) {
+    // If we don't update encrypted files, then we need to delete the stale
+    // directory on the background thread. We need to be sure encryption is
+    // fully disabled as we need to know the entire folder is extranious.
+    backend_task_runner->PostNonNestableTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const base::FilePath encrypted_session_directory) {
+              base::DeletePathRecursively(encrypted_session_directory);
+            },
+            file_path_.Append(kEncryptedSessionsDirectory)));
   }
 }
 
@@ -564,6 +578,12 @@ base::Value CommandStorageManager::ToDebugValue() const {
   return base::Value(std::move(debug_value));
 }
 #endif  // DCHECK_IS_ON()
+
+base::FilePath CommandStorageManager::GetBackendDirectoryForTesting(
+    bool is_encrypted) {
+  return file_path_.Append(is_encrypted ? kEncryptedSessionsDirectory
+                                        : kSessionsDirectory);
+}
 
 void CommandStorageManager::OnErrorWritingToFile() {
   delegate_->OnErrorWritingSessionCommands();
