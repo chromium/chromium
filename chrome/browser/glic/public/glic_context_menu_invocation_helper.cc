@@ -42,8 +42,10 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
         glic::Target(*tab),
         glic::mojom::InvocationSource::kWebContentsContextMenu);
 
+    std::u16string_view trimmed_selection =
+        base::TrimWhitespace(selection_text, base::TRIM_ALL);
     if (base::FeatureList::IsEnabled(features::kGlicTextSelectionContextMenu) &&
-        !selection_text.empty()) {
+        !trimmed_selection.empty()) {
       auto context = glic::mojom::AdditionalContext::New();
       context->source = glic::mojom::AdditionalContextSource::kTextSelection;
       context->tab_id = tab->GetHandle().raw_value();
@@ -51,7 +53,7 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
       auto data = glic::mojom::ContextData::New();
       data->mime_type = kMimeTypeGlicSelection;
 
-      std::string utf8_text = base::UTF16ToUTF8(selection_text);
+      std::string utf8_text = base::UTF16ToUTF8(trimmed_selection);
       data->data = mojo_base::BigBuffer(base::as_byte_span(utf8_text));
 
       auto part = glic::mojom::AdditionalContextPart::NewData(std::move(data));

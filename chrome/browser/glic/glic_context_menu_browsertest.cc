@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
 namespace glic {
@@ -539,6 +541,57 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuStandardBrowserTest,
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+}
+
+class GlicTextSelectionContextMenuBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicTextSelectionContextMenuBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlicTextSelectionContextMenu},
+                                   {features::kGlicContextMenu});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
+                       GlicItemAbsentForWhitespaceOnlySelection) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"   \n\t   ";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
+                       GlicItemPresentForValidSelection) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"   valid text   ";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  auto glic_index = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC);
+  ASSERT_TRUE(glic_index.has_value());
+  EXPECT_EQ(glic_index->first->GetLabelAt(glic_index->second),
+            l10n_util::GetStringFUTF16(IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT,
+                                       u"valid text"));
 }
 
 }  // namespace glic

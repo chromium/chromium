@@ -1026,7 +1026,8 @@ bool GlicEnabling::IsContextualMenuItemEnabled(
     Profile* profile, const std::u16string& selection_text) {
   const bool text_selection_menu_enabled =
       base::FeatureList::IsEnabled(features::kGlicTextSelectionContextMenu) &&
-      !selection_text.empty();
+      !base::TrimWhitespace(std::u16string_view(selection_text), base::TRIM_ALL)
+           .empty();
   const bool enabled =
       IsEnabledForProfile(profile) &&
       (base::FeatureList::IsEnabled(features::kGlicContextMenu) ||
