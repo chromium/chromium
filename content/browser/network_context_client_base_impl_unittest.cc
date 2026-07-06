@@ -14,7 +14,9 @@
 #include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_future.h"
 #include "base/types/fixed_array.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/public/browser/network_context_client_base.h"
@@ -223,19 +225,39 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFileAndOneNotFound) {
   EXPECT_EQ(0U, response.opened_files.size());
 }
 
-TEST_F(NetworkContextClientBaseTest, UploadFromBrowserProcess) {
+TEST_F(NetworkContextClientBaseTest,
+       OnFileUploadRequested_BrowserProcess_AccessDenied) {
   base::FilePath path = temp_dir_.GetPath().AppendASCII("filename");
   CreateFile(path, kFileContent1);
-  // No grant necessary for browser process.
 
-  UploadResponse response;
+  base::test::TestFuture<int, std::vector<base::File>> future;
   client_.OnFileUploadRequested(
       network::OriginatingProcessId::browser(), false, {path},
-      /*destination_url=*/GURL(), std::move(response.callback));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(net::OK, response.error_code);
-  ASSERT_EQ(1U, response.opened_files.size());
-  ValidateFileContents(response.opened_files[0], kFileContent1);
+      /*destination_url=*/GURL(), future.GetCallback());
+  EXPECT_EQ(net::ERR_ACCESS_DENIED, future.Get<0>());
+  EXPECT_EQ(0U, future.Get<1>().size());
+}
+
+TEST_F(NetworkContextClientBaseTest,
+       OnFileUploadRequested_BrowserProcess_AccessGranted) {
+  base::FilePath path = temp_dir_.GetPath().AppendASCII("filename");
+  CreateFile(path, kFileContent1);
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantFileForBrowserUpload(
+      token, path);
+
+  base::test::TestFuture<int, std::vector<base::File>> future;
+  client_.OnFileUploadRequested(
+      network::OriginatingProcessId::browser(), false, {path},
+      /*destination_url=*/GURL(), future.GetCallback());
+  EXPECT_EQ(net::OK, future.Get<0>());
+  std::vector<base::File> opened_files = std::get<1>(future.Take());
+  ASSERT_EQ(1U, opened_files.size());
+  ValidateFileContents(opened_files[0], kFileContent1);
+
+  ChildProcessSecurityPolicyImpl::GetInstance()->RevokeFileForBrowserUpload(
+      token);
 }
 
 }  // namespace content
