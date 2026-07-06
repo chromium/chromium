@@ -2289,6 +2289,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Graphics.Gbm.SupportsZeroCopyWebGPUImport" enum="Boolean"
+    expires_after="2026-11-29">
+  <owner>hitawala@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records whether zero-copy WebGPU import is supported for a GBM buffer.
+    Logged on GbmBuffer creation and when checking compatibility.
+  </summary>
+</histogram>
+
 <histogram name="NPU.Intel.DeviceId" enum="IntelNpuDeviceId"
     expires_after="2026-12-27">
   <owner>reillyg@chromium.org</owner>
