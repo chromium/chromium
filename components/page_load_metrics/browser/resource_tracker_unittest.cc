@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/global_request_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +41,7 @@ class ResourceTrackerTest : public testing::Test {
   base::ByteCount GetUnfinishedResourceBytes(int resource_id) {
     return resource_tracker_.unfinished_resources()
         .find(content::GlobalRequestID(process_id_, resource_id))
-        ->second->delta_bytes;
+        ->second->delta_bytes.AsDeprecatedByteCount();
   }
 
   bool HasPreviousUpdateForResource(int resource_id) {
@@ -52,7 +53,7 @@ class ResourceTrackerTest : public testing::Test {
     return resource_tracker_
         .GetPreviousUpdateForResource(
             content::GlobalRequestID(process_id_, resource_id))
-        ->delta_bytes;
+        ->delta_bytes.AsDeprecatedByteCount();
   }
 
  private:
@@ -63,7 +64,8 @@ class ResourceTrackerTest : public testing::Test {
     auto resource_data_update =
         page_load_metrics::mojom::ResourceDataUpdate::New();
     resource_data_update->request_id = request_id;
-    resource_data_update->delta_bytes = delta_bytes;
+    resource_data_update->delta_bytes =
+        base::ByteSize::FromDeprecatedByteCount(delta_bytes);
     resource_data_update->is_complete = is_complete;
     resources.push_back(std::move(resource_data_update));
     resource_tracker_.UpdateResourceDataUse(process_id_.GetUnsafeValue(),

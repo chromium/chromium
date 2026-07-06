@@ -1000,12 +1000,13 @@ void UmaPageLoadMetricsObserver::OnResourceDataUseObserved(
     if (resource->is_complete) {
       if (resource->cache_type ==
           page_load_metrics::mojom::CacheType::kNotCached) {
-        network_bytes_ += resource->encoded_body_length;
+        network_bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
       } else {
-        cache_bytes_ += resource->encoded_body_length;
+        cache_bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
       }
     }
-    network_bytes_including_headers_ += resource->delta_bytes;
+    network_bytes_including_headers_ +=
+        resource->delta_bytes.AsDeprecatedByteCount();
   }
 }
 

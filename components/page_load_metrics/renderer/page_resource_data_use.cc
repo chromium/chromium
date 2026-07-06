@@ -4,7 +4,6 @@
 
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -103,18 +102,14 @@ mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
   mojom::ResourceDataUpdatePtr resource_data_update =
       mojom::ResourceDataUpdate::New();
   resource_data_update->request_id = resource_id();
-  resource_data_update->received_data_length =
-      total_received_bytes_.AsDeprecatedByteCount();
-  resource_data_update->delta_bytes =
-      CalculateNewlyReceivedBytes().AsDeprecatedByteCount();
+  resource_data_update->received_data_length = total_received_bytes_;
+  resource_data_update->delta_bytes = CalculateNewlyReceivedBytes();
   resource_data_update->is_complete = is_complete_;
   resource_data_update->reported_as_ad_resource = reported_as_ad_resource_;
   resource_data_update->is_main_frame_resource = is_main_frame_resource_;
   resource_data_update->mime_type = mime_type_;
-  resource_data_update->encoded_body_length =
-      encoded_body_length_.AsDeprecatedByteCount();
-  resource_data_update->decoded_body_length =
-      decoded_body_length_.AsDeprecatedByteCount();
+  resource_data_update->encoded_body_length = encoded_body_length_;
+  resource_data_update->decoded_body_length = decoded_body_length_;
   resource_data_update->cache_type = cache_type_;
   resource_data_update->is_secure_scheme = is_secure_scheme_;
   resource_data_update->proxy_used = proxy_used_;

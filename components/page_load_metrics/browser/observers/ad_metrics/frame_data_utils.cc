@@ -5,6 +5,7 @@
 
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 
+#include "base/byte_size.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/base/mime_util.h"
@@ -41,25 +42,26 @@ ResourceMimeType ResourceLoadAggregator::GetResourceMimeType(
 
 void ResourceLoadAggregator::ProcessResourceLoad(
     const mojom::ResourceDataUpdatePtr& resource) {
-  bytes_ += resource->delta_bytes;
-  network_bytes_ += resource->delta_bytes;
+  bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
+  network_bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
 
   // Report cached resource body bytes to overall frame bytes.
   if (resource->is_complete &&
       resource->cache_type != mojom::CacheType::kNotCached) {
-    bytes_ += resource->encoded_body_length;
+    bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
   }
 
   if (resource->reported_as_ad_resource) {
-    ad_network_bytes_ += resource->delta_bytes;
-    ad_bytes_ += resource->delta_bytes;
+    ad_network_bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
+    ad_bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
     // Report cached resource body bytes to overall frame bytes.
     if (resource->is_complete &&
         resource->cache_type != mojom::CacheType::kNotCached)
-      ad_bytes_ += resource->encoded_body_length;
+      ad_bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
 
     ResourceMimeType mime_type = GetResourceMimeType(resource);
-    ad_bytes_by_mime_[static_cast<size_t>(mime_type)] += resource->delta_bytes;
+    ad_bytes_by_mime_[static_cast<size_t>(mime_type)] +=
+        resource->delta_bytes.AsDeprecatedByteCount();
   }
 }
 

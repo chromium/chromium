@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 
 using page_load_metrics::OptionalMin;
@@ -90,10 +91,14 @@ page_load_metrics::mojom::ResourceDataUpdatePtr CreateResource(
   resource_data_update->cache_type =
       was_cached ? page_load_metrics::mojom::CacheType::kHttp
                  : page_load_metrics::mojom::CacheType::kNotCached;
-  resource_data_update->delta_bytes = delta_bytes;
-  resource_data_update->received_data_length = delta_bytes;
-  resource_data_update->encoded_body_length = encoded_body_length;
-  resource_data_update->decoded_body_length = decoded_body_length;
+  resource_data_update->delta_bytes =
+      base::ByteSize::FromDeprecatedByteCount(delta_bytes);
+  resource_data_update->received_data_length =
+      base::ByteSize::FromDeprecatedByteCount(delta_bytes);
+  resource_data_update->encoded_body_length =
+      base::ByteSize::FromDeprecatedByteCount(encoded_body_length);
+  resource_data_update->decoded_body_length =
+      base::ByteSize::FromDeprecatedByteCount(decoded_body_length);
   resource_data_update->is_complete = is_complete;
   return resource_data_update;
 }

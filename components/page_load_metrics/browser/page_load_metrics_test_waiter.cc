@@ -4,6 +4,8 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/i18n/number_formatting.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
@@ -429,9 +431,10 @@ void PageLoadMetricsTestWaiter::OnResourceDataUseObserved(
       current_complete_resources_++;
       if (resource->cache_type ==
           page_load_metrics::mojom::CacheType::kNotCached)
-        current_network_body_bytes_ += resource->encoded_body_length;
+        current_network_body_bytes_ +=
+            resource->encoded_body_length.AsDeprecatedByteCount();
     }
-    current_network_bytes_ += resource->delta_bytes;
+    current_network_bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
 
     // If |rfh| is a subframe with nonzero bytes, update the subframe
     // data observation.

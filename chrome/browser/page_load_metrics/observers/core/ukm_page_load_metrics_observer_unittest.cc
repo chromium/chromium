@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
@@ -1587,9 +1588,9 @@ TEST_F(UkmPageLoadMetricsObserverTest, PageSizeMetrics) {
   for (const auto& request : resources) {
     if (request->cache_type ==
         page_load_metrics::mojom::CacheType::kNotCached) {
-      network_bytes += request->delta_bytes;
+      network_bytes += request->delta_bytes.AsDeprecatedByteCount();
     } else {
-      cache_bytes += request->encoded_body_length;
+      cache_bytes += request->encoded_body_length.AsDeprecatedByteCount();
     }
   }
 

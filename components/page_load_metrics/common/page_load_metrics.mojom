@@ -4,7 +4,7 @@
 
 module page_load_metrics.mojom;
 
-import "mojo/public/mojom/base/byte_count.mojom";
+import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -555,19 +555,19 @@ struct ResourceDataUpdate {
 
   // Network bytes received for the resource since the last timing update
   // from renderer to browser.
-  mojo_base.mojom.ByteCount delta_bytes;
+  mojo_base.mojom.ByteSize delta_bytes;
 
   // Total network bytes received for the resource across timing updates. This
   // is the aggregate of the |delta_bytes| from each timing update.
-  mojo_base.mojom.ByteCount received_data_length;
+  mojo_base.mojom.ByteSize received_data_length;
 
   // The length of the response body for the resource before removing any
   // content encodings. Only set for complete resources.
-  mojo_base.mojom.ByteCount encoded_body_length;
+  mojo_base.mojom.ByteSize encoded_body_length;
 
   // The length of the response body in bytes for the resource after decoding.
   // Only set for complete resources.
-  mojo_base.mojom.ByteCount decoded_body_length;
+  mojo_base.mojom.ByteSize decoded_body_length;
 
   // Whether this resource load has completed.
   bool is_complete;

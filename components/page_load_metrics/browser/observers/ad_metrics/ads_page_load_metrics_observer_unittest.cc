@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -204,9 +205,9 @@ class ResourceLoadingCancellingThrottle
     // Load a resource for the main frame before it commits.
     std::vector<mojom::ResourceDataUpdatePtr> resources;
     mojom::ResourceDataUpdatePtr resource = mojom::ResourceDataUpdate::New();
-    resource->received_data_length = base::KiB(10);
-    resource->delta_bytes = base::KiB(10);
-    resource->encoded_body_length = base::KiB(10);
+    resource->received_data_length = base::KiBU(10);
+    resource->delta_bytes = base::KiBU(10);
+    resource->encoded_body_length = base::KiBU(10);
     resource->cache_type = mojom::CacheType::kNotCached;
     resource->is_complete = true;
     resource->is_primary_frame_resource = true;
@@ -594,11 +595,13 @@ class AdsPageLoadMetricsObserverTest
                           bool is_ad_resource = false) {
     std::vector<mojom::ResourceDataUpdatePtr> resources;
     mojom::ResourceDataUpdatePtr resource = mojom::ResourceDataUpdate::New();
+    const auto resource_byte_size =
+        base::ByteSize::FromDeprecatedByteCount(resource_size);
     resource->received_data_length =
-        resource_cached == ResourceCached::kNotCached ? resource_size
-                                                      : base::ByteCount(0);
+        resource_cached == ResourceCached::kNotCached ? resource_byte_size
+                                                      : base::ByteSize(0);
     resource->delta_bytes = resource->received_data_length;
-    resource->encoded_body_length = resource_size;
+    resource->encoded_body_length = resource_byte_size;
     resource->reported_as_ad_resource = is_ad_resource;
     resource->is_complete = true;
     switch (resource_cached) {

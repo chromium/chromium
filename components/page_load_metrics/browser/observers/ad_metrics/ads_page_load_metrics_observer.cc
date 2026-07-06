@@ -885,7 +885,8 @@ base::ByteCount AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
       GetDelegate().GetResourceTracker().GetPreviousUpdateForResource(
           global_request_id);
   bool is_new_ad = !previous_update->reported_as_ad_resource;
-  return is_new_ad ? resource->received_data_length - resource->delta_bytes
+  return is_new_ad ? (resource->received_data_length - resource->delta_bytes)
+                         .AsDeprecatedByteCount()
                    : base::ByteCount(0);
 }
 
