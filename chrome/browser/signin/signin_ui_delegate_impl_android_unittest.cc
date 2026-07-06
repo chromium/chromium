@@ -4,7 +4,10 @@
 
 #include "chrome/browser/signin/signin_ui_delegate_impl_android.h"
 
+#include <optional>
+
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -19,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
+#include "url/gurl.h"
 
 namespace signin_ui_util {
 
@@ -32,9 +36,31 @@ const signin_metrics::PromoAction kTestPromoAction =
 
 const char kTestEmail[] = "test@gmail.com";
 
+const char kTestExtensionName[] = "Test Extension";
+
+GURL GetTestUrl() {
+  return GURL("http://example.com");
+}
+
 class MockSigninBridge : public SigninBridge {
  public:
   MockSigninBridge() = default;
+
+  MOCK_METHOD(void,
+              OpenAccountPickerBottomSheetForExtensions,
+              (content::WebContents * web_contents,
+               const GURL& continue_url,
+               const std::optional<CoreAccountId>& account_id,
+               const std::string& extension_name),
+              (override));
+
+  MOCK_METHOD(void,
+              StartAddAccountFlow,
+              (TabAndroid * window,
+               const std::string& prefilled_email,
+               const GURL& continue_url,
+               const std::string& extension_name),
+              (override));
 
   MOCK_METHOD(void,
               StartUpdateCredentialsFlow,
@@ -86,14 +112,13 @@ class SigninUiDelegateImplAndroidTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<MockSigninBridge> mock_signin_bridge_ = nullptr;
 };
 
-TEST_F(SigninUiDelegateImplAndroidTest, ShowReauthUI) {
+TEST_F(SigninUiDelegateImplAndroidTest, ShowSigninUI) {
   CoreAccountId account_id = identity_test_env()
                                  ->MakePrimaryAccountAvailable(
                                      kTestEmail, signin::ConsentLevel::kSignin)
                                  .account_id;
-  identity_test_env()->SetInvalidRefreshTokenForAccount(account_id);
 
-  NavigateAndCommit(GURL("http://example.com"));
+  NavigateAndCommit(GetTestUrl());
   TestTabModel tab_model(profile());
   TabModelList::AddTabModel(&tab_model);
 
@@ -106,8 +131,63 @@ TEST_F(SigninUiDelegateImplAndroidTest, ShowReauthUI) {
 
   signin_ui_util::SigninUiDelegateImplAndroid delegate;
 
-  EXPECT_CALL(*signin_bridge(), StartUpdateCredentialsFlow(
-                                    _, GURL("http://example.com"), account_id));
+  EXPECT_CALL(
+      *signin_bridge(),
+      OpenAccountPickerBottomSheetForExtensions(
+          _, GetTestUrl(), std::make_optional(account_id), kTestExtensionName));
+
+  delegate.ShowSigninUI(profile(), /*enable_sync=*/true, kTestAccessPoint,
+                        kTestPromoAction, kTestExtensionName);
+
+  TabModelList::RemoveTabModel(&tab_model);
+}
+
+TEST_F(SigninUiDelegateImplAndroidTest, ShowSigninUINoAccountsOnDevice) {
+  NavigateAndCommit(GetTestUrl());
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+
+  tab_model.SetWebContentsList({web_contents()});
+  tab_model.SetIsActiveModel(true);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android->get()->AddChild(web_contents()->GetNativeView());
+
+  signin_ui_util::SigninUiDelegateImplAndroid delegate;
+
+  EXPECT_CALL(
+      *signin_bridge(),
+      StartAddAccountFlow(_, std::string(), GetTestUrl(), kTestExtensionName));
+
+  delegate.ShowSigninUI(profile(), /*enable_sync=*/true, kTestAccessPoint,
+                        kTestPromoAction, kTestExtensionName);
+
+  TabModelList::RemoveTabModel(&tab_model);
+}
+
+TEST_F(SigninUiDelegateImplAndroidTest, ShowReauthUI) {
+  CoreAccountId account_id = identity_test_env()
+                                 ->MakePrimaryAccountAvailable(
+                                     kTestEmail, signin::ConsentLevel::kSignin)
+                                 .account_id;
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account_id);
+
+  NavigateAndCommit(GetTestUrl());
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+
+  tab_model.SetWebContentsList({web_contents()});
+  tab_model.SetIsActiveModel(true);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android->get()->AddChild(web_contents()->GetNativeView());
+
+  signin_ui_util::SigninUiDelegateImplAndroid delegate;
+
+  EXPECT_CALL(*signin_bridge(),
+              StartUpdateCredentialsFlow(_, GetTestUrl(), account_id));
 
   delegate.ShowReauthUI(profile(), kTestEmail, /*enable_sync=*/true,
                         kTestAccessPoint, kTestPromoAction);

@@ -27,15 +27,19 @@ namespace signin_ui_util {
 // sign-in related UIs.
 // Do not use this class directly. Instead, call the functions defined in
 // signin_ui_util.cc.
+// TODO(crbug.com/530902365): Create a centralized mock for this class to make
+// updates easier.
 class SigninUiDelegate {
  public:
   // Displays a sign-in prompt to the user.
   // `enable_sync` indicates whether the sync should be enabled after the user
-  // successfully signs in.
+  // successfully signs in. When this prompt is displayed for extensions, we
+  // also pass the `extension_name`.
   virtual void ShowSigninUI(Profile* profile,
                             bool enable_sync,
                             signin_metrics::AccessPoint access_point,
-                            signin_metrics::PromoAction promo_action) = 0;
+                            signin_metrics::PromoAction promo_action,
+                            const std::string& extension_name) = 0;
 
   // Displays a reauth prompt to the user for an account with indicated `email`.
   // This account should be already known to Chrome.

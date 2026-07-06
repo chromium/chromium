@@ -927,7 +927,8 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
                                ? GetSigninPrimaryAccount(GetProfile()).email
                                : account.email;
 
-  ShowExtensionSigninPrompt(GetProfile(), IsPrimaryAccountOnly(), email_hint);
+  ShowExtensionSigninPrompt(GetProfile(), IsPrimaryAccountOnly(), email_hint,
+                            extension()->name());
 }
 #endif
 

@@ -3748,6 +3748,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Sign in to this site and Chrome to get your bookmarks and more on all your devices
       </message>
 
+      <!-- Extension requests sign in to Chrome through chrome.identity API -->
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_TITLE_FOR_EXTENSIONS" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
+        The extension "<ph name="EXTENSION_NAME">%1$s<ex>Screencast</ex></ph>" wants you to sign in to Chrome
+      </message>
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_EXTENSIONS" desc="This string is the body of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
+        To use this extension, sign in to Chrome. You'll also be able to use and save your passwords and more from your Google Account.
+      </message>
+
       <!-- Personalized Signin Promos Strings -->
       <message name="IDS_SYNC_PROMO_CONTINUE_AS" desc="Button to sign into Chrome with the displayed account and without having to reenter a password. ‘John’ is replaced with the user’s given name, or the user’s full name if the given name is not available. Ensure consistency with related OneGoogle sign-in buttons (see e.g. TC ID 5569230012177947065).">
         Continue as <ph name="USER_FULL_NAME">%1$s<ex>John</ex></ph>

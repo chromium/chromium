@@ -242,7 +242,8 @@ void SignInFromSingleAccountPromo(Profile* profile,
             : signin_metrics::PromoAction::
                   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT;
     GetSigninUiDelegate()->ShowSigninUI(profile, /*enable_sync=*/false,
-                                        access_point, new_account_promo_action);
+                                        access_point, new_account_promo_action,
+                                        /*extension_name=*/"");
     return;
   }
 
@@ -315,7 +316,8 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
             : signin_metrics::PromoAction::
                   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT;
     GetSigninUiDelegate()->ShowSigninUI(profile, /*enable_sync=*/true,
-                                        access_point, new_account_promo_action);
+                                        access_point, new_account_promo_action,
+                                        /*extension_name=*/"");
     return;
   }
 

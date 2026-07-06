@@ -22,7 +22,8 @@ class SigninUiDelegate;
 // is created.
 void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
-                               const std::string& email_hint);
+                               const std::string& email_hint,
+                               const std::string& extension_name);
 
 base::AutoReset<signin_ui_util::SigninUiDelegate*>
 SetSigninUiDelegateForExtensionsTesting(

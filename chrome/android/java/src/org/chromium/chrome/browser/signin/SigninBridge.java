@@ -115,23 +115,21 @@ final class SigninBridge {
      * @param prefilledEmail The email address to prefill in the add account flow, or null if no
      *     email should be prefilled.
      * @param continueUrl The URL to navigate to after the account is added.
-     * @param isWebSignin Whether the flow is being started for a web sign-in.
-     * @param accessPoint The sign-in access point.
+     * @param extensionName The name of the extension requesting the account. Can be empty if the
+     *     flow is not started by an extension.
      */
     @CalledByNative
     private static void startAddAccountFlow(
             Tab tab,
             @Nullable @JniType("std::string") String prefilledEmail,
             @JniType("GURL") GURL continueUrl,
-            boolean isWebSignin,
-            @SigninAccessPoint int accessPoint) {
+            @JniType("std::string") String extensionName) {
         startAddAccountFlow(
                 tab,
                 prefilledEmail,
                 continueUrl,
                 new AccountPickerBottomSheetCoordinatorFactory(),
-                isWebSignin,
-                accessPoint);
+                extensionName);
     }
 
     /** See {@link SigninBridge#startAddAccountFlow()} above. */
@@ -141,8 +139,7 @@ final class SigninBridge {
             @Nullable String prefilledEmail,
             GURL continueUrl,
             AccountPickerBottomSheetCoordinatorFactory factory,
-            boolean isWebSignin,
-            @SigninAccessPoint int accessPoint) {
+            String extensionName) {
         ThreadUtils.assertOnUiThread();
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
@@ -172,8 +169,7 @@ final class SigninBridge {
                                     continueUrl,
                                     factory,
                                     initialTabURL,
-                                    isWebSignin,
-                                    accessPoint),
+                                    extensionName),
                             null);
                 });
     }
@@ -184,8 +180,7 @@ final class SigninBridge {
             GURL continueUrl,
             AccountPickerBottomSheetCoordinatorFactory factory,
             GURL initialTabURL,
-            boolean isWebSignin,
-            @SigninAccessPoint int accessPoint) {
+            String extensionName) {
         return (int resultCode, @Nullable Intent data) -> {
             @Nullable String addedAccountEmail =
                     data == null
@@ -210,8 +205,7 @@ final class SigninBridge {
                                             identityManager.findExtendedAccountInfoByEmailAddress(
                                                     assumeNonNull(addedAccountEmail)))
                                     .getId(),
-                            isWebSignin,
-                            accessPoint);
+                            extensionName);
                     return;
                 }
 
@@ -273,19 +267,31 @@ final class SigninBridge {
 
     /** Opens account picker bottom sheet. */
     @CalledByNative
-    private static void openAccountPickerBottomSheet(
+    private static void openAccountPickerBottomSheetForWebSignin(
             Tab tab,
             @JniType("GURL") GURL continueUrl,
-            @Nullable @JniType("std::optional<CoreAccountId>") CoreAccountId selectedAccountId,
-            boolean isWebSignin,
-            @SigninAccessPoint int signinAccessPoint) {
+            @Nullable @JniType("std::optional<CoreAccountId>") CoreAccountId selectedAccountId) {
         openAccountPickerBottomSheet(
                 tab,
                 continueUrl,
                 new AccountPickerBottomSheetCoordinatorFactory(),
                 selectedAccountId,
-                isWebSignin,
-                signinAccessPoint);
+                /* extensionName= */ "");
+    }
+
+    /** Opens account picker bottom sheet for the extensions API. */
+    @CalledByNative
+    private static void openAccountPickerBottomSheetForExtensions(
+            Tab tab,
+            @JniType("GURL") GURL continueUrl,
+            @Nullable @JniType("std::optional<CoreAccountId>") CoreAccountId selectedAccountId,
+            @JniType("std::string") String extensionName) {
+        openAccountPickerBottomSheet(
+                tab,
+                continueUrl,
+                new AccountPickerBottomSheetCoordinatorFactory(),
+                selectedAccountId,
+                assertNonNull(extensionName));
     }
 
     /** Opens account picker bottom sheet. */
@@ -295,8 +301,7 @@ final class SigninBridge {
             GURL continueUrl,
             AccountPickerBottomSheetCoordinatorFactory factory,
             @Nullable CoreAccountId selectedAccountId,
-            boolean isWebSignin,
-            @SigninAccessPoint int accessPoint) {
+            String extensionName) {
         ThreadUtils.assertOnUiThread();
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
@@ -307,6 +312,12 @@ final class SigninBridge {
         Profile profile = tab.getProfile().getOriginalProfile();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
+
+        // The signin bridge bottom sheet is only used for web signin or extensions.
+        final @SigninAccessPoint int accessPoint =
+                extensionName.isEmpty()
+                        ? SigninAccessPoint.WEB_SIGNIN
+                        : SigninAccessPoint.EXTENSIONS;
         if (!signinManager.isSigninAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED, accessPoint);
@@ -321,6 +332,7 @@ final class SigninBridge {
             return;
         }
 
+        final boolean isWebSignin = extensionName.isEmpty();
         // If the web requests a sign-in with a specific account that is present on the device the
         // impression limit is ignored.
         if (isWebSignin
@@ -329,7 +341,8 @@ final class SigninBridge {
                                 .getWebSigninAccountPickerActiveDismissalCount()
                         >= ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS, accessPoint);
+                    AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
+                    SigninAccessPoint.WEB_SIGNIN);
             return;
         }
         BottomSheetController bottomSheetController =
@@ -345,20 +358,8 @@ final class SigninBridge {
             return;
         }
 
-        // TODO(crbug.com/403867715): Check if there are specific strings for extensions.
-        String subtitleString =
-                isWebSignin
-                        ? context.getString(
-                                R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
-                        : context.getString(R.string.signin_account_picker_bottom_sheet_subtitle);
         AccountPickerBottomSheetStrings strings =
-                new AccountPickerBottomSheetStrings.Builder(
-                                context.getString(
-                                        R.string.signin_account_picker_bottom_sheet_title))
-                        .setSubtitleString(subtitleString)
-                        .setDismissButtonString(
-                                context.getString(R.string.signin_account_picker_dismiss_button))
-                        .build();
+                buildAccountPickerBottomSheetStrings(context, extensionName);
 
         // We add the {@code !isWebSignin} check to "force" the newly implemented extensions flow to
         // use the activityless signin.
@@ -402,9 +403,31 @@ final class SigninBridge {
                 strings,
                 DeviceLockActivityLauncherImpl.get(),
                 AccountPickerLaunchMode.DEFAULT,
-                isWebSignin,
-                accessPoint,
+                /* isWebSignin= */ true,
+                SigninAccessPoint.WEB_SIGNIN,
                 selectedAccountId);
+    }
+
+    private static AccountPickerBottomSheetStrings buildAccountPickerBottomSheetStrings(
+            Context context, String extensionName) {
+        String titleString =
+                extensionName.isEmpty()
+                        ? context.getString(R.string.signin_account_picker_bottom_sheet_title)
+                        : context.getString(
+                                R.string.signin_account_picker_bottom_sheet_title_for_extensions,
+                                assertNonNull(extensionName));
+        String subtitleString =
+                extensionName == null
+                        ? context.getString(
+                                R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
+                        : context.getString(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_subtitle_for_extensions);
+        return new AccountPickerBottomSheetStrings.Builder(titleString)
+                .setSubtitleString(subtitleString)
+                .setDismissButtonString(
+                        context.getString(R.string.signin_account_picker_dismiss_button))
+                .build();
     }
 
     /**

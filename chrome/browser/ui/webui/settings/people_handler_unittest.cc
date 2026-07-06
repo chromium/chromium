@@ -122,7 +122,8 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
               (Profile*,
                bool,
                signin_metrics::AccessPoint,
-               signin_metrics::PromoAction),
+               signin_metrics::PromoAction,
+               const std::string&),
               (override));
   MOCK_METHOD(void,
               ShowReauthUI,
@@ -568,7 +569,8 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
               ShowSigninUI(profile(), /*enable_sync=*/true,
                            signin_metrics::AccessPoint::kSettings,
                            signin_metrics::PromoAction::
-                               PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT));
+                               PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+                           /*extension_name=*/""));
   base::ListValue args;
   args.Append(0);
   handler_->HandleStartSignin(args);

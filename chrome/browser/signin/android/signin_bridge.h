@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_
 #define CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_
 
+#include <optional>
 #include <string>
 
 #include "components/keyed_service/core/keyed_service.h"
@@ -30,26 +31,31 @@ class SigninBridge : public KeyedService {
   SigninBridge() = default;
   ~SigninBridge() override = default;
 
-  // Opens a add account flow pre-filled with |prefilled_email| that opens
-  // the specified |continue_url| upon completion.
+  // Opens an add account flow pre-filled with |prefilled_email| that opens
+  // the specified |continue_url| upon completion. For the extensions flow,
+  // provides the |extension_name|.
   virtual void StartAddAccountFlow(TabAndroid* tab,
                                    const std::string& prefilled_email,
                                    const GURL& continue_url,
-                                   bool is_web_signin,
-                                   signin_metrics::AccessPoint access_point);
+                                   const std::string& extension_name);
 
   // Opens the account management screen.
   virtual void OpenAccountManagementScreen(
       ui::WindowAndroid* window,
       signin::GAIAServiceType service_type);
 
-  // Opens the account picker bottomsheet.
-  virtual void OpenAccountPickerBottomSheet(
+  // Opens the account picker bottomsheet for web sign-in.
+  virtual void OpenAccountPickerBottomSheetForWebSignin(
+      content::WebContents* web_contents,
+      const GURL& continue_url,
+      const std::optional<CoreAccountId>& account_id);
+
+  // Opens the account picker bottomsheet for extensions.
+  virtual void OpenAccountPickerBottomSheetForExtensions(
       content::WebContents* web_contents,
       const GURL& continue_url,
       const std::optional<CoreAccountId>& account_id,
-      bool is_web_signin,
-      signin_metrics::AccessPoint access_point);
+      const std::string& extension_name);
 
   // Opens the reauthentication flow.
   virtual void StartUpdateCredentialsFlow(TabAndroid* tab,

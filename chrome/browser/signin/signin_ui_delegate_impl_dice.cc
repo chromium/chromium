@@ -40,7 +40,8 @@ void SigninUiDelegateImplDice::ShowSigninUI(
     Profile* profile,
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
-    signin_metrics::PromoAction promo_action) {
+    signin_metrics::PromoAction promo_action,
+    const std::string& extension_name) {
   ShowDiceTab(EnsureBrowser(profile), /*email=*/std::string(), enable_sync,
               access_point, promo_action);
 }

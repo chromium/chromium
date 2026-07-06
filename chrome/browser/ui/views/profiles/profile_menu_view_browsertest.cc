@@ -165,7 +165,8 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
               (Profile*,
                bool,
                signin_metrics::AccessPoint,
-               signin_metrics::PromoAction),
+               signin_metrics::PromoAction,
+               const std::string&),
               (override));
   MOCK_METHOD(void,
               ShowReauthUI,

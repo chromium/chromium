@@ -372,12 +372,12 @@ void ProcessMirrorHeader(
                                        manage_accounts_params.email);
 
   if (manage_accounts_params.show_consistency_promo) {
-    SigninBridgeFactory::GetForProfile(profile)->OpenAccountPickerBottomSheet(
-        web_contents, continue_url,
-        target_account_info
-            ? std::make_optional(target_account_info->account_id)
-            : std::nullopt,
-        /*is_web_signin=*/true, signin_metrics::AccessPoint::kWebSignin);
+    SigninBridgeFactory::GetForProfile(profile)
+        ->OpenAccountPickerBottomSheetForWebSignin(
+            web_contents, continue_url,
+            target_account_info
+                ? std::make_optional(target_account_info->account_id)
+                : std::nullopt);
     return;
   }
 
@@ -399,8 +399,7 @@ void ProcessMirrorHeader(
           signin::MirrorHeaderEvent::kAccountNotOnDevice);
       SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
           TabAndroid::FromWebContents(web_contents),
-          manage_accounts_params.email, continue_url, /*is_web_signin=*/true,
-          signin_metrics::AccessPoint::kWebSignin);
+          manage_accounts_params.email, continue_url, /*extension_name=*/"");
       return;
     }
 

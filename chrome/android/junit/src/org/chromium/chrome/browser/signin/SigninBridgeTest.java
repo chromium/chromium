@@ -94,8 +94,8 @@ public class SigninBridgeTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
-                    {/* isWebSignin= */ true, SigninAccessPoint.WEB_SIGNIN},
-                    {/* isWebSignin= */ false, SigninAccessPoint.EXTENSIONS}
+                    {/* isWebSignin= */ true, SigninAccessPoint.WEB_SIGNIN, ""},
+                    {/* isWebSignin= */ false, SigninAccessPoint.EXTENSIONS, "Test Extension"}
                 });
     }
 
@@ -115,6 +115,9 @@ public class SigninBridgeTest {
 
     @Parameter(1)
     public @SigninAccessPoint int mSigninAccessPoint;
+
+    @Parameter(2)
+    public @Nullable String mExtensionName;
 
     @Mock private Tab mTabMock;
 
@@ -177,8 +180,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
                 .create(
                         any(),
@@ -207,8 +209,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
                 .create(
                         any(),
@@ -234,8 +235,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
@@ -265,8 +265,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS, mSigninAccessPoint);
@@ -297,12 +296,7 @@ public class SigninBridgeTest {
                         SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock,
-                mContinueUrl,
-                mAccountPickerBottomSheetCoordinatorFactoryMock,
-                null,
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mTabMock, mContinueUrl, mAccountPickerBottomSheetCoordinatorFactoryMock, null, "");
 
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
@@ -318,8 +312,8 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         anyInt(),
-                        eq(mIsWebSignin),
-                        eq(mSigninAccessPoint),
+                        eq(true),
+                        eq(SigninAccessPoint.WEB_SIGNIN),
                         eq(null));
     }
 
@@ -343,8 +337,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT2.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                "");
 
         verify(mSigninMetricsUtilsJniMock, never())
                 .logAccountConsistencyPromoAction(
@@ -360,8 +353,8 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         anyInt(),
-                        eq(mIsWebSignin),
-                        eq(mSigninAccessPoint),
+                        eq(true),
+                        eq(SigninAccessPoint.WEB_SIGNIN),
                         eq(TestAccounts.ACCOUNT2.getId()));
     }
 
@@ -385,8 +378,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT2.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
 
         verify(mSigninMetricsUtilsJniMock, never())
                 .logAccountConsistencyPromoAction(
@@ -412,8 +404,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                "");
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
@@ -424,8 +415,8 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         anyInt(),
-                        eq(mIsWebSignin),
-                        eq(mSigninAccessPoint),
+                        eq(true),
+                        eq(SigninAccessPoint.WEB_SIGNIN),
                         eq(TestAccounts.ACCOUNT1.getId()));
     }
 
@@ -444,8 +435,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
 
         verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
         verifyBottomSheetStartSigninFlow(TestAccounts.ACCOUNT1.getId());
@@ -463,12 +453,7 @@ public class SigninBridgeTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock,
-                mContinueUrl,
-                mAccountPickerBottomSheetCoordinatorFactoryMock,
-                null,
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mTabMock, mContinueUrl, mAccountPickerBottomSheetCoordinatorFactoryMock, null, "");
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
@@ -479,8 +464,8 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         anyInt(),
-                        eq(mIsWebSignin),
-                        eq(mSigninAccessPoint),
+                        eq(true),
+                        eq(SigninAccessPoint.WEB_SIGNIN),
                         isNull());
     }
 
@@ -499,8 +484,7 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 null,
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
 
         verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
         verifyBottomSheetStartSigninFlow(/* accountId= */ null);
@@ -530,8 +514,7 @@ public class SigninBridgeTest {
                 TestAccounts.ACCOUNT2.getEmail(),
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
-                mIsWebSignin,
-                mSigninAccessPoint);
+                "");
 
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         intentCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
@@ -546,8 +529,8 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         anyInt(),
-                        eq(mIsWebSignin),
-                        eq(mSigninAccessPoint),
+                        eq(true),
+                        eq(SigninAccessPoint.WEB_SIGNIN),
                         eq(TestAccounts.ACCOUNT2.getId()));
     }
 
@@ -570,8 +553,7 @@ public class SigninBridgeTest {
                 TestAccounts.ACCOUNT2.getEmail(),
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
-                mIsWebSignin,
-                mSigninAccessPoint);
+                mExtensionName);
 
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         intentCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
