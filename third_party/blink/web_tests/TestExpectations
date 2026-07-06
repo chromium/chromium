@@ -9431,6 +9431,9 @@ crbug.com/513985436 [ Release Win11-arm64 ] virtual/text-antialias/selection/khm
 
 # TODO(crbug.com/493947412): Failing on all platforms (Linux/Mac/Win). Re-enable once extension WPT infra is implemented.
 crbug.com/493947412 external/wpt/web-extensions/browser.runtime.extension.html [ Failure ]
+crbug.com/527385398 external/wpt/web-extensions/browser.alarms.extension.html [ Failure ]
+crbug.com/527385398 external/wpt/web-extensions/browser.bookmarks.extension.html [ Failure ]
+crbug.com/527385398 external/wpt/web-extensions/browser.browsingData.extension.html [ Failure ]
 crbug.com/527385398 external/wpt/web-extensions/browser.idle.extension.html [ Failure ]
 crbug.com/527385398 external/wpt/web-extensions/browser.storage.extension.html [ Failure ]
 
