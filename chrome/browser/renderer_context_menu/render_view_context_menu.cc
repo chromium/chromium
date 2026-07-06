@@ -1910,7 +1910,9 @@ void RenderViewContextMenu::AppendLinkItems() {
     if (show_open_in_new_window) {
       AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
                               IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                              kOpenInNewOldIcon);
+                              features::IsRoundedIconsEnabled()
+                                  ? kOpenInNewIcon
+                                  : kOpenInNewOldIcon);
     }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1961,13 +1963,15 @@ void RenderViewContextMenu::AppendLinkItems() {
             IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
             in_app ? IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP_V2
                    : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_V2,
-            kIncognitoRefreshMenuOldIcon);
+            features::IsRoundedIconsEnabled() ? kIncognitoIcon
+                                              : kIncognitoRefreshMenuOldIcon);
       } else {
         AddItemWithOptionalIcon(
             IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
             in_app ? IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP
                    : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
-            kIncognitoRefreshMenuOldIcon);
+            features::IsRoundedIconsEnabled() ? kIncognitoIcon
+                                              : kIncognitoRefreshMenuOldIcon);
       }
     }
 
@@ -2087,7 +2091,9 @@ void RenderViewContextMenu::AppendCopyLinkLocationItem() {
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
         IDS_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
-        ui::ImageModel::FromVectorIcon(kReadingListOldIcon));
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kListAltIcon
+                                           : kReadingListOldIcon));
   }
 }
 
@@ -2315,7 +2321,9 @@ void RenderViewContextMenu::AppendVideoItems() {
     if (media_router::MediaRouterEnabled(browser_context_)) {
       menu_model_.AddItemWithStringIdAndIcon(
           IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-          ui::ImageModel::FromVectorIcon(kCastChromeRefreshOldIcon,
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kCastIcon
+                                             : kCastChromeRefreshOldIcon,
                                          ui::kColorMenuIcon, kTabMenuIconSize));
     }
 
@@ -2726,7 +2734,9 @@ void RenderViewContextMenu::AppendTranslateItem() {
 void RenderViewContextMenu::AppendMediaRouterItem() {
   if (media_router::MediaRouterEnabled(browser_context_)) {
     AddItemWithOptionalIcon(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-                            kCastChromeRefreshOldIcon);
+                            features::IsRoundedIconsEnabled()
+                                ? kCastIcon
+                                : kCastChromeRefreshOldIcon);
   }
 }
 
@@ -2753,7 +2763,9 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
     if (is_menu_simplification_enabled) {
       menu_model_.SetIconForCommandId(
           IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
-          ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshOldIcon,
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kMenuBookIcon
+                                             : kMenuBookChromeRefreshOldIcon,
                                          ui::kColorMenuIcon, kTabMenuIconSize));
     }
 
@@ -2870,8 +2882,10 @@ void RenderViewContextMenu::AppendSearchProvider() {
         menu_model_.SetIconForCommandId(
             IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
             ui::ImageModel::FromVectorIcon(
-                vector_icons::kSearchChromeRefreshOldIcon, ui::kColorMenuIcon,
-                kTabMenuIconSize));
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kSearchIcon
+                    : vector_icons::kSearchChromeRefreshOldIcon,
+                ui::kColorMenuIcon, kTabMenuIconSize));
       }
     }
   } else {
