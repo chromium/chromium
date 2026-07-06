@@ -26,3 +26,15 @@ source_set("contextual_search") {
     "//content/public/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_contextual_search_session_tab_validator_unittest.cc" ]
+  deps = [
+    ":contextual_search",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
