@@ -45,12 +45,11 @@ void ScannerFeedbackDialog::OnDialogShown(content::WebUI* webui) {
   // This is called from `ui::WebDialogUI::HandleRenderFrameCreated`, right
   // after the `content::RenderFrameHost` is created - before any JavaScript is
   // run.
-  SystemWebDialogDelegate::OnDialogShown(webui);
 
   auto* controller =
-      CHECK_DEREF(webui->GetController()).GetAs<ScannerFeedbackUntrustedUI>();
+      &CHECK_DEREF(webui->GetController()->GetAs<ScannerFeedbackUntrustedUI>());
 
-  CHECK(controller);
+  SystemWebDialogDelegate::OnDialogShown(webui);
 
   auto* feedback_info = std::get_if<ScannerFeedbackInfo>(&feedback_info_);
   // `OnDialogShown` should never be called multiple times. If it was previously

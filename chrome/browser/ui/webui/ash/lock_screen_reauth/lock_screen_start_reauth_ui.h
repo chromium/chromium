@@ -41,6 +41,8 @@ class LockScreenStartReauthUI : public ui::WebDialogUI {
   raw_ptr<LockScreenReauthHandler> main_handler_;
 
   base::WeakPtrFactory<LockScreenStartReauthUI> weak_factory_{this};
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace ash

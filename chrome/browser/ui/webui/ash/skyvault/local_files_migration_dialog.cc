@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -83,9 +84,10 @@ gfx::NativeWindow LocalFilesMigrationDialog::GetDialogWindowForTesting() const {
 
 void LocalFilesMigrationDialog::OnDialogShown(content::WebUI* webui) {
   CHECK(migration_callback_);
+  auto* controller =
+      &CHECK_DEREF(webui->GetController()->GetAs<LocalFilesMigrationUI>());
   SystemWebDialogDelegate::OnDialogShown(webui);
-  static_cast<LocalFilesMigrationUI*>(webui->GetController())
-      ->SetInitialDialogInfo(destination_, migration_start_time_);
+  controller->SetInitialDialogInfo(destination_, migration_start_time_);
 }
 
 bool LocalFilesMigrationDialog::ShouldShowCloseButton() const {
