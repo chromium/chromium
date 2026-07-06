@@ -27,6 +27,7 @@ class VerticalTabStripBackgroundBlurBackdrop : public views::View {
 
  private:
   float alpha_ = 1.0f;
+  SkPath border_path_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_BACKGROUND_BLUR_BACKDROP_H_
