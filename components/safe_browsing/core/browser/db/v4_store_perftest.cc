@@ -90,7 +90,7 @@ TEST_F(V4StorePerftest, StressTest) {
 
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   auto store =
-      std::make_unique<V4Store>(task_runner, store_path, /*v5_prefix_size=*/0,
+      std::make_unique<V4Store>(task_runner, store_path, /*v5_prefix_size=*/4,
                                 /*is_eligible_for_migration=*/true,
                                 /*is_extensions_blocklist=*/false);
   std::sort(prefixes.begin(), prefixes.end());
@@ -137,7 +137,7 @@ TEST_F(V4StorePerftest, VerifyChecksumFast) {
 
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   auto store =
-      std::make_unique<V4Store>(task_runner, store_path, /*v5_prefix_size=*/0,
+      std::make_unique<V4Store>(task_runner, store_path, /*v5_prefix_size=*/4,
                                 /*is_eligible_for_migration=*/true,
                                 /*is_extensions_blocklist=*/false);
   store->hash_prefix_map_->Clear();
@@ -201,7 +201,7 @@ TEST_F(V4StorePerftest, MergeUpdateFast) {
 
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   auto store = std::make_unique<V4Store>(task_runner, base::FilePath(),
-                                         /*v5_prefix_size=*/0,
+                                         /*v5_prefix_size=*/4,
                                          /*is_eligible_for_migration=*/true,
                                          /*is_extensions_blocklist=*/false);
 

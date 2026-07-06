@@ -54,7 +54,7 @@ class V4StoreFuzzer {
 
     auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     auto store = std::make_unique<V4Store>(task_runner, store_path,
-                                           /*v5_prefix_size=*/0,
+                                           /*v5_prefix_size=*/4,
                                            /*is_eligible_for_migration=*/false,
                                            /*is_extensions_blocklist=*/false);
     // Assume no removals.
