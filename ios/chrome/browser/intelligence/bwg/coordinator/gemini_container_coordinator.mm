@@ -5,12 +5,16 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_coordinator.h"
 
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+
+@interface GeminiContainerCoordinator () <GeminiContainerViewControllerDelegate>
+@end
 
 @implementation GeminiContainerCoordinator {
   // Startup state used to initialize the Gemini content.
@@ -45,6 +49,7 @@
       ios::provider::GetFloatyViewControllerWithConfiguration(config);
   _viewController = [[GeminiContainerViewController alloc]
       initWithGeminiViewController:geminiViewController];
+  _viewController.delegate = self;
 
   _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                          AssistantContainerCommands);
@@ -60,6 +65,18 @@
 - (void)stop {
   _viewController = nil;
   _containerHandler = nil;
+}
+
+#pragma mark - GeminiContainerViewControllerDelegate
+
+- (void)geminiContainerViewController:
+            (GeminiContainerViewController*)viewController
+          didShowKeyboardWithDuration:(NSTimeInterval)duration
+                                curve:(UIViewAnimationCurve)curve {
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
+                               duration:duration
+                                  curve:curve];
 }
 
 @end

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <UIKit/UIKit.h>
+
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 namespace ios::provider {
@@ -116,7 +118,11 @@ int GetLiveCaptionsNumberOfLines() {
 
 UIViewController* GetFloatyViewControllerWithConfiguration(
     GeminiConfiguration* gemini_configuration) {
-  return nil;
+  UIViewController* viewController = [[UIViewController alloc] init];
+  UITextField* textField = [[UITextField alloc] init];
+  textField.accessibilityIdentifier = @"GeminiTestTextField";
+  [viewController.view addSubview:textField];
+  return viewController;
 }
 
 }  // namespace ios::provider

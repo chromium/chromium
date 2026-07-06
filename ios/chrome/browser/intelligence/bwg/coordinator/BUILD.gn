@@ -22,6 +22,7 @@ source_set("coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/assistant/ui:detent",
     "//ios/chrome/browser/authentication/account_menu/coordinator",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",

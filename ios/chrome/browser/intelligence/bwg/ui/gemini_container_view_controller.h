@@ -7,8 +7,24 @@
 
 #import <UIKit/UIKit.h>
 
+@class GeminiContainerViewController;
+
+// Delegate for the GeminiContainerViewController.
+@protocol GeminiContainerViewControllerDelegate <NSObject>
+
+// Called when the keyboard is shown.
+- (void)geminiContainerViewController:
+            (GeminiContainerViewController*)viewController
+          didShowKeyboardWithDuration:(NSTimeInterval)duration
+                                curve:(UIViewAnimationCurve)curve;
+
+@end
+
 // A view controller that acts as a container for Gemini features.
 @interface GeminiContainerViewController : UIViewController
+
+// The delegate for this view controller.
+@property(nonatomic, weak) id<GeminiContainerViewControllerDelegate> delegate;
 
 // Initializes the container with the Gemini backend view controller.
 - (instancetype)initWithGeminiViewController:
