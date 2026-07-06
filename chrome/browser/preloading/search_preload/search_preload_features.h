@@ -51,7 +51,7 @@ BASE_DECLARE_FEATURE(kDsePreload2OnPressIncognito);
 //
 // For more details, see
 // https://docs.google.com/document/d/1f4dcNYP3O_Ft4yMmC42ETxGC5lM7YF5FDbEgnxUua7M/edit?tab=t.38v8gca76tmi
-BASE_DECLARE_FEATURE(kDsePreload2OnSuggestNonDefalutMatch);
+BASE_DECLARE_FEATURE(kDsePreload2OnSuggestNonDefaultMatch);
 
 // Initial No-Vary-Search hint if there is no No-Vary-Search hint from Prefs.
 //

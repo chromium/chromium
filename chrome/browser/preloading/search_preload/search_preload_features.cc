@@ -37,8 +37,8 @@ const base::FeatureParam<bool> kDsePreload2OnPressTouchDown{
 
 BASE_FEATURE(kDsePreload2OnPressIncognito, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDsePreload2OnSuggestNonDefalutMatch,
-             "kDsePreload2OnSuggestNonDefalutMatch",
+BASE_FEATURE(kDsePreload2OnSuggestNonDefaultMatch,
+             "kDsePreload2OnSuggestNonDefaultMatch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // An empty string means that do not use initial No-Vary-Search hint.

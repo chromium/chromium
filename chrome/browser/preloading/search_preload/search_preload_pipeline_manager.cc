@@ -161,7 +161,7 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kDsePreload2OnSuggestNonDefalutMatch)) {
+          features::kDsePreload2OnSuggestNonDefaultMatch)) {
     for (const auto& match : result) {
       auto signal_results = OnAutocompleteResultChangedProcessOne(
           profile, search_preload_service, *template_url_service, match,
