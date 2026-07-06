@@ -447,7 +447,7 @@ BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the explicit actor path that directly activates an observed DOM node
 // when its interaction point is covered by an eligible modeless panel.
 BASE_FEATURE(kGlicActorOccludedDirectActivation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorInternalPopups, base::FEATURE_ENABLED_BY_DEFAULT);
 
