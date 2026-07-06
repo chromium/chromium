@@ -405,7 +405,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      *
      * @param uiUpdateSpecs See {@link SideUiUpdateSpecs}.
      */
-    // TODO(crbug.com/510059861): Add tests for transition animations.
     private TransitionSet collectTransitions(SideUiUpdateSpecs uiUpdateSpecs) {
         // Rather than use a standard Android or Material interpolator, we instead match the desktop
         // impl's curve found at chrome/browser/ui/views/animations/side_panel_animations.cc.

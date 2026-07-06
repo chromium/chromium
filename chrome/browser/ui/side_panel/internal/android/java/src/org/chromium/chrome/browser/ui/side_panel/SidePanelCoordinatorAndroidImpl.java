@@ -158,6 +158,12 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
                 new SidePanelContent(sidePanelNativeView), this::onPanelContentReplaced);
     }
 
+    @CalledByNative
+    private void endAnimations() {
+        log(TAG, "endAnimations");
+        mSidePanelContainerCoordinator.endAnimations();
+    }
+
     @CalledByNativeForTesting
     private int getContainerWidthForTesting() {
         View view = mSidePanelContainerCoordinator.getViewForTesting(); // IN-TEST

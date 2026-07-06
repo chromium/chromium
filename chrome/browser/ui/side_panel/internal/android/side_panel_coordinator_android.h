@@ -131,13 +131,38 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
       SidePanelOpenTrigger open_trigger,
       std::unique_ptr<SidePanelNativeViewAndroid> native_view);
 
+  // Immediately ends all ongoing animations.
+  //
+  // This will also complete all state updates scheduled at the end of the
+  // animations and ensure the side panel is in a stable state.
+  void EndAnimations();
+
   bool CanShowEntryForKey(const UniqueKey& key) const;
 
   // The current state of the Side Panel.
   //
-  // A SidePanelEntry is considered current/active as soon as the state becomes
-  // `kOpening` and the entry will become inactive when the state becomes
-  // `kClosed`.
+  // `kOpening`: set as soon as the side panel starts opening.
+  // `kShown`: set after the side panel is fully opened.
+  // `kClosing`: set as soon as the side panel starts closing.
+  // `kClosed`: set after the side panel is fully closed.
+  //
+  // State changes always start from a _stable_ state (`kOpening` or `kShown`).
+  // If a `Show()`/`Close()` request is received when the state is `kOpening` or
+  // `kClosing`, we'll always reach a stable state first, then make state
+  // changes for the new request.
+  //
+  // For example, if a `Close()` request is received when the state is
+  // `kOpening`, we'll fast-forward the opening animation to its end so the
+  // state becomes `kShown`, then change it to `kClosing`.
+  //
+  // In other words:
+  // - `kOpening` will always be followed by `kShown`.
+  // - `kClosing` will always be followed by `kClosed`.
+  // - We don't allow state transitions from `kOpening` to `kClosing` or vice
+  //   versa.
+  //
+  // This makes the state transitions easier to reason about and less
+  // error-prone.
   SidePanelState state_ = SidePanelState::kClosed;
 
   // Tracks the `SidePanelEntryHideReason` for the current "close side panel" or

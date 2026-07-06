@@ -110,6 +110,9 @@ public interface SidePanelContainerCoordinator {
      */
     void startReplacingPanelContent(SidePanelContent newContent, Runnable onPanelContentReplaced);
 
+    /** Immediately ends all ongoing animations. */
+    void endAnimations();
+
     /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
     boolean isShowing(SidePanelContent sidePanelContent);
 

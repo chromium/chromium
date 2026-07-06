@@ -201,6 +201,11 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public void endAnimations() {
+        mSideUiCoordinator.endAnimations();
+    }
+
+    @Override
     public boolean isShowing(SidePanelContent sidePanelContent) {
         log(TAG, "isShowing", sidePanelContent);
         ThreadUtils.assertOnUiThread();

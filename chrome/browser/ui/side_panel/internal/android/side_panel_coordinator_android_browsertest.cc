@@ -48,22 +48,31 @@ class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
 
   void OnEntryShown(SidePanelEntry* entry) override {
     id_for_last_entry_shown_ = entry->key().id();
+    num_on_entry_shown_received_++;
   }
 
   void OnEntryWillHide(SidePanelEntry* entry,
                        SidePanelEntryHideReason reason) override {
     id_for_last_entry_will_hide_ = entry->key().id();
     reason_for_last_entry_will_hide_ = reason;
+    num_on_entry_will_hide_received_++;
   }
 
   void OnEntryHidden(SidePanelEntry* entry) override {
     id_for_last_entry_hidden_ = entry->key().id();
+    num_on_entry_hidden_received_++;
   }
 
   void OnEntryHiddenWithReason(SidePanelEntry* entry,
                                SidePanelEntryHideReason reason) override {
     id_for_last_entry_hidden_with_reason_ = entry->key().id();
     reason_for_last_entry_hidden_with_reason_ = reason;
+    num_on_entry_hidden_with_reason_received_++;
+  }
+
+  void OnEntryHideCancelled(SidePanelEntry* entry) override {
+    id_for_last_entry_hide_cancelled_ = entry->key().id();
+    num_on_entry_hide_cancelled_received_++;
   }
 
   std::optional<SidePanelEntry::Id> id_for_last_entry_shown_;
@@ -76,6 +85,14 @@ class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
   std::optional<SidePanelEntry::Id> id_for_last_entry_hidden_with_reason_;
   std::optional<SidePanelEntryHideReason>
       reason_for_last_entry_hidden_with_reason_;
+
+  std::optional<SidePanelEntry::Id> id_for_last_entry_hide_cancelled_;
+
+  int num_on_entry_shown_received_ = 0;
+  int num_on_entry_will_hide_received_ = 0;
+  int num_on_entry_hidden_received_ = 0;
+  int num_on_entry_hidden_with_reason_received_ = 0;
+  int num_on_entry_hide_cancelled_received_ = 0;
 
  private:
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver> observation_{
@@ -129,23 +146,22 @@ BrowserWindowInterface* CreateBrowserWindowAsync(Profile* profile) {
   return future.Get();
 }
 
+// Wait until both the Java layout and the C++ state reflect that the side panel
+// is open.
 void WaitUntilOpened(SidePanelCoordinatorAndroid* coordinator) {
-  // Wait until the Java layout has finished and the container width is
-  // non-zero.
   ASSERT_TRUE(base::test::RunUntil([coordinator]() {
-    return coordinator->GetContainerWidthForTesting() > 0;
+    return coordinator->GetContainerWidthForTesting() > 0 &&
+           coordinator->GetStateForTesting() == SidePanelState::kShown;
   }));
-  // Confirm that the C++ state has been updated to match the Java.
-  EXPECT_EQ(coordinator->GetStateForTesting(), SidePanelState::kShown);
 }
 
+// Wait until both the Java layout and the C++ state reflect that the side panel
+// is closed.
 void WaitUntilClosed(SidePanelCoordinatorAndroid* coordinator) {
-  // Wait until the Java layout has finished and the container width is zero.
   ASSERT_TRUE(base::test::RunUntil([coordinator]() {
-    return coordinator->GetContainerWidthForTesting() == 0;
+    return coordinator->GetContainerWidthForTesting() == 0 &&
+           coordinator->GetStateForTesting() == SidePanelState::kClosed;
   }));
-  // Confirm that the C++ state has been updated to match the Java.
-  EXPECT_EQ(coordinator->GetStateForTesting(), SidePanelState::kClosed);
 }
 }  // namespace
 
@@ -194,8 +210,6 @@ class SidePanelCoordinatorAndroidBrowserTest
 
     auto* tab_list = TabListInterface::From(window);
     auto* coordinator = SidePanelCoordinatorAndroid::From(window);
-    coordinator->SetNoDelaysForTesting(true);
-    coordinator->DisableAnimationsForTesting();
 
     // Pre-create tabs while the panel is closed so they don't inherit the open
     // panel state.
@@ -263,7 +277,6 @@ class SidePanelCoordinatorAndroidBrowserTest
     tab_list_ = TabListInterface::From(browser_);
     coordinator_ = SidePanelCoordinatorAndroid::From(browser_);
     coordinator_->SetNoDelaysForTesting(true);
-    coordinator_->DisableAnimationsForTesting();
   }
 
   raw_ptr<BrowserWindowInterface> browser_;
@@ -1372,50 +1385,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       Show_ReShowsClosingEntry) {
-  // Arrange:
-
-  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
-  std::unique_ptr<SidePanelEntry> entry =
-      CreateSidePanelEntry(entry_key, browser_);
-  TestSidePanelEntryObserver entry_observer(entry.get());
-
-  auto* registry = SidePanelRegistry::From(browser_);
-  registry->Register(std::move(entry));
-
-
-  // Show the entry first.
-  coordinator_->SidePanelUIBase::Show(entry_key,
-                                      SidePanelOpenTrigger::kToolbarButton,
-                                      /*suppress_animations=*/true);
-  WaitUntilOpened(coordinator_);
-  EXPECT_TRUE(
-      coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
-  EXPECT_NE(coordinator_->GetStateForTesting(), SidePanelState::kClosing);
-
-  // Act: Close the side panel (suppressing animations).
-  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
-                      /*suppress_animations=*/true);
-
-  // Verify it is closed. We must wait for the asynchronous layout pass to
-  // complete for the JNI callbacks to finish and update the C++ state.
-  WaitUntilClosed(coordinator_);
-  EXPECT_NE(coordinator_->GetStateForTesting(), SidePanelState::kClosing);
-  EXPECT_FALSE(
-      coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
-
-  // Act: Should re-show
-  coordinator_->SidePanelUIBase::Show(entry_key,
-                                      SidePanelOpenTrigger::kToolbarButton,
-                                      /*suppress_animations=*/true);
-
-  WaitUntilOpened(coordinator_);
-  EXPECT_NE(coordinator_->GetStateForTesting(), SidePanelState::kClosing);
-  EXPECT_TRUE(
-      coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                        Toggle_ClosedPanel_OpensPanel) {
   // Arrange:
 
@@ -2342,4 +2311,402 @@ IN_PROC_BROWSER_TEST_F(
 
   // Assert:
   EXPECT_TRUE(coordinator_->HasContentToShow(/*env=*/nullptr));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_ShowThenClose_WaitForAnimationsToEnd_OnEntryShownAndOnEntryHiddenCalled) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  // Act: Open the side panel, wait for animations to end, then close it.
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  WaitUntilClosed(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_hidden_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_ShowThenClose_DoNotWaitForAnimations_OnEntryShownAndOnEntryHiddenCalled) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  // Act: Open the side panel, then immediately close it.
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  WaitUntilClosed(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_hidden_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_CloseThenShow_DifferentEntries_WaitForAnimationsToEnd_OnEntryHiddenAndOnEntryShownCalled) {
+  // Arrange:
+  auto entry_1_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto entry_2_key = SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  std::unique_ptr<SidePanelEntry> entry_1 =
+      CreateSidePanelEntry(entry_1_key, browser_);
+  std::unique_ptr<SidePanelEntry> entry_2 =
+      CreateSidePanelEntry(entry_2_key, browser_);
+  TestSidePanelEntryObserver entry_1_observer(entry_1.get());
+  TestSidePanelEntryObserver entry_2_observer(entry_2.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry_1));
+  registry->Register(std::move(entry_2));
+
+  coordinator_->SidePanelUIBase::Show(entry_1_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Act: Close the side panel, wait for animations to end, then open it.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  WaitUntilClosed(coordinator_);
+  coordinator_->SidePanelUIBase::Show(entry_2_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(entry_2_key.id(),
+            entry_2_observer.id_for_last_entry_shown_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_CloseThenShow_DifferentEntries_DoNotWaitForAnimations_OnEntryHiddenAndOnEntryShownCalled) {
+  // Arrange:
+  auto entry_1_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto entry_2_key = SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  std::unique_ptr<SidePanelEntry> entry_1 =
+      CreateSidePanelEntry(entry_1_key, browser_);
+  std::unique_ptr<SidePanelEntry> entry_2 =
+      CreateSidePanelEntry(entry_2_key, browser_);
+  TestSidePanelEntryObserver entry_1_observer(entry_1.get());
+  TestSidePanelEntryObserver entry_2_observer(entry_2.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry_1));
+  registry->Register(std::move(entry_2));
+
+  coordinator_->SidePanelUIBase::Show(entry_1_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Act: Close the side panel, then immediately open it.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  coordinator_->SidePanelUIBase::Show(entry_2_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(entry_2_key.id(),
+            entry_2_observer.id_for_last_entry_shown_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_CloseThenShow_SameEntry_WaitForAnimationsToEnd_OnEntryHiddenAndOnEntryShownCalled) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Act: Close the side panel, wait for animations to end, then open it.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  WaitUntilClosed(coordinator_);
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(2, entry_observer.num_on_entry_shown_received_);
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_received_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_CloseThenShow_SameEntry_DoNotWaitForAnimations_OnEntryHiddenAndOnEntryShownCalled) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Act: Close the side panel, then immediately open it.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(2, entry_observer.num_on_entry_shown_received_);
+  EXPECT_EQ(entry_key.id(),
+            entry_observer.id_for_last_entry_hide_cancelled_.value());
+  EXPECT_EQ(1, entry_observer.num_on_entry_hide_cancelled_received_);
+  EXPECT_EQ(0, entry_observer.num_on_entry_hidden_received_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_ShowThenShow_DifferentEntries_WaitForAnimationsToEnd_ReplacesSidePanelContent) {
+  // Arrange:
+  auto entry_1_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto entry_2_key = SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  std::unique_ptr<SidePanelEntry> entry_1 =
+      CreateSidePanelEntry(entry_1_key, browser_);
+  std::unique_ptr<SidePanelEntry> entry_2 =
+      CreateSidePanelEntry(entry_2_key, browser_);
+  TestSidePanelEntryObserver entry_1_observer(entry_1.get());
+  TestSidePanelEntryObserver entry_2_observer(entry_2.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry_1));
+  registry->Register(std::move(entry_2));
+
+  // Act: Open the side panel, wait for animations to end, then show a different
+  // entry.
+  coordinator_->SidePanelUIBase::Show(entry_1_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+  coordinator_->SidePanelUIBase::Show(entry_2_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(SidePanelEntryHideReason::kReplaced,
+            entry_1_observer.reason_for_last_entry_hidden_with_reason_.value());
+  EXPECT_EQ(entry_2_key.id(),
+            entry_2_observer.id_for_last_entry_shown_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_ShowThenShow_DifferentEntries_DoNotWaitForAnimations_ReplacesSidePanelContent) {
+  // Arrange:
+  auto entry_1_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto entry_2_key = SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  std::unique_ptr<SidePanelEntry> entry_1 =
+      CreateSidePanelEntry(entry_1_key, browser_);
+  std::unique_ptr<SidePanelEntry> entry_2 =
+      CreateSidePanelEntry(entry_2_key, browser_);
+  TestSidePanelEntryObserver entry_1_observer(entry_1.get());
+  TestSidePanelEntryObserver entry_2_observer(entry_2.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry_1));
+  registry->Register(std::move(entry_2));
+
+  // Act: Open the side panel, then immediately show a different entry.
+  coordinator_->SidePanelUIBase::Show(entry_1_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  coordinator_->SidePanelUIBase::Show(entry_2_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(entry_1_key.id(),
+            entry_1_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(SidePanelEntryHideReason::kReplaced,
+            entry_1_observer.reason_for_last_entry_hidden_with_reason_.value());
+  EXPECT_EQ(entry_2_key.id(),
+            entry_2_observer.id_for_last_entry_shown_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_ShowThenShow_SameEntry_WaitForAnimationsToEnd_SecondShowIsNoOp) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  // Act: Open the side panel, wait for animations to end, then show the same
+  // entry.
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(1, entry_observer.num_on_entry_shown_received_);
+  EXPECT_FALSE(entry_observer.id_for_last_entry_hidden_.has_value());
+  EXPECT_FALSE(
+      entry_observer.reason_for_last_entry_hidden_with_reason_.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_ShowThenShow_SameEntry_DoNotWaitForAnimationsToEnd_SecondShowIsNoOp) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  // Act: Open the side panel, then immediately show the same entry again.
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
+  EXPECT_EQ(1, entry_observer.num_on_entry_shown_received_);
+  EXPECT_FALSE(entry_observer.id_for_last_entry_hidden_.has_value());
+  EXPECT_FALSE(
+      entry_observer.reason_for_last_entry_hidden_with_reason_.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_CloseThenClose_WaitForAnimationsToEnd_SecondCloseIsNoOp) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Act: Close the side panel, wait for animations to end, then close again.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  WaitUntilClosed(coordinator_);
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  WaitUntilClosed(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(SidePanelEntryHideReason::kSidePanelClosed,
+            entry_observer.reason_for_last_entry_hidden_with_reason_.value());
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_received_);
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_with_reason_received_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAnimations_CloseThenClose_DoNotWaitForAnimations_SecondCloseIsNoOp) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Act: Close the side panel, then immediately close again.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  WaitUntilClosed(coordinator_);
+
+  // Assert:
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(SidePanelEntryHideReason::kSidePanelClosed,
+            entry_observer.reason_for_last_entry_hidden_with_reason_.value());
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_received_);
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_with_reason_received_);
 }
