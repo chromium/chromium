@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Looper;
@@ -39,9 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -285,21 +282,6 @@ public class ReaderModeManagerTest {
     @DisableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testUi_notTriggered_contextualPageActionUiEnabled_exceptOnCct() {
         when(mTab.isCustomTab()).thenReturn(true);
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-        assertEquals(
-                "Distillation should be possible.",
-                DistillationStatus.POSSIBLE,
-                mManager.getDistillationStatus());
-        verify(mMessageDispatcher)
-                .enqueueMessage(
-                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    public void testUi_notTriggered_contextualPageActionUiEnabled_exceptOnIncognitoTabs() {
-        when(mTab.isIncognito()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
                 "Distillation should be possible.",
@@ -640,13 +622,16 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
-    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    public void testTryShowingPrompt_CctCpaOn_Incognito_ShouldShowPromptIfApplicable() {
+    public void testTryShowingPrompt_CctCpaOn_IncognitoCct_ShouldShowPromptIfApplicable() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.isIncognito()).thenReturn(true);
-        when(mTab.isCustomTab()).thenReturn(false);
+        when(mTab.isCustomTab()).thenReturn(true);
 
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        // Notify that the CPA is not showing reader mode.
+        mButtonVisibilitySupplier.set(false);
+        mManager.onContextualPageActionShown(mButtonVisibilitySupplier, /* isReaderMode= */ false);
 
         verify(mMessageDispatcher)
                 .enqueueMessage(
@@ -762,7 +747,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testShouldUseReaderModeMessages() {
         assertFalse(ReaderModeManager.shouldUseReaderModeMessages(null));
 
@@ -771,46 +755,7 @@ public class ReaderModeManagerTest {
 
         when(mTab.isCustomTab()).thenReturn(false);
         when(mTab.isIncognito()).thenReturn(true);
-        assertTrue(ReaderModeManager.shouldUseReaderModeMessages(mTab));
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    public void testShouldUseReaderModeMessages_distillInApp() {
-        assertFalse(ReaderModeManager.shouldUseReaderModeMessages(null));
-
-        when(mTab.isCustomTab()).thenReturn(true);
-        assertTrue(ReaderModeManager.shouldUseReaderModeMessages(mTab));
-
-        when(mTab.isCustomTab()).thenReturn(false);
-        when(mTab.isIncognito()).thenReturn(true);
         assertFalse(ReaderModeManager.shouldUseReaderModeMessages(mTab));
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    public void testIsReaderModeCreatedIntent_NotChrome() {
-        Intent intent = new Intent();
-        intent.putExtra(ReaderModeManager.EXTRA_READER_MODE_PARENT, 1);
-
-        assertFalse(
-                "Untrusted intent should not be considered Reader Mode created",
-                ReaderModeManager.isReaderModeCreatedIntent(intent));
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    public void testIsReaderModeCreatedIntent_FromChrome() {
-        Intent intent = new Intent();
-        intent.putExtra(ReaderModeManager.EXTRA_READER_MODE_PARENT, 1);
-
-        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-
-        assertTrue(
-                "Intent from Chrome should be considered Reader Mode created",
-                ReaderModeManager.isReaderModeCreatedIntent(intent));
     }
 
     @Test

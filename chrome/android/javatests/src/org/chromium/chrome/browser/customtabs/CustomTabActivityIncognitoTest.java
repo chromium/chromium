@@ -62,7 +62,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -403,44 +402,6 @@ public class CustomTabActivityIncognitoTest {
 
         // Check top icons are still the same.
         testTopActionIconsIsVisible();
-    }
-
-    @Test
-    @MediumTest
-    public void ensureAddCustomMenuItemIsEnabledForReaderMode() throws Exception {
-        Intent intent = createTestCustomTabIntent();
-        CustomTabIntentDataProvider.addReaderModeUiExtras(intent);
-        IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READER_MODE);
-        CustomTabActivity activity = launchIncognitoCustomTab(intent);
-        CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
-
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator());
-        int expectedMenuSize =
-                BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())
-                        ? 2
-                        : 1;
-
-        // Check the menu items have only 1 or 2 items visible "not" including the top icon row
-        // menu.
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
-        assertNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.reader_mode_prefs_id));
-        assertNotNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
-
-        assertNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.icon_row_menu_id));
-        assertNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_id));
     }
 
     @Test

@@ -553,19 +553,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
-    public void testOptionalButton_notSupportedOnNonDefaultType() {
-        Intent intent = createMinimalCustomTabIntent();
-        CustomTabIntentDataProvider.addReaderModeUiExtras(intent);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        var dataProvider = mCustomTabActivityTestRule.getActivity().getIntentDataProvider();
-        assertFalse(
-                "Reader mode CCT should not support optional button",
-                dataProvider.isOptionalButtonSupported());
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true",
         ChromeFeatureList.ENABLE_DISCOUNT_INFO_API

@@ -356,37 +356,6 @@ public class CustomTabActivityAppMenuTest {
                 });
     }
 
-    /** Test the entries in app menu for Reader Mode. */
-    @Test
-    @SmallTest
-    public void testAppMenuForReaderMode() throws Exception {
-        Intent intent = createMinimalCustomTabIntent();
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READER_MODE);
-        IntentUtils.addTrustedIntentExtras(intent);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        openAppMenuAndAssertMenuShown();
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator());
-        int expectedMenuSize = 1;
-        if (BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())) {
-            expectedMenuSize++;
-        }
-
-        Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-
-        Assert.assertNotNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
-        Assert.assertNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.reader_mode_prefs_id));
-
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
-    }
-
     /** Test the entries in app menu for media viewer. */
     @Test
     @SmallTest

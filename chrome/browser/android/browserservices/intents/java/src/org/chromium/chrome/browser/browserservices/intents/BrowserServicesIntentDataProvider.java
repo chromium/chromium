@@ -57,7 +57,6 @@ public abstract class BrowserServicesIntentDataProvider {
         CustomTabsUiType.DEFAULT,
         CustomTabsUiType.MEDIA_VIEWER,
         CustomTabsUiType.INFO_PAGE,
-        CustomTabsUiType.READER_MODE,
         CustomTabsUiType.MINIMAL_UI_WEBAPP,
         CustomTabsUiType.OFFLINE_PAGE,
         CustomTabsUiType.AUTH_TAB,
@@ -70,7 +69,7 @@ public abstract class BrowserServicesIntentDataProvider {
         int DEFAULT = 0;
         int MEDIA_VIEWER = 1;
         int INFO_PAGE = 2;
-        int READER_MODE = 3;
+        // int READER_MODE = 3; // Deprecated.
         int MINIMAL_UI_WEBAPP = 4;
         int OFFLINE_PAGE = 5;
         // int READ_LATER = 6; // Unused.
@@ -110,7 +109,6 @@ public abstract class BrowserServicesIntentDataProvider {
         IncognitoCctCallerId.OTHER_APPS,
         IncognitoCctCallerId.GOOGLE_APPS,
         IncognitoCctCallerId.OTHER_CHROME_FEATURES,
-        IncognitoCctCallerId.READER_MODE,
         IncognitoCctCallerId.READ_LATER,
         IncognitoCctCallerId.EPHEMERAL_TAB,
         IncognitoCctCallerId.DOWNLOAD_HOME,
@@ -126,7 +124,7 @@ public abstract class BrowserServicesIntentDataProvider {
         int OTHER_CHROME_FEATURES = 2;
 
         // Chrome Features
-        int READER_MODE = 3;
+        // int READER_MODE = 3; // Deprecated.
         int READ_LATER = 4;
 
         // An ephemeral custom tab without incognito branding.

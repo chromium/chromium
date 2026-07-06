@@ -2609,7 +2609,6 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.AUTH_TAB));
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.MEDIA_VIEWER));
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.POPUP));
-        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.READER_MODE));
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.OFFLINE_PAGE));
     }
 

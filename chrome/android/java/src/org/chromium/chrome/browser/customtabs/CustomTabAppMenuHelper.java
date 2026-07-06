@@ -50,11 +50,11 @@ public class CustomTabAppMenuHelper {
         }
         return switch (uiType) {
             case CustomTabsUiType.MEDIA_VIEWER,
-                    CustomTabsUiType.READER_MODE,
                     CustomTabsUiType.MINIMAL_UI_WEBAPP,
                     CustomTabsUiType.OFFLINE_PAGE,
                     CustomTabsUiType.AUTH_TAB,
-                    CustomTabsUiType.POPUP -> false;
+                    CustomTabsUiType.POPUP ->
+                    false;
             default -> true;
         };
     }

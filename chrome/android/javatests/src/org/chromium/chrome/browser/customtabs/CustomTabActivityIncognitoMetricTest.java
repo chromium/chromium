@@ -74,25 +74,6 @@ public class CustomTabActivityIncognitoMetricTest {
 
     @Test
     @MediumTest
-    public void recordsHistogram_ReaderMode_WithExtra() {
-        try (var ignored =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                UMA_KEY,
-                                BrowserServicesIntentDataProvider.IncognitoCctCallerId.READER_MODE)
-                        .expectBooleanRecord(IS_TRUSTED_UMA_KEY, true)
-                        .build()) {
-            Intent intent = createMinimalIncognitoCustomTabIntent();
-            CustomTabIntentDataProvider.addReaderModeUiExtras(intent);
-            IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                    intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READER_MODE);
-
-            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        }
-    }
-
-    @Test
-    @MediumTest
     @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
     public void recordsHistogram_Other() {
         try (var ignored =

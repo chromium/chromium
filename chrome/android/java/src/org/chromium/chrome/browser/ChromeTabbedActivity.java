@@ -128,7 +128,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.versioning.VersioningMessageBanner;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
-import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
@@ -4970,23 +4969,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 }
             }
             return firstTab;
-        }
-
-        // Check if the tab is being created from a Reader Mode navigation.
-        if (ReaderModeManager.isEnabled() && ReaderModeManager.isReaderModeCreatedIntent(intent)) {
-            Bundle extras = intent.getExtras();
-            int readerParentId =
-                    IntentUtils.safeGetInt(
-                            extras, ReaderModeManager.EXTRA_READER_MODE_PARENT, Tab.INVALID_TAB_ID);
-            extras.remove(ReaderModeManager.EXTRA_READER_MODE_PARENT);
-            // Set the parent tab to the tab that Reader Mode started from.
-            if (readerParentId != Tab.INVALID_TAB_ID && mTabModelSelector != null) {
-                return getCurrentTabCreator()
-                        .createNewTab(
-                                new LoadUrlParams(loadUrlParams.getUrl(), PageTransition.LINK),
-                                TabLaunchType.FROM_LINK,
-                                mTabModelSelector.getTabById(readerParentId));
-            }
         }
 
         Tab tab =

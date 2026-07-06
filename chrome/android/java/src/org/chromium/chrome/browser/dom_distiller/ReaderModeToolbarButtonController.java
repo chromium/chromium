@@ -23,18 +23,22 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Responsible for providing UI resources for showing a reader mode button on toolbar. */
 @NullMarked
 public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         implements ReaderModeActionRateLimiter.Observer {
+    // The amount of time the Reader Mode contextual page action button is shown before it is
+    // automatically hidden.
+    private static final long HIDE_CPA_DELAY_MS = TimeUnit.SECONDS.toMillis(5);
+
     private final Supplier<@Nullable ReaderModeIphController> mReaderModeIphControllerSupplier;
     private final TabSupplierObserver mActivityTabObserver;
     private final ButtonSpec mEntryPointSpec;
@@ -167,10 +171,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
                             }
                             setCanShowButton(false);
                         });
-        PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT,
-                task,
-                DomDistillerFeatures.sReaderModeDistillInAppHideCpaDelayMs.getValue());
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, task, HIDE_CPA_DELAY_MS);
     }
 
     // Private methods

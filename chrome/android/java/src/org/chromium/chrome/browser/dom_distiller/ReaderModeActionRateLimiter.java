@@ -10,7 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A class to manage rate limiting of the reader mode contextual page action. This works by:
@@ -37,6 +38,25 @@ import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 @NullMarked
 public class ReaderModeActionRateLimiter {
     private static final int INVALID_TIME = -1;
+
+    /** The number of times the CPA can be shown without interaction before being suppressed. */
+    private static final int CPA_SHOW_LIMIT = 3;
+
+    /** The window of time to track the CPA being shown in milliseconds. */
+    private static final long TRACKING_WINDOW_MS = TimeUnit.DAYS.toMillis(1);
+
+    /**
+     * The number of times that the CPA can be temporarily suppressed before being permanently
+     * suppressed.
+     */
+    private static final int SUPPRESSION_LIMIT = 3;
+
+    /**
+     * The window of time to suppress the CPA after it's been shown without interaction in
+     * milliseconds.
+     */
+    private static final long SUPPRESSION_WINDOW_MS = TimeUnit.DAYS.toMillis(3);
+
     @Nullable private static ReaderModeActionRateLimiter sInstance;
 
     public interface Observer {
@@ -44,26 +64,9 @@ public class ReaderModeActionRateLimiter {
         default void onActionShown() {}
     }
 
-    /** No-op implementation for when the feature is off. */
-    private static class EmptyLimiter extends ReaderModeActionRateLimiter {
-        @Override
-        public boolean isActionSuppressed() {
-            return false;
-        }
-
-        @Override
-        public void onActionShown() {}
-
-        @Override
-        public void onActionClicked() {}
-    }
-
     public static ReaderModeActionRateLimiter getInstance() {
         if (sInstance == null) {
-            sInstance =
-                    DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
-                            ? new ReaderModeActionRateLimiter()
-                            : new EmptyLimiter();
+            sInstance = new ReaderModeActionRateLimiter();
         }
 
         return sInstance;
@@ -93,7 +96,7 @@ public class ReaderModeActionRateLimiter {
         // until the user interacts with the feature.
         if (ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT, 0)
-                >= DomDistillerFeatures.sReaderModeDistillInAppSuppressionLimit.getValue()) {
+                >= SUPPRESSION_LIMIT) {
             return true;
         }
 
@@ -115,8 +118,7 @@ public class ReaderModeActionRateLimiter {
         int showCount = prefs.readInt(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT, 0);
 
         // The tracking window has elapsed, reset the variables.
-        if (System.currentTimeMillis() - firstShownTimestamp
-                > DomDistillerFeatures.sReaderModeDistillInAppTrackingWindowMs.getValue()) {
+        if (System.currentTimeMillis() - firstShownTimestamp > TRACKING_WINDOW_MS) {
             showCount = 0;
             firstShownTimestamp = INVALID_TIME;
         }
@@ -131,7 +133,7 @@ public class ReaderModeActionRateLimiter {
 
         showCount++;
         prefs.writeInt(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT, showCount);
-        if (showCount >= DomDistillerFeatures.sReaderModeDistillInAppCpaShowLimit.getValue()) {
+        if (showCount >= CPA_SHOW_LIMIT) {
             startTemporarySuppression(prefs);
         }
 
@@ -154,10 +156,7 @@ public class ReaderModeActionRateLimiter {
      * </ol>
      */
     private void startTemporarySuppression(SharedPreferencesManager prefs) {
-        long suppressionEnd =
-                System.currentTimeMillis()
-                        + DomDistillerFeatures.sReaderModeDistillInAppSuppressionWindowMs
-                                .getValue();
+        long suppressionEnd = System.currentTimeMillis() + SUPPRESSION_WINDOW_MS;
         prefs.writeLong(
                 ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP, suppressionEnd);
         prefs.writeInt(

@@ -394,12 +394,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     private final @Nullable Network mNetwork;
 
-    /** Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome. */
-    public static void addReaderModeUiExtras(Intent intent) {
-        intent.putExtra(EXTRA_UI_TYPE, CustomTabsUiType.READER_MODE);
-        IntentUtils.addTrustedIntentExtras(intent);
-    }
-
     /**
      * Evaluates whether the passed Intent and/or CustomTabsSessionToken are from a trusted source.
      * Trusted in this case means from the app itself or via a first-party application.
@@ -1106,7 +1100,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private static boolean isOpenInBrowserAllowedForType(int type) {
         switch (type) {
             case CustomTabsUiType.MEDIA_VIEWER:
-            case CustomTabsUiType.READER_MODE:
             case CustomTabsUiType.OFFLINE_PAGE:
             case CustomTabsUiType.AUTH_TAB:
             case CustomTabsUiType.NETWORK_BOUND_TAB:

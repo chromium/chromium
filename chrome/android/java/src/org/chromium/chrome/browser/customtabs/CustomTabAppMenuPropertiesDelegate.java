@@ -175,14 +175,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             requestDesktopSiteVisible = false;
             addToHomeScreenVisible = false;
             tryAddingReadAloud = false;
-        } else if (mUiType == CustomTabsUiType.READER_MODE) {
-            // Only 'find in page' and the reader mode preference are shown for Reader Mode UI.
-            iconRowVisible = false;
-            bookmarkItemVisible = false; // Set to skip initialization.
-            downloadItemVisible = false; // Set to skip initialization.
-            requestDesktopSiteVisible = false;
-            addToHomeScreenVisible = false;
-            tryAddingReadAloud = false;
         } else if (mUiType == CustomTabsUiType.MINIMAL_UI_WEBAPP) {
             requestDesktopSiteVisible = false;
             // For Webapps & WebAPKs Verifier#wasPreviouslyVerified() performs verification

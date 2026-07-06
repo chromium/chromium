@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -55,7 +54,6 @@ import java.util.List;
  */
 @NullMarked
 public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentDataProvider {
-    private static final int MAX_CUSTOM_MENU_ITEMS = 7;
     private final Intent mIntent;
     private final @Nullable SessionHolder<CustomTabsSessionToken> mSession;
     private final boolean mIsTrustedIntent;
@@ -104,13 +102,11 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                         intentVisibilityState, false);
 
         mUiType = getUiType(intent);
-        updateExtraMenuItemsIfNecessary(intent);
 
         logFeatureUsage(intent);
     }
 
     private static @CustomTabsUiType int getUiType(Intent intent) {
-        if (isForReaderMode(intent)) return CustomTabsUiType.READER_MODE;
         if (isForPopup(intent)) return CustomTabsUiType.POPUP;
 
         return CustomTabsUiType.DEFAULT;
@@ -119,12 +115,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private static boolean isIncognitoRequested(Intent intent) {
         return IntentUtils.safeGetBooleanExtra(
                 intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
-    }
-
-    private static boolean isForReaderMode(Intent intent) {
-        final int requestedUiType =
-                IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        return (isIntentFromChrome(intent) && (requestedUiType == CustomTabsUiType.READER_MODE));
     }
 
     private static boolean isForPopup(Intent intent) {
@@ -139,28 +129,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     private static boolean isIntentFromChrome(Intent intent) {
         return IntentHandler.wasIntentSenderChrome(intent);
-    }
-
-    private static boolean isAllowedToAddCustomMenuItem(Intent intent) {
-        // Only READER_MODE is supported for now.
-        return isForReaderMode(intent);
-    }
-
-    private void updateExtraMenuItemsIfNecessary(Intent intent) {
-        if (!isAllowedToAddCustomMenuItem(intent)) return;
-
-        List<Bundle> menuItems =
-                IntentUtils.getParcelableArrayListExtra(intent, CustomTabsIntent.EXTRA_MENU_ITEMS);
-        if (menuItems == null) return;
-
-        for (int i = 0; i < Math.min(MAX_CUSTOM_MENU_ITEMS, menuItems.size()); i++) {
-            Bundle bundle = menuItems.get(i);
-            String title = IntentUtils.safeGetString(bundle, CustomTabsIntent.KEY_MENU_ITEM_TITLE);
-            PendingIntent pendingIntent =
-                    IntentUtils.safeGetParcelable(bundle, CustomTabsIntent.KEY_PENDING_INTENT);
-            if (TextUtils.isEmpty(title) || pendingIntent == null) continue;
-            mMenuEntries.add(new Pair<>(title, pendingIntent));
-        }
     }
 
     /**
@@ -187,7 +155,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             featureUsage.log(CustomTabsFeature.EXTRA_CALLING_ACTIVITY_PACKAGE);
         }
         if (isPartialHeightCustomTab()) featureUsage.log(CustomTabsFeature.CTF_PARTIAL);
-        if (isForReaderMode(intent)) featureUsage.log(CustomTabsFeature.CTF_READER_MODE);
         if (mIsOpenedByChrome) featureUsage.log(CustomTabsFeature.CTF_SENT_BY_CHROME);
         if (mShowShareItem) featureUsage.log(CustomTabsFeature.EXTRA_DEFAULT_SHARE_MENU_ITEM);
         if (mTitleVisibilityState != CustomTabsIntent.NO_TITLE) {
