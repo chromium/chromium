@@ -4,7 +4,16 @@
 
 #include "components/autofill/core/browser/payments/payments_churned_users_manager.h"
 
+#include <algorithm>
+
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_service.h"
 
 namespace autofill::payments {
 
@@ -16,5 +25,39 @@ PaymentsChurnedUsersManager::PaymentsChurnedUsersManager(
 }
 
 PaymentsChurnedUsersManager::~PaymentsChurnedUsersManager() = default;
+
+void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
+    AutofillManager& manager,
+    FormGlobalId form,
+    AutofillManager::Observer::FieldTypeSource source,
+    bool small_forms_were_parsed) {
+  const FormStructure* form_structure = manager.FindCachedFormById(form);
+  if (!form_structure) {
+    return;
+  }
+
+  bool is_visible_credit_card_form =
+      std::ranges::any_of(form_structure->fields(), [](const auto& field) {
+        return field->Type().GetGroups().contains(
+                   FieldTypeGroup::kCreditCard) &&
+               field->is_visible();
+      });
+
+  if (is_visible_credit_card_form) {
+    PrefService* prefs = manager.client().GetPrefs();
+    if (prefs) {
+      const PrefService::Preference* pref =
+          prefs->FindPreference(prefs::kAutofillCreditCardEnabled);
+      if (pref && pref->IsUserControlled() && !pref->GetValue()->GetBool() &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableResurrectingPaymentsUsers)) {
+        if (payments::PaymentsAutofillClient* payments_client =
+                manager.client().GetPaymentsAutofillClient()) {
+          payments_client->ShowPaymentsChurnedUsersUI();
+        }
+      }
+    }
+  }
+}
 
 }  // namespace autofill::payments

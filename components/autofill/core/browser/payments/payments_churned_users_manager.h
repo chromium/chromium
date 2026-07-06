@@ -22,6 +22,12 @@ class PaymentsChurnedUsersManager : public AutofillManager::Observer {
       const PaymentsChurnedUsersManager& other) = delete;
   ~PaymentsChurnedUsersManager() override;
 
+  // AutofillManager::Observer:
+  void OnFieldTypesDetermined(AutofillManager& manager,
+                              FormGlobalId form,
+                              AutofillManager::Observer::FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
+
  private:
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
 

@@ -1764,6 +1764,7 @@ source_set("unit_tests") {
     "payments/multiple_request_payments_network_interface_base_unittest.cc",
     "payments/multiple_request_payments_network_interface_unittest.cc",
     "payments/payments_access_token_fetcher_unittest.cc",
+    "payments/payments_churned_users_manager_unittest.cc",
     "payments/payments_data_cleaner_unittest.cc",
     "payments/payments_network_interface_unittest.cc",
     "payments/payments_requests/create_bnpl_payment_instrument_request_unittest.cc",
