@@ -379,13 +379,13 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
     base::OnceCallback<void(bool)> on_closed) {
   auto stop_and_create_tag_callback = base::BindOnce(
       [](base::WeakPtr<ActorTaskUnloadHandler> handler,
-         content::WebContents* contents,
+         base::WeakPtr<content::WebContents> contents,
          base::OnceCallback<void(bool)> on_closed, bool confirmed) {
         if (confirmed && contents) {
           // Tag the WebContents so that subsequent unload checks skip showing
           // duplicate custom confirmation dialogs or standard website prompts.
           actor::ActorTabCloseSkipBeforeUnloadUserData::CreateForWebContents(
-              contents);
+              contents.get());
         }
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(
@@ -397,7 +397,8 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
                            handler));
         std::move(on_closed).Run(confirmed);
       },
-      weak_factory_.GetWeakPtr(), contents, std::move(on_closed));
+      weak_factory_.GetWeakPtr(), contents ? contents->GetWeakPtr() : nullptr,
+      std::move(on_closed));
   owned_widget_ = ActorTaskTabCloseConfirmDialog::ShowModalIfActuating(
       contents, std::move(stop_and_create_tag_callback));
   if (owned_widget_) {
