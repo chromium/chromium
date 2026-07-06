@@ -263,9 +263,10 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     params.initiator_frame_token =
         GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
             env, j_additional_navigation_params);
-    params.initiator_process_id =
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue.
+    params.initiator_process_id = ChildProcessId::FromUnsafeValue(
         GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
-            env, j_additional_navigation_params);
+            env, j_additional_navigation_params));
 
     // If the attribution src token exists, then an impression exists with this
     // navigation.

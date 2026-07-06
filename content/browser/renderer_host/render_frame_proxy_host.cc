@@ -564,7 +564,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
   bool is_guest_to_embedder_communication = false;
   if (source_frame_token) {
     RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetDeprecatedID(), source_frame_token.value());
+        GetProcess()->GetID(), source_frame_token.value());
     if (source_rfh) {
       RenderFrameHostImpl* source_outermost_rfh =
           source_rfh->GetOutermostMainFrame();
@@ -603,7 +603,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
   std::optional<blink::RemoteFrameToken> translated_source_token;
   if (source_frame_token) {
     RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetDeprecatedID(), source_frame_token.value());
+        GetProcess()->GetID(), source_frame_token.value());
     if (source_rfh) {
       // https://crbug.com/822958: If the postMessage is going to a descendant
       // frame, ensure that any pending visual properties such as size are sent
@@ -806,7 +806,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
   if (params->initiator_frame_token) {
     RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetDeprecatedID(), params->initiator_frame_token.value());
+        GetProcess()->GetID(), params->initiator_frame_token.value());
     if (current_rfh->IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
           /*initiator_frame=*/initiator_frame, /*target_frame=*/current_rfh,
@@ -853,12 +853,11 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // TODO(clamy): The transition should probably be changed for POST navigations
   // to PAGE_TRANSITION_FORM_SUBMIT. See https://crbug.com/829827.
   frame_tree_node_->navigator().NavigateFromFrameProxy(
-      current_rfh, validated_url, initiator_frame_token,
-      GetProcess()->GetDeprecatedID(), params->initiator_origin,
-      params->initiator_base_url, initiator_navigation_state,
-      params->referrer.To<content::Referrer>(), ui::PAGE_TRANSITION_LINK,
-      params->should_replace_current_entry, download_policy,
-      params->post_body ? "POST" : "GET", params->post_body,
+      current_rfh, validated_url, initiator_frame_token, GetProcess()->GetID(),
+      params->initiator_origin, params->initiator_base_url,
+      initiator_navigation_state, params->referrer.To<content::Referrer>(),
+      ui::PAGE_TRANSITION_LINK, params->should_replace_current_entry,
+      download_policy, params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
       params->is_form_submission, params->impression, params->started_by_ad,
@@ -892,7 +891,7 @@ void RenderFrameProxyHost::AdvanceFocus(
   // continuing the focus traversal from correct place in a parent frame after
   // one of its child frames finishes its traversal.
   RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
-      GetProcess()->GetDeprecatedID(), source_frame_token);
+      GetProcess()->GetID(), source_frame_token);
   RenderFrameHostImpl* target_rfh = frame_tree_node_->current_frame_host();
   RenderFrameProxyHost* source_proxy =
       source_rfh

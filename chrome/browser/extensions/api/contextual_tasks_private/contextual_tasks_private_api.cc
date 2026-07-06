@@ -218,8 +218,7 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   content::NavigationController::LoadURLParams load_params(target_url);
   load_params.initiator_origin = rfh->GetLastCommittedOrigin();
   load_params.initiator_frame_token = rfh->GetFrameToken();
-  load_params.initiator_process_id =
-      rfh->GetProcess()->GetID().GetUnsafeValue();
+  load_params.initiator_process_id = rfh->GetProcess()->GetID();
   load_params.source_site_instance = rfh->GetSiteInstance();
   load_params.is_renderer_initiated = true;
   load_params.has_user_gesture = user_gesture();

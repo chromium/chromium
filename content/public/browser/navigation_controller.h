@@ -24,6 +24,7 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -170,7 +171,7 @@ class NavigationController {
     // ID of the renderer process of the frame host that initiated the
     // navigation. This is defined if and only if |initiator_frame_token| above
     // is, and it is only valid in conjunction with it.
-    int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
+    ChildProcessId initiator_process_id;
 
     // The origin of the initiator of the navigation or std::nullopt if the
     // navigation was initiated through trusted, non-web-influenced UI

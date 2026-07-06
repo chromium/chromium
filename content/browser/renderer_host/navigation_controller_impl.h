@@ -226,7 +226,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       RenderFrameHostImpl* render_frame_host,
       const GURL& url,
       const blink::LocalFrameToken* initiator_frame_token,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       const std::optional<url::Origin>& initiator_origin,
       const std::optional<GURL>& initiator_base_url,
       bool is_renderer_initiated,

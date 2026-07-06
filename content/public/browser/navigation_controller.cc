@@ -22,7 +22,9 @@ NavigationController::LoadURLParams::LoadURLParams(
 NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
     : url(input.url),
       initiator_frame_token(input.initiator_frame_token),
-      initiator_process_id(input.initiator_process_id),
+      // TODO(crbug.com/379869738): Remove FromUnsafeValue.
+      initiator_process_id(
+          ChildProcessId::FromUnsafeValue(input.initiator_process_id)),
       initiator_origin(input.initiator_origin),
       initiator_base_url(input.initiator_base_url),
       initiator_navigation_state(input.initiator_navigation_state),

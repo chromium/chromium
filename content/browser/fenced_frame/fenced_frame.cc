@@ -146,8 +146,8 @@ void FencedFrame::Navigate(
   // necessary to record a different `actual_navigation_start_time`.
   inner_root->navigator().NavigateFromFrameProxy(
       inner_root->current_frame_host(), validated_url,
-      /*initiator_frame_token=*/nullptr,
-      content::ChildProcessHost::kInvalidUniqueID, initiator_origin,
+      /*initiator_frame_token=*/nullptr, content::ChildProcessId(),
+      initiator_origin,
       /*initiator_base_url=*/std::nullopt,
       /*initiator_navigation_state=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,

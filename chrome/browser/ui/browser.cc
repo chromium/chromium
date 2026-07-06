@@ -1728,7 +1728,7 @@ WebContents* Browser::CreateCustomWebContents(
     // to happen in the same tab.
     content::NavigationController::LoadURLParams params(target_url);
     params.initiator_frame_token = opener->GetFrameToken();
-    params.initiator_process_id = opener->GetProcess()->GetDeprecatedID();
+    params.initiator_process_id = opener->GetProcess()->GetID();
     params.initiator_origin = opener->GetLastCommittedOrigin();
     params.source_site_instance = source_site_instance;
     params.transition_type = ui::PAGE_TRANSITION_LINK;
@@ -2868,7 +2868,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
   params.is_renderer_initiated = true;
   if (opener) {
     params.initiator_origin = opener->GetLastCommittedOrigin();
-    params.initiator_process_id = opener->GetProcess()->GetDeprecatedID();
+    params.initiator_process_id = opener->GetProcess()->GetID();
   } else {
     params.initiator_origin = url::Origin::Create(opener_url);
   }

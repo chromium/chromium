@@ -596,9 +596,7 @@ bool PrerenderHost::StartPrerendering() {
   NavigationController::LoadURLParams load_url_params(
       attributes_.prerendering_url);
   load_url_params.initiator_origin = attributes_.initiator_origin;
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  load_url_params.initiator_process_id =
-      attributes_.initiator_process_id.GetUnsafeValue();
+  load_url_params.initiator_process_id = attributes_.initiator_process_id;
   load_url_params.initiator_frame_token = attributes_.initiator_frame_token;
   load_url_params.initiator_navigation_state =
       attributes_.initiator_navigation_state;

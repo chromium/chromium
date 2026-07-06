@@ -3312,7 +3312,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     RenderFrameHostImpl* render_frame_host,
     const GURL& url,
     const blink::LocalFrameToken* initiator_frame_token,
-    int initiator_process_id,
+    ChildProcessId initiator_process_id,
     const std::optional<url::Origin>& initiator_origin,
     const std::optional<GURL>& initiator_base_url,
     bool is_renderer_initiated,
@@ -4832,10 +4832,12 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   // TODO(crbug.com/510258191): Check that |initiator_navigation_state_| is non
   // null for renderer-intiiated navigations.
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   auto navigation_request = NavigationRequest::Create(
       node, std::move(common_params), std::move(commit_params),
       !params.is_renderer_initiated, params.was_opener_suppressed,
-      params.initiator_frame_token, params.initiator_process_id,
+      params.initiator_frame_token,
+      params.initiator_process_id.GetUnsafeValue(),
       params.initiator_navigation_state,
       params.should_ignore_initiator_policies_for_inheritance,
       extra_headers_crlf, frame_entry, entry, params.is_form_submission,

@@ -314,7 +314,7 @@ content::WebContents* TabWebContentsDelegateAndroid::CreateCustomWebContents(
     // to happen in the same tab.
     content::NavigationController::LoadURLParams params(target_url);
     params.initiator_frame_token = opener->GetFrameToken();
-    params.initiator_process_id = opener->GetProcess()->GetDeprecatedID();
+    params.initiator_process_id = opener->GetProcess()->GetID();
     params.initiator_origin = opener->GetLastCommittedOrigin();
     params.source_site_instance = source_site_instance;
     params.transition_type = ui::PAGE_TRANSITION_LINK;

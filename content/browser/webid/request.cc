@@ -1648,8 +1648,7 @@ void Request::RedirectTo(const GURL& idp_config_url,
   content::NavigationController::LoadURLParams params(redirect_to);
   params.transition_type = ui::PAGE_TRANSITION_LINK;
   params.initiator_frame_token = render_frame_host().GetFrameToken();
-  params.initiator_process_id =
-      render_frame_host().GetProcess()->GetID().value();
+  params.initiator_process_id = render_frame_host().GetProcess()->GetID();
   params.initiator_origin = origin();
   params.source_site_instance = render_frame_host().GetSiteInstance();
   params.referrer =
