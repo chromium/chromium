@@ -60,7 +60,6 @@ class CONTENT_EXPORT IdentityUrlLoaderThrottle
   GURL request_url_;
   std::optional<url::Origin> request_initiator_;
   SetIdpStatusCallback set_idp_status_cb_;
-  bool has_user_gesture_ = false;
 
   base::WeakPtrFactory<IdentityUrlLoaderThrottle> weak_ptr_factory_{this};
 };

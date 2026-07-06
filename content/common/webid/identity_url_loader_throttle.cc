@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -66,7 +65,6 @@ void IdentityUrlLoaderThrottle::WillStartRequest(
     bool* defer) {
   request_url_ = request->url;
   request_initiator_ = request->request_initiator;
-  has_user_gesture_ = request->has_user_gesture;
 }
 
 void IdentityUrlLoaderThrottle::WillProcessResponse(
@@ -99,7 +97,6 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
   // TODO(crbug.com/40236764):
   // - Limit to toplevel frames
   // - Decide whether to limit to same-origin
-  // - Decide the right behavior with respect to user gestures.
 
   scoped_refptr<net::HttpResponseHeaders> headers = response_head.headers;
   if (!headers)
@@ -109,16 +106,12 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
   if (HeaderHasToken(*headers, kSetLoginHeader, kSetLoginHeaderValueLoggedIn)) {
     // Mark IDP as logged in
     VLOG(1) << "IDP signed in: " << response_url.spec();
-    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IdpSigninRequestInitiatedByUser",
-                          has_user_gesture_);
     set_idp_status_cb_.Run(request_initiator_, idp_origin,
                            IdpSigninStatus::kSignedIn);
   } else if (HeaderHasToken(*headers, kSetLoginHeader,
                             kSetLoginHeaderValueLoggedOut)) {
     // Mark IDP as logged out
     VLOG(1) << "IDP signed out: " << response_url.spec();
-    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IdpSignoutRequestInitiatedByUser",
-                          has_user_gesture_);
     set_idp_status_cb_.Run(request_initiator_, idp_origin,
                            IdpSigninStatus::kSignedOut);
   }
