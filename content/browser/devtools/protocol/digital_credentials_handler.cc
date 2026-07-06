@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/digital_credentials/digital_credential_environment.h"
 #include "content/browser/digital_credentials/virtual_wallet.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -31,7 +32,8 @@ void DigitalCredentialsHandler::Wire(UberDispatcher* dispatcher) {
 DispatchResponse DigitalCredentialsHandler::SetVirtualWalletBehavior(
     const String& in_action,
     std::optional<String> in_protocol,
-    std::unique_ptr<protocol::DictionaryValue> in_response) {
+    std::unique_ptr<protocol::DictionaryValue> in_response,
+    std::optional<String> in_frame_id) {
   if (!frame_host_) {
     return DispatchResponse::InvalidParams(
         "Command must be issued on a session attached to a frame");
@@ -43,9 +45,19 @@ DispatchResponse DigitalCredentialsHandler::SetVirtualWalletBehavior(
         "Protocol and response are only allowed when action is 'respond'");
   }
 
+  FrameTreeNode* target_node = frame_host_->frame_tree_node();
+  if (in_frame_id.has_value()) {
+    target_node = FrameTreeNodeFromDevToolsFrameToken(
+        frame_host_->frame_tree_node(), *in_frame_id);
+    if (!target_node) {
+      return DispatchResponse::InvalidParams(
+          "No frame found with the given frameId");
+    }
+  }
+
   VirtualWallet* wallet =
       DigitalCredentialEnvironment::GetInstance()->GetOrCreateVirtualWallet(
-          frame_host_->frame_tree_node());
+          target_node);
   CHECK(wallet);
 
   if (in_action == DigitalCredentials::VirtualWalletActionEnum::Clear) {

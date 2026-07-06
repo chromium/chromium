@@ -43,7 +43,8 @@ class DigitalCredentialsHandler : public DevToolsDomainHandler,
   CONTENT_EXPORT DispatchResponse SetVirtualWalletBehavior(
       const String& in_action,
       std::optional<String> in_protocol,
-      std::unique_ptr<protocol::DictionaryValue> in_response) override;
+      std::unique_ptr<protocol::DictionaryValue> in_response,
+      std::optional<String> in_frame_id) override;
 
  private:
   raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
