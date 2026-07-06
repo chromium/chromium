@@ -166,10 +166,11 @@ public class ContextualSearchPolicyTest {
                     TemplateUrl defaultSearchEngine =
                             templateUrlService.getDefaultSearchEngineTemplateUrl();
                     setupAllConditionsToSendUrl();
-                    templateUrlService.setSearchEngine("yahoo.com");
+                    // TODO(crbug.com/530120931): Stop assuming that search engine is even available
+                    templateUrlService.setSearchEngine("bing.com");
                     Assert.assertFalse(mPolicy.doSendBasePageUrl());
                     // Set default search engine back to default to prevent cross-talk from
-                    // this test which sets it to Yahoo
+                    // this test which sets it to Microsoft Bing.
                     templateUrlService.setSearchEngine(defaultSearchEngine.getShortName());
                 });
     }
