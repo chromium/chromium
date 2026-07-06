@@ -172,6 +172,23 @@ class CORE_EXPORT RubyBlockPositionCalculator {
     FontHeight Metrics() const { return metrics_; }
     void AddLinesTo(LogicalLineContainer& line_container) const;
 
+    // Computes the maximum emphasis mark heights (ascent and descent) for all
+    // items in this ruby level. If this is the base level, it computes the
+    // emphasis heights of the base items. Otherwise, it computes the emphasis
+    // heights of the annotation items in this level.
+    FontHeight ComputeLevelEmphasisHeights(
+        const LogicalLineItems& base_line_items) const;
+    // Computes the emphasis mark heights (ascent and descent) of this level,
+    // restricted only to the segments that overlap with the specified `child`
+    // annotation level. This is used to ensure the child annotation is placed
+    // outside of this level's emphasis marks.
+    FontHeight ComputeParentEmphasisHeightsForChild(
+        const RubyLine& child,
+        const LogicalLineItems& base_line_items) const;
+
+    // Returns true if the given `column` is part of this ruby level.
+    bool ContainsColumn(const LogicalRubyColumn* column) const;
+
     const HeapVector<Member<LogicalRubyColumn>>& ColumnListForTesting() const {
       return column_list_;
     }
@@ -258,7 +275,8 @@ class CORE_EXPORT RubyBlockPositionCalculator {
       const RubyLine& current_ruby_line,
       const HeapVector<Member<LogicalRubyColumn>>& column_list);
   RubyLine& EnsureRubyLine(const RubyLevel& level);
-  void UpdateColumnLayoutAnnotationMetrics(LogicalRubyColumn& column) const;
+  void UpdateColumnLayoutAnnotationMetrics(LogicalRubyColumn& column,
+                                           LayoutUnit base_offset) const;
   void AccumulateColumnOffsets(const LogicalRubyColumn& column,
                                LayoutUnit& min_offset,
                                LayoutUnit& max_offset) const;
