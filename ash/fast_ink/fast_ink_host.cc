@@ -33,13 +33,10 @@ namespace ash {
 namespace {
 
 void ClearGpuBuffer(const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-  if (shared_image) {
-    mapping = shared_image->Map();
-  }
-
-  LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
+      shared_image->Map();
   if (!mapping) {
+    LOG(ERROR) << "Failed to map MappableSI";
     return;
   }
 
@@ -171,11 +168,13 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
       buffer_size_, usage, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
-  LOG_IF(ERROR, !client_shared_image_) << "Failed to create MappableSI";
-  if (client_shared_image_) {
-    sync_token_ = client_shared_image_->creation_sync_token();
-    sii->VerifySyncToken(sync_token_);
+  if (!client_shared_image_) {
+    LOG(ERROR) << "Failed to create MappableSI";
+    return;
   }
+
+  sync_token_ = client_shared_image_->creation_sync_token();
+  sii->VerifySyncToken(sync_token_);
 
   // Clear the buffer before usage, since it may be uninitialized.
   // (http://b/168735625)
