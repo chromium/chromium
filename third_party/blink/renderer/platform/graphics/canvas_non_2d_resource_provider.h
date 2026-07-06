@@ -224,11 +224,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
 
-  // NOTE: Can only be used if this instance is accelerated.
-  bool UploadToBackingSharedImage(const SkPixmap& pixmap,
-                                  uint32_t src_x,
-                                  uint32_t src_y);
-
   scoped_refptr<CanvasResource> DoExternalOverdrawAndProduceResource(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
@@ -243,18 +238,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // write is complete, the caller should call `EndExternalWrite()`.
   scoped_refptr<gpu::ClientSharedImage> BeginExternalOverwrite(
       gpu::SyncToken& internal_access_sync_token);
-
-  // Copies the contents of the passed-in SharedImage at `copy_rect` into this
-  // instance's SharedImage. Waits on `ready_sync_token` before copying; pass
-  // SyncToken() if no sync is required. Synthesizes a new sync token in
-  // `completion_sync_token` which will satisfy after the image copy completes.
-  // NOTE: Can only be used if this instance is accelerated.
-  bool CopyToBackingSharedImage(
-      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-      uint32_t src_x,
-      uint32_t src_y,
-      const gpu::SyncToken& ready_sync_token,
-      gpu::SyncToken& completion_sync_token);
 
   // Signals that an external write has completed, passing the token that should
   // be waited on to ensure that the service-side operations of the external
