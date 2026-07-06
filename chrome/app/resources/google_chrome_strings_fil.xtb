@@ -74,7 +74,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1640672724030957280">Dina-download...</translation>
 <translation id="1651617469580841801">Kapag ginamit mo ang Google Lens, ipapadala sa Google ang pamagat ng page, URL, at content, pati ang mga PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tungkol sa ChromeOS Flex</translation>
-<translation id="1665867022636014702">Gamitin ang mga inirerekomendang setting ng browser ng Google</translation>
 <translation id="1674870198290878346">Buksan ang link sa Inco&amp;gnito Window ng Chrome</translation>
 <translation id="1682634494516646069">Hindi makapagbasa at makapagsulat ang Google Chrome sa direktoryo nito ng data:
 
@@ -237,6 +236,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3242123554343253302">Magdagdag ng profile sa Chrome</translation>
 <translation id="3242486428260808857">Sulitin ang online na pamimili kapag ginamit mo ang Chrome app sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Kung nagbabahagi ka rin ng mga ulat ng paggamit sa Chrome, isasama sa mga ulat na iyon ang mga URL na binibisita mo</translation>
+<translation id="3249558306861350254">I-click ang <ph name="BEGIN_BOLD" />Itakda ang Default<ph name="END_BOLD" /> sa iyong mga setting ng Windows.</translation>
 <translation id="3259748324892322072">Kunin ang Chrome App</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
@@ -830,7 +830,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8999208279178790196">{0,plural, =0{May available na update sa Chrome}=1{May available na update sa Chrome}one{# araw nang may available na update sa Chrome}other{# na araw nang may available na update sa Chrome}}</translation>
 <translation id="9014771989710951291">Maraming organisasyon ang namamahala sa Chrome</translation>
 <translation id="9018218886431812662">Tapos na ang pag-install</translation>
-<translation id="9024318700713112071">Itakda ang Chrome bilang iyong default</translation>
 <translation id="9066987883552592250">Isara ang Gemini sa Chrome Canary</translation>
 <translation id="9074041031320636790">Tagumpay! Madali ka na ngayong makakapagtanong habang nagba-browse ka gamit ang AI Mode ng Google Search</translation>
 <translation id="9090566250983691233">Alamin kung bakit bina-block ng Chrome ang ilang file</translation>

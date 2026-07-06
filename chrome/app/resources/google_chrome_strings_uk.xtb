@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">Завантаження...</translation>
 <translation id="1651617469580841801">Коли ви користуєтеся Google Об’єктивом, у Google надсилається назва сторінки, її URL-адреса й контент, зокрема файли PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Про ОС Chrome Flex</translation>
-<translation id="1665867022636014702">Використовувати рекомендовані Google налаштування вебпереглядача</translation>
 <translation id="1674870198290878346">Відкрити посилання в аноні&amp;мному вікні Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не може читати та записувати у свій каталог даних: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Коли ви вводите запит в адресному рядку або полі пошуку, Chrome надсилає його в агрегатор пошуку вашої організації, а також штучному інтелекту й агентам на основі ШІ, які вона використовує, щоб надавати вам підказки.</translation>
@@ -233,6 +232,7 @@
 <translation id="3242123554343253302">Додати профіль Chrome</translation>
 <translation id="3242486428260808857">Робіть покупки онлайн ефективніше в додатку Chrome на вашому пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Якщо ви також будете надсилати звіти про використання Chrome, у них буде включено дані про відвідані URL-адреси</translation>
+<translation id="3249558306861350254">У налаштуваннях Windows натисніть <ph name="BEGIN_BOLD" />Установити за умовчанням<ph name="END_BOLD" />.</translation>
 <translation id="3259748324892322072">Завантажити додаток Chrome</translation>
 <translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>
@@ -822,7 +822,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8999208279178790196">{0,plural, =0{Доступне оновлення Chrome}=1{Доступне оновлення Chrome}one{Оновлення Chrome доступне вже # день}few{Оновлення Chrome доступне вже # дні}many{Оновлення Chrome доступне вже # днів}other{Оновлення Chrome доступне вже # дня}}</translation>
 <translation id="9014771989710951291">Вебпереглядачем Chrome керують кілька організацій</translation>
 <translation id="9018218886431812662">Встановлення завершено</translation>
-<translation id="9024318700713112071">Зробіть Chrome вебпереглядачем за умовчанням</translation>
 <translation id="9066987883552592250">Закрити Gemini у Chrome Canary</translation>
 <translation id="9074041031320636790">Готово! Тепер ви можете легко ставити запитання під час вебперегляду в режимі ШІ в Пошуку Google.</translation>
 <translation id="9090566250983691233">Чому Chrome блокує деякі файли</translation>

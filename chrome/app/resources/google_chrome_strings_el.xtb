@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">Γίνεται λήψη…</translation>
 <translation id="1651617469580841801">Όταν χρησιμοποιείτε το Google Lens, ο τίτλος, το URL και το περιεχόμενο της σελίδας, συμπεριλαμβανομένων των PDF, αποστέλλονται στην Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Σχετικά με το ChromeOS Flex</translation>
-<translation id="1665867022636014702">Χρήση προτεινόμενων ρυθμίσεων προγράμματος περιήγησης της Google</translation>
 <translation id="1674870198290878346">Άνοιγμα Συνδέσμου σε Παράθυρο ανών&amp;υμης περιήγησης Chrome</translation>
 <translation id="1682634494516646069">Το Google Chrome δεν έχει δυνατότητα ανάγνωσης και εγγραφής στον κατάλογο δεδομένων του:
 
@@ -235,6 +234,7 @@
 <translation id="3242123554343253302">Προσθήκη προφίλ Chrome</translation>
 <translation id="3242486428260808857">Αξιοποιήστε περισσότερο τις ηλεκτρονικές αγορές όταν χρησιμοποιείτε την εφαρμογή Chrome στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Εάν κοινοποιείτε επίσης αναφορές χρήσης του Chrome, αυτές περιλαμβάνουν τα URL που επισκέπτεστε</translation>
+<translation id="3249558306861350254">Κάντε κλικ στην επιλογή <ph name="BEGIN_BOLD" />Ορισμός ως προεπιλογής<ph name="END_BOLD" /> στις ρυθμίσεις των Windows.</translation>
 <translation id="3259748324892322072">Λήψη της εφαρμογής Chrome</translation>
 <translation id="3282568296779691940">Σύνδεση στο Chrome</translation>
 <translation id="3286538390144397061">Άμεση επανεκκίνηση</translation>
@@ -826,7 +826,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Υπάρχει μια διαθέσιμη ενημέρωση του Chrome}=1{Υπάρχει μια διαθέσιμη ενημέρωση του Chrome}other{Υπάρχει μια διαθέσιμη ενημέρωση του Chrome για # ημέρες}}</translation>
 <translation id="9014771989710951291">Πολλοί οργανισμοί διαχειρίζονται το Chrome</translation>
 <translation id="9018218886431812662">Η εγκατάσταση ολοκληρώθηκε</translation>
-<translation id="9024318700713112071">Ορισμός του Chrome ως προεπιλογής</translation>
 <translation id="9066987883552592250">Κλείσιμο του Gemini στο Chrome Canary</translation>
 <translation id="9074041031320636790">Επιτυχία! Μπορείτε πλέον να κάνετε εύκολα ερωτήσεις κατά την περιήγηση με τη Λειτουργία AI της Αναζήτησης Google</translation>
 <translation id="9090566250983691233">Μάθετε γιατί το Chrome αποκλείει ορισμένα αρχεία</translation>

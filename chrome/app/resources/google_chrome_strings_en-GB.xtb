@@ -74,7 +74,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1651617469580841801">When you use Google Lens, the page title, URL and content, including PDFs, are sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">About Chrome OS Flex</translation>
-<translation id="1665867022636014702">Use Google-recommended browser settings</translation>
 <translation id="1674870198290878346">Open Link in Chrome Inco&amp;gnito Window</translation>
 <translation id="1682634494516646069">Google Chrome cannot read and write to its data directory:
 
@@ -237,6 +236,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3242123554343253302">Add Chrome profile</translation>
 <translation id="3242486428260808857">Get more out of online shopping when you use the Chrome app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
+<translation id="3249558306861350254">Click <ph name="BEGIN_BOLD" />Set default<ph name="END_BOLD" /> in your Windows settings.</translation>
 <translation id="3259748324892322072">Get the Chrome app</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286538390144397061">Restart Now</translation>
@@ -830,7 +830,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
 <translation id="9014771989710951291">Multiple organisations manage Chrome</translation>
 <translation id="9018218886431812662">Installation complete</translation>
-<translation id="9024318700713112071">Set Chrome as your default</translation>
 <translation id="9066987883552592250">Close Gemini in Chrome Canary</translation>
 <translation id="9074041031320636790">Success! You can now easily ask questions as you browse with Google Search AI Mode</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>

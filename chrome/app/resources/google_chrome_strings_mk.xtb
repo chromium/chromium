@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">Се презема…</translation>
 <translation id="1651617469580841801">Кога ја користите Google Lens, насловот, URL-адресата и содржините на страницата, како и PDF-датотеките, се испраќаат до Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">За ChromeOS Flex</translation>
-<translation id="1665867022636014702">Користете ги поставките за прелистувачот препорачани од Google</translation>
 <translation id="1674870198290878346">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не може да чита и да пишува во директориумот за податоци:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Додајте профил на Chrome</translation>
 <translation id="3242486428260808857">Извлечете максимум од онлајн купувањето кога ја користите апликацијата Chrome на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Ако ги споделувате и извештаите за користењето на Chrome, тие ги содржат URL-адресите што ги посетувате</translation>
+<translation id="3249558306861350254">Кликнете <ph name="BEGIN_BOLD" />Постави го како стандарден<ph name="END_BOLD" /> во поставките за Windows.</translation>
 <translation id="3259748324892322072">Преземете ја апликацијата Chrome</translation>
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3286538390144397061">Рестартирај веднаш</translation>
@@ -829,7 +829,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8999208279178790196">{0,plural, =0{Достапно е ажурирање за Chrome}=1{Достапно е ажурирање за Chrome}one{Достапно е ажурирање за Chrome веќе # ден}other{Достапно е ажурирање за Chrome веќе # дена}}</translation>
 <translation id="9014771989710951291">Повеќе организации управуваат со Chrome</translation>
 <translation id="9018218886431812662">Инсталирањето заврши</translation>
-<translation id="9024318700713112071">Поставете го Chrome како стандарден прелистувач</translation>
 <translation id="9066987883552592250">Затворете го Gemini во Chrome Canary</translation>
 <translation id="9074041031320636790">Успешно! Отсега може лесно да поставувате прашања додека прелистувате со „AI-режимот“ на „Пребарување на Google“</translation>
 <translation id="9090566250983691233">Дознајте зошто Chrome блокира некои датотеки</translation>

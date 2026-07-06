@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">ডাউনলোড হচ্ছে...</translation>
 <translation id="1651617469580841801">Google Lens ব্যবহার করার সময় পৃষ্ঠার শীর্ষক, URL, PDF সহ কন্টেন্ট Google-কে পাঠানো হয়। <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex সম্পর্কে</translation>
-<translation id="1665867022636014702">Google-এর সাজেস্ট করা ব্রাউজার সেটিংস ব্যবহার করুন</translation>
 <translation id="1674870198290878346">Chrome-এ ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="1682634494516646069">Google Chrome-এর ডেটা নির্দেশিকা পড়তে এবং লিখতে পারে না:
 
@@ -235,6 +234,7 @@
 <translation id="3242123554343253302">Chrome প্রোফাইল যোগ করুন</translation>
 <translation id="3242486428260808857">আপনার <ph name="DEVICE_TYPE" />-এ Chrome অ্যাপ ব্যবহার করে অনলাইন শপিংয়ের সবচেয়ে বেশি সুবিধা পান</translation>
 <translation id="3245429137663807393">আপনি Chrome ব্যবহারের রিপোর্ট শেয়ার করলেও, আপনার দেখা URL তার মধ্যে অন্তর্ভুক্ত থাকে</translation>
+<translation id="3249558306861350254">আপনার Windows সেটিংসে <ph name="BEGIN_BOLD" />ডিফল্ট হিসেবে সেট করুন<ph name="END_BOLD" /> বিকল্পে ক্লিক করুন।</translation>
 <translation id="3259748324892322072">Chrome অ্যাপ ডাউনলোড করুন</translation>
 <translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3286538390144397061">এখন পুর্নসূচনা করবেন</translation>
@@ -825,7 +825,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Chrome-এর একটি আপডেট উপলভ্য আছে}=1{Chrome-এর একটি আপডেট উপলভ্য আছে}one{Chrome-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}other{Chrome-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}}</translation>
 <translation id="9014771989710951291">একাধিক সংস্থা Chrome ম্যানেজ করে</translation>
 <translation id="9018218886431812662">ইনস্টল হয়ে গেছে</translation>
-<translation id="9024318700713112071">আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome সেট করুন</translation>
 <translation id="9066987883552592250">Chrome Canary-তে Gemini বন্ধ করুন</translation>
 <translation id="9074041031320636790">হয়ে গেছে! Google Search AI মোডের সাহায্যে ব্রাউজ করার সময় আপনি এখন সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
 <translation id="9090566250983691233">Chrome কিছু ফাইল কেন ব্লক করে সেই সম্পর্কে জানুন</translation>

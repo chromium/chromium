@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Atvērt</translation>
 <translation id="4883766694719903356">Inkognito ciļņu režģis</translation>
 <translation id="4884937942297374058">Uzlabota aizsardzība ir izslēgta</translation>
+<translation id="4887391901725877182">Subtitru pievienošana</translation>
 <translation id="488785315393301722">Rādīt detaļas</translation>
 <translation id="4889521386764567563">Pašreizējais profils</translation>
 <translation id="4893713555726946316">Paslēpt vienumu “Atrast lapā”</translation>
@@ -1421,6 +1422,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5779117921996157216">{count,plural, =1{Jums ir {count} uzlauzta parole, kas var apdraudēt jūsu drošību. Labojiet to tūlīt, lai gādātu par savu drošību.}zero{Jums ir {count} uzlauztas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}one{Jums ir {count} uzlauzta parole, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}other{Jums ir {count} uzlauztas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}}</translation>
 <translation id="5791632441210678828">Kārtošanas poga plūsmai Sekojat.</translation>
 <translation id="5799263916847593256">Atvērt, lai skatītu cenu vēsturi</translation>
+<translation id="5801568494490449797">Preferences</translation>
 <translation id="5803566855766646066">Vai tiešām vēlaties atmest jauno kartīti?</translation>
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="58081802114142635">Jūsu darbību dati uzlabo Google MI</translation>
@@ -2105,6 +2107,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8023878949384262191">Izvērš sadaļu.</translation>
 <translation id="8027581147000338959">Atvērt jaunā logā</translation>
 <translation id="8029092694585014252">Iestatīt atgādinājumu</translation>
+<translation id="8029349782735515147">Iespējojiet subtitrus, kad izmantojat Gemini Live.</translation>
 <translation id="8032569120109842252">Sekojat</translation>
 <translation id="8035133914807600019">Jauna mape…</translation>
 <translation id="8035412398498507358">Fotoattēli</translation>

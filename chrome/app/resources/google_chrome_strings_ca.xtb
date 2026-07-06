@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">S'està baixant...</translation>
 <translation id="1651617469580841801">Quan utilitzes Google Lens, el títol, l'URL i el contingut de la pàgina (inclosos els PDF) s'envien a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Sobre ChromeOS Flex</translation>
-<translation id="1665867022636014702">Utilitza la configuració del navegador recomanada per Google</translation>
 <translation id="1674870198290878346">Obre l'enllaç en una finestra d'incò&amp;gnit a Chrome</translation>
 <translation id="1682634494516646069">Google Chrome no pot llegir ni escriure en el directori de dades: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius a les eines de cerca, d'IA i d'agent de la teva organització per obtenir suggeriments.</translation>
@@ -229,6 +228,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3226612997184048185">Si també deses les teves adreces d'interès al teu Compte de Google, pots fer un seguiment dels preus dels productes a Chrome i rebre una notificació quan baixi el preu</translation>
 <translation id="3242123554343253302">Afegeix un perfil de Chrome</translation>
 <translation id="3245429137663807393">Si també comparteixes els informes d'ús de Chrome, aquests informes inclouen els URL que visites</translation>
+<translation id="3249558306861350254">Fes clic a <ph name="BEGIN_BOLD" />Defineix com a predeterminat<ph name="END_BOLD" /> a la configuració de Windows.</translation>
 <translation id="3259748324892322072">Obtén l'aplicació Chrome</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
@@ -806,7 +806,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
 <translation id="9014771989710951291">Diverses organitzacions gestionen Chrome</translation>
 <translation id="9018218886431812662">La instal·lació s'ha completat</translation>
-<translation id="9024318700713112071">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="9066987883552592250">Tanca Gemini a Chrome Canary</translation>
 <translation id="9074041031320636790">Fet! Ara pots fer preguntes fàcilment mentre navegues amb el mode IA de la Cerca de Google.</translation>
 <translation id="9090566250983691233">Descobreix per què Chrome bloqueja alguns fitxers</translation>

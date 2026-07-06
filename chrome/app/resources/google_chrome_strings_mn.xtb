@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">Татаж байна...</translation>
 <translation id="1651617469580841801">Таныг Google Lens-г ашиглахад хуудасны гарчиг, URL, PDF зэрэг контентыг Google рүү илгээдэг. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-н тухай</translation>
-<translation id="1665867022636014702">Google-н санал болгосон хөтчийн тохиргоог ашиглах</translation>
 <translation id="1674870198290878346">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>
 <translation id="1682634494516646069">Google Chrome нь өөрийн өгөгдлийн хадгалалтын сан руу уншуулж бас бичиж чадахгүй:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome-н профайл нэмэх</translation>
 <translation id="3242486428260808857">Та <ph name="DEVICE_TYPE" /> дээрээ Chrome аппыг ашиглахдаа онлайн худалдан авалтаас илүү ихийг аваарай</translation>
 <translation id="3245429137663807393">Хэрэв та мөн Chrome-н ашиглалтын тайланг хуваалцвал тэдгээр тайланд таны зочилсон URL багтана</translation>
+<translation id="3249558306861350254">Windows-н тохиргооноосоо <ph name="BEGIN_BOLD" />Өгөгдмөл тохируулах<ph name="END_BOLD" /> дээр товшино уу.</translation>
 <translation id="3259748324892322072">Chrome аппыг авах</translation>
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
@@ -828,7 +828,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8999208279178790196">{0,plural, =0{Chrome-н шинэчлэлт боломжтой байна}=1{Chrome-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
 <translation id="9014771989710951291">Олон байгууллага Chrome-г удирддаг</translation>
 <translation id="9018218886431812662">Суулгаж дууссан</translation>
-<translation id="9024318700713112071">Chrome-г өгөгдмөлөөрөө тохируулна уу</translation>
 <translation id="9066987883552592250">Chrome Канар дахь Gemini-г хаах</translation>
 <translation id="9074041031320636790">Амжилттай! Та одоо Google Хайлтын ХОУ-ы горимоор үзэх явцдаа асуулт хялбархан асуух боломжтой</translation>
 <translation id="9090566250983691233">Chrome зарим файлыг яагаад блоклодог болохыг мэдэж авах</translation>

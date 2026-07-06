@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">Жүктеп алынып жатыр…</translation>
 <translation id="1651617469580841801">Google Lens пайдаланған кезде, бет атауы, URL мекенжайы және контенті, сондай-ақ PDF файлдары Google-ға жіберіледі. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex туралы ақпарат</translation>
-<translation id="1665867022636014702">Google ұсынған браузер параметрлерін пайдалану</translation>
 <translation id="1674870198290878346">Сілтемені Chrome инкогнито терезесінде ашу</translation>
 <translation id="1682634494516646069">Google Chrome өзінің деректер каталогін оқуы және жазуы мүмкін емес:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome профилін қосу</translation>
 <translation id="3242486428260808857"><ph name="DEVICE_TYPE" /> құрылғысында Chrome пайдаланып, онлайн сатып алудан барынша пайда көріңіз</translation>
 <translation id="3245429137663807393">Chrome пайдалану есептерін де бөліссеңіз, бұл есептерде сіз кірген URL мекенжайлары қамтылады.</translation>
+<translation id="3249558306861350254">Windows параметрлерінде <ph name="BEGIN_BOLD" />Әдепкі ретінде орнату<ph name="END_BOLD" /> түймесін басыңыз.</translation>
 <translation id="3259748324892322072">Chrome Apps-ті жүктеп алу</translation>
 <translation id="3282568296779691940">Chrome жүйесіне кіру</translation>
 <translation id="3286538390144397061">Қазір қайта іске қосу</translation>
@@ -829,7 +829,6 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="8999208279178790196">{0,plural, =0{Chrome браузерінің жаңартылған нұсқасы қолжетімді}=1{Chrome браузерінің жаңартылған нұсқасы қолжетімді}other{Chrome браузерінің жаңартылған нұсқасы # күннен бері қолжетімді}}</translation>
 <translation id="9014771989710951291">Chrome-ды бірнеше ұйым басқарады</translation>
 <translation id="9018218886431812662">Орнату аяқталды</translation>
-<translation id="9024318700713112071">Chrome-ды әдепкі браузер етіп орнату</translation>
 <translation id="9066987883552592250">Chrome Canary-дегі Gemini-ды жабу</translation>
 <translation id="9074041031320636790">Дайын! Енді Google Search AI режимімен шолған кезде, оңай сұрақ қоя аласыз.</translation>
 <translation id="9090566250983691233">Неліктен Chrome кейбір файлдарды блоктайтыны туралы ақпарат алыңыз</translation>

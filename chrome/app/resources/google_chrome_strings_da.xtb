@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1651617469580841801">Når du bruger Google Lens, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
-<translation id="1665867022636014702">Brug de browserindstillinger, der anbefales af Google</translation>
 <translation id="1674870198290878346">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke læse og skrive i sin egen datamappe: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Når du skriver i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
@@ -233,6 +232,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3242123554343253302">Tilføj Chrome-profil</translation>
 <translation id="3242486428260808857">Få mere ud af onlineshopping, når du bruger Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
+<translation id="3249558306861350254">Klik på <ph name="BEGIN_BOLD" />Angiv som standard<ph name="END_BOLD" /> i dine Windows-indstillinger.</translation>
 <translation id="3259748324892322072">Hent Chrome-appen</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
@@ -822,7 +822,6 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>
 <translation id="9014771989710951291">Flere organisationer administrerer Chrome</translation>
 <translation id="9018218886431812662">Installationen er fuldført</translation>
-<translation id="9024318700713112071">Angiv Chrome som din standardbrowser</translation>
 <translation id="9066987883552592250">Luk Gemini i Chrome Canary</translation>
 <translation id="9074041031320636790">Perfekt! Nu kan du nemt stille spørgsmål, mens du browser, med AI-tilstand i Google Søgning</translation>
 <translation id="9090566250983691233">Se, hvorfor Chrome blokerer visse filer</translation>

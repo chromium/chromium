@@ -95,6 +95,8 @@
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計此裝置的位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可隨時前往 [設定] &gt; [應用程式] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [安全性和位置] &gt; [位置]，以在此裝置上關閉 Android 定位服務。你亦可在同一選單中關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、流動網絡和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
@@ -103,10 +105,15 @@
 <translation id="2732134891301408122">第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2754825024506485820">在 Google Play 商店上尋找您需要的應用程式，從提升工作效率到娛樂，種類一應俱全。您可隨時安裝應用程式。</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集此裝置附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 會將從此裝置收集的資料用於改善定位精確度和適地性服務，並改善、提供和維護 Google 整體的服務。Google 會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。這些資料不會用於識別任何人士。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />你可隨時在此裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷此裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">大功告成！</translation>
 <translation id="2832124733806557606">子女可使用 PIN 來登入裝置或裝置解鎖。</translation>
 <translation id="283669119850230892">如要使用 <ph name="NETWORK_ID" /> 網絡，請先在下方連線至互聯網。</translation>
 <translation id="2849767214114481738">已新增您的 PIN</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 安排要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可前往 Chrome 裝置設定，允許或禁止傳送這類報告。如果你是網域管理員，亦可前往管理控制台變更此設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2893180576842394309">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務</translation>
 <translation id="2902265136119311513">以訪客身份瀏覽</translation>
 <translation id="2904210161403910217">密碼已在您上次登入後變更</translation>
@@ -183,6 +190,9 @@
 <translation id="4341905082470253054">正在檢查 TPM 狀態…</translation>
 <translation id="4370975561335139969">您所輸入的電郵與密碼不符</translation>
 <translation id="4373418556073552953">使用 Android 手機登入</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、你所使用的功能、記憶體一般使用量，以及 Android 應用程式診斷和使用情況資料。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可在 ChromeOS 裝置設定中啟用或停用傳送報告功能。如果你是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />如果你為 Google 帳戶開啟「網絡及應用程式活動記錄」設定，你的 Android 資料可能會儲存在你的 Google 帳戶中。你可前往 account.google.com 查看和刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4403266582403435904">隨時輕鬆還原資料或轉用裝置。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4410545552906060960">您可以使用數字 (PIN) 來解鎖裝置。如要稍後才設定 PIN，請前往「設定」。</translation>
 <translation id="4415213869328311284">您的 <ph name="DEVICE_TYPE" /> 已準備就緒。</translation>
@@ -261,6 +271,9 @@
 <translation id="5539070192556911367">無法連接 Google</translation>
 <translation id="557722062034137776">重設裝置並不會影響您的 Google 帳戶，以及任何與這些帳戶同步處理的數據。不過，裝置中所有本機儲存檔案將被刪除。</translation>
 <translation id="5626172233890210551">改用密碼</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />為提供最佳體驗，<ph name="DEVICE_OS" /> 會收集裝置硬件資料並與 Google 分享，以判斷應提供哪些更新內容。你可選擇允許 Google 將這類資料用於其他用途，例如提供支援，以及改善 <ph name="DEVICE_OS" /> 的使用體驗和服務。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可登入此裝置並前往 chrome://system，查看列為 chromeosflex_ 的欄位，瞭解哪些資料傳送給 Google 用作篩選更新類型，以及你選擇與 Google 分享資料的其他情況。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能與 Google 分享的資料和資料用途，請前往 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，您必須先<ph name="LINK_START" />前往網絡的登入頁面<ph name="LINK_END" /> (該頁面將在數秒內自動開啟)；如果沒有，表示您無法使用該網絡。</translation>
 <translation id="5655296450510165335">裝置註冊</translation>
 <translation id="5659964844710667266">為此 <ph name="DEVICE_TYPE" /> 建立密碼</translation>
@@ -310,6 +323,8 @@
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
 <translation id="640457954117263537">讓 ChromeOS 和 Android 應用程式和服務使用位置資料。</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這些報告可能包括 ChromeOS 當機時間、你所使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可前往 Chrome 裝置設定，允許或禁止傳送這類報告。如果你是網域管理員，亦可前往管理控制台變更此設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">安裝重要更新</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi</translation>
@@ -326,11 +341,16 @@
 <translation id="6722744767592605627">您可以復原 <ph name="EMAIL" />，但系統將刪除本機資料。</translation>
 <translation id="6748980958975836188">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="6789834167207639931">在下一個畫面中再次輸入 Google 帳戶密碼，完成復原程序</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 安排要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷和使用資料。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果你是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />如果你為子女的 Google 帳戶開啟「網絡及應用程式活動記錄」設定，你子女的資料可能會儲存在其 Google 帳戶中。你可前往 families.google.com，進一步瞭解這些設定及其調整方式。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> 的熱門應用程式</translation>
 <translation id="682971198310367122">Google 私隱權政策</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6883319974225028188">抱歉！系統無法儲存裝置設定。</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式根據開發人員設定儲存的任何資料，包括聯絡人、訊息和相片等。備份資料不會計入子女的「雲端硬碟」儲存空間配額。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可在「設定」中關閉此服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
 <translation id="6918733588290914545">透過 Android 手機快速設定</translation>
 <translation id="6920473853105515518">請確定你的 <ph name="DEVICE_TYPE" /> 已連線到互聯網，然後再試一次。你亦可使用其他裝置瀏覽 play.google/play-terms。</translation>
@@ -374,6 +394,8 @@
 <translation id="7630426712700473382">此裝置由 <ph name="MANAGER" /> 管理，每次使用均需要登入。</translation>
 <translation id="7639914187072011620">無法由伺服器擷取 SAML 重新導向網址</translation>
 <translation id="7643117827468520640">請詳閱這些條款</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式根據開發人員設定儲存的任何資料，包括聯絡人、訊息和相片等。備份資料不會計入「雲端硬碟」的儲存空間配額。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可在「設定」中關閉此服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659584679870740384">您無權使用這部裝置。如需登入權限，請與管理員聯絡。</translation>
@@ -391,6 +413,8 @@
 <translation id="7870730066603611552">設定後查看同步選項</translation>
 <translation id="7883792253546618164">您可隨時取消訂閱。</translation>
 <translation id="7906440585529721295">本機資料將被刪除</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 安排要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果你是網域管理員，亦可前往管理控制台變更此設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7943311690198910993">登入方法已更新</translation>
 <translation id="795240231873601803">進行公司和學校帳戶的企業註冊程序</translation>
 <translation id="7968982339740310781">檢視詳情</translation>
@@ -409,6 +433,8 @@
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與您的管理員聯絡。</translation>
 <translation id="8157704005178149728">正在設定監控功能</translation>
 <translation id="8174047975335711832">裝置資料</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計裝置位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可隨時前往 [設定] &gt; [應用程式] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [安全性和位置] &gt; [位置]，以在你的裝置上關閉 Android 定位服務。你亦可在同一選單中關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、流動網絡和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">請重新輸入密碼以更新 <ph name="DEVICE_TYPE" /> 的個人檔案。</translation>
 <translation id="8239032431519548577">企業註冊完成</translation>
 <translation id="8241806945692107836">正在確定裝置設定…</translation>
@@ -436,6 +462,9 @@
         <ph name="BR" />
         向附近的裝置顯示為「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」…</translation>
 <translation id="8655972064210167941">系統無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集你附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資料識別你的身分，而是用於改善定位精確度和適地性服務，並改善、提供及維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />你可隨時在此裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷你裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">抱歉，您的電腦是由格式錯誤的硬件 ID 所設定。這導致 Chrome OS 無法使用最新的安全性修正程式進行更新，您的電腦也可能<ph name="BEGIN_BOLD" />容易被惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="8695139659682234808">設定完成後新增家長監控設定</translation>
 <translation id="8698269656364382265">如要返回上一個畫面，請從左邊向另一邊滑動。</translation>

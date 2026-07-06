@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">ડાઉનલોડ કરી રહ્યું છે...</translation>
 <translation id="1651617469580841801">જ્યારે તમે Google Lensનો ઉપયોગ કરો છો, ત્યારે PDFs સહિત પેજનું શીર્ષક, URL અને કન્ટેન્ટ Googleને મોકલવામાં આવે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex વિશે</translation>
-<translation id="1665867022636014702">Google દ્વારા સુઝાવ આપવામાં આવેલા બ્રાઉઝર સેટિંગનો ઉપયોગ કરો</translation>
 <translation id="1674870198290878346">Chrome છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="1682634494516646069">Google Chrome એની ડેટા ડિરેક્ટરી વાંચી અથવા લખી શકતુંં નથી:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome પ્રોફાઇલ ઉમેરો</translation>
 <translation id="3242486428260808857">જ્યારે તમે તમારા <ph name="DEVICE_TYPE" /> પર Chrome ઍપનો ઉપયોગ કરો, ત્યારે ઑનલાઇન શૉપિંગનો વધુ લાભ મેળવો</translation>
 <translation id="3245429137663807393">જો તમે Chromeના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
+<translation id="3249558306861350254">તમારા Windows સેટિંગમાં <ph name="BEGIN_BOLD" />ડિફૉલ્ટ તરીકે સેટ કરો<ph name="END_BOLD" /> પર ક્લિક કરો.</translation>
 <translation id="3259748324892322072">Chrome ઍપ મેળવો</translation>
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
 <translation id="3286538390144397061">હવે ફરીથી પ્રારંભ કરો</translation>
@@ -830,7 +830,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8999208279178790196">{0,plural, =0{એક Chrome અપડેટ ઉપલબ્ધ છે}=1{એક Chrome અપડેટ ઉપલબ્ધ છે}one{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
 <translation id="9014771989710951291">એકથી વધુ સંસ્થાઓ Chromeને મેનેજ કરે છે</translation>
 <translation id="9018218886431812662">ઇન્સ્ટૉલેશન પૂર્ણ</translation>
-<translation id="9024318700713112071">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="9066987883552592250">Chrome Canaryમાં Gemini બંધ કરો</translation>
 <translation id="9074041031320636790">સફળતા! હવે તમે Google Search AI મોડ વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="9090566250983691233">Chrome શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>

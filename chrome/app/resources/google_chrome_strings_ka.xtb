@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">მიმდინარეობს ჩამოტვირთვა…</translation>
 <translation id="1651617469580841801">Google Lens-ის გამოყენებისას Google-ს ეგზავნება გვერდის სათაური, URL და კონტენტი, PDF-ების ჩათვლით. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-ის შესახებ</translation>
-<translation id="1665867022636014702">Google-ის მიერ რეკომენდებული ბრაუზერის პარამეტრების გამოყენება</translation>
 <translation id="1674870198290878346">ბმულის გახსნა Chrome-ის ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="1682634494516646069">Google Chrome ვერ ახერხებს თავის მონაცემთა დირექტორიაში წაკითხვას და ჩაწერის განხორციელებას:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome პროფილის დამატება</translation>
 <translation id="3242486428260808857">მეტად გამოიყენეთ ონლაინ შოპინგის შესაძლებლობები, როდესაც სარგებლობთ Chrome აპით თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="3245429137663807393">თუ თქვენ აზიარებთ Chrome-ის მოხმარების ანგარიშებსაც, ეს ანგარიშები ასევე მოიცავს თქვენ მიერ მონახულებულ URL-ებს</translation>
+<translation id="3249558306861350254">დააწკაპუნეთ <ph name="BEGIN_BOLD" />ნაგულისხმევის დაყენებაზე<ph name="END_BOLD" /> Windows-ის პარამეტრებში.</translation>
 <translation id="3259748324892322072">Chrome აპის ჩამოტვირთვა</translation>
 <translation id="3282568296779691940">შესვლა Chrome-ში</translation>
 <translation id="3286538390144397061">გადატვირთეთ ახლა</translation>
@@ -830,7 +830,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8999208279178790196">{0,plural, =0{ხელმისაწვდომია Chrome-ის განახლება}=1{ხელმისაწვდომია Chrome-ის განახლება}other{უკვე # დღეა, რაც ხელმისაწვდომია Chrome-ის განახლება}}</translation>
 <translation id="9014771989710951291">რამდენიმე ორგანიზაცია მართავს Chrome-ს</translation>
 <translation id="9018218886431812662">ინსტალაცია დასრულდა</translation>
-<translation id="9024318700713112071">Chrome-ის დაყენება ნაგულისხმევად</translation>
 <translation id="9066987883552592250">Gemini Chrome Canary-ში დახურვა</translation>
 <translation id="9074041031320636790">წარმატებით შესრულდა! ახლა უკვე მარტივად შეგიძლიათ კითხვების დასმა დათვალიერებისას, Google Search-ის ხელოვნური ინტელექტის რეჟიმით</translation>
 <translation id="9090566250983691233">შეიტყვეთ, რატომ ბლოკავს Chrome ზოგიერთ ფაილს</translation>

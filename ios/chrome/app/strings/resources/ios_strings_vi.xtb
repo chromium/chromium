@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Mở</translation>
 <translation id="4883766694719903356">Lưới thẻ ẩn danh</translation>
 <translation id="4884937942297374058">Chế độ Bảo vệ nâng cao đang tắt</translation>
+<translation id="4887391901725877182">Phụ đề</translation>
 <translation id="488785315393301722">Hiển thị chi tiết</translation>
 <translation id="4889521386764567563">Hồ sơ hiện tại</translation>
 <translation id="4893713555726946316">Ẩn tuỳ chọn Tìm trong trang</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{Bạn có {count} mật khẩu bị lộ. Điều này có thể khiến bạn gặp rủi ro về bảo mật. Hãy khắc phục ngay để giữ an toàn.}other{Bạn có {count} mật khẩu bị lộ. Điều này có thể khiến bạn gặp rủi ro về bảo mật. Hãy khắc phục ngay để giữ an toàn.}}</translation>
 <translation id="5791632441210678828">Nút sắp xếp cho Nguồn cấp dữ liệu đang theo dõi.</translation>
 <translation id="5799263916847593256">Mở để xem nhật ký giá</translation>
+<translation id="5801568494490449797">Tùy chọn</translation>
 <translation id="5803566855766646066">Bạn có chắc chắn muốn hủy thẻ mới này không?</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="58081802114142635">Hoạt động của bạn giúp cải thiện AI của Google</translation>
@@ -2105,6 +2107,7 @@
 <translation id="8023878949384262191">Mở rộng phần.</translation>
 <translation id="8027581147000338959">Mở trong cửa sổ mới</translation>
 <translation id="8029092694585014252">Đặt lời nhắc</translation>
+<translation id="8029349782735515147">Hiện phụ đề khi dùng Gemini Live</translation>
 <translation id="8032569120109842252">Đang theo dõi</translation>
 <translation id="8035133914807600019">Thư mục mới...</translation>
 <translation id="8035412398498507358">Ảnh</translation>

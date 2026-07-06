@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">در حال بارگیری…</translation>
 <translation id="1651617469580841801">‏وقتی از «لنز Google» استفاده می‌کنید، عنوان، نشانی وب، و محتوای صفحه (ازجمله فایل‌های PDF) به Google ارسال می‌شود. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">‏درباره ChromeOS Flex</translation>
-<translation id="1665867022636014702">‏استفاده از تنظیمات مرورگر توصیه‌شده Google</translation>
 <translation id="1674870198290878346">‏باز کردن پیوند در پنجره &amp;ناشناس Chrome</translation>
 <translation id="1682634494516646069">‏Google Chrome نمی‌تواند مسیر داده‌های خود را بخواند یا در آن بنویسد: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chrome چیزی را که تایپ می‌کنید برای دریافت پیشنهاد به ابزارهای عامل، جستجو، و هوش مصنوعی سازمانتان ارسال می‌کند.</translation>
@@ -233,6 +232,7 @@
 <translation id="3242123554343253302">‏افزودن نمایه Chrome</translation>
 <translation id="3242486428260808857">‏وقتی از برنامه Chrome در <ph name="DEVICE_TYPE" /> استفاده می‌کنید، از خرید آنلاین بهره بیشتری می‌برید</translation>
 <translation id="3245429137663807393">‏اگر گزارش‌های استفاده از Chrome را نیز هم‌رسانی کنید، این گزارش‌ها نشانی‌های وبی را که بازدید می‌کنید دربرمی‌گیرند.</translation>
+<translation id="3249558306861350254">‏در تنظیمات Windows، روی <ph name="BEGIN_BOLD" />Set Default (تنظیم پیش‌فرض)<ph name="END_BOLD" /> کلیک کنید.</translation>
 <translation id="3259748324892322072">‏دریافت برنامه Chrome</translation>
 <translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
@@ -822,7 +822,6 @@
 <translation id="8999208279178790196">{0,plural, =0{‏به‌روزرسانی Chrome دردسترس است}=1{‏به‌روزرسانی Chrome دردسترس است}one{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}other{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}}</translation>
 <translation id="9014771989710951291">‏چندین سازمان Chrome را مدیریت می‌کنند</translation>
 <translation id="9018218886431812662">نصب کامل شد</translation>
-<translation id="9024318700713112071">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="9066987883552592250">‏بستن «Gemini در Chrome Canary»</translation>
 <translation id="9074041031320636790">‏انجام شد! اکنون می‌توانید با «حالت هوشواره‌ای جستجوی Google» به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="9090566250983691233">‏ببینید چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>

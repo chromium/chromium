@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">ഡൗൺലോഡുചെയ്യുന്നു...</translation>
 <translation id="1651617469580841801">നിങ്ങൾ Google Lens ഉപയോഗിക്കുമ്പോൾ, പേജിന്റെ പേരും URL-ഉം PDF-കൾ ഉൾപ്പെടെയുള്ള ഉള്ളടക്കവും Google-ലേക്ക് അയയ്ക്കും. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-നെ കുറിച്ച്</translation>
-<translation id="1665867022636014702">Google നിർദ്ദേശിക്കുന്ന ബ്രൗസർ ക്രമീകരണം ഉപയോഗിക്കുക</translation>
 <translation id="1674870198290878346">Chrome അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="1682634494516646069">Google Chrome-ന് ഇതിന്റെ ഡാറ്റാ ഡയറക്റ്ററി വായിക്കാനോ അതിൽ എഴുതാനോ കഴിയില്ല:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome പ്രൊഫൈൽ ചേർക്കുക</translation>
 <translation id="3242486428260808857">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Chrome ആപ്പ് ഉപയോഗിക്കുമ്പോൾ ഓൺലൈൻ ഷോപ്പിംഗ് പരമാവധി പ്രയോജനപ്പെടുത്തൂ</translation>
 <translation id="3245429137663807393">നിങ്ങൾ Chrome ഉപയോഗ റിപ്പോർട്ടുകളും പങ്കിടുന്നുവെങ്കിൽ ആ റിപ്പോർട്ടുകളിൽ നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കളും ഉൾപ്പെടും</translation>
+<translation id="3249558306861350254">നിങ്ങളുടെ Windows ക്രമീകരണത്തിൽ <ph name="BEGIN_BOLD" />ഡിഫോൾട്ടായി സജ്ജീകരിക്കുക<ph name="END_BOLD" /> ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3259748324892322072">Chrome ആപ്പ് നേടുക</translation>
 <translation id="3282568296779691940">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3286538390144397061">ഇപ്പോള്‍ പുനരാരംഭിക്കുക</translation>
@@ -829,7 +829,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}=1{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}other{# ദിവസമായി Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}}</translation>
 <translation id="9014771989710951291">ഒന്നിലധികം സ്ഥാപനങ്ങൾ Chrome മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="9018218886431812662">ഇൻസ്‌റ്റലേഷൻ പൂർത്തിയായി</translation>
-<translation id="9024318700713112071">Chrome ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="9066987883552592250">Chrome Canary-യിലെ Gemini അടയ്ക്കുക</translation>
 <translation id="9074041031320636790">വിജയകരം! Google Search AI മോഡ് ഉപയോഗിച്ച് ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് ഇപ്പോൾ എളുപ്പത്തിൽ ചോദ്യങ്ങൾ ചോദിക്കാം</translation>
 <translation id="9090566250983691233">ചില ഫയലുകൾ Chrome ബ്ലോക്ക് ചെയ്യുന്നത് എന്തുകൊണ്ടാണെന്ന് അറിയുക</translation>

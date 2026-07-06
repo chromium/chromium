@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">Загрузка...</translation>
 <translation id="1651617469580841801">При использовании Google Объектива заголовок, URL и контент страницы, в том числе PDF-файлы, отправляются в Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">О Chrome OS Flex</translation>
-<translation id="1665867022636014702">Используйте рекомендуемые настройки браузера Google</translation>
 <translation id="1674870198290878346">Открыть ссылку в режиме инкогнито браузера Chrome</translation>
 <translation id="1682634494516646069">Браузеру Google Chrome не может выполнять операции чтения и записи в каталоге данных <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Когда вы вводите текст в адресную строку или окно поиска, Chrome передает этот запрос вашей организации, а именно ее поисковой системе, инструментам агентов и искусственному интеллекту. Это нужно, чтобы получить подсказки.</translation>
@@ -233,6 +232,7 @@
 <translation id="3242123554343253302">Добавить профиль Chrome</translation>
 <translation id="3242486428260808857">Покупать онлайн станет ещё удобнее с приложением Chrome на <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Если вы также отправляете отчеты об использовании Chrome, в них включаются URL посещенных вами страниц.</translation>
+<translation id="3249558306861350254">В настройках Windows нажмите <ph name="BEGIN_BOLD" />По умолчанию<ph name="END_BOLD" />.</translation>
 <translation id="3259748324892322072">Скачать приложение Chrome</translation>
 <translation id="3282568296779691940">Войдите в Chrome</translation>
 <translation id="3286538390144397061">Перезапустить сейчас</translation>
@@ -821,7 +821,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Доступно обновление Chrome}=1{Доступно обновление Chrome}one{Обновление Chrome доступно # день}few{Обновление Chrome доступно # дня}many{Обновление Chrome доступно # дней}other{Обновление Chrome доступно # дня}}</translation>
 <translation id="9014771989710951291">Несколько организаций управляют Chrome</translation>
 <translation id="9018218886431812662">Установка завершена</translation>
-<translation id="9024318700713112071">Сделайте Chrome браузером по умолчанию</translation>
 <translation id="9066987883552592250">Закрыть Gemini в Chrome Canary</translation>
 <translation id="9074041031320636790">Готово! Теперь вы можете легко задавать вопросы во время просмотра сайтов благодаря режиму ИИ из Google Поиска.</translation>
 <translation id="9090566250983691233">Узнайте, почему Chrome блокирует скачивание некоторых файлов</translation>

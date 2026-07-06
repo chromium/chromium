@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">ডাউনল’ড হৈ আছে...</translation>
 <translation id="1651617469580841801">আপুনি Google Lens ব্যৱহাৰ কৰিলে, PDFসমূহকে ধৰি পৃষ্ঠাৰ শিৰোনাম, URL আৰু সমল Google লৈ প্ৰেৰণ কৰা হয়। <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flexৰ বিষয়ে</translation>
-<translation id="1665867022636014702">Googleএ চুপাৰিছ কৰা ব্ৰাউজাৰৰ ছেটিং ব্যৱহাৰ কৰক</translation>
 <translation id="1674870198290878346">Chromeৰ ইনক’গ&amp;নিট’ ৱিণ্ড’ লিংকটো খোলক</translation>
 <translation id="1682634494516646069">Google Chromeএ নিজৰ ডেটা ডাইৰেক্টৰী পঢ়িব আৰু লিখিব নোৱাৰে:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome প্ৰ'ফাইল যোগ দিয়ক</translation>
 <translation id="3242486428260808857">আপোনাৰ <ph name="DEVICE_TYPE" />ত Chrome এপ্‌টো ব্যৱহাৰ কৰি অনলাইন ক্ৰয়ৰ পৰা অধিক উপকৃত হওক</translation>
 <translation id="3245429137663807393">যদি আপুনি Chrome ব্যৱহাৰ কৰাৰ ৰিপ’ৰ্টও শ্বেয়াৰ কৰে, সেই ৰিপ’ৰ্টত আপুনি চোৱা URLসমূহ অন্তৰ্ভুক্ত হয়</translation>
+<translation id="3249558306861350254">আপোনাৰ Windowsৰ ছেটিঙত <ph name="BEGIN_BOLD" />ডিফ’ল্ট হিচাপে ছেট কৰক<ph name="END_BOLD" />ত ক্লিক কৰক।</translation>
 <translation id="3259748324892322072">Chrome এপ্‌টো লাভ কৰক</translation>
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="3286538390144397061">এতিয়াই ৰিষ্টাৰ্ট কৰক</translation>
@@ -830,7 +830,6 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="8999208279178790196">{0,plural, =0{Chromeৰ এটা আপডে’ট উপলব্ধ}=1{Chromeৰ এটা আপডে’ট উপলব্ধ}one{# দিনৰ বাবে Chromeৰ এটা আপডে’ট উপলব্ধ}other{# দিনৰ বাবে Chromeৰ এটা আপডে’ট উপলব্ধ}}</translation>
 <translation id="9014771989710951291">একাধিক প্ৰতিষ্ঠানে Chrome পৰিচালনা কৰে</translation>
 <translation id="9018218886431812662">ইনষ্টল সম্পূৰ্ণ হ’ল</translation>
-<translation id="9024318700713112071">Chromeক আপোনাৰ ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="9066987883552592250">Chrome কেনেৰীত Gemini বন্ধ কৰক</translation>
 <translation id="9074041031320636790">সফল হ’ল! আপুনি এতিয়া Google Searchৰ AI ম’ডৰ জৰিয়তে ব্ৰাউজ কৰাৰ সময়ত সহজে প্ৰশ্ন সুধিব পাৰে</translation>
 <translation id="9090566250983691233">Chromeএ কিয় কিছুমান ফাইল অৱৰোধ কৰে সেই বিষয়ে জানক</translation>

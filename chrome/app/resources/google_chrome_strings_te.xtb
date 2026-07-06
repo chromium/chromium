@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">డౌన్‌లోడ్ చేయబడుతోంది...</translation>
 <translation id="1651617469580841801">మీరు Google Lensను ఉపయోగించడం ద్వారా, PDFలతో పాటు పేజీ టైటిల్, URL, ఇంకా కంటెంట్ Googleకు పంపబడతాయి. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex గురించి</translation>
-<translation id="1665867022636014702">Google సిఫార్సు చేసిన బ్రౌజర్ సెట్టింగ్‌లను ఉపయోగించండి</translation>
 <translation id="1674870198290878346">Chrome అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="1682634494516646069">Google Chrome దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">మీరు అడ్రస్ బార్ లేదా సెర్చ్ బాక్స్‌లో టైప్ చేసినప్పుడు, Chrome మీరు టైప్ చేసే దాన్ని మీ సంస్థకు సంబంధించిన సెర్చ్, AI, ఇంకా ఏజెంట్ టూల్స్‌కు పంపి, మీకు సూచనలను అందిస్తుంది.</translation>
@@ -233,6 +232,7 @@
 <translation id="3242123554343253302">Chrome ప్రొఫైల్‌ను జోడించండి</translation>
 <translation id="3242486428260808857">మీ <ph name="DEVICE_TYPE" />‌లో Chrome యాప్‌ను ఉపయోగించినప్పుడు, ఆన్‌లైన్ షాపింగ్‌లో మరిన్ని ప్రయోజనాలను పొందండి</translation>
 <translation id="3245429137663807393">మీరు Chrome వినియోగ రిపోర్ట్‌లను కూడా షేర్ చేస్తున్నట్లయితే, ఆ రిపోర్ట్‌లలో మీరు సందర్శించే URLలు ఉంటాయి</translation>
+<translation id="3249558306861350254">మీ Windows సెట్టింగ్‌లలో <ph name="BEGIN_BOLD" />ఆటోమేటిక్‌గా సెట్ చేయండి<ph name="END_BOLD" />ని క్లిక్ చేయండి.</translation>
 <translation id="3259748324892322072">Chrome యాప్‌ను పొందండి</translation>
 <translation id="3282568296779691940">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
@@ -822,7 +822,6 @@
 <translation id="8999208279178790196">{0,plural, =0{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chrome అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>
 <translation id="9014771989710951291">పలు సంస్థలు Chromeను మేనేజ్ చేస్తాయి</translation>
 <translation id="9018218886431812662">ఇన్‌స్టాలేషన్ పూర్తయింది</translation>
-<translation id="9024318700713112071">Chromeను మీ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="9066987883552592250">Chrome కెనరీలో Geminiని మూసివేయండి</translation>
 <translation id="9074041031320636790">విజయవంతమైంది! ఇకపై మీరు Google Search AI మోడ్‌తో బ్రౌజ్ చేస్తున్నప్పుడే సులభంగా ప్రశ్నలు అడగవచ్చు</translation>
 <translation id="9090566250983691233">Chrome కొన్ని ఫైల్స్‌ను ఎందుకు బ్లాక్ చేస్తుంది అనే దాని గురించి మరింత తెలుసుకోండి</translation>

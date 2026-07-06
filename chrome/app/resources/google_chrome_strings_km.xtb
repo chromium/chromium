@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">កំពុងទាញ​យក...</translation>
 <translation id="1651617469580841801">នៅពេលអ្នកប្រើ Google Lens នោះចំណងជើងទំព័រ, URL និងខ្លឹមសារ រួមទាំង PDF នឹងត្រូវបានបញ្ជូនទៅ Google។ <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">អំពី ChromeOS Flex</translation>
-<translation id="1665867022636014702">ប្រើ​ការកំណត់​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​ដែលបាន​ណែនាំ​ដោយ Google</translation>
 <translation id="1674870198290878346">បើក​តំណ​នៅក្នុងវិនដូ​ឯកជន Chrome</translation>
 <translation id="1682634494516646069">Google Chrome មិនអាចអាន និងសរសេរទៅថតឯកសារទិន្នន័យរបស់វាបានទេ៖
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">បញ្ចូល​កម្រងព័ត៌មាន Chrome</translation>
 <translation id="3242486428260808857">ទទួលបានអត្ថប្រយោជន៍កាន់តែច្រើនពីការទិញទំនិញលើអ៊ីនធឺណិត នៅពេលអ្នកប្រើកម្មវិធី Chrome នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="3245429137663807393">ប្រសិនបើអ្នកចែករំលែករបាយការណ៍ប្រើប្រាស់ Chrome ផងដែររបាយការណ៍ទាំងនោះរួមបញ្ចូល URL ដែលអ្នកចូលមើល</translation>
+<translation id="3249558306861350254">ចុច <ph name="BEGIN_BOLD" />"កំណត់​លំនាំដើម"<ph name="END_BOLD" /> នៅក្នុង​ការកំណត់ Windows របស់អ្នក។</translation>
 <translation id="3259748324892322072">យក​កម្មវិធី Chrome</translation>
 <translation id="3282568296779691940">ចូលទៅ Chrome</translation>
 <translation id="3286538390144397061">ចាប់ផ្ដើមឡើងវិញឥឡូវនេះ</translation>
@@ -829,7 +829,6 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8999208279178790196">{0,plural, =0{មាន​កំណែថ្មី​របស់ Chrome ហើយ}=1{មាន​កំណែថ្មី​របស់ Chrome ហើយ}other{មាន​កំណែថ្មី​របស់ Chrome រយៈពេល # ថ្ងៃហើយ}}</translation>
 <translation id="9014771989710951291">ស្ថាប័នច្រើន​គ្រប់គ្រង Chrome</translation>
 <translation id="9018218886431812662">ការដំឡើង​បានបញ្ចប់</translation>
-<translation id="9024318700713112071">កំណត់ Chrome ជា​លំនាំដើម​របស់អ្នក</translation>
 <translation id="9066987883552592250">បិទ Gemini ក្នុង Chrome Canary</translation>
 <translation id="9074041031320636790">ជោគជ័យហើយ! ឥឡូវនេះ អ្នកអាចសួរសំណួរយ៉ាងងាយស្រួល នៅពេលអ្នករុករកដោយប្រើមុខងារ AI របស់ម៉ាស៊ីនស្វែងរកនៅលើ Google</translation>
 <translation id="9090566250983691233">ស្វែងយល់អំពីមូលហេតុដែល Chrome ទប់ស្កាត់ឯកសារ​មួយចំនួន</translation>

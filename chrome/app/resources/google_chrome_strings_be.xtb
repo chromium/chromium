@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">Ідзе спампоўванне…</translation>
 <translation id="1651617469580841801">Пры выкарыстанні Google Аб’ектыва загаловак, URL-адрас і змесціва старонкі, у тым ліку файлы PDF, адпраўляюцца ў Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Пра Chrome OS Flex</translation>
-<translation id="1665867022636014702">Выкарыстоўвайце налады браўзера, якія рэкамендуе Google</translation>
 <translation id="1674870198290878346">Адкрыць спасылку ў акне інко&amp;гніта ў Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не можа чытаць з каталога даных і запісваць у яго:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Дадаць профіль Chrome</translation>
 <translation id="3242486428260808857">Выкарыстоўвайце праграму Chrome на прыладзе "<ph name="DEVICE_TYPE" />", каб атрымліваць больш магчымасцей ад куплі тавараў у інтэрнэце</translation>
 <translation id="3245429137663807393">Калі вы абагульваеце справаздачы пра выкарыстанне браўзера Chrome, у іх уключаюцца URL-адрасы наведаных вамі старонак.</translation>
+<translation id="3249558306861350254">У наладах Windows націсніце <ph name="BEGIN_BOLD" />Задаць у якасці стандартнага<ph name="END_BOLD" />.</translation>
 <translation id="3259748324892322072">Усталяваць праграму Chrome</translation>
 <translation id="3282568296779691940">Увайсці ў Chrome</translation>
 <translation id="3286538390144397061">Перазапусціць</translation>
@@ -829,7 +829,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Ёсць абнаўленне Chrome}=1{Ёсць абнаўленне Chrome}one{Абнаўленне Chrome выйшла ўжо # дзень таму}few{Абнаўленне Chrome выйшла # дні таму}many{Абнаўленне Chrome выйшла # дзён таму}other{Абнаўленне Chrome выйшла # дня таму}}</translation>
 <translation id="9014771989710951291">Некалькі арганізацый кіруюць браўзерам Chrome</translation>
 <translation id="9018218886431812662">Усталяванне завершана</translation>
-<translation id="9024318700713112071">Зрабіць Chrome стандартным браўзерам</translation>
 <translation id="9066987883552592250">Закрыць Gemini ў Chrome Canary</translation>
 <translation id="9074041031320636790">Гатова! Цяпер вы можаце задаваць пытанні падчас прагляду вэб-старонак з дапамогай рэжыму AI ў Google Пошуку</translation>
 <translation id="9090566250983691233">Даведацца, чаму Chrome блакіруе некаторыя файлы</translation>

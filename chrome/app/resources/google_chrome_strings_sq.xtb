@@ -74,7 +74,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1640672724030957280">Po shkarkohet...</translation>
 <translation id="1651617469580841801">Kur përdor "Lenten e Google", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
-<translation id="1665867022636014702">Përdor cilësimet e rekomanduara të shfletuesit të Google</translation>
 <translation id="1674870198290878346">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="1682634494516646069">Google Chrome nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
@@ -237,6 +236,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3242123554343253302">Shto profilin e Chrome</translation>
 <translation id="3242486428260808857">Përfito më shumë nga blerjet online kur përdor aplikacionin e Chrome në <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>
+<translation id="3249558306861350254">Kliko te <ph name="BEGIN_BOLD" />Cakto si të parazgjedhur<ph name="END_BOLD" /> te cilësimet e Windows.</translation>
 <translation id="3259748324892322072">Merr aplikacionin e Chrome</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
@@ -827,7 +827,6 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
 <translation id="9014771989710951291">Disa organizata menaxhojnë Chrome</translation>
 <translation id="9018218886431812662">Instalimi përfundoi</translation>
-<translation id="9024318700713112071">Cakto Chrome si parazgjedhje</translation>
 <translation id="9066987883552592250">Mbyll Gemini në Chrome Canary</translation>
 <translation id="9074041031320636790">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me "Modalitetin e IA-së" të "Kërko në Google"</translation>
 <translation id="9090566250983691233">Mëso se pse Chrome i bllokon disa skedarë</translation>

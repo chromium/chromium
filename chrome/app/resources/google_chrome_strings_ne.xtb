@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">डाउनलोड गरिँदै छ...</translation>
 <translation id="1651617469580841801">तपाईंले Google लेन्स प्रयोग गर्दा PDF सहित पेजको शीर्षक, URL र सामग्री Google मा पठाइन्छन्। <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex का बारेमा जानकारी</translation>
-<translation id="1665867022636014702">Google ले सिफारिस गरेको ब्राउजरको सेटिङ प्रयोग गर्नुहोस्</translation>
 <translation id="1674870198290878346">लिंकलाई Chrome को इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="1682634494516646069">Google Chromeले यसको डाटा निर्देशिका पढ्न वा लेख्न सक्दैन: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">तपाईंले एड्रेस बार वा खोज बाकसमा टाइप गर्दा तपाईंलाई सुझावहरू देखाउन सकियोस् भन्नाका लागि Chrome ले तपाईंले टाइप गर्ने कुरा तपाईंको सङ्गठनको खोज, AI र एजेन्टसम्बन्धी टुलहरूमा पठाउँछ।</translation>
@@ -235,6 +234,7 @@
 <translation id="3242123554343253302">Chrome प्रोफाइल हाल्नुहोस्</translation>
 <translation id="3242486428260808857">आफ्नो <ph name="DEVICE_TYPE" /> मा Chrome एप प्रयोग गरी अनलाइन किनमेलबाट अझ बढी फाइदा लिनुहोस्</translation>
 <translation id="3245429137663807393">तपाईंले Chrome को प्रयोगसम्बन्धी रिपोर्टहरू पनि सेयर गर्नुभयो भने ती रिपोर्टमा तपाईंले खोलेका URL हरू समावेश हुन्छन्</translation>
+<translation id="3249558306861350254">Windows का सेटिङमा रहेको <ph name="BEGIN_BOLD" />डिफल्ट बनाउनुहोस्<ph name="END_BOLD" /> मा क्लिक गर्नुहोस्।</translation>
 <translation id="3259748324892322072">Chrome एप इन्स्टल गर्नुहोस्</translation>
 <translation id="3282568296779691940">Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="3286538390144397061">अहिले फेरी सुरु गर्नुहोस्</translation>
@@ -825,7 +825,6 @@ Google Chrome ले तपाईंको सेटिङहरू पुन: �
 <translation id="8999208279178790196">{0,plural, =0{Chrome को अपडेट उपलब्ध छ}=1{Chrome को अपडेट उपलब्ध छ}other{Chrome को अपडेट # दिनदेखि उपलब्ध छ}}</translation>
 <translation id="9014771989710951291">एकभन्दा बढी सङ्गठनहरूले Chrome व्यवस्थापन गर्छन्</translation>
 <translation id="9018218886431812662">स्थापना गर्ने कार्य सम्पन्न भयो</translation>
-<translation id="9024318700713112071">Chrome लाई डिफल्ट ब्राउजर बनाउनुहोस्</translation>
 <translation id="9066987883552592250">Chrome क्यानेरीमा उपलब्ध Gemini बन्द गर्नुहोस्</translation>
 <translation id="9074041031320636790">सफल भयो! तपाईं अब Google Search AI मोड प्रयोग गरी ब्राउज गर्दै गर्दा सजिलैसँग प्रश्नहरू सोध्न सक्नुहुन्छ</translation>
 <translation id="9090566250983691233">Chrome ले केही फाइलहरू ब्लक गर्नुको कारण जान्नुहोस्</translation>

@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4883766694719903356">Quadrícula de pestanyes d'incògnit</translation>
 <translation id="4884937942297374058">La protecció millorada està desactivada</translation>
+<translation id="4887391901725877182">Subtítols</translation>
 <translation id="488785315393301722">Mostra els detalls</translation>
 <translation id="4889521386764567563">Perfil actual</translation>
 <translation id="4893713555726946316">Amaga l'opció Cerca a la pàgina</translation>
@@ -1420,6 +1421,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5779117921996157216">{count,plural, =1{Tens {count} contrasenya en perill que podria posar en risc la teva seguretat. Corregeix el problema per protegir-te.}other{Tens {count} contrasenyes en perill que podrien posar en risc la teva seguretat. Corregeix el problema per protegir-te.}}</translation>
 <translation id="5791632441210678828">Botó Ordena del tauler Seguint</translation>
 <translation id="5799263916847593256">Obre-ho per veure l'historial de preus</translation>
+<translation id="5801568494490449797">Preferències</translation>
 <translation id="5803566855766646066">Confirmes que vols descartar aquesta targeta nova?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="58081802114142635">La teva activitat millora la IA de Google</translation>
@@ -2104,6 +2106,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8023878949384262191">Desplega la secció.</translation>
 <translation id="8027581147000338959">Obre en una finestra nova</translation>
 <translation id="8029092694585014252">Configura el recordatori</translation>
+<translation id="8029349782735515147">Mostra els subtítols descriptius quan utilitzis Gemini Live</translation>
 <translation id="8032569120109842252">Seguint</translation>
 <translation id="8035133914807600019">Carpeta nova…</translation>
 <translation id="8035412398498507358">Fotos</translation>

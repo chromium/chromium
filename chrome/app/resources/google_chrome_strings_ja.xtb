@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">ダウンロードしています...</translation>
 <translation id="1651617469580841801">Google レンズを使用すると、ページのタイトル、URL、コンテンツ（PDF を含む）が Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex について</translation>
-<translation id="1665867022636014702">Google の推奨ブラウザ設定を使用する</translation>
 <translation id="1674870198290878346">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome はこのデータ ディレクトリへの読み書きを実行できません: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容が組織の検索ツール、AI ツール、エージェント ツールに送信され、検索候補が表示されます。</translation>
@@ -231,6 +230,7 @@
 <translation id="3242123554343253302">Chrome プロファイルを追加</translation>
 <translation id="3242486428260808857"><ph name="DEVICE_TYPE" /> の Chrome アプリで、オンライン ショッピングをさらに便利に利用できます</translation>
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
+<translation id="3249558306861350254">Windows の設定で [<ph name="BEGIN_BOLD" />デフォルトに設定<ph name="END_BOLD" />] をクリックします。</translation>
 <translation id="3259748324892322072">Chrome アプリを入手</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
@@ -819,7 +819,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
 <translation id="9014771989710951291">Chrome は複数の組織によって管理されています</translation>
 <translation id="9018218886431812662">インストールが完了しました</translation>
-<translation id="9024318700713112071">Chrome を既定として設定</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary を閉じる</translation>
 <translation id="9074041031320636790">これで完了です。ブラウジング中に Google 検索の AI モードで簡単に質問できるようになりました</translation>
 <translation id="9090566250983691233">Chrome で一部のファイルがブロックされる理由</translation>

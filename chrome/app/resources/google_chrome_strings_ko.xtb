@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="1651617469580841801">Google 렌즈를 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 Google로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex 정보</translation>
-<translation id="1665867022636014702">Google 권장 브라우저 설정 사용</translation>
 <translation id="1674870198290878346">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="1682634494516646069">Chrome에서 다음 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome 프로필 추가</translation>
 <translation id="3242486428260808857"><ph name="DEVICE_TYPE" />에서 Chrome 앱을 사용하여 온라인 쇼핑을 최대한 활용하세요</translation>
 <translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
+<translation id="3249558306861350254">Windows 설정에서 <ph name="BEGIN_BOLD" />기본으로 설정<ph name="END_BOLD" />을 클릭합니다.</translation>
 <translation id="3259748324892322072">Chrome 앱 다운로드</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
@@ -829,7 +829,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="9014771989710951291">여러 조직에서 Chrome을 관리합니다.</translation>
 <translation id="9018218886431812662">설치 완료</translation>
-<translation id="9024318700713112071">Chrome을 기본 브라우저로 설정</translation>
 <translation id="9066987883552592250">Chrome Canary의 Gemini 닫기</translation>
 <translation id="9074041031320636790">완료되었습니다. 이제 Google 검색 AI 모드를 사용해 탐색 중에도 쉽게 질문할 수 있습니다</translation>
 <translation id="9090566250983691233">Chrome에서 일부 파일을 차단하는 이유 알아보기</translation>

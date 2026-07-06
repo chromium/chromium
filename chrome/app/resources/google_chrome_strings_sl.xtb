@@ -74,7 +74,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1640672724030957280">Prenos ...</translation>
 <translation id="1651617469580841801">Če uporabljate Google Lens, se naslov strani, URL in vsebina, vključno s PDF-ji, pošljejo Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O sistemu ChromeOS Flex</translation>
-<translation id="1665867022636014702">Uporaba Googlovih priporočenih nastavitev brskalnika</translation>
 <translation id="1674870198290878346">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
 <translation id="1682634494516646069">Google Chrome ne more brati svojega imenika s podatki ali pisati vanj:
 
@@ -237,6 +236,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3242123554343253302">Dodaj profil v Chromu</translation>
 <translation id="3242486428260808857">Kar najbolje izkoristite spletno nakupovanje, ko v napravi <ph name="DEVICE_TYPE" /> uporabljate aplikacijo Chrome</translation>
 <translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
+<translation id="3249558306861350254">V nastavitvah sistema Windows kliknite <ph name="BEGIN_BOLD" />Nastavi privzeto<ph name="END_BOLD" />.</translation>
 <translation id="3259748324892322072">Prenos aplikacije Chrome</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
@@ -830,7 +830,6 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="8999208279178790196">{0,plural, =0{Posodobitev za Chrome je na voljo}=1{Posodobitev za Chrome je na voljo}one{Posodobitev za Chrome je na voljo že # dan}two{Posodobitev za Chrome je na voljo že # dneva}few{Posodobitev za Chrome je na voljo že # dni}other{Posodobitev za Chrome je na voljo že # dni}}</translation>
 <translation id="9014771989710951291">Chrome upravlja več organizacij</translation>
 <translation id="9018218886431812662">Namestitev je dokončana</translation>
-<translation id="9024318700713112071">Nastavite Chrome kot privzeto možnost</translation>
 <translation id="9066987883552592250">Zapiranje Geminija v Chromu Canary</translation>
 <translation id="9074041031320636790">Uspelo je. Z načinom umetne inteligence v Iskanju Google lahko med brskanjem preprosto postavljate vprašanja</translation>
 <translation id="9090566250983691233">Preberite, zakaj Chrome blokira nekatere datoteke</translation>

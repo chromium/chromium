@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">正在下載…</translation>
 <translation id="1651617469580841801">使用「Google 智能鏡頭」時，網頁標題、網址和內容 (包括 PDF) 會傳送至 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">關於 ChromeOS Flex</translation>
-<translation id="1665867022636014702">使用 Google 建議的瀏覽器設定</translation>
 <translation id="1674870198290878346">在 Chrome 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome 無法讀取及寫入數據目錄：
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">新增 Chrome 設定檔</translation>
 <translation id="3242486428260808857">在 <ph name="DEVICE_TYPE" /> 透過 Chrome 應用程式享受更豐富的網上購物體驗</translation>
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
+<translation id="3249558306861350254">在 Windows 設定中按一下 [設為預設]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />。</translation>
 <translation id="3259748324892322072">取得 Chrome 應用程式</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
@@ -829,7 +829,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
 <translation id="9014771989710951291">Chrome 由多個機構管理</translation>
 <translation id="9018218886431812662">安裝完成</translation>
-<translation id="9024318700713112071">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="9066987883552592250">關閉 Chrome Canary 版 Gemini</translation>
 <translation id="9074041031320636790">大功告成！你現可透過「Google 搜尋 AI 模式」在瀏覽時輕鬆提問</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖部分檔案的原因</translation>

@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
 <translation id="1651617469580841801">ನೀವು Google Lens ಅನ್ನು ಬಳಸಿದಾಗ, PDF ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಪುಟದ ಶೀರ್ಷಿಕೆ, URL ಮತ್ತು ಕಂಟೆಂಟ್‌ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex ಕುರಿತು</translation>
-<translation id="1665867022636014702">Google ಶಿಫಾರಸು ಮಾಡಿರುವ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="1674870198290878346">ಲಿಂಕ್‌ ಅನ್ನು ಅ&amp;ದೃಶ್ಯ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1682634494516646069">Google Chrome ಗೆ ಇದರ ಡೇಟಾ ಡೈರೆಕ್ಟರಿಯನ್ನು ಓದಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ಬರೆಯಲಾಗುವುದಿಲ್ಲ:
 
@@ -235,6 +234,7 @@
 <translation id="3242123554343253302">Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3242486428260808857">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Chrome ಆ್ಯಪ್ ಅನ್ನು ಬಳಸಿದಾಗ ಆನ್‌ಲೈನ್ ಶಾಪಿಂಗ್‌ನಿಂದ ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3245429137663807393">ನೀವು Chrome ಬಳಕೆಯ ವರದಿಗಳನ್ನು ಸಹ ಹಂಚಿಕೊಂಡರೆ, ಆ ವರದಿಗಳು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತವೆ</translation>
+<translation id="3249558306861350254">ನಿಮ್ಮ Windows ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ <ph name="BEGIN_BOLD" />ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ<ph name="END_BOLD" /> ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="3259748324892322072">Chrome ಆ್ಯಪ್ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3282568296779691940">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3286538390144397061">ಈಗ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -825,7 +825,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="8999208279178790196">{0,plural, =0{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>
 <translation id="9014771989710951291">ಬಹು ಸಂಸ್ಥೆಗಳು Chrome ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತವೆ</translation>
 <translation id="9018218886431812662">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
-<translation id="9024318700713112071">Chrome ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="9066987883552592250">Chrome Canary ನಲ್ಲಿ Gemini ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="9074041031320636790">ಯಶಸ್ವಿಯಾಗಿದೆ! ನೀವು Google Search AI ಮೋಡ್‌ ಮೂಲಕ ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವುದರಿಂದ ಈಗ ನೀವು ಸುಲಭವಾಗಿ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಬಹುದು</translation>
 <translation id="9090566250983691233">Chrome ಕೆಲವು ಫೈಲ್‌ಗಳನ್ನು ಏಕೆ ನಿರ್ಬಂಧಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ</translation>

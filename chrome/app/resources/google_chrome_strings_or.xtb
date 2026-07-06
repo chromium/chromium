@@ -74,7 +74,6 @@
 <translation id="1640672724030957280">ଡାଉନଲୋଡ ହେଉଛି…</translation>
 <translation id="1651617469580841801">ଆପଣ Google Lens ବ୍ୟବହାର କଲେ, PDFଗୁଡ଼ିକ ସମେତ ପୃଷ୍ଠାର ଟାଇଟେଲ, URL ଏବଂ ବିଷୟବସ୍ତୁ Googleକୁ ପଠାଯାଏ। <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex ବିଷୟରେ</translation>
-<translation id="1665867022636014702">Google ସୁପାରିଶ କରିଥିବା ବ୍ରାଉଜର ସେଟିଂସକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1674870198290878346">Chrome ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="1682634494516646069">Google Chrome ଏହାର ଡାଟା ଡିରେକ୍ଟୋରୀକୁ ପଢ଼ି ଓ ଲେଖି ପାରିବ ନାହିଁ:
 
@@ -237,6 +236,7 @@
 <translation id="3242123554343253302">Chrome ପ୍ରୋଫାଇଲ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3242486428260808857">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chrome ଆପ ବ୍ୟବହାର କରି ଅନଲାଇନ ସପିଂରୁ ଅଧିକ ଲାଭ ପାଆନ୍ତୁ</translation>
 <translation id="3245429137663807393">ଯଦି ଆପଣ Chrome ବ୍ୟବହାର ରିପୋର୍ଟଗୁଡ଼ିକ ମଧ୍ୟ ସେୟାର କରନ୍ତି, ତେବେ ସେହି ରିପୋର୍ଟଗୁଡ଼ିକ ଆପଣ ଭିଜିଟ କରିଥିବା URLଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବ</translation>
+<translation id="3249558306861350254">ଆପଣଙ୍କ Windows ସେଟିଂସରେ <ph name="BEGIN_BOLD" />ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="3259748324892322072">Chrome ଆପ ପାଆନ୍ତୁ</translation>
 <translation id="3282568296779691940">Chromeରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ</translation>
 <translation id="3286538390144397061">ଏବେ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
@@ -829,7 +829,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}=1{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}}</translation>
 <translation id="9014771989710951291">ଏକାଧିକ ସଂସ୍ଥା Chromeକୁ ପରିଚାଳନା କରେ</translation>
 <translation id="9018218886431812662">ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
-<translation id="9024318700713112071">Chromeକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="9066987883552592250">Chrome Canaryରେ Gemini ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="9074041031320636790">ସଫଳ! ଆପଣ ବର୍ତ୍ତମାନ Google Search AI ମୋଡ ସହ ବ୍ରାଉଜ କରିବା ସମୟରେ ସହଜରେ ପ୍ରଶ୍ନ ପଚାରିପାରିବେ</translation>
 <translation id="9090566250983691233">Chrome କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ତାହା ଜାଣନ୍ତୁ</translation>

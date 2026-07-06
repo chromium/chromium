@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="4883766694719903356">Rutenett for inkognitofane</translation>
 <translation id="4884937942297374058">Økt beskyttelse er av</translation>
+<translation id="4887391901725877182">Teksting for hørselshemmede</translation>
 <translation id="488785315393301722">Vis detaljer</translation>
 <translation id="4889521386764567563">Nåværende profil</translation>
 <translation id="4893713555726946316">Skjul Finn på siden</translation>
@@ -1421,6 +1422,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5779117921996157216">{count,plural, =1{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
 <translation id="5791632441210678828">Sorteringsknapp for Følger-feeden.</translation>
 <translation id="5799263916847593256">Åpne for å se prishistorikk</translation>
+<translation id="5801568494490449797">Innstillinger</translation>
 <translation id="5803566855766646066">Er du sikker på at du vil forkaste dette nye kortet?</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="58081802114142635">Aktiviteten din forbedrer AI fra Google</translation>
@@ -2105,6 +2107,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8023878949384262191">Utvider delen.</translation>
 <translation id="8027581147000338959">Åpne i nytt vindu</translation>
 <translation id="8029092694585014252">Angi påminnelse</translation>
+<translation id="8029349782735515147">Vis teksting når du bruker Gemini Live</translation>
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8035133914807600019">Ny mappe</translation>
 <translation id="8035412398498507358">Bilder</translation>

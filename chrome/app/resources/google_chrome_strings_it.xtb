@@ -72,7 +72,6 @@
 <translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1651617469580841801">Quando utilizzi Google Lens, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Informazioni su ChromeOS Flex</translation>
-<translation id="1665867022636014702">Utilizza le impostazioni del browser consigliate da Google</translation>
 <translation id="1674870198290878346">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non è in grado di leggere e scrivere nella directory dei dati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti agli strumenti di ricerca, all'AI e all'agente della tua organizzazione per ricevere suggerimenti.</translation>
@@ -233,6 +232,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="3242123554343253302">Aggiungi profilo Chrome</translation>
 <translation id="3242486428260808857">Ottieni di più dallo shopping online quando usi l'app Chrome sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Se condividi anche report sull'utilizzo di Chrome, tali report includono gli URL visitati</translation>
+<translation id="3249558306861350254">Fai clic su <ph name="BEGIN_BOLD" />Imposta come predefinito<ph name="END_BOLD" /> nelle impostazioni di Windows.</translation>
 <translation id="3259748324892322072">Installa l'app Chrome</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
@@ -820,7 +820,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
 <translation id="9014771989710951291">Più organizzazioni gestiscono Chrome</translation>
 <translation id="9018218886431812662">Installazione completata</translation>
-<translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
 <translation id="9066987883552592250">Chiudi Gemini in Chrome Canary</translation>
 <translation id="9074041031320636790">Operazione riuscita. Ora puoi porre domande in tutta semplicità mentre navighi con AI Mode di Ricerca Google</translation>
 <translation id="9090566250983691233">Scopri perché Chrome blocca alcuni file</translation>
