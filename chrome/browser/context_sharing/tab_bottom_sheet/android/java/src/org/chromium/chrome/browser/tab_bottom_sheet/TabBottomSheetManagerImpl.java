@@ -516,6 +516,7 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     private void maybeShowBottomSheet() {
         if (!isInternallySuppressed()) {
             if (mTabBottomSheetCoordinator != null && mNativeInterfaceDelegate != null) {
+                if (mState == SheetState.SHOWING) return;
                 if (mTabBottomSheetCoordinator.tryToShowBottomSheet(
                         /* animate= */ false, /* startsExpanded= */ false)) {
                     mState = SheetState.SHOWING;
