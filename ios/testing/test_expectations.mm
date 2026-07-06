@@ -9,6 +9,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/system/sys_info.h"
+#import "build/build_config.h"
 #import "ui/base/device_form_factor.h"
 
 @implementation TestExpectationEntry
@@ -119,6 +120,20 @@ TagCategory GetTagCategory(NSString* tag) {
   [tags addObject:@"simulator"];
 #else
   [tags addObject:@"device"];
+#endif
+
+#if defined(ADDRESS_SANITIZER)
+  [tags addObject:@"asan"];
+#endif
+
+#if BUILDFLAG(IS_IOS_MACCATALYST)
+  [tags addObject:@"catalyst"];
+#endif
+
+#if defined(NDEBUG)
+  [tags addObject:@"release"];
+#else
+  [tags addObject:@"debug"];
 #endif
 
   std::string hardwareModel = base::SysInfo::HardwareModelName();
@@ -241,6 +256,21 @@ TagCategory GetTagCategory(NSString* tag) {
 }
 
 // Evaluates whether the expectation's tag string matches active tags.
+//
+// Note on tag matching semantics:
+// - OS and Device categories use "ANY" (OR) semantics: if an expectation
+// specifies
+//   multiple tags within the OS or Device category (e.g., [ ios-17 ios-18 ] or
+//   [ iphone ipad ]), matching ANY tag within that category satisfies the
+//   requirement.
+// - Other tags use "ALL" (AND) semantics: EVERY tag in the kOther category
+// present in the
+//   expectation (e.g., [ debug asan ]) must be present in the active tags for a
+//   match.
+//
+// This divergence between ANY and ALL semantics is intentional to allow
+// expectations that span multiple OS versions or device families while
+// requiring specific build configurations.
 - (BOOL)doTagsMatch:(NSString*)tagsStr
          activeTags:(NSSet<NSString*>*)activeTags {
   if (!tagsStr) {
@@ -283,6 +313,9 @@ TagCategory GetTagCategory(NSString* tag) {
     }
   }
 
+  // For the expectation to match, all kOther tags must have matched in the loop
+  // above (ALL semantics), and if any OS or Device tags were specified, at
+  // least one tag from each specified category must match (ANY semantics).
   return (os_matched || !expectation_has_os_tag) &&
          (device_matched || !expectation_has_device_tag);
 }

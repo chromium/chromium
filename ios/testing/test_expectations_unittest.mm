@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "build/build_config.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -193,6 +194,41 @@ TEST_F(TestExpectationsTest, IPadIPhoneTagsMatching) {
                                              methodName:@"testMethod2"] != nil);
 }
 
+TEST_F(TestExpectationsTest, ActiveTagsIncludesAsanIfDefined) {
+  TestExpectations* expectations =
+      [TestExpectations sharedInstanceForTesting:@""];
+  NSSet<NSString*>* tags = [expectations activeTags];
+#if defined(ADDRESS_SANITIZER)
+  EXPECT_TRUE([tags containsObject:@"asan"]);
+#else
+  EXPECT_FALSE([tags containsObject:@"asan"]);
+#endif
+}
+
+TEST_F(TestExpectationsTest, ActiveTagsIncludesCatalystIfDefined) {
+  TestExpectations* expectations =
+      [TestExpectations sharedInstanceForTesting:@""];
+  NSSet<NSString*>* tags = [expectations activeTags];
+#if BUILDFLAG(IS_IOS_MACCATALYST)
+  EXPECT_TRUE([tags containsObject:@"catalyst"]);
+#else
+  EXPECT_FALSE([tags containsObject:@"catalyst"]);
+#endif
+}
+
+TEST_F(TestExpectationsTest, ActiveTagsIncludesDebugOrRelease) {
+  TestExpectations* expectations =
+      [TestExpectations sharedInstanceForTesting:@""];
+  NSSet<NSString*>* tags = [expectations activeTags];
+#if defined(NDEBUG)
+  EXPECT_TRUE([tags containsObject:@"release"]);
+  EXPECT_FALSE([tags containsObject:@"debug"]);
+#else
+  EXPECT_TRUE([tags containsObject:@"debug"]);
+  EXPECT_FALSE([tags containsObject:@"release"]);
+#endif
+}
+
 TEST_F(TestExpectationsTest, SkipExpectation) {
   NSString* content = @"NotABug MyTestCase/testMethod1 [ Skip ]\n"
                       @"crbug.com/98765 MyTestCase/testMethod2 [ Skip ]\n"
@@ -345,7 +381,39 @@ INSTANTIATE_TEST_SUITE_P(
             "DeviceModelExact",
             "[ iphone17,1 ] MyTestCase/testMethod [ Failure ]\n",
             {"iphone", "iphone17", "iphone17,1"},
-            true}),
+            true},
+        TagMatchingTestCase{"AsanMatch",
+                            "[ asan ] MyTestCase/testMethod [ Failure ]\n",
+                            {"asan"},
+                            true},
+        TagMatchingTestCase{"AsanMismatch",
+                            "[ asan ] MyTestCase/testMethod [ Failure ]\n",
+                            {"ios"},
+                            false},
+        TagMatchingTestCase{"CatalystMatch",
+                            "[ catalyst ] MyTestCase/testMethod [ Failure ]\n",
+                            {"catalyst"},
+                            true},
+        TagMatchingTestCase{"CatalystMismatch",
+                            "[ catalyst ] MyTestCase/testMethod [ Failure ]\n",
+                            {"ios"},
+                            false},
+        TagMatchingTestCase{"DebugMatch",
+                            "[ debug ] MyTestCase/testMethod [ Failure ]\n",
+                            {"debug"},
+                            true},
+        TagMatchingTestCase{"DebugMismatch",
+                            "[ debug ] MyTestCase/testMethod [ Failure ]\n",
+                            {"release"},
+                            false},
+        TagMatchingTestCase{"ReleaseMatch",
+                            "[ release ] MyTestCase/testMethod [ Failure ]\n",
+                            {"release"},
+                            true},
+        TagMatchingTestCase{"ReleaseMismatch",
+                            "[ release ] MyTestCase/testMethod [ Failure ]\n",
+                            {"debug"},
+                            false}),
     [](const testing::TestParamInfo<TagMatchingTestCase>& info) {
       return info.param.test_name;
     });
