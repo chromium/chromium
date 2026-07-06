@@ -26,12 +26,10 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/types/pass_key.h"
 
 namespace base {
 
 class BucketRanges;
-class Histogram;
 
 class BASE_EXPORT SampleVectorBase : public HistogramSamples {
  public:
@@ -54,11 +52,6 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   const BucketRanges* bucket_ranges() const { return bucket_ranges_; }
 
   AtomicSingleSample* SingleSampleForTesting() { return &single_sample(); }
-
-  // Disables single-sample optimization and mounts a counts array.
-  void DisableSingleSample(PassKey<Histogram>) {
-    MountCountsStorageAndMoveSingleSample();
-  }
 
  protected:
   SampleVectorBase(uint64_t id,
@@ -127,7 +120,6 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   friend class SampleVectorTest;
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, CorruptSampleCounts);
   FRIEND_TEST_ALL_PREFIXES(SharedHistogramTest, CorruptSampleCounts);
-  FRIEND_TEST_ALL_PREFIXES(HistogramTest, DisableSingleSampleOptimizationFlag);
 
   // Returns a reference into the `counts()` array. As `counts()` may be an
   // empty optional until the array is populated, `counts()` must be checked for
