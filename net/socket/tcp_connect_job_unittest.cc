@@ -161,7 +161,7 @@ class TcpConnectJobTest : public TcpConnectJobTestBase,
     connect_job_ = std::make_unique<TcpConnectJob>(
         initial_priority_, SocketTag(), &common_connect_job_params_,
         SocketParams(), test_delegate_.get(), /*net_log=*/nullptr,
-        service_endpoint_override_);
+        service_endpoint_override_, disable_stale_dns_);
     start_time_ = base::TimeTicks::Now();
   }
 
@@ -385,6 +385,7 @@ class TcpConnectJobTest : public TcpConnectJobTestBase,
   // Passed in to TcpConnectJob constructor.
   std::optional<TcpConnectJob::ServiceEndpointOverride>
       service_endpoint_override_;
+  bool disable_stale_dns_ = false;
 
   // Use pointers so can easily re-initialize these.
   std::unique_ptr<TestConnectJobDelegate> test_delegate_;
@@ -3147,6 +3148,41 @@ class TcpConnectJobOptimisticDnsTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All, TcpConnectJobOptimisticDnsTest, testing::Bool());
+
+TEST_P(TcpConnectJobOptimisticDnsTest, OptimisticDnsRequiresTlsEnabled) {
+  const auto fresh_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 1> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV4Endpoint1);
+
+  // Explicitly disable stale DNS to simulate a plain text connection (or a
+  // TLS connection retry) where optimistic DNS is disallowed.
+  disable_stale_dns_ = true;
+  InitConnectJob();
+  EXPECT_THAT(connect_job_->Connect(), IsError(ERR_IO_PENDING));
+
+  // The request should not have requested stale results because it is not for
+  // TLS.
+  EXPECT_NE(request->resolve_host_params().cache_usage,
+            HostResolver::ResolveHostParameters::CacheUsage::
+                STALE_ALLOWED_WHILE_REFRESHING);
+
+  // Since it didn't request stale endpoints, the HostResolver will only
+  // provide fresh endpoints.
+  request->set_crypto_ready(true)
+      .set_is_stale_while_refreshing(false)
+      .set_endpoints({fresh_endpoint})
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+
+  EXPECT_TRUE(connect_completers[0].is_connecting());
+
+  request->CallOnServiceEndpointRequestFinished(OK);
+
+  connect_completers[0].Complete(OK);
+  CheckConnection(kIpV4Endpoint1, fresh_endpoint);
+}
 
 TEST_P(TcpConnectJobOptimisticDnsTest, StaleAThenFreshA) {
   const auto stale_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});

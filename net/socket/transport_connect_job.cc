@@ -112,9 +112,10 @@ std::unique_ptr<ConnectJob> TransportConnectJob::Factory::CreateJob(
     Delegate* delegate,
     const NetLogWithSource* net_log) {
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV2)) {
-    return std::make_unique<TcpConnectJob>(priority, socket_tag,
-                                           common_connect_job_params, params,
-                                           delegate, net_log);
+    return std::make_unique<TcpConnectJob>(
+        priority, socket_tag, common_connect_job_params, params, delegate,
+        net_log, /*endpoint_result_override=*/std::nullopt,
+        /*disable_stale_dns=*/true);
   }
   return std::make_unique<TransportConnectJob>(priority, socket_tag,
                                                common_connect_job_params,
