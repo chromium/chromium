@@ -1391,6 +1391,9 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the fast scroll continuity rule of the V4 scroll jank metric only"
                     + " applies if the previous and current frames' total raw scroll deltas have"
                     + " the same sign."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_AW_CLASS_PRELOADER,
+                "When enabled, WebView will preload a certain list of classes for performance."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
