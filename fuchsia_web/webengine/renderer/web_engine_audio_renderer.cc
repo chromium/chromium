@@ -7,6 +7,7 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"

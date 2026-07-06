@@ -12,6 +12,7 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
