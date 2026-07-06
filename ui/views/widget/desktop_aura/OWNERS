@@ -2,3 +2,4 @@ per-file *x11*=file://ui/ozone/platform/x11/OWNERS
 per-file window_event_filter*=thomasanderson@chromium.org
 per-file desktop_window_tree_host_platform*=thomasanderson@chromium.org
 per-file *linux*=thomasanderson@chromium.org
+per-file *_win.*=davidbienvenu@chromium.org
