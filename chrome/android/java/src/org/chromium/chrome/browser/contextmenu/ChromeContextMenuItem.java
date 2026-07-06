@@ -88,7 +88,8 @@ class ChromeContextMenuItem {
         Item.DOWNLOAD_VIDEO_FRAME,
         Item.READING_MODE,
         Item.SEND_TAB_TO_SELF,
-        Item.TRANSLATE
+        Item.TRANSLATE,
+        Item.CREATE_QR_CODE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
@@ -155,8 +156,9 @@ class ChromeContextMenuItem {
         int READING_MODE = 49;
         int SEND_TAB_TO_SELF = 50;
         int TRANSLATE = 51;
+        int CREATE_QR_CODE = 52;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 52;
+        int NUM_ENTRIES = 53;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -213,6 +215,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_open_in_reading_mode, // Item.READING_MODE
         R.id.contextmenu_send_tab_to_self, // Item.SEND_TAB_TO_SELF
         R.id.contextmenu_translate, // Item.TRANSLATE
+        R.id.contextmenu_create_qr_code, // Item.CREATE_QR_CODE
     };
 
     /** Mapping from {@link Item} to the ID of the string that describes the action of the item. */
@@ -269,6 +272,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_open_in_reading_mode, // Item.READING_MODE
         R.string.sharing_send_tab_to_self, // Item.SEND_TAB_TO_SELF
         R.string.contextmenu_translate, // Item.TRANSLATE
+        R.string.contextmenu_create_qr_code, // Item.CREATE_QR_CODE
     };
 
     /**

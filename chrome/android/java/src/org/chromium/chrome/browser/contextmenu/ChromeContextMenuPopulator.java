@@ -15,6 +15,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TEXT_APPEARANCE_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
+import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
@@ -259,6 +261,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.READING_MODE,
             Action.SEND_TAB_TO_SELF,
             Action.TRANSLATE,
+            Action.CREATE_QR_CODE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -320,7 +323,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int READING_MODE = 55;
             int SEND_TAB_TO_SELF = 56;
             int TRANSLATE = 57;
-            int NUM_ENTRIES = 58;
+            int CREATE_QR_CODE = 58;
+            int NUM_ENTRIES = 59;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -568,6 +572,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 getProfile(), mParams.getPageUrl().getSpec());
                 if (sendTabToSelfDisplayReason != null) {
                     pageGroup.add(createListItem(Item.SEND_TAB_TO_SELF));
+                }
+                if (!isEmptyUrl(mParams.getPageUrl())) {
+                    pageGroup.add(createListItem(Item.CREATE_QR_CODE));
                 }
             }
             groupedItems.add(pageGroup);
@@ -1182,6 +1189,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Tab tab = getTab();
             if (tab != null) {
                 TranslateBridge.translateTabWhenReady(tab);
+            }
+        } else if (itemId == R.id.contextmenu_create_qr_code) {
+            recordContextMenuSelection(ContextMenuUma.Action.CREATE_QR_CODE);
+            WindowAndroid window = getWindow();
+            if (window != null) {
+                Activity activity = window.getActivity().get();
+                if (activity != null) {
+                    QrCodeCoordinator qrCodeCoordinator =
+                            new QrCodeCoordinator(activity, mParams.getPageUrl().getSpec(), window);
+                    qrCodeCoordinator.show();
+                }
             }
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);

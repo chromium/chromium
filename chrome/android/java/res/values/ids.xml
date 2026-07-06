@@ -65,6 +65,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_reload" />
     <item type="id" name="contextmenu_open_in_reading_mode" />
     <item type="id" name="contextmenu_send_tab_to_self" />
+    <item type="id" name="contextmenu_create_qr_code" />
     <item type="id" name="contextmenu_inspect_element" />
     <item type="id" name="contextmenu_view_page_source" />
     <item type="id" name="contextmenu_translate" />

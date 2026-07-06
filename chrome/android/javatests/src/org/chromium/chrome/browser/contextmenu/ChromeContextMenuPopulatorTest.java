@@ -2602,7 +2602,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_print_page,
                 R.id.contextmenu_search_tab_with_google_lens,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self
+                R.id.contextmenu_send_tab_to_self,
+                R.id.contextmenu_create_qr_code
             },
         };
 
@@ -2630,7 +2631,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_save_page,
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_print_page,
-                R.id.contextmenu_open_in_reading_mode
+                R.id.contextmenu_open_in_reading_mode,
+                R.id.contextmenu_create_qr_code
             },
         };
 
@@ -2655,7 +2657,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_print_page,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self
+                R.id.contextmenu_send_tab_to_self,
+                R.id.contextmenu_create_qr_code
             },
         };
 
@@ -2683,7 +2686,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_print_page,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self
+                R.id.contextmenu_send_tab_to_self,
+                R.id.contextmenu_create_qr_code
             },
             {R.id.contextmenu_translate},
         };
@@ -2713,7 +2717,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_print_page,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self
+                R.id.contextmenu_send_tab_to_self,
+                R.id.contextmenu_create_qr_code
             },
         };
 
@@ -2750,7 +2755,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_print_page,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self
+                R.id.contextmenu_send_tab_to_self,
+                R.id.contextmenu_create_qr_code
             },
         };
 
@@ -2793,7 +2799,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_print_page,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self
+                R.id.contextmenu_send_tab_to_self,
+                R.id.contextmenu_create_qr_code
             },
             {R.id.contextmenu_view_page_source, R.id.contextmenu_inspect_element},
         };
@@ -2844,7 +2851,8 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_share_page,
             R.id.contextmenu_print_page,
             R.id.contextmenu_open_in_reading_mode,
-            R.id.contextmenu_send_tab_to_self
+            R.id.contextmenu_send_tab_to_self,
+            R.id.contextmenu_create_qr_code
         };
         List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_save_page);
 
@@ -2880,7 +2888,8 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_save_page,
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self
+                R.id.contextmenu_send_tab_to_self,
+                R.id.contextmenu_create_qr_code
             },
         };
 
