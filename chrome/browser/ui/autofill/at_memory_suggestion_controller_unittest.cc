@@ -201,8 +201,9 @@ TEST_F(AtMemorySuggestionControllerTest, AcceptSuggestion) {
       manager().external_delegate(),
       DidAcceptSuggestion(
           suggestions[0],
-          testing::Field(&AutofillSuggestionDelegate::SuggestionMetadata::row,
-                         0)));
+          testing::Field(
+              &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
+              std::vector<size_t>{0})));
 
   client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);

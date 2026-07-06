@@ -40,6 +40,10 @@ class MockAutofillPopupView : public AutofillPopupView {
               CreateSubPopupView,
               (base::WeakPtr<AutofillPopupController>),
               (override));
+  MOCK_METHOD(std::optional<size_t>,
+              GetIndexOfSubPopupAnchorSuggestion,
+              (),
+              (const override));
   MOCK_METHOD(bool, HasFocus, (), (const override));
 
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override {

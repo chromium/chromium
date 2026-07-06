@@ -688,7 +688,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   base::HistogramTester histogram_tester;
 
   external_delegate().DidAcceptSuggestion(
-      external_delegate().suggestions().front(), {});
+      external_delegate().suggestions().front(), {.multi_index = {0}});
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance",
@@ -713,7 +713,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   external_delegate().DidAcceptSuggestion(
       Suggestion(u"1234", u"Deutsche Bahn", Suggestion::Icon::kNoIcon,
                  SuggestionType::kLoyaltyCardEntry),
-      {});
+      {.multi_index = {0}});
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance",

@@ -77,7 +77,8 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().front().global_id());
     base::HistogramTester histogram_tester;
-    external_delegate().DidAcceptSuggestion(address_suggestion, {1, 0});
+    external_delegate().DidAcceptSuggestion(address_suggestion,
+                                            {.multi_index = {1}});
     histogram_tester.ExpectUniqueSample(
         "Autofill.SuggestionAcceptedIndex.Profile", 1, 1);
   }
@@ -86,7 +87,8 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().back().global_id());
     base::HistogramTester histogram_tester;
-    external_delegate().DidAcceptSuggestion(credit_card_suggestion, {0, 0});
+    external_delegate().DidAcceptSuggestion(credit_card_suggestion,
+                                            {.multi_index = {0}});
     histogram_tester.ExpectUniqueSample(
         "Autofill.SuggestionAcceptedIndex.CreditCard", 0, 1);
   }
@@ -109,7 +111,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
         form, form.fields().front().global_id());
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(address_suggestion,
-                                            /*position=*/{});
+                                            {.multi_index = {0}});
     histogram_tester.ExpectUniqueSample(
         "Autofill.Suggestion.AcceptanceFieldValueLength.Address", 3, 1);
   }
@@ -119,7 +121,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
         form, form.fields().back().global_id());
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(credit_card_suggestion,
-                                            /*position=*/{});
+                                            {.multi_index = {0}});
     histogram_tester.ExpectUniqueSample(
         "Autofill.Suggestion.AcceptanceFieldValueLength.CreditCard", 2, 1);
   }

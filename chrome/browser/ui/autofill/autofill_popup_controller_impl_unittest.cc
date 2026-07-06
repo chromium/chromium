@@ -57,9 +57,8 @@ Matcher<const AutofillSuggestionDelegate::SuggestionMetadata&>
 EqualsSuggestionMetadata(
     AutofillSuggestionDelegate::SuggestionMetadata metadata) {
   return AllOf(
-      Field(&AutofillSuggestionDelegate::SuggestionMetadata::row, metadata.row),
-      Field(&AutofillSuggestionDelegate::SuggestionMetadata::sub_popup_level,
-            metadata.sub_popup_level),
+      Field(&AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
+            metadata.multi_index),
       Field(&AutofillSuggestionDelegate::SuggestionMetadata::from_search_result,
             metadata.from_search_result));
 }
@@ -436,8 +435,8 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
       .SetView(client().sub_popup_view()->GetWeakPtr());
 
   EXPECT_CALL(manager().external_delegate(),
-              DidAcceptSuggestion(_, EqualsSuggestionMetadata(
-                                         {.row = 0, .sub_popup_level = 1})));
+              DidAcceptSuggestion(
+                  _, EqualsSuggestionMetadata({.multi_index = {0, 0}})));
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   sub_controller->AcceptSuggestion(
@@ -1035,7 +1034,8 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(manager().external_delegate(),
               DidAcceptSuggestion(
-                  _, EqualsSuggestionMetadata({.from_search_result = true})));
+                  _, EqualsSuggestionMetadata(
+                         {.multi_index = {0}, .from_search_result = true})));
 
   controller.SetFilter(AutofillPopupController::StringFilter(u"main_text"),
                        AutofillPopupController::FilterSource::kInputChanged);

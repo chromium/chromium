@@ -292,7 +292,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       metadata.from_search_result);
   base::UmaHistogramBoolean(
       "PasswordManager.ManualFallback.AcceptedSuggestion.FromRootPopup",
-      metadata.sub_popup_level == 0);
+      metadata.sub_popup_level() == 0);
 
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry: {

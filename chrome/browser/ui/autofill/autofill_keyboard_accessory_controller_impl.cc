@@ -451,7 +451,8 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
   base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
                                 accept_method);
   delegate_->DidAcceptSuggestion(
-      suggestion, AutofillSuggestionDelegate::SuggestionMetadata{.row = index});
+      suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
+                      .multi_index = {static_cast<size_t>(index)}});
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(

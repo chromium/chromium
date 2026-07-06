@@ -98,6 +98,10 @@ class AutofillPopupView {
   virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillPopupController> sub_controller) = 0;
 
+  // Returns the index of the suggestion on which the currently open sub-popup
+  // of this view is anchored.
+  virtual std::optional<size_t> GetIndexOfSubPopupAnchorSuggestion() const = 0;
+
   // Indicates whether any of the view elements currently has focus.
   virtual bool HasFocus() const = 0;
 

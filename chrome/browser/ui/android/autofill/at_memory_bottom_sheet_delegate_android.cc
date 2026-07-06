@@ -59,8 +59,8 @@ void AtMemoryBottomSheetDelegateAndroid::OnSuggestionSelected(int position) {
   Suggestion suggestion = suggestions_[position];
   if (delegate_) {
     delegate_->DidAcceptSuggestion(
-        suggestion,
-        AutofillSuggestionDelegate::SuggestionMetadata{.row = position});
+        suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
+                        .multi_index = {static_cast<size_t>(position)}});
   }
 }
 
@@ -85,7 +85,8 @@ void AtMemoryBottomSheetDelegateAndroid::OnChildSuggestionSelected(
   if (delegate_) {
     delegate_->DidAcceptSuggestion(
         suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
-                        .row = child_position, .sub_popup_level = 1});
+                        .multi_index = {static_cast<size_t>(parent_position),
+                                        static_cast<size_t>(child_position)}});
   }
 }
 

@@ -422,8 +422,9 @@ bool HasGuid(const Suggestion::Payload& payload) {
                                         ? suggestion.payload
                                         : Suggestion::Payload();
 
-      _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
-                                               {static_cast<int>(index), 0});
+      CHECK_GE(index, 0);
+      _suggestionDelegate->DidAcceptSuggestion(
+          autofill_suggestion, {.multi_index = {static_cast<size_t>(index)}});
     }
     return;
   }

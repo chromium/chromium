@@ -688,7 +688,7 @@ TEST_F(AutofillExternalDelegateTest, SelectAutocompleteAtMemoryButton) {
                   AutofillSuggestionTriggerSource::kAtMemory));
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kAutocompleteAtMemoryButton),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
@@ -710,7 +710,7 @@ TEST_F(AutofillExternalDelegateTest,
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(u"some query", SuggestionType::kAtMemorySearchAffordance),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 // Tests that accessibility annotator trigger source uses the caret anchor
@@ -852,8 +852,8 @@ TEST_F(AutofillExternalDelegateTest,
   suggestion.payload = Suggestion::AtMemoryPayload(
       u"pasted text", accessibility_annotator::MemoryDataType::kUnknown);
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
@@ -1273,7 +1273,7 @@ TEST_P(AutofillExternalDelegateAutoSuggestInactivityTest,
                   AutofillSuggestionTriggerSource::kAtMemory));
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kAtMemoryInactivityNudge),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1418,8 +1418,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryAcceptOpenGeminiSuggestion) {
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               Eq(std::nullopt)));
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 #endif
 
@@ -1452,8 +1452,8 @@ TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
 
   // This should trigger a call to hide the popup since we've selected an
   // option.
-  external_delegate().DidAcceptSuggestion(autofill_item[0],
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      autofill_item[0], SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that data list elements for a node will appear in the Autofill popup.
@@ -1662,7 +1662,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
       CreateAutofillSuggestion(SuggestionType::kBnplEntry,
                                /*main_text_value=*/u"BNPL suggestion",
                                payments_payload),
-      {});
+      {.multi_index = {0}});
 }
 
 // Tests that accepting a BNPL entry when PayNowPayLater tabs are enabled
@@ -1684,8 +1684,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Tests that accepting a BNPL entry when PayNowPayLater tabs are disabled
@@ -1712,8 +1712,8 @@ TEST_F(AutofillExternalDelegateTest,
       SuggestionType::kBnplEntry, /*main_text_value=*/u"BNPL suggestion",
       payments_payload);
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Tests that `prefer_prev_arrow_side_on_suggestions_update` is true when
@@ -2073,8 +2073,8 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateInvalidUniqueId) {
                               Eq(std::nullopt)));
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that the Autofill delegate still allows previewing and filling
@@ -2126,8 +2126,8 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsIbanEntry) {
         std::move(callback).Run(iban.value());
       });
 
-  external_delegate().DidAcceptSuggestion(suggestions[0],
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestions[0], SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that the Autofill delegate still allows previewing and filling
@@ -2170,8 +2170,8 @@ TEST_F(AutofillExternalDelegateTest,
                          promo_code_value, FillingProduct::kMerchantPromoCode,
                          std::optional(MERCHANT_PROMO_CODE)));
 
-  external_delegate().DidAcceptSuggestion(suggestions[0],
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestions[0], SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that the Autofill delegate allows previewing `kLoyaltyCardEntry`
@@ -2239,8 +2239,8 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsLoyaltyCardEntry) {
           HasQueriedFormId(), HasQueriedFieldId(), full_loyalty_card_value,
           FillingProduct::kLoyaltyCard, std::optional(LOYALTY_MEMBERSHIP_ID)));
 
-  external_delegate().DidAcceptSuggestion(suggestions[0],
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestions[0], SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, AcceptManageLoyaltyCards) {
@@ -2248,7 +2248,8 @@ TEST_F(AutofillExternalDelegateTest, AcceptManageLoyaltyCards) {
       Suggestion(u"Manage cards", SuggestionType::kManageLoyaltyCard);
   EXPECT_CALL(autofill_client(),
               ShowAutofillSettings(SuggestionType::kManageLoyaltyCard));
-  external_delegate().DidAcceptSuggestion(manage_suggestion, {});
+  external_delegate().DidAcceptSuggestion(manage_suggestion,
+                                          {.multi_index = {0}});
 }
 
 // Test that the Autofill delegate routes the merchant promo code suggestions
@@ -2262,7 +2263,7 @@ TEST_F(AutofillExternalDelegateTest,
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kSeePromoCodeDetails, u"baz foo",
                                gurl),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that the ClearPreview call is only sent if the form was being previewed
@@ -2337,7 +2338,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateAcceptDatalistSuggestion) {
 
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kDatalistEntry, dummy_string),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
@@ -2412,7 +2413,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion) {
       CreateAutofillSuggestion(
           SuggestionType::kAddressEntry, u"John Legend",
           Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()))),
-      SuggestionPosition{.row = 2});
+      SuggestionPosition{.multi_index = {2}});
 }
 
 TEST_F(AutofillExternalDelegateTest,
@@ -2456,8 +2457,8 @@ TEST_F(AutofillExternalDelegateTest, TestAddressSuggestion_FillAndPreview) {
   EXPECT_CALL(autofill_client(),
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               Eq(std::nullopt)));
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
   histogram_tester.ExpectUniqueSample(
       "Autofill.TestAddressesEvent",
       autofill_metrics::AutofillInDevtoolsTestAddressesEvents::
@@ -2505,8 +2506,8 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Fill) {
       .WillOnce(RunOnceCallback<2>(/*accepted=*/true));
 
   // Test fill.
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that an accepted verified email autofill suggestion will not fill the
@@ -2529,8 +2530,8 @@ TEST_F(AutofillExternalDelegateTest,
       .WillOnce(RunOnceCallback<2>(/*accepted=*/false));
 
   // Test fill.
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest,
@@ -2546,7 +2547,7 @@ TEST_F(AutofillExternalDelegateTest,
           SuggestionType::kAddressEntry, u"John Legend",
           Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()))),
       AutofillSuggestionDelegate::SuggestionMetadata{
-          .row = suggestion_accepted_row});
+          .multi_index = {static_cast<size_t>(suggestion_accepted_row)}});
 
   histogram_tester.ExpectUniqueSample("Autofill.SuggestionAcceptedIndex",
                                       suggestion_accepted_row, 1);
@@ -2569,8 +2570,8 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(profile),
                         DefaultTriggerSource(), _));
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 1});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {1}});
 }
 
 // Tests that on selecting and accepting a `kFillAutofillAi` suggestion with
@@ -2603,7 +2604,8 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(passport),
                         DefaultTriggerSource(), _));
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
@@ -2668,7 +2670,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
                           DefaultTriggerSource(), _));
   }
 
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
   ASSERT_FALSE(reauth_callback.is_null());
   std::move(reauth_callback).Run(true);
 }
@@ -2717,7 +2720,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthMessage) {
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 // Tests that when accepting a `kFillAutofillAi` suggestion that requires
@@ -2748,7 +2752,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthRejected) {
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 // Tests that the result of the re-authentication flow is recorded per field
@@ -2781,7 +2786,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ResultMetrics) {
     test_api(autofill_manager().GetAutofillAiAccessManager())
         .SetDeviceAuthenticator(std::move(authenticator));
 
-    external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+    external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                            {.multi_index = {0}});
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.ReauthToFill.ResultPerFieldType",
@@ -2801,7 +2807,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ResultMetrics) {
     test_api(autofill_manager().GetAutofillAiAccessManager())
         .SetDeviceAuthenticator(std::move(authenticator));
 
-    external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+    external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                            {.multi_index = {0}});
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.ReauthToFill.ResultPerFieldType",
@@ -2837,7 +2844,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 // Tests that no authentication is required when filling `kFillAutofillAi` and
@@ -2866,7 +2874,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 // Tests that when accepting a `kFillAutofillAi` suggestion that requires
@@ -2898,7 +2907,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 #endif
 
@@ -2907,7 +2917,8 @@ TEST_F(AutofillExternalDelegateTest, AcceptManageAutofillAi) {
       Suggestion(u"Manage information", SuggestionType::kManageAutofillAi);
   EXPECT_CALL(autofill_client(),
               ShowAutofillSettings(SuggestionType::kManageAutofillAi));
-  external_delegate().DidAcceptSuggestion(manage_suggestion, {});
+  external_delegate().DidAcceptSuggestion(manage_suggestion,
+                                          {.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
@@ -2925,7 +2936,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kOneTimePasswordEntry,
                                /*main_text_value=*/otp_value),
-      {});
+      {.multi_index = {0}});
 }
 
 class AutofillExternalDelegateWithWalletPrivatePassesTest
@@ -2995,7 +3006,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
                                 std::optional(FillingProduct::kAutofillAi)));
   }
 
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 // Tests that when accepting a `kFillAutofillAi` suggestion that would fill a
@@ -3034,7 +3046,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
 
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 // Tests that when fetching a masked server entity fails, the suggestion is
@@ -3071,7 +3084,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
 
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
@@ -3122,7 +3136,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
 
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_IOS)
@@ -3202,7 +3217,8 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
               GetUnmaskedSpiiEntity(masked_passport.guid(), _))
       .WillOnce(MoveArg<1>(&callback));
 
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
 
   // Now simulate the async response.
   EXPECT_CALL(
@@ -3389,8 +3405,8 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateOpensComposeAndFills) {
   EXPECT_CALL(autofill_client(),
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               Eq(std::nullopt)));
-  external_delegate().DidAcceptSuggestion(suggestions[0],
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestions[0], SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest,
@@ -3406,7 +3422,7 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(compose_delegate, DisableCompose);
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kComposeDisable),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest,
@@ -3422,7 +3438,7 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(compose_delegate, GoToSettings);
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kComposeGoToSettings),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest,
@@ -3433,7 +3449,7 @@ TEST_F(AutofillExternalDelegateTest,
               OnDidAcceptCreditCardSaveAndFillSuggestion(_));
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, AcceptedSaveAndFillEntry_FillForm) {
@@ -3453,7 +3469,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedSaveAndFillEntry_FillForm) {
 
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, SaveAndFillMetrics_SuggestionAccepted) {
@@ -3462,7 +3478,7 @@ TEST_F(AutofillExternalDelegateTest, SaveAndFillMetrics_SuggestionAccepted) {
 
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 
   histogram.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.SaveAndFill",
@@ -3482,7 +3498,7 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(compose_delegate, NeverShowComposeForOrigin);
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kComposeNeverShowOnThisSiteAgain),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -3492,7 +3508,8 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateUndoForm) {
   IssueOnQuery();
   EXPECT_CALL(autofill_manager(), UndoAutofill);
   external_delegate().DidAcceptSuggestion(
-      Suggestion(SuggestionType::kUndoOrClear), SuggestionPosition{.row = 0});
+      Suggestion(SuggestionType::kUndoOrClear),
+      SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that the driver is directed to undo the form after being notified that
@@ -3516,7 +3533,7 @@ TEST_F(AutofillExternalDelegateTest, ScanCreditCardMenuItem) {
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kScanCreditCard),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionShown) {
@@ -3541,7 +3558,7 @@ TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionAccepted) {
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kScanCreditCard),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 
   histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
                               AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
@@ -3563,7 +3580,7 @@ TEST_F(AutofillExternalDelegateTest,
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kCreditCardEntry),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 
   histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
                               AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
@@ -3606,7 +3623,8 @@ TEST_F(AutofillExternalDelegateTest, ScanCreditCard_FillForm) {
               FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _,
                                 HasFillingPayload(card), _, _));
   external_delegate().DidAcceptSuggestion(
-      CreateAutofillSuggestion(SuggestionType::kScanCreditCard), {});
+      CreateAutofillSuggestion(SuggestionType::kScanCreditCard),
+      {.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, IgnoreAutocompleteOffForAutofill) {
@@ -3654,7 +3672,7 @@ TEST_F(AutofillExternalDelegateTest,
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
                                dummy_autocomplete_string),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SuggestionAcceptedIndex.Autocomplete", 0, 1);
@@ -3695,8 +3713,8 @@ TEST_F(AutofillExternalDelegateTest,
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
           NAME_FULL, profile.guid()));
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 
   histogram_tester.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
                                       SuggestionType::kAddressEntryOnTyping, 1);
@@ -3735,7 +3753,7 @@ TEST_F(AutofillExternalDelegateTest,
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kMerchantPromoCodeEntry,
                                dummy_promo_code_string),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillFieldWithValue_Iban) {
@@ -3766,7 +3784,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillFieldWithValue_Iban) {
       CreateAutofillSuggestion(SuggestionType::kIbanEntry,
                                iban.GetIdentifierStringForAutofillDisplay(),
                                Suggestion::Guid(iban.guid())),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest,
@@ -3793,8 +3811,8 @@ TEST_F(AutofillExternalDelegateTest,
                   Property(&AutofillProfile::guid, profile.guid()),
                   queried_form().global_id(), IsQueriedFieldId(), _));
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Test that browser autofill manager will handle the unmasking request for the
@@ -3810,8 +3828,8 @@ TEST_F(AutofillExternalDelegateTest, AcceptVirtualCardOptionItem) {
                         IsQueriedFieldId(), _, _, _));
   Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, SelectVirtualCardOptionItem) {
@@ -3912,7 +3930,7 @@ TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
 
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kAddressEntry),
-      SuggestionPosition{.row = 0});
+      SuggestionPosition{.multi_index = {0}});
 
   histogram_tester.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
                                       SuggestionType::kAddressEntry, 1);
@@ -3987,8 +4005,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          std::u16string(u"pasted text"),
                          FillingProduct::kAtMemory, _));
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Tests that accepting an AtMemory suggestion for an IBAN attempts to fetch the
@@ -4019,8 +4037,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          iban.value(), FillingProduct::kAtMemory, _));
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Tests that accepting an AtMemory suggestion for a Credit Card attempts to
@@ -4058,8 +4076,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsCreditCard) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          card.number(), FillingProduct::kAtMemory, _));
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Tests that accepting an AtMemory suggestion for an AutofillAI SPII attempts
@@ -4094,8 +4112,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsAutofillAi) {
                          passport_attribute->GetCompleteRawInfo(),
                          FillingProduct::kAtMemory, _));
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 // Tests that accepting an AtMemory suggestion for a masked server AutofillAI
@@ -4141,8 +4159,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
                          passport_attribute->GetCompleteRawInfo(),
                          FillingProduct::kAtMemory, _));
 
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest,

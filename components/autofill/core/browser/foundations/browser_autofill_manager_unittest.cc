@@ -1656,7 +1656,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   OnAskForValuesToFill(form, form.fields()[0]);
 
-  external_delegate()->DidAcceptSuggestion(suggestion, {});
+  external_delegate()->DidAcceptSuggestion(suggestion, {.multi_index = {0}});
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

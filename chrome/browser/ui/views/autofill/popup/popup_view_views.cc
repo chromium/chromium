@@ -842,6 +842,11 @@ base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
   return nullptr;
 }
 
+std::optional<size_t> PopupViewViews::GetIndexOfSubPopupAnchorSuggestion()
+    const {
+  return row_with_open_sub_popup_;
+}
+
 bool PopupViewViews::HasFocus() const {
   if (!GetWidget()) {
     return false;

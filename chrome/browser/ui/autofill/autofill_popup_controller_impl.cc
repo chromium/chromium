@@ -544,10 +544,21 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
                                        PopupInteraction::kSuggestionAccepted);
   base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
                                 accept_method);
+
+  const int popup_level = GetPopupLevel();
+  std::vector<size_t> multi_row_index(popup_level + 1, 0);
+  multi_row_index.back() = index;
+  base::WeakPtr<AutofillPopupControllerImpl> controller =
+      parent_controller_.value_or({});
+  for (int i = popup_level - 1; i >= 0 && controller && controller->view_;
+       --i) {
+    multi_row_index[i] =
+        controller->view_->GetIndexOfSubPopupAnchorSuggestion().value_or(0);
+    controller = controller->parent_controller_.value_or({});
+  }
   delegate_->DidAcceptSuggestion(suggestion,
                                  AutofillSuggestionDelegate::SuggestionMetadata{
-                                     .row = index,
-                                     .sub_popup_level = GetPopupLevel(),
+                                     .multi_index = std::move(multi_row_index),
                                      .from_search_result = !!filter_});
 }
 

@@ -56,10 +56,11 @@ TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
   AtMemoryBottomSheetDelegateAndroid delegate(
       &client_, mock_suggestion_delegate_.GetWeakPtr(), suggestions);
 
-  EXPECT_CALL(mock_suggestion_delegate_,
-              DidAcceptSuggestion(
-                  suggestions[1],
-                  AutofillSuggestionDelegate::SuggestionMetadata{.row = 1}));
+  EXPECT_CALL(
+      mock_suggestion_delegate_,
+      DidAcceptSuggestion(
+          suggestions[1],
+          AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {1}}));
   delegate.OnSuggestionSelected(1);
 }
 
@@ -77,7 +78,7 @@ TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
   EXPECT_CALL(mock_suggestion_delegate_,
               DidAcceptSuggestion(
                   child1, AutofillSuggestionDelegate::SuggestionMetadata{
-                              .row = 1, .sub_popup_level = 1}));
+                              .multi_index = {1, 1}}));
   delegate.OnChildSuggestionSelected(1, 1);
 }
 
