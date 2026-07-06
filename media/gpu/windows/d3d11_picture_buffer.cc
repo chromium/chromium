@@ -22,19 +22,13 @@ D3D11PictureBuffer::D3D11PictureBuffer(
     ComD3D11Texture2D texture,
     size_t array_slice,
     std::unique_ptr<Texture2DWrapper> texture_wrapper,
-    gfx::Size size,
     size_t picture_index)
     : RefCountedDeleteOnSequence<D3D11PictureBuffer>(
           std::move(delete_task_runner)),
       texture_(std::move(texture)),
       array_slice_(array_slice),
       texture_wrapper_(std::move(texture_wrapper)),
-      size_(size),
-      picture_index_(picture_index) {
-  // TODO(crbug.com/492116792): Drop size param and use
-  // texture_wrapper_->GetSize() instead.
-  CHECK_EQ(size, texture_wrapper_->GetSize());
-}
+      picture_index_(picture_index) {}
 
 D3D11PictureBuffer::~D3D11PictureBuffer() = default;
 

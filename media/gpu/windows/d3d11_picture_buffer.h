@@ -59,7 +59,6 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
       ComD3D11Texture2D texture,
       size_t array_slice,
       std::unique_ptr<Texture2DWrapper> texture_wrapper,
-      gfx::Size size,
       size_t picture_index);
 
   D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -86,7 +85,6 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   void SetFenceAndValue(scoped_refptr<D3D12Fence> fence, uint64_t value);
   D3D11Status WaitForDecodeCompleteGPU(ID3D11DeviceContext* context);
 
-  const gfx::Size& size() const { return size_; }
   size_t picture_index() const { return picture_index_; }
 
   // Is this PictureBuffer backing a VideoFrame right now?
@@ -122,7 +120,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
 
   std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<Texture2DWrapper> texture_wrapper_;
-  gfx::Size size_;
+
   bool in_picture_use_ = false;
   int in_client_use_ = 0;
   size_t picture_index_;

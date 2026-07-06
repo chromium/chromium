@@ -22,7 +22,7 @@ class D3D11PictureBufferTest : public ::testing::Test {
         /*device=*/nullptr);
     picture_buffer_ = base::MakeRefCounted<D3D11PictureBuffer>(
         task_environment_.GetMainThreadTaskRunner(), nullptr, 0,
-        std::move(wrapper), size_, 0);
+        std::move(wrapper), 0);
   }
 
   base::test::TaskEnvironment task_environment_;

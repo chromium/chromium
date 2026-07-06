@@ -829,7 +829,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     const size_t array_slice = use_single_video_decoder_texture_ ? 0 : i;
     picture_buffers_.push_back(base::MakeRefCounted<D3D11PictureBuffer>(
         decoder_task_runner_, in_texture, array_slice, std::move(tex_wrapper),
-        size, /*level=*/i));
+        /*level=*/i));
 
     base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>
         picture_buffer_gpu_resource_init_done_cb = base::DoNothing();
