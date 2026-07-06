@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/tab_interface.h"
@@ -30,6 +31,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -299,8 +301,8 @@ ActorTaskTabCloseConfirmDialog::CreateDelegate(
       kIconBadgeBorderColor));
 
   auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(::ui::ImageModel::FromVectorIcon(
-      vector_icons::kProductIcon, ::ui::kColorIcon, kProductIconSize));
+  icon->SetImage(::ui::ImageModel::FromResourceId(IDR_PRODUCT_LOGO_64));
+  icon->SetImageSize(gfx::Size(kProductIconSize, kProductIconSize));
   icon_container->AddChildView(std::move(icon));
   container->AddChildView(std::move(icon_container));
 

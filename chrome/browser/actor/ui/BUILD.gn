@@ -300,6 +300,7 @@ source_set("ui") {
       "actor_task_unload_handler.h",
     ]
     deps += [
+      "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/browser/actor",
       "//chrome/browser/glic",
       "//chrome/browser/lifetime",
