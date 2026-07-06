@@ -8548,25 +8548,6 @@
             ]
         }
     ],
-    "DeriveVSyncIntervalFromFrameTimelines": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AlwaysDerive_5PctSnapTolerance",
-                    "params": {
-                        "mode": "always_derive",
-                        "snap_tolerance": "0.05"
-                    },
-                    "enable_features": [
-                        "DeriveVSyncIntervalFromFrameTimelines"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopAndroidLinkCapturing": [
         {
             "platforms": [
