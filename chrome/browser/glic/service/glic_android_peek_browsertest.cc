@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -224,6 +225,35 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
 
   // Cleanup created window
   browser2->GetWindow()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
+                       CloseFromPeekStateNotifiesVisibility) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  auto* coordinator_android = GetSidePanelCoordinatorAndroid(active_tab);
+
+  // Set to PEEK
+  coordinator_android->OnOpened(false);
+  EXPECT_EQ(coordinator_android->state(),
+            GlicSidePanelCoordinator::State::kPeek);
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_NE(instance->GetEmbedderForTab(active_tab), nullptr);
+
+  int visibility_change_count = 0;
+  auto subscription =
+      instance->service()->instance_coordinator().AddGlobalShowHideCallback(
+          base::BindLambdaForTesting([&]() { visibility_change_count++; }));
+
+  // Close the side panel from peek mode.
+  coordinator_android->OnClosed();
+  ASSERT_OK(WaitForSidePanelState(active_tab,
+                                  GlicSidePanelCoordinator::State::kClosed));
+  EXPECT_FALSE(instance->IsShowing());
+
+  // Verify that closing from peek mode notified global visibility observers
+  // (such as Java's GlicButtonStateController).
+  EXPECT_GT(visibility_change_count, 0);
 }
 
 }  // namespace glic

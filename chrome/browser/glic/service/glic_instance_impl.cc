@@ -798,6 +798,8 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   MaybeDeactivateEmbedder(key);
   embedders_.erase(key);
 
+  NotifyVisibilityChange();
+
   UpdateFloatingPanelCanAttach();
 
   MaybeRemoveInstance();
@@ -1333,6 +1335,8 @@ void GlicInstanceImpl::DidCloseFor(EmbedderKey key,
 
   // Deactivation might delete 'this'
   MaybeDeactivateEmbedder(key);
+
+  NotifyVisibilityChange();
 
   auto* entry = GetEmbedderEntry(key);
   if (reason == EmbedderCloseReason::kExplicitlyClosed && entry &&
