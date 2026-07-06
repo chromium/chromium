@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "permission_request_manager_test_api.cc",
+    "permission_request_manager_test_api.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/content_settings/core/common",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//ui/views",
+  ]
+}
