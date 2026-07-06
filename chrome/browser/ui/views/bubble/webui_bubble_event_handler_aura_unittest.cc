@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_event_handler_aura.h"
 
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"

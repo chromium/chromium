@@ -4,16 +4,12 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
-#include "base/notimplemented.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level_recorder.h"
-#include "chrome/common/webui_url_utils.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
