@@ -108,14 +108,14 @@ public class TabbedCrashRecoveryDelegate {
         List<CrashRecoveryWindowInfo> crashedWindows = mCrashedWindows;
         assert crashedWindows != null : "mCrashedWindows should be set.";
 
+        // Reset state before processing a new crash recovery request to avoid using stale state.
+        resetState();
+
         // If the only crashed window is the host activity itself, do not show the dialog.
         if (crashedWindows.size() == 1
                 && crashedWindows.get(0).windowId == hostActivity.getWindowId()) {
             return false;
         }
-
-        // Reset state before processing a new crash recovery request to avoid using stale state.
-        resetState();
 
         mPreRecoveryAppTasks = MultiWindowUtils.getAppTasksById(hostActivity);
         int nonHostCrashedWindowCount = 0;
