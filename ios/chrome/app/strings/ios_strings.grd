@@ -5835,7 +5835,7 @@ Handoff must also be enabled in the General section of Settings, and your device
         Show details
       </message>
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE" desc="Shown on the payment bottom sheet to inform users that, upon accepting the prompt, credit card informations will be shared with the given website. [iOS only]" meaning="A string under the title logo of the payment bottom sheet.">
-        You'll fill info into <ph name="URL">$1<ex>chromium.org</ex></ph>
+        Autofill payment info on <ph name="URL">$1<ex>chromium.org</ex></ph>
       </message>
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the payment bottom sheet and revert to using the keyboard to fill in payment fields on the webpage.">
         Use keyboard
