@@ -341,7 +341,8 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         mCoordinator.setNtpSingleThemeCollectionCoordinatorForTesting(
                 mNtpSingleThemeCollectionCoordinator);
 
-        mNtpCustomizationConfigManager.onBackgroundReset();
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(
+                mContext, /* backgroundData= */ null);
         mCoordinator.onBackgroundTypeChanged();
 
         verify(mNtpSingleThemeCollectionCoordinator).cancelLoadingState();

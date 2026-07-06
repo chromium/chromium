@@ -434,7 +434,8 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // Triggers a change that would normally notify the listener.
         clearInvocations(mListener);
-        mNtpCustomizationConfigManager.onBackgroundReset();
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(
+                mContext, /* backgroundData= */ null);
 
         // Verifies the listener is removed.
         verify(mListener, never()).onBackgroundReset(anyInt());
@@ -522,7 +523,8 @@ public class NtpCustomizationConfigManagerUnitTest {
         clearInvocations(mListener);
 
         // Test case for resetting to the default color.
-        mNtpCustomizationConfigManager.onBackgroundReset();
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(
+                mContext, /* backgroundData= */ null);
         assertEquals(defaultColor, mNtpCustomizationConfigManager.getBackgroundColor(mContext));
         assertNull(mNtpCustomizationConfigManager.getNtpThemeColorInfo());
 
@@ -630,7 +632,8 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertTrue(imageFile.exists());
 
         // Test case for resetting to the default color.
-        mNtpCustomizationConfigManager.onBackgroundReset();
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(
+                mContext, /* backgroundData= */ null);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(NtpBackgroundType.DEFAULT, mNtpCustomizationConfigManager.getBackgroundType());

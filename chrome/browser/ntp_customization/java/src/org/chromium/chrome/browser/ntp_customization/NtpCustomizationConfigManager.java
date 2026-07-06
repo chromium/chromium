@@ -307,9 +307,13 @@ public class NtpCustomizationConfigManager {
      * @param context The application context.
      * @param backgroundData The selected NTP background theme data.
      */
-    public void onBackgroundDataChanged(Context context, NtpBackgroundDataBase backgroundData) {
+    public void onBackgroundDataChanged(
+            Context context, @Nullable NtpBackgroundDataBase backgroundData) {
         boolean saveUserSelectedBackgroundType = true;
-        if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor) {
+        if (backgroundData == null) {
+            onBackgroundReset();
+            saveUserSelectedBackgroundType = false;
+        } else if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor) {
             if (ntpBackgroundDataColor.getThemeColorId() == NtpThemeColorId.DEFAULT) {
                 onBackgroundReset();
                 saveUserSelectedBackgroundType = false;
@@ -429,7 +433,8 @@ public class NtpCustomizationConfigManager {
      *     landscape matrices.
      * @param oldBackgroundType The previous type of the NTP's background.
      */
-    public void onBackgroundImageChanged(
+    @VisibleForTesting
+    void onBackgroundImageChanged(
             Bitmap bitmap,
             @Nullable BackgroundImageInfo backgroundImageInfo,
             @NtpBackgroundType int oldBackgroundType) {
@@ -526,7 +531,7 @@ public class NtpCustomizationConfigManager {
     }
 
     /** Notifies listeners about the NTP's customized background is reset. */
-    public void onBackgroundReset() {
+    private void onBackgroundReset() {
         @NtpBackgroundType int oldType = mBackgroundType;
         mBackgroundType = NtpBackgroundType.DEFAULT;
         mNtpBackgroundData = null;
@@ -598,7 +603,7 @@ public class NtpCustomizationConfigManager {
      * @param oldType The previously set background type for NTP.
      */
     @VisibleForTesting
-    public void notifyBackgroundReset(@NtpBackgroundType int oldType) {
+    void notifyBackgroundReset(@NtpBackgroundType int oldType) {
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundReset(oldType);
         }

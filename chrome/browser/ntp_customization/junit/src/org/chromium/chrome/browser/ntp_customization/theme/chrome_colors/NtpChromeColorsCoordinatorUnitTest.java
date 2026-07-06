@@ -593,7 +593,8 @@ public class NtpChromeColorsCoordinatorUnitTest {
         setupChromeColorSelectionState();
 
         // Changes the NTP background to the default background
-        mNtpCustomizationConfigManager.onBackgroundReset();
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(
+                mContext, /* backgroundData= */ null);
         mCoordinator.onBackgroundTypeChanged();
 
         verifyChromeColorSelectionCleared();
