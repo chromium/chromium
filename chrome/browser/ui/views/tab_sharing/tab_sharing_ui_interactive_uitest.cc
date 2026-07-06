@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
       CheckIsCaptureContentsBorderShowing(1, false), StopSharingTab(),
       InAnyContext(WaitForHide(kContentsCaptureBorder)),
       CheckIsCaptureContentsBorderShowing(0, false),
-      CheckIsCaptureContentsBorderShowing(1, false));
+      CheckIsCaptureContentsBorderShowing(1, false), ExitSplitView(0));
 }
 
 IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
             tab_strip_model->GetTabAtIndex(0)->GetSplit().value());
       }),
       CheckIsCaptureContentsBorderShowing(0, false),
-      CheckIsCaptureContentsBorderShowing(1, true));
+      CheckIsCaptureContentsBorderShowing(1, true), ExitSplitView(0));
 }
 
 IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
@@ -146,11 +146,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1), ShareTab(0),
       WaitForShow(kContentsCaptureBorder),
       CheckIsCaptureContentsBorderShowing(0, true),
-      CheckIsCaptureContentsBorderShowing(1, false), Do([this] {
-        TabStripModel* const tab_strip_model = browser()->tab_strip_model();
-        tab_strip_model->RemoveSplit(
-            tab_strip_model->GetTabAtIndex(0)->GetSplit().value());
-      }),
+      CheckIsCaptureContentsBorderShowing(1, false), ExitSplitView(0),
       SelectTab(kTabStripElementId, 0),
       CheckIsCaptureContentsBorderShowing(0, true),
       SelectTab(kTabStripElementId, 1), WaitForHide(kContentsCaptureBorder),
