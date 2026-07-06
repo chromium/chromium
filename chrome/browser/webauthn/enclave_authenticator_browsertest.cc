@@ -84,6 +84,7 @@
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -341,6 +342,41 @@ static constexpr char kMakeCredentialWithPrf[] = R"((() => {
     },
     e => window.domAutomationController.send('error ' + e));
 })())";
+
+static constexpr char kMakeCredentialWithCmtg[] = R"(
+  window.cmtgPromise = new Promise(async (resolve) => {
+    try {
+      const c = await navigator.credentials.create({
+        publicKey: {
+          rp: { name: "" },
+          user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+          pubKeyCredParams: [{type: "public-key", alg: -7}],
+          challenge: new Uint8Array([0]),
+          timeout: 10000,
+          authenticatorSelection: {
+            requireResidentKey: true,
+            userVerification: 'discouraged',
+          },
+          extensions: {
+            cmtgKey: true,
+          },
+        }
+      });
+      const ext = c.getClientExtensionResults();
+      if (ext?.cmtgKey?.cmtgKey) {
+        const hex = Array.from(new Uint8Array(ext.cmtgKey.cmtgKey))
+                         .map(b => b.toString(16).padStart(2, '0'))
+                         .join('');
+        resolve('cmtg OK: ' + hex.substring(0, 16));
+      } else {
+        resolve('cmtg NONE');
+      }
+    } catch (e) {
+      resolve('error ' + e.toString());
+    }
+  });
+  "this string avoids having the expression evaluate into a promise";
+)";
 
 static constexpr char kMakeCredentialGoogle[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
@@ -835,6 +871,12 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       delete;
   EnclaveAuthenticatorBrowserTest& operator=(
       const EnclaveAuthenticatorBrowserTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnclaveAuthenticatorTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII("enable-blink-features",
+                                    "WebAuthenticationCmtgKey");
+  }
 
   void SetUpOnMainThread() override {
     EnclaveAuthenticatorTestBase::SetUpOnMainThread();
@@ -4780,6 +4822,32 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
           base::ToVector(kSecurityDomainSecret), kSecretVersion)},
       std::nullopt);
   model_observer()->WaitForStep();
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredentialWithCmtg) {
+  SetTrustedVaultEmpty();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  ASSERT_TRUE(content::ExecJs(web_contents, kMakeCredentialWithCmtg));
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMCreationConfirmed();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+  std::string result =
+      content::EvalJs(web_contents, "window.cmtgPromise").ExtractString();
+  EXPECT_TRUE(base::StartsWith(result, "cmtg OK:")) << "Got: " << result;
 }
 
 }  // namespace

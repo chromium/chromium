@@ -260,6 +260,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
             kWebAuthentication,
         test.request_type, test.resident_key_requirement,
         device::UserVerificationRequirement::kRequired,
+        /*cmtg_key_requested=*/false,
         /*user_name=*/std::nullopt,
         /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
@@ -293,6 +294,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
         device::FidoRequestType::kMakeCredential,
         device::ResidentKeyRequirement::kPreferred,
         device::UserVerificationRequirement::kRequired,
+        /*cmtg_key_requested=*/false,
         /*user_name=*/std::nullopt,
         /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
@@ -652,6 +654,7 @@ TEST_P(ChromeAuthenticatorRequestDelegateTestWithPassword, DiscoverPasswords) {
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
+                                /*cmtg_key_requested=*/false,
                                 /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
@@ -695,6 +698,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
+                                /*cmtg_key_requested=*/false,
                                 /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
@@ -737,6 +741,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
+                                /*cmtg_key_requested=*/false,
                                 /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
@@ -796,6 +801,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
                                 device::FidoRequestType::kGetAssertion,
                                 device::ResidentKeyRequirement::kPreferred,
                                 device::UserVerificationRequirement::kRequired,
+                                /*cmtg_key_requested=*/false,
                                 /*user_name=*/std::nullopt,
                                 /*is_enclave_authenticator_available=*/false,
                                 &discovery_factory);
@@ -915,6 +921,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, SigninQRCodeModelPopulation) {
                                  device::FidoRequestType::kGetAssertion,
                                  device::ResidentKeyRequirement::kRequired,
                                  device::UserVerificationRequirement::kRequired,
+                                 /*cmtg_key_requested=*/false,
                                  /*user_name=*/std::nullopt,
                                  /*is_enclave_authenticator_available=*/false,
                                  &discovery_factory);

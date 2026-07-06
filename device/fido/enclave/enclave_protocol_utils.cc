@@ -545,6 +545,18 @@ ParseMakeCredentialResponse(cbor::Value response_value,
   response.prf_enabled = prf_enabled;
   response.prf_results = std::move(prf_results);
 
+  auto cmtg_it = last_response->find(cbor::Value(kResponseCmtgKey));
+  if (cmtg_it != last_response->end() && cmtg_it->second.is_map()) {
+    const auto& cmtg_map = cmtg_it->second.GetMap();
+    auto key_it = cmtg_map.find(cbor::Value(kResponseCmtgKey));
+    auto sig_it = cmtg_map.find(cbor::Value(kResponseCmtgSignature));
+    if (key_it != cmtg_map.end() && key_it->second.is_bytestring() &&
+        sig_it != cmtg_map.end() && sig_it->second.is_bytestring()) {
+      response.cmtg_key.emplace(key_it->second.GetBytestring(),
+                                sig_it->second.GetBytestring());
+    }
+  }
+
   return std::make_pair(std::move(response), std::move(entity));
 }
 
@@ -607,7 +619,9 @@ cbor::Value BuildMakeCredentialCommand(
     std::unique_ptr<ClaimedPIN> claimed_pin,
     std::optional<std::vector<uint8_t>> wrapped_secret,
     std::optional<std::vector<uint8_t>> secret,
-    UserPresentAndVerifiedBits up_and_uv_bits) {
+    UserPresentAndVerifiedBits up_and_uv_bits,
+    base::span<const uint8_t> client_data_json,
+    std::optional<base::span<const uint8_t>> cmtg_device_key) {
   CHECK(wrapped_secret.has_value() ^ secret.has_value());
   cbor::Value::MapValue entry_map;
 
@@ -654,6 +668,16 @@ cbor::Value BuildMakeCredentialCommand(
     entry_map.emplace(kRequestClaimedPINKey, std::move(claimed_pin->pin_claim));
     entry_map.emplace(kRequestWrappedPINDataKey,
                       std::move(claimed_pin->wrapped_pin));
+  }
+
+  if (!client_data_json.empty()) {
+    entry_map.emplace(cbor::Value(kRequestClientDataJSONHashKey),
+                      cbor::Value(crypto::hash::Sha256(client_data_json)));
+  }
+
+  if (cmtg_device_key.has_value()) {
+    entry_map.emplace(cbor::Value(kRequestCmtgDeviceKey),
+                      cbor::Value(*cmtg_device_key));
   }
 
   return cbor::Value(entry_map);

@@ -26,6 +26,23 @@ namespace device {
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorMakeCredential
 class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
  public:
+  // The response to a CMTG key request.
+  struct COMPONENT_EXPORT(DEVICE_FIDO) CmtgKeyResponse {
+    CmtgKeyResponse(std::vector<uint8_t> key, std::vector<uint8_t> signature);
+    ~CmtgKeyResponse();
+
+    CmtgKeyResponse(CmtgKeyResponse&&);
+    CmtgKeyResponse& operator=(CmtgKeyResponse&&);
+    CmtgKeyResponse(const CmtgKeyResponse&) = delete;
+    CmtgKeyResponse& operator=(const CmtgKeyResponse&) = delete;
+
+    // The CMTG public key, in the same format as the credential public key.
+    std::vector<uint8_t> key;
+
+    // The CMTG key signature over the WebAuthn signed data.
+    std::vector<uint8_t> signature;
+  };
+
   static std::optional<AuthenticatorMakeCredentialResponse>
   CreateFromU2fRegisterResponse(
       std::optional<FidoTransportProtocol> transport_used,
@@ -92,6 +109,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // prf_results contains the output of the hmac-secret-mc or prf extension.
   // The values have already been decrypted.
   std::optional<std::vector<uint8_t>> prf_results;
+
+  // `cmtg_key` is present if the client requested a CMTG key and the
+  // authenticator supported it.
+  std::optional<CmtgKeyResponse> cmtg_key;
 };
 
 // Through cbor::Writer, produces a CTAP style CBOR-encoded byte array

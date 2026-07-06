@@ -101,7 +101,8 @@ constexpr char kGetAssertionHexResponse[] =
     "616E646C654261627161757468656E74696361746F724461746158251194228DA8FDBDEEFD"
     "261BD7B6595CFD70A50D70C6407BCF013DE96D4EFB17DE010000003B";
 constexpr char kMakeCredentialHexResponse[] =
-    "81A1626F6BA4677075625F6B6579440506070869656E637279707465644401020304726175"
+    "81A1626F6BA567636D74674B6579A267636D74674B65794401020304697369676E61747572"
+    "654405060708677075625F6B6579440506070869656E637279707465644401020304726175"
     "7468656E74696361746F725F64617461589480FC0FB9266DB7B83F85850FA0E6548B6D70EE"
     "68C8B5B412F1DEEA6EBDEF04045900000000EA9B8D664D011D213CE4B6B48CB575D4001020"
     "56D1BAAD6CA3BA888D8E59C98490FAA50102032620012158204893597E915737155C6DCBB2"
@@ -418,7 +419,8 @@ TEST_P(EnclaveProtocolUtilsTestStripParameters,
       BuildMakeCredentialCommand(
           json_request, /*claimed_pin=*/nullptr, wrapped_secret(),
           /*secret=*/std::nullopt,
-          UserPresentAndVerifiedBits::kPresentAndVerified),
+          UserPresentAndVerifiedBits::kPresentAndVerified,
+          base::as_byte_span(kClientDataJson), kCmtgHardcodedDeviceKey),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -437,6 +439,21 @@ TEST_P(EnclaveProtocolUtilsTestStripParameters,
   EXPECT_TRUE(command_map.find(cbor::Value("wrapped_pin_data")) ==
               command_map.end());
   EXPECT_TRUE(command_map.find(cbor::Value("up"))->second.GetBool());
+
+  auto hash_it = command_map.find(cbor::Value("client_data_json_hash"));
+  ASSERT_NE(hash_it, command_map.end());
+  ASSERT_TRUE(hash_it->second.is_bytestring());
+  EXPECT_THAT(hash_it->second.GetBytestring(),
+              testing::ElementsAreArray(
+                  crypto::hash::Sha256(base::as_byte_span(kClientDataJson))));
+
+  auto cmtg_it = command_map.find(cbor::Value(kRequestCmtgDeviceKey));
+  ASSERT_NE(cmtg_it, command_map.end());
+  ASSERT_TRUE(cmtg_it->second.is_bytestring());
+  EXPECT_EQ(cmtg_it->second.GetBytestring(),
+            std::vector<uint8_t>(kCmtgHardcodedDeviceKey.begin(),
+                                 kCmtgHardcodedDeviceKey.end()));
+
   auto& request_value_map =
       command_map.find(cbor::Value("request"))->second.GetMap();
   EXPECT_EQ(request_value_map.find(cbor::Value("rp"))
@@ -471,7 +488,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_WithPIN) {
       BuildMakeCredentialCommand(
           json_request, std::move(claimed_pin), wrapped_secret(),
           /*secret=*/std::nullopt,
-          UserPresentAndVerifiedBits::kPresentAndVerified),
+          UserPresentAndVerifiedBits::kPresentAndVerified,
+          /*client_data_json=*/{}, /*cmtg_device_key=*/std::nullopt),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -573,6 +591,12 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
                   .obtained_user_presence());
   EXPECT_FALSE(register_response.attestation_object.authenticator_data()
                    .obtained_user_verification());
+
+  ASSERT_TRUE(register_response.cmtg_key.has_value());
+  EXPECT_THAT(register_response.cmtg_key->key,
+              testing::ElementsAre(1, 2, 3, 4));
+  EXPECT_THAT(register_response.cmtg_key->signature,
+              testing::ElementsAre(5, 6, 7, 8));
 }
 
 // Tests that Chrome does not set the UP bit to `true` on the request for
@@ -587,7 +611,9 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_ConditionalCreate) {
   BuildCommandRequestBody(
       BuildMakeCredentialCommand(json_request, /*claimed_pin=*/nullptr,
                                  wrapped_secret(), /*secret=*/std::nullopt,
-                                 UserPresentAndVerifiedBits::kNeither),
+                                 UserPresentAndVerifiedBits::kNeither,
+                                 /*client_data_json=*/{},
+                                 /*cmtg_device_key=*/std::nullopt),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));

@@ -81,6 +81,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // asserted to CTAP2 authenticators.
   bool hmac_secret = false;
 
+  // cmtg_key indicates whether a Credential Manager Trust Group key was
+  // requested.
+  bool cmtg_key = false;
+
   // prf indicates that the "prf" extension should be asserted to request that
   // the authenticator associate a PRF with the credential.
   bool prf = false;

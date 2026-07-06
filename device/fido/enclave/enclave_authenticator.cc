@@ -237,7 +237,13 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
           std::move(pending_make_credential_request_->options.json),
           std::move(ui_request_->claimed_pin),
           std::move(ui_request_->wrapped_secret),
-          std::move(ui_request_->secret), ui_request_->up_and_uv_bits),
+          std::move(ui_request_->secret), ui_request_->up_and_uv_bits,
+          base::as_byte_span(
+              pending_make_credential_request_->request.client_data_json),
+          pending_make_credential_request_->request.cmtg_key
+              ? std::make_optional<base::span<const uint8_t>>(
+                    kCmtgHardcodedDeviceKey)
+              : std::nullopt),
       std::move(ui_request_->signing_callback),
       base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
                      weak_factory_.GetWeakPtr()));
@@ -257,7 +263,13 @@ void EnclaveAuthenticator::DispatchMakeCredentialWithNewUVKey(
       std::move(pending_make_credential_request_->options.json),
       std::move(ui_request_->claimed_pin),
       std::move(ui_request_->wrapped_secret), std::move(ui_request_->secret),
-      ui_request_->up_and_uv_bits));
+      ui_request_->up_and_uv_bits,
+      base::as_byte_span(
+          pending_make_credential_request_->request.client_data_json),
+      pending_make_credential_request_->request.cmtg_key
+          ? std::make_optional<base::span<const uint8_t>>(
+                kCmtgHardcodedDeviceKey)
+          : std::nullopt));
 
   pending_transaction_ = Transact(
       network_context_factory_, GetEnclaveIdentity(),

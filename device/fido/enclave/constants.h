@@ -171,6 +171,17 @@ extern const char kRecoveryKeyStoreCertFileURL[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreSigFileURL[];
 
+// CMTG keys.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRequestCmtgDeviceKey[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kResponseCmtgKey[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kResponseCmtgSignature[];
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const std::array<uint8_t, 32> kCmtgHardcodedDeviceKey;
+
 }  // namespace device::enclave
 
 #endif  // DEVICE_FIDO_ENCLAVE_CONSTANTS_H_

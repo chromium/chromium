@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_view_util.h"
@@ -136,6 +137,7 @@ enum class RequestExtension {
   kGetCredBlob,
   kMinPINLength,
   kCrossDeviceFallbackUrl,
+  kCmtgKey,
 };
 
 enum class AttestationErasureOption {
@@ -897,6 +899,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       device::FidoRequestType::kMakeCredential,
       make_credential_options->resident_key,
       make_credential_options->user_verification,
+      ctap_make_credential_request->cmtg_key,
       ctap_make_credential_request->user.name, discover_enclave,
       discovery_factory());
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
@@ -973,6 +976,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       ctap_get_assertion_request->user_verification,
+      /*cmtg_key_requested=*/false,
       /*user_name=*/std::nullopt, discover_enclave, discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
@@ -1373,6 +1377,10 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
     req_state_->requested_extensions.insert(RequestExtension::kMinPINLength);
     ctap_make_credential_request->min_pin_length_requested = true;
   }
+  if (options->cmtg_key) {
+    req_state_->requested_extensions.insert(RequestExtension::kCmtgKey);
+    ctap_make_credential_request->cmtg_key = true;
+  }
   make_credential_options->large_blob_support = options->large_blob_enable;
   ctap_make_credential_request->app_id_exclude = std::move(appid_exclude);
   make_credential_options->is_off_the_record_context =
@@ -1685,6 +1693,7 @@ void AuthenticatorCommonImpl::GetPasswordOnlyCredential(
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       device::UserVerificationRequirement::kDiscouraged,
+      /*cmtg_key_requested=*/false,
       /*user_name=*/std::nullopt,
       /*is_enclave_authenticator_available=*/false,
       /*fido_discovery_factory=*/nullptr);
@@ -2968,6 +2977,14 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
               PRFResultsToValues(*response_data.prf_results);
         }
         break;
+      case RequestExtension::kCmtgKey:
+        if (response_data.cmtg_key) {
+          response->cmtg_key = blink::mojom::CmtgKeyResponse::New();
+          response->cmtg_key->cmtg_key = std::move(response_data.cmtg_key->key);
+          response->cmtg_key->signature =
+              std::move(response_data.cmtg_key->signature);
+        }
+        break;
       case RequestExtension::kHMACSecret:
         response->echo_hmac_create_secret = true;
         response->hmac_create_secret = did_create_hmac_secret;
@@ -3098,6 +3115,9 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
             CreateApplicationParameter(*req_state_->app_id)) {
           response_extensions->appid_extension = true;
         }
+        break;
+      case RequestExtension::kCmtgKey:
+        NOTIMPLEMENTED();
         break;
       case RequestExtension::kPRF: {
         response_extensions->echo_prf = true;
