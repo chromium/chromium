@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <initializer_list>
 #include <memory>
 #include <string>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/at_exit.h"
 #include "base/check.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/testing_pref_service.h"
 
 namespace em = enterprise_management;
 
@@ -61,6 +61,11 @@ struct Environment {
   // Initialize the "at exit manager" singleton used by the tested code.
   base::AtExitManager at_exit_manager;
   ProfileManager profile_manager{/*user_data_dir=*/{}};
+
+  // Needed for DeviceCommandStartCrdSessionJob.
+  // NOTE: No need to register prefs because this fuzz test does not trigger
+  // RemoteCommandJob::RunImpl().
+  TestingPrefServiceSimple local_state;
 };
 
 class StubDeviceCommandScreenshotJobDelegate
@@ -89,7 +94,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   DeviceCommandSetVolumeJob set_volume_job;
   FakeStartCrdSessionJobDelegate start_crd_session_job_delegate;
   DeviceCommandStartCrdSessionJob start_crd_session_job(
-      start_crd_session_job_delegate);
+      &env.local_state, start_crd_session_job_delegate);
   DeviceCommandRunRoutineJob run_routine_job;
   DeviceCommandGetRoutineUpdateJob get_routine_update_job;
   DeviceCommandRebootJob reboot_job;

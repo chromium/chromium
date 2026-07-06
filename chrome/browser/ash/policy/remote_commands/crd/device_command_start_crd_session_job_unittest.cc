@@ -292,7 +292,9 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   FakeStartCrdSessionJobDelegate& delegate() { return delegate_; }
 
   DeviceCommandStartCrdSessionJob CreateJob() {
-    return DeviceCommandStartCrdSessionJob{delegate_, robot_account_id_};
+    return DeviceCommandStartCrdSessionJob{
+        TestingBrowserProcess::GetGlobal()->local_state(), delegate_,
+        robot_account_id_};
   }
 
   Result RunJobAndWaitForResult(const Payload& payload = Payload()) {

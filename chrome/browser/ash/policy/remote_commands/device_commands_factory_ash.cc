@@ -66,7 +66,8 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
     case RemoteCommand::DEVICE_SET_VOLUME:
       return std::make_unique<DeviceCommandSetVolumeJob>();
     case RemoteCommand::DEVICE_START_CRD_SESSION:
-      return std::make_unique<DeviceCommandStartCrdSessionJob>(*crd_delegate_);
+      return std::make_unique<DeviceCommandStartCrdSessionJob>(local_state,
+                                                               *crd_delegate_);
     case RemoteCommand::DEVICE_FETCH_STATUS:
       return std::make_unique<DeviceCommandFetchStatusJob>(
           browser_policy_connector_ash);

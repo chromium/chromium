@@ -18,6 +18,8 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
+class PrefService;
+
 namespace policy {
 
 // Remote command that would start Chrome Remote Desktop host and return auth
@@ -27,10 +29,12 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  public:
   using Delegate = StartCrdSessionJobDelegate;
 
-  explicit DeviceCommandStartCrdSessionJob(Delegate& delegate);
+  // `local_state` must be non-null and outlive `this`.
+  DeviceCommandStartCrdSessionJob(PrefService* local_state, Delegate& delegate);
   // Constructor used in unit tests. By using this constructor we avoid the need
   // for a `DeviceOAuth2TokenService` to exist.
-  DeviceCommandStartCrdSessionJob(Delegate& delegate,
+  DeviceCommandStartCrdSessionJob(PrefService* local_state,
+                                  Delegate& delegate,
                                   std::string_view robot_account_id);
   ~DeviceCommandStartCrdSessionJob() override;
 
@@ -69,6 +73,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldAutoAcceptSession(bool is_in_managed_environment) const;
 
   Delegate::ErrorCallback GetErrorCallback();
+
+  const raw_ref<PrefService> local_state_;
 
   std::unique_ptr<crash_reporter::ScopedCrashKeyString> crd_crash_key_;
 
