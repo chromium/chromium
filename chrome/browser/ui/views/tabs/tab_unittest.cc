@@ -1292,6 +1292,26 @@ TEST_F(TabTest, SingleElementCentering) {
     EXPECT_EQ(tab->width() / 2,
               GetCloseButton(tab)->bounds().CenterPoint().x());
   }
+
+  {
+    SCOPED_TRACE("Title only (no icons or close button)");
+    tabs::TabData data;
+    data.should_display_favicon = false;
+    data.alert_state = std::nullopt;
+    tab->SetDataForTesting(data);
+    StopFadeAnimationIfNecessary(*tab);
+    controller->set_active_tab(nullptr);
+    tab->ActiveStateChanged();
+    tab->OnMouseExited(ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(),
+                                      gfx::Point(), base::TimeTicks(), 0, 0));
+    tab->SetBounds(0, 0, 60, 50);
+    LayoutTab(tab);
+    EXPECT_FALSE(tab->IsActive());
+    EXPECT_FALSE(tab->showing_icon());
+    EXPECT_FALSE(tab->showing_alert_indicator());
+    EXPECT_FALSE(tab->showing_close_button());
+    EXPECT_TRUE(GetTabTitle(tab)->GetVisible());
+  }
 }
 
 #if BUILDFLAG(IS_MAC)
