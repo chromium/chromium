@@ -1126,7 +1126,9 @@ static_library("ui") {
   }
 
   allow_circular_includes_from += [
-    # TODO(crbug.com/503408628): Remove this circular dependency.
+    # TODO(crbug.com/503408628): Remove this circular dependency when the
+    # following headers get modularized:
+    # --  c/b/ui/views/eula_dialog_linux.h
     "//chrome/browser/first_run:impl",
 
     # enterprise headers include from //chrome/browser/ui (e.g. idle_dialog.h).
@@ -4854,7 +4856,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/web_dialogs",
       "//chrome/browser/ui/views/webauthn",
       "//chrome/browser/ui/views/webid",
-      "//chrome/browser/ui/views/webid:impl",
       "//chrome/browser/ui/views/zoom",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/webauthn:impl",
@@ -5142,9 +5143,6 @@ static_library("ui") {
       # - c/b/ui/browser_command_controller.h
       # - c/b/ui/view_ids.h
       "//chrome/browser/ui/views/sharing_hub:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular include annotation.
-      "//chrome/browser/ui/views/webid:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # the following headers get modularized:

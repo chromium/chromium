@@ -5,7 +5,7 @@
 assert(!is_android, "This is desktop code for fedcm.")
 
 source_set("webid") {
-  sources = [
+  public = [
     "account_selection_bubble_view.h",
     "account_selection_modal_view.h",
     "account_selection_view_base.h",
@@ -28,9 +28,7 @@ source_set("webid") {
     "//third_party/blink/public/common",
     "//ui/views",
   ]
-}
 
-source_set("impl") {
   sources = [
     "account_selection_bubble_view.cc",
     "account_selection_modal_view.cc",
@@ -39,8 +37,8 @@ source_set("impl") {
     "fedcm_modal_dialog_view.cc",
     "webid_utils.cc",
   ]
+
   deps = [
-    ":webid",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/image_fetcher",
