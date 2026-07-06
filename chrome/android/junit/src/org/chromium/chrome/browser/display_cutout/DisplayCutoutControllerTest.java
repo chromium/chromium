@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
+import static androidx.core.view.WindowInsetsCompat.Type.statusBars;
+
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -15,9 +19,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -34,8 +41,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -51,6 +64,13 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisplayCutoutControllerTest {
+    private static final Insets INITIAL_STATUS_BAR_INSETS = Insets.of(0, 80, 0, 0);
+    private static final Insets INITIAL_NAV_BAR_INSETS = Insets.of(0, 0, 0, 24);
+    private static final Insets UPDATED_STATUS_BAR_INSETS = Insets.of(0, 64, 0, 0);
+    private static final Insets UPDATED_NAV_BAR_INSETS = Insets.of(0, 0, 0, 16);
+    private static final Rect INITIAL_EXPECTED_SAFE_AREA = new Rect(0, 80, 0, 24);
+    private static final Rect UPDATED_EXPECTED_SAFE_AREA = new Rect(0, 64, 0, 16);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
@@ -67,6 +87,12 @@ public class DisplayCutoutControllerTest {
     @Mock private ChromeActivity mChromeActivity;
 
     @Mock private InsetObserver mInsetObserver;
+
+    @Mock private BaseCustomTabActivity mCustomTabActivity;
+
+    @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
+
+    @Mock private DisplayCutoutController.Delegate mDelegate;
 
     private DisplayCutoutTabHelper mDisplayCutoutTabHelper;
     private DisplayCutoutController mController;
@@ -87,6 +113,12 @@ public class DisplayCutoutControllerTest {
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
+
+        // Common defaults for Delegate-based tests. Individual tests still set test-specific
+        // values such as getDisplayMode() and override these when needed.
+        when(mDelegate.getWebContents()).thenReturn(mWebContents);
+        when(mDelegate.isDrawEdgeToEdgeEnabled()).thenReturn(true);
+        when(mDelegate.isInteractable()).thenReturn(true);
 
         ActivityDisplayCutoutModeSupplier.setInstanceForTesting(0);
 
@@ -125,11 +157,20 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testViewportFitUpdateNotChanged() {
+    public void testViewportFitAutoUpdateNotChanged() {
         verify(mController, never()).maybeUpdateLayout();
 
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.AUTO);
         verify(mController, never()).maybeUpdateLayout();
+    }
+
+    @Test
+    @SmallTest
+    public void testViewportFitCoverUpdateWhenValueNotChanged() {
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
+
+        verify(mController, times(2)).maybeUpdateLayout();
     }
 
     @Test
@@ -174,6 +215,156 @@ public class DisplayCutoutControllerTest {
         Assert.assertEquals(
                 LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER,
                 mController.computeDisplayCutoutMode());
+    }
+
+    @Test
+    @SmallTest
+    public void testCutoutModeWhenCoverInBrowserFullscreenAndNotWebFullscreen() {
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
+        when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
+
+        DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
+        controller.setViewportFit(ViewportFit.COVER);
+
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+                controller.computeDisplayCutoutMode());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testCutoutModeWhenCoverInStandaloneAndFeatureDisabled() {
+        DisplayCutoutController controller = setUpFeatureDisabledWebApp(DisplayMode.STANDALONE);
+        controller.setViewportFit(ViewportFit.COVER);
+
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                controller.computeDisplayCutoutMode());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testCutoutModeWhenCoverInFullscreenAndFeatureDisabled() {
+        DisplayCutoutController controller = setUpFeatureDisabledWebApp(DisplayMode.FULLSCREEN);
+        controller.setViewportFit(ViewportFit.COVER);
+
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+                controller.computeDisplayCutoutMode());
+    }
+
+    @Test
+    @SmallTest
+    public void testStandaloneForcedCoverRequestsEdgeToEdge() {
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+
+        DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
+        controller.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
+
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+                controller.computeDisplayCutoutMode());
+        verify(mDelegate).setEdgeToEdgeState(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testBrowserFullscreenExplicitCoverRequestsEdgeToEdge() {
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+        when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
+
+        DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
+        controller.setViewportFit(ViewportFit.COVER);
+
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+                controller.computeDisplayCutoutMode());
+        verify(mDelegate).setEdgeToEdgeState(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testStandaloneCoverMergesSafeAreaWithSystemBars() {
+        WindowInsetsCompat initialInsets = mock(WindowInsetsCompat.class);
+        WindowInsetsCompat updatedInsets = mock(WindowInsetsCompat.class);
+        WindowInsetsCompat zeroInsets = mock(WindowInsetsCompat.class);
+
+        when(initialInsets.getInsetsIgnoringVisibility(statusBars()))
+                .thenReturn(INITIAL_STATUS_BAR_INSETS);
+        when(initialInsets.getInsetsIgnoringVisibility(navigationBars()))
+                .thenReturn(INITIAL_NAV_BAR_INSETS);
+
+        when(updatedInsets.getInsetsIgnoringVisibility(statusBars()))
+                .thenReturn(UPDATED_STATUS_BAR_INSETS);
+        when(updatedInsets.getInsetsIgnoringVisibility(navigationBars()))
+                .thenReturn(UPDATED_NAV_BAR_INSETS);
+
+        when(zeroInsets.getInsetsIgnoringVisibility(statusBars())).thenReturn(Insets.NONE);
+        when(zeroInsets.getInsetsIgnoringVisibility(navigationBars())).thenReturn(Insets.NONE);
+
+        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
+        when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+        when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mInsetObserver.getCurrentSafeArea()).thenReturn(new Rect());
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(initialInsets);
+
+        DisplayCutoutController controller =
+                new DisplayCutoutController(mDelegate) {
+                    @Override
+                    protected float getDipScale() {
+                        return 1f;
+                    }
+                };
+
+        clearInvocations(mWebContents);
+        controller.setViewportFit(ViewportFit.COVER);
+
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(INITIAL_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+
+        clearInvocations(mWebContents);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(updatedInsets);
+        controller.setViewportFit(ViewportFit.COVER);
+
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+
+        clearInvocations(mWebContents);
+        controller.onInsetChanged();
+
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+
+        clearInvocations(mWebContents);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(zeroInsets);
+        controller.setViewportFit(ViewportFit.COVER);
+
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testBrowserFullscreenCoverAcquiresAndReleasesEdgeToEdge() {
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+
+        DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
+
+        controller.setViewportFit(ViewportFit.COVER);
+        verify(mDelegate).setEdgeToEdgeState(true);
+
+        clearInvocations(mDelegate);
+        controller.setViewportFit(ViewportFit.AUTO);
+        verify(mDelegate).setEdgeToEdgeState(false);
     }
 
     @Test
@@ -349,5 +540,21 @@ public class DisplayCutoutControllerTest {
         mDisplayCutoutTabHelper = new DisplayCutoutTabHelper(mTab);
         Assert.assertNull(
                 mDisplayCutoutTabHelper.mCutoutController.getWebContentObserverForTesting());
+    }
+
+    /**
+     * Wires up the mTab path through a webapp BaseCustomTabActivity with the given resolved display
+     * mode, with the short-edges feature disabled, and returns a fresh controller built via the
+     * production ChromeDisplayCutoutDelegate.
+     */
+    private DisplayCutoutController setUpFeatureDisabledWebApp(@DisplayMode.EnumType int mode) {
+        when(mTab.isUserInteractable()).thenReturn(true);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mCustomTabActivity));
+        when(mCustomTabActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(mode);
+        when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
+        return new DisplayCutoutController(
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab));
     }
 }

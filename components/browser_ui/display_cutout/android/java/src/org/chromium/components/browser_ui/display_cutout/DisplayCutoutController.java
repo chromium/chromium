@@ -4,22 +4,32 @@
 
 package org.chromium.components.browser_ui.display_cutout;
 
+import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
+import static androidx.core.view.WindowInsetsCompat.Type.statusBars;
+import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.Display;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
+import androidx.core.view.DisplayCutoutCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,7 +45,8 @@ import org.chromium.ui.insets.InsetObserver;
  *
  * <p>The WebContents is updated with the safe area continuously, as long as {@link
  * Delegate#getAttachedActivity()} returns a non-null value. The cutout mode is set on the
- * Activity's window only in P+, and only when the associated WebContents is fullscreen.
+ * Activity's window only in P+, and when either the associated WebContents is fullscreen or the
+ * embedder reports browser fullscreen mode.
  */
 @NullMarked
 public class DisplayCutoutController implements InsetObserver.WindowInsetObserver, UserData {
@@ -43,6 +54,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     private static final Class<DisplayCutoutController> USER_DATA_KEY =
             DisplayCutoutController.class;
+    private static final int INVALID_DISPLAY_ROTATION = -1;
+    private static final Rect EMPTY_RECT = new Rect();
 
     /** {@link Window} of the current {@link Activity}. */
     private @Nullable Window mWindow;
@@ -57,8 +70,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     private @Nullable InsetObserver mInsetObserver;
 
     /**
-     * Provides the activity-specific (vs tab-specific) cutout mode. The activity-specific
-     * cutout mode takes precedence over the tab-specific cutout mode.
+     * Provides the activity-specific (vs tab-specific) cutout mode. The activity-specific cutout
+     * mode takes precedence over the tab-specific cutout mode.
      */
     private @Nullable MonotonicObservableSupplier<Integer> mBrowserCutoutModeSupplier;
 
@@ -72,6 +85,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     private final SafeAreaInsetsTrackerImpl mSafeAreaInsetsTracker;
 
     private Rect mCachedSafeAreaInsets = new Rect();
+    private Rect mCachedBrowserSafeAreaInsets = new Rect();
+    private int mCachedBrowserSafeAreaInsetsRotation = INVALID_DISPLAY_ROTATION;
 
     /**
      * An interface to track general changes to Safe Area Insets. TODO(crbug.com/40279791) Develop
@@ -143,11 +158,31 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
          */
         @Nullable MonotonicObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier();
 
-        /** Whether the activity is in browser (not-HTML) fullscreen. */
-        boolean isInBrowserFullscreen();
+        /** Returns the resolved display mode for the embedder. */
+        @DisplayMode.EnumType
+        int getDisplayMode();
 
         /** Whether the basic Feature for drawing Edge To Edge is enabled. */
         boolean isDrawEdgeToEdgeEnabled();
+
+        /**
+         * Requests or releases edge-to-edge drawing on the embedder's window. Called by the
+         * controller on every viewport-fit update, so implementations may receive repeated calls
+         * with the same value; they should also use this hook to re-sync related surfaces such as
+         * system bar coloring.
+         *
+         * @param drawEdgeToEdge whether the window should currently draw edge-to-edge.
+         */
+        void setEdgeToEdgeState(boolean drawEdgeToEdge);
+
+        /**
+         * Whether the embedder's short-edges cutout mode is enabled. When false, the controller
+         * falls back to its pre-flag behavior so it can serve as a killswitch for the new
+         * cover-mode logic (browser safe-area sourcing and cached fallback).
+         */
+        default boolean isShortEdgesCutoutModeEnabled() {
+            return false;
+        }
     }
 
     // Helper implementation to observe fullscreen changes and trigger re-layout.
@@ -217,10 +252,12 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         updateBrowserCutoutObserver(mDelegate.getBrowserDisplayCutoutModeSupplier());
         updateWebContentObserver(mDelegate.getWebContents());
         mWindow = activity.getWindow();
+        updateEdgeToEdgeMode(shouldUseBrowserEdgeToEdge());
     }
 
     /** Remove observers added by {@link #maybeAddObservers()}. */
     void removeObservers() {
+        updateEdgeToEdgeMode(/* useEdgeToEdge= */ false);
         updateInsetObserver(null);
         updateBrowserCutoutObserver(null);
         if (mWebContentsObserver != null) {
@@ -289,28 +326,32 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     /**
      * Set the viewport fit value for the tab.
+     *
      * @param value The new viewport fit value.
      */
     public void setViewportFit(@WebContentsObserver.ViewportFitType int value) {
         Log.i(TAG, "setViewportFit: %s", value);
-        mSafeAreaInsetsTracker.setIsViewportFitCover(
-                value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
+        mSafeAreaInsetsTracker.setIsViewportFitCover(shouldTreatViewportFitAsCover(value));
 
         // TODO(crbug.com/40281421): Investigate whether if() can be turned into assert.
         // Most likely we will need to just remove this section when E2E is launched.
         if (!mDelegate.isDrawEdgeToEdgeEnabled()
                 && !assumeNonNull(mDelegate.getWebContents()).isFullscreenForCurrentTab()
-                && !mDelegate.isInBrowserFullscreen()) {
+                && !isInEdgeToEdgeCompatibleDisplayMode()) {
             value = ViewportFit.AUTO;
         }
 
-        if (value == mViewportFit) return;
-
+        boolean viewportFitChanged = value != mViewportFit;
         mViewportFit = value;
+        // Re-process unchanged cover-mode reports too (e.g. a page reloading still at
+        // viewport-fit=cover) so Blink gets the current insets again.
+        if (!viewportFitChanged && !shouldTreatViewportFitAsCover(value)) return;
+
         maybeUpdateLayout();
         if (mDelegate.isDrawEdgeToEdgeEnabled()) {
-            // Update the safe area insets just in case, since in some flows (such as navigating
-            // from recent tabs) the insets may be incorrect and outdated.
+            // Re-push the safe area when a cover-mode page reports viewport-fit=cover again after
+            // reload. Blink needs the current insets for CSS env() variables even if the enum value
+            // did not change.
             maybePushSafeAreaInsets(mCachedSafeAreaInsets);
         }
     }
@@ -343,22 +384,135 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         maybePushSafeAreaInsets(area);
     }
 
+    @Override
+    public void onInsetChanged() {
+        // In app-style browser fullscreen (for example display: standalone), the safe area from
+        // InsetObserver can be 0 because the cutout is fully contained by the status bar. Re-push
+        // insets when system bars change so we can merge in the raw system-bar values.
+        if (!shouldMergeWithBrowserSafeAreaInsets()) return;
+
+        maybePushSafeAreaInsets(mCachedSafeAreaInsets);
+    }
+
     private void maybePushSafeAreaInsets(Rect area) {
         WebContents webContents = mDelegate.getWebContents();
         if (webContents == null) return;
         if (webContents.getTopLevelNativeWindow() == null) return;
 
         mCachedSafeAreaInsets = area;
+        Rect mergedSafeAreaInsets = maybeMergeWithBrowserSafeAreaInsets(area);
         float dipScale = getDipScale();
         Rect safeArea =
                 new Rect(
-                        adjustInsetForScale(area.left, dipScale),
-                        adjustInsetForScale(area.top, dipScale),
-                        adjustInsetForScale(area.right, dipScale),
-                        adjustInsetForScale(area.bottom, dipScale));
+                        adjustInsetForScale(mergedSafeAreaInsets.left, dipScale),
+                        adjustInsetForScale(mergedSafeAreaInsets.top, dipScale),
+                        adjustInsetForScale(mergedSafeAreaInsets.right, dipScale),
+                        adjustInsetForScale(mergedSafeAreaInsets.bottom, dipScale));
 
         // Notify Blink of the new insets for css env() variables.
         webContents.setDisplayCutoutSafeArea(safeArea);
+    }
+
+    /**
+     * In app-style browser fullscreen modes (e.g. webapps with display:standalone or app-style CCT)
+     * the per-WebContents safe area reported by Blink does not include the browser's system bar
+     * geometry, but CSS env(safe-area-inset-*) authors expect a single rect that covers everything
+     * obstructing the viewport. This helper merges the WebContents safe area with the browser's own
+     * bar/cutout insets so the page sees a complete safe area.
+     *
+     * <p>When the embedder's short-edges cutout mode is enabled, the browser safe area is also
+     * cached per display rotation. Reload / pull-to-refresh paths can transiently report all-zero
+     * raw insets even though the bar geometry has not changed; the cache lets the page keep its CSS
+     * env(safe-area-inset-*) values across that hiccup. The cache is invalidated across rotations
+     * because portrait and landscape can have different browser safe areas.
+     *
+     * @param safeAreaInsets the per-WebContents safe area reported by Blink.
+     * @return the merged safe area to push back to Blink, or {@code safeAreaInsets} unchanged when
+     *     no merge is required (e.g. fullscreen HTML mode, or no browser insets to merge).
+     */
+    private Rect maybeMergeWithBrowserSafeAreaInsets(Rect safeAreaInsets) {
+        if (!shouldMergeWithBrowserSafeAreaInsets()) return safeAreaInsets;
+
+        Rect browserSafeAreaInsets = getBrowserSafeAreaInsets();
+        if (mDelegate.isShortEdgesCutoutModeEnabled()) {
+            // Reload paths can transiently report all-zero raw insets even though the bar
+            // geometry has not changed. Fall back to the last non-zero browser safe area so the
+            // page does not lose its CSS env(safe-area-inset-*) values on refresh. Do not reuse the
+            // cache across display rotations, since portrait and landscape can have different
+            // browser safe areas.
+            int currentRotation = getDisplayRotationForWindow(mWindow);
+            if (EMPTY_RECT.equals(browserSafeAreaInsets)) {
+                if (currentRotation == INVALID_DISPLAY_ROTATION
+                        || currentRotation == mCachedBrowserSafeAreaInsetsRotation) {
+                    browserSafeAreaInsets = mCachedBrowserSafeAreaInsets;
+                }
+            } else {
+                mCachedBrowserSafeAreaInsets = browserSafeAreaInsets;
+                mCachedBrowserSafeAreaInsetsRotation = currentRotation;
+            }
+        }
+
+        if (EMPTY_RECT.equals(browserSafeAreaInsets)) {
+            return safeAreaInsets;
+        }
+
+        return getMaxRect(safeAreaInsets, browserSafeAreaInsets);
+    }
+
+    /**
+     * Returns the area on the activity window that is currently obstructed by browser chrome
+     * (status bar, navigation bar, and any display cutout). Together these represent everything a
+     * web page should treat as "not safe to draw under" once the controller is in browser
+     * edge-to-edge mode, and they are merged with the per-WebContents safe area before being pushed
+     * back to Blink for CSS env(safe-area-inset-*).
+     *
+     * <p>In short-edges cutout mode we read the bar geometry via {@link
+     * WindowInsetsCompat#getInsetsIgnoringVisibility} so transient bar visibility changes (e.g.
+     * while the IME is showing) don't collapse the safe area; otherwise we use the visible
+     * system-bar insets to preserve the pre-flag behavior.
+     *
+     * @return the union of browser bar and cutout insets, or an empty Rect if no insets are
+     *     available yet.
+     */
+    private Rect getBrowserSafeAreaInsets() {
+        if (mInsetObserver == null) return new Rect();
+
+        WindowInsetsCompat windowInsets = mInsetObserver.getLastRawWindowInsets();
+        if (windowInsets == null) return new Rect();
+
+        Rect barInsets;
+        if (mDelegate.isShortEdgesCutoutModeEnabled()) {
+            // Use stable bar geometry so reload / pull-to-refresh does not transiently zero
+            // CSS env(safe-area-inset-*) when bars are momentarily reported as not visible.
+            Insets statusBarInsets = windowInsets.getInsetsIgnoringVisibility(statusBars());
+            Insets navigationBarInsets = windowInsets.getInsetsIgnoringVisibility(navigationBars());
+            barInsets = getMaxRect(toRect(statusBarInsets), toRect(navigationBarInsets));
+        } else {
+            barInsets = toRect(windowInsets.getInsets(systemBars()));
+        }
+
+        DisplayCutoutCompat displayCutout = windowInsets.getDisplayCutout();
+        if (displayCutout == null) return barInsets;
+
+        Rect cutoutInsets =
+                new Rect(
+                        displayCutout.getSafeInsetLeft(),
+                        displayCutout.getSafeInsetTop(),
+                        displayCutout.getSafeInsetRight(),
+                        displayCutout.getSafeInsetBottom());
+        return getMaxRect(barInsets, cutoutInsets);
+    }
+
+    private static Rect getMaxRect(Rect a, Rect b) {
+        return new Rect(
+                Math.max(a.left, b.left),
+                Math.max(a.top, b.top),
+                Math.max(a.right, b.right),
+                Math.max(a.bottom, b.bottom));
+    }
+
+    private static Rect toRect(Insets insets) {
+        return new Rect(insets.left, insets.top, insets.right, insets.bottom);
     }
 
     /**
@@ -370,6 +524,46 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     private static int adjustInsetForScale(int inset, float dipScale) {
         return (int) Math.ceil(inset / dipScale);
+    }
+
+    private static int getDisplayRotationForWindow(@Nullable Window window) {
+        if (window == null) return INVALID_DISPLAY_ROTATION;
+
+        View decorView = window.getDecorView();
+        if (decorView == null) return INVALID_DISPLAY_ROTATION;
+
+        Display display = decorView.getDisplay();
+        return display == null ? INVALID_DISPLAY_ROTATION : display.getRotation();
+    }
+
+    private boolean shouldMergeWithBrowserSafeAreaInsets() {
+        return shouldUseBrowserEdgeToEdge();
+    }
+
+    private boolean shouldUseBrowserEdgeToEdge() {
+        return mDelegate.isShortEdgesCutoutModeEnabled()
+                && mDelegate.isDrawEdgeToEdgeEnabled()
+                && isInEdgeToEdgeCompatibleDisplayMode()
+                && shouldTreatViewportFitAsCover(mViewportFit);
+    }
+
+    private boolean isInEdgeToEdgeCompatibleDisplayMode() {
+        @DisplayMode.EnumType int displayMode = mDelegate.getDisplayMode();
+        if (!mDelegate.isShortEdgesCutoutModeEnabled()) {
+            return displayMode == DisplayMode.FULLSCREEN;
+        }
+        return displayMode == DisplayMode.FULLSCREEN || displayMode == DisplayMode.STANDALONE;
+    }
+
+    private static boolean shouldTreatViewportFitAsCover(
+            @WebContentsObserver.ViewportFitType int value) {
+        return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
+    }
+
+    private void updateEdgeToEdgeMode(boolean useEdgeToEdge) {
+        // The delegate owns the edge-to-edge token; setEdgeToEdgeState is idempotent and safe to
+        // call on every update.
+        mDelegate.setEdgeToEdgeState(useEdgeToEdge);
     }
 
     @VisibleForTesting
@@ -402,17 +596,21 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             }
         }
 
-        // Never draw under notch if it is not in fullscreen mode.
-        if (!assumeNonNull(mDelegate.getWebContents()).isFullscreenForCurrentTab()) {
+        // Never draw under notch unless either the page is in fullscreen mode or the embedder
+        // reports browser fullscreen mode (for example, app-style webapp windows).
+        WebContents webContents = mDelegate.getWebContents();
+        boolean isHtmlFullscreen = webContents != null && webContents.isFullscreenForCurrentTab();
+        if (!isHtmlFullscreen && !isInEdgeToEdgeCompatibleDisplayMode()) {
             return LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
         }
 
-        return switch (mViewportFit) {
-            case ViewportFit.CONTAIN -> LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-            case ViewportFit.COVER_FORCED_BY_USER_AGENT, ViewportFit.COVER -> LayoutParams
-                    .LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-            default -> LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
-        };
+        if (mViewportFit == ViewportFit.CONTAIN) {
+            return LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+        }
+        if (shouldTreatViewportFitAsCover(mViewportFit)) {
+            return LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
+        return LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
     }
 
     @VisibleForTesting
@@ -428,6 +626,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     /** Should be called to refresh the activity window's layout based on current state. */
     public void maybeUpdateLayout() {
+        updateEdgeToEdgeMode(shouldUseBrowserEdgeToEdge());
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         LayoutParams attributes = getWindowAttributes();
@@ -452,6 +651,22 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     /** Called when web contents changed in the attached tab. */
     public void onContentChanged() {
         updateWebContentObserver(mDelegate.getWebContents());
+        // The new WebContents starts with cleared display-cutout safe area state. If the page is
+        // already known to be in cover mode (e.g. same-page reload), proactively re-push the
+        // cached insets so CSS env(safe-area-inset-*) does not collapse to 0 across reload.
+        if (shouldUseBrowserEdgeToEdge()) {
+            maybePushSafeAreaInsets(mCachedSafeAreaInsets);
+        }
+    }
+
+    /**
+     * Called by the embedder once the page load has finished and the renderer is ready to apply a
+     * new display-cutout safe area for env(safe-area-inset-*).
+     */
+    public void onPageLoadFinished() {
+        if (shouldUseBrowserEdgeToEdge()) {
+            maybePushSafeAreaInsets(mCachedSafeAreaInsets);
+        }
     }
 
     public @Nullable WebContentsObserver getWebContentObserverForTesting() {
