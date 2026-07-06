@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
 
@@ -19,7 +20,6 @@ using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
 using ScrollAxis = V8ScrollAxis::Enum;
 
 class AnimationTimeline;
-class ComputedStyle;
 class Node;
 
 namespace scroll_timeline_util {
@@ -34,12 +34,10 @@ ToCompositorScrollTimeline(AnimationTimeline*);
 std::optional<CompositorElementId> CORE_EXPORT
 GetCompositorScrollElementId(const Node*);
 
-// Convert the blink concept of a ScrollTimeline axis into the cc one.
-//
-// This implements a subset of the conversions documented in
-// https://drafts.csswg.org/css-writing-modes-3/#logical-to-physical
-CompositorScrollTimeline::ScrollDirection CORE_EXPORT
-ConvertOrientation(ScrollAxis, const ComputedStyle*);
+// Convert the timeline's resolved physical scroll direction into the cc
+// representation.
+std::optional<CompositorScrollTimeline::ScrollDirection> CORE_EXPORT
+    ToCompositorScrollDirection(std::optional<PhysicalDirection>);
 
 }  // namespace scroll_timeline_util
 

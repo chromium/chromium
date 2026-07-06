@@ -6,10 +6,11 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -97,106 +98,98 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
-  EXPECT_TRUE(compositor_timeline.get());
+  ASSERT_TRUE(compositor_timeline.get());
+  // Without a layout box the direction is unresolved, so the cc timeline is
+  // inactive.
+  EXPECT_EQ(compositor_timeline->GetDirectionForTest(), std::nullopt);
 }
 
-TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
-  // For physical the writing-mode and directionality shouldn't matter, so make
-  // sure it doesn't.
-  Vector<WritingMode> writing_modes = {WritingMode::kHorizontalTb,
-                                       WritingMode::kVerticalLr,
-                                       WritingMode::kVerticalRl};
-  Vector<TextDirection> directions = {TextDirection::kLtr, TextDirection::kRtl};
+TEST_F(ScrollTimelineUtilTest,
+       ToCompositorScrollTimelineMismatchedWritingDirections) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #outer {
+        overflow: scroll clip;
+        width: 100px;
+        height: 100px;
+      }
+      #inner {
+        writing-mode: vertical-rl;
+        overflow: clip scroll;
+        width: 300px;
+        height: 100px;
+      }
+      #subject {
+        width: 50px;
+        height: 300px;
+      }
+    </style>
+    <div id='outer'><div id='inner'><div id='subject'></div></div></div>
+  )HTML");
 
-  for (const WritingMode& writing_mode : writing_modes) {
-    for (const TextDirection& direction : directions) {
-      ComputedStyleBuilder style_builder =
-          GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-      style_builder.SetWritingMode(writing_mode);
-      style_builder.SetDirection(direction);
-      const ComputedStyle* style = style_builder.TakeStyle();
-      EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kY, style),
-                CompositorScrollTimeline::ScrollDown);
-      EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kX, style),
-                CompositorScrollTimeline::ScrollRight);
-    }
-  }
+  // The timeline's block axis resolves via #inner (vertical-rl) to the
+  // horizontal axis, but the matched source #outer is horizontal-tb ltr, so
+  // progress must not be reversed.
+  ViewTimelineOptions* options = ViewTimelineOptions::Create();
+  options->setSubject(GetElementById("subject"));
+  options->setAxis(V8ScrollAxis::Enum::kBlock);
+  ViewTimeline* timeline =
+      ViewTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+
+  scoped_refptr<CompositorScrollTimeline> compositor_timeline =
+      ToCompositorScrollTimeline(timeline);
+  ASSERT_TRUE(compositor_timeline.get());
+  EXPECT_EQ(compositor_timeline->GetDirectionForTest(),
+            CompositorScrollTimeline::ScrollRight);
 }
 
-TEST_F(ScrollTimelineUtilTest, ConvertOrientationLogical) {
-  // horizontal-tb, ltr
-  ComputedStyleBuilder builder =
-      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.SetWritingMode(WritingMode::kHorizontalTb);
-  builder.SetDirection(TextDirection::kLtr);
-  const ComputedStyle* style = builder.TakeStyle();
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kBlock, style),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kInline, style),
-            CompositorScrollTimeline::ScrollRight);
+TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineOriginAtPhysicalEnd) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #rtl, #vertical-rl-rtl {
+        width: 100px;
+        height: 100px;
+      }
+      #rtl {
+        direction: rtl;
+        overflow: scroll clip;
+      }
+      #rtl > div {
+        width: 1000px;
+        height: 50px;
+      }
+      #vertical-rl-rtl {
+        writing-mode: vertical-rl;
+        direction: rtl;
+        overflow: clip scroll;
+      }
+      #vertical-rl-rtl > div {
+        width: 50px;
+        height: 1000px;
+      }
+    </style>
+    <div id='rtl'><div></div></div>
+    <div id='vertical-rl-rtl'><div></div></div>
+  )HTML");
 
-  // vertical-lr, ltr
-  builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.SetWritingMode(WritingMode::kVerticalLr);
-  builder.SetDirection(TextDirection::kLtr);
-  style = builder.TakeStyle();
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kBlock, style),
-            CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kInline, style),
-            CompositorScrollTimeline::ScrollDown);
+  auto direction_for = [&](const char* id, V8ScrollAxis::Enum axis) {
+    ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+    options->setSource(GetElementById(id));
+    options->setAxis(axis);
+    ScrollTimeline* timeline =
+        ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+    return ToCompositorScrollTimeline(timeline)->GetDirectionForTest();
+  };
 
-  // vertical-rl, ltr
-  builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.SetWritingMode(WritingMode::kVerticalRl);
-  builder.SetDirection(TextDirection::kLtr);
-  style = builder.TakeStyle();
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kBlock, style),
+  // A negative minimum scroll offset means the scroll origin sits at the
+  // physical end of the axis, so the resolved direction points toward the
+  // physical start.
+  EXPECT_EQ(direction_for("rtl", V8ScrollAxis::Enum::kX),
             CompositorScrollTimeline::ScrollLeft);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kInline, style),
-            CompositorScrollTimeline::ScrollDown);
-
-  // horizontal-tb, rtl
-  builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.SetWritingMode(WritingMode::kHorizontalTb);
-  builder.SetDirection(TextDirection::kRtl);
-  style = builder.TakeStyle();
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kBlock, style),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kInline, style),
-            CompositorScrollTimeline::ScrollLeft);
-
-  // vertical-lr, rtl
-  builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.SetWritingMode(WritingMode::kVerticalLr);
-  builder.SetDirection(TextDirection::kRtl);
-  style = builder.TakeStyle();
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kBlock, style),
-            CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kInline, style),
+  // In vertical-rl rtl, the inline axis is vertical with its scroll origin
+  // at the physical bottom.
+  EXPECT_EQ(direction_for("vertical-rl-rtl", V8ScrollAxis::Enum::kInline),
             CompositorScrollTimeline::ScrollUp);
-
-  // vertical-rl, rtl
-  builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.SetWritingMode(WritingMode::kVerticalRl);
-  builder.SetDirection(TextDirection::kRtl);
-  style = builder.TakeStyle();
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kBlock, style),
-            CompositorScrollTimeline::ScrollLeft);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kInline, style),
-            CompositorScrollTimeline::ScrollUp);
-}
-
-TEST_F(ScrollTimelineUtilTest, ConvertOrientationNullStyle) {
-  // When the style is nullptr we assume horizontal-tb and ltr direction. This
-  // means that block is ScrollDown and inline is ScrollRight
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kY, nullptr),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kX, nullptr),
-            CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kBlock, nullptr),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollAxis::kInline, nullptr),
-            CompositorScrollTimeline::ScrollRight);
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNullNode) {

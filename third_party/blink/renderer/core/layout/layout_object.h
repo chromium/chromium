@@ -96,6 +96,8 @@ struct PaintInvalidatorContext;
 struct SVGLayoutInfo;
 struct SVGLayoutResult;
 
+enum class PhysicalAxis : uint8_t;
+
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
 
 enum MarkingBehavior {
@@ -2263,8 +2265,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   LayoutBlock* InclusiveContainingBlock(AncestorSkipInfo* = nullptr);
 
+  // Returns the nearest ancestor scroll container.
   const LayoutBox* ContainingScrollContainer(
       bool ignore_layout_view_for_fixed_pos = false) const;
+
+  // Returns the nearest ancestor scroll container with a scrollable overflow
+  // value in the given axis.
+  const LayoutBox* ContainingScrollContainer(PhysicalAxis axis) const;
+
   const PaintLayer* ContainingScrollContainerLayer(
       bool ignore_layout_view_for_fixed_pos = false) const;
 

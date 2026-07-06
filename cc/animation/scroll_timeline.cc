@@ -30,19 +30,20 @@ bool IsReverse(ScrollTimeline::ScrollDirection direction) {
 }  // namespace
 
 ScrollTimeline::ScrollTimeline(std::optional<ElementId> scroller_id,
-                               ScrollDirection direction,
+                               std::optional<ScrollDirection> direction,
                                std::optional<ScrollOffsets> scroll_offsets,
                                int animation_timeline_id)
     : AnimationTimeline(animation_timeline_id, /* is_impl_only */ false),
       pending_id_(scroller_id),
-      direction_(direction),
+      active_direction_(direction),
+      pending_direction_(direction),
       pending_offsets_(scroll_offsets) {}
 
 ScrollTimeline::~ScrollTimeline() = default;
 
 scoped_refptr<ScrollTimeline> ScrollTimeline::Create(
     std::optional<ElementId> scroller_id,
-    ScrollTimeline::ScrollDirection direction,
+    std::optional<ScrollTimeline::ScrollDirection> direction,
     std::optional<ScrollOffsets> scroll_offsets) {
   return base::WrapRefCounted(
       new ScrollTimeline(scroller_id, direction, scroll_offsets,
@@ -50,8 +51,8 @@ scoped_refptr<ScrollTimeline> ScrollTimeline::Create(
 }
 
 scoped_refptr<AnimationTimeline> ScrollTimeline::CreateImplInstance() const {
-  return base::WrapRefCounted(
-      new ScrollTimeline(pending_id(), direction(), pending_offsets(), id()));
+  return base::WrapRefCounted(new ScrollTimeline(
+      pending_id(), pending_direction(), pending_offsets(), id()));
 }
 
 bool ScrollTimeline::IsActive(const ScrollTree& scroll_tree,
@@ -59,6 +60,11 @@ bool ScrollTimeline::IsActive(const ScrollTree& scroll_tree,
   // Blink passes empty scroll offsets when the timeline is inactive.
   if ((is_active_tree && !active_offsets()) ||
       (!is_active_tree && !pending_offsets())) {
+    return false;
+  }
+
+  if ((is_active_tree && !active_direction()) ||
+      (!is_active_tree && !pending_direction())) {
     return false;
   }
 
@@ -98,11 +104,13 @@ std::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
 
   gfx::PointF scroll_dimensions = scroll_tree.MaxScrollOffset(scroll_node->id);
 
+  ScrollDirection direction =
+      is_active_tree ? active_direction().value() : pending_direction().value();
   double max_offset =
-      IsVertical(direction()) ? scroll_dimensions.y() : scroll_dimensions.x();
+      IsVertical(direction) ? scroll_dimensions.y() : scroll_dimensions.x();
   double current_physical_offset =
-      IsVertical(direction()) ? offset.y() : offset.x();
-  double current_offset = IsReverse(direction())
+      IsVertical(direction) ? offset.y() : offset.x();
+  double current_offset = IsReverse(direction)
                               ? max_offset - current_physical_offset
                               : current_physical_offset;
   DCHECK_GE(max_offset, 0);
@@ -146,12 +154,15 @@ void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {
   DCHECK(impl_timeline);
   ScrollTimeline* scroll_timeline = ToScrollTimeline(impl_timeline);
   scroll_timeline->pending_id_.Write(*this) = pending_id_.Read(*this);
+  scroll_timeline->pending_direction_.Write(*this) =
+      pending_direction_.Read(*this);
   scroll_timeline->pending_offsets_.Write(*this) = pending_offsets_.Read(*this);
   scroll_timeline->last_tick_time_.Write(*scroll_timeline) = std::nullopt;
 }
 
 void ScrollTimeline::ActivateTimeline() {
   active_id_.Write(*this) = pending_id_.Read(*this);
+  active_direction_.Write(*this) = pending_direction_.Read(*this);
   active_offsets_.Write(*this) = pending_offsets_.Read(*this);
   last_tick_time_.Write(*this) = std::nullopt;
   for (auto& kv : id_to_animation_map_.Write(*this)) {
@@ -205,8 +216,10 @@ bool ScrollTimeline::TickScrollLinkedAnimations(
 
 void ScrollTimeline::UpdateScrollerIdAndScrollOffsets(
     std::optional<ElementId> pending_id,
+    std::optional<ScrollDirection> pending_direction,
     std::optional<ScrollOffsets> pending_offsets) {
   if (pending_id_.Read(*this) == pending_id &&
+      pending_direction_.Read(*this) == pending_direction &&
       pending_offsets_.Read(*this) == pending_offsets) {
     return;
   }
@@ -215,6 +228,7 @@ void ScrollTimeline::UpdateScrollerIdAndScrollOffsets(
   // Then later (when the pending tree is promoted to active)
   // |ActivateTimeline| will be called and will set the |active_id_|.
   pending_id_.Write(*this) = pending_id;
+  pending_direction_.Write(*this) = pending_direction;
   pending_offsets_.Write(*this) = pending_offsets;
 
   SetNeedsPushProperties();

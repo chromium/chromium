@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/layout/custom/layout_custom.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
@@ -1821,6 +1822,22 @@ const LayoutBox* LayoutObject::ContainingScrollContainer(
   if (const PaintLayer* scroll_container_layer =
           ContainingScrollContainerLayer(ignore_layout_view_for_fixed_pos)) {
     return scroll_container_layer->GetLayoutBox();
+  }
+  return nullptr;
+}
+
+const LayoutBox* LayoutObject::ContainingScrollContainer(
+    PhysicalAxis axis) const {
+  NOT_DESTROYED();
+  const LayoutObject* current = this;
+  while (const LayoutBox* container = current->ContainingScrollContainer()) {
+    const ComputedStyle& style = container->StyleRef();
+    if (axis == PhysicalAxis::kHorizontal
+            ? style.IsOverflowValueScrollableX()
+            : style.IsOverflowValueScrollableY()) {
+      return container;
+    }
+    current = container;
   }
   return nullptr;
 }

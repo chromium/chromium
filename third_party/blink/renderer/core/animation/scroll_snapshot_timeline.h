@@ -15,7 +15,9 @@
 #include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
 
@@ -32,7 +34,8 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   bool IsScrollSnapshotTimeline() const override { return true; }
 
   // ScrollTimeline is not resolved if source is null, does not currently
-  // have a CSS layout box, or if its layout box is not a scroll container.
+  // have a CSS layout box, or if its layout box is not a scroll container in
+  // the timeline's resolved physical axis.
   bool IsResolved() const override;
 
   // ScrollTimeline is not active if not resolved or if the current time is
@@ -65,12 +68,13 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
     return timeline_state_snapshotted_.resolved_source.Get();
   }
 
-  // Returns the layout box for the resolved source's scrollable area. In most
-  // cases, the layout box for the resolved source is a scroll container.  A
-  // fieldset has a legend and scrollable content.  The scrollable content is
-  // in an anonymous block.
-  LayoutBox* ScrollContainer() const {
-    return ComputeScrollContainer(ResolvedSource());
+  // Returns the layout box for the resolved source's scrollable area if it is
+  // a scroll container in the given physical axis. In most cases, the layout
+  // box for the resolved source is a scroll container.  A fieldset has a
+  // legend and scrollable content.  The scrollable content is in an anonymous
+  // block.
+  LayoutBox* ScrollContainer(PhysicalAxis physical_axis) const {
+    return ComputeScrollContainer(ResolvedSource(), physical_axis);
   }
 
   // Return the latest resolved scroll/view offsets. This will be empty when
@@ -106,7 +110,18 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
 
+  static PhysicalAxis ToPhysicalAxis(PhysicalDirection direction) {
+    return direction == PhysicalDirection::kUp ||
+                   direction == PhysicalDirection::kDown
+               ? PhysicalAxis::kVertical
+               : PhysicalAxis::kHorizontal;
+  }
+
   virtual ScrollAxis GetAxis() const = 0;
+
+  std::optional<PhysicalDirection> GetResolvedScrollDirection() const {
+    return timeline_state_snapshotted_.scroll_direction;
+  }
 
  protected:
   // For access to TimelineState.
@@ -120,12 +135,20 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
       const std::optional<TimelineOffset>& range_end,
       const Timing&) override;
 
-  static LayoutBox* ComputeScrollContainer(Node* resolved_source);
+  // Returns nullptr if the resolved source is not a scroll container in the
+  // timeline's physical axis.
+  static LayoutBox* ComputeScrollContainer(Node* resolved_source,
+                                           PhysicalAxis physical_axis);
 
   struct TimelineState {
     DISALLOW_NEW();
 
    public:
+    // The physical direction of scrolling on the timeline's resolved axis.
+    // Logical axes are resolved on the nearest scroll container to the subject,
+    // or the reference element itself.
+    std::optional<PhysicalDirection> scroll_direction;
+
     std::optional<base::TimeDelta> current_time;
     // Offsets corresponding to the entire scroll range of the scroll
     // container backing the timeline in the axis of the timeline.
@@ -152,12 +175,14 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
     Member<Node> resolved_source;
 
     bool HasConsistentLayout(const TimelineState& other) const {
-      return scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
+      return scroll_direction == other.scroll_direction &&
+             scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
              view_offsets == other.view_offsets;
     }
 
     bool operator==(const TimelineState& other) const {
       return current_time == other.current_time &&
+             scroll_direction == other.scroll_direction &&
              scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
              view_offsets == other.view_offsets &&
              resolved_source == other.resolved_source;
