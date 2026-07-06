@@ -20,7 +20,7 @@
                 "archive_subdir": "desktop-x64",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan",
-                "use_archive_path": false
+                "use_archive_path": true
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {

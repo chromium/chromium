@@ -533,12 +533,12 @@ ci_builder(
         archive_name_prefix = "asan",
 
         # TODO(https://crbug.com/525381517): Replace this with
-        # "android-release-desktop-x64/asan-android-release" and set
-        # `use_archive_path` to True.
+        # "android-release-desktop-x64/asan-android-release".
         archive_path = "linux-release-desktop-x64/asan-linux-release",
         archive_subdir = "desktop-x64",
         gs_acl = "public-read",
         gs_bucket = "chromium-browser-asan",
+        use_archive_path = True,
     ),
     console_category = "android",
     console_short_name = "asan-x64",
