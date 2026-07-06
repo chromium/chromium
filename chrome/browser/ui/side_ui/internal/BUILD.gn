@@ -15,6 +15,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorFactory.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorImpl.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiObserverNotifier.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiTransitionListener.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiUpdateSpecs.java",
   ]
 
   deps = [

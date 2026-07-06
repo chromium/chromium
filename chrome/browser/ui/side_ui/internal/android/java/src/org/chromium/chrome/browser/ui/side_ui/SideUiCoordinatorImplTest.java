@@ -737,4 +737,39 @@ public class SideUiCoordinatorImplTest {
         assertEquals(List.of(SideUiId.SIDE_PANEL), showabilityCaptor.getValue().mShowableSideUiIds);
         assertTrue(showabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
     }
+
+    @Test
+    public void testEndAnimations_BeforeTransitionStarts_EndTransitionAndNotifyObservers() {
+        // Arrange:
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.addObserver(mSideUiObserver);
+        clearInvocations(mSideUiObserver);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(), /* suppressAnimations= */ false));
+
+        // Act: Immediately call endAnimations() after updateUi().
+        // The transition hasn't started at this point.
+        mCoordinator.endAnimations();
+
+        // Assert: SideUiContainer has the correct width and received onUiUpdateCompleted().
+        @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
+        assertEquals(expectedWidth, mSideUiContainerView.getWidth());
+        assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidth);
+        assertEquals(Integer.valueOf(expectedWidth), sideUiContainer.mLastNewWidth);
+
+        // Assert: SideUiObserver received onTransitionBegun() and onTransitionEnded().
+        Map<@AnchorSide Integer, Integer> sideUiWidths = new ArrayMap<>();
+        sideUiWidths.put(AnchorSide.LEFT, 0);
+        sideUiWidths.put(AnchorSide.RIGHT, expectedWidth);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(sideUiWidths);
+        verify(mSideUiObserver).onTransitionBegun(expectedSideUiSpecs);
+        verify(mSideUiObserver).onTransitionEnded(expectedSideUiSpecs);
+    }
 }

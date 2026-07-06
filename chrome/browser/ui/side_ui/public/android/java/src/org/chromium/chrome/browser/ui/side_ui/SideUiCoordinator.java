@@ -253,6 +253,9 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      */
     void updateUi(UiUpdateRequest request);
 
+    /** Immediately ends all ongoing animations. */
+    void endAnimations();
+
     /** Destroys all objects owned by this coordinator. */
     void destroy();
 }
