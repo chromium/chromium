@@ -109,7 +109,8 @@ class GPMEnclaveTransaction {
       EnclaveManager* enclave_manager,
       std::optional<std::string> pin,
       std::optional<std::vector<uint8_t>> selected_credential_id,
-      EnclaveRequestCallback enclave_request_callback);
+      EnclaveRequestCallback enclave_request_callback,
+      std::optional<std::vector<std::vector<uint8_t>>> cmtg_device_keys);
 
   ~GPMEnclaveTransaction();
 
@@ -138,6 +139,7 @@ class GPMEnclaveTransaction {
   std::string rp_id_;
   raw_ptr<EnclaveManager> enclave_manager_;
   std::optional<std::string> pin_;
+  std::optional<std::vector<std::vector<uint8_t>>> cmtg_device_keys_;
   std::optional<std::vector<uint8_t>> selected_credential_id_;
   EnclaveRequestCallback enclave_request_callback_;
 

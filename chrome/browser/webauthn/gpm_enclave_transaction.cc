@@ -66,13 +66,15 @@ GPMEnclaveTransaction::GPMEnclaveTransaction(
     EnclaveManager* enclave_manager,
     std::optional<std::string> pin,
     std::optional<std::vector<uint8_t>> selected_credential_id,
-    EnclaveRequestCallback enclave_request_callback)
+    EnclaveRequestCallback enclave_request_callback,
+    std::optional<std::vector<std::vector<uint8_t>>> cmtg_device_keys)
     : delegate_(delegate),
       passkey_model_(passkey_model),
       request_type_(request_type),
       rp_id_(std::move(rp_id)),
       enclave_manager_(enclave_manager),
       pin_(std::move(pin)),
+      cmtg_device_keys_(std::move(cmtg_device_keys)),
       selected_credential_id_(std::move(selected_credential_id)),
       enclave_request_callback_(std::move(enclave_request_callback)) {
   CHECK(delegate_);
@@ -150,6 +152,7 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
 
   auto request = std::make_unique<device::enclave::CredentialRequest>();
   request->access_token = std::move(*token);
+  request->cmtg_device_keys = std::move(cmtg_device_keys_);
   // A request to the enclave can either provide a wrapped secret, which only
   // the enclave can decrypt, or can provide the security domain secret
   // directly. The latter is only possible immediately after registering a

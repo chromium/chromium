@@ -11,12 +11,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "components/keyed_service/core/keyed_service.h"
 
 namespace webauthn {
 
 // Interface representing a service that vends device keys for Credential
 // Manager Trust Group (CMTG) key operations.
-class CmtgDeviceKeyProvider {
+class CmtgDeviceKeyProvider : public KeyedService {
  public:
   enum class Error {
     kNetworkError,
@@ -35,7 +36,7 @@ class CmtgDeviceKeyProvider {
     virtual ~Request() = default;
   };
 
-  virtual ~CmtgDeviceKeyProvider() = default;
+  ~CmtgDeviceKeyProvider() override = default;
 
   // Fetches the device keys.
   [[nodiscard]] virtual std::unique_ptr<Request> GetDeviceKeys(

@@ -180,12 +180,13 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   CHECK(enclave_request_callback_);
+  // TODO(crbug.com/485888879): add support for CMTG keys.
   enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(profile()),
       device::FidoRequestType::kMakeCredential, rp_id_,
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile()),
       /*pin=*/std::nullopt, /*selected_credential_id=*/std::nullopt,
-      enclave_request_callback_);
+      enclave_request_callback_, /*cmtg_device_keys=*/std::nullopt);
   enclave_transaction_->Start();
 }
 

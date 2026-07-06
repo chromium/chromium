@@ -587,7 +587,7 @@ cbor::Value BuildGetAssertionCommand(
     std::unique_ptr<ClaimedPIN> claimed_pin,
     std::optional<std::vector<uint8_t>> wrapped_secret,
     std::optional<std::vector<uint8_t>> secret,
-    std::optional<base::span<const uint8_t>> cmtg_device_key) {
+    std::optional<std::vector<std::vector<uint8_t>>> cmtg_device_keys) {
   CHECK(wrapped_secret.has_value() ^ secret.has_value());
   cbor::Value::MapValue entry_map;
 
@@ -626,9 +626,13 @@ cbor::Value BuildGetAssertionCommand(
   entry_map.emplace(cbor::Value(kRequestClientDataJSONHashKey),
                     cbor::Value(crypto::hash::Sha256(client_data_json)));
 
-  if (cmtg_device_key.has_value()) {
-    entry_map.emplace(cbor::Value(kRequestCmtgDeviceKey),
-                      cbor::Value(*cmtg_device_key));
+  if (cmtg_device_keys.has_value()) {
+    cbor::Value::ArrayValue array_val;
+    for (auto& key : *cmtg_device_keys) {
+      array_val.emplace_back(std::move(key));
+    }
+    entry_map.emplace(cbor::Value(kRequestCmtgDeviceKeys),
+                      cbor::Value(std::move(array_val)));
   }
 
   if (claimed_pin) {
@@ -647,7 +651,7 @@ cbor::Value BuildMakeCredentialCommand(
     std::optional<std::vector<uint8_t>> secret,
     UserPresentAndVerifiedBits up_and_uv_bits,
     base::span<const uint8_t> client_data_json,
-    std::optional<base::span<const uint8_t>> cmtg_device_key) {
+    std::optional<std::vector<uint8_t>> cmtg_device_key) {
   CHECK(wrapped_secret.has_value() ^ secret.has_value());
   cbor::Value::MapValue entry_map;
 
@@ -703,7 +707,7 @@ cbor::Value BuildMakeCredentialCommand(
 
   if (cmtg_device_key.has_value()) {
     entry_map.emplace(cbor::Value(kRequestCmtgDeviceKey),
-                      cbor::Value(*cmtg_device_key));
+                      cbor::Value(std::move(*cmtg_device_key)));
   }
 
   return cbor::Value(entry_map);

@@ -161,8 +161,14 @@ source_set("unit_tests") {
 
 static_library("test_support") {
   testonly = true
-  sources = []
-  deps = []
+  sources = [
+    "fake_cmtg_device_key_provider.cc",
+    "fake_cmtg_device_key_provider.h",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+  ]
 
   if (use_blink) {
     sources += [

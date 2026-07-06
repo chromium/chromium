@@ -24,6 +24,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/webauthn/core/browser/cmtg_device_key_provider.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -131,6 +132,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
                              public GPMEnclaveTransaction::Delegate {
  public:
   static constexpr base::TimeDelta kLoadingTimeout = base::Milliseconds(500);
+  static constexpr base::TimeDelta kFetchDeviceKeysTimeout = base::Seconds(5);
 
   enum class AccountState {
     // There isn't a primary account, or enclave support is disabled.
@@ -160,7 +162,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
       AuthenticatorRequestDialogModel* model,
       const std::string& rp_id,
       device::FidoRequestType request_type,
-      device::UserVerificationRequirement user_verification_requirement);
+      device::UserVerificationRequirement user_verification_requirement,
+      bool cmtg_key_requested);
   GPMEnclaveController(const GPMEnclaveController&) = delete;
   GPMEnclaveController& operator=(const GPMEnclaveController&) = delete;
   GPMEnclaveController(GPMEnclaveController&&) = delete;
@@ -234,6 +237,14 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
       std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
+
+  // Called when CMTG device keys have finished fetching.
+  void OnCmtgDeviceKeysFetched(
+      base::expected<std::vector<std::vector<uint8_t>>,
+                     webauthn::CmtgDeviceKeyProvider::Error> keys);
+
+  // Called when the CMTG device key fetch timer fires.
+  void OnCmtgDeviceKeysTimeout();
 
   // Called when enough state has been loaded that the initial UI can be shown.
   // If `kEnabled` then the enclave will be a valid mechanism.
@@ -427,6 +438,22 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // The gaia id of the user at the time the account state was downloaded.
   GaiaId user_gaia_id_;
+
+  // True if `StartTransaction()` was called while still waiting for CMTG device
+  // keys, so it needs to be delayed until the keys are ready or the fetch has
+  // timed out.
+  bool transaction_waiting_for_cmtg_device_keys_ = false;
+
+  // Cached CMTG device keys.
+  std::optional<std::vector<std::vector<uint8_t>>> cmtg_device_keys_;
+
+  // CMTG device keys request. Present while the request is still running, and
+  // only for operations requiring fetching CMTG device keys.
+  std::unique_ptr<webauthn::CmtgDeviceKeyProvider::Request>
+      fetch_cmtg_keys_request_;
+
+  // CMTG device keys timer.
+  base::OneShotTimer fetch_cmtg_keys_timeout_;
 
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};
 };

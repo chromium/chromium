@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
+#include "chrome/browser/webauthn/cmtg_device_key_provider_factory.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
@@ -401,14 +402,19 @@ GPMEnclaveController::GPMEnclaveController(
     AuthenticatorRequestDialogModel* model,
     const std::string& rp_id,
     device::FidoRequestType request_type,
-    device::UserVerificationRequirement user_verification_requirement)
+    device::UserVerificationRequirement user_verification_requirement,
+    bool cmtg_key_requested)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       rp_id_(rp_id),
       request_type_(request_type),
       user_verification_requirement_(user_verification_requirement),
       enclave_manager_(
           EnclaveManagerFactory::GetAsEnclaveManagerForProfile(GetProfile())),
-      model_(model) {
+      model_(model),
+      loading_timeout_(
+          GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host)),
+      fetch_cmtg_keys_timeout_(
+          GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host)) {
   enclave_manager_observer_.Observe(enclave_manager_);
   model_observer_.Observe(model_);
 
@@ -445,6 +451,21 @@ GPMEnclaveController::GPMEnclaveController(
     return;
   }
   SetActive(EnclaveEnabledStatus::kEnabled);
+
+  if (cmtg_key_requested) {
+    if (webauthn::CmtgDeviceKeyProvider* cmtg_provider =
+            CmtgDeviceKeyProviderFactory::GetForProfile(profile)) {
+      FIDO_LOG(EVENT) << "Fetching CMTG device keys";
+      fetch_cmtg_keys_timeout_.Start(
+          FROM_HERE, kFetchDeviceKeysTimeout,
+          base::BindOnce(&GPMEnclaveController::OnCmtgDeviceKeysTimeout,
+                         weak_ptr_factory_.GetWeakPtr()));
+      fetch_cmtg_keys_request_ = cmtg_provider->GetDeviceKeys(
+          base::BindOnce(&GPMEnclaveController::OnCmtgDeviceKeysFetched,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+
   FIDO_LOG(EVENT) << "Checking for UV key capability";
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -719,6 +740,34 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   pin_metadata_ = std::move(result.gpm_pin_metadata);
   security_domain_icloud_recovery_keys_ = std::move(result.icloud_keys);
   user_gaia_id_ = std::move(gaia_id);
+}
+
+void GPMEnclaveController::OnCmtgDeviceKeysFetched(
+    base::expected<std::vector<std::vector<uint8_t>>,
+                   webauthn::CmtgDeviceKeyProvider::Error> keys) {
+  fetch_cmtg_keys_request_.reset();
+  fetch_cmtg_keys_timeout_.Stop();
+  if (keys.has_value()) {
+    FIDO_LOG(EVENT) << "Successfully fetched " << keys->size()
+                    << " CMTG device keys";
+    cmtg_device_keys_ = std::move(*keys);
+  } else {
+    FIDO_LOG(ERROR) << "Failed to fetch CMTG device keys from Cryptauth: error "
+                    << static_cast<int>(keys.error());
+  }
+  if (transaction_waiting_for_cmtg_device_keys_) {
+    transaction_waiting_for_cmtg_device_keys_ = false;
+    StartTransaction();
+  }
+}
+
+void GPMEnclaveController::OnCmtgDeviceKeysTimeout() {
+  FIDO_LOG(EVENT) << "CMTG device key fetch timed out";
+  fetch_cmtg_keys_request_.reset();
+  if (transaction_waiting_for_cmtg_device_keys_) {
+    transaction_waiting_for_cmtg_device_keys_ = false;
+    StartTransaction();
+  }
 }
 
 void GPMEnclaveController::SetActive(EnclaveEnabledStatus status) {
@@ -1367,13 +1416,19 @@ void GPMEnclaveController::OnGPMReauthComplete(std::string rapt) {
 }
 
 void GPMEnclaveController::StartTransaction() {
+  if (fetch_cmtg_keys_request_) {
+    FIDO_LOG(EVENT) << "Deferring transaction start until CMTG keys are ready";
+    transaction_waiting_for_cmtg_device_keys_ = true;
+    return;
+  }
+
   // Starting a transaction means the user has chosen to use GPM. Reset the
   // decline count so GPM can again be the priority on creation.
   ResetDeclinedBootstrappingCount(GetProfile());
   pending_enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(GetProfile()),
       request_type_, rp_id_, enclave_manager_, pin_, selected_cred_id_,
-      enclave_request_callback_);
+      enclave_request_callback_, cmtg_device_keys_);
   pending_enclave_transaction_->Start();
 }
 

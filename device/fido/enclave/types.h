@@ -166,6 +166,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // bits is enclave-supplied.
   UserPresentAndVerifiedBits up_and_uv_bits =
       UserPresentAndVerifiedBits::kPresentOnly;
+  // The list of CMTG device keys fetched from Cryptauth. If this is null, then
+  // CMTG keys will not be requested.
+  std::optional<std::vector<std::vector<uint8_t>>> cmtg_device_keys;
 };
 
 }  // namespace device::enclave
