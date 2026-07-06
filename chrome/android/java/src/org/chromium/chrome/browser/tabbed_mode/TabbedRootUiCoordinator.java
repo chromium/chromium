@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
 import org.chromium.chrome.browser.glic.GlicMetrics;
@@ -2798,8 +2799,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
-        return GlicKeyedServiceHandler.toggleGlic(
-                profile, mChromeAndroidTaskSupplier.get(), preventClose, invocationSource);
+        boolean success =
+                GlicKeyedServiceHandler.toggleGlic(
+                        profile,
+                        mChromeAndroidTaskSupplier.get(),
+                        mActivity,
+                        preventClose,
+                        invocationSource);
+        if (!success) {
+            GlicHelper.showUnavailableSnackbar(mActivity);
+        }
+        return success;
     }
 
     /* package */ KeyboardFocusRowManager getKeyboardFocusRowManagerForTesting() {
