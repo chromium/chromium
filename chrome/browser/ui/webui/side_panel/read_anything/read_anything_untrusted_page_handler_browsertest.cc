@@ -2149,8 +2149,14 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
   handler_->OnActiveAXTreeIDChanged();
 }
 
+// TODO(crbug.com/531483974): Failing on ChromiumOS Msan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_DistillationPopulatesContent DISABLED_DistillationPopulatesContent
+#else
+#define MAYBE_DistillationPopulatesContent DistillationPopulatesContent
+#endif
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
-                       DistillationPopulatesContent) {
+                       MAYBE_DistillationPopulatesContent) {
   ASSERT_TRUE(embedded_test_server()->Start());
   handler_ = CreateHandler();
 
