@@ -423,6 +423,24 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testStatusIconOverride_hubSearch() {
+        doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mMediator.setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
+
+        assertEquals(
+                R.drawable.ic_suggestion_magnifier,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+        assertEquals(0, mModel.get(StatusProperties.STATUS_ICON_DESCRIPTION_RES));
+        assertNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
+        assertEquals(
+                Resources.ID_NULL,
+                mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
     public void testSetTooltipText() {
         doReturn(PageClassification.NTP_VALUE)

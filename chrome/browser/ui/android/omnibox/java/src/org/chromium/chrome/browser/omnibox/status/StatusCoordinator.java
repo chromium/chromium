@@ -242,6 +242,20 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         mMediator.setUseSmallWidget(useSmallWidget);
     }
 
+    /**
+     * Sets an icon override resource ID to replace the default status icon. For each {@link
+     * PageClassification} type, a status icon for the location bar is set up within the status
+     * mediator via #updateLocationBarIcon(), which is considered to be the default status icon. At
+     * runtime, this helper can replace that default status icon for edge cases which require the
+     * functionality of the used page classification with a different icon.
+     *
+     * @param iconOverrideResId The resource ID of the override icon, or {@link Resources#ID_NULL}
+     *     to clear.
+     */
+    public void setDefaultStatusIconOverrideResId(@DrawableRes int iconOverrideResId) {
+        mMediator.setDefaultStatusIconOverrideResId(iconOverrideResId);
+    }
+
     /** Returns the resource identifier of the current security icon drawable. */
     public @DrawableRes int getSecurityIconResource() {
         return mMediator.getSecurityIconResource();

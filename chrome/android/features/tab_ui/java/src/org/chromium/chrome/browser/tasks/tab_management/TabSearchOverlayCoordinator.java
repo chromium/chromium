@@ -208,6 +208,7 @@ public class TabSearchOverlayCoordinator {
                 /* backPressManager= */ null,
                 embedder,
                 mEdgeToEdgeSystemBarColorHelper);
+        mSearchUiCoordinator.setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
 
         TabSearchOverlayViewBinder.ViewHolder viewHolder =
                 new TabSearchOverlayViewBinder.ViewHolder(panelContainer, scrim);
