@@ -3922,12 +3922,6 @@ inline constexpr char kPasswordSaveUpdateDropdownMenuExperimentDescription[] =
     "Enables an experimental dropdown menu for password save and update "
     "prompts.";
 
-inline constexpr char kPasswordUploadUiUpdateName[] =
-    "Password Upload UI Update";
-inline constexpr char kPasswordUploadUiUpdateDescription[] =
-    "Adds new entry points for uploading passwords to account storage and "
-    "updates existing ones.";
-
 inline constexpr char kPaymentRequestRejectTooSmallWindowsName[] =
     "Reject Payment Request in small windows";
 inline constexpr char kPaymentRequestRejectTooSmallWindowsDescription[] =

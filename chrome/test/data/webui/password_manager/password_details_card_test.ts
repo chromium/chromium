@@ -39,8 +39,6 @@ suite('PasswordDetailsCardTest', function() {
   let metrics: MetricsTracker;
 
   setup(function() {
-    loadTimeData.overrideValues({'passwordUploadUiUpdate': true});
-
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
@@ -134,8 +132,6 @@ suite('PasswordDetailsCardTest', function() {
   });
 
   test('show/hide password', async function() {
-    const refresh_suffix =
-        loadTimeData.getBoolean('passwordUploadUiUpdate') ? '-refresh' : '';
     const password = createPasswordEntry(
         {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
 
@@ -147,8 +143,7 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals('password', card.$.passwordValue.type);
     assertTrue(card.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility' + refresh_suffix,
-        card.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility', card.$.showPasswordButton.getAttribute('class'));
 
     card.$.showPasswordButton.click();
     assertEquals(
@@ -161,8 +156,7 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals('text', card.$.passwordValue.type);
     assertTrue(card.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility-off' + refresh_suffix,
-        card.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility-off', card.$.showPasswordButton.getAttribute('class'));
   });
 
   test('clicking edit button opens an edit dialog', async function() {
@@ -472,11 +466,8 @@ suite('PasswordDetailsCardTest', function() {
     await flushTasks();
 
     assertTrue(isChildVisible(card, '.move-password-container'));
-    assertTrue(isChildVisible(card, '#uploadSinglePasswordLarge'));
+    assertTrue(isChildVisible(card, '#uploadSinglePasswordIcon'));
     assertTrue(isChildVisible(card, '#uploadPasswordButton'));
-
-    assertFalse(isChildVisible(card, '#uploadSinglePasswordSmall'));
-    assertFalse(isChildVisible(card, '#movePasswordLink'));
   });
 
   test(
@@ -506,65 +497,5 @@ suite('PasswordDetailsCardTest', function() {
             metrics.count(
                 'PasswordManager.AccountStorage.' +
                 'MoveToAccountStoreFlowAccepted2'));
-      });
-});
-
-suite('PasswordDetailsCardWithoutUploadUiUpdateTest', function() {
-  let passwordManager: TestPasswordManagerProxy;
-  let syncProxy: TestSyncBrowserProxy;
-  let card: PasswordDetailsCardElement;
-  let metrics: MetricsTracker;
-
-  setup(async function() {
-    loadTimeData.overrideValues({'passwordUploadUiUpdate': false});
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    passwordManager = new TestPasswordManagerProxy();
-    PasswordManagerImpl.setInstance(passwordManager);
-    syncProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.setInstance(syncProxy);
-    Router.getInstance().navigateTo(Page.PASSWORDS);
-    metrics = fakeMetricsPrivate();
-
-    passwordManager.data.isAccountStorageActive = true;
-    syncProxy.syncInfo = {
-      isSyncingPasswords: false,
-    };
-    card = await createCardElement();
-    card.isUsingAccountStore = true;
-    return flushTasks();
-  });
-
-  test('Move password container content displayed properly', function() {
-    assertTrue(isChildVisible(card, '.move-password-container'));
-    assertTrue(isChildVisible(card, '#uploadSinglePasswordSmall'));
-    assertTrue(isChildVisible(card, '#movePasswordLink'));
-
-    assertFalse(isChildVisible(card, '#uploadSinglePasswordLarge'));
-    assertFalse(isChildVisible(card, '#uploadPasswordButton'));
-  });
-
-  test(
-      'clicking save password in account opens move password dialog',
-      async function() {
-        const movePasswordLabel = card.shadowRoot!.querySelector<HTMLElement>(
-            '.move-password-container div');
-        assertTrue(!!movePasswordLabel);
-        assertTrue(isVisible(movePasswordLabel));
-
-        movePasswordLabel.click();
-        await flushTasks();
-
-        const moveDialog =
-            card.shadowRoot!.querySelector('move-single-password-dialog');
-        assertTrue(!!moveDialog);
-        const dialog = moveDialog.shadowRoot!.querySelector('#dialog');
-        assertTrue(!!dialog);
-
-        assertEquals(
-            1,
-            metrics.count(
-                'PasswordManager.AccountStorage.' +
-                'MoveToAccountStoreFlowOffered'));
       });
 });

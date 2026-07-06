@@ -9,7 +9,6 @@ import '../user_utils_mixin.js';
 import './password_preview_item.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -80,8 +79,6 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    assert(loadTimeData.getBoolean('passwordUploadUiUpdate'));
-
     this.selectedPasswordIds_ = this.passwords.map(item => item.id);
     PasswordManagerImpl.getInstance()
         .requestCredentialsDetails(this.selectedPasswordIds_)

@@ -57,8 +57,6 @@ suite('EditPasswordDialogTest', function() {
   });
 
   test('show/hide password', async function() {
-    const refresh_suffix =
-        loadTimeData.getBoolean('passwordUploadUiUpdate') ? '-refresh' : '';
     const password = createPasswordEntry(
         {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
     password.affiliatedDomains = [createAffiliatedDomain('test.com')];
@@ -73,8 +71,7 @@ suite('EditPasswordDialogTest', function() {
     assertEquals('password', dialog.$.passwordInput.type);
     assertTrue(dialog.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility' + refresh_suffix,
-        dialog.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility', dialog.$.showPasswordButton.getAttribute('class'));
 
     dialog.$.showPasswordButton.click();
 
@@ -84,7 +81,7 @@ suite('EditPasswordDialogTest', function() {
     assertEquals('text', dialog.$.passwordInput.type);
     assertTrue(dialog.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility-off' + refresh_suffix,
+        'icon-visibility-off',
         dialog.$.showPasswordButton.getAttribute('class'));
   });
 

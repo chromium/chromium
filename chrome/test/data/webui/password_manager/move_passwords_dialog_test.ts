@@ -4,7 +4,6 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PasswordManagerImpl, PluralStringProxyImpl, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import type {MovePasswordsDialogElement} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -26,7 +25,6 @@ suite('MovePasswordsDialogTest', function() {
   let dialog: MovePasswordsDialogElement;
 
   setup(function() {
-    loadTimeData.overrideValues({'passwordUploadUiUpdate': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     passwordManager.setAccountStorageEnabled(true);

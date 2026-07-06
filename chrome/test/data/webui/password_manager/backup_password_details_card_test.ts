@@ -142,8 +142,6 @@ suite('BackupPasswordDetailsCardTest', function() {
   });
 
   test('show/hide password', async function() {
-    const refresh_suffix =
-        loadTimeData.getBoolean('passwordUploadUiUpdate') ? '-refresh' : '';
     const password = createPasswordEntry({
       url: 'test.com',
       username: 'vik',
@@ -159,8 +157,7 @@ suite('BackupPasswordDetailsCardTest', function() {
     assertEquals('password', card.$.passwordValue.type);
     assertTrue(card.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility' + refresh_suffix,
-        card.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility', card.$.showPasswordButton.getAttribute('class'));
 
     card.$.showPasswordButton.click();
     assertEquals(
@@ -173,8 +170,7 @@ suite('BackupPasswordDetailsCardTest', function() {
     assertEquals('text', card.$.passwordValue.type);
     assertTrue(card.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility-off' + refresh_suffix,
-        card.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility-off', card.$.showPasswordButton.getAttribute('class'));
   });
 
   test('Sites title', async function() {

@@ -4,17 +4,11 @@
 
 #include "chrome/browser/ui/webui/password_manager/promo_cards/move_passwords_promo.h"
 
-#include "base/strings/escape.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -55,20 +49,6 @@ int GetLocalPasswordsCount(extensions::PasswordsPrivateDelegate* delegate) {
   }
 
   return local_passwords_count;
-}
-
-std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
-  if (!profile) {
-    return std::u16string();
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return std::u16string();
-  }
-  return base::UTF8ToUTF16(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email);
 }
 
 }  // namespace
@@ -118,26 +98,16 @@ bool MovePasswordsPromo::ShouldShowPromo() const {
 
 std::u16string MovePasswordsPromo::GetTitle() const {
   return l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(switches::kPasswordUploadUiUpdate)
-          ? IDS_PASSWORD_MANAGER_UI_BATCH_UPLOAD_PROMO_CARD_TITLE
-          : IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_PROMO_CARD_TITLE);
+      IDS_PASSWORD_MANAGER_UI_BATCH_UPLOAD_PROMO_CARD_TITLE);
 }
 
 std::u16string MovePasswordsPromo::GetDescription() const {
-  CHECK(profile_);
-  return base::FeatureList::IsEnabled(switches::kPasswordUploadUiUpdate)
-             ? l10n_util::GetPluralStringFUTF16(
-                   IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO,
-                   GetLocalPasswordsCount(delegate_.get()))
-             : l10n_util::GetStringFUTF16(
-                   IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_PROMO_CARD_DESCRIPTION,
-                   base::EscapeForHTML(
-                       GetPrimaryAccountEmailFromProfile(profile_)));
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO,
+      GetLocalPasswordsCount(delegate_.get()));
 }
 
 std::u16string MovePasswordsPromo::GetActionButtonText() const {
   return l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(switches::kPasswordUploadUiUpdate)
-          ? IDS_PASSWORD_MANAGER_UI_BATCH_UPLOAD_PROMO_CARD_ACTION_BUTTON
-          : IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_PROMO_CARD_ACTION_BUTTON);
+      IDS_PASSWORD_MANAGER_UI_BATCH_UPLOAD_PROMO_CARD_ACTION_BUTTON);
 }

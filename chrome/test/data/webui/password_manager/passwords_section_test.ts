@@ -4,7 +4,6 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AddPasswordDialogElement, AuthTimedOutDialogElement, MovePasswordsDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -77,8 +76,6 @@ suite('PasswordsSectionTest', function() {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({'passwordUploadUiUpdate': true});
-
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
@@ -721,97 +718,5 @@ suite('PasswordsSectionTest', function() {
     assertFalse(
         !!listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
             '#movePasswordsDialog'));
-  });
-});
-
-suite('PasswordsSectionWithoutUploadUiUpdateTest', function() {
-  let passwordManager: TestPasswordManagerProxy;
-  let pluralString: TestPluralStringProxy;
-  let syncProxy: TestSyncBrowserProxy;
-
-  async function createPasswordsSection(): Promise<PasswordsSectionElement> {
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    document.body.appendChild(section);
-    await passwordManager.whenCalled('getCredentialGroups');
-    await flushTasks();
-
-    return section;
-  }
-
-  setup(function() {
-    loadTimeData.overrideValues({'passwordUploadUiUpdate': false});
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    passwordManager = new TestPasswordManagerProxy();
-    PasswordManagerImpl.setInstance(passwordManager);
-    pluralString = new TestPluralStringProxy();
-    PluralStringProxyImpl.setInstance(pluralString);
-    syncProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.setInstance(syncProxy);
-
-    Router.getInstance().updateRouterParams(new URLSearchParams());
-    passwordManager.setAccountStorageEnabled(true);
-
-    return flushTasks();
-  });
-
-  test('Should not show local credentials icon', async function() {
-    passwordManager.data.groups = [createCredentialGroup({
-      name: 'test.com',
-      credentials: [
-        createPasswordEntry({id: 0, inAccountStore: true}),
-        createPasswordEntry(
-            {id: 1, inAccountStore: true, inProfileStore: true}),
-      ],
-    })];
-
-    const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
-    assertTrue(!!listEntry);
-    assertFalse(isVisible(
-        section.shadowRoot!.querySelector<HTMLElement>('#localPasswordsIcon')));
-  });
-
-  test('Should show local credentials icon', async function() {
-    syncProxy.syncInfo = {
-      isSyncingPasswords: false,
-    };
-
-    passwordManager.data.groups = [createCredentialGroup({
-      name: 'test.com',
-      credentials: [
-        createPasswordEntry({id: 0, inProfileStore: true}),
-      ],
-    })];
-
-    const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
-    assertTrue(!!listEntry);
-    assertTrue(isVisible(listEntry.shadowRoot!.querySelector<HTMLElement>(
-        '#localPasswordsIcon')));
-  });
-
-  test('Number of local passwords tooltip text', async function() {
-    passwordManager.data.groups = [
-      createCredentialGroup({
-        name: 'bar.com',
-        credentials: [
-          createPasswordEntry({id: 0, inProfileStore: true}),
-        ],
-      }),
-    ];
-    pluralString.text = '1 password';
-
-    const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
-    assertTrue(!!listEntry);
-    assertEquals(
-        listEntry.shadowRoot!.querySelector<HTMLElement>(
-                                 'cr-tooltip')!.innerHTML,
-        '1 password');
   });
 });
