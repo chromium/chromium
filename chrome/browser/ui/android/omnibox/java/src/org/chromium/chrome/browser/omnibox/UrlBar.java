@@ -928,7 +928,16 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     protected void onCreateContextMenu(ContextMenu menu) {
+        int start = getSelectionStart();
+        int end = getSelectionEnd();
+
+        // Android's Editor collapses backwards selections during context menu creation.
+        // Temporarily force a forward selection during context menu creation.
+        if (start > end) setSelection(end, start);
         super.onCreateContextMenu(menu);
+        // Restore backwards selection if necessary.
+        if (start > end) setSelection(start, end);
+
         if (mShowAiModeCallback != null) {
             if (menu.findItem(R.id.url_bar_always_show_ai_mode) == null) {
                 MenuItem alwaysShowItem =
