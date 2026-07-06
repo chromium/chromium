@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -37,24 +38,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-// Fake SceneState to set sceneSessionID.
-@interface TaskUpdaterFakeSceneState : SceneState
-- (void)setFakeSceneSessionID:(const std::string&)sessionID;
-@end
-
-@implementation TaskUpdaterFakeSceneState {
-  std::string _fakeSceneSessionID;
-}
-
-- (const std::string&)sceneSessionID {
-  return _fakeSceneSessionID;
-}
-
-- (void)setFakeSceneSessionID:(const std::string&)sessionID {
-  _fakeSceneSessionID = sessionID;
-}
-@end
 
 // Fake TaskOrchestrator to record calls.
 @interface FakeTaskOrchestrator : TaskOrchestrator
@@ -104,9 +87,9 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_.get();
 
-    scene_state_ =
-        [[TaskUpdaterFakeSceneState alloc] initWithAppState:app_state_];
-    [scene_state_ setFakeSceneSessionID:"scene-1"];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
+                                                    profile:profile_.get()
+                                             sceneSessionID:"scene-1"];
     scene_state_.profileState = profile_state_;
 
     agent_ = [[TaskUpdaterSceneAgent alloc] init];
@@ -119,6 +102,7 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
 
   void TearDown() override {
     [(OCMockObject*)mock_application_ stopMocking];
+    [scene_state_ shutdown];
     PlatformTest::TearDown();
   }
 
@@ -138,7 +122,7 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
   AppState* app_state_;
   FakeTaskOrchestrator* fake_task_orchestrator_;
   ProfileState* profile_state_;
-  TaskUpdaterFakeSceneState* scene_state_;
+  FakeSceneState* scene_state_;
   TaskUpdaterSceneAgent* agent_;
   id mock_application_;
 };
@@ -174,8 +158,10 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIBlocker) {
   scene_state_.UIEnabled = YES;
 
   // Set a UI blocker before becoming active.
-  TaskUpdaterFakeSceneState* blocker_target =
-      [[TaskUpdaterFakeSceneState alloc] initWithAppState:app_state_];
+  FakeSceneState* blocker_target =
+      [[FakeSceneState alloc] initWithAppState:app_state_
+                                       profile:profile_.get()
+                                sceneSessionID:"scene-2"];
   [profile_state_ incrementBlockingUICounterForTarget:blocker_target];
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -189,6 +175,8 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIBlocker) {
 
   EXPECT_EQ(fake_task_orchestrator_.stage,
             TaskExecutionStage::TaskExecutionUIReady);
+
+  [blocker_target shutdown];
 }
 
 // Tests that TaskExecutionUIReady is NOT sent if presenting modal overlay.
