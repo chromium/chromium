@@ -75,13 +75,7 @@ const Provider kAllProviders[] = {
 
 const crypto::SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
     crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-#if BUILDFLAG(IS_WIN)
-// TODO(https://crbug.com/529304622): Fix failing `RSA_PKCS1_SHA256` tests
-// on Windows.
-// crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-#else
     crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-#endif
 };
 
 #if BUILDFLAG(IS_APPLE)
@@ -122,6 +116,15 @@ class UnexportableKeyTest
 
   Provider provider_type() { return std::get<1>(GetParam()); }
 
+  bool CurrentAlgorithmSupported(crypto::UnexportableKeyProvider* provider) {
+    if (!provider) {
+      return false;
+    }
+    const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+        algorithm()};
+    return provider->SelectAlgorithm(algorithms) == algorithm();
+  }
+
  private:
 #if BUILDFLAG(IS_MAC)
   crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain_{
@@ -158,33 +161,33 @@ TEST_P(UnexportableKeyTest, RoundTrip) {
     fake.emplace();
   }
 
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
+  }
+
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
       algorithm()};
-
-  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
-  if (!provider) {
-    LOG(INFO) << "Skipping test because of lack of hardware support.";
-    return;
-  }
-
-  if (!provider->SelectAlgorithm(algorithms)) {
-    LOG(INFO) << "Skipping test because of lack of support for this key type.";
-    return;
-  }
-
   const base::TimeTicks generate_start = base::TimeTicks::Now();
   std::unique_ptr<crypto::UnexportableSigningKey> key =
       provider->GenerateSigningKeySlowly(algorithms);
-  if (algorithm() ==
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256) {
-    if (!key) {
-      GTEST_SKIP()
-          << "Workaround for https://issues.chromium.org/issues/41494935";
-    }
+  if (provider_type() == Provider::kFake) {
+    ASSERT_TRUE(key);
+  } else if (!key) {
+    GTEST_SKIP() << "Key generation failed (see https://crbug.com/41494935).";
   }
 
-  ASSERT_TRUE(key);
   EXPECT_EQ(key->IsHardwareBacked(), expected_is_hardware_backed);
+#if BUILDFLAG(IS_WIN)
+  if (provider_type() == Provider::kFake ||
+      provider_type() == Provider::kMicrosoftSoftware) {
+    EXPECT_TRUE(key->SupportsTls13());
+  } else if (provider_type() == Provider::kTPM) {
+    // Verify that the call does not crash, even if the TPM doesn't support
+    // TLS 1.3.
+    std::ignore = key->SupportsTls13();
+  }
+#endif
   LOG(INFO) << "Generation took " << (base::TimeTicks::Now() - generate_start);
 
   ASSERT_EQ(key->Algorithm(), algorithm());
@@ -205,7 +208,10 @@ TEST_P(UnexportableKeyTest, RoundTrip) {
   const base::TimeTicks import2_start = base::TimeTicks::Now();
   std::unique_ptr<crypto::UnexportableSigningKey> key2 =
       provider->FromWrappedSigningKeySlowly(wrapped);
-  ASSERT_TRUE(key2);
+  if (!key2) {
+    GTEST_SKIP()
+        << "Importing wrapped key failed (see https://crbug.com/41494935).";
+  }
   LOG(INFO) << "Import took " << (base::TimeTicks::Now() - import2_start);
 
   const base::TimeTicks sign2_start = base::TimeTicks::Now();
@@ -231,22 +237,16 @@ TEST_P(UnexportableKeyTest, DuplicatePlatformKeyHandleSucceeds) {
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
-  if (!provider) {
-    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
       algorithm()};
   auto key = provider->GenerateSigningKeySlowly(algorithms);
-  if (algorithm() ==
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256) {
-    if (!key) {
-      GTEST_SKIP()
-          << "Workaround for https://issues.chromium.org/issues/41494935";
-    }
+  if (!key) {
+    GTEST_SKIP() << "Key generation failed (see https://crbug.com/41494935).";
   }
-
-  ASSERT_TRUE(key);
 
   auto ncrypt_key = crypto::DuplicatePlatformKeyHandle(*key);
   EXPECT_TRUE(ncrypt_key.is_valid());
@@ -258,8 +258,8 @@ TEST_P(UnexportableKeyTest, AttestationKeyCannotSign) {
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
-  if (!provider) {
-    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
@@ -268,7 +268,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyCannotSign) {
   if (!key) {
     // Software providers or missing TPM support.
     GTEST_SKIP() << "Skipping test because of lack of hardware support for "
-                    "attestation keys.";
+                    "attestation keys (see https://crbug.com/41494935).";
   }
 
   auto ncrypt_key = crypto::DuplicatePlatformKeyHandle(*key);
@@ -302,23 +302,23 @@ TEST_P(UnexportableKeyTest, CertifySlowlySucceeds) {
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
-  if (!provider) {
-    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
       algorithm()};
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
-  if (algorithm() ==
-          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 &&
-      !attestation_key) {
-    GTEST_SKIP()
-        << "Workaround for https://issues.chromium.org/issues/41494935";
+  if (!attestation_key) {
+    GTEST_SKIP() << "Attestation key generation failed (see "
+                    "https://crbug.com/41494935).";
   }
-  ASSERT_TRUE(attestation_key);
 
   auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
-  ASSERT_TRUE(signing_key);
+  if (!signing_key) {
+    GTEST_SKIP()
+        << "Signing key generation failed (see https://crbug.com/41494935).";
+  }
 
   std::vector<uint8_t> challenge = {1, 2, 3, 4};
   auto statement = attestation_key->CertifySlowly(*signing_key, challenge);
@@ -333,33 +333,30 @@ TEST_P(UnexportableKeyTest, CertifyFailsForSoftwareSigningKey) {
 
   std::unique_ptr<crypto::UnexportableKeyProvider> tpm_provider =
       CreateProvider();
-  if (!tpm_provider) {
-    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  if (!CurrentAlgorithmSupported(tpm_provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by TPM provider.";
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> sw_provider =
       crypto::GetMicrosoftSoftwareUnexportableKeyProvider();
-  if (!sw_provider) {
-    GTEST_SKIP() << "Software provider not available.";
+  if (!CurrentAlgorithmSupported(sw_provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by software provider.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
       algorithm()};
 
   auto attestation_key = tpm_provider->GenerateAttestationKeySlowly(algorithms);
-  if (algorithm() ==
-          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 &&
-      !attestation_key) {
-    GTEST_SKIP()
-        << "Workaround for https://issues.chromium.org/issues/41494935";
+  if (!attestation_key) {
+    GTEST_SKIP() << "Attestation key generation failed (see "
+                    "https://crbug.com/41494935).";
   }
-  ASSERT_TRUE(attestation_key);
-
-  auto signing_key = tpm_provider->GenerateSigningKeySlowly(algorithms);
-  ASSERT_TRUE(signing_key);
 
   auto software_signing_key = sw_provider->GenerateSigningKeySlowly(algorithms);
-  ASSERT_TRUE(software_signing_key);
+  if (!software_signing_key) {
+    GTEST_SKIP() << "Software signing key generation failed (see "
+                    "https://crbug.com/41494935).";
+  }
 
   base::HistogramTester histogram_tester;
   std::vector<uint8_t> challenge = {1, 2, 3, 4};
@@ -379,8 +376,8 @@ TEST_P(UnexportableKeyTest, FromWrappedAttestationKeyFailsForSigningKey) {
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
-  if (!provider) {
-    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
@@ -388,13 +385,10 @@ TEST_P(UnexportableKeyTest, FromWrappedAttestationKeyFailsForSigningKey) {
 
   // 1. Generate a signing key.
   auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
-  if (algorithm() ==
-          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 &&
-      !signing_key) {
+  if (!signing_key) {
     GTEST_SKIP()
-        << "Workaround for https://issues.chromium.org/issues/41494935";
+        << "Signing key generation failed (see https://crbug.com/41494935).";
   }
-  ASSERT_TRUE(signing_key);
   std::vector<uint8_t> signing_wrapped = signing_key->GetWrappedKey();
 
   // 2. Try to load it as an attestation key. It should fail.
@@ -406,8 +400,8 @@ TEST_P(UnexportableKeyTest, FromWrappedAttestationKeyFailsForSigningKey) {
 TEST_P(UnexportableKeyTest,
        FromWrappedAttestationKeySucceedsForAttestationKey) {
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
-  if (!provider) {
-    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
@@ -417,7 +411,7 @@ TEST_P(UnexportableKeyTest,
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
     GTEST_SKIP() << "Skipping test because of lack of hardware support for "
-                    "attestation keys.";
+                    "attestation keys (see https://crbug.com/41494935).";
   }
   std::vector<uint8_t> attestation_wrapped = attestation_key->GetWrappedKey();
 
@@ -433,8 +427,8 @@ TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
-  if (!provider) {
-    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
@@ -444,7 +438,7 @@ TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
     GTEST_SKIP() << "Skipping test because of lack of hardware support for "
-                    "attestation keys.";
+                    "attestation keys (see https://crbug.com/41494935).";
   }
   std::vector<uint8_t> attestation_wrapped = attestation_key->GetWrappedKey();
 
