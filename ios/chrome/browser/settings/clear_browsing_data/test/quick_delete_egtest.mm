@@ -277,6 +277,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // deleting browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
 
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"InactiveTabsTestMode"];
+
   [super tearDownHelper];
 }
 
