@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, SuggestionChipClickFlow) {
       IndigoServiceFactory::GetForProfile(browser()->profile());
   // Set anchored message as already shown so the suggestion chip shows
   // automatically instead of the anchored message.
-  service->AnchoredMessageShown();
+  service->ContextualCueShown();
   const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
   RunTestSequence(
       InstrumentTab(kWebContentsId),

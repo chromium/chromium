@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -202,8 +203,9 @@ class IndigoPageActionControllerTest : public testing::Test {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kIndigo,
           {{"indigo_onboarding_url", "https://example.com/onboard"},
-           {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
-         {features::kIndigoMetadataKeywordHeuristic, {}}},
+           {features::kIndigoAllowForEnterprise.name, "true"}}},
+         {features::kIndigoMetadataKeywordHeuristic, {}},
+         {contextual_cueing::kContextualCueingV2, {}}},
         {});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         "indigo-script", "/dummy/path");
@@ -703,6 +705,11 @@ TEST_F(IndigoPageActionControllerTest, ShowsAnchoredMessageThenSuggestionChip) {
             })));
     EXPECT_CALL(
         *page_action_controller_,
+        SetAnchoredMessageAction(
+            kActionIndigo, page_actions::AnchoredMessageActionIconType::kMenu,
+            testing::NotNull()));
+    EXPECT_CALL(
+        *page_action_controller_,
         ShowAnchoredMessage(
             kActionIndigo,
             page_actions::AnchoredMessageConfig{
@@ -973,6 +980,15 @@ TEST_F(IndigoPageActionControllerTest,
   }
 
   // The first click on the suggestion chip should show the anchored message.
+  EXPECT_CALL(*page_action_controller_,
+              SetAnchoredMessageText(kActionIndigo, _));
+  EXPECT_CALL(*page_action_controller_,
+              SetAnchoredMessageIcon(kActionIndigo, _));
+  EXPECT_CALL(
+      *page_action_controller_,
+      SetAnchoredMessageAction(
+          kActionIndigo, page_actions::AnchoredMessageActionIconType::kClose,
+          testing::_));
   EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(kActionIndigo, _));
 
   controller_->InvokeAction(EntryPoint::kSuggestionChip);
@@ -1196,7 +1212,7 @@ TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
   CreateController();
 
   auto* service = IndigoServiceFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(service->CanShowAnchoredMessage());
+  ASSERT_TRUE(service->CanShowContextualCue());
 
   base::UserActionTester user_action_tester;
   EXPECT_EQ(user_action_tester.GetActionCount(
@@ -1215,7 +1231,7 @@ TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
   // Simply attempting to show the anchored message (via UpdateEntryPointsState
   // during navigation) should NOT be enough to record the user action or
   // update the service's state.
-  EXPECT_TRUE(service->CanShowAnchoredMessage());
+  EXPECT_TRUE(service->CanShowContextualCue());
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Indigo.PageAction.ShowAnchoredMessage"),
             0);
@@ -1228,7 +1244,7 @@ TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
   controller_->OnPageActionAnchoredMessageShown(state);
 
   // Verify that the service was notified and the action was recorded.
-  EXPECT_FALSE(service->CanShowAnchoredMessage());
+  EXPECT_FALSE(service->CanShowContextualCue());
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Indigo.PageAction.ShowAnchoredMessage"),
             1);
@@ -1437,6 +1453,7 @@ TEST_F(IndigoPageActionControllerTest,
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
             1);
 }
+
 TEST_F(IndigoPageActionControllerTest, HeuristicShowsActionOnSuccess) {
   CreateController();
   SetupHeuristicConfig();
@@ -1633,6 +1650,27 @@ TEST_F(IndigoPageActionControllerTest, HeuristicIgnoredIfUrlNotAllowed) {
   navigation2->Commit();
 
   EXPECT_FALSE(binder_called);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       SuggestionChipShownWhenContextualCueingV2Disabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      contextual_cueing::kContextualCueingV2);
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _)).Times(0);
+  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
 }
 
 }  // namespace
