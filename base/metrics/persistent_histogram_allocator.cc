@@ -303,14 +303,6 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
       name_hash != data->samples_metadata.id) {
     return nullptr;
   }
-
-  // Check that the counts storage is reasonable: if the histogram is disabled
-  // for single-sample optimizations, the counts storage must have been
-  // allocated.
-  if ((data->flags & HistogramBase::kDisableSingleSampleOptimizationFlag) &&
-      data->counts_ref.load(std::memory_order_relaxed) == 0) {
-    return nullptr;
-  }
   return CreateHistogram(data, durable_metric_name, name_hash);
 }
 
