@@ -814,7 +814,7 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_LargeBlob_Success) {
               testing::ElementsAre(1, 2, 3));
 }
 
-TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveRequest) {
+TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveRequestGetAssertion) {
   auto entity = PasskeyEntity();
   entity.set_rp_id(kRpId);
   std::optional<base::Value> parsed_json = base::JSONReader::Read(
@@ -822,16 +822,43 @@ TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveRequest) {
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+  std::vector<std::vector<uint8_t>> cmtg_keys = {{1, 2, 3}};
   cbor::Value request_cbor = BuildGetAssertionCommand(
       std::move(entity), json_request, kClientDataJson,
       /*claimed_pin=*/nullptr, /*wrapped_secret=*/std::nullopt, secret(),
-      /*cmtg_device_keys=*/std::nullopt);
+      std::move(cmtg_keys));
   cbor::Value redacted = RedactEnclaveRequest(request_cbor);
   ASSERT_TRUE(redacted.is_map());
   const auto& redacted_map = redacted.GetMap();
   const auto& redacted_value =
       redacted_map.find(cbor::Value(kRequestSecretKey))->second;
   EXPECT_EQ(redacted_value.GetString(), "[redacted]");
+  const auto& redacted_cmtg_keys =
+      redacted_map.find(cbor::Value(kRequestCmtgDeviceKeys))->second;
+  EXPECT_EQ(redacted_cmtg_keys.GetString(), "[redacted]");
+}
+
+TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveRequestMakeCredential) {
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kMakeCredentialRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  EXPECT_TRUE(parsed_json);
+  auto json_request =
+      base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+  std::vector<uint8_t> cmtg_key = {4, 5, 6};
+  cbor::Value request_cbor = BuildMakeCredentialCommand(
+      json_request, /*claimed_pin=*/nullptr,
+      /*wrapped_secret=*/std::nullopt, secret(),
+      UserPresentAndVerifiedBits::kPresentOnly,
+      base::as_byte_span(kClientDataJson), std::move(cmtg_key));
+  cbor::Value redacted = RedactEnclaveRequest(request_cbor);
+  ASSERT_TRUE(redacted.is_map());
+  const auto& redacted_map = redacted.GetMap();
+  const auto& redacted_secret =
+      redacted_map.find(cbor::Value(kRequestSecretKey))->second;
+  EXPECT_EQ(redacted_secret.GetString(), "[redacted]");
+  const auto& redacted_cmtg_key =
+      redacted_map.find(cbor::Value(kRequestCmtgDeviceKey))->second;
+  EXPECT_EQ(redacted_cmtg_key.GetString(), "[redacted]");
 }
 
 TEST_F(EnclaveProtocolUtilsTest, RedactErroneousEnclaveRequest) {

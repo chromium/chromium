@@ -792,9 +792,12 @@ void BuildCommandRequestBody(
 
 cbor::Value RedactEnclaveRequest(const cbor::Value& cbor) {
   return fido_parsing_utils::RedactCbor(
-      cbor, std::array{fido_parsing_utils::ToCborVector(kRequestSecretKey),
-                       fido_parsing_utils::ToCborVector(kWrappingKeyToWrap),
-                       fido_parsing_utils::ToCborVector(kClaimKey)});
+      cbor,
+      std::array{fido_parsing_utils::ToCborVector(kRequestSecretKey),
+                 fido_parsing_utils::ToCborVector(kWrappingKeyToWrap),
+                 fido_parsing_utils::ToCborVector(kClaimKey),
+                 fido_parsing_utils::ToCborVector(kRequestCmtgDeviceKeys),
+                 fido_parsing_utils::ToCborVector(kRequestCmtgDeviceKey)});
 }
 
 cbor::Value RedactEnclaveResponse(const cbor::Value& cbor) {

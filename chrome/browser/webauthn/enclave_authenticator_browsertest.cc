@@ -4917,6 +4917,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyRoundTrip) {
   EXPECT_EQ(make_script_result, get_script_result);
 
   histogram_tester_.ExpectTotalCount("WebAuthentication.Cmtg.BlockedDelay", 0);
+
+  // Ensure the CMTG device keys are redacted from logs.
+  const std::string device_log = GetDeviceLog();
+  EXPECT_THAT(device_log,
+              testing::HasSubstr("\"cmtg_device_key\": \"[redacted]\""));
+  EXPECT_THAT(device_log,
+              testing::HasSubstr("\"cmtg_device_keys\": \"[redacted]\""));
 }
 
 // Tests creating a credential without a CMTG key, then asserting it with
