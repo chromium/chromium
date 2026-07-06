@@ -9,6 +9,7 @@
 
 #import <optional>
 #import <string>
+#import <string_view>
 #import <utility>
 
 #import "base/functional/callback.h"
@@ -162,7 +163,7 @@ std::optional<AccountInfo> GetAccountInfoOnDeviceWithEmail(
 // have their own metrics for signout.
 void MultiProfileSignOutForProfile(
     ProfileIOS* profile,
-    std::string trigger_scene_session_id,
+    std::string_view trigger_scene_session_id,
     signin_metrics::ProfileSignout signout_source,
     SignoutCompletion signout_completion_closure);
 

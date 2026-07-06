@@ -369,9 +369,8 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 
     signin::SignoutCompletion signoutCompletion =
         base::BindOnce(&SignOutDoneForSceneState, primaryIdentity);
-    std::string sceneSessionID = self.sceneState.sceneSessionID;
     signin::MultiProfileSignOutForProfile(
-        profile, sceneSessionID,
+        profile, self.sceneState.sceneSessionID,
         signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
         std::move(signoutCompletion));
   }

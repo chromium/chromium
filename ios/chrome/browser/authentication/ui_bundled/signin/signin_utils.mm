@@ -162,7 +162,7 @@ syncer::DataTypeSet DataCountsMapToDataTypeSet(
 // If `trigger_scene_session_id` is empty or invalid, the new scene state is
 // nullptr.
 void AllBrowsersSignedOut(signin::SignoutCompletion completion,
-                          std::string trigger_scene_session_id,
+                          std::string_view trigger_scene_session_id,
                           std::vector<SceneState*> results) {
   SceneState* new_scene_state = nullptr;
   if (!trigger_scene_session_id.empty()) {
@@ -535,7 +535,7 @@ void ProfileSignoutRequest::Run(Browser* browser) && {
 
 void MultiProfileSignOutForProfile(
     ProfileIOS* profile,
-    std::string trigger_scene_session_id,
+    std::string_view trigger_scene_session_id,
     signin_metrics::ProfileSignout signout_source,
     SignoutCompletion signout_completion_closure) {
   // Simply sign out if no profile switching is needed.
@@ -571,7 +571,7 @@ void MultiProfileSignOutForProfile(
   // the personal profile.
   auto on_all_switches_done = base::BindOnce(
       &AllBrowsersSignedOut, std::move(signout_completion_closure),
-      trigger_scene_session_id);
+      std::string(trigger_scene_session_id));
   base::RepeatingCallback<void(SceneState*)> barrier =
       base::BarrierCallback<SceneState*>(browser_list.size(),
                                          std::move(on_all_switches_done));
