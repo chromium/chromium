@@ -506,6 +506,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/AutofillFallbackSurfaceLauncherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherUtilsTest.java",
+      "src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridgeTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillUiUtilsTest.java",
       "src/org/chromium/chrome/browser/autofill/CardUnmaskBridgeTest.java",
       "src/org/chromium/chrome/browser/autofill/GoogleWalletLauncherTest.java",
