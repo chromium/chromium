@@ -733,6 +733,59 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       CanUpdateSuggestedTabContext_SidePanelLifecycle) {
+  auto* service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+
+  // 1. Open the side panel. This will load the ContextualTasksUI.
+  service->InitSidePanelWithGhostLoader(browser(), tab, nullptr);
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return panel_controller->IsPanelOpenForContextualTask(); }));
+
+  content::WebContents* web_contents = panel_controller->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  ContextualTasksUI* side_panel_ui = static_cast<ContextualTasksUI*>(
+      web_contents->GetWebUI()->GetController());
+  ASSERT_TRUE(side_panel_ui);
+
+  // Wait for the composebox handler to be initialized so
+  // CanUpdateSuggestedTabContext can proceed.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->CanUpdateSuggestedTabContext(
+        tab, GURL("https://example.com"));
+  }));
+
+  // 2. Verified that when panel is open and active for this task, it returns
+  // true.
+  EXPECT_TRUE(side_panel_ui->CanUpdateSuggestedTabContext(
+      tab, GURL("https://example.com")));
+
+  // 3. Set a different task ID on the WebUI. It should now return false because
+  // the task ID doesn't match the panel's active task.
+  side_panel_ui->SetTaskId(base::Uuid::GenerateRandomV4());
+  EXPECT_FALSE(side_panel_ui->CanUpdateSuggestedTabContext(
+      tab, GURL("https://example.com")));
+
+  // Restore the correct task ID.
+  std::optional<contextual_tasks::ContextualTask> current_task =
+      panel_controller->GetCurrentTask();
+  ASSERT_TRUE(current_task.has_value());
+  side_panel_ui->SetTaskId(current_task->GetTaskId());
+
+  // Should be true again.
+  EXPECT_TRUE(side_panel_ui->CanUpdateSuggestedTabContext(
+      tab, GURL("https://example.com")));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class ContextualTasksDarkModeBrowserTest
     : public ContextualTasksNoMockBrowserTest {
