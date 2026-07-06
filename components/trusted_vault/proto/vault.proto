@@ -128,6 +128,31 @@ message ListSecurityDomainMembersResponse {
   string next_page_token = 2;
 }
 
+message RotatedSharedMemberKey {
+  string security_domain_member = 1;
+  bytes wrapped_key = 2;
+  bytes member_proof = 3;
+}
+
+message RotateSharedKeyRequest {
+  string security_domain = 1;
+  int32 base_epoch = 2;
+  repeated RotatedSharedMemberKey rotated_shared_member_keys = 3;
+  bytes rotation_proof = 4;
+}
+
+message RotateSharedKeyResponse {
+  int32 new_epoch = 1;
+}
+
+message GaiaPasswordEncryptionKeyData {
+  bytes public_key = 1;
+}
+
+message GetCurrentGaiaPasswordEncryptionKeyDataResponse {
+  GaiaPasswordEncryptionKeyData current_gaia_password_encryption_key_data = 1;
+}
+
 // There is no way to google.protobuf.Any directly in this codebase, so this
 // proto just replicates it.
 message Proto3Any {
