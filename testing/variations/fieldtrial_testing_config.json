@@ -1896,6 +1896,21 @@
             ]
         }
     ],
+    "ApplyDeviceChoiceRenewal": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260706",
+                    "enable_features": [
+                        "ApplyDeviceChoiceRenewal"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppsCollectionsFeature": [
         {
             "platforms": [
