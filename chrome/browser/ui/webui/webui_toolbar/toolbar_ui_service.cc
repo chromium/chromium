@@ -146,17 +146,30 @@ void ToolbarUIService::OnPageActionClick(
     ::toolbar_ui_api::mojom::PageActionId action_id,
     ::toolbar_ui_api::mojom::PageActionTrigger trigger,
     OnPageActionClickCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(
-      base::unexpected(Error::New(Code::kUnimplemented, "Not implemented")));
+  if (delegate_) {
+    delegate_->OnPageActionClick(action_id, trigger, std::move(callback));
+  } else {
+    std::move(callback).Run(base::unexpected(Error::New(
+        Code::kFailedPrecondition,
+        base::StringPrintf("ToolbarUIService: cannot click page action "
+                           "(action_id=%d, trigger=%d) without delegate_",
+                           static_cast<int>(action_id),
+                           static_cast<int>(trigger)))));
+  }
 }
 
 void ToolbarUIService::OnPageActionChipShowingChanged(
     ::toolbar_ui_api::mojom::PageActionId action_id,
     OnPageActionChipShowingChangedCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(
-      base::unexpected(Error::New(Code::kUnimplemented, "Not implemented")));
+  if (delegate_) {
+    delegate_->OnPageActionChipShowingChanged(action_id, std::move(callback));
+  } else {
+    std::move(callback).Run(base::unexpected(Error::New(
+        Code::kFailedPrecondition,
+        base::StringPrintf("ToolbarUIService: cannot change page action "
+                           "chip showing (action_id=%d) without delegate_",
+                           static_cast<int>(action_id)))));
+  }
 }
 
 void ToolbarUIService::InvokePinnedToolbarAction(

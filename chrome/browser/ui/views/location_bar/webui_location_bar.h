@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -116,6 +117,10 @@ class WebUILocationBar : public LocationBar,
     return content_setting_image_control_;
   }
 
+  page_actions::WebUIPageActionControl& page_action_control() {
+    return page_action_control_;
+  }
+
   // ContentSettingImageViewDelegate:
   bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
@@ -180,6 +185,7 @@ class WebUILocationBar : public LocationBar,
   // `permission_dashboard_controller_` depends on models owned by
   // `content_setting_image_control_` during teardown.
   WebUIContentSettingImageControl content_setting_image_control_;
+  page_actions::WebUIPageActionControl page_action_control_;
 
   // Threshold for suppressing LHS chip clicks after bubble closing.
   base::TimeDelta suppression_threshold_ =

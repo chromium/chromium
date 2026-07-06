@@ -10,11 +10,14 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -23,6 +26,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -196,6 +200,30 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
 
   EXPECT_EQ("webui-toolbar:chrome_product",
             content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {
+  WaitForInitialWebUIToolbar(browser());
+  auto* location_bar = static_cast<WebUILocationBar*>(GetLocationBar());
+  auto& control = location_bar->page_action_control();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  auto* controller = tab->GetTabFeatures()->page_action_controller();
+
+  controller->Show(kActionAiMode);
+  EXPECT_FALSE(control.GetPageActionStates().empty());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  tab = tabs::TabInterface::GetFromContents(web_contents);
+  controller = tab->GetTabFeatures()->page_action_controller();
+
+  controller->Show(kActionAiMode);
+  EXPECT_FALSE(control.GetPageActionStates().empty());
 }
 
 }  // namespace

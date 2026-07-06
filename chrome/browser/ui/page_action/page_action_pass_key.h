@@ -7,6 +7,7 @@
 
 namespace page_actions {
 
+class WebUIPageActionControl;
 class PageActionController;
 class PageActionControllerImpl;
 class PageActionView;
@@ -33,6 +34,7 @@ class PageActionPassKey {
   friend class ScopedPageActionActivity;
   friend class PageActionModel;
   friend class MockPageActionController;
+  friend class WebUIPageActionControl;
 
   PageActionPassKey() = default;
 };

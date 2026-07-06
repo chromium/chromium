@@ -104,6 +104,8 @@ class WebUIToolbarControlDelegate {
   virtual void OnContentSettingChanged(
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>
           state) = 0;
+  virtual void OnPageActionChanged(
+      std::vector<toolbar_ui_api::mojom::PageActionStatePtr> state) = 0;
   virtual void OnAvatarControlStateChanged(
       toolbar_ui_api::mojom::AvatarControlStatePtr state) = 0;
   virtual void OnFocusRequested(
@@ -176,6 +178,15 @@ class WebUIToolbarWebView
       ::toolbar_ui_api::mojom::ContentSettingImageType type,
       toolbar_ui_api::mojom::ToolbarUIService::ShowContentSettingsBubbleCallback
           callback) override;
+  void OnPageActionClick(
+      ::toolbar_ui_api::mojom::PageActionId action_id,
+      ::toolbar_ui_api::mojom::PageActionTrigger trigger,
+      ::toolbar_ui_api::mojom::ToolbarUIService::OnPageActionClickCallback
+          callback) override;
+  void OnPageActionChipShowingChanged(
+      ::toolbar_ui_api::mojom::PageActionId action_id,
+      ::toolbar_ui_api::mojom::ToolbarUIService::
+          OnPageActionChipShowingChangedCallback callback) override;
   void OnPageInitialized() override;
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
@@ -320,6 +331,8 @@ class WebUIToolbarWebView
   void OnContentSettingChanged(
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr> state)
       override;
+  void OnPageActionChanged(
+      std::vector<toolbar_ui_api::mojom::PageActionStatePtr> state) override;
   const toolbar_ui_api::mojom::NavigationControlsState& GetState()
       const override;
   void OnAvatarControlStateChanged(

@@ -24,6 +24,7 @@ source_set("page_action") {
     "page_action_view.h",
     "page_action_view_interface.h",
     "page_action_view_params.h",
+    "webui_page_action_control.h",
     "zoom_view.h",
   ]
 
@@ -39,6 +40,7 @@ source_set("page_action") {
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views/location_bar:icon_label_bubble",
+    "//components/browser_apis/ui_controllers/toolbar:mojom",
     "//components/metrics/structured:structured_events",
     "//components/prefs",
     "//components/saved_tab_groups/public",
@@ -66,6 +68,7 @@ source_set("impl") {
     "page_action_icon_params.cc",
     "page_action_icon_view.cc",
     "page_action_view.cc",
+    "webui_page_action_control.cc",
     "zoom_view.cc",
   ]
 
@@ -166,6 +169,7 @@ source_set("unit_tests") {
     "page_action_container_view_unittest.cc",
     "page_action_icon_view_unittest.cc",
     "page_action_view_unittest.cc",
+    "webui_page_action_control_unittest.cc",
   ]
 
   deps = [
@@ -175,6 +179,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/page_action:unit_tests",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//ui/events:test_support",

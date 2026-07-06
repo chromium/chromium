@@ -560,6 +560,40 @@ void WebUIToolbarWebView::ShowContentSettingsBubble(
   }
 }
 
+void WebUIToolbarWebView::OnPageActionClick(
+    ::toolbar_ui_api::mojom::PageActionId action_id,
+    ::toolbar_ui_api::mojom::PageActionTrigger trigger,
+    ::toolbar_ui_api::mojom::ToolbarUIService::OnPageActionClickCallback
+        callback) {
+  if (location_bar_) {
+    location_bar_->page_action_control().OnPageActionClick(action_id, trigger,
+                                                           std::move(callback));
+  } else {
+    std::move(callback).Run(base::unexpected(Error::New(
+        Code::kFailedPrecondition,
+        base::StringPrintf("WebUIToolbarWebView: cannot click page action "
+                           "(action_id=%d, trigger=%d) without location_bar_",
+                           static_cast<int>(action_id),
+                           static_cast<int>(trigger)))));
+  }
+}
+
+void WebUIToolbarWebView::OnPageActionChipShowingChanged(
+    ::toolbar_ui_api::mojom::PageActionId action_id,
+    ::toolbar_ui_api::mojom::ToolbarUIService::
+        OnPageActionChipShowingChangedCallback callback) {
+  if (location_bar_) {
+    location_bar_->page_action_control().OnPageActionChipShowingChanged(
+        action_id, std::move(callback));
+  } else {
+    std::move(callback).Run(base::unexpected(Error::New(
+        Code::kFailedPrecondition,
+        base::StringPrintf("WebUIToolbarWebView: cannot change page action "
+                           "chip showing (action_id=%d) without location_bar_",
+                           static_cast<int>(action_id)))));
+  }
+}
+
 void WebUIToolbarWebView::MaybeInitializePageDependentControls() {
   if (!GetWidget() ||
       initialization_state_ != InitializationState::kInitialized) {
@@ -1169,6 +1203,16 @@ void WebUIToolbarWebView::OnContentSettingChanged(
   if (!mojo::Equals(state, last_queued_state_.location_bar_state
                                ->content_setting_image_states)) {
     last_queued_state_.location_bar_state->content_setting_image_states =
+        std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnPageActionChanged(
+    std::vector<toolbar_ui_api::mojom::PageActionStatePtr> state) {
+  if (!mojo::Equals(
+          state, last_queued_state_.location_bar_state->page_action_states)) {
+    last_queued_state_.location_bar_state->page_action_states =
         std::move(state);
     PostPushNavigationState();
   }
