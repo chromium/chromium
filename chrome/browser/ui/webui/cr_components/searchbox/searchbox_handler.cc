@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -487,6 +488,9 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
   dict.Set("searchboxCr23SteadyStateShadow",
            ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
+  dict.Set(
+      "realboxVirtualFocusNavigation",
+      base::FeatureList::IsEnabled(features::kRealboxVirtualFocusNavigation));
 
   int max_files = omnibox::kDefaultMaxTotalInputs;
   int max_images = max_files;

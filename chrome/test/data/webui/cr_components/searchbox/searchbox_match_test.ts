@@ -344,4 +344,70 @@ suite('CrComponentsRealboxMatchTest', () => {
         descriptionEl.innerHTML);
     assertEquals(0, descriptionEl.querySelectorAll('img').length);
   });
+
+  test('AriaLabelUpdatingWithVirtualFocus', async () => {
+    matchEl.virtualFocusEnabled = true;
+    const match = createAutocompleteMatch();
+    match.a11yLabel = 'Search Google';
+    match.description = 'Google';
+    match.keywordChipA11y = 'Search Google in Keyword Mode';
+    match.actions = [
+      {
+        hint: 'action hint',
+        suggestionContents: 'suggestionContents',
+        iconPath: 'iconPath',
+        a11yLabel: 'First Action A11y Label',
+      },
+    ];
+    match.supportsDeletion = true;
+    match.removeButtonA11yLabel = 'Remove Suggestion';
+    matchEl.match = match;
+    matchEl.matchIndex = 0;
+    await microtasksFinished();
+
+    // 1. Normal state selection
+    matchEl.selection = {
+      line: 0,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    };
+    await microtasksFinished();
+    assertEquals('Search Google, Google', matchEl.ariaLabel);
+
+    // 2. Keyword Mode chip selection
+    matchEl.selection = {
+      line: 0,
+      state: SelectionLineState.kKeywordMode,
+      actionIndex: 0,
+    };
+    await microtasksFinished();
+    assertEquals('Search Google in Keyword Mode', matchEl.ariaLabel);
+
+    // 3. Action chip selection
+    matchEl.selection = {
+      line: 0,
+      state: SelectionLineState.kFocusedButtonAction,
+      actionIndex: 0,
+    };
+    await microtasksFinished();
+    assertEquals('First Action A11y Label', matchEl.ariaLabel);
+
+    // 4. Remove button selection
+    matchEl.selection = {
+      line: 0,
+      state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+      actionIndex: 0,
+    };
+    await microtasksFinished();
+    assertEquals('Remove Suggestion', matchEl.ariaLabel);
+
+    // 5. Selection index mismatch (different match line selected)
+    matchEl.selection = {
+      line: 1,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    };
+    await microtasksFinished();
+    assertEquals('Search Google, Google', matchEl.ariaLabel);
+  });
 });
