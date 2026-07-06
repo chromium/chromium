@@ -61,8 +61,12 @@ class TestHibernationHandlerDelegate
   void ResetResourceProvider() override { resource_provider_.reset(); }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override {
-    if (resource_provider_) {
-      return resource_provider_->Flush(reason);
+    if (resource_provider_ &&
+        resource_provider_->Recorder().HasReleasableDrawOps()) {
+      cc::PaintRecord recording =
+          resource_provider_->Recorder().ReleaseMainRecording();
+      resource_provider_->RasterRecord(recording);
+      return recording;
     }
     return std::nullopt;
   }
