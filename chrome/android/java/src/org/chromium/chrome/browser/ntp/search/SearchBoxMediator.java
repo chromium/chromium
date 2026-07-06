@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -54,6 +55,7 @@ class SearchBoxMediator implements DestroyObserver {
     private final Profile mProfile;
     private final TemplateUrlServiceObserver mTemplateUrlServiceObserver =
             this::onTemplateURLServiceChanged;
+    private @Nullable StatusIconResource mSearchEngineIcon;
 
     SearchBoxMediator(
             Context context,
@@ -104,6 +106,8 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, null);
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, null);
         mModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, null);
+        mModel.set(SearchBoxProperties.DSE_ICON_TINT, null);
+        mSearchEngineIcon = null;
 
         mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
     }
@@ -140,7 +144,12 @@ class SearchBoxMediator implements DestroyObserver {
     }
 
     void setSearchEngineIcon(@Nullable StatusIconResource newIcon) {
-        if (newIcon == null) {
+        // AL desktop environments with Google as DSE uses the search loop icon instead of the
+        // engine specific icon.
+        mSearchEngineIcon = isGoogleDseOnDesktop() ? null : newIcon;
+        updateDseIconTint();
+
+        if (mSearchEngineIcon == null) {
             mModel.set(
                     SearchBoxProperties.DSE_ICON_DRAWABLE,
                     mContext.getDrawable(R.drawable.ic_search_24dp));
@@ -150,14 +159,32 @@ class SearchBoxMediator implements DestroyObserver {
         // When DSE is Google, setSearchEngineIcon() is called before
         // NewTabPageLayout#setSearchProviderInfo(). Thus, we check the icon's resource id to change
         // the icon to be R.drawable.ic_logo_googleg_24dp which doesn't have a padding.
-        if (newIcon.getIconRes() == R.drawable.ic_logo_googleg_20dp) {
+        if (mSearchEngineIcon.getIconRes() == R.drawable.ic_logo_googleg_20dp) {
             mModel.set(
                     SearchBoxProperties.DSE_ICON_DRAWABLE,
                     mContext.getDrawable(R.drawable.ic_logo_googleg_24dp));
             return;
         }
 
-        mModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, newIcon.getDrawable(mContext));
+        mModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, mSearchEngineIcon.getDrawable(mContext));
+    }
+
+    private void updateDseIconTint() {
+        if (mSearchEngineIcon == null) {
+            mModel.set(SearchBoxProperties.DSE_ICON_TINT, getIconTint());
+            return;
+        }
+        mModel.set(SearchBoxProperties.DSE_ICON_TINT, null);
+    }
+
+    private @Nullable ColorStateList getIconTint() {
+        return ComposeplateUtils.getSearchBoxIconColorTint(
+                mContext, mModel.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND));
+    }
+
+    private boolean isGoogleDseOnDesktop() {
+        return mTemplateUrlService.isDefaultSearchEngineGoogle()
+                && OmniboxCapabilities.isDesktopPlatform();
     }
 
     private void updateStartIcon() {
@@ -227,6 +254,7 @@ class SearchBoxMediator implements DestroyObserver {
                         ? R.style.TextAppearance_FakeSearchBoxTextMediumDark
                         : R.style.TextAppearance_FakeSearchBoxTextMedium;
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);
+        updateDseIconTint();
     }
 
     /**

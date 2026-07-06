@@ -16,6 +16,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -29,6 +30,7 @@ import android.view.View.OnClickListener;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.core.widget.ImageViewCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -117,6 +119,13 @@ public class SearchBoxViewBinderUnitTest {
         Drawable drawable = mContext.getDrawable(R.drawable.ic_search_24dp);
         mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, drawable);
         assertEquals(drawable, mSearchBoxLayout.mDseIconView.getDrawable());
+    }
+
+    @Test
+    public void testSetDseIconTint() {
+        ColorStateList tint = ColorStateList.valueOf(Color.RED);
+        mPropertyModel.set(SearchBoxProperties.DSE_ICON_TINT, tint);
+        assertEquals(tint, ImageViewCompat.getImageTintList(mSearchBoxLayout.mDseIconView));
     }
 
     @Test

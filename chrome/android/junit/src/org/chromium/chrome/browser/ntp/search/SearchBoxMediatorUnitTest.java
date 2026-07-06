@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -176,12 +178,46 @@ public class SearchBoxMediatorUnitTest {
         StatusIconResource googleIcon = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
         mMediator.setSearchEngineIcon(googleIcon);
         assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+        assertNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
+        assertEquals(
+                R.drawable.ic_logo_googleg_24dp,
+                shadowOf(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE))
+                        .getCreatedFromResId());
     }
 
     @Test
     public void testSetSearchEngineIcon_Null() {
         mMediator.setSearchEngineIcon(null);
         assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
+        assertEquals(
+                R.drawable.ic_search_24dp,
+                shadowOf(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE))
+                        .getCreatedFromResId());
+    }
+
+    @Test
+    public void testSetSearchEngineIcon_onDesktop() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        StatusIconResource googleIcon = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
+        mMediator.setSearchEngineIcon(googleIcon);
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
+        assertEquals(
+                R.drawable.ic_search_24dp,
+                shadowOf(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE))
+                        .getCreatedFromResId());
+    }
+
+    @Test
+    public void testSetSearchEngineIcon_NonGoogle_onDesktop() {
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        Drawable drawable = new ColorDrawable(Color.RED);
+        StatusIconResource newIcon = new StatusIconResource(drawable);
+        mMediator.setSearchEngineIcon(newIcon);
+        assertEquals(drawable, mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+        assertNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
     }
 
     @Test
@@ -286,6 +322,7 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
+        assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
         verifyApplyBackground(mView);
 
         // Tests the case to remove the white background with shadow.
@@ -299,6 +336,7 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
+        assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
         verifyResetBackground(mView, defaultBackground);
     }
 

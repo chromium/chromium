@@ -24,6 +24,7 @@ interface SearchBoxProperties {
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     WritableBooleanPropertyKey APPLY_WHITE_BACKGROUND = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<Drawable> DSE_ICON_DRAWABLE = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<ColorStateList> DSE_ICON_TINT = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey ENABLE_SEARCH_BOX_EDIT_TEXT = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> LENS_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
@@ -57,6 +58,7 @@ interface SearchBoxProperties {
                 ALPHA,
                 APPLY_WHITE_BACKGROUND,
                 DSE_ICON_DRAWABLE,
+                DSE_ICON_TINT,
                 ENABLE_SEARCH_BOX_EDIT_TEXT,
                 LENS_CLICK_CALLBACK,
                 LENS_VISIBILITY,

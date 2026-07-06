@@ -33,6 +33,8 @@ class SearchBoxViewBinder
             view.applyWhiteBackground(model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND));
         } else if (SearchBoxProperties.DSE_ICON_DRAWABLE == propertyKey) {
             view.setDseIconDrawable(model.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+        } else if (SearchBoxProperties.DSE_ICON_TINT == propertyKey) {
+            view.setDseIconTint(model.get(SearchBoxProperties.DSE_ICON_TINT));
         } else if (SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT == propertyKey) {
             view.mHintTextView.setEnabled(
                     model.get(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT));

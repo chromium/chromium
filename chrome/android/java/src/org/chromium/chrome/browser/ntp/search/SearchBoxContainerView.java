@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp.search;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -104,6 +105,10 @@ public class SearchBoxContainerView extends LinearLayout {
      */
     void applyWhiteBackground(boolean apply) {
         ComposeplateUtils.applyWhiteBackground(getContext(), this, apply);
+    }
+
+    void setDseIconTint(@Nullable ColorStateList tint) {
+        ImageViewCompat.setImageTintList(mDseIconView, tint);
     }
 
     private void updateTouchDelegate() {
