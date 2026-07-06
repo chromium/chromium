@@ -74,6 +74,9 @@ export interface ApiHostEmbedder {
 
   // Returns the current zoom level of the webview.
   getZoom(): Promise<number>;
+
+  // Called when the user completes the onboarding flow.
+  onboardingCompleted?(): void;
 }
 
 

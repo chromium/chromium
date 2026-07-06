@@ -718,6 +718,9 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
 
   setOnboardingCompleted(): void {
     this.handler.setOnboardingCompleted();
+    if (this.embedder.onboardingCompleted) {
+      this.embedder.onboardingCompleted();
+    }
   }
 
   subscribeToTabData(request: {

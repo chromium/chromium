@@ -256,6 +256,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean("showErrorAllowed", is_internal_google_account ||
                                              profile->GetPrefs()->GetBoolean(
                                                  prefs::kGlicShowErrorAllowed));
+  const bool completed_fre = GlicEnabling::HasConsentedForProfile(profile);
+  source->AddBoolean("completedFre", completed_fre);
 #if BUILDFLAG(IS_ANDROID)
   const bool is_android_mobile =
       GetGlicFormFactor(ui::GetDeviceFormFactor()) == mojom::FormFactor::kPhone;

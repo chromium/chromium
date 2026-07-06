@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
@@ -152,6 +153,11 @@ class TestExperimentalTriggeringUpdatesHandler
 };
 
 namespace {
+using ::base::Bucket;
+using ::base::BucketsAre;
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 std::vector<std::string> GetTestSuiteNames() {
   std::vector<std::string> names = {
@@ -1447,15 +1453,37 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFails) {
+  service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
   glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest({
       .params = base::Value(base::DictValue().Set("failWith", "error")),
   });
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
-  EXPECT_GT(histogram_tester.GetBucketCount("Glic.PanelWebUiState.Error",
-                                            6 /*CLIENT_ERROR*/),
-            0);
+  // Verify non-FRE error metric is recorded immediately.
+  EXPECT_THAT(histogram_tester.GetAllSamples("Glic.PanelWebUiState.Error"),
+              BucketsAre(Bucket(6 /*CLIENT_ERROR*/, 1)));
+
+  // Verify WebUiState transitions and error metrics update immediately during
+  // the session before the panel closes.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix("Glic.Fre.PanelWebUiState"),
+      UnorderedElementsAre(
+          Pair("Glic.Fre.PanelWebUiState",
+               BucketsAre(Bucket(1 /*kBeginLoad*/, 1),
+                          Bucket(2 /*kShowLoading*/, 1),
+                          Bucket(4 /*kFinishLoading*/, 1),
+                          Bucket(5 /*kError*/, 1),
+                          Bucket(13 /*kGuestError*/, 1))),
+          Pair("Glic.Fre.PanelWebUiState.Error",
+               BucketsAre(Bucket(6 /*CLIENT_ERROR*/, 1)))));
+
+  // Close Glic and verify FinishState is recorded.
+  CloseAllEmbeddersAndPreventDeletion();
+  ASSERT_OK(WaitForGlicClose());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Glic.Fre.PanelWebUiState.FinishState"),
+      BucketsAre(Bucket(5 /*kError*/, 1)));
 }
 
 // Flaky on slower bots / builds.
