@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -140,9 +141,9 @@ WebGpuRecyclableResourceProvider::Create(
   }
 #endif
 
-  auto provider = std::make_unique<WebGpuRecyclableResourceProvider>(
+  auto provider = base::WrapUnique(new WebGpuRecyclableResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
-      context_provider_wrapper, shared_image_usage_flags);
+      context_provider_wrapper, shared_image_usage_flags));
 
   return provider->IsValid() ? std::move(provider) : nullptr;
 }

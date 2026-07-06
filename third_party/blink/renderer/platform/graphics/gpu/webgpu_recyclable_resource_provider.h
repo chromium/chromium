@@ -62,14 +62,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       public viz::ContextLostObserver,
       public ScopedRasterTimer::Host {
  public:
-  static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
   static std::unique_ptr<WebGpuRecyclableResourceProvider> CreateForWebGPU(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -77,46 +69,14 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata,
       gpu::SharedImageUsageSet shared_image_usage_flags = {});
-  WebGpuRecyclableResourceProvider(
-      gfx::Size,
-      viz::SharedImageFormat,
-      SkAlphaType,
-      const gfx::ColorSpace&,
-      const gfx::HDRMetadata&,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
   ~WebGpuRecyclableResourceProvider() override;
-
-  void ClearUnusedResources();
-  bool IsSingleBuffered() const;
-
-  bool IsGpuContextLost() const;
-
-  CanvasImageProvider* GetOrCreateImageProvider();
 
   gfx::Size Size() const { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
   SkAlphaType GetAlphaType() const { return alpha_type_; }
 
-  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
-  void OnContextDestroyed() override;
-
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
-  void OnDestroyResource() override { --num_inflight_resources_; }
-  base::ByteSize EstimatedSizeInBytes() const;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
-  size_t GetSize() const override;
-
-  void EnsureWriteAccess();
-  void EndWriteAccess();
-
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-
   scoped_refptr<CanvasResource> ProduceCanvasResource();
-
-  bool IsValid() const;
 
   // NOTE: Can only be used if this instance is accelerated.
   bool UploadToBackingSharedImage(const SkPixmap& pixmap,
@@ -161,8 +121,50 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // via raster or the compositor) waits on this token.
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
-  gpu::raster::RasterInterface* RasterInterface() const;
+ private:
+  static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      gpu::SharedImageUsageSet shared_image_usage_flags);
 
+  WebGpuRecyclableResourceProvider(
+      gfx::Size,
+      viz::SharedImageFormat,
+      SkAlphaType,
+      const gfx::ColorSpace&,
+      const gfx::HDRMetadata&,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      gpu::SharedImageUsageSet shared_image_usage_flags);
+
+  void ClearUnusedResources();
+  bool IsSingleBuffered() const;
+  bool IsGpuContextLost() const;
+  CanvasImageProvider* GetOrCreateImageProvider();
+
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
+  void OnContextDestroyed() override;
+
+  // CanvasResourceSharedImage::Client implementation.
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
+
+  // CanvasMemoryDumpClient implementation.
+  base::ByteSize EstimatedSizeInBytes() const;
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  size_t GetSize() const override;
+
+  void EnsureWriteAccess();
+  void EndWriteAccess();
+
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  bool IsValid() const;
+
+  gpu::raster::RasterInterface* RasterInterface() const;
   base::WeakPtr<WebGpuRecyclableResourceProvider> CreateWeakPtr();
 
   // The maximum number of in-flight resources waiting to be used for
@@ -176,7 +178,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
- private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
     return context_provider_wrapper_;
