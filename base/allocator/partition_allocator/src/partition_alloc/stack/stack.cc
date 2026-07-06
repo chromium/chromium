@@ -11,7 +11,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/notreached.h"
 #include "partition_alloc/partition_alloc_check.h"
 
 #if PA_BUILDFLAG(IS_WIN)
@@ -173,11 +172,11 @@ void StackTopRegistry::NotifyThreadDestroyed() {
   stack_tops_.erase(tid);
 }
 
-// TODO(crbug.com/530922114): Remove StackTopRegistry.
 void* StackTopRegistry::GetCurrentThreadStackTop() const {
-  // The registry contains approximate stack top pointer. This reduces stack
-  // scan ranges. Protect this method from accidental use for security checks.
-  PA_NOTREACHED();
+  const auto tid = base::PlatformThread::CurrentId();
+  ScopedGuard guard(lock_);
+  auto it = stack_tops_.find(tid);
+  return it != stack_tops_.end() ? it->second : nullptr;
 }
 
 }  // namespace partition_alloc::internal
