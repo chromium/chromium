@@ -603,7 +603,7 @@ class BlinkPerfLoading(_BlinkPerfBenchmark):
     return 'UNSCHEDULED_blink_perf.loading'
 
 
-@benchmark.Info(emails=['ayui@chromium.org'],
+@benchmark.Info(emails=['fergal@chromium.org', 'stevebe@microsoft.com'],
                 component='Blink>Storage',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfOWPStorage(_BlinkPerfBenchmark):

@@ -24,7 +24,7 @@ blink_perf.dom,masonf@chromium.org,Blink>DOM,https://bit.ly/blink-perf-benchmark
 blink_perf.events,masonf@chromium.org,Blink>DOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.image_decoder,"dalecurtis@chromium.org, vmpstr@chromium.org",Internals>Images>Codecs,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.layout,"ikilpatrick@chromium.org, kojii@chromium.org",Blink>Layout,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.owp_storage,ayui@chromium.org,Blink>Storage,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.owp_storage,"fergal@chromium.org, stevebe@microsoft.com",Blink>Storage,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.paint,"pdr@chromium.org, wangxianzhu@chromium.org",Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.parser,masonf@chromium.org,Blink>HTML>Parser,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.shadow_dom,masonf@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
