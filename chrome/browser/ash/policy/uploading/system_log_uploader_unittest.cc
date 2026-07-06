@@ -171,9 +171,12 @@ class MockSystemLogDelegate : public SystemLogUploader::Delegate {
 class MockSystemLogUploader : public SystemLogUploader {
  public:
   MockSystemLogUploader(
+      PrefService* local_state,
       std::unique_ptr<Delegate> syslog_delegate,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-      : SystemLogUploader(std::move(syslog_delegate), task_runner) {}
+      : SystemLogUploader(local_state,
+                          std::move(syslog_delegate),
+                          task_runner) {}
   MOCK_METHOD(void, OnSuccess, (), (override));
 };
 
@@ -216,6 +219,10 @@ class SystemLogUploaderTest : public testing::TestWithParam<bool> {
     EXPECT_GE(next_task, uploader.last_upload_attempt() + expected_delay);
   }
 
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   ash::ScopedCrosSettingsTestHelper settings_helper_;
@@ -236,7 +243,8 @@ TEST_P(SystemLogUploaderTest, LogThrottleTest) {
     syslog_delegate->set_upload_allowed(true);
     settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
 
-    SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+    SystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                               task_runner_);
 
     EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
@@ -260,7 +268,8 @@ TEST_P(SystemLogUploaderTest, ImmediateLogUpload) {
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
 
-  SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  SystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                             task_runner_);
   for (int upload_num = 0;
        upload_num < SystemLogUploader::kLogThrottleCount + 3; upload_num++) {
     uploader.ScheduleNextSystemLogUploadImmediately(kCommandId);
@@ -279,7 +288,8 @@ TEST_P(SystemLogUploaderTest, Basic) {
                                 SystemLogUploader::SystemLogs(),
                                 /*is_immediate_upload=*/false));
   syslog_delegate->set_upload_allowed(false);
-  SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  SystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                             task_runner_);
 
   task_runner_->RunPendingTasks();
 }
@@ -294,7 +304,8 @@ TEST_P(SystemLogUploaderTest, SuccessTest) {
                                 /*is_immediate_upload=*/false));
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
-  SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  SystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                             task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
@@ -312,7 +323,8 @@ TEST_P(SystemLogUploaderTest, ThreeFailureTest) {
                                 /*is_immediate_upload=*/false));
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
-  SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  SystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                             task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
@@ -337,7 +349,8 @@ TEST_P(SystemLogUploaderTest, CheckHeaders) {
                                 /*is_immediate_upload=*/false));
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
-  SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  SystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                             task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
@@ -356,7 +369,8 @@ TEST_P(SystemLogUploaderTest, DisableLogUpload) {
   MockSystemLogDelegate* mock_delegate = syslog_delegate.get();
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   mock_delegate->set_upload_allowed(true);
-  SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  SystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                             task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
   RunPendingUploadTaskAndCheckNext(
@@ -388,7 +402,8 @@ TEST_F(SystemLogUploaderTest, DeviceSettingsPendingToTrusted) {
   settings_helper_.SetTrustedStatus(
       ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED);
   mock_delegate->set_upload_allowed(true);
-  MockSystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  MockSystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                                 task_runner_);
 
   // We should only see one log job success case after running all of the tasks.
   EXPECT_CALL(uploader, OnSuccess()).Times(1);
@@ -419,7 +434,8 @@ TEST_F(SystemLogUploaderTest, DeviceSettingsPendingToUntrusted) {
   settings_helper_.SetTrustedStatus(
       ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED);
   mock_delegate->set_upload_allowed(true);
-  MockSystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
+  MockSystemLogUploader uploader(local_state(), std::move(syslog_delegate),
+                                 task_runner_);
 
   // We should not see any log job successes after running all of the tasks.
   EXPECT_CALL(uploader, OnSuccess()).Times(0);

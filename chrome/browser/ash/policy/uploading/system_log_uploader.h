@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,6 +24,7 @@
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 class GURL;
+class PrefService;
 
 namespace base {
 class SequencedTaskRunner;
@@ -93,7 +95,9 @@ class SystemLogUploader : public UploadJob::Delegate {
 
   // Constructor. Callers can inject their own Delegate. A nullptr can be passed
   // for |syslog_delegate| to use the default implementation.
+  // `local_state` must be non-null and must outlive `this`.
   SystemLogUploader(
+      PrefService* local_state,
       std::unique_ptr<Delegate> syslog_delegate,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
@@ -148,6 +152,8 @@ class SystemLogUploader : public UploadJob::Delegate {
   void ScheduleNextSystemLogUpload(
       base::TimeDelta frequency,
       std::optional<RemoteCommandJob::UniqueIDType> command_id);
+
+  const raw_ref<PrefService> local_state_;
 
   // The number of consequent retries after the failed uploads.
   int retry_count_;

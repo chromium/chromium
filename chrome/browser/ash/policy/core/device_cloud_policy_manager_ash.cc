@@ -255,8 +255,8 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   if (install_attributes->IsCloudManaged()) {
     CreateManagedSessionServiceAndReporters();
     CreateStatusUploader(managed_session_service_.get());
-    syslog_uploader_ =
-        std::make_unique<SystemLogUploader>(nullptr, task_runner_);
+    syslog_uploader_ = std::make_unique<SystemLogUploader>(
+        local_state_, nullptr, task_runner_);
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();

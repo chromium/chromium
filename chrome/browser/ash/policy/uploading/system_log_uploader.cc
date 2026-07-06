@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -317,9 +318,11 @@ const char* const SystemLogUploader::kContentTypeOctetStream =
     "application/octet-stream";
 
 SystemLogUploader::SystemLogUploader(
+    PrefService* local_state,
     std::unique_ptr<Delegate> syslog_delegate,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : retry_count_(0),
+    : local_state_(CHECK_DEREF(local_state)),
+      retry_count_(0),
       upload_frequency_(GetUploadFrequency()),
       task_runner_(task_runner),
       syslog_delegate_(std::move(syslog_delegate)),
@@ -489,10 +492,9 @@ void SystemLogUploader::OnSystemLogsLoaded(
 // latest log upload time if any.
 base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   const base::Time now = base::Time::NowFromSystemTime();
-  PrefService* local_state = g_browser_process->local_state();
 
   const base::ListValue& prev_log_uploads =
-      local_state->GetList(ash::prefs::kStoreLogStatesAcrossReboots);
+      local_state_->GetList(ash::prefs::kStoreLogStatesAcrossReboots);
 
   std::vector<base::Time> updated_log_uploads;
 
@@ -525,11 +527,11 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   for (auto it : updated_log_uploads) {
     updated_prev_log_uploads.Append(it.InSecondsFSinceUnixEpoch());
   }
-  local_state->SetList(ash::prefs::kStoreLogStatesAcrossReboots,
-                       std::move(updated_prev_log_uploads));
+  local_state_->SetList(ash::prefs::kStoreLogStatesAcrossReboots,
+                        std::move(updated_prev_log_uploads));
 
   // Write the changes to the disk to prevent loss of changes.
-  local_state->CommitPendingWrite();
+  local_state_->CommitPendingWrite();
   // If there are no log entries till now, return zero value.
   return updated_log_uploads.empty() ? base::Time() : updated_log_uploads[0];
 }
@@ -552,9 +554,8 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(
 
   // To ensure at most kLogThrottleCount logs are uploaded in
   // kLogThrottleWindowDuration time.
-  if (g_browser_process->local_state()
-              ->GetList(ash::prefs::kStoreLogStatesAcrossReboots)
-              .size() >= kLogThrottleCount &&
+  if (local_state_->GetList(ash::prefs::kStoreLogStatesAcrossReboots).size() >=
+          kLogThrottleCount &&
       !frequency.is_zero()) {
     delay = std::max(delay, last_valid_log_upload + kLogThrottleWindowDuration -
                                 base::Time::NowFromSystemTime());

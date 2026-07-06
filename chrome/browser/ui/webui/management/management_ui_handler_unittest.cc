@@ -627,6 +627,7 @@ class ManagementUIHandlerTests :
         std::move(GetTestConfig().report_website_telemetry_allowlist));
 
     const policy::SystemLogUploader system_log_uploader(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         /*syslog_delegate=*/nullptr,
         /*task_runner=*/task_runner_);
     ON_CALL(testing::Const(handler_), GetDeviceCloudPolicyManager())
