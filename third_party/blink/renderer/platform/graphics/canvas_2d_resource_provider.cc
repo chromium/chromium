@@ -218,8 +218,8 @@ bool Canvas2DResourceProvider::ShouldReplaceTargetBuffer(
     return false;
   }
 
-  // If the resource was lost, we can not use it for writes again.
-  if (resource()->IsLost()) {
+  // If the resource is missing or lost, we cannot use it for writes again.
+  if (!resource() || resource()->IsLost()) {
     return true;
   }
 
