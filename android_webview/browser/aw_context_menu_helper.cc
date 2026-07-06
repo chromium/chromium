@@ -34,7 +34,7 @@ void AwContextMenuHelper::ShowContextMenu(
   Java_AwContextMenuHelper_showContextMenu(
       env, java_obj_,
       context_menu::BuildJavaContextMenuParams(
-          params, nullptr, render_frame_host.GetProcess()->GetDeprecatedID(),
+          params, nullptr, render_frame_host.GetProcess()->GetID(),
           render_frame_host.GetFrameToken().value()),
       view->GetContainerView());
 }

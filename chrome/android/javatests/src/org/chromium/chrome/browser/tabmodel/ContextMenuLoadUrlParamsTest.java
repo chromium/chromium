@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.tabmodel;
 import static androidx.test.espresso.intent.Intents.intended;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.Context;
@@ -55,6 +55,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -191,10 +192,10 @@ public class ContextMenuLoadUrlParamsTest {
                 mActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
 
-        assertNotNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
-        assertNotEquals(
-                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams().getInitiatorProcessId(),
-                -1);
+        AdditionalNavigationParams navigationParams =
+                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams();
+        assertNotNull(navigationParams);
+        assertTrue(navigationParams.getInitiatorProcessId().isValid());
     }
 
     /**

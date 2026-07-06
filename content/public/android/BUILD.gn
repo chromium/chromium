@@ -73,6 +73,7 @@ generate_jni("content_main_dex_jni") {
     "java/src/org/chromium/content/browser/TracingControllerAndroidImpl.java",
     "java/src/org/chromium/content/common/SurfaceWrapper.java",
     "java/src/org/chromium/content_public/browser/ContentFeatureMap.java",
+    "java/src/org/chromium/content_public/common/ChildProcessId.java",
     "java/src/org/chromium/content_public/common/ResourceRequestBody.java",
   ]
 }
@@ -100,6 +101,7 @@ android_library("content_main_dex_java") {
     "//content/common:common_java",
     "//content/public/common:common_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:accessibility_features_java",
@@ -139,6 +141,7 @@ android_library("content_main_dex_java") {
     "java/src/org/chromium/content_public/browser/DeviceUtils.java",
     "java/src/org/chromium/content_public/browser/JavalessRenderersFeatureList.java",
     "java/src/org/chromium/content_public/browser/TracingControllerAndroid.java",
+    "java/src/org/chromium/content_public/common/ChildProcessId.java",
     "java/src/org/chromium/content_public/common/ContentProcessInfo.java",
     "java/src/org/chromium/content_public/common/ContentUrlConstants.java",
     "java/src/org/chromium/content_public/common/IsolatedWorldIds.java",

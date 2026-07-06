@@ -12,6 +12,7 @@ import org.chromium.base.UnguessableToken;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
+import org.chromium.content_public.common.ChildProcessId;
 
 /** Interface which provides native access to an AdditionalNavigationParams instance. */
 @JNINamespace("content")
@@ -22,7 +23,7 @@ public class AdditionalNavigationParamsUtils {
     @CalledByNative
     private static AdditionalNavigationParams create(
             @JniType("base::UnguessableToken") UnguessableToken initiatorFrameToken,
-            int initiatorProcessId,
+            @JniType("content::ChildProcessId") ChildProcessId initiatorProcessId,
             @JniType("std::optional<base::UnguessableToken>") @Nullable
                     UnguessableToken attributionSrcToken) {
         return new AdditionalNavigationParams(
@@ -36,7 +37,8 @@ public class AdditionalNavigationParamsUtils {
     }
 
     @CalledByNative
-    private static int getInitiatorProcessId(AdditionalNavigationParams params) {
+    private static @JniType("content::ChildProcessId") ChildProcessId
+            getInitiatorProcessId(AdditionalNavigationParams params) {
         return params.getInitiatorProcessId();
     }
 

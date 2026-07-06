@@ -299,6 +299,8 @@ source_set("common") {
 
   if (is_android) {
     sources += [
+      "android/child_process_id.cc",
+      "android/child_process_id.h",
       "android/cpu_time_metrics.cc",
       "android/cpu_time_metrics.h",
       "android/cpu_time_metrics_internal.cc",

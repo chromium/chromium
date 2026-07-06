@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
+#include "content/public/common/child_process_id.h"
 #include "ui/menus/android/menu_model_bridge.h"
 
 namespace content {
@@ -20,8 +21,8 @@ namespace context_menu {
 base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
     const content::ContextMenuParams& params,
     ui::MenuModel* menu_model,
-    int initiator_process_id = 0,
-    std::optional<base::UnguessableToken> initiator_frame_token = std::nullopt);
+    content::ChildProcessId initiator_process_id,
+    std::optional<base::UnguessableToken> initiator_frame_token);
 
 content::ContextMenuParams* ContextMenuParamsFromJavaObject(
     const base::android::JavaRef<jobject>& jcontext_menu_params);

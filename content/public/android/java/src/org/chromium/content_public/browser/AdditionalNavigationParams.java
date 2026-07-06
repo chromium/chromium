@@ -7,6 +7,7 @@ package org.chromium.content_public.browser;
 import org.chromium.base.UnguessableToken;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.common.ChildProcessId;
 
 /**
  * Holds parameters for NavigationController::LoadUrlParams::AdditionalNavigationParams. This is
@@ -16,7 +17,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class AdditionalNavigationParams {
     private final UnguessableToken mInitiatorFrameToken;
-    private final int mInitiatorProcessId;
+    private final ChildProcessId mInitiatorProcessId;
 
     // Parameters related to Attribution Reporting Impressions. May not always
     // be set.
@@ -24,7 +25,7 @@ public class AdditionalNavigationParams {
 
     public AdditionalNavigationParams(
             UnguessableToken initiatorFrameToken,
-            int initiatorProcessId,
+            ChildProcessId initiatorProcessId,
             @Nullable UnguessableToken attributionSrcToken) {
         mInitiatorFrameToken = initiatorFrameToken;
         mInitiatorProcessId = initiatorProcessId;
@@ -35,7 +36,7 @@ public class AdditionalNavigationParams {
         return mInitiatorFrameToken;
     }
 
-    public int getInitiatorProcessId() {
+    public ChildProcessId getInitiatorProcessId() {
         return mInitiatorProcessId;
     }
 

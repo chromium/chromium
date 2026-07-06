@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/android/additional_navigation_params_android.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
@@ -19,7 +20,7 @@ GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_object);
 
-int GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
+content::ChildProcessId GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_object);
 

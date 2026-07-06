@@ -26,7 +26,7 @@ namespace context_menu {
 base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
     const content::ContextMenuParams& params,
     ui::MenuModel* menu_model,
-    int initiator_process_id,
+    content::ChildProcessId initiator_process_id,
     std::optional<base::UnguessableToken> initiator_frame_token) {
   GURL sanitizedReferrer =
       (params.frame_url.is_empty() ? params.page_url : params.frame_url)

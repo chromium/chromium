@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 
@@ -15,7 +16,7 @@ CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobject>
 CreateJavaAdditionalNavigationParams(
     JNIEnv* env,
     base::UnguessableToken initiator_frame_token,
-    int initiator_process_id,
+    content::ChildProcessId initiator_process_id,
     std::optional<base::UnguessableToken> attribution_src_token);
 
 }  // namespace content
