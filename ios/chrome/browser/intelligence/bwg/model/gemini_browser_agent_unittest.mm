@@ -1049,7 +1049,7 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiLiveUserDidBargeIn) {
 
 // Tests that preparing the floaty to be shown temporarily disables fullscreen
 // mode, and verify that it is re-enabled once the Gemini UI did appear or when
-// the state collapses.
+// the state collapses or when the floaty is dismissed.
 TEST_F(GeminiBrowserAgentTest, TestPrepareFloatyToBeShownDisablesFullscreen) {
   FullscreenController* controller =
       FullscreenController::FromBrowser(browser_.get());
@@ -1073,6 +1073,16 @@ TEST_F(GeminiBrowserAgentTest, TestPrepareFloatyToBeShownDisablesFullscreen) {
   // collapsed.
   gemini_browser_agent_->OnViewStateChanged(
       ios::provider::GeminiViewState::kCollapsed);
+  EXPECT_TRUE(controller->IsEnabled());
+
+  // Fullscreen should be disabled once the state transitions to expanded again.
+  gemini_browser_agent_->OnViewStateChanged(
+      ios::provider::GeminiViewState::kExpanded);
+  EXPECT_FALSE(controller->IsEnabled());
+
+  // Fullscreen should be re-enabled once the state transitions to hidden.
+  gemini_browser_agent_->OnViewStateChanged(
+      ios::provider::GeminiViewState::kHidden);
   EXPECT_TRUE(controller->IsEnabled());
 }
 

@@ -1919,6 +1919,8 @@ void GeminiBrowserAgent::OnViewStateChanged(
   } else if (view_state == ios::provider::GeminiViewState::kCollapsed) {
     ResetFullscreenDisabler();
   } else if (view_state == ios::provider::GeminiViewState::kHidden) {
+    ResetFullscreenDisabler();
+
     // TODO(crbug.com/517583120): Remove when the temporary actuation prototype
     // is cleaned up.
     if (IsGeminiActorEnabled()) {
