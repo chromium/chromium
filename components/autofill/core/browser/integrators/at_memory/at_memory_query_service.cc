@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 
 #include <algorithm>
 #include <iterator>
@@ -23,9 +23,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type_util.h"
+#include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
@@ -33,9 +34,17 @@
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "net/base/network_change_notifier.h"
 
-namespace accessibility_annotator {
+namespace autofill {
 
 namespace {
+
+using ::accessibility_annotator::EntryMetadata;
+using ::accessibility_annotator::MemoryDataType;
+using ::accessibility_annotator::MemoryEntrySource;
+using ::accessibility_annotator::MemoryEntrySourceType;
+using ::accessibility_annotator::MemorySearchResult;
+using ::accessibility_annotator::MemorySearchResults;
+using ::accessibility_annotator::MemorySearchStatus;
 
 MemoryDataType ToMemoryDataType(
     personal_context::proto::MemoryDataType data_type) {
@@ -585,7 +594,7 @@ std::vector<MemoryDataType> RationalizeFetchPlanDataTypes(
 // local suggestions via `data_provider`, bypassing query classification and
 // remote resolution.
 void QueryPersonalContextDebug(
-    MemoryDataProvider* data_provider,
+    AutofillDataProvider* data_provider,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback) {
   if (!data_provider) {
     update_callback.Run(
@@ -610,7 +619,7 @@ void QueryPersonalContextDebug(
 
 AtMemoryQueryService::AtMemoryQueryService(
     std::unique_ptr<AtMemoryQueryServiceDelegate> delegate,
-    std::unique_ptr<MemoryDataProvider> data_provider,
+    std::unique_ptr<AutofillDataProvider> data_provider,
     personal_context::PersonalContextService* personal_context_service,
     const std::string& locale)
     : delegate_(std::move(delegate)),
@@ -735,4 +744,4 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
                                    std::move(ranked_results)));
 }
 
-}  // namespace accessibility_annotator
+}  // namespace autofill

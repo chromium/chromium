@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/accessibility_annotator/core/at_memory_query_service_delegate.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 
 class Profile;
 
@@ -28,7 +28,8 @@ namespace accessibility_annotator {
 
 class LiveTabRetriever;
 
-class AtMemoryQueryServiceDelegateImpl : public AtMemoryQueryServiceDelegate {
+class AtMemoryQueryServiceDelegateImpl
+    : public autofill::AtMemoryQueryServiceDelegate {
  public:
   explicit AtMemoryQueryServiceDelegateImpl(Profile* profile);
   AtMemoryQueryServiceDelegateImpl(
@@ -45,8 +46,9 @@ class AtMemoryQueryServiceDelegateImpl : public AtMemoryQueryServiceDelegate {
 
   // AtMemoryQueryServiceDelegate:
   void RetrieveLiveTabContext(
-      LiveTabContextQuery query,
-      base::OnceCallback<void(LiveTabContextResponse)> callback) override;
+      autofill::LiveTabContextQuery query,
+      base::OnceCallback<void(autofill::LiveTabContextResponse)> callback)
+      override;
 
  private:
   const raw_ptr<Profile> profile_;

@@ -23,6 +23,8 @@
 
 namespace accessibility_annotator {
 
+using ::autofill::LiveTabContextQuery;
+using ::autofill::LiveTabContextResponse;
 using ::page_content_annotations::CreateExtractionResult;
 using ::page_content_annotations::CreatePassageEmbeddings;
 using ::page_content_annotations::MockPageContentExtractionService;

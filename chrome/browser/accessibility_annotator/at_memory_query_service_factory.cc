@@ -16,9 +16,10 @@
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/accessibility_annotator/core/at_memory_query_service.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
-#include "components/autofill/core/browser/at_memory/autofill_data_provider_impl.h"
+#include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -29,9 +30,9 @@ AtMemoryQueryServiceFactory* AtMemoryQueryServiceFactory::GetInstance() {
 }
 
 // static
-accessibility_annotator::AtMemoryQueryService*
-AtMemoryQueryServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<accessibility_annotator::AtMemoryQueryService*>(
+autofill::AtMemoryQueryService* AtMemoryQueryServiceFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<autofill::AtMemoryQueryService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -55,15 +56,14 @@ AtMemoryQueryServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<autofill::AutofillDataProviderImpl> data_provider =
-      std::make_unique<autofill::AutofillDataProviderImpl>(
-          autofill::PersonalDataManagerFactory::GetForBrowserContext(context),
-          autofill::AutofillEntityDataManagerFactory::GetForProfile(profile));
+  auto data_provider = std::make_unique<autofill::AutofillDataProvider>(
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(context),
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile));
 
   personal_context::PersonalContextService* personal_context_service =
       PersonalContextServiceFactory::GetForProfile(profile);
 
-  return std::make_unique<accessibility_annotator::AtMemoryQueryService>(
+  return std::make_unique<autofill::AtMemoryQueryService>(
       std::make_unique<
           accessibility_annotator::AtMemoryQueryServiceDelegateImpl>(profile),
       std::move(data_provider), personal_context_service,

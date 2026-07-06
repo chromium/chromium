@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AUTOFILL_DATA_PROVIDER_IMPL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AUTOFILL_DATA_PROVIDER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AUTOFILL_DATA_PROVIDER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AUTOFILL_DATA_PROVIDER_H_
 
 #include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
@@ -23,21 +22,19 @@ namespace autofill {
 // Provides data from various Autofill backends (e.g. addresses, payments,
 // Autofill AI entities) and serves them in a standardized format suitable for
 // @memory search results.
-class AutofillDataProviderImpl
-    : public accessibility_annotator::MemoryDataProvider {
+class AutofillDataProvider {
  public:
-  AutofillDataProviderImpl(const PersonalDataManager* personal_data_manager,
-                           const EntityDataManager* entity_data_manager);
-  AutofillDataProviderImpl(const AutofillDataProviderImpl&) = delete;
-  AutofillDataProviderImpl& operator=(const AutofillDataProviderImpl&) = delete;
-  ~AutofillDataProviderImpl() override;
+  AutofillDataProvider(const PersonalDataManager* personal_data_manager,
+                       const EntityDataManager* entity_data_manager);
+  AutofillDataProvider(const AutofillDataProvider&) = delete;
+  AutofillDataProvider& operator=(const AutofillDataProvider&) = delete;
+  virtual ~AutofillDataProvider();
 
-  // accessibility_annotator::MemoryDataProvider:
-  void RetrieveAll(
+  // Retrieves all data entries for the given entry types.
+  virtual void RetrieveAll(
       const std::vector<accessibility_annotator::MemoryDataType>& types,
       base::OnceCallback<void(
-          std::vector<accessibility_annotator::MemorySearchResult>)> callback)
-      override;
+          std::vector<accessibility_annotator::MemorySearchResult>)> callback);
 
  private:
   // Retrieves all entities for a given Autofill data type.
@@ -59,4 +56,4 @@ class AutofillDataProviderImpl
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AUTOFILL_DATA_PROVIDER_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AUTOFILL_DATA_PROVIDER_H_

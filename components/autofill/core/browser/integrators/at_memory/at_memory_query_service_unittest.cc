@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 
 #include <memory>
 #include <optional>
@@ -15,10 +15,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/at_memory_query_service_delegate.h"
+#include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
@@ -29,11 +29,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace accessibility_annotator {
+namespace autofill {
 
 namespace {
 
+using ::accessibility_annotator::EntryMetadata;
 using ::accessibility_annotator::MemoryDataType;
+using ::accessibility_annotator::MemoryEntrySource;
+using ::accessibility_annotator::MemoryEntrySourceType;
+using ::accessibility_annotator::MemorySearchResult;
+using ::accessibility_annotator::MemorySearchResults;
+using ::accessibility_annotator::MemorySearchStatus;
 using ::testing::_;
 using ::testing::Field;
 using ::testing::UnorderedElementsAre;
@@ -47,8 +53,9 @@ class MockAtMemoryQueryServiceDelegate : public AtMemoryQueryServiceDelegate {
               (override));
 };
 
-class FakeMemoryDataProvider : public MemoryDataProvider {
+class FakeMemoryDataProvider : public AutofillDataProvider {
  public:
+  FakeMemoryDataProvider() : AutofillDataProvider(nullptr, nullptr) {}
   void RetrieveAll(const std::vector<MemoryDataType>& types,
                    base::OnceCallback<void(std::vector<MemorySearchResult>)>
                        callback) override {
@@ -68,8 +75,9 @@ class FakeMemoryDataProvider : public MemoryDataProvider {
   std::vector<MemoryDataType> last_types_;
 };
 
-class DelayedMemoryDataProvider : public MemoryDataProvider {
+class DelayedMemoryDataProvider : public AutofillDataProvider {
  public:
+  DelayedMemoryDataProvider() : AutofillDataProvider(nullptr, nullptr) {}
   void RetrieveAll(const std::vector<MemoryDataType>& types,
                    base::OnceCallback<void(std::vector<MemorySearchResult>)>
                        callback) override {
@@ -1124,4 +1132,4 @@ TEST_F(AtMemoryQueryServiceTest,
 
 }  // namespace
 
-}  // namespace accessibility_annotator
+}  // namespace autofill

@@ -26,11 +26,7 @@
 #include "base/uuid.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/at_memory_query_service.h"
-#include "components/accessibility_annotator/core/at_memory_query_service_delegate.h"
-#include "components/accessibility_annotator/core/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -49,6 +45,9 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
+#include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
@@ -369,13 +368,11 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
 };
 
-class StubAtMemoryQueryServiceDelegate
-    : public accessibility_annotator::AtMemoryQueryServiceDelegate {
+class StubAtMemoryQueryServiceDelegate : public AtMemoryQueryServiceDelegate {
  public:
   void RetrieveLiveTabContext(
-      accessibility_annotator::LiveTabContextQuery query,
-      base::OnceCallback<void(accessibility_annotator::LiveTabContextResponse)>
-          callback) override {
+      LiveTabContextQuery query,
+      base::OnceCallback<void(LiveTabContextResponse)> callback) override {
     std::move(callback).Run({});
   }
 };
@@ -498,8 +495,8 @@ class AutofillExternalDelegateTest : public testing::Test,
   void SetupMockAtMemoryQueryService(
       const std::u16string& query,
       accessibility_annotator::MemorySearchResults results) {
-    auto mock_service = std::make_unique<
-        testing::NiceMock<accessibility_annotator::MockAtMemoryQueryService>>();
+    auto mock_service =
+        std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
     EXPECT_CALL(*mock_service, Query(Eq(query), _))
         .WillOnce(base::test::RunOnceCallback<1>(std::move(results)));
     // Inject the mock service into the client.
@@ -979,10 +976,9 @@ TEST_F(AutofillExternalDelegateTest,
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
       std::move(entries1));
 
-  auto mock_service = std::make_unique<
-      testing::NiceMock<accessibility_annotator::MockAtMemoryQueryService>>();
-  accessibility_annotator::MockAtMemoryQueryService* mock_service_ptr =
-      mock_service.get();
+  auto mock_service =
+      std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
+  MockAtMemoryQueryService* mock_service_ptr = mock_service.get();
   autofill_client().set_at_memory_query_service(std::move(mock_service));
 
   EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _))
@@ -1039,10 +1035,9 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
       AutofillClient::SuggestionUiSessionId(1));
   external_delegate().OnSuggestionsShown({});
 
-  auto mock_service = std::make_unique<
-      testing::NiceMock<accessibility_annotator::MockAtMemoryQueryService>>();
-  accessibility_annotator::MockAtMemoryQueryService* mock_service_ptr =
-      mock_service.get();
+  auto mock_service =
+      std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
+  MockAtMemoryQueryService* mock_service_ptr = mock_service.get();
   autofill_client().set_at_memory_query_service(std::move(mock_service));
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
@@ -1097,10 +1092,9 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFinalResponseStopsSearching) {
       AutofillClient::SuggestionUiSessionId(1));
   external_delegate().OnSuggestionsShown({});
 
-  auto mock_service = std::make_unique<
-      testing::NiceMock<accessibility_annotator::MockAtMemoryQueryService>>();
-  accessibility_annotator::MockAtMemoryQueryService* mock_service_ptr =
-      mock_service.get();
+  auto mock_service =
+      std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
+  MockAtMemoryQueryService* mock_service_ptr = mock_service.get();
   autofill_client().set_at_memory_query_service(std::move(mock_service));
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
@@ -1155,10 +1149,9 @@ TEST_F(AutofillExternalDelegateTest,
       AutofillClient::SuggestionUiSessionId(1));
   external_delegate().OnSuggestionsShown({});
 
-  auto mock_service = std::make_unique<
-      testing::NiceMock<accessibility_annotator::MockAtMemoryQueryService>>();
-  accessibility_annotator::MockAtMemoryQueryService* mock_service_ptr =
-      mock_service.get();
+  auto mock_service =
+      std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
+  MockAtMemoryQueryService* mock_service_ptr = mock_service.get();
   autofill_client().set_at_memory_query_service(std::move(mock_service));
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
@@ -1198,10 +1191,9 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
       AutofillClient::SuggestionUiSessionId(1));
   external_delegate().OnSuggestionsShown({});
 
-  auto mock_service = std::make_unique<
-      testing::NiceMock<accessibility_annotator::MockAtMemoryQueryService>>();
-  accessibility_annotator::MockAtMemoryQueryService* mock_service_ptr =
-      mock_service.get();
+  auto mock_service =
+      std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
+  MockAtMemoryQueryService* mock_service_ptr = mock_service.get();
   autofill_client().set_at_memory_query_service(std::move(mock_service));
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>

@@ -185,7 +185,9 @@ test("components_unittests") {
 
   deps = [
     "//base",
-    "//components/accessibility_annotator/core:unit_tests",
+    "//components/accessibility_annotator/core/annotation_reducer:unit_tests",
+    "//components/accessibility_annotator/core/content_annotator:unit_tests",
+    "//components/accessibility_annotator/core/storage:unit_tests",
     "//components/account_settings:unit_tests",
     "//components/activity_reporter:unit_tests",
     "//components/actor/core:unit_tests",

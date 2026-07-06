@@ -25,7 +25,6 @@
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/google_groups_manager.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-#include "components/accessibility_annotator/core/at_memory_query_service.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
@@ -41,6 +40,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
@@ -229,8 +229,7 @@ class TestAutofillClientTemplate : public T {
     return &mock_autocomplete_history_manager_;
   }
 
-  accessibility_annotator::AtMemoryQueryService* GetAtMemoryQueryService()
-      override {
+  AtMemoryQueryService* GetAtMemoryQueryService() override {
     return at_memory_query_service_.get();
   }
 
@@ -743,8 +742,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void set_at_memory_query_service(
-      std::unique_ptr<accessibility_annotator::AtMemoryQueryService>
-          at_memory_query_service) {
+      std::unique_ptr<AtMemoryQueryService> at_memory_query_service) {
     at_memory_query_service_ = std::move(at_memory_query_service);
   }
 
@@ -826,8 +824,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<GoogleGroupsManager> google_groups_manager_;
 #endif
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
-  std::unique_ptr<accessibility_annotator::AtMemoryQueryService>
-      at_memory_query_service_;
+  std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
   personal_context::PersonalContextEnablementState
       personal_context_enablement_state_ =
           personal_context::PersonalContextEnablementState::kEnabled;

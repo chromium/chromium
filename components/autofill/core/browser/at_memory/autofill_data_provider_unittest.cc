@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/at_memory/autofill_data_provider_impl.h"
+#include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 
 #include <vector>
 
@@ -71,16 +71,16 @@ Matcher<MemorySearchResult> IsMemorySearchResult(
 }
 
 std::vector<MemorySearchResult> RetrieveAllHelper(
-    AutofillDataProviderImpl& retriever,
+    AutofillDataProvider& retriever,
     accessibility_annotator::MemoryDataType type) {
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   retriever.RetrieveAll({type}, future.GetCallback());
   return future.Take();
 }
 
-class AutofillDataProviderImplTest : public testing::Test {
+class AutofillDataProviderTest : public testing::Test {
  public:
-  AutofillDataProviderImplTest()
+  AutofillDataProviderTest()
       : webdata_helper_(std::make_unique<EntityTable>()) {
     client_.SetAutofillProfileEnabled(true);
     client_.GetPersonalDataManager()
@@ -98,13 +98,13 @@ class AutofillDataProviderImplTest : public testing::Test {
     entity_data_manager_ = entity_data_manager.get();
     client_.set_entity_data_manager(std::move(entity_data_manager));
 
-    retriever_ = std::make_unique<AutofillDataProviderImpl>(
+    retriever_ = std::make_unique<AutofillDataProvider>(
         &client_.GetPersonalDataManager(), client_.GetEntityDataManager());
   }
 
   void WaitForDatabase() { webdata_helper_.WaitUntilIdle(); }
 
-  AutofillDataProviderImpl& retriever() { return *retriever_; }
+  AutofillDataProvider& retriever() { return *retriever_; }
   TestAutofillClient& client() { return client_; }
   EntityDataManager& entity_data_manager() { return *entity_data_manager_; }
 
@@ -115,11 +115,11 @@ class AutofillDataProviderImplTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   TestAutofillClient client_;
   raw_ptr<EntityDataManager> entity_data_manager_;
-  std::unique_ptr<AutofillDataProviderImpl> retriever_;
+  std::unique_ptr<AutofillDataProvider> retriever_;
 };
 
 // Tests that RetrieveAll returns an empty list when no data is available
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_Empty) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_Empty) {
   EXPECT_THAT(
       RetrieveAllHelper(retriever(),
                         accessibility_annotator::MemoryDataType::kAddressCity),
@@ -128,7 +128,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_Empty) {
 
 // Tests that RetrieveAll fetches and formats address-related data from
 // PersonalDataManager.
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
   AutofillProfile profile = test::GetFullProfile();
   profile.set_guid(test::MakeGuid(1));
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
@@ -253,7 +253,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
 }
 
 // Tests that RetrieveAll correctly fetches and formats IBAN data.
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_IbanData) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_IbanData) {
   Iban iban = test::GetLocalIban();
   iban.set_nickname(u"My IBAN");
   client().GetPersonalDataManager().test_payments_data_manager().AddIbanForTest(
@@ -269,7 +269,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_IbanData) {
 }
 
 // Tests that RetrieveAll correctly fetches and formats credit card data.
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData) {
   CreditCard credit_card = test::WithCvc(test::GetCreditCard(), u"123");
   credit_card.SetExpirationYear(2030);
   credit_card.SetExpirationMonth(10);
@@ -362,7 +362,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
 
 // Tests that RetrieveAll correctly fetches and formats data from
 // EntityDataManager (Autofill AI).
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiEntityData) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiEntityData) {
   EntityInstance vehicle = test::GetVehicleEntityInstance({.use_count = 1});
   entity_data_manager().AddOrUpdateEntityInstance(vehicle);
   WaitForDatabase();
@@ -385,7 +385,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiEntityData) {
 }
 
 // Tests that RetrieveAll correctly formats Passport entity data.
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_PassportData) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_PassportData) {
   EntityInstance passport =
       test::GetPassportEntityInstance({.number = u"XYZ123", .use_count = 1});
   entity_data_manager().AddOrUpdateEntityInstance(passport);
@@ -415,7 +415,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_PassportData) {
 }
 
 // Tests that RetrieveAll correctly fetches data for a specific attribute.
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiAttributeData) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiAttributeData) {
   EntityInstance vehicle = test::GetVehicleEntityInstance({.use_count = 1});
   entity_data_manager().AddOrUpdateEntityInstance(vehicle);
   WaitForDatabase();
@@ -438,8 +438,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiAttributeData) {
 
 // Tests that RetrieveAll falls back to the first non-empty attribute for
 // Vehicle when plate number is missing.
-TEST_F(AutofillDataProviderImplTest,
-       RetrieveAll_VehicleFallbackToFirstNonEmpty) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_VehicleFallbackToFirstNonEmpty) {
   EntityInstance vehicle = test::GetVehicleEntityInstance(
       {.name = u"", .plate = u"", .make = u"BMW", .year = u"", .use_count = 1});
   entity_data_manager().AddOrUpdateEntityInstance(vehicle);
@@ -460,7 +459,7 @@ TEST_F(AutofillDataProviderImplTest,
 
 // Tests that RetrieveAll omits address suggestions for profiles that only have
 // a name but no address data.
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_EmptyProfile) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_AddressFull_EmptyProfile) {
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
@@ -473,7 +472,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_EmptyProfile) {
 
 // Tests that RetrieveAll correctly formats address suggestions for
 // partial addresses.
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_PartialAddress) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_AddressFull_PartialAddress) {
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid(test::MakeGuid(1));
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
@@ -499,7 +498,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_PartialAddress) {
 }
 
 // Tests that RetrieveAll can fetch multiple types at once (e.g. City and Zip).
-TEST_F(AutofillDataProviderImplTest, RetrieveAll_MultipleTypes) {
+TEST_F(AutofillDataProviderTest, RetrieveAll_MultipleTypes) {
   AutofillProfile profile = test::GetFullProfile();
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 

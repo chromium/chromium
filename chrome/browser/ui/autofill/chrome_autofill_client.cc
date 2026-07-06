@@ -531,8 +531,7 @@ AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 #endif
 }
 
-accessibility_annotator::AtMemoryQueryService*
-ChromeAutofillClient::GetAtMemoryQueryService() {
+AtMemoryQueryService* ChromeAutofillClient::GetAtMemoryQueryService() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return AtMemoryQueryServiceFactory::GetForProfile(profile);

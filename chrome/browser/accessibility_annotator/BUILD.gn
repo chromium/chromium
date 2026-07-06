@@ -11,8 +11,8 @@ source_set("accessibility_annotator") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
-    "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core/annotation_reducer",
+    "//components/accessibility_annotator/core/storage",
     "//components/autofill/core/browser",
     "//components/keyed_service/content",
     "//content/public/browser",
@@ -45,7 +45,6 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//components/accessibility_annotator/content/live_tab_context",
-    "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core/data_models",
     "//components/accessibility_annotator/core/storage",

@@ -66,8 +66,8 @@ AtMemoryQueryServiceDelegateImpl::AtMemoryQueryServiceDelegateImpl(
 AtMemoryQueryServiceDelegateImpl::~AtMemoryQueryServiceDelegateImpl() = default;
 
 void AtMemoryQueryServiceDelegateImpl::RetrieveLiveTabContext(
-    LiveTabContextQuery query,
-    base::OnceCallback<void(LiveTabContextResponse)> callback) {
+    autofill::LiveTabContextQuery query,
+    base::OnceCallback<void(autofill::LiveTabContextResponse)> callback) {
   if (!live_tab_retriever_) {
     std::move(callback).Run({});
     return;
@@ -100,7 +100,7 @@ void AtMemoryQueryServiceDelegateImpl::RetrieveLiveTabContext(
   live_tab_retriever_->Retrieve(
       query.query, tabs,
       base::BindOnce([](std::vector<ScoredPassage> passages) {
-        LiveTabContextResponse response;
+        autofill::LiveTabContextResponse response;
         response.results = base::ToVector(passages, &ScoredPassage::passage);
         return response;
       }).Then(std::move(callback)));

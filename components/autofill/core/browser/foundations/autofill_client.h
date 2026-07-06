@@ -99,10 +99,6 @@ namespace version_info {
 enum class Channel;
 }
 
-namespace accessibility_annotator {
-class AtMemoryQueryService;
-}
-
 namespace personal_context {
 enum class PersonalContextEnablementState;
 class PersonalContextEnablementService;
@@ -121,6 +117,7 @@ namespace autofill {
 class ActorKeyMetricsRecorder;
 class AutofillManager;
 class AddressNormalizer;
+class AtMemoryQueryService;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillAiManager;
@@ -498,8 +495,7 @@ class AutofillClient {
 
   // Returns the `AtMemoryQueryService` associated with the profile of
   // the window of this tab.
-  virtual accessibility_annotator::AtMemoryQueryService*
-  GetAtMemoryQueryService();
+  virtual AtMemoryQueryService* GetAtMemoryQueryService();
 
   // Returns the enablement state of the Accessibility Annotator.
   // TODO(crbug.com/524193567) Delete this method once all the invocations are

@@ -8,14 +8,13 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace accessibility_annotator {
+namespace autofill {
 class AtMemoryQueryService;
-}  // namespace accessibility_annotator
+}  // namespace autofill
 
 class AtMemoryQueryServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static accessibility_annotator::AtMemoryQueryService* GetForProfile(
-      Profile* profile);
+  static autofill::AtMemoryQueryService* GetForProfile(Profile* profile);
   static AtMemoryQueryServiceFactory* GetInstance();
 
   AtMemoryQueryServiceFactory(const AtMemoryQueryServiceFactory&) = delete;

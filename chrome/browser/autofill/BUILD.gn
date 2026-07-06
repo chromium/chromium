@@ -91,6 +91,7 @@ static_library("autofill") {
     "//components/account_settings",
     "//components/autofill/content/browser",
     "//components/image_fetcher/core",
+    "//components/personal_context/core",
     "//components/prefs",
     "//components/strings:components_strings_grit",
     "//components/variations/service",

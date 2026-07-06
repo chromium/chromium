@@ -157,8 +157,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void MarkPersonalContextAtMemoryNoticeAsAcknowledged() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
   AutofillComposeDelegate* GetComposeDelegate() final;
-  accessibility_annotator::AtMemoryQueryService* GetAtMemoryQueryService()
-      override;
+  AtMemoryQueryService* GetAtMemoryQueryService() override;
   personal_context::PersonalContextEnablementState
   GetPersonalContextEnablementState() const override;
   personal_context::PersonalContextEnablementService*

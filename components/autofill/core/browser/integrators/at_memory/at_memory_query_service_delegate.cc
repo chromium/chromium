@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/at_memory_query_service_delegate.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 
-namespace accessibility_annotator {
+namespace autofill {
 
 LiveTabContextQuery::LiveTabContextQuery() = default;
 
@@ -25,4 +25,4 @@ LiveTabContextResponse& LiveTabContextResponse::operator=(
 
 LiveTabContextResponse::~LiveTabContextResponse() = default;
 
-}  // namespace accessibility_annotator
+}  // namespace autofill

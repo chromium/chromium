@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "base/types/zip.h"
 #include "build/build_config.h"
-#include "components/accessibility_annotator/core/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_utils.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -33,6 +32,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -121,8 +121,8 @@ class AtMemoryManagerTest : public testing::Test,
  public:
   void SetUp() override {
     InitAutofillClient();
-    auto mock_query_service = std::make_unique<
-        testing::NiceMock<accessibility_annotator::MockAtMemoryQueryService>>();
+    auto mock_query_service =
+        std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
     mock_query_service_ptr_ = mock_query_service.get();
     autofill_client().set_at_memory_query_service(
         std::move(mock_query_service));
@@ -149,7 +149,7 @@ class AtMemoryManagerTest : public testing::Test,
  protected:
   AtMemoryManager& manager() { return autofill_manager().GetAtMemoryManager(); }
 
-  accessibility_annotator::MockAtMemoryQueryService& mock_query_service() {
+  MockAtMemoryQueryService& mock_query_service() {
     return *mock_query_service_ptr_;
   }
 
@@ -183,8 +183,7 @@ class AtMemoryManagerTest : public testing::Test,
 
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<accessibility_annotator::MockAtMemoryQueryService>
-      mock_query_service_ptr_ = nullptr;
+  raw_ptr<MockAtMemoryQueryService> mock_query_service_ptr_ = nullptr;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>

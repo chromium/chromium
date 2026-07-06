@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/at_memory/autofill_data_provider_impl.h"
+#include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 
 #include <stdint.h>
 
@@ -295,15 +295,15 @@ std::vector<MemorySearchResult> FetchAutofillAiAttributeData(
 
 }  // namespace
 
-AutofillDataProviderImpl::AutofillDataProviderImpl(
+AutofillDataProvider::AutofillDataProvider(
     const PersonalDataManager* personal_data_manager,
     const EntityDataManager* entity_data_manager)
     : personal_data_manager_(personal_data_manager),
       entity_data_manager_(entity_data_manager) {}
 
-AutofillDataProviderImpl::~AutofillDataProviderImpl() = default;
+AutofillDataProvider::~AutofillDataProvider() = default;
 
-void AutofillDataProviderImpl::RetrieveAll(
+void AutofillDataProvider::RetrieveAll(
     const std::vector<MemoryDataType>& types,
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
   std::vector<MemorySearchResult> combined_results;
@@ -319,7 +319,7 @@ void AutofillDataProviderImpl::RetrieveAll(
   std::move(callback).Run(std::move(combined_results));
 }
 
-std::vector<MemorySearchResult> AutofillDataProviderImpl::GetAutofillData(
+std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
     MemoryDataType memory_data_type,
     AtMemoryDataType at_memory_type) {
   if (!personal_data_manager_) {
@@ -369,7 +369,7 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::GetAutofillData(
 }
 
 // Fetches IBAN data from PersonalDataManager.
-std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchIbanData() {
+std::vector<MemorySearchResult> AutofillDataProvider::FetchIbanData() {
   std::vector<MemorySearchResult> entries;
   for (const Iban* iban :
        personal_data_manager_->payments_data_manager().GetIbans()) {
@@ -400,7 +400,7 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchIbanData() {
   return entries;
 }
 
-std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchCreditCardData(
+std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     FieldType field_type,
     MemoryDataType memory_data_type) {
   std::vector<MemorySearchResult> entries;
