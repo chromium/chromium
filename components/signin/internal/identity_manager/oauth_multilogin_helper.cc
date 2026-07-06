@@ -181,8 +181,22 @@ void RecordCreateBoundSessionsResult(
 
 void RecordMultiloginResponseStatus(OAuthMultiloginResponseStatus status,
                                     PartitionSuffix partition_suffix) {
-  // TODO(crbug.com/509497240): Consider recording network errors in the future
-  // (e.g., in a v2 histogram) to avoid skewing existing metrics.
+  // Record the version 2 histogram, which includes all statuses including
+  // network errors.
+  static constexpr std::string_view kBaseHistogramName2 =
+      "Signin.OAuthMultiloginResponseStatus2";
+  base::UmaHistogramEnumeration(kBaseHistogramName2, status);
+  std::string_view suffix_str = PartitionSuffixToString(partition_suffix);
+  if (!suffix_str.empty()) {
+    base::UmaHistogramEnumeration(
+        base::JoinString({kBaseHistogramName2, suffix_str}, "."), status);
+  }
+
+  // Record the V1 histogram, excluding network errors to avoid skewing existing
+  // metrics.
+  // TODO(crbug.com/531677785): Deprecate this histogram once the version 2 one
+  // (Signin.OAuthMultiloginResponseStatus2) has been recorded for a long enough
+  // time.
   if (status == OAuthMultiloginResponseStatus::kNetworkError) {
     return;
   }
@@ -190,7 +204,6 @@ void RecordMultiloginResponseStatus(OAuthMultiloginResponseStatus status,
   static constexpr std::string_view kBaseHistogramName =
       "Signin.OAuthMultiloginResponseStatus";
   base::UmaHistogramEnumeration(kBaseHistogramName, status);
-  std::string_view suffix_str = PartitionSuffixToString(partition_suffix);
   if (!suffix_str.empty()) {
     base::UmaHistogramEnumeration(
         base::JoinString({kBaseHistogramName, suffix_str}, "."), status);

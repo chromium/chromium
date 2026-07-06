@@ -61,6 +61,7 @@ enum class OAuthMultiloginResponseStatus {
   // A network error occurred while trying to fetch OAuth multilogin. This
   // is a transient issue, so the client may retry at a later time with
   // exponential backoff or when the client is back online.
+  // Recorded in Signin.OAuthMultiloginResponseStatus2.
   kNetworkError = 7,
 
   kMaxValue = kNetworkError,

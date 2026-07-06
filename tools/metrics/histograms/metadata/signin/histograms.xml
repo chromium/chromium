@@ -3057,10 +3057,25 @@ tokens and is needed for as long as Chrome is fetching access tokens. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.OAuthMultiloginResponseStatus{PartitionSuffix}"
+<histogram name="Signin.OAuthMultiloginResponseStatus2{PartitionSuffix}"
     enum="OAuthMultiloginResponseStatus" expires_after="never">
 <!-- expires-never: This reports the status received from gaia Multilogin and
 should be kept to monitor/debug signin Multilogin issues-->
+
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Response status received from gaia Multilogin. {PartitionSuffix} This is
+    version 2 of the histogram, which also records network errors.
+  </summary>
+  <token key="PartitionSuffix" variants="PartitionSuffix"/>
+</histogram>
+
+<histogram name="Signin.OAuthMultiloginResponseStatus{PartitionSuffix}"
+    enum="OAuthMultiloginResponseStatus" expires_after="2027-01-06">
+<!-- TODO(crbug.com/531677785): Remove this histogram once we have recorded the new
+Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough time. -->
 
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>

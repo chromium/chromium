@@ -978,6 +978,16 @@ TEST_F(OAuthMultiloginHelperTest,
   histogram_tester.ExpectTotalCount("Signin.OAuthMultiloginResponseStatus", 0);
   histogram_tester.ExpectTotalCount("Signin.OAuthMultiloginResponseStatus.Test",
                                     0);
+
+  // NetworkError should be recorded in V2 histograms.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginResponseStatus2",
+      OAuthMultiloginResponseStatus::kNetworkError,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginResponseStatus2.Test",
+      OAuthMultiloginResponseStatus::kNetworkError,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(OAuthMultiloginHelperTest,
@@ -1002,6 +1012,14 @@ TEST_F(OAuthMultiloginHelperTest,
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Signin.OAuthMultiloginResponseStatus.Test",
+      OAuthMultiloginResponseStatus::kRetry,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample("Signin.OAuthMultiloginResponseStatus2",
+                                      OAuthMultiloginResponseStatus::kRetry,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginResponseStatus2.Test",
       OAuthMultiloginResponseStatus::kRetry,
       /*expected_bucket_count=*/1);
 }
@@ -1036,6 +1054,14 @@ TEST_F(OAuthMultiloginHelperTest, ResponseStatusHistogramWithSuffix) {
   // Suffix specific histogram should be recorded.
   histogram_tester.ExpectUniqueSample(
       "Signin.OAuthMultiloginResponseStatus.Glic",
+      OAuthMultiloginResponseStatus::kOk,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample("Signin.OAuthMultiloginResponseStatus2",
+                                      OAuthMultiloginResponseStatus::kOk,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginResponseStatus2.Glic",
       OAuthMultiloginResponseStatus::kOk,
       /*expected_bucket_count=*/1);
 }
@@ -1078,6 +1104,14 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Signin.OAuthMultiloginResponseStatus.Test",
+      OAuthMultiloginResponseStatus::kOk,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample("Signin.OAuthMultiloginResponseStatus2",
+                                      OAuthMultiloginResponseStatus::kOk,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginResponseStatus2.Test",
       OAuthMultiloginResponseStatus::kOk,
       /*expected_bucket_count=*/1);
 }
