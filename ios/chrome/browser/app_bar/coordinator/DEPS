@@ -3,6 +3,7 @@ include_rules = [
   "+components/search/search.h",
   "+components/signin/public/base/signin_metrics.h",
   "+components/signin/public/identity_manager",
+  "+ios/chrome/browser/aim/model",
   "+ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h",
   "+ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h",
   "+ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h",
