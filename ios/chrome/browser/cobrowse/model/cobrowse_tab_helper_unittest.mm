@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -32,7 +33,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 class CobrowseTabHelperTest : public PlatformTest {
- protected:
+ public:
   CobrowseTabHelperTest() {
     feature_list_.InitWithFeatures({kAimCobrowse, kAssistantContainer},
                                    {kComposeboxAIMDisabled});
@@ -69,19 +70,6 @@ class CobrowseTabHelperTest : public PlatformTest {
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
 
-    mock_scene_state_ = OCMClassMock([SceneState class]);
-    static base::NoDestructor<std::string> test_session_id("test_session_id");
-    OCMStub([mock_scene_state_ sceneSessionID])
-        .andDo(^(NSInvocation* invocation) {
-          const std::string* ptr = &(*test_session_id);
-          [invocation setReturnValue:&ptr];
-        });
-    mock_tab_grid_state_ = OCMClassMock([TabGridState class]);
-    OCMStub([mock_scene_state_ tabGridState]).andReturn(mock_tab_grid_state_);
-
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), mock_scene_state_);
-    web_state_list_ = browser_->GetWebStateList();
-
     // Create a mock dispatcher and associate it with a mock scene commands
     // handler.
     mock_command_dispatcher_ = OCMClassMock([CommandDispatcher class]);
@@ -89,62 +77,103 @@ class CobrowseTabHelperTest : public PlatformTest {
     OCMStub([mock_command_dispatcher_
                 strictCallableForProtocol:@protocol(SceneCommands)])
         .andReturn(mock_scene_commands_handler_);
-    browser_->SetCommandDispatcher(mock_command_dispatcher_);
 
-    CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+    scene_state_ =
+        [[FakeSceneState alloc] initWithAppState:nil
+                                         profile:profile_.get()
+                                  sceneSessionID:"FakeScene"
+                               commandDispatcher:mock_command_dispatcher_];
 
-    fake_web_state_ = CreateAndInsertWebState(GURL::EmptyGURL());
+    CobrowseBrowserAgent::CreateForBrowser(browser());
+  }
 
-    tab_helper_ = CobrowseTabHelper::FromWebState(fake_web_state_);
+  ~CobrowseTabHelperTest() override {
+    [scene_state_ shutdown];
+    scene_state_ = nil;
   }
 
   // Creates a new WebState with the given `url`, adds it to the list and
   // returns a pointer to it.
   web::FakeWebState* CreateAndInsertWebState(const GURL& url) {
-    auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(profile_.get());
-    web_state->SetNavigationManager(
-        std::make_unique<web::FakeNavigationManager>());
-    web_state->SetCurrentURL(url);
-    web::FakeWebState* web_state_ptr = web_state.get();
-    TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
-    CobrowseTabHelper::CreateForWebState(web_state_ptr, template_url_service);
-    web_state_list_->InsertWebState(std::move(web_state));
-    return web_state_ptr;
+    return CreateAndInsertWebStateWithOptions(url, browser(),
+                                              /*opener=*/nullptr);
   }
 
   // Creates a new WebState with the given `url` and `opener`, adds it to the
   // list and returns a pointer to it.
   web::FakeWebState* CreateAndInsertWebStateWithOpener(const GURL& url,
                                                        web::WebState* opener) {
+    return CreateAndInsertWebStateWithOptions(url, browser(), opener);
+  }
+
+  // Creates a new incognito WebState with the given `url`, adds it to the
+  // list and returns a pointer to it.
+  web::FakeWebState* CreateAndInsertIncognitoWebState(const GURL& url) {
+    return CreateAndInsertWebStateWithOptions(url, incognito_browser(),
+                                              /*opener=*/nullptr);
+  }
+
+  // Creates a new incognito WebState with the given `url` and `opener`, adds
+  // it to the list and returns a pointer to it.
+  web::FakeWebState* CreateAndInsertIncognitoWebStateWithOpener(
+      const GURL& url,
+      web::WebState* opener) {
+    return CreateAndInsertWebStateWithOptions(url, incognito_browser(), opener);
+  }
+
+  // Returns the regular profile.
+  TestProfileIOS* profile() { return profile_.get(); }
+
+  // Returns the mock SceneCommandsHandler.
+  id mock_scene_commands_handler() { return mock_scene_commands_handler_; }
+
+ private:
+  // Creates a new WebState with options, adds it to the Browser's list and
+  // returns a pointer to it.
+  web::FakeWebState* CreateAndInsertWebStateWithOptions(const GURL& url,
+                                                        Browser* browser,
+                                                        web::WebState* opener) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(profile_.get());
+    web_state->SetBrowserState(browser->GetProfile());
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     web_state->SetCurrentURL(url);
-    web::FakeWebState* web_state_ptr = web_state.get();
-    TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
-    CobrowseTabHelper::CreateForWebState(web_state_ptr, template_url_service);
-    web_state_list_->InsertWebState(
-        std::move(web_state),
-        WebStateList::InsertionParams::Automatic().WithOpener(
-            WebStateOpener(opener)));
-    return web_state_ptr;
+
+    CobrowseTabHelper::CreateForWebState(
+        web_state.get(),
+        ios::TemplateURLServiceFactory::GetForProfile(browser->GetProfile()));
+
+    WebStateList* web_state_list = browser->GetWebStateList();
+    auto insertion_params = WebStateList::InsertionParams::Automatic();
+    if (opener != nullptr) {
+      const int opener_index = web_state_list->GetIndexOfWebState(opener);
+      CHECK_NE(opener_index, WebStateList::kInvalidIndex);
+      insertion_params.WithOpener(WebStateOpener(opener));
+    }
+
+    const int insertion_index = web_state_list->InsertWebState(
+        std::move(web_state), std::move(insertion_params));
+    return static_cast<web::FakeWebState*>(
+        web_state_list->GetWebStateAt(insertion_index));
+  }
+
+  // Returns the regular browser.
+  Browser* browser() {
+    return scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+  }
+
+  // Returns the incognito browser.
+  Browser* incognito_browser() {
+    return scene_state_.browserProviderInterface.incognitoBrowserProvider
+        .browser;
   }
 
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<WebStateList> web_state_list_;
-  raw_ptr<web::FakeWebState> fake_web_state_;
-  raw_ptr<CobrowseTabHelper> tab_helper_;
+  FakeSceneState* scene_state_;
   id mock_scene_commands_handler_;
   id mock_command_dispatcher_;
-  id mock_scene_state_;
-  id mock_tab_grid_state_;
 };
 
 // Tests that showAssistant is called when navigating in a new tab if the opener
@@ -153,24 +182,18 @@ TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL next_url("https://www.example.com");
 
-  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
-
-  web::FakeWebState* opener_ptr = CreateAndInsertWebState(aim_url);
-
-  web::FakeWebState* new_web_state_ptr =
-      CreateAndInsertWebStateWithOpener(GURL::EmptyGURL(), opener_ptr);
-
-  CobrowseTabHelper* new_tab_helper =
-      CobrowseTabHelper::FromWebState(new_web_state_ptr);
+  web::FakeWebState* opener = CreateAndInsertWebState(aim_url);
+  web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
 
   web::FakeNavigationContext context;
   context.SetUrl(next_url);
 
-  OCMExpect([mock_scene_commands_handler_ showAssistantInMinimizedState:YES]);
+  OCMExpect([mock_scene_commands_handler() showAssistantInMinimizedState:YES]);
 
-  new_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
+  tab_helper->DidStartNavigation(web_state, &context);
 
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that showAssistant is NOT called when navigating in a new tab if the
@@ -179,24 +202,18 @@ TEST_F(CobrowseTabHelperTest, NoTriggerFromNonAimOpener) {
   GURL non_aim_url("https://www.google.com/search?q=test");
   GURL next_url("https://www.example.com");
 
-  web::FakeWebState* opener_ptr = CreateAndInsertWebState(non_aim_url);
-
-  web::FakeWebState* new_web_state_ptr =
-      CreateAndInsertWebStateWithOpener(GURL::EmptyGURL(), opener_ptr);
-
-  CobrowseTabHelper* new_tab_helper =
-      CobrowseTabHelper::FromWebState(new_web_state_ptr);
+  web::FakeWebState* opener = CreateAndInsertWebState(non_aim_url);
+  web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
 
   web::FakeNavigationContext context;
   context.SetUrl(next_url);
 
-  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
+  [[mock_scene_commands_handler() reject] showAssistant];
 
-  [[mock_scene_commands_handler_ reject] showAssistant];
+  tab_helper->DidStartNavigation(web_state, &context);
 
-  new_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
-
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that showAssistant is NOT called when navigating in the same tab,
@@ -205,18 +222,19 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInSameTab) {
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL non_aim_url("https://www.google.com/search?q=test");
 
-  fake_web_state_->SetCurrentURL(aim_url);
+  web::FakeWebState* web_state = CreateAndInsertWebState({});
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web_state->SetCurrentURL(aim_url);
 
   web::FakeNavigationContext context;
   context.SetUrl(non_aim_url);
 
-  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
+  [[mock_scene_commands_handler() reject] showAssistant];
 
-  [[mock_scene_commands_handler_ reject] showAssistant];
+  tab_helper->DidStartNavigation(web_state, &context);
 
-  tab_helper_->DidStartNavigation(fake_web_state_, &context);
-
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that showAssistant is NOT called when navigating in an incognito
@@ -225,39 +243,16 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL next_url("https://www.example.com");
 
-  // Create an incognito browser.
-  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
-  TemplateURLService* incognito_template_url_service =
-      ios::TemplateURLServiceFactory::GetForProfile(incognito_profile);
-  std::unique_ptr<TestBrowser> incognito_browser =
-      std::make_unique<TestBrowser>(incognito_profile, mock_scene_state_);
-
   // Create an opener WebState in the incognito browser.
-  auto opener_web_state = std::make_unique<web::FakeWebState>();
-  opener_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  opener_web_state->SetCurrentURL(aim_url);
-  web::FakeWebState* opener_ptr = opener_web_state.get();
-  CobrowseTabHelper::CreateForWebState(opener_web_state.get(),
-                                       incognito_template_url_service);
-  incognito_browser->GetWebStateList()->InsertWebState(
-      std::move(opener_web_state));
+  web::FakeWebState* incognito_opener =
+      CreateAndInsertIncognitoWebState(aim_url);
 
   // Create a new WebState with the opener in the incognito browser.
-  auto new_web_state = std::make_unique<web::FakeWebState>();
-  new_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  new_web_state->SetCurrentURL(GURL::EmptyGURL());
-  web::FakeWebState* new_web_state_ptr = new_web_state.get();
-  CobrowseTabHelper::CreateForWebState(new_web_state_ptr,
-                                       incognito_template_url_service);
-  incognito_browser->GetWebStateList()->InsertWebState(
-      std::move(new_web_state),
-      WebStateList::InsertionParams::Automatic().WithOpener(
-          WebStateOpener(opener_ptr)));
+  web::FakeWebState* incognito_web_state =
+      CreateAndInsertIncognitoWebStateWithOpener({}, incognito_opener);
 
   CobrowseTabHelper* incognito_tab_helper =
-      CobrowseTabHelper::FromWebState(new_web_state_ptr);
+      CobrowseTabHelper::FromWebState(incognito_web_state);
 
   // In an incognito browser, CobrowseBrowserAgent is not created, so the
   // delegate and scene commands handler should be null.
@@ -265,13 +260,11 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
   web::FakeNavigationContext context;
   context.SetUrl(next_url);
 
-  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
+  [[mock_scene_commands_handler() reject] showAssistant];
 
-  [[mock_scene_commands_handler_ reject] showAssistant];
+  incognito_tab_helper->DidStartNavigation(incognito_web_state, &context);
 
-  incognito_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
-
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that closeAssistant is NOT called when navigating to a regular search
@@ -279,29 +272,35 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInIncognito) {
 TEST_F(CobrowseTabHelperTest, NoCloseAssistantOnRegularSearchNavigation) {
   GURL search_url("https://www.google.com/search?q=test");
 
+  web::FakeWebState* web_state = CreateAndInsertWebState({});
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
   web::FakeNavigationContext context;
   context.SetUrl(search_url);
 
-  [[mock_scene_commands_handler_ reject] closeAssistant];
-  [[mock_scene_commands_handler_ reject] hideAssistant];
+  [[mock_scene_commands_handler() reject] closeAssistant];
+  [[mock_scene_commands_handler() reject] hideAssistant];
 
-  tab_helper_->DidStartNavigation(fake_web_state_, &context);
+  tab_helper->DidStartNavigation(web_state, &context);
 
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that hideAssistant is called when navigating to an AIM search URL.
 TEST_F(CobrowseTabHelperTest, HideAssistantOnAimSearchNavigation) {
   GURL aim_search_url("https://www.google.com/search?q=test&udm=50");
 
+  web::FakeWebState* web_state = CreateAndInsertWebState({});
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
   web::FakeNavigationContext context;
   context.SetUrl(aim_search_url);
 
-  OCMExpect([mock_scene_commands_handler_ hideAssistant]);
+  OCMExpect([mock_scene_commands_handler() hideAssistant]);
 
-  tab_helper_->DidStartNavigation(fake_web_state_, &context);
+  tab_helper->DidStartNavigation(web_state, &context);
 
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that hideAssistant is called when navigating to an AIM Zero State
@@ -309,14 +308,17 @@ TEST_F(CobrowseTabHelperTest, HideAssistantOnAimSearchNavigation) {
 TEST_F(CobrowseTabHelperTest, HideAssistantOnAimZeroStateSearchNavigation) {
   GURL aim_zero_state_url("https://www.google.com/?udm=50");
 
+  web::FakeWebState* web_state = CreateAndInsertWebState({});
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
   web::FakeNavigationContext context;
   context.SetUrl(aim_zero_state_url);
 
-  OCMExpect([mock_scene_commands_handler_ hideAssistant]);
+  OCMExpect([mock_scene_commands_handler() hideAssistant]);
 
-  tab_helper_->DidStartNavigation(fake_web_state_, &context);
+  tab_helper->DidStartNavigation(web_state, &context);
 
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that hideAssistant is called when navigating to the NTP, and
@@ -326,36 +328,32 @@ TEST_F(CobrowseTabHelperTest, HideOnNtpAndRestoreOnNormalNavigation) {
   GURL ntp_url("chrome://newtab");
   GURL normal_url("https://www.example.com");
 
-  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
+  web::FakeWebState* opener = CreateAndInsertWebState(aim_url);
 
-  web::FakeWebState* opener_ptr = CreateAndInsertWebState(aim_url);
+  web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
 
-  web::FakeWebState* new_web_state_ptr =
-      CreateAndInsertWebStateWithOpener(GURL::EmptyGURL(), opener_ptr);
-
-  CobrowseTabHelper* new_tab_helper =
-      CobrowseTabHelper::FromWebState(new_web_state_ptr);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
 
   // 1. Start session by navigating to a normal page.
   web::FakeNavigationContext context1;
   context1.SetUrl(normal_url);
-  OCMExpect([mock_scene_commands_handler_ showAssistantInMinimizedState:YES]);
-  new_tab_helper->DidStartNavigation(new_web_state_ptr, &context1);
-  [mock_scene_commands_handler_ verify];
+  OCMExpect([mock_scene_commands_handler() showAssistantInMinimizedState:YES]);
+  tab_helper->DidStartNavigation(web_state, &context1);
+  [mock_scene_commands_handler() verify];
 
   // 2. Navigate to NTP -> should hide.
   web::FakeNavigationContext context2;
   context2.SetUrl(ntp_url);
-  OCMExpect([mock_scene_commands_handler_ hideAssistant]);
-  new_tab_helper->DidStartNavigation(new_web_state_ptr, &context2);
-  [mock_scene_commands_handler_ verify];
+  OCMExpect([mock_scene_commands_handler() hideAssistant]);
+  tab_helper->DidStartNavigation(web_state, &context2);
+  [mock_scene_commands_handler() verify];
 
   // 3. Navigate to a normal page again -> should restore (show).
   web::FakeNavigationContext context3;
   context3.SetUrl(normal_url);
-  OCMExpect([mock_scene_commands_handler_ showAssistantInMinimizedState:YES]);
-  new_tab_helper->DidStartNavigation(new_web_state_ptr, &context3);
-  [mock_scene_commands_handler_ verify];
+  OCMExpect([mock_scene_commands_handler() showAssistantInMinimizedState:YES]);
+  tab_helper->DidStartNavigation(web_state, &context3);
+  [mock_scene_commands_handler() verify];
 }
 
 // Tests that showAssistant is NOT called when navigating in a new tab from an
@@ -363,29 +361,25 @@ TEST_F(CobrowseTabHelperTest, HideOnNtpAndRestoreOnNormalNavigation) {
 // enabled).
 TEST_F(CobrowseTabHelperTest, NoTriggerWhenNotEligible) {
   MockAimEligibilityService* service = static_cast<MockAimEligibilityService*>(
-      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get()));
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile()));
   EXPECT_CALL(*service, IsCobrowseEligible())
       .WillRepeatedly(testing::Return(false));
 
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL next_url("https://www.example.com");
 
-  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
+  web::FakeWebState* opener = CreateAndInsertWebState(aim_url);
+  web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
 
-  web::FakeWebState* opener_ptr = CreateAndInsertWebState(aim_url);
-  web::FakeWebState* new_web_state_ptr =
-      CreateAndInsertWebStateWithOpener(GURL::EmptyGURL(), opener_ptr);
-
-  CobrowseTabHelper* new_tab_helper =
-      CobrowseTabHelper::FromWebState(new_web_state_ptr);
-  ASSERT_NE(new_tab_helper, nullptr);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+  ASSERT_NE(tab_helper, nullptr);
 
   web::FakeNavigationContext context;
   context.SetUrl(next_url);
 
-  [[mock_scene_commands_handler_ reject] showAssistant];
+  [[mock_scene_commands_handler() reject] showAssistant];
 
-  new_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
+  tab_helper->DidStartNavigation(web_state, &context);
 
-  [mock_scene_commands_handler_ verify];
+  [mock_scene_commands_handler() verify];
 }
