@@ -32,6 +32,7 @@ source_set("model") {
     "//components/autofill/ios/form_util",
     "//components/password_manager/ios",
     "//components/password_manager/ios:account_select_fill_data",
+    "//components/webauthn/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:features",

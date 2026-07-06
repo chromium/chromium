@@ -12,6 +12,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/debug/crash_logging.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/json/string_escape.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
@@ -27,6 +28,8 @@
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/form_observer_helper.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credential.h"
 #import "ios/chrome/browser/autofill/model/features.h"
@@ -218,21 +221,32 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
       .field_id = [self lastFocusedElementUniqueID],
       .form_id = [self lastFocusedElementFormIdentifier]};
 
+  __weak __typeof(self) weakSelf = self;
+  auto actionBlock = ^(BOOL wasReauthenticated) {
+    if (credential.passkeyCredentialId.length > 0) {
+      [weakSelf selectPasskeyWithCredential:credential
+                                    context:context
+                           markUserVerified:wasReauthenticated];
+    } else {
+      [weakSelf fillFormWithPasswordCredential:credential context:context];
+    }
+  };
+
   if (shouldReauth && [self.reauthenticationModule canAttemptReauth]) {
     NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
-    __weak __typeof(self) weakSelf = self;
     auto completionHandler = ^(ReauthenticationResult result) {
       if (result != ReauthenticationResult::kFailure) {
-        [weakSelf fillFormWithCredential:credential context:context];
+        actionBlock(result == ReauthenticationResult::kSuccess);
       }
     };
 
     [self.reauthenticationModule
         attemptReauthWithLocalizedReason:reason
-                    canReusePreviousAuth:YES
+                    canReusePreviousAuth:
+                        [self canReusePreviousAuthForFrameID:context.frame_id]
                                  handler:completionHandler];
   } else {
-    [self fillFormWithCredential:credential context:context];
+    actionBlock(NO);
   }
 }
 
@@ -370,8 +384,8 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 
 // Fills the current form with the given `credential`. Only works if the current
 // form is a password form, otherwise it's a no-op.
-- (void)fillFormWithCredential:(ManualFillCredential*)credential
-                       context:(const AutofillTargetContext&)context {
+- (void)fillFormWithPasswordCredential:(ManualFillCredential*)credential
+                               context:(const AutofillTargetContext&)context {
   if (!_webStateList) {
     return;
   }
@@ -541,6 +555,48 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   NOTREACHED();
 
   return nil;
+}
+
+// Selects the passkey associated with the credential.
+- (void)selectPasskeyWithCredential:(ManualFillCredential*)credential
+                            context:(const AutofillTargetContext&)context
+                   markUserVerified:(BOOL)markUserVerified {
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      [self webAuthnCredentialsDelegateForFrameID:context.frame_id];
+  if (!delegate) {
+    return;
+  }
+
+  std::string credentialIdString =
+      base::SysNSStringToUTF8(credential.passkeyCredentialId);
+
+  if (markUserVerified) {
+    delegate->MarkPasskeyAsUserVerified(credentialIdString);
+  }
+  delegate->SelectPasskey(credentialIdString, base::DoNothing());
+}
+
+// Returns whether the previous authentication can be reused for the given
+// frame ID.
+- (BOOL)canReusePreviousAuthForFrameID:(const std::string&)frameID {
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      [self webAuthnCredentialsDelegateForFrameID:frameID];
+  return delegate && delegate->CanReusePreviousSigninAuth();
+}
+
+// Returns the WebAuthn credentials delegate for the given frame ID.
+- (webauthn::IOSWebAuthnCredentialsDelegate*)
+    webAuthnCredentialsDelegateForFrameID:(const std::string&)frameID {
+  web::WebState* activeWebState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (!activeWebState) {
+    return nullptr;
+  }
+
+  webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
+      webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+          activeWebState);
+  return factory->GetDelegateForFrameId(frameID);
 }
 
 @end

@@ -19,6 +19,9 @@
 // Whether this credential is a backup to a regular one.
 @property(nonatomic, assign) BOOL isBackupCredential;
 
+// The base64-encoded credential ID if this is a passkey.
+@property(nonatomic, readonly) NSString* passkeyCredentialId;
+
 // The display name related to this credential, if available.
 @property(nonatomic, readonly) NSString* displayName;
 
@@ -31,6 +34,14 @@
                              URL:(const GURL&)URL
               isBackupCredential:(BOOL)isBackupCredential
     NS_DESIGNATED_INITIALIZER;
+
+// Initializer for passkey credentials.
+- (instancetype)initWithUsername:(NSString*)username
+                     displayName:(NSString*)displayName
+                        siteName:(NSString*)siteName
+                            host:(NSString*)host
+                             URL:(const GURL&)URL
+             passkeyCredentialId:(NSString*)passkeyCredentialId;
 
 // Unavailable. Please use
 // `initWithUsername:password:displayName:siteName:host:URL:

@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "base/base64.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -352,14 +353,15 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
       NSString* rpId = base::SysUTF8ToNSString(passkey.rp_id());
       NSString* displayName = base::SysUTF8ToNSString(passkey.display_name());
+      NSString* passkeyCredentialId =
+          base::SysUTF8ToNSString(base::Base64Encode(passkey.credential_id()));
       ManualFillCredential* passkeyCredential = [[ManualFillCredential alloc]
-            initWithUsername:base::SysUTF8ToNSString(passkey.username())
-                    password:@""
-                 displayName:displayName
-                    siteName:rpId
-                        host:rpId
-                         URL:_URL
-          isBackupCredential:NO];
+             initWithUsername:base::SysUTF8ToNSString(passkey.username())
+                  displayName:displayName
+                     siteName:rpId
+                         host:rpId
+                          URL:_URL
+          passkeyCredentialId:passkeyCredentialId];
 
       NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
           base::i18n::MessageFormatter::FormatWithNamedArgs(

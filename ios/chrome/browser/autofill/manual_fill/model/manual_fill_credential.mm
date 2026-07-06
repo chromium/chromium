@@ -36,6 +36,25 @@ BOOL stringsAreEqual(NSString* string1, NSString* string2) {
   return self;
 }
 
+- (instancetype)initWithUsername:(NSString*)username
+                     displayName:(NSString*)displayName
+                        siteName:(NSString*)siteName
+                            host:(NSString*)host
+                             URL:(const GURL&)URL
+             passkeyCredentialId:(NSString*)passkeyCredentialId {
+  self = [self initWithUsername:username
+                       password:@""
+                    displayName:displayName
+                       siteName:siteName
+                           host:host
+                            URL:URL
+             isBackupCredential:NO];
+  if (self) {
+    _passkeyCredentialId = [passkeyCredentialId copy];
+  }
+  return self;
+}
+
 - (BOOL)isEqual:(id)object {
   if (!object) {
     return NO;
@@ -68,23 +87,28 @@ BOOL stringsAreEqual(NSString* string1, NSString* string2) {
   if (otherObject.isBackupCredential != self.isBackupCredential) {
     return NO;
   }
+  if (!stringsAreEqual(otherObject.passkeyCredentialId,
+                       self.passkeyCredentialId)) {
+    return NO;
+  }
   return YES;
 }
 
 - (NSUInteger)hash {
   return [base::SysUTF8ToNSString(self.URL.spec()) hash] ^
          [self.username hash] ^ [self.password hash] ^ [self.displayName hash] ^
-         self.isBackupCredential;
+         [self.passkeyCredentialId hash] ^ self.isBackupCredential;
 }
 
 - (NSString*)description {
   return [NSString
       stringWithFormat:
           @"<%@ (%p): username: %@, displayName: %@, siteName: %@, host: "
-          @"%@, URL: %@, isBackupCredential: %d>",
+          @"%@, URL: %@, isBackupCredential: %d, passkeyCredentialId: %@>",
           NSStringFromClass([self class]), self, self.username,
           self.displayName, self.siteName, self.host,
-          base::SysUTF8ToNSString(self.URL.spec()), self.isBackupCredential];
+          base::SysUTF8ToNSString(self.URL.spec()), self.isBackupCredential,
+          self.passkeyCredentialId];
 }
 
 @end
