@@ -18,6 +18,10 @@
 
 namespace safe_browsing {
 
+namespace V5 {
+class HashList;
+}
+
 // Enumerate different results of the migration attempt from v4 to v5.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -199,6 +203,16 @@ class V5Store : public SBStore {
       const base::FilePath& v5_hash_file_path,
       std::string* checksum_sha256,
       uint64_t* file_size);
+
+  // Common update processing logic for both full and partial updates.
+  // `response` contains the V5 HashList update.
+  // `metric` is the base metric string to be used for histograms.
+  // `is_full_update` is true if the update is a full update, false if it is
+  // a partial update. This is used for metrics.
+  // Returns the result of the update process.
+  V5ApplyUpdateResult ProcessUpdate(std::unique_ptr<V5::HashList> response,
+                                    const std::string& metric,
+                                    bool is_full_update);
 
   std::unique_ptr<HashPrefixList> hash_prefix_list_;
 

@@ -6,15 +6,19 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
+#include "components/safe_browsing/core/browser/db/v5_rice.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/v5_store.pb.h"
 #include "crypto/hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,6 +90,10 @@ class V5StoreTest : public PlatformTest {
 
   std::string GetExpectedChecksum(const V5Store& store) {
     return store.expected_checksum_;
+  }
+
+  void SetExpectedChecksum(V5Store& store, const std::string& checksum) {
+    store.expected_checksum_ = checksum;
   }
 
   std::string ExtensionV4IdToV5Hash(std::string_view v4_id) {
@@ -268,6 +276,137 @@ class V5StoreTest : public PlatformTest {
         "SafeBrowsing.V5ReadFromDisk.VerifyChecksumDuration", 1);
     histogram_tester_.ExpectTotalCount(
         "SafeBrowsing.SBReadFromDisk.VerifyChecksumDuration", 1);
+  }
+
+  SBStorePtr RunApplyUpdateTest(V5Store& store,
+                                std::unique_ptr<V5::HashList> hash_list) {
+    base::RunLoop run_loop;
+    SBStorePtr updated_store{nullptr, SBStoreDeleter(task_runner())};
+    UpdatedStoreReadyCallback store_ready_callback = base::BindOnce(
+        [](base::OnceClosure quit_closure, SBStorePtr* out_store,
+           SBStorePtr store) {
+          *out_store = std::move(store);
+          std::move(quit_closure).Run();
+        },
+        run_loop.QuitClosure(), &updated_store);
+
+    auto sb_response = std::make_unique<SBUpdateResponse>();
+    sb_response->v5_response = std::move(hash_list);
+
+    store.ApplyUpdate(std::move(sb_response), task_runner(),
+                      std::move(store_ready_callback));
+    run_loop.Run();
+    return updated_store;
+  }
+
+  void CheckApplyUpdateHistograms(
+      const std::string& partial_or_full,
+      V5ApplyUpdateResult expected_apply_update_result,
+      std::optional<V5DecodeResult> expected_decode_removals_result,
+      std::optional<V5DecodeResult> expected_decode_additions_result,
+      std::optional<size_t> expected_removals_count,
+      std::optional<size_t> expected_additions_count) {
+    const std::string store_suffix = ".V5StoreTest";
+
+    // ApplyUpdate Result
+    histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Process" +
+                                             partial_or_full +
+                                             "Update.ApplyUpdate.Result",
+                                         expected_apply_update_result, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.V5Process" + partial_or_full +
+            "Update.ApplyUpdate.Result" + store_suffix,
+        expected_apply_update_result, 1);
+
+    // ApplyUpdate Duration
+    histogram_tester_.ExpectTotalCount("SafeBrowsing.V5Process" +
+                                           partial_or_full +
+                                           "Update.ApplyUpdateDuration",
+                                       1);
+
+    // Decode Removals Result
+    if (expected_decode_removals_result.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.DecodeRemovals.Result",
+          expected_decode_removals_result.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.DecodeRemovals.Result" + store_suffix,
+          expected_decode_removals_result.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount("SafeBrowsing.V5Process" +
+                                             partial_or_full +
+                                             "Update.DecodeRemovals.Result",
+                                         0);
+      histogram_tester_.ExpectTotalCount(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.DecodeRemovals.Result" + store_suffix,
+          0);
+    }
+
+    // Removals Count
+    if (expected_removals_count.has_value()) {
+      histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Process" +
+                                               partial_or_full +
+                                               "Update.RemovalsHashesCount",
+                                           expected_removals_count.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.RemovalsHashesCount" + store_suffix,
+          expected_removals_count.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount("SafeBrowsing.V5Process" +
+                                             partial_or_full +
+                                             "Update.RemovalsHashesCount",
+                                         0);
+      histogram_tester_.ExpectTotalCount(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.RemovalsHashesCount" + store_suffix,
+          0);
+    }
+
+    // Decode Additions Result
+    if (expected_decode_additions_result.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.DecodeAdditions.Result",
+          expected_decode_additions_result.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.DecodeAdditions.Result" + store_suffix,
+          expected_decode_additions_result.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount("SafeBrowsing.V5Process" +
+                                             partial_or_full +
+                                             "Update.DecodeAdditions.Result",
+                                         0);
+      histogram_tester_.ExpectTotalCount(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.DecodeAdditions.Result" + store_suffix,
+          0);
+    }
+
+    // Additions Count
+    if (expected_additions_count.has_value()) {
+      histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Process" +
+                                               partial_or_full +
+                                               "Update.AdditionsHashesCount",
+                                           expected_additions_count.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.AdditionsHashesCount" + store_suffix,
+          expected_additions_count.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount("SafeBrowsing.V5Process" +
+                                             partial_or_full +
+                                             "Update.AdditionsHashesCount",
+                                         0);
+      histogram_tester_.ExpectTotalCount(
+          "SafeBrowsing.V5Process" + partial_or_full +
+              "Update.AdditionsHashesCount" + store_suffix,
+          0);
+    }
   }
 
   base::ScopedTempDir temp_dir_;
@@ -1390,6 +1529,184 @@ TEST_F(V5StoreTest, TestVerifyChecksumSkippedOnReadFailure) {
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V5StoreRead.Result",
       V5StoreReadResult::kUnexpectedMagicNumberFailure, 1);
+}
+
+TEST_F(V5StoreTest, ApplyUpdateEmptySucceeds) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+
+  auto hash_list = std::make_unique<V5::HashList>();
+  hash_list->set_version("new_test_version_123");
+  auto hash = crypto::hash::Sha256(base::span<const uint8_t>());
+  hash_list->set_sha256_checksum(std::string(hash.begin(), hash.end()));
+
+  SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+
+  ASSERT_TRUE(updated_store);
+  EXPECT_TRUE(updated_store->HasValidData());
+  EXPECT_EQ("new_test_version_123", updated_store->GetStoreState());
+
+  // TODO(crbug.com/362791941): Use GetMatchingHashPrefix to verify store
+  // contents once implemented.
+  CheckApplyUpdateHistograms(
+      "Full",
+      /*expected_apply_update_result=*/V5ApplyUpdateResult::kSuccess,
+      /*expected_decode_removals_result=*/V5DecodeResult::kSuccess,
+      /*expected_decode_additions_result=*/V5DecodeResult::kSuccess,
+      /*expected_removals_count=*/0,
+      /*expected_additions_count=*/0);
+}
+
+TEST_F(V5StoreTest, ApplyUpdateMissingChecksumFailure) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+
+  auto hash_list = std::make_unique<V5::HashList>();
+  hash_list->set_version("new_test_version_123");
+  // No checksum on the update or on the original store.
+
+  SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+
+  EXPECT_FALSE(updated_store);
+
+  CheckApplyUpdateHistograms(
+      "Full",
+      /*expected_apply_update_result=*/
+      V5ApplyUpdateResult::kChecksumMismatchFailure,
+      /*expected_decode_removals_result=*/V5DecodeResult::kSuccess,
+      /*expected_decode_additions_result=*/V5DecodeResult::kSuccess,
+      /*expected_removals_count=*/0,
+      /*expected_additions_count=*/0);
+}
+
+TEST_F(V5StoreTest, ApplyUpdateMissingChecksumSucceedsWithOldChecksum) {
+  // From safebrowsingv5.proto `sha256_checksum` comments: "In the case that no
+  // updates were provided, the server will omit this field to indicate that
+  // the client should use the existing checksum."
+
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  auto empty_hash = crypto::hash::Sha256(base::span<const uint8_t>());
+  std::string empty_hash_str(empty_hash.begin(), empty_hash.end());
+  SetExpectedChecksum(store, empty_hash_str);
+
+  auto hash_list = std::make_unique<V5::HashList>();
+  hash_list->set_version("new_test_version_123");
+
+  SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+
+  ASSERT_TRUE(updated_store);
+  EXPECT_TRUE(updated_store->HasValidData());
+  EXPECT_EQ("new_test_version_123", updated_store->GetStoreState());
+  EXPECT_TRUE(updated_store->VerifyChecksum());
+
+  CheckApplyUpdateHistograms(
+      "Full",
+      /*expected_apply_update_result=*/V5ApplyUpdateResult::kSuccess,
+      /*expected_decode_removals_result=*/V5DecodeResult::kSuccess,
+      /*expected_decode_additions_result=*/V5DecodeResult::kSuccess,
+      /*expected_removals_count=*/0,
+      /*expected_additions_count=*/0);
+}
+
+TEST_F(V5StoreTest, ApplyUpdateWithAdditions) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+
+  auto hash_list = std::make_unique<V5::HashList>();
+  hash_list->set_version("new_version_with_entries");
+  std::string expected_data = std::string("\x11\x22\x33\x44", 4);
+  auto expected_checksum =
+      crypto::hash::Sha256(base::as_byte_span(expected_data));
+  hash_list->set_sha256_checksum(
+      std::string(expected_checksum.begin(), expected_checksum.end()));
+
+  // Single-entry additions:
+  V5::RiceDeltaEncoded32Bit* additions =
+      hash_list->mutable_additions_four_bytes();
+  additions->set_entries_count(0);
+  additions->set_first_value(0x11223344);
+  additions->set_rice_parameter(3);
+
+  SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+
+  ASSERT_TRUE(updated_store);
+  EXPECT_TRUE(updated_store->HasValidData());
+  EXPECT_EQ("new_version_with_entries", updated_store->GetStoreState());
+
+  // TODO(crbug.com/362791941): Use GetMatchingHashPrefix to verify store
+  // contents once implemented.
+  CheckApplyUpdateHistograms(
+      "Full",
+      /*expected_apply_update_result=*/V5ApplyUpdateResult::kSuccess,
+      /*expected_decode_removals_result=*/V5DecodeResult::kSuccess,
+      /*expected_decode_additions_result=*/V5DecodeResult::kSuccess,
+      /*expected_removals_count=*/0,
+      /*expected_additions_count=*/1);
+}
+
+TEST_F(V5StoreTest, ApplyUpdateFailsAdditions) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+
+  auto hash_list = std::make_unique<V5::HashList>();
+  hash_list->set_version("failed_additions");
+
+  // Additions with 1 entry but empty encoded data (should fail decode)
+  V5::RiceDeltaEncoded32Bit* additions =
+      hash_list->mutable_additions_four_bytes();
+  additions->set_entries_count(1);
+  additions->set_first_value(0x11223344);
+  additions->set_rice_parameter(3);
+  additions->set_encoded_data("");
+
+  SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+
+  EXPECT_FALSE(updated_store);
+
+  CheckApplyUpdateHistograms(
+      "Full",
+      /*expected_apply_update_result=*/
+      V5ApplyUpdateResult::kRiceDecodingAdditionsFailure,
+      /*expected_decode_removals_result=*/V5DecodeResult::kSuccess,
+      /*expected_decode_additions_result=*/V5DecodeResult::kRanOutOfBits,
+      /*expected_removals_count=*/0,
+      /*expected_additions_count=*/std::nullopt);
+}
+
+TEST_F(V5StoreTest, ApplyUpdateFailsRemovals) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+
+  auto hash_list = std::make_unique<V5::HashList>();
+  hash_list->set_version("failed_removals");
+
+  // Removals with 1 entry but empty encoded data (should fail decode)
+  V5::RiceDeltaEncoded32Bit* removals =
+      hash_list->mutable_compressed_removals();
+  removals->set_entries_count(1);
+  removals->set_first_value(42);
+  removals->set_rice_parameter(3);
+  removals->set_encoded_data("");
+
+  SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+
+  EXPECT_FALSE(updated_store);
+
+  CheckApplyUpdateHistograms(
+      "Full",
+      /*expected_apply_update_result=*/
+      V5ApplyUpdateResult::kRiceDecodingRemovalsFailure,
+      /*expected_decode_removals_result=*/V5DecodeResult::kRanOutOfBits,
+      /*expected_decode_additions_result=*/std::nullopt,
+      /*expected_removals_count=*/std::nullopt,
+      /*expected_additions_count=*/std::nullopt);
 }
 
 }  // namespace safe_browsing

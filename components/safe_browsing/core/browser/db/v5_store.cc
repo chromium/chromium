@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -17,6 +18,8 @@
 #include "components/safe_browsing/core/browser/db/hash_prefix_container.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
+#include "components/safe_browsing/core/browser/db/v5_hash_list_rice_decoder.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/v5_store.pb.h"
 #include "crypto/hash.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -50,13 +53,52 @@ void RecordApplyUpdateResult(const std::string& base_metric,
   RecordEnumWithAndWithoutSuffix(base_metric + kApplyUpdate, result, file_path);
 }
 
+void RecordApplyUpdateDuration(const std::string& base_metric,
+                               base::TimeDelta elapsed) {
+  base::UmaHistogramTimes(base_metric + ".ApplyUpdateDuration", elapsed);
+}
+
+void RecordDecodeRemovalsResult(const std::string& base_metric,
+                                V5DecodeResult result,
+                                const base::FilePath& file_path) {
+  RecordEnumWithAndWithoutSuffix(base_metric + ".DecodeRemovals", result,
+                                 file_path);
+}
+
+void RecordRemovalsHashesCount(const std::string& base_metric,
+                               size_t count,
+                               const base::FilePath& file_path) {
+  std::string metric = base_metric + ".RemovalsHashesCount";
+  base::UmaHistogramCounts10000(metric, count);
+  std::string suffix = GetUmaSuffixForStore(file_path);
+  base::UmaHistogramCounts10000(metric + suffix, count);
+}
+
+void RecordDecodeAdditionsResult(const std::string& base_metric,
+                                 V5DecodeResult result,
+                                 const base::FilePath& file_path) {
+  RecordEnumWithAndWithoutSuffix(base_metric + ".DecodeAdditions", result,
+                                 file_path);
+}
+
+void RecordAdditionsHashesCount(const std::string& base_metric,
+                                bool is_full_update,
+                                size_t count,
+                                const base::FilePath& file_path) {
+  std::string metric = base_metric + ".AdditionsHashesCount";
+  std::string suffix = GetUmaSuffixForStore(file_path);
+  int exclusive_max = is_full_update ? 5000000 : 100000;
+  base::UmaHistogramCustomCounts(metric, count, /*min=*/1, exclusive_max,
+                                 /*buckets=*/50);
+  base::UmaHistogramCustomCounts(metric + suffix, count, /*min=*/1,
+                                 exclusive_max, /*buckets=*/50);
+}
+
 void RecordMigrationTime(base::TimeDelta elapsed,
                          const base::FilePath& store_path) {
   std::string suffix = GetUmaSuffixForStore(store_path);
-  if (!suffix.empty()) {
-    base::UmaHistogramTimes(
-        "SafeBrowsing.V5Store.V4ToV5Migration.TimeTaken" + suffix, elapsed);
-  }
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V5Store.V4ToV5Migration.TimeTaken" + suffix, elapsed);
 }
 
 }  // namespace
@@ -457,8 +499,81 @@ void V5Store::ApplyUpdate(
     std::unique_ptr<SBUpdateResponse> response,
     const scoped_refptr<base::SequencedTaskRunner>& runner,
     UpdatedStoreReadyCallback callback) {
-  // TODO(crbug.com/362791941): implement
-  NOTREACHED();
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(response->v5_response);
+
+  std::unique_ptr<V5::HashList> v5_response = std::move(response->v5_response);
+  base::ElapsedThreadTimer thread_timer;
+
+  V5StorePtr new_store(new V5Store(task_runner_, store_path_, prefix_size_,
+                                   v4_store_path_, is_eligible_for_migration_,
+                                   is_extensions_blocklist_, file_size_),
+                       SBStoreDeleter(task_runner_));
+  new_store->expected_checksum_ = expected_checksum_;
+
+  bool is_full_update = !v5_response->partial_update();
+  std::string metric = is_full_update ? "SafeBrowsing.V5ProcessFullUpdate"
+                                      : "SafeBrowsing.V5ProcessPartialUpdate";
+  V5ApplyUpdateResult apply_update_result =
+      new_store->ProcessUpdate(std::move(v5_response), metric, is_full_update);
+
+  if (apply_update_result == V5ApplyUpdateResult::kSuccess) {
+    new_store->has_valid_data_ = true;
+    new_store->last_apply_update_result_ = apply_update_result;
+  } else {
+    new_store.reset();
+  }
+
+  // Record the state of the update to be shown in the Safe Browsing page.
+  last_apply_update_result_ = apply_update_result;
+
+  RecordApplyUpdateResult(metric, apply_update_result, store_path_);
+  RecordApplyUpdateDuration(metric, thread_timer.Elapsed());
+
+  // Posting the task should be the last thing to do in this function.
+  // Otherwise, the posted task can end up running in parallel. If that
+  // happens, the old store will get destroyed and can lead to use-after-free
+  // in this function.
+  runner->PostTask(FROM_HERE,
+                   base::BindOnce(std::move(callback), std::move(new_store)));
+}
+
+V5ApplyUpdateResult V5Store::ProcessUpdate(
+    std::unique_ptr<V5::HashList> response,
+    const std::string& metric,
+    bool is_full_update) {
+  std::vector<uint32_t> removals;
+  V5DecodeResult decode_removals_result =
+      v5_hash_list_rice_decoder::DecodeRemovals(*response, removals);
+  RecordDecodeRemovalsResult(metric, decode_removals_result, store_path_);
+  if (decode_removals_result != V5DecodeResult::kSuccess) {
+    return V5ApplyUpdateResult::kRiceDecodingRemovalsFailure;
+  }
+  RecordRemovalsHashesCount(metric, removals.size(), store_path_);
+
+  std::string additions;
+  V5DecodeResult decode_additions_result =
+      v5_hash_list_rice_decoder::DecodeAdditions(*response, additions);
+  RecordDecodeAdditionsResult(metric, decode_additions_result, store_path_);
+  if (decode_additions_result != V5DecodeResult::kSuccess) {
+    return V5ApplyUpdateResult::kRiceDecodingAdditionsFailure;
+  }
+  RecordAdditionsHashesCount(metric, is_full_update,
+                             additions.size() / prefix_size_, store_path_);
+
+  // TODO(crbug.com/362791941): Implement merging of additions and removals into
+  // hash_prefix_list_.
+
+  version_ = response->version();
+  if (!response->sha256_checksum().empty()) {
+    expected_checksum_ = response->sha256_checksum();
+  }
+  // TODO(crbug.com/372395685): This can move into merging updates once v4
+  // implementation is deprecated.
+  if (expected_checksum_.empty()) {
+    return V5ApplyUpdateResult::kChecksumMismatchFailure;
+  }
+  return V5ApplyUpdateResult::kSuccess;
 }
 
 const std::string& V5Store::GetStoreState() const {

@@ -203,6 +203,9 @@ class V5RiceInputValidator {
 };
 
 // Enumerate different results while decoding the Rice-encoded data.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(V5DecodeResult)
 enum class V5DecodeResult {
   // Decoding was successful.
   kSuccess = 0,
@@ -216,6 +219,7 @@ enum class V5DecodeResult {
 
   kMaxValue = kQuotientTooLarge
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV5DecodeResult)
 
 // Decoder for Golomb-Rice encoded Safe Browsing V5 database updates.
 // See https://en.wikipedia.org/wiki/Golomb_coding.

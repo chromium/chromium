@@ -180,6 +180,11 @@ chromium-metrics-reviews@google.com.
       summary="time spent parsing and handling response on UI thread"/>
 </variants>
 
+<variants name="V5ProcessUpdateType">
+  <variant name="V5ProcessFullUpdate" summary="full update"/>
+  <variant name="V5ProcessPartialUpdate" summary="partial update"/>
+</variants>
+
 <histogram name="SafeBrowsing.AdvancedProtection.Enabled"
     enum="AdvancedProtectionEnabledStatus" expires_after="2024-02-04">
   <owner>meacer@chromium.org</owner>
@@ -4713,6 +4718,68 @@ useful for Chirp alerts (go/crca-alerts). -->
     service, in KB.
   </summary>
   <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{V5ProcessUpdateType}.ApplyUpdate.Result{SafeBrowsing_SBStore_Metrics}"
+    enum="SafeBrowsingV5ApplyUpdateResult" expires_after="2027-06-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The result of applying a {V5ProcessUpdateType} received from the PVer5
+    SafeBrowsing service. {SafeBrowsing_SBStore_Metrics}
+  </summary>
+  <token key="V5ProcessUpdateType" variants="V5ProcessUpdateType"/>
+  <token key="SafeBrowsing_SBStore_Metrics"
+      variants="SafeBrowsing_SBStore_Metrics"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{V5ProcessUpdateType}.ApplyUpdateDuration"
+    units="ms" expires_after="2027-06-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time it takes to apply a {V5ProcessUpdateType} received from the
+    SafeBrowsing service.
+  </summary>
+  <token key="V5ProcessUpdateType" variants="V5ProcessUpdateType"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{V5ProcessUpdateType}.Decode{AdditionsOrRemovals}.Result{SafeBrowsing_SBStore_Metrics}"
+    enum="SafeBrowsingV5DecodeResult" expires_after="2027-06-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The result of decoding Rice-encoded {AdditionsOrRemovals} from
+    {V5ProcessUpdateType}s received from the server.
+    {SafeBrowsing_SBStore_Metrics}
+  </summary>
+  <token key="V5ProcessUpdateType" variants="V5ProcessUpdateType"/>
+  <token key="AdditionsOrRemovals">
+    <variant name="Additions" summary="additions"/>
+    <variant name="Removals" summary="removals"/>
+  </token>
+  <token key="SafeBrowsing_SBStore_Metrics"
+      variants="SafeBrowsing_SBStore_Metrics"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{V5ProcessUpdateType}.{AdditionsOrRemovals}HashesCount{SafeBrowsing_SBStore_Metrics}"
+    units="hashes" expires_after="2027-06-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of {AdditionsOrRemovals} hashes successfully decoded from a
+    {V5ProcessUpdateType}. {SafeBrowsing_SBStore_Metrics}
+  </summary>
+  <token key="V5ProcessUpdateType" variants="V5ProcessUpdateType"/>
+  <token key="AdditionsOrRemovals">
+    <variant name="Additions" summary="additions"/>
+    <variant name="Removals" summary="removals"/>
+  </token>
+  <token key="SafeBrowsing_SBStore_Metrics"
+      variants="SafeBrowsing_SBStore_Metrics"/>
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"

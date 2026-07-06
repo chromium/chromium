@@ -659,9 +659,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="MmapFailure"/>
   <int value="3" label="FileSizeNotMultipleOfPrefixSize"/>
   <int value="4" label="ChecksumMismatchFailure"/>
+  <int value="5" label="RiceDecodingAdditionsFailure"/>
+  <int value="6" label="RiceDecodingRemovalsFailure"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_list.h:V5ApplyUpdateResult) -->
+
+<!-- LINT.IfChange(SafeBrowsingV5DecodeResult) -->
+
+<enum name="SafeBrowsingV5DecodeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="PrefixAccumulationOverflow"/>
+  <int value="2" label="RanOutOfBits"/>
+  <int value="3" label="QuotientTooLarge"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_rice.h:V5DecodeResult) -->
 
 <!-- LINT.IfChange(SafeBrowsingV5InputValidationResult) -->
 

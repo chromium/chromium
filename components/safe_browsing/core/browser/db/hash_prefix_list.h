@@ -36,7 +36,13 @@ enum class V5ApplyUpdateResult {
   // The expected checksum did not match the actual hash file's checksum.
   kChecksumMismatchFailure = 4,
 
-  kMaxValue = kChecksumMismatchFailure,
+  // Failed to decode the Rice-encoded additions.
+  kRiceDecodingAdditionsFailure = 5,
+
+  // Failed to decode the Rice-encoded removals.
+  kRiceDecodingRemovalsFailure = 6,
+
+  kMaxValue = kRiceDecodingRemovalsFailure,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV5ApplyUpdateResult)
 

@@ -22,6 +22,10 @@ class V5StoreFileFormat;
 // TODO(crbug.com/362791941): replace all |comments| with `comments`.
 namespace safe_browsing {
 
+namespace V5 {
+class HashList;
+}
+
 class V4StoreFileFormat;
 class SBStore;
 class ListInfo;
@@ -45,7 +49,7 @@ struct SBUpdateResponse {
   ~SBUpdateResponse();
 
   std::unique_ptr<ListUpdateResponse> v4_response;
-  // TODO(crbug.com/362791941): add `v5_response`
+  std::unique_ptr<V5::HashList> v5_response;
 };
 
 using SBUpdateResponseMap =

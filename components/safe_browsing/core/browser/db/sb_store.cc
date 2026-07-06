@@ -12,6 +12,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/v5_store.pb.h"
 
 namespace safe_browsing {
