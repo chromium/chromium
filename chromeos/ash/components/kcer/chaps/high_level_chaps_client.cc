@@ -60,6 +60,9 @@ int GetDefaultLength(AttributeId attribute_id) {
       // An arbitrary length, the id is just a user readable string. In same
       // cases it contains a GUID (38 characters).
       return 40;
+    case AttributeId::kBrowserEnterpriseClientCertKey:
+      // A single CK_BYTE used as a boolean tag.
+      return sizeof(chromeos::PKCS11_CK_BBOOL);
   }
 }
 

@@ -71,6 +71,10 @@ class HighLevelChapsClient {
     kKeyPermissions = pkcs11_custom_attributes::kCkaChromeOsKeyPermissions,
     kCertProvisioningId =
         pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId,
+    // Stored on the private key, indicates that the keys created  by the
+    // chrome/browser/enterprise/client_certificates component.
+    kBrowserEnterpriseClientCertKey =
+        pkcs11_custom_attributes::kCkaBrowserEnterpriseClientCertKey,
   };
 
   HighLevelChapsClient() = default;
