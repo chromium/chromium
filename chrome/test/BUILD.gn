@@ -9150,7 +9150,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/about_flags_browsertest.cc",
       "../browser/browser_keyevents_interactive_uitest.cc",
       "../browser/chrome_render_widget_host_interactive_uitest.cc",
-      "../browser/controlled_frame/controlled_frame_interactive_uitest.cc",
       "../browser/focus_ring_interactive_uitest.cc",
       "../browser/media/webrtc/conditional_focus_interactive_uitest.cc",
       "../browser/media/webrtc/display_media_access_handler_interactive_uitest.cc",
@@ -9580,6 +9579,7 @@ if (!is_android && !is_chromeos_device) {
 
     if (enable_extensions) {
       deps += [
+        "//chrome/browser/controlled_frame:interactive_ui_tests",
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/extensions:interactive_ui_tests",
         "//chrome/browser/guest_view:interactive_ui_tests",
