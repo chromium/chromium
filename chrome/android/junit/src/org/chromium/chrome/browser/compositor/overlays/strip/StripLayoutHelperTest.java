@@ -2396,6 +2396,52 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testOnLongPress_ResetsCloseButtonPressedState() {
+        // Initialize.
+        initializeTest(false, false, 0, 5);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+
+        // Press down on second tab's close button with mouse.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
+        when(tabs[1].getClosePressed()).thenReturn(true);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onDown(150f, 0f, MotionEvent.BUTTON_PRIMARY);
+
+        // Verify it is pressed.
+        verify(tabs[1]).setClosePressed(eq(true), eq(MotionEvent.BUTTON_PRIMARY));
+
+        // Long press.
+        mStripLayoutHelper.onLongPress(150f, 0f);
+
+        // Verify it is reset.
+        verify(tabs[1]).setClosePressed(eq(false), eq(MotionEventUtils.MOTION_EVENT_BUTTON_NONE));
+    }
+
+    @Test
+    public void testOnUpOrCancel_ResetsCloseButtonPressedState() {
+        // Initialize.
+        initializeTest(false, false, 0, 5);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+
+        // Press down on second tab's close button with mouse.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
+        when(tabs[1].getClosePressed()).thenReturn(true);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onDown(150f, 0f, MotionEvent.BUTTON_PRIMARY);
+
+        // Verify it is pressed.
+        verify(tabs[1]).setClosePressed(eq(true), eq(MotionEvent.BUTTON_PRIMARY));
+
+        // Release.
+        mStripLayoutHelper.onUpOrCancel();
+
+        // Verify it is reset.
+        verify(tabs[1]).setClosePressed(eq(false), eq(MotionEventUtils.MOTION_EVENT_BUTTON_NONE));
+    }
+
+    @Test
     public void testOnDown_WhileScrolling() {
         // Initialize and assert scroller is finished.
         initializeTest(false, false, 0, 5);

@@ -655,6 +655,9 @@ public class StripLayoutHelper
     // been reached.
     private @Nullable StripLayoutView mDelayedReorderView;
 
+    // View with a close button that is currently being pressed.
+    private @Nullable StripLayoutTab mTabWithCloseButtonPressed;
+
     // X-position of the initial interaction with the view above. If the user drags a certain
     // distance away from this initial position, the context menu (if any) will be dismissed, and
     // we'll enter reorder mode.
@@ -2458,6 +2461,7 @@ public class StripLayoutHelper
      * @param buttons State of all buttons that are pressed.
      */
     public void onDown(float x, float y, int buttons) {
+        resetTabCloseButtonPressedState();
         if (mNewTabButton.onDown(x, y, buttons) || mTabSearchButton.onDown(x, y, buttons)) {
             mRenderHost.requestRender();
             return;
@@ -2467,6 +2471,7 @@ public class StripLayoutHelper
         if (clickedView instanceof StripLayoutTab clickedTab
                 && clickedTab.checkCloseHitTest(x, y)) {
             clickedTab.setClosePressed(/* closePressed= */ true, buttons);
+            mTabWithCloseButtonPressed = clickedTab;
             mRenderHost.requestRender();
         } else if (MotionEventUtils.isPrimaryButton(buttons)) {
             mDelayedReorderView = clickedView;
@@ -2483,6 +2488,7 @@ public class StripLayoutHelper
      * @param y The y coordinate of the position of the press event.
      */
     public void onLongPress(float x, float y) {
+        resetTabCloseButtonPressedState();
         // TODO(crbug.com/485925830): Refactor to a long-press handler, similar to the existing
         //  click handler.
         StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
@@ -3228,6 +3234,7 @@ public class StripLayoutHelper
         if (!isViewDraggingInProgress()) stopReorderMode(false);
 
         // 2. Reset state
+        resetTabCloseButtonPressedState();
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
             if (!mModel.isIncognito()) mModel.commitAllTabClosures();
             if (mTabCreator != null) TabCreatorUtil.launchNtp(mTabCreator);
@@ -6018,6 +6025,15 @@ public class StripLayoutHelper
     private void resetDelayedReorderState() {
         mDelayedReorderView = null;
         mDelayedReorderInitialX = 0.f;
+    }
+
+    private void resetTabCloseButtonPressedState() {
+        if (mTabWithCloseButtonPressed != null) {
+            mTabWithCloseButtonPressed.setClosePressed(
+                    /* closePressed= */ false, MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+            mTabWithCloseButtonPressed = null;
+            mRenderHost.requestRender();
+        }
     }
 
     /** Returns the keyboard-focused view, or null if there is none. */
