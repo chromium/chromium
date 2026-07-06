@@ -4,23 +4,19 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "base/supports_user_data.h"
+#include "base/functional/bind.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/renderer_context_menu/context_menu_delegate.h"
-#include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/menus/simple_menu_model.h"
+#include "ui/strings/grit/ui_strings.h"
 
 OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
     OmniboxPopupPresenterBase* presenter,
@@ -77,60 +73,53 @@ bool OmniboxFullPopupWebUIContent::HandleContextMenu(
   GetClipboardText(
       /*notify_if_restricted=*/false,
       base::BindOnce(&OmniboxFullPopupWebUIContent::OnClipboardTextReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     render_frame_host.GetGlobalId(), params));
+                     weak_ptr_factory_.GetWeakPtr(), params));
   return true;
 }
 
 void OmniboxFullPopupWebUIContent::OnClipboardTextReceived(
-    content::GlobalRenderFrameHostId render_frame_host_id,
     const content::ContextMenuParams& params,
     std::u16string clipboard_text) {
   clipboard_text_ = std::move(clipboard_text);
 
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_frame_host_id);
-  if (!render_frame_host) {
-    return;
-  }
+  params_ = params;
 
-  content::WebContents* web_contents = GetWebContents();
-  if (!web_contents) {
-    return;
-  }
+  menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  menu_model_->AddItemWithStringId(IDC_CONTENT_CONTEXT_UNDO, IDS_APP_UNDO);
 
-  ContextMenuDelegate* menu_delegate =
-      ContextMenuDelegate::FromWebContents(web_contents);
-  if (!menu_delegate) {
-    return;
-  }
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      menu_model_.get(),
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
 
-  // Build the default native context menu asynchronously.
-  menu_delegate->BuildMenuAsync(
-      *render_frame_host, params,
-      base::BindOnce(&OmniboxFullPopupWebUIContent::OnBuildMenuComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+  gfx::Point screen_point(params.x, params.y);
+  views::View::ConvertPointToScreen(this, &screen_point);
+
+  menu_runner_->RunMenuAt(GetWidget(), /*button_controller=*/nullptr,
+                          gfx::Rect(screen_point, gfx::Size()),
+                          views::MenuAnchorPosition::kTopLeft,
+                          ui::mojom::MenuSourceType::kMouse);
 }
 
-void OmniboxFullPopupWebUIContent::OnBuildMenuComplete(
-    std::unique_ptr<RenderViewContextMenuBase> menu) {
-  if (!menu) {
-    return;
+bool OmniboxFullPopupWebUIContent::IsCommandIdEnabled(int command_id) const {
+  switch (command_id) {
+    case IDC_CONTENT_CONTEXT_UNDO:
+      return !!(params_.edit_flags & blink::ContextMenuDataEditFlags::kCanUndo);
+    default:
+      return false;
   }
+}
 
+void OmniboxFullPopupWebUIContent::ExecuteCommand(int command_id,
+                                                  int event_flags) {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents) {
     return;
   }
-
-  ContextMenuDelegate* menu_delegate =
-      ContextMenuDelegate::FromWebContents(web_contents);
-  if (!menu_delegate) {
-    return;
+  switch (command_id) {
+    case IDC_CONTENT_CONTEXT_UNDO:
+      web_contents->Undo();
+      break;
   }
-
-  // Show the built-in native context menu as-is.
-  menu_delegate->ShowMenu(std::move(menu));
 }
 
 BEGIN_METADATA(OmniboxFullPopupWebUIContent)
