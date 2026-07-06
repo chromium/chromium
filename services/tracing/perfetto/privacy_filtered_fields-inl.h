@@ -927,9 +927,13 @@ constexpr MessageInfo kChromeThreadDescriptor = {kChromeThreadDescriptorIndices,
 constexpr int kCounterDescriptorIndices[] = {1, 3, 4, 5, -1};
 constexpr MessageInfo kCounterDescriptor = {kCounterDescriptorIndices, nullptr};
 
+// Proto Message: StateDescriptor
+constexpr int kStateDescriptorIndices[] = {-1};
+constexpr MessageInfo kStateDescriptor = {kStateDescriptorIndices, nullptr};
+
 // Proto Message: TrackDescriptor
-constexpr int kTrackDescriptorIndices[] = {1, 3,  4,  5,  6,  7,  8,
-                                           9, 10, 11, 12, 15, 17, -1};
+constexpr int kTrackDescriptorIndices[] = {1,  3,  4,  5,  6,  7,  8, 9,
+                                           10, 11, 12, 15, 17, 18, -1};
 constexpr MessageInfo const* kTrackDescriptorComplexMessages[] = {
     nullptr,
     &kProcessDescriptor,
@@ -943,7 +947,8 @@ constexpr MessageInfo const* kTrackDescriptorComplexMessages[] = {
     nullptr,
     nullptr,
     nullptr,
-    nullptr};
+    nullptr,
+    &kStateDescriptor};
 constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
                                           kTrackDescriptorComplexMessages};
 
