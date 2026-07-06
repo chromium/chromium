@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/feature.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -34,6 +35,9 @@ namespace network {
 
 class ProxyResolvingClientSocketFactory;
 class P2PMessageThrottler;
+
+COMPONENT_EXPORT(NETWORK_SERVICE)
+BASE_DECLARE_FEATURE(kEnforceP2PSocketPortRestrictions);
 
 // Base class for P2P sockets.
 class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {

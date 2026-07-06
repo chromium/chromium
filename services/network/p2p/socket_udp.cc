@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -417,9 +418,14 @@ bool P2PSocketUdp::DoSend(P2PPendingPacket packet) {
   int64_t send_time_us = webrtc::TimeMicros();
   int64_t send_time_ms = send_time_us / 1000;
 
-  if (!net::IsPortAllowedForIpEndpoint(packet.to)) {
-    OnError();
-    return false;
+  if (base::FeatureList::IsEnabled(kEnforceP2PSocketPortRestrictions)) {
+    bool is_restricted_port =
+        !net::IsPortAllowedForIpEndpoint(packet.to) ||
+        !net::IsPortAllowedForScheme(packet.to.port(), "stun");
+    if (is_restricted_port) {
+      OnError();
+      return false;
+    }
   }
 
   // The peer is considered not connected until the first incoming STUN

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/span_reader.h"
+#include "base/feature.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/base/net_errors.h"
@@ -58,6 +59,9 @@ static SocketErrorCode MapNetErrorToSocketErrorCode(int net_err) {
 }  // namespace
 
 namespace network {
+
+BASE_FEATURE(kEnforceP2PSocketPortRestrictions,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 P2PSocket::P2PSocket(Delegate* delegate,
                      mojo::PendingRemote<mojom::P2PSocketClient> client,

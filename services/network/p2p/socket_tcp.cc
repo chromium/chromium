@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/time/time.h"
@@ -18,6 +19,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/port_util.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/ssl_client_socket.h"
@@ -81,6 +83,16 @@ void P2PSocketTcpBase::Init(
   DCHECK(!socket_);
 
   remote_address_ = remote_address;
+
+  if (base::FeatureList::IsEnabled(kEnforceP2PSocketPortRestrictions)) {
+    bool is_restricted_port =
+        !net::IsPortAllowedForIpEndpoint(remote_address.ip_address) ||
+        !net::IsPortAllowedForScheme(remote_address.ip_address.port(), "stun");
+    if (is_restricted_port) {
+      OnError();
+      return;
+    }
+  }
 
   net::HostPortPair dest_host_port_pair;
   // If there is a domain name, let's try it first, it's required by some proxy

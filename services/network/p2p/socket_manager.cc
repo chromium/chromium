@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +20,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
 #include "net/base/network_interfaces.h"
+#include "net/base/port_util.h"
 #include "net/base/sys_addrinfo.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
@@ -413,6 +415,20 @@ void P2PSocketManager::CreateSocket(
       (port_range.min_port == 0 && port_range.max_port != 0)) {
     trusted_socket_manager_client_->InvalidSocketPortRangeRequested();
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(kEnforceP2PSocketPortRestrictions)) {
+    // When creating UDP sockets, the renderer initially passes port 0.
+    // Port 0 is normally restricted, so we skip validation when type is UDP
+    // and port is 0.
+    bool should_skip_port_validation =
+        type == P2P_SOCKET_UDP && remote_address.ip_address.port() == 0;
+    bool is_restricted_port =
+        !net::IsPortAllowedForIpEndpoint(remote_address.ip_address) ||
+        !net::IsPortAllowedForScheme(remote_address.ip_address.port(), "stun");
+    if (is_restricted_port && !should_skip_port_validation) {
+      return;
+    }
   }
 
   if (!proxy_resolving_socket_factory_) {

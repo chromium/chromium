@@ -12,15 +12,18 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/p2p/socket.h"
 #include "services/network/p2p/socket_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,6 +91,40 @@ TEST_F(P2PSocketManagerTest, DoGetNetworkListTest) {
   run_loop.Run();
 
   EXPECT_TRUE(fake_notification_client->get_network_list_changed());
+}
+
+TEST_F(P2PSocketManagerTest, CreateSocketRestrictedPort) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnforceP2PSocketPortRestrictions);
+  SetUpSocketManager();
+
+  mojo::Remote<mojom::P2PSocket> socket_remote;
+  mojo::PendingRemote<mojom::P2PSocketClient> client_remote;
+  std::ignore = client_remote.InitWithNewPipeAndPassReceiver();
+
+  P2PPortRange port_range;
+  port_range.min_port = 0;
+  port_range.max_port = 0;
+
+  P2PHostAndIPEndPoint remote_address;
+  net::IPAddress ip(192, 168, 1, 10);
+  remote_address.ip_address =
+      net::IPEndPoint(ip, 25);  // Restricted SMTP port (25).
+
+  mojo::PendingReceiver<mojom::P2PSocket> socket_receiver =
+      socket_remote.BindNewPipeAndPassReceiver();
+  base::RunLoop run_loop;
+  socket_remote.set_disconnect_handler(run_loop.QuitClosure());
+
+  socket_manager_remote_->CreateSocket(
+      P2P_SOCKET_STUN_TCP_CLIENT,
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0), port_range,
+      remote_address,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      std::nullopt, std::move(client_remote), std::move(socket_receiver));
+
+  run_loop.Run();
+  EXPECT_FALSE(socket_remote.is_connected());
 }
 
 }  // namespace network
