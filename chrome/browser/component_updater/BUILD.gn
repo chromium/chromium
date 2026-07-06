@@ -361,6 +361,14 @@ source_set("unit_tests") {
       "//chromeos/ash/components/dbus/image_loader",
     ]
   }
+
+  if (is_win || is_mac) {
+    sources += [ "updater_state_unittest.cc" ]
+    deps += [ "//chrome/updater:public_sources" ]
+    if (is_mac) {
+      deps += [ "//chrome/updater:browser_sources" ]
+    }
+  }
 }
 
 if (!is_android) {

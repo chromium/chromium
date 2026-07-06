@@ -8275,12 +8275,6 @@ test("unit_tests") {
   if (is_chrome_branded && (is_linux || is_chromeos) && current_cpu == "x86") {
     ldflags = [ "-Wl,--strip-debug" ]
   }
-  if (is_win || is_mac) {
-    sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
-    if (is_mac) {
-      deps += [ "//chrome/updater:browser_sources" ]
-    }
-  }
   if (is_win || is_mac || is_chromeos) {
     deps += [ "//chrome/common/notifications:unit_tests" ]
   }
