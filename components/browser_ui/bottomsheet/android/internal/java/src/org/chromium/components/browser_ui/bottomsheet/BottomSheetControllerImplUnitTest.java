@@ -515,4 +515,68 @@ public class BottomSheetControllerImplUnitTest {
         // 4. Verify that Z-elevation remains 0.0f (not elevated to 1.0f automatically).
         verify(mRoot, never()).setZ(1.0f);
     }
+
+    @Test
+    public void testSuppressSheet_doesNotCaptureIfTargetStateIsHidden() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent currentContent = mock(BottomSheetContent.class);
+        when(currentContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(currentContent);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.HIDDEN);
+
+        int token = mController.suppressSheet(StateChangeReason.NONE);
+
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, false, StateChangeReason.NONE);
+
+        mController.unsuppressSheet(token);
+        verify(mBottomSheet, never()).showContent(currentContent);
+    }
+
+    @Test
+    public void testRequestShowContent_doesNotQueueIfTargetStateIsHidden() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent newContent = mock(BottomSheetContent.class);
+        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        BottomSheetContent currentContent = mock(BottomSheetContent.class);
+        when(currentContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.LOW);
+        when(currentContent.canBeSuppressed(newContent)).thenReturn(true);
+        when(currentContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(currentContent);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.HIDDEN);
+
+        boolean result = mController.requestShowContent(newContent, /* animate= */ true);
+
+        assertTrue("Request should return true", result);
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true);
+
+        // Verify the dying content was not queued by ensuring it doesn't restore when the new
+        // content is hidden.
+        mController.hideContent(newContent, false, StateChangeReason.NONE);
+        verify(mBottomSheet, never()).showContent(currentContent);
+    }
+
+    @Test
+    public void testHideContent_purgesFromSuppressionCache() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent currentContent = mock(BottomSheetContent.class);
+        when(currentContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(currentContent);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.PEEK);
+
+        int token = mController.suppressSheet(StateChangeReason.NONE);
+        mController.hideContent(currentContent, false, StateChangeReason.NONE);
+        mController.unsuppressSheet(token);
+
+        verify(mBottomSheet, never()).showContent(currentContent);
+    }
 }

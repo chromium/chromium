@@ -487,7 +487,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                 mSheetStateBeforeSuppress = getSheetState();
             }
 
-            mContentWhenSuppressed = getCurrentSheetContent();
+            // Prevent sheets that are already animating to a HIDDEN state from being captured
+            // and resurrected.
+            if (!mBottomSheet.isHiding()) {
+                mContentWhenSuppressed = getCurrentSheetContent();
+            }
             mBottomSheet.setSheetState(SheetState.HIDDEN, false, reason);
         }
 
@@ -578,8 +582,12 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             // TabBottomSheetManager ensures that we always close the previous coBrowse
             // bottomSheet before ever showing a new one.
             if (!isCobrowse) {
-                mIsSuppressingCurrentContent = true;
-                mContentQueue.add(mBottomSheet.getCurrentSheetContent());
+                // Prevent sheets that are already animating to a HIDDEN state from being captured
+                // and resurrected.
+                if (!mBottomSheet.isHiding()) {
+                    mIsSuppressingCurrentContent = true;
+                    mContentQueue.add(mBottomSheet.getCurrentSheetContent());
+                }
             }
             if (!mSuppressionTokens.hasTokens()) {
                 mBottomSheet.setSheetState(SheetState.HIDDEN, animate);
@@ -601,8 +609,15 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             @StateChangeReason int hideReason) {
         if (mBottomSheet == null) return;
 
-        if (content != mBottomSheet.getCurrentSheetContent()) {
+        if (content != null) {
             assumeNonNull(mContentQueue).remove(content);
+            // Ensure permanently hidden sheets are completely purged from the suppression cache.
+            if (mContentWhenSuppressed == content) {
+                mContentWhenSuppressed = null;
+            }
+        }
+
+        if (content != mBottomSheet.getCurrentSheetContent()) {
             return;
         }
 
