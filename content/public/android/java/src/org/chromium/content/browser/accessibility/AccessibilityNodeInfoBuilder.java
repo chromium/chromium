@@ -517,8 +517,12 @@ public class AccessibilityNodeInfoBuilder {
 
         // We expose the nested structure of links, which results in the roles of all nested nodes
         // being read. Use content description in the case of links to prevent verbose TalkBack.
-        if (annotateAsLink && (contentDescription == null || contentDescription.isEmpty())) {
-            node.setContentDescription(computedText);
+        if (annotateAsLink) {
+            // If our previously assigned contentDescription is null or empty, assign the
+            // computedText as our contentDescription instead.
+            if (contentDescription == null || contentDescription.isEmpty()) {
+                node.setContentDescription(computedText);
+            }
         } else {
             node.setText(computedText);
         }
