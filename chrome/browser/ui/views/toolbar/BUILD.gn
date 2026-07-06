@@ -389,7 +389,7 @@ if (!is_android && !is_chromeos_device) {
         "forward_button_accessibility_interactive_uitest.cc",
         "home_button_accessibility_interactive_uitest.cc",
         "reload_button_accessibility_interactive_uitest.cc",
-        "reload_button_browsertest.cc",
+        "reload_button_interactive_uitest.cc",
         "split_tabs_button_interactive_ui_test.cc",
         "toolbar_accessibility_test.cc",
         "toolbar_accessibility_test.h",
@@ -399,7 +399,7 @@ if (!is_android && !is_chromeos_device) {
         "webui_and_views_toolbar_interactive_uitest_base.cc",
         "webui_and_views_toolbar_interactive_uitest_base.h",
         "webui_toolbar_interactive_uitest.cc",
-        "webui_toolbar_web_view_uitest.cc",
+        "webui_toolbar_web_view_interactive_uitest.cc",
       ]
     }
 
