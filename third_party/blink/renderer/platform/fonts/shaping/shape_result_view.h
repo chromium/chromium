@@ -163,7 +163,8 @@ class PLATFORM_EXPORT ShapeResultView final
     DISALLOW_NEW();
 
    public:
-    RunInfoPart(GlyphDataRange range,
+    RunInfoPart(const ShapeResultRun* run,
+                GlyphDataRange range,
                 unsigned start_index,
                 unsigned offset,
                 unsigned num_characters,
@@ -204,7 +205,7 @@ class PLATFORM_EXPORT ShapeResultView final
     unsigned PreviousSafeToBreakOffset(unsigned offset) const;
 
     // Common signatures with RunInfo, to templatize algorithms.
-    const ShapeResultRun* GetRunInfo() const { return range_.GetRun(); }
+    const ShapeResultRun* GetRunInfo() const { return run_.Get(); }
     const GlyphDataRange& GetGlyphDataRange() const { return range_; }
     GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
                                       unsigned end_character_index) const;
@@ -251,6 +252,7 @@ class PLATFORM_EXPORT ShapeResultView final
       return {{part_start, part_end}};
     }
 
+    Member<const ShapeResultRun> run_;
     GlyphDataRange range_;
 
     // Start index for partial run, adjusted to ensure that runs are continuous.

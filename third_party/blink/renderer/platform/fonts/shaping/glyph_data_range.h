@@ -25,7 +25,6 @@ class PLATFORM_EXPORT GlyphDataRange {
 
   unsigned size() const { return size_; }
   bool IsEmpty() const { return !size_; }
-  const ShapeResultRun* GetRun() const { return run_.Get(); }
 
   // The `span` of `HarfBuzzRunGlyphData`.
   base::span<const HarfBuzzRunGlyphData> Glyphs() const;
