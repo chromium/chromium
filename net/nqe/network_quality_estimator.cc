@@ -52,7 +52,7 @@ BASE_FEATURE(kNetworkQualityEstimatorAsyncNotifyStartTransaction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetworkQualityEstimatorAsyncNotifyHeadersReceived,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -70,7 +70,7 @@ BASE_FEATURE_PARAM(bool,
                    kDeferHeadersReceivedUntilNextStep,
                    &kNetworkQualityEstimatorAsyncNotifyHeadersReceived,
                    "defer_notify_headers_until_next_step",
-                   false);
+                   true);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // SequencedTaskRunner to get the network id. A SequencedTaskRunner is used
