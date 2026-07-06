@@ -220,7 +220,7 @@ void BrowserPolicyConnectorAsh::Init(
     device_cloud_policy_manager_->Initialize(local_state, url_loader_factory);
     EnrollmentRequisitionManager::Initialize(CHECK_DEREF(local_state));
     device_cloud_policy_manager_->AddDeviceCloudPolicyManagerObserver(this);
-    RestartDeviceCloudPolicyInitializer();
+    RestartDeviceCloudPolicyInitializer(url_loader_factory);
   }
 
   device_local_account_policy_service_ =
@@ -693,11 +693,12 @@ void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
   }
 }
 
-void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
+void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   device_cloud_policy_initializer_ =
       std::make_unique<DeviceCloudPolicyInitializer>(
-          device_management_service(), ash::InstallAttributes::Get(),
-          state_keys_broker_.get(),
+          url_loader_factory, device_management_service(),
+          ash::InstallAttributes::Get(), state_keys_broker_.get(),
           device_cloud_policy_manager_->device_store(),
           device_cloud_policy_manager_,
           ash::system::StatisticsProvider::GetInstance());

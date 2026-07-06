@@ -44,7 +44,9 @@ class DeviceCloudPolicyInitializer
     : public CloudPolicyStore::Observer,
       public DeviceCloudPolicyManagerAsh::Observer {
  public:
+  // `url_loader_factory` must be non-null.
   DeviceCloudPolicyInitializer(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceManagementService* enterprise_service,
       ash::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
@@ -69,9 +71,6 @@ class DeviceCloudPolicyInitializer
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
 
-  void SetSystemURLLoaderFactoryForTesting(
-      scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
-
  private:
   // Creates a new CloudPolicyClient.
   std::unique_ptr<CloudPolicyClient> CreateClient(
@@ -80,6 +79,7 @@ class DeviceCloudPolicyInitializer
   void TryToStartConnection();
   void StartConnection(std::unique_ptr<CloudPolicyClient> client);
 
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<DeviceManagementService, DanglingUntriaged> enterprise_service_;
   raw_ptr<ash::InstallAttributes, DanglingUntriaged> install_attributes_;
   raw_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
@@ -93,10 +93,6 @@ class DeviceCloudPolicyInitializer
   base::ScopedObservation<DeviceCloudPolicyManagerAsh,
                           DeviceCloudPolicyManagerAsh::Observer>
       policy_manager_observer_{this};
-
-  // The URLLoaderFactory set in tests.
-  scoped_refptr<network::SharedURLLoaderFactory>
-      system_url_loader_factory_for_testing_;
 };
 
 }  // namespace policy

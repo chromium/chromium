@@ -334,11 +334,10 @@ class DeviceCloudPolicyManagerAshTest
     EnrollmentRequisitionManager::Initialize(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
+        test_url_loader_factory_.GetSafeWeakWrapper(),
         &device_management_service_, install_attributes_.get(),
         &state_keys_broker_, store_, manager_.get(),
         &fake_statistics_provider_);
-    initializer_->SetSystemURLLoaderFactoryForTesting(
-        test_url_loader_factory_.GetSafeWeakWrapper());
     initializer_->Init();
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(external_data_manager_);

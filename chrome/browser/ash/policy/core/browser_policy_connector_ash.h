@@ -270,7 +270,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
 
   // Restarts the device cloud policy initializer, because the device's
   // registration status changed from registered to unregistered.
-  void RestartDeviceCloudPolicyInitializer();
+  void RestartDeviceCloudPolicyInitializer(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Returns the device policy data or nullptr if it does not exist.
   const enterprise_management::PolicyData* GetDevicePolicy() const;
