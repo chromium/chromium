@@ -13,6 +13,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/omnibox/browser:aim_eligibility_service_features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/assistant/ui:constants",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/shared/ui:ui_constants",
     "//ios/chrome/browser/omnibox/public:constants",

@@ -13,6 +13,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
@@ -203,6 +204,8 @@ void RemoveAttachmentWithTitle(NSString* title) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kComposeboxIpad);
+  config.features_enabled.push_back(kAssistantContainer);
+  config.features_enabled.push_back(kAimCobrowse);
   config.features_disabled.push_back(kComposeboxAIMDisabled);
   // Only rely on local conditions for AIM eligibility, so disable the
   // server-side checks.
@@ -285,6 +288,53 @@ void RemoveAttachmentWithTitle(NSString* title) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kComposeboxMicButtonAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that empty text with attached tab and AI mode launches Assistant.
+- (void)testComposeboxAIModeEmptyTextStartsCobrowse {
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
+
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(base::StringPrintf(kPageURL, 1))];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Tap the "Add Current Tab" action.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxAttachCurrentTabActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the AI mode button is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kComposeboxAIMButtonAccessibilityIdentifier)];
+
+  VerifyTabIsAttachedWithTitle(
+      base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, 1)));
+
+  // Wait for the Send button to be enabled (which implies tab upload finished)
+  // and tap it.
+  id<GREYMatcher> sendButtonMatcher = grey_allOf(
+      grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier),
+      grey_enabled(), grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:sendButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:sendButtonMatcher]
+      performAction:grey_tap()];
+
+  // Verify that the Assistant container is shown.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kAssistantContainerAccessibilityIdentifier)];
 }
 
 // Tests that the AI mode action works as expected.
@@ -671,6 +721,8 @@ void RemoveAttachmentWithTitle(NSString* title) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kComposeboxIpad);
+  config.features_enabled.push_back(kAssistantContainer);
+  config.features_enabled.push_back(kAimCobrowse);
   config.features_disabled.push_back(kComposeboxAIMDisabled);
   // Only rely on local conditions for AIM eligibility, so disable the
   // server-side checks.
