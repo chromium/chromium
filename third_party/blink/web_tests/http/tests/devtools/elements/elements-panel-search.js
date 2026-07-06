@@ -58,7 +58,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   async function searchCallback(next, resultCount) {
     if (resultCount == 0) {
       TestRunner.addResult('Nothing found');
-      SDK.DOMModel.DOMModel.cancelSearch();
+      SDK.DOMModel.DOMModel.cancelSearch(SDK.TargetManager.TargetManager.instance());
       next();
       return;
     }
@@ -71,7 +71,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.addResult(markupVa_lue.split('').join(' '));
     }
 
-    SDK.DOMModel.DOMModel.cancelSearch();
+    SDK.DOMModel.DOMModel.cancelSearch(SDK.TargetManager.TargetManager.instance());
     next();
   }
 
