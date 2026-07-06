@@ -78,3 +78,6 @@
 
 # crbug.com/441501312
 -org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab
+
+# crbug.com/531604581
+-org.chromium.chrome.browser.gesturenav.NavigationTransitionsTest.testBackNavInRTL__ThreeButtonMode
