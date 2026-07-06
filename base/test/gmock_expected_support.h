@@ -5,6 +5,7 @@
 #ifndef BASE_TEST_GMOCK_EXPECTED_SUPPORT_H_
 #define BASE_TEST_GMOCK_EXPECTED_SUPPORT_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <type_traits>
@@ -15,12 +16,20 @@
 #include "base/types/expected.h"
 #include "base/types/expected_internal.h"
 #include "base/types/expected_macros.h"
+#include "base/types/is_instantiation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::test {
 
 namespace internal {
+
+template <typename T>
+concept IsOptional =
+    base::is_instantiation<std::remove_cvref_t<T>, std::optional>;
+
+template <typename T>
+concept IsExpectedOrOptional = base::internal::IsExpected<T> || IsOptional<T>;
 
 // `HasVoidValueType<T>` is true iff `T` satisfies
 // `base::internal::IsExpected<T>` and `T`'s `value_type` is `void`.
@@ -41,24 +50,36 @@ class HasValueMatcher {
 
  private:
   template <typename T>
-    requires(base::internal::IsExpected<T>)
+    requires(IsExpectedOrOptional<T>)
   class Impl : public ::testing::MatcherInterface<T> {
    public:
     Impl() = default;
 
     void DescribeTo(std::ostream* os) const override {
-      *os << "is an 'expected' type with a value";
+      if constexpr (IsOptional<T>) {
+        *os << "is a 'std::optional' type with a value";
+      } else {
+        *os << "is an 'expected' type with a value";
+      }
     }
 
     void DescribeNegationTo(std::ostream* os) const override {
-      *os << "is an 'expected' type with an error";
+      if constexpr (IsOptional<T>) {
+        *os << "is a 'std::optional' type which is nullopt";
+      } else {
+        *os << "is an 'expected' type with an error";
+      }
     }
 
     bool MatchAndExplain(
         T actual_value,
         ::testing::MatchResultListener* listener) const override {
       if (!actual_value.has_value()) {
-        *listener << "which has the error " << ToString(actual_value.error());
+        if constexpr (IsOptional<T>) {
+          *listener << "which is nullopt";
+        } else {
+          *listener << "which has the error " << ToString(actual_value.error());
+        }
       }
       return actual_value.has_value();
     }
@@ -78,19 +99,28 @@ class ValueIsMatcher {
 
  private:
   template <typename U>
-    requires(base::internal::IsExpected<U> && !HasVoidValueType<U>)
+    requires(IsExpectedOrOptional<U> && !HasVoidValueType<U>)
   class Impl : public ::testing::MatcherInterface<U> {
    public:
     explicit Impl(const T& matcher)
         : matcher_(::testing::SafeMatcherCast<const V&>(matcher)) {}
 
     void DescribeTo(std::ostream* os) const override {
-      *os << "is an 'expected' type with a value which ";
+      if constexpr (IsOptional<U>) {
+        *os << "is a 'std::optional' type with a value which ";
+      } else {
+        *os << "is an 'expected' type with a value which ";
+      }
       matcher_.DescribeTo(os);
     }
 
     void DescribeNegationTo(std::ostream* os) const override {
-      *os << "is an 'expected' type with an error or a value which ";
+      if constexpr (IsOptional<U>) {
+        *os << "is a 'std::optional' type which is nullopt or has a value "
+               "which ";
+      } else {
+        *os << "is an 'expected' type with an error or a value which ";
+      }
       matcher_.DescribeNegationTo(os);
     }
 
@@ -98,7 +128,11 @@ class ValueIsMatcher {
         U actual_value,
         ::testing::MatchResultListener* listener) const override {
       if (!actual_value.has_value()) {
-        *listener << "which has the error " << ToString(actual_value.error());
+        if constexpr (IsOptional<U>) {
+          *listener << "which is nullopt";
+        } else {
+          *listener << "which has the error " << ToString(actual_value.error());
+        }
         return false;
       }
 

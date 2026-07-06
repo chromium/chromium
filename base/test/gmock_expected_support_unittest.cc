@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "base/test/gmock_expected_support.h"
 
 #include <optional>
@@ -10,10 +9,18 @@
 
 #include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::test {
 namespace {
+
+template <typename MatcherType, typename Value>
+std::string Explain(const MatcherType& matcher, const Value& value) {
+  testing::StringMatchResultListener listener;
+  testing::ExplainMatchResult(matcher, value, &listener);
+  return listener.str();
+}
 
 TEST(GmockExpectedSupportTest, ExpectOk) {
   const expected<void, std::string> e_void;
@@ -21,6 +28,11 @@ TEST(GmockExpectedSupportTest, ExpectOk) {
 
   const expected<int, std::string> e_int = 1;
   EXPECT_OK(e_int);
+}
+
+TEST(GmockExpectedSupportTest, ExpectOkOptional) {
+  const std::optional<int> o_int = 1;
+  EXPECT_OK(o_int);
 }
 
 TEST(GmockExpectedSupportTest, AssertOk) {
@@ -31,6 +43,11 @@ TEST(GmockExpectedSupportTest, AssertOk) {
   ASSERT_OK(e_int);
 }
 
+TEST(GmockExpectedSupportTest, AssertOkOptional) {
+  const std::optional<int> o_int = 1;
+  ASSERT_OK(o_int);
+}
+
 TEST(GmockExpectedSupportTest, AssertOkAndAssign) {
   const expected<int, std::string> e_int = 1;
   ASSERT_OK_AND_ASSIGN(int result1, e_int);
@@ -39,6 +56,26 @@ TEST(GmockExpectedSupportTest, AssertOkAndAssign) {
   const std::optional<int> o_int = 2;
   ASSERT_OK_AND_ASSIGN(int result2, o_int);
   EXPECT_EQ(2, result2);
+}
+
+TEST(GmockExpectedSupportTest, AssertOkAndAssignFailureExpected) {
+  static const expected<int, std::string> e_int = unexpected("error_msg");
+  EXPECT_FATAL_FAILURE(
+      []() {
+        ASSERT_OK_AND_ASSIGN(int result, e_int);
+        (void)result;
+      }(),
+      "e_int returned error: error_msg");
+}
+
+TEST(GmockExpectedSupportTest, AssertOkAndAssignFailureOptional) {
+  static const std::optional<int> o_int = std::nullopt;
+  EXPECT_FATAL_FAILURE(
+      []() {
+        ASSERT_OK_AND_ASSIGN(int result, o_int);
+        (void)result;
+      }(),
+      "o_int returned nullopt");
 }
 
 TEST(GmockExpectedSupportTest, VoidOkEquals) {
@@ -80,6 +117,14 @@ TEST(GmockExpectedSupportTest, HasValue) {
   EXPECT_THAT(error, ::testing::Not(HasValue()));
 }
 
+TEST(GmockExpectedSupportTest, HasValueOptional) {
+  const std::optional<int> o_int = 3;
+  EXPECT_THAT(o_int, HasValue());
+
+  const std::optional<int> o_nullopt = std::nullopt;
+  EXPECT_THAT(o_nullopt, ::testing::Not(HasValue()));
+}
+
 TEST(GmockExpectedSupportTest, ValueIs) {
   const expected<int, std::string> e_int = 3;
   EXPECT_THAT(e_int, ValueIs(3));
@@ -92,6 +137,18 @@ TEST(GmockExpectedSupportTest, ValueIs) {
   EXPECT_THAT(e_error, ::testing::Not(ValueIs(3)));
 }
 
+TEST(GmockExpectedSupportTest, ValueIsOptional) {
+  const std::optional<int> o_int = 3;
+  EXPECT_THAT(o_int, ValueIs(3));
+
+  const std::optional<std::string> o_string = "OK";
+  EXPECT_THAT(o_string, ValueIs("OK"));
+  EXPECT_THAT(o_string, ::testing::Not(ValueIs("ERROR")));
+
+  const std::optional<int> o_nullopt = std::nullopt;
+  EXPECT_THAT(o_nullopt, ::testing::Not(ValueIs(3)));
+}
+
 TEST(GmockExpectedSupportTest, ErrorIs) {
   const expected<std::string, int> e_int = unexpected(3);
   EXPECT_THAT(e_int, ErrorIs(3));
@@ -102,6 +159,18 @@ TEST(GmockExpectedSupportTest, ErrorIs) {
 
   const expected<std::string, int> e_value = "OK";
   EXPECT_THAT(e_value, ::testing::Not(ErrorIs(3)));
+}
+
+TEST(GmockExpectedSupportTest, MismatchExplanationOptional) {
+  const std::optional<int> o_nullopt = std::nullopt;
+  EXPECT_EQ(Explain(HasValue(), o_nullopt), "which is nullopt");
+  EXPECT_EQ(Explain(ValueIs(3), o_nullopt), "which is nullopt");
+}
+
+TEST(GmockExpectedSupportTest, MismatchExplanationExpected) {
+  const expected<int, std::string> e_error = unexpected("Uh oh");
+  EXPECT_EQ(Explain(HasValue(), e_error), "which has the error Uh oh");
+  EXPECT_EQ(Explain(ValueIs(3), e_error), "which has the error Uh oh");
 }
 
 }  // namespace
