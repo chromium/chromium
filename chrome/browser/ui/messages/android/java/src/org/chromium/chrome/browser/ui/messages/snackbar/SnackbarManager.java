@@ -197,12 +197,34 @@ public class SnackbarManager
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
     private final NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     private final @Nullable ModalDialogManager mModalDialogManager;
+    private final NonNullObservableSupplier<Boolean> mPersistentFullscreenModeSupplier;
 
     private @Nullable SnackbarView mView;
     private long mCurrentSnackbarStartTimeMs;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
     private boolean mIsModalDialogShowing;
+
+    /**
+     * Constructs a SnackbarManager to show snackbars in the given window.
+     *
+     * <p>See {@link #SnackbarManager(Activity, ViewGroup, WindowAndroid, NonNullObservableSupplier,
+     * ModalDialogManager, NonNullObservableSupplier)} for details.
+     */
+    public SnackbarManager(
+            Activity activity,
+            ViewGroup snackbarParentView,
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier,
+            @Nullable ModalDialogManager modalDialogManager) {
+        this(
+                activity,
+                snackbarParentView,
+                windowAndroid,
+                additionalBottomMarginPxSupplier,
+                modalDialogManager,
+                ObservableSuppliers.alwaysFalse());
+    }
 
     /**
      * Constructs a SnackbarManager to show snackbars in the given window.
@@ -214,13 +236,16 @@ public class SnackbarManager
      * @param additionalBottomMarginPxSupplier The supplier publishes the changes of the additional
      *     bottom margin in pixels.
      * @param modalDialogManager The ModalDialogManager to observe for dialog visibility.
+     * @param persistentFullscreenModeSupplier The supplier that monitors whether the app is in
+     *     persistent fullscreen mode.
      */
     public SnackbarManager(
             Activity activity,
             ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid,
             @Nullable NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier,
-            @Nullable ModalDialogManager modalDialogManager) {
+            @Nullable ModalDialogManager modalDialogManager,
+            NonNullObservableSupplier<Boolean> persistentFullscreenModeSupplier) {
         mActivity = activity;
         mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
@@ -243,6 +268,7 @@ public class SnackbarManager
             mModalDialogManager.addObserver(this);
             mIsModalDialogShowing = mModalDialogManager.isShowing();
         }
+        mPersistentFullscreenModeSupplier = persistentFullscreenModeSupplier;
     }
 
     @Override
@@ -512,7 +538,8 @@ public class SnackbarManager
                                 currentSnackbar,
                                 mOriginalParentView,
                                 mWindowAndroid,
-                                mAdditionalBottomMarginPxSupplier);
+                                mAdditionalBottomMarginPxSupplier,
+                                mPersistentFullscreenModeSupplier);
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here

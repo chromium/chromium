@@ -705,7 +705,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             mBottomContainer,
                             windowAndroid,
                             mChromeActivitySnackbarHelper.getBottomMarginSupplier(),
-                            modalDialogManager);
+                            modalDialogManager,
+                            getFullscreenManager().getPersistentFullscreenModeSupplier());
+
             mSnackbarManagerSupplier.set(snackbarManager);
             mChromeActivitySnackbarHelper.setSnackbarManager(snackbarManager);
             getInsetObserver().addObserver(snackbarManager);

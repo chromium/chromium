@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ui.messages.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -46,7 +47,9 @@ import java.util.function.Supplier;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class SnackbarTest {
+    private static final int SAMPLE_KEYBOARD_HEIGHT = 150;
     private SnackbarManager mManager;
+    private MockKeyboardVisibilityDelegate mKeyboardDelegate;
     private final CallbackHelper mShowingHelper = new CallbackHelper();
     private final CallbackHelper mDismissHelper = new CallbackHelper();
     private final SnackbarController mDefaultController =
@@ -72,6 +75,13 @@ public class SnackbarTest {
                 public void onAction(Object actionData) {}
             };
 
+    private final Snackbar mSampleNotificationSnackbar =
+            Snackbar.make(
+                    "test snackbar text",
+                    mDismissController,
+                    Snackbar.TYPE_NOTIFICATION,
+                    Snackbar.UMA_TEST_SNACKBAR);
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -81,6 +91,7 @@ public class SnackbarTest {
     private static FrameLayout sAlternateParent1;
     private static FrameLayout sAlternateParent2;
     private SettableNonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mFullscreenSupplier;
     private boolean mDismissed;
     private boolean mActionClicked;
     private final CallbackHelper mActionHelper = new CallbackHelper();
@@ -126,18 +137,24 @@ public class SnackbarTest {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     mAdditionalBottomMarginPxSupplier = ObservableSuppliers.createNonNull(0);
+                    mFullscreenSupplier = ObservableSuppliers.createNonNull(false);
                     mManager =
                             new SnackbarManager(
                                     sActivity,
                                     sMainParent,
                                     null,
                                     mAdditionalBottomMarginPxSupplier,
-                                    ((BlankUiTestActivity) sActivity).getModalDialogManager());
+                                    ((BlankUiTestActivity) sActivity).getModalDialogManager(),
+                                    mFullscreenSupplier);
                     mManager.isShowingSupplier()
                             .addSyncObserverAndPostIfNonNull(
                                     (showing) -> mShowingHelper.notifyCalled());
                     mManager.dismissAllSnackbars();
                     AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+
+                    mKeyboardDelegate = new MockKeyboardVisibilityDelegate();
+                    mKeyboardDelegate.setKeyboardHeight(SAMPLE_KEYBOARD_HEIGHT);
+                    KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardDelegate);
                 });
     }
 
@@ -892,7 +909,88 @@ public class SnackbarTest {
                 });
     }
 
+    @Test
+    @SmallTest
+    public void testSnackbarBottomMargin_isFullscreen_adjusts() {
+        postUITask(() -> mFullscreenSupplier.set(true));
+        int baselineMargin = getSnackbarBaselineBottomMargin();
+
+        postUITask(() -> mKeyboardDelegate.setKeyboardShowing(true));
+
+        pollSnackbarCondition(
+                "Snackbar bottom margin should include keyboard height in fullscreen",
+                verifySnackbarBottomMarginEquals(baselineMargin + SAMPLE_KEYBOARD_HEIGHT));
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarBottomMargin_isNotFullscreen_unchanged() {
+        postUITask(() -> mFullscreenSupplier.set(false));
+        int baselineMargin = getSnackbarBaselineBottomMargin();
+
+        postUITask(() -> mKeyboardDelegate.setKeyboardShowing(true));
+
+        pollSnackbarCondition(
+                "Snackbar bottom margin should ignore keyboard in non-fullscreen",
+                verifySnackbarBottomMarginEquals(baselineMargin));
+    }
+
     private void pollSnackbarCondition(String message, Supplier<Boolean> condition) {
         CriteriaHelper.pollUiThread(condition::get, message);
+    }
+
+    private void postUITask(Runnable task) {
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    task.run();
+                });
+    }
+
+    private Supplier<Boolean> verifySnackbarBottomMarginEquals(int expectedMargin) {
+        return () -> {
+            SnackbarView view = mManager.getCurrentSnackbarViewForTesting();
+            if (view == null) return false;
+            int currentMargin =
+                    ((FrameLayout.LayoutParams) view.getContainerViewForTesting().getLayoutParams())
+                            .bottomMargin;
+            return currentMargin == expectedMargin;
+        };
+    }
+
+    private int getSnackbarBaselineBottomMargin() {
+        postUITask(() -> mKeyboardDelegate.setKeyboardShowing(false));
+        postUITask(() -> mManager.showSnackbar(mSampleNotificationSnackbar));
+
+        pollSnackbarCondition("Snackbar should be shown", () -> mManager.isShowing());
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SnackbarView view = mManager.getCurrentSnackbarViewForTesting();
+                    if (view == null) return 0;
+                    return ((FrameLayout.LayoutParams)
+                                    view.getContainerViewForTesting().getLayoutParams())
+                            .bottomMargin;
+                });
+    }
+
+    private static class MockKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
+        private boolean mIsKeyboardShowing;
+        private int mKeyboardHeight;
+
+        public void setKeyboardHeight(int height) {
+            mKeyboardHeight = height;
+        }
+
+        public void setKeyboardShowing(boolean showing) {
+            if (mIsKeyboardShowing != showing) {
+                mIsKeyboardShowing = showing;
+                notifyListeners(showing);
+            }
+        }
+
+        @Override
+        public int calculateTotalKeyboardHeight(View rootView) {
+            return mIsKeyboardShowing ? mKeyboardHeight : 0;
+        }
     }
 }
