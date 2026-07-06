@@ -549,15 +549,14 @@ void ResponsivenessMetrics::ReportToMetrics(PerformanceEventTiming* entry) {
   }
 
   UserInteractionType interaction_type = entry->InteractionType();
-  uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
   RecordUserInteractionUKM(window, interaction_type, *entry);
-  RecordUserInteractionTracing(window, interaction_type, *entry, event_id);
 
-  // For Histogram convenience, we only report "unique" interaction durations.
-  // I.e. when keydown and keypress, or pointerup and click, report in the
-  // same animation frame, we don't duplicate reports.  The first event for each
-  // interaction id should always be the longest.  If they have the same end
-  // time, they perfectly overlap in time and don't need to be repeated.
+  // For Histogram and Tracing convenience, we only report "unique" interaction
+  // durations. I.e. when keydown and keypress, or pointerup and click, report
+  // in the same animation frame, we don't duplicate reports. The first event
+  // for each interaction id should always be the longest. If they have the
+  // same end time, they perfectly overlap in time and don't need to be
+  // repeated.
   uint64_t frame_index = entry->GetEventTimingReportingInfo()->frame_index;
   if (!last_recorded_frame_index_.has_value() ||
       frame_index != *last_recorded_frame_index_) {
@@ -570,6 +569,8 @@ void ResponsivenessMetrics::ReportToMetrics(PerformanceEventTiming* entry) {
 
   if (!reported_interactions_in_frame_.Contains(key)) {
     reported_interactions_in_frame_.emplace_back(key);
+    uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
+    RecordUserInteractionTracing(window, interaction_type, *entry, event_id);
     RecordUserInteractionHistograms(interaction_type, *entry, event_id);
   }
 }
