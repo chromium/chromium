@@ -82,6 +82,10 @@ bool CanPerformAutofillAiAction(ProfileIOS* profile,
       action, entity_type);
 }
 
+bool IsAmbientAutofillEnabled() {
+  return base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill);
+}
+
 bool IsAutofillAtMemoryEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
 }

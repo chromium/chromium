@@ -19,6 +19,7 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/webauthn/ios/features.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -585,8 +586,7 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
     }
 
     if (ShouldShowContextMenu(suggestion)) {
-      if (base::FeatureList::IsEnabled(
-              autofill::features::kAutofillAmbientAutofill)) {
+      if (autofill::IsAmbientAutofillEnabled()) {
         [self addInteraction:[[UIContextMenuInteraction alloc]
                                  initWithDelegate:self]];
       }

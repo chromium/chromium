@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -37,6 +38,7 @@
   TableViewDetailIconItem* _autofillProfileDetailItem;
   TableViewDetailIconItem* _identityDocsDetailItem;
   TableViewDetailIconItem* _travelInfoDetailItem;
+  TableViewDetailIconItem* _shoppingInfoDetailItem;
 
   BOOL _settingsAreDismissed;
 }
@@ -89,6 +91,14 @@
     _travelInfoDetailItem = TravelInfoItem(_travelInfoEnabled);
     [model addItem:_travelInfoDetailItem
         toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+
+    if (autofill::IsAmbientAutofillEnabled()) {
+      // TODO(crbug.com/530619453): Replace 'YES' with _shoppingInfoEnabled
+      // once it is added to the mediator.
+      _shoppingInfoDetailItem = ShoppingInfoItem(YES);
+      [model addItem:_shoppingInfoDetailItem
+          toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -129,6 +139,9 @@
     case SettingsItemTypeTravelInfo:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectTravelInfo:self];
+      break;
+    case SettingsItemTypeShoppingInfo:
+      // TODO(crbug.com/530620605): Connect to the Shopping Info page.
       break;
     case SettingsItemTypeAutofillSettings:
       [self.delegate

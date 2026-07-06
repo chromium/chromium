@@ -26,6 +26,9 @@ NSString* IdentityDocsItemDetailText(BOOL enabled);
 // Returns the detail text for the travel info item.
 NSString* TravelInfoItemDetailText(BOOL enabled);
 
+// Returns the detail text for the shopping info item.
+NSString* ShoppingInfoItemDetailText(BOOL enabled);
+
 // Returns the passwords item.
 TableViewDetailIconItem* PasswordsItem(BOOL enabled);
 
@@ -40,6 +43,9 @@ TableViewDetailIconItem* IdentityDocsItem(BOOL enabled);
 
 // Returns the travel info item.
 TableViewDetailIconItem* TravelInfoItem(BOOL enabled);
+
+// Returns the shopping info item.
+TableViewDetailIconItem* ShoppingInfoItem(BOOL enabled);
 
 // Returns the autofill settings item.
 TableViewDetailIconItem* AutofillSettingsItem();

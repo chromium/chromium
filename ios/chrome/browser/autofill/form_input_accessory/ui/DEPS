@@ -16,6 +16,7 @@ specific_include_rules = {
     "+ios/chrome/browser/autofill/model/form_suggestion_client.h",
   ],
   "form_suggestion_label.mm": [
+    "+ios/chrome/browser/autofill/model/autofill_ai_util.h",
     "+ios/chrome/browser/autofill/model/form_suggestion_constants.h",
   ],
   "form_suggestion_view.mm": [

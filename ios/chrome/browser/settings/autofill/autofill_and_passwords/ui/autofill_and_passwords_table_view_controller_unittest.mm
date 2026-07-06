@@ -52,8 +52,81 @@ class AutofillAndPasswordsTableViewControllerTest
 
 TEST_P(AutofillAndPasswordsTableViewControllerTest, TestModel) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema,
+                            autofill::features::kAutofillAmbientAutofill},
+      /*disabled_features=*/{});
+
+  AutofillAndPasswordsTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAndPasswordsTableViewController>(
+          controller());
+
+  [view_controller setPasswordsEnabled:YES];
+  [view_controller setAutofillCreditCardEnabled:NO];
+  [view_controller setAutofillProfileEnabled:YES];
+  [view_controller setIdentityDocsEnabled:YES];
+  [view_controller setTravelInfoEnabled:NO];
+  [view_controller setShouldShowAutofillAIFeatures:YES];
+
+  [view_controller loadModel];
+
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(7, NumberOfItemsInSection(0));
+
+  if (IsParamFeatureEnabled()) {
+    CheckDetailItemTextWithIds(
+        IDS_IOS_PASSWORD_MANAGER,
+        IDS_AUTOFILL_AND_PASSWORDS_PASSWORD_MANAGER_SUMMARY, 0, 0);
+    CheckTrailingDetailItemTextWithId(IDS_IOS_SETTING_ON, 0, 0);
+
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_PAYMENTS_TITLE,
+                               IDS_AUTOFILL_AND_PASSWORDS_PAYMENTS_SUMMARY, 0,
+                               1);
+    CheckTrailingDetailItemTextWithId(IDS_IOS_SETTING_OFF, 0, 1);
+
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_CONTACT_INFO_TITLE,
+                               IDS_AUTOFILL_AND_PASSWORDS_CONTACT_INFO_SUMMARY,
+                               0, 2);
+    CheckTrailingDetailItemTextWithId(IDS_IOS_SETTING_ON, 0, 2);
+
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_IDENTITY_DOCS_TITLE,
+                               IDS_AUTOFILL_AND_PASSWORDS_IDENTITY_DOCS_SUMMARY,
+                               0, 3);
+    CheckTrailingDetailItemTextWithId(IDS_IOS_SETTING_ON, 0, 3);
+
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_TRAVEL_TITLE,
+                               IDS_AUTOFILL_AND_PASSWORDS_TRAVEL_SUMMARY, 0, 4);
+    CheckTrailingDetailItemTextWithId(IDS_IOS_SETTING_OFF, 0, 4);
+
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_SHOPPING_TITLE,
+                               IDS_AUTOFILL_AND_PASSWORDS_SHOPPING_SUMMARY, 0,
+                               5);
+    CheckTrailingDetailItemTextWithId(IDS_IOS_SETTING_ON, 0, 5);
+  } else {
+    CheckDetailItemTextWithIds(IDS_IOS_PASSWORD_MANAGER, IDS_IOS_SETTING_ON, 0,
+                               0);
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_PAYMENT_METHODS,
+                               IDS_IOS_SETTING_OFF, 0, 1);
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE,
+                               IDS_IOS_SETTING_ON, 0, 2);
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_IDENTITY_DOCS_TITLE,
+                               IDS_IOS_SETTING_ON, 0, 3);
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_TRAVEL_TITLE, IDS_IOS_SETTING_OFF,
+                               0, 4);
+    CheckDetailItemTextWithIds(IDS_AUTOFILL_SHOPPING_TITLE, IDS_IOS_SETTING_ON,
+                               0, 5);
+  }
+
+  CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_AUTOFILL_SETTINGS), nil, 0, 6);
+}
+
+TEST_P(AutofillAndPasswordsTableViewControllerTest,
+       TestShoppingInfoHiddenWhenAmbientAutofillDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
+      /*disabled_features=*/{autofill::features::kAutofillAmbientAutofill});
 
   AutofillAndPasswordsTableViewController* view_controller =
       base::apple::ObjCCastStrict<AutofillAndPasswordsTableViewController>(
@@ -113,7 +186,7 @@ TEST_P(AutofillAndPasswordsTableViewControllerTest, TestModel) {
 }
 
 TEST_P(AutofillAndPasswordsTableViewControllerTest,
-       TestIdentityDocsAndTravelInfoHidden) {
+       TestIdentityDocsTravelInfoAndShoppingInfoHidden) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       autofill::features::kAutofillAiWithDataSchema);

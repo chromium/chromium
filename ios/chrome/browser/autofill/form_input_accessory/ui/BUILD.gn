@@ -24,6 +24,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/form_input_accessory/public",
     "//ios/chrome/browser/autofill/manual_fill/public",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:constants",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model:model_shared",

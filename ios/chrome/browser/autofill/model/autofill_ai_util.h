@@ -27,6 +27,9 @@ bool CanPerformAutofillAiAction(
     AutofillAiAction action,
     std::optional<EntityType> entity_type = std::nullopt);
 
+// Returns whether Ambient Autofill is enabled.
+bool IsAmbientAutofillEnabled();
+
 // Returns whether Autofill AI (AtMemory) is enabled.
 bool IsAutofillAtMemoryEnabled();
 

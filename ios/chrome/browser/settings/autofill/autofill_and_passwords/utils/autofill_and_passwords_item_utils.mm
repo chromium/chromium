@@ -66,6 +66,10 @@ TableViewDetailIconItem* DetailItemWithType(
         detail_item.detailText =
             l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_TRAVEL_SUMMARY);
         break;
+      case SettingsItemTypeShoppingInfo:
+        detail_item.detailText =
+            l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_SHOPPING_SUMMARY);
+        break;
       default:
         detail_item.detailText = nil;
         break;
@@ -126,6 +130,10 @@ NSString* TravelInfoItemDetailText(BOOL enabled) {
   return DetailTextForEnabledState(enabled);
 }
 
+NSString* ShoppingInfoItemDetailText(BOOL enabled) {
+  return DetailTextForEnabledState(enabled);
+}
+
 TableViewDetailIconItem* PasswordsItem(BOOL enabled) {
   NSString* passwordsSectionTitle =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
@@ -175,6 +183,13 @@ TableViewDetailIconItem* TravelInfoItem(BOOL enabled) {
   return DetailItemWithType(
       SettingsItemTypeTravelInfo, title, TravelInfoItemDetailText(enabled),
       DefaultSettingsRootSymbol(kSuitcaseSymbol), kSettingsTravelInfoCellId);
+}
+
+TableViewDetailIconItem* ShoppingInfoItem(BOOL enabled) {
+  NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE);
+  return DetailItemWithType(
+      SettingsItemTypeShoppingInfo, title, ShoppingInfoItemDetailText(enabled),
+      DefaultSettingsRootSymbol(kCartSymbol), kSettingsShoppingInfoCellId);
 }
 
 TableViewDetailIconItem* AutofillSettingsItem() {
