@@ -35,6 +35,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   PrefBackedBoolean* _preciseLocationPref;
   // Accessor for the camera permission preference.
   PrefBackedBoolean* _cameraPref;
+  // Accessor for the closed captioning preference.
+  PrefBackedBoolean* _closedCaptioningPref;
+  // Accessor for the microphone permission preference.
+  PrefBackedBoolean* _microphonePref;
   // Accessor for the page content preference.
   PrefBackedBoolean* _pageContentPref;
   // AuthenticationService
@@ -64,6 +68,16 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
                    prefName:prefs::kIOSGeminiCameraSetting];
     _cameraPref.observer = self;
 
+    _closedCaptioningPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:prefs::kIOSGeminiLiveClosedCaptioningSetting];
+    _closedCaptioningPref.observer = self;
+
+    _microphonePref = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:prefs::kIOSGeminiLiveMicrophoneSetting];
+    _microphonePref.observer = self;
+
     _pageContentPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:prefs::kIOSBWGPageContentSetting];
@@ -82,6 +96,14 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _cameraPref.observer = nil;
   _cameraPref = nil;
 
+  [_closedCaptioningPref stop];
+  _closedCaptioningPref.observer = nil;
+  _closedCaptioningPref = nil;
+
+  [_microphonePref stop];
+  _microphonePref.observer = nil;
+  _microphonePref = nil;
+
   [_pageContentPref stop];
   _pageContentPref.observer = nil;
   _pageContentPref = nil;
@@ -95,6 +117,8 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _consumer = consumer;
   [_consumer setPreciseLocationEnabled:_preciseLocationPref.value];
   [_consumer setCameraPermissionEnabled:_cameraPref.value];
+  [_consumer setClosedCaptioningEnabled:_closedCaptioningPref.value];
+  [_consumer setMicrophoneEnabled:_microphonePref.value];
   [_consumer setPageContentSharingEnabled:_pageContentPref.value];
 }
 
@@ -135,6 +159,14 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _prefService->SetBoolean(prefs::kIOSGeminiCameraSetting, value);
 }
 
+- (void)setClosedCaptioningPref:(BOOL)value {
+  _prefService->SetBoolean(prefs::kIOSGeminiLiveClosedCaptioningSetting, value);
+}
+
+- (void)setMicrophonePref:(BOOL)value {
+  _prefService->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting, value);
+}
+
 - (void)setPageContentSharingPref:(BOOL)value {
   _prefService->SetBoolean(prefs::kIOSBWGPageContentSetting, value);
   ios::provider::GeminiPageContextAttachmentState attachmentState =
@@ -155,6 +187,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
     [self.consumer setPreciseLocationEnabled:_preciseLocationPref.value];
   } else if (observableBoolean == _cameraPref) {
     [self.consumer setCameraPermissionEnabled:_cameraPref.value];
+  } else if (observableBoolean == _closedCaptioningPref) {
+    [self.consumer setClosedCaptioningEnabled:_closedCaptioningPref.value];
+  } else if (observableBoolean == _microphonePref) {
+    [self.consumer setMicrophoneEnabled:_microphonePref.value];
   } else if (observableBoolean == _pageContentPref) {
     [self.consumer setPageContentSharingEnabled:_pageContentPref.value];
   }

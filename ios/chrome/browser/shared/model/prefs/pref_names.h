@@ -825,6 +825,16 @@ inline constexpr char kIOSGeminiLiveIntroPlayed[] =
 // A boolean specifying whether the Gemini camera permission setting is enabled.
 inline constexpr char kIOSGeminiCameraSetting[] = "ios.gemini.camera.setting";
 
+// A boolean specifying whether the Gemini Live closed captioning setting is
+// enabled.
+inline constexpr char kIOSGeminiLiveClosedCaptioningSetting[] =
+    "ios.gemini.live_closed_captioning.setting";
+
+// A boolean specifying whether the Gemini Live microphone permission setting is
+// enabled.
+inline constexpr char kIOSGeminiLiveMicrophoneSetting[] =
+    "ios.gemini.live_microphone.setting";
+
 // Timestamp tracking the last interaction with the Gemini floaty.
 inline constexpr char kLastGeminiInteractionTimestamp[] =
     "ios.gemini.last_interaction_timestamp";

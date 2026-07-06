@@ -411,6 +411,8 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   gemini_view_state_handler_ = nil;
 
   gemini_actuation_handler_ = nil;
+
+  [gemini_consent_provider_handler_ disconnect];
   gemini_consent_provider_handler_ = nil;
 
   if (keyboard_show_observer_) {
@@ -454,6 +456,9 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
 
   gemini_actuation_handler_ = nil;
   gemini_tab_picker_handler_ = nil;
+
+  [gemini_consent_provider_handler_ disconnect];
+  gemini_consent_provider_handler_ = nil;
 
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
