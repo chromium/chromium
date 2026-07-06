@@ -282,13 +282,14 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 
   SessionRestorationService* otrService = nullptr;
   if (profile->HasOffTheRecordProfile()) {
-    SessionRestorationServiceFactory::GetForProfile(
+    otrService = SessionRestorationServiceFactory::GetForProfile(
         profile->GetOffTheRecordProfile());
   }
 
+  const size_t expected_calls = 3u + (otrService ? 1u : 0u);
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   base::RepeatingClosure closure =
-      base::BarrierClosure(otrService ? 2u : 1u, base::BindRepeating(^{
+      base::BarrierClosure(expected_calls, base::BindRepeating(^{
                              dispatch_semaphore_signal(semaphore);
                            }));
 
@@ -298,6 +299,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
     otrService->SaveSessions();
     otrService->InvokeClosureWhenBackgroundProcessingDone(closure);
   }
+
+  GetApplicationContext()->GetLocalState()->CommitPendingWrite(
+      base::OnceClosure(), closure);
+  profile->GetPrefs()->CommitPendingWrite(base::OnceClosure(), closure);
 
   dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
