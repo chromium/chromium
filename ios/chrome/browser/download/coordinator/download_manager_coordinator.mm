@@ -361,9 +361,11 @@
 #pragma mark - ContainedPresenterDelegate
 
 - (void)containedPresenterWillPresent:(id<ContainedPresenter>)presenter {
-  [_geminiHandler
-      hideFloatyIfInvokedAnimated:NO
-                       fromSource:gemini::FloatyUpdateSource::Banner];
+  if (IsPageActionMenuEnabled()) {
+    [_geminiHandler
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::Banner];
+  }
 }
 
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
@@ -380,10 +382,12 @@
     [self start];
   }
 
-  [_geminiHandler
-      updateFloatyVisibilityIfEligibleAnimated:NO
-                                    fromSource:gemini::FloatyUpdateSource::
-                                                   Banner];
+  if (IsPageActionMenuEnabled()) {
+    [_geminiHandler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     Banner];
+  }
 }
 
 #pragma mark - DownloadManagerViewControllerDelegate

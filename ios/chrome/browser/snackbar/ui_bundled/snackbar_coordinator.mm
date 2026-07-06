@@ -43,8 +43,10 @@
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _delegate = delegate;
-    _geminiHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                        GeminiCommands);
+    if (IsPageActionMenuEnabled()) {
+      _geminiHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                          GeminiCommands);
+    }
   }
   return self;
 }
@@ -248,7 +250,7 @@
   _snackbarView.bottomOffset = offset;
 
   // Add the snackbar to the window and present it.
-  if (hideFloaty) {
+  if (hideFloaty && IsPageActionMenuEnabled()) {
     [_geminiHandler
         hideFloatyIfInvokedAnimated:NO
                          fromSource:gemini::FloatyUpdateSource::Snackbar];
