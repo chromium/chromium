@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, PanelStateKind, Platform, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, PanelStateKind, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -878,20 +878,15 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testGetFormFactor() {
     assertDefined(this.host.getFormFactor);
-    assertDefined(this.host.getPlatform);
     const formFactor = this.host.getFormFactor();
     assertDefined(formFactor);
-    const platform = this.host.getPlatform();
-    // On Android, the form factor can be PHONE (for mobile user agents)
-    // or TABLET/DESKTOP/UNKNOWN (for tablet/automotive/desktop-like layouts).
-    if (platform === Platform.ANDROID) {
+    if (navigator.userAgent.includes('Android')) {
       if (navigator.userAgent.includes('Mobile')) {
         assertEquals(formFactor, FormFactor.PHONE);
       } else {
         assertTrue(
-            (formFactor as FormFactor) === FormFactor.TABLET ||
-            (formFactor as FormFactor) === FormFactor.DESKTOP ||
-            (formFactor as FormFactor) === FormFactor.UNKNOWN);
+            formFactor === FormFactor.TABLET ||
+            formFactor === FormFactor.DESKTOP);
       }
     } else {
       assertEquals(formFactor, FormFactor.DESKTOP);
