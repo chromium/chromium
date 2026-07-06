@@ -38,7 +38,7 @@ bool HasMainFrames(const ProcessNode* process_node) {
 void DecrementPendingReuseRefCountById(content::ChildProcessId rph_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderProcessHost* rph = content::RenderProcessHost::FromID(rph_id);
-  if (rph) {
+  if (rph && !rph->IsDeletingSoon() && !rph->AreRefCountsDisabled()) {
     rph->DecrementPendingReuseRefCount();
   }
 }
@@ -188,10 +188,10 @@ void TransientKeepAlivePolicy::OnProcessNodeRemoved(
   CHECK(rph);
 
   auto SafeDecrement = [](content::RenderProcessHost* rph) {
-    // If the RenderProcessHost is already destroying, the pending reuse ref
-    // count has already been forcibly cleared. Decrementing it again would be
-    // incorrect.
-    if (!rph->IsDeletingSoon()) {
+    // If the RenderProcessHost is already destroying or has ref counts
+    // disabled, the pending reuse ref count has already been forcibly cleared.
+    // Decrementing it again would be incorrect.
+    if (!rph->IsDeletingSoon() && !rph->AreRefCountsDisabled()) {
       rph->DecrementPendingReuseRefCount();
     }
   };
