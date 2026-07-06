@@ -126,7 +126,14 @@ bool EsAdapterVideo::OnNewBuffer(
 }
 
 void EsAdapterVideo::ProcessPendingBuffers(bool flush) {
-  DCHECK(has_valid_config_);
+  if (!has_valid_config_) {
+    // If a flush is triggered (e.g., during MarkEndOfStream) before a valid
+    // video decoder config has been parsed, we cannot process any buffers.
+    // In this case, `buffer_list_` must be empty because all incoming buffers
+    // are discarded in `EmitBuffer` until a valid config is established.
+    DCHECK(buffer_list_.empty());
+    return;
+  }
 
   while (!buffer_list_.empty() &&
          (flush || buffer_list_.size() > kHistorySize)) {
