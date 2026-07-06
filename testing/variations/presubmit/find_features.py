@@ -15,7 +15,7 @@ import re
 
 from typing import List, Set
 
-BASE_FEATURE_PATTERN = br'BASE_FEATURE\((.*?)\);'
+BASE_FEATURE_PATTERN = br'BASE_(?:RUNTIME_MUTABLE_)?FEATURE\((.*?)\);'
 BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
                              flags=re.MULTILINE + re.DOTALL)
 

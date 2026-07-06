@@ -1960,8 +1960,9 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     ),
     BanRule(
         r'base::Feature k',
-        ('Please use BASE_DECLARE_FEATURE() or BASE_FEATURE() instead of ',
-         'directly declaring/defining features.'),
+        ('Please use the BASE_DECLARE_FEATURE() macro to declare features and ',
+         'the BASE_FEATURE() or BASE_RUNTIME_MUTABLE_FEATURE() macros to ',
+         'define features, rather than declaring/defining them directly.'),
         True,
         [
             # Implements BASE_DECLARE_FEATURE().
@@ -8253,9 +8254,12 @@ def CheckNoBrowserStarInUnittests(input_api, output_api):
 
 
 def CheckBaseFeatureMacro(input_api, output_api):
-    """Checks for correct usage of the BASE_FEATURE macro."""
+    """Checks for correct usage of the BASE_FEATURE macros.
+
+    Matches both BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE.
+    """
     pattern = input_api.re.compile(
-        r'\bBASE_FEATURE\s*\(\s*([^,]+)\s*,\s*([^,)]+)')
+        r'\bBASE_(?:RUNTIME_MUTABLE_)?FEATURE\s*\(\s*([^,]+)\s*,\s*([^,)]+)')
     warnings = []
 
     for f in input_api.AffectedFiles():
@@ -8291,7 +8295,8 @@ def CheckBaseFeatureMacro(input_api, output_api):
 
             if param2.startswith('"') and param2.endswith('"'):
                 warnings.append(
-                    '    %s:%d: The 3-argument BASE_FEATURE macro with a '
+                    '    %s:%d: Use of the 3-argument BASE_FEATURE and '
+                    'BASE_RUNTIME_MUTABLE_FEATURE macros with a '
                     'string literal is discouraged. Use the 2-argument '
                     'version instead.' % (f.LocalPath(), start_line))
 

@@ -6203,6 +6203,26 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
                 '// BASE_FEATURE(kMyToggle, "MyToggle", '
                 'base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
+            MockAffectedFile('valid1_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle,'
+                ' base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('valid_multiline_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(', '    kMyMultilineToggle,',
+                '    base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('valid_complex_arg_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle,'
+                ' GetDefaultState(vector<int>(1)));'
+            ]),
+            MockAffectedFile('valid_comment_runtime_mutable.cc', [
+                '// BASE_RUNTIME_MUTABLE_FEATURE(invalidToggle, '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('valid_3param_comment_runtime_mutable.cc', [
+                '// BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "MyToggle", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
 
             # #################################################################
             # Cases that should produce warnings.
@@ -6222,6 +6242,22 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
                 'BASE_FEATURE(kMyToggle,', '             "MyToggle",',
                 '             base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
+            MockAffectedFile('warning_3param_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "MyToggle", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('warning_no_k_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE('
+                'MyToggle, base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('warning_lowercase_after_k_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kmyToggle, '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('warning_3param_multiline_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(', '    kMyToggle,',
+                '    "MyToggle",', '    base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
         ]
         results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
                                                   MockOutputApi())
@@ -6232,18 +6268,33 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
         warnings = results[0].items
 
         expected_warnings = [
-            '    warning_3param.cc:1: The 3-argument BASE_FEATURE macro with a '
+            '    warning_3param.cc:1: Use of the 3-argument BASE_FEATURE and '
+            'BASE_RUNTIME_MUTABLE_FEATURE macros with a string literal is '
+            'discouraged. Use the 2-argument version instead.',
+            '    warning_3param_multiline.cc:1: Use of the 3-argument '
+            'BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros with a '
             'string literal is discouraged. Use the 2-argument version '
             'instead.',
-            '    warning_3param_multiline.cc:1: The 3-argument BASE_FEATURE '
-            'macro with a string literal is discouraged. Use the 2-argument '
-            'version instead.',
             '    warning_no_k.cc:1: Feature identifier "MyToggle" should start '
             'with "k" followed by an uppercase letter.',
             '    warning_lowercase_after_k.cc:1: Feature identifier "kmyToggle"'
             ' should start with "k" followed by an uppercase letter.',
+            '    warning_3param_runtime_mutable.cc:1: Use of the 3-argument '
+            'BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros with a '
+            'string literal is discouraged. Use the 2-argument version '
+            'instead.',
+            '    warning_3param_multiline_runtime_mutable.cc:1: Use of the '
+            '3-argument BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros '
+            'with a string literal is discouraged. Use the 2-argument version '
+            'instead.',
+            '    warning_no_k_runtime_mutable.cc:1: Feature identifier '
+            '"MyToggle" should start with "k" followed by an uppercase letter.',
+            '    warning_lowercase_after_k_runtime_mutable.cc:1: Feature '
+            'identifier "kmyToggle" should start with "k" followed by an '
+            'uppercase letter.',
         ]
 
+        self.maxDiff = None
         self.assertEqual(len(expected_warnings), len(warnings))
         self.assertCountEqual(expected_warnings, warnings)
 
