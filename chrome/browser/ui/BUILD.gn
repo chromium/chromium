@@ -145,9 +145,11 @@ if (!is_android) {
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webid",
       "//chrome/browser/ui/webui/inspect",
+      "//chrome/browser/undo",
       "//components/commerce/core:metrics",
       "//components/multistep_filter/core:features",
       "//components/spellcheck/browser",
+      "//components/undo",
     ]
     if (is_mac) {
       deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
