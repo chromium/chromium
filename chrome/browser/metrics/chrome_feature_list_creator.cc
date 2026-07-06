@@ -154,10 +154,8 @@ void ChromeFeatureListCreator::CreatePrefService() {
       base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_file);
   DCHECK(result);
 
-#if BUILDFLAG(IS_ANDROID)
   base::UmaHistogramBoolean("UMA.Startup.LocalStateFileExistence",
                             base::PathExists(local_state_file));
-#endif  // BUILDFLAG(IS_ANDROID)
 
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   RegisterLocalState(pref_registry.get());

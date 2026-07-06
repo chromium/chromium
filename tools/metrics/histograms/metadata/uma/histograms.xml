@@ -899,7 +899,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Denotes whether or not the Local State file exists during startup. Emitted
-    when the PrefService is created. Android Chrome only.
+    when the PrefService is created. Before M152, recorded on only Android
+    Chrome.
   </summary>
 </histogram>
 
