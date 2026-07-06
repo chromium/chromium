@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -137,7 +138,9 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
-    app_browser_ = delegate ? &delegate->GetBrowser() : nullptr;
+    app_browser_ = delegate
+                       ? delegate->GetBrowser().GetBrowserForMigrationOnly()
+                       : nullptr;
   }
 
   Browser* LaunchMockSWA() {
@@ -150,7 +153,8 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
-    return delegate ? &delegate->GetBrowser() : nullptr;
+    return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
+                    : nullptr;
   }
 
   Browser* InstallAndLaunchMockApp() {

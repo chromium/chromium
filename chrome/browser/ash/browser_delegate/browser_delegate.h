@@ -12,7 +12,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "ui/gfx/geometry/rect.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 
 namespace aura {
@@ -43,7 +43,7 @@ class BrowserDelegate {
   // NOTE: This function is here only temporarily to facilitate transitioning
   // code from Browser to BrowserDelegate incrementally. See also
   // BrowserController::GetDelegate.
-  virtual Browser& GetBrowser() const = 0;
+  virtual BrowserWindowInterface& GetBrowser() const = 0;
 
   // Returns the browser's type.
   virtual BrowserType GetType() const = 0;

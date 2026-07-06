@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -249,7 +250,7 @@ void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
       ash::BrowserController::BrowserOrder::kAscendingActivationTime,
       [&](ash::BrowserDelegate& browser) {
         if (browser.IsWebApp() && browser.GetAppId() == web_app->app_id() &&
-            browser.GetBrowser().profile() == profile_for_new_entry_point_) {
+            browser.GetBrowser().GetProfile() == profile_for_new_entry_point_) {
           browser.Show();
           app_running = true;
           return ash::BrowserController::kBreakIteration;

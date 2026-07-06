@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 namespace ash {
 
@@ -18,7 +19,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   virtual ~BrowserDelegateImpl();
 
   // BrowserDelegate:
-  Browser& GetBrowser() const override;
+  BrowserWindowInterface& GetBrowser() const override;
   BrowserType GetType() const override;
   SessionID GetSessionID() const override;
   const AccountId& GetAccountId() const override;

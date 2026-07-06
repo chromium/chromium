@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -42,7 +42,7 @@ bool CanRestoreUrlsForProfile(const Profile* profile) {
 // Returns true, if the url defined in the on startup setting should be
 // opened. Otherwise, returns false.
 bool ShouldRestoreUrls(BrowserDelegate* browser) {
-  Profile* profile = browser->GetBrowser().profile();
+  Profile* profile = browser->GetBrowser().GetProfile();
 
   // Only open urls for regular sign in users.
   CHECK(profile);
@@ -54,7 +54,7 @@ bool ShouldRestoreUrls(BrowserDelegate* browser) {
   // However, in case of LAST_AND_URLS startup setting, urls should be opened
   // even when the restore session is in progress.
   SessionStartupPref pref = SessionStartupPref::GetStartupPref(
-      browser->GetBrowser().profile()->GetPrefs());
+      browser->GetBrowser().GetProfile()->GetPrefs());
   if ((SessionRestore::IsRestoring(profile) &&
        pref.type != SessionStartupPref::LAST_AND_URLS) ||
       HasPendingUncleanExit(profile)) {
@@ -86,7 +86,7 @@ bool ShouldRestoreUrls(BrowserDelegate* browser) {
 // opened in a new browser. Otherwise, returns false.
 bool ShouldOpenUrlsInNewBrowser(BrowserDelegate* browser) {
   SessionStartupPref pref = SessionStartupPref::GetStartupPref(
-      browser->GetBrowser().profile()->GetPrefs());
+      browser->GetBrowser().GetProfile()->GetPrefs());
   return pref.type == SessionStartupPref::LAST_AND_URLS;
 }
 
@@ -105,7 +105,7 @@ void BrowserRestoreObserver::OnBrowserCreated(BrowserDelegate* browser) {
   BrowserController::GetInstance()->ForEachBrowser(
       BrowserController::kAscendingCreationTime,
       [browser, &is_the_only_browser_for_profile](BrowserDelegate& b) {
-        if (b.GetBrowser().profile() == browser->GetBrowser().profile() &&
+        if (b.GetBrowser().GetProfile() == browser->GetBrowser().GetProfile() &&
             &b != browser) {
           is_the_only_browser_for_profile = false;
         }
@@ -156,11 +156,11 @@ void BrowserRestoreObserver::RestoreUrls(BrowserDelegate* browser) {
   CHECK(browser);
 
   SessionStartupPref pref = SessionStartupPref::GetStartupPref(
-      browser->GetBrowser().profile()->GetPrefs());
+      browser->GetBrowser().GetProfile()->GetPrefs());
 
   custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser->GetBrowser().profile());
+          browser->GetBrowser().GetProfile());
   for (const GURL& url : pref.urls) {
     // We skip URLs that we'd have to launch an external protocol handler for.
     // This avoids us getting into an infinite loop asking ourselves to open

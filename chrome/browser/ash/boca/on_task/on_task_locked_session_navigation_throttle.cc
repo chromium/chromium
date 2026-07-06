@@ -13,8 +13,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -363,7 +361,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
       // 3. Navigation on a pre-existing child tab that may or may not have
       // already met the 1LD requirement.
       GURL source_url = window_tracker->browser()
-                            ->tab_strip_model()
+                            ->GetTabStripModel()
                             ->GetActiveWebContents()
                             ->GetLastCommittedURL();
       const SessionID original_tab_id = sessions::SessionTabHelper::IdForTab(

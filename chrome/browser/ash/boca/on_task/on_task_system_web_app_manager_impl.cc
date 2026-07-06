@@ -19,12 +19,13 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
@@ -333,7 +334,7 @@ void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
     content::WebContents* const tab = browser->GetWebContentsAt(idx);
     const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     if (tab_ids_to_remove.contains(tab_id)) {
-      browser->GetBrowser().tab_strip_model()->DetachAndDeleteWebContentsAt(
+      browser->GetBrowser().GetTabStripModel()->DetachAndDeleteWebContentsAt(
           idx);
     }
   }

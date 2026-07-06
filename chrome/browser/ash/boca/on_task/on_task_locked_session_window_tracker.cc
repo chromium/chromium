@@ -27,8 +27,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -94,7 +92,7 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
     return;
   }
   browser_ = browser;
-  browser_->GetBrowser().tab_strip_model()->AddObserver(this);
+  browser_->GetBrowser().GetTabStripModel()->AddObserver(this);
 
   if (ash::features::IsBocaOnTaskPodEnabled()) {
     on_task_pod_controller_ =
@@ -182,12 +180,12 @@ void LockedSessionWindowTracker::MaybeCloseWebContents(
   }
   if (browser_->GetWebContentsCount() > 1) {
     int index =
-        browser_->GetBrowser().tab_strip_model()->GetIndexOfWebContents(tab);
+        browser_->GetBrowser().GetTabStripModel()->GetIndexOfWebContents(tab);
     if (index == TabStripModel::kNoTab) {
       return;
     }
     on_task_blocklist()->RemoveChildFilter(tab);
-    browser_->GetBrowser().tab_strip_model()->CloseWebContentsAt(
+    browser_->GetBrowser().GetTabStripModel()->CloseWebContentsAt(
         index, TabCloseTypes::CLOSE_NONE);
   }
 }
@@ -206,9 +204,10 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
   // Immersive mode is disabled when in pause mode to ensure users cannot switch
   // tabs. We keep the window property always set to restore the window to its
   // previously intended state.
-  browser_->GetBrowser().GetWindow()->GetNativeWindow()->SetProperty(
+  browser_->GetNativeWindow()->SetProperty(
       chromeos::kUseImmersiveInTrustedPinned, !paused);
-  browser_->GetBrowser().GetBrowserView().FullscreenStateChanged();
+  BrowserView::GetBrowserViewForBrowser(&browser_->GetBrowser())
+      ->FullscreenStateChanged();
 }
 
 void LockedSessionWindowTracker::set_can_start_navigation_throttle(
@@ -221,7 +220,7 @@ OnTaskBlocklist* LockedSessionWindowTracker::on_task_blocklist() {
   return on_task_blocklist_.get();
 }
 
-Browser* LockedSessionWindowTracker::browser() {
+BrowserWindowInterface* LockedSessionWindowTracker::browser() {
   return browser_ ? &browser_->GetBrowser() : nullptr;
 }
 
@@ -231,7 +230,7 @@ bool LockedSessionWindowTracker::CanOpenNewPopup() {
 
 void LockedSessionWindowTracker::CleanupWindowTracker() {
   if (browser_) {
-    browser_->GetBrowser().tab_strip_model()->RemoveObserver(this);
+    browser_->GetBrowser().GetTabStripModel()->RemoveObserver(this);
   }
   if (on_task_blocklist_) {
     on_task_blocklist_->CleanupBlocklist();
@@ -278,7 +277,7 @@ void LockedSessionWindowTracker::OnTabChangedAt(tabs::TabInterface* tab,
   // When all tabs are closing, the tab strip model is still active, but the
   // active tab is no longer valid. This can cause a crash if we try to access
   // the navigation context of the active tab.
-  if (!browser_->GetBrowser().tab_strip_model()->closing_all() &&
+  if (!browser_->GetBrowser().GetTabStripModel()->closing_all() &&
       browser_->GetWebContentsCount() && on_task_pod_controller_) {
     on_task_pod_controller_->OnPageNavigationContextChanged();
   }
@@ -340,7 +339,7 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
     // app homepage, then we set `active_tab_id` to be invalid.
     if (old_contents &&
         (TabStripModel::kNoTab !=
-         browser_->GetBrowser().tab_strip_model()->GetIndexOfWebContents(
+         browser_->GetBrowser().GetTabStripModel()->GetIndexOfWebContents(
              old_contents)) &&
         (old_contents->GetVisibleURL() !=
          GURL(ash::boca::kChromeBocaAppUntrustedIndexURL))) {
@@ -375,8 +374,8 @@ void LockedSessionWindowTracker::WillCloseAllTabs(
   // Force browser to skip tab unload so we can proceed with the close
   // operation.
   // TODO (crbug.com/372362860): Add browser tests to test tab unload.
-  Browser* const browser = static_cast<Browser*>(
-      tab_strip_model->delegate()->GetBrowserWindowInterface());
+  BrowserWindowInterface* const browser =
+      tab_strip_model->delegate()->GetBrowserWindowInterface();
   UnloadController::From(browser)->set_force_skip_warning_user_on_close(true);
 }
 

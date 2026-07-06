@@ -15,6 +15,8 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
@@ -26,7 +28,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace content::webid {
@@ -103,7 +104,7 @@ class LockedSessionWindowTracker : public KeyedService,
 
   ash::OnTaskPodController* on_task_pod_controller();
   OnTaskBlocklist* on_task_blocklist();
-  Browser* browser();
+  BrowserWindowInterface* browser();
 
   // Test helpers:
   void SetNotificationManagerForTesting(

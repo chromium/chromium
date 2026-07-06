@@ -7,7 +7,7 @@
 #include "ash/public/cpp/back_gesture_contextual_nudge_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -40,7 +40,7 @@ void BackGestureContextualNudgeDelegate::MaybeStartTrackingNavigation(
   window_ = window;
   window_->AddObserver(this);
 
-  TabStripModel* tab_strip_model = browser->GetBrowser().tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetBrowser().GetTabStripModel();
   tab_strip_model->AddObserver(this);
 
   Observe(browser->GetActiveWebContents());
@@ -86,7 +86,7 @@ void BackGestureContextualNudgeDelegate::StopTrackingNavigation() {
     ash::BrowserDelegate* browser =
         ash::BrowserController::GetInstance()->GetBrowserForWindow(window_);
     if (browser) {
-      browser->GetBrowser().tab_strip_model()->RemoveObserver(this);
+      browser->GetBrowser().GetTabStripModel()->RemoveObserver(this);
     }
 
     window_->RemoveObserver(this);

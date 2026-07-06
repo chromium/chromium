@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -193,7 +193,7 @@ void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
   ash::BrowserDelegate* browser =
       ash::BrowserController::GetInstance()->GetBrowserForTab(contents);
   if (remove || (browser && multi_user_util::IsProfileFromActiveUser(
-                                browser->GetBrowser().profile()))) {
+                                browser->GetBrowser().GetProfile()))) {
     shelf_controller_->UpdateAppState(contents, remove);
   }
 }
@@ -207,7 +207,7 @@ void BrowserStatusMonitor::OnBrowserCreated(
     ash::BrowserDelegate* browser_delegate) {
   DCHECK(initialized_);
 
-  Browser* browser = &browser_delegate->GetBrowser();
+  BrowserWindowInterface* browser = &browser_delegate->GetBrowser();
 
 #if DCHECK_IS_ON()
   auto insert_result = known_browsers_.insert(browser);
@@ -215,7 +215,7 @@ void BrowserStatusMonitor::OnBrowserCreated(
 #endif
 
   if (IsAppBrowser(browser_delegate) &&
-      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+      multi_user_util::IsProfileFromActiveUser(browser->GetProfile())) {
     AddAppBrowserToShelf(browser_delegate);
   }
 }
@@ -224,7 +224,7 @@ void BrowserStatusMonitor::OnBrowserClosed(
     ash::BrowserDelegate* browser_delegate) {
   DCHECK(initialized_);
 
-  Browser* browser = &browser_delegate->GetBrowser();
+  BrowserWindowInterface* browser = &browser_delegate->GetBrowser();
 
 #if DCHECK_IS_ON()
   size_t num_removed = known_browsers_.erase(browser);
@@ -232,7 +232,7 @@ void BrowserStatusMonitor::OnBrowserClosed(
 #endif
 
   if (IsAppBrowser(browser_delegate) &&
-      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+      multi_user_util::IsProfileFromActiveUser(browser->GetProfile())) {
     RemoveAppBrowserFromShelf(browser_delegate);
   }
 
@@ -326,7 +326,7 @@ void BrowserStatusMonitor::AddAppBrowserToShelf(
     }
     shelf_controller_->SetAppStatus(app_id, ash::STATUS_RUNNING);
   }
-  Browser* browser = &browser_delegate->GetBrowser();
+  BrowserWindowInterface* browser = &browser_delegate->GetBrowser();
   browser_to_app_id_map_[browser] = app_id;
 }
 
@@ -335,7 +335,7 @@ void BrowserStatusMonitor::RemoveAppBrowserFromShelf(
   DCHECK(IsAppBrowser(browser_delegate));
   DCHECK(initialized_);
 
-  Browser* browser = &browser_delegate->GetBrowser();
+  BrowserWindowInterface* browser = &browser_delegate->GetBrowser();
   auto iter = browser_to_app_id_map_.find(browser);
   if (iter != browser_to_app_id_map_.end()) {
     const std::string app_id = iter->second;
@@ -372,7 +372,7 @@ void BrowserStatusMonitor::OnActiveTabChanged(
   // Update immediately on a tab change.
   if (old_contents &&
       (TabStripModel::kNoTab !=
-       browser->GetBrowser().tab_strip_model()->GetIndexOfWebContents(
+       browser->GetBrowser().GetTabStripModel()->GetIndexOfWebContents(
            old_contents))) {
     UpdateAppItemState(old_contents, false /*remove*/);
   }
@@ -405,7 +405,7 @@ void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
 
   if (browser && IsAppBrowserInShelf(&browser->GetBrowser()) &&
       multi_user_util::IsProfileFromActiveUser(
-          browser->GetBrowser().profile())) {
+          browser->GetBrowser().GetProfile())) {
     shelf_controller_->SetAppStatus(browser->GetAppId().value_or(std::string()),
                                     ash::STATUS_RUNNING);
   }

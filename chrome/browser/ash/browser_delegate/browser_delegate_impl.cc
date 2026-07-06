@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -37,7 +38,7 @@ BrowserDelegateImpl::BrowserDelegateImpl(Browser* browser)
 
 BrowserDelegateImpl::~BrowserDelegateImpl() = default;
 
-Browser& BrowserDelegateImpl::GetBrowser() const {
+BrowserWindowInterface& BrowserDelegateImpl::GetBrowser() const {
   return browser_.get();
 }
 

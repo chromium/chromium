@@ -12,13 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 class ShelfModel;
 }
 
-class Browser;
+class BrowserWindowInterface;
 class ShelfContextMenu;
 
 // Shelf item delegate for a browser shortcut; only one such item should exist.
@@ -78,7 +79,7 @@ class BrowserShortcutShelfItemController
   std::unique_ptr<ShelfItemBrowsers> shelf_browsers_;
 
   // The cached browser windows and tab indices shown in an application menu.
-  std::vector<std::pair<Browser*, size_t>> app_menu_items_;
+  std::vector<std::pair<BrowserWindowInterface*, size_t>> app_menu_items_;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 };

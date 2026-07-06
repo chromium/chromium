@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -283,11 +284,11 @@ BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
 
 Browser* FindSystemWebAppBrowser(Profile* profile,
                                  SystemWebAppType app_type,
-                                 Browser::Type browser_type,
+                                 BrowserWindowInterface::Type browser_type,
                                  const GURL& url) {
   auto* browser = FindSystemWebAppBrowser(
       profile, app_type, FromInternalBrowserType(browser_type), url);
-  return browser ? &browser->GetBrowser() : nullptr;
+  return browser ? browser->GetBrowser().GetBrowserForMigrationOnly() : nullptr;
 }
 
 BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,

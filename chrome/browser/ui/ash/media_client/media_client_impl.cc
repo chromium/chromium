@@ -39,7 +39,7 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -359,7 +359,7 @@ void MediaClientImpl::OnRequestUpdate(int render_process_id,
 }
 
 void MediaClientImpl::OnBrowserActivated(ash::BrowserDelegate* browser) {
-  active_context_ = browser->GetBrowser().profile();
+  active_context_ = browser->GetBrowser().GetProfile();
   UpdateForceMediaClientKeyHandling();
 }
 

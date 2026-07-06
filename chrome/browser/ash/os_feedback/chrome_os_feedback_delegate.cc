@@ -48,6 +48,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "mojo/public/cpp/base/big_buffer.h"
