@@ -10,12 +10,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -46,16 +48,27 @@ class AppLaunchUtilsTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    const AccountId account_id = AccountId::FromUserEmail("lala@example.com");
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    fake_user_manager_->AddKioskWebAppUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+
+    const AccountId account_id =
+        AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
+            "lala", policy::DeviceLocalAccountType::kWebKioskApp));
+    std::ignore = test_user_session_manager_->AddKioskWebAppUser(
+        account_id.GetUserEmail());
+    test_user_session_manager_->LogIn(account_id);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     input_file_ = temp_dir_.GetPath().AppendASCII("prefs.json");
     ASSERT_TRUE(base::WriteFile(input_file_, kEmptyPrefsFile));
 
     registry_ = new PrefRegistrySimple;
+  }
+
+  void TearDown() override {
+    test_user_session_manager_.reset();
+    testing::Test::TearDown();
   }
 
   std::unique_ptr<PrefService> CreatePrefService() {
@@ -74,8 +87,7 @@ class AppLaunchUtilsTest : public testing::Test {
   scoped_refptr<JsonPrefStore> pref_store_;
   scoped_refptr<PrefRegistrySimple> registry_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
 };
 
 TEST_F(AppLaunchUtilsTest, ClearUserPrefs) {

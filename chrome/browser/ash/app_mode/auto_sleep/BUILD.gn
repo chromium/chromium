@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//components/session_manager/core:test_support",
+    "//components/session_manager/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

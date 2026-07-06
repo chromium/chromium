@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -26,7 +25,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,7 +119,9 @@ class MockKioskAppManagerObserver : public KioskAppManagerObserver {
 class KioskIwaManagerTest : public testing::Test {
  public:
   KioskIwaManagerTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+      : test_user_session_manager_(
+            std::make_unique<ash::test::TestUserSessionManager>(
+                TestingBrowserProcess::GetGlobal()->local_state())),
         kiosk_cryptohome_remover_(
             TestingBrowserProcess::GetGlobal()->local_state()),
         iwa_manager_(
@@ -163,8 +164,7 @@ class KioskIwaManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
 
   MockKioskAppManagerObserver observer_;
   KioskCryptohomeRemover kiosk_cryptohome_remover_;

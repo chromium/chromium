@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,8 +23,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -32,7 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -57,7 +58,21 @@ class DeviceWeeklyScheduledSuspendControllerTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kDeviceWeeklyScheduledSuspendMgs, IsEnabledInMgs());
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+
+    // Add all potential users before starting any session.
+    std::ignore = test_user_session_manager_->AddRegularUser(
+        AccountId::FromUserEmailGaiaId("user@example.com",
+                                       GaiaId("1234567890")));
+    std::ignore = test_user_session_manager_->AddPublicAccountUser(
+        policy::GenerateDeviceLocalAccountUserId(
+            "mgs", policy::DeviceLocalAccountType::kPublicSession));
+    std::ignore = test_user_session_manager_->AddKioskWebAppUser(
+        policy::GenerateDeviceLocalAccountUserId(
+            "kiosk", policy::DeviceLocalAccountType::kWebKioskApp));
+
     chromeos::PowerManagerClient::InitializeFake();
     InitController();
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
@@ -84,40 +99,41 @@ class DeviceWeeklyScheduledSuspendControllerTest
     chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
         base::NullCallback());
     chromeos::PowerManagerClient::Shutdown();
-    fake_user_manager_.Reset();
+    test_user_session_manager_.reset();
   }
 
   void LoginUser(TestUserType user_type) {
+    AccountId account_id;
     switch (user_type) {
       case TestUserType::kRegular: {
-        auto account_id = AccountId::FromUserEmail("user@example.com");
-        fake_user_manager_->AddUser(account_id);
-        fake_user_manager_->LoginUser(account_id);
-        fake_user_manager_->SwitchActiveUser(account_id);
-        session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
+        account_id = AccountId::FromUserEmailGaiaId("user@example.com",
+                                                    GaiaId("1234567890"));
         break;
       }
       case TestUserType::kMgs: {
-        auto account_id = AccountId::FromUserEmail("mgs@example.com");
-        auto* user = fake_user_manager_->AddPublicAccountUser(account_id);
-        fake_user_manager_->LoginUser(user->GetAccountId());
-        fake_user_manager_->SwitchActiveUser(user->GetAccountId());
-        session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
+        account_id =
+            AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
+                "mgs", policy::DeviceLocalAccountType::kPublicSession));
         break;
       }
       case TestUserType::kKiosk: {
-        auto account_id = AccountId::FromUserEmail("kiosk@example.com");
-        auto* user = fake_user_manager_->AddKioskWebAppUser(account_id);
-        fake_user_manager_->LoginUser(user->GetAccountId());
-        fake_user_manager_->SwitchActiveUser(user->GetAccountId());
-        session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
+        account_id =
+            AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
+                "kiosk", policy::DeviceLocalAccountType::kWebKioskApp));
         break;
       }
       case TestUserType::kNotLoggedIn: {
-        session_manager_.SetSessionState(
+        session_manager::SessionManager::Get()->SetSessionState(
             session_manager::SessionState::LOGIN_PRIMARY);
-        break;
+        return;
       }
+    }
+
+    test_user_session_manager_->LogIn(account_id);
+    if (!user_manager::UserManager::Get()->GetActiveUser() ||
+        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId() !=
+            account_id) {
+      user_manager::UserManager::Get()->SwitchActiveUser(account_id);
     }
   }
 
@@ -196,10 +212,7 @@ class DeviceWeeklyScheduledSuspendControllerTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<DeviceWeeklyScheduledSuspendController>
       device_weekly_scheduled_suspend_controller_;
   int user_activity_calls_;

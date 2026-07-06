@@ -65,6 +65,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/policy/core/common",
+    "//components/session_manager/test:test_support",
     "//components/webapps/isolated_web_apps",
     "//testing/gtest",
     "//url",
