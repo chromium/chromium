@@ -199,28 +199,27 @@ void MultistepFilterService::ExtractAnnotation(
     const GURL& url,
     std::optional<UrlFilterSuggestion> applied_suggestion) {
   if (!HasUserProvidedConsent(navigation_id, url.GetHost())) {
-    OnExtractionFinished(applied_suggestion, url.GetHost(), navigation_id,
+    OnExtractionFinished(navigation_id, url.GetHost(), applied_suggestion,
                          std::nullopt);
     return;
   }
 
   GetSupportedTaskForUrl(
-      url,
+      navigation_id, url,
       base::BindOnce(&MultistepFilterService::OnUrlAllowedForExtraction,
-                     weak_ptr_factory_.GetWeakPtr(), url, navigation_id,
-                     std::move(applied_suggestion)),
-      navigation_id);
+                     weak_ptr_factory_.GetWeakPtr(), navigation_id, url,
+                     std::move(applied_suggestion)));
 }
 
 void MultistepFilterService::OnUrlAllowedForExtraction(
-    const GURL& url,
     int64_t navigation_id,
+    const GURL& url,
     std::optional<UrlFilterSuggestion> applied_suggestion,
     std::vector<std::string> supported_task_types) {
   if (supported_task_types.empty()) {
     LogExtractionFailed(log_router_, navigation_id, url.GetHost(),
                         "no_supported_tasks");
-    OnExtractionFinished(applied_suggestion, url.GetHost(), navigation_id,
+    OnExtractionFinished(navigation_id, url.GetHost(), applied_suggestion,
                          std::nullopt);
     return;
   }
@@ -230,16 +229,15 @@ void MultistepFilterService::OnUrlAllowedForExtraction(
   filter_extractor_->ExtractAnnotationFromUrl(
       url,
       base::BindOnce(&MultistepFilterService::OnExtractionFinished,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(applied_suggestion), url.GetHost(),
-                     navigation_id),
+                     weak_ptr_factory_.GetWeakPtr(), navigation_id,
+                     url.GetHost(), std::move(applied_suggestion)),
       navigation_id);
 }
 
 void MultistepFilterService::OnExtractionFinished(
-    std::optional<UrlFilterSuggestion> applied_suggestion,
-    std::string host,
     int64_t navigation_id,
+    std::string host,
+    std::optional<UrlFilterSuggestion> applied_suggestion,
     std::optional<FilterAnnotation> annotation) {
   LogSuggestionApplicationOutcome(log_router_, navigation_id, host,
                                   applied_suggestion, annotation);
@@ -266,17 +264,16 @@ void MultistepFilterService::GenerateFilterSuggestions(
   }
 
   GetSupportedTaskForUrl(
-      url,
+      navigation_id, url,
       base::BindOnce(&MultistepFilterService::OnUrlAllowedForSuggestion,
-                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback),
-                     navigation_id),
-      navigation_id);
+                     weak_ptr_factory_.GetWeakPtr(), navigation_id, url,
+                     std::move(callback)));
 }
 
 void MultistepFilterService::OnUrlAllowedForSuggestion(
+    int64_t navigation_id,
     const GURL& url,
     base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-    int64_t navigation_id,
     std::vector<std::string> supported_task_types) {
   if (supported_task_types.empty()) {
     LogSuggestionSuppressed(log_router_, navigation_id, url.GetHost(),
@@ -333,9 +330,9 @@ bool MultistepFilterService::HasUserProvidedConsent(int64_t navigation_id,
 }
 
 void MultistepFilterService::GetSupportedTaskForUrl(
+    int64_t navigation_id,
     const GURL& url,
-    base::OnceCallback<void(std::vector<std::string>)> callback,
-    int64_t navigation_id) {
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
   annotation_index_client_->GetSupportedTasks(url, std::move(callback),
                                               navigation_id);
 }

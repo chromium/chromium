@@ -126,25 +126,25 @@ class MultistepFilterService : public KeyedService,
 
   // Callback for when `GetSupportedTaskForUrl` finishes for extraction.
   void OnUrlAllowedForExtraction(
-      const GURL& url,
       int64_t navigation_id,
+      const GURL& url,
       std::optional<UrlFilterSuggestion> applied_suggestion,
       std::vector<std::string> supported_task_types);
 
   // Callback for when an annotation is extracted or failed. In case of failure,
   // `annotation` will be nullopt.
   void OnExtractionFinished(
-      std::optional<UrlFilterSuggestion> applied_suggestion,
-      std::string host,
       int64_t navigation_id,
+      std::string host,
+      std::optional<UrlFilterSuggestion> applied_suggestion,
       std::optional<FilterAnnotation> annotation);
 
   // Callback for when `GetSupportedTaskForUrl` finishes for suggestion
   // generation.
   void OnUrlAllowedForSuggestion(
+      int64_t navigation_id,
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-      int64_t navigation_id,
       std::vector<std::string> supported_task_types);
 
   // Callback for when a suggestion is generated.
@@ -160,9 +160,9 @@ class MultistepFilterService : public KeyedService,
   // Asynchronously retrieves the supported task types for `url` via the
   // annotation index client and returns them via `callback`.
   void GetSupportedTaskForUrl(
+      int64_t navigation_id,
       const GURL& url,
-      base::OnceCallback<void(std::vector<std::string>)> callback,
-      int64_t navigation_id);
+      base::OnceCallback<void(std::vector<std::string>)> callback);
 
   // Returns true if the user is currently signed in. The Multistep Filter
   // feature is only available for signed-in users.
