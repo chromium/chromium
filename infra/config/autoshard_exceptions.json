@@ -56,7 +56,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "browser_tests": {
-                "shards": 151,
+                "shards": 163,
                 "try_builder": "linux-chromeos-rel"
             },
             "components_unittests": {
@@ -164,11 +164,11 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
-                "shards": 158,
+                "shards": 140,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
-                "shards": 17,
+                "shards": 20,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "unit_tests": {
