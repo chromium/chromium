@@ -301,6 +301,9 @@ public class PdfCoordinator
             mPdfView = pdfView;
 
             if (getView() != null && mViewTag != null) getView().setTag(mViewTag);
+            if (PdfUtils.isInlinePdfV2Enabled()) {
+                pdfView.setFormFillingEnabled(!isEditModeEnabled());
+            }
             // TODO(crbug.com/498644542): call getPageCount() within onLoadDocumentSuccess()
             if (!PdfUtils.isInlinePdfV2Enabled() || mDelegate == null) {
                 return;
@@ -463,6 +466,9 @@ public class PdfCoordinator
         @Override
         public void onEnterEditMode() {
             super.onEnterEditMode();
+            if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
+                mPdfView.setFormFillingEnabled(false);
+            }
             if (mDelegate != null) {
                 mDelegate.onEditModeChanged(true);
             }
@@ -471,6 +477,9 @@ public class PdfCoordinator
         @Override
         public void onExitEditMode() {
             super.onExitEditMode();
+            if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
+                mPdfView.setFormFillingEnabled(true);
+            }
             if (mDelegate != null) {
                 mDelegate.onEditModeChanged(false);
             }
@@ -617,6 +626,9 @@ public class PdfCoordinator
         @Override
         public void onLoadDocumentSuccess(PdfDocument pdfDocument) {
             super.onLoadDocumentSuccess(pdfDocument);
+            if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
+                mPdfView.setFormFillingEnabled(!isEditModeEnabled());
+            }
             if (mRestorePositionPending && mPdfView != null) {
                 mRestorePositionPending = false;
                 if (mSavedZoom > 0) {

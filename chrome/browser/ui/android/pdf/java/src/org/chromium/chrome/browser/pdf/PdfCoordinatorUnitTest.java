@@ -48,6 +48,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -534,6 +535,65 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
         assertFalse(
                 "Edit button should not be selected after onExitEditMode", editButton.isSelected());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testFormFillingEnabledBasedOnEditMode() {
+        createPdfCoordinator();
+
+        // Initially, when view is created with edit mode false, form filling should be enabled
+        mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertTrue(
+                "Form filling should be enabled initially since edit mode is false",
+                shadowPdfView.isFormFillingEnabled());
+
+        PdfDocument pdfDocument = Mockito.mock(PdfDocument.class);
+
+        // Simulate document load success
+        mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
+        assertTrue(
+                "Form filling should still be enabled after document load success",
+                shadowPdfView.isFormFillingEnabled());
+
+        // Simulate entering edit mode
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        assertFalse(
+                "Form filling should be disabled when in edit mode",
+                shadowPdfView.isFormFillingEnabled());
+
+        // Simulate exiting edit mode
+        mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
+        assertTrue(
+                "Form filling should be enabled again when exiting edit mode",
+                shadowPdfView.isFormFillingEnabled());
+
+        // Simulate document reload success after edit mode is exited
+        mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
+        assertTrue(
+                "Form filling should remain enabled after reload when edit mode is false",
+                shadowPdfView.isFormFillingEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testFormFillingDisabledWhenInlinePdfV2IsDisabled() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertFalse(
+                "Form filling should not be enabled when InlinePdfV2 is disabled",
+                shadowPdfView.isFormFillingEnabled());
+
+        PdfDocument pdfDocument = Mockito.mock(PdfDocument.class);
+        mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
+        assertFalse(
+                "Form filling should still not be enabled after document load success when"
+                    + " InlinePdfV2 is disabled",
+                shadowPdfView.isFormFillingEnabled());
     }
 
     @Test
@@ -1136,8 +1196,19 @@ public class PdfCoordinatorUnitTest {
         public PdfDocument mPdfDocument;
         public int mPagesPerRow = 1;
         public int mFirstVisiblePage;
+        public boolean mFormFillingEnabled;
 
         public ShadowPdfView() {}
+
+        @Implementation
+        public void setFormFillingEnabled(boolean enabled) {
+            mFormFillingEnabled = enabled;
+        }
+
+        @Implementation
+        public boolean isFormFillingEnabled() {
+            return mFormFillingEnabled;
+        }
 
         @Implementation
         public int getFirstVisiblePage() {
@@ -1226,6 +1297,11 @@ public class PdfCoordinatorUnitTest {
         @Implementation
         public void setEditModeEnabled(boolean enabled) {
             mEditModeEnabled = enabled;
+        }
+
+        @Implementation
+        public boolean isEditModeEnabled() {
+            return mEditModeEnabled != null ? mEditModeEnabled : false;
         }
 
         @Implementation
