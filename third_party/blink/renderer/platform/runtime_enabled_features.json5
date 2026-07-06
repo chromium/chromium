@@ -790,6 +790,12 @@
       status: "stable",
     },
     {
+      // Makes form control elements have a hard coded font when they are in
+      // their autofill previewed state.
+      name: "AutofillPreviewIgnoreAuthorFont",
+      status: "stable",
+    },
+    {
       name: "AutomationControlled",
       base_feature: "none",
       public: true,

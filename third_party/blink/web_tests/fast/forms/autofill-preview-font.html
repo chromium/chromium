@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/517697155">
+<link rel=help href="https://issues.chromium.org/issues/517404644">
+<link rel=help href="https://issues.chromium.org/issues/40057398">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/common.js"></script>
+<style>
+  @font-face {
+    font-family: Ahem;
+    src: url(../../resources/Ahem.ttf);
+  }
+  .use-ahem {
+    font-family: Ahem;
+  }
+</style>
+
+<select id=my-select class=use-ahem>
+  <option value=v1>Value 1</option>
+  <option value=v2>Value 2</option>
+</select>
+
+<input id=my-date type=date class=use-ahem>
+<textarea id=my-textarea class=use-ahem></textarea>
+<input id=my-text type=text class=use-ahem>
+<input id=my-search type=search class=use-ahem>
+<input id=my-tel type=tel class=use-ahem>
+<input id=my-url type=url class=use-ahem>
+<input id=my-email type=email class=use-ahem>
+<input id=my-password type=password class=use-ahem>
+<input id=my-number type=number class=use-ahem>
+<input id=my-month type=month class=use-ahem>
+<input id=my-week type=week class=use-ahem>
+<input id=my-time type=time class=use-ahem>
+<input id=my-datetime-local type=datetime-local class=use-ahem>
+
+<script>
+function getElementByTextContent(root, text) {
+    var node = root;
+    while (node) {
+        if (node.nodeType === Node.ELEMENT_NODE && node.textContent === text)
+            return node;
+        node = traverseNextNode(node, root);
+    }
+    return null;
+}
+
+promise_test(async () => {
+  await document.fonts.ready;
+  const select = document.getElementById('my-select');
+  const initialSelectStyle = window.getComputedStyle(select);
+  assert_equals(initialSelectStyle.fontFamily, 'Ahem', 'Select should use author font initially');
+
+  internals.setSuggestedValue(select, 'v2');
+  const selectStyle = window.getComputedStyle(select);
+  assert_not_equals(selectStyle.fontFamily, 'Ahem',
+    'Select should not use author font in preview state.');
+}, 'Autofill preview should not use author fonts for select');
+
+const simpleTypes = [
+  { type: 'textarea', value: 'suggested value' },
+  { type: 'text', value: 'suggested value' },
+  { type: 'search', value: 'suggested value' },
+  { type: 'tel', value: '123-456-7890' },
+  { type: 'url', value: 'https://example.com' },
+  { type: 'email', value: 'user@example.com' },
+  { type: 'password', value: 'secret' },
+  { type: 'number', value: '42' }
+];
+
+simpleTypes.forEach(({type, value}) => {
+  promise_test(async () => {
+    await document.fonts.ready;
+    const id = type === 'textarea' ? 'my-textarea' : `my-${type}`;
+    const element = document.getElementById(id);
+    const initialStyle = window.getComputedStyle(element);
+    assert_equals(initialStyle.fontFamily, 'Ahem', `${type} should use author font initially`);
+
+    internals.setSuggestedValue(element, value);
+    const shadowRoot = internals.shadowRoot(element);
+    const pseudoIds = [];
+    var node = shadowRoot;
+    while (node) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            pseudoIds.push(internals.shadowPseudoId(node));
+        }
+        node = traverseNextNode(node, shadowRoot);
+    }
+    const suggestedElement = getElementByPseudoId(shadowRoot, '-internal-input-suggested')
+      || getElementByTextContent(shadowRoot, value);
+    const style = window.getComputedStyle(suggestedElement || element);
+    assert_not_equals(style.fontFamily, 'Ahem',
+      `${type} should not use author font in preview state. Pseudo IDs: ${pseudoIds.join(', ')}`);
+  }, `Autofill preview should not use author fonts for ${type}`);
+});
+
+const complexTypes = [
+  { type: 'month', fields: [
+      '-webkit-datetime-edit-text',
+      '-webkit-datetime-edit-year-field',
+      '-webkit-datetime-edit-month-field'
+    ], value: '2026-05' },
+  { type: 'week', fields: [
+      '-webkit-datetime-edit-text',
+      '-webkit-datetime-edit-year-field',
+      '-webkit-datetime-edit-week-field'
+    ], value: '2026-W22' },
+  { type: 'time', fields: [
+      '-webkit-datetime-edit-text',
+      '-webkit-datetime-edit-hour-field',
+      '-webkit-datetime-edit-minute-field',
+      '-webkit-datetime-edit-ampm-field'
+    ], value: '10:05' },
+  { type: 'datetime-local', fields: [
+      '-webkit-datetime-edit-text',
+      '-webkit-datetime-edit-year-field',
+      '-webkit-datetime-edit-month-field',
+      '-webkit-datetime-edit-day-field',
+      '-webkit-datetime-edit-hour-field',
+      '-webkit-datetime-edit-minute-field',
+      '-webkit-datetime-edit-ampm-field'
+    ], value: '2026-05-29T10:05' },
+  { type: 'date', fields: [
+      '-webkit-datetime-edit-text',
+      '-webkit-datetime-edit-year-field',
+      '-webkit-datetime-edit-month-field',
+      '-webkit-datetime-edit-day-field'
+    ], value: '2026-05-29' },
+];
+
+complexTypes.forEach(({type, fields, value}) => {
+  promise_test(async () => {
+    await document.fonts.ready;
+    const element = document.getElementById(`my-${type}`);
+    const shadowRoot = internals.shadowRoot(element);
+
+    const firstField = getElementByPseudoId(shadowRoot, fields[1]);
+    assert_true(!!firstField, `Should find ${fields[1]}`);
+    const initialStyle = window.getComputedStyle(firstField);
+    assert_equals(initialStyle.fontFamily, 'Ahem', `${type} field should use author font initially`);
+
+    internals.setSuggestedValue(element, value);
+
+    fields.forEach(pseudoId => {
+      const el = getElementByPseudoId(shadowRoot, pseudoId);
+      if (el) {
+        const style = window.getComputedStyle(el);
+        assert_not_equals(style.fontFamily, 'Ahem',
+          `${pseudoId} should not use author font in preview state for ${type}.`);
+      }
+    });
+  }, `Autofill preview should not use author fonts for ${type}`);
+});
+</script>

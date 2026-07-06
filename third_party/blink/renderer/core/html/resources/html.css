@@ -634,29 +634,84 @@ input::-internal-input-suggested {
     overflow: hidden;
 }
 
-input::-internal-input-suggested,
-textarea::-internal-input-suggested {
-    font: -webkit-small-control !important;
-    /* font: -webkit-small-control resolves to Arial on every platform. Ideally
-       we'd keep Arial, but a concrete family is matched against author
-       @font-face, so a single-character unicode-range could disclose the
-       preview text; a generic family avoids that lookup. crbug.com/517710554. */
-    @supports blink-feature(AutofillPreviewGenericFontFamily) {
-      font-family: sans-serif !important;
+@supports blink-feature(AutofillPreviewIgnoreAuthorFont) {
+    input::-internal-input-suggested,
+    textarea::-internal-input-suggested {
+        font: -webkit-small-control !important;
     }
-    /* -webkit-small-control does not pin the font-feature-settings and we want
-       previews to look consistent. */
-    font-feature-settings: normal !important;
-    /* Prevent that overflow affects the scrollable area. Without this,
-       LayoutBox::*Scroll{Height,Width}() may determine the scroll width/height
-       from the scrollable area instead of from the overrides in
-       LayoutTextControl{Single,Multi}Line::Scroll{Height,Width}(). */
-    overflow: hidden !important;
-    overflow-anchor: none;
+    select:-internal-autofill-previewed,
+    input::-internal-input-suggested,
+    textarea::-internal-input-suggested {
+        /* font: -webkit-small-control resolves to Arial on every platform. Ideally
+           we'd keep Arial, but a concrete family is matched against author
+           @font-face, so a single-character unicode-range could disclose the
+           preview text; a generic family avoids that lookup. crbug.com/517710554. */
+        font-family: sans-serif !important;
+    }
+    textarea::-internal-input-suggested,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-ampm-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-day-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-hour-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-millisecond-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-minute-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-month-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-second-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-week-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-year-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-text,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-fields-wrapper {
+        font-family: monospace !important;
+    }
+    input::-internal-input-suggested,
+    textarea::-internal-input-suggested,
+    select:-internal-autofill-previewed,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-ampm-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-day-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-hour-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-millisecond-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-minute-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-month-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-second-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-week-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-year-field,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-text,
+    input:-internal-autofill-previewed::-webkit-datetime-edit-fields-wrapper {
+        /* -webkit-small-control does not pin the font-feature-settings and we want
+           previews to look consistent. */
+        font-feature-settings: normal !important;
+        /* Prevent overflow from affecting the scrollable area. Without this,
+           LayoutBox::*Scroll{Height,Width}() may determine the scroll width/height
+           from the scrollable area instead of from the overrides in
+           LayoutTextControl{Single,Multi}Line::Scroll{Height,Width}(). */
+        overflow: hidden !important;
+        overflow-anchor: none;
+    }
 }
 
-textarea::-internal-input-suggested {
-  font-family: monospace !important;
+@supports not blink-feature(AutofillPreviewIgnoreAuthorFont) {
+    input::-internal-input-suggested,
+    textarea::-internal-input-suggested {
+        font: -webkit-small-control !important;
+        /* font: -webkit-small-control resolves to Arial on every platform. Ideally
+           we'd keep Arial, but a concrete family is matched against author
+           @font-face, so a single-character unicode-range could disclose the
+           preview text; a generic family avoids that lookup. crbug.com/517710554. */
+        @supports blink-feature(AutofillPreviewGenericFontFamily) {
+          font-family: sans-serif !important;
+        }
+        /* -webkit-small-control does not pin the font-feature-settings and we want
+           previews to look consistent. */
+        font-feature-settings: normal !important;
+        /* Prevent overflow from affecting the scrollable area. Without this,
+           LayoutBox::*Scroll{Height,Width}() may determine the scroll width/height
+           from the scrollable area instead of from the overrides in
+           LayoutTextControl{Single,Multi}Line::Scroll{Height,Width}(). */
+        overflow: hidden !important;
+        overflow-anchor: none;
+    }
+    textarea::-internal-input-suggested {
+        font-family: monospace !important;
+    }
 }
 
 input[type="password" i] {
