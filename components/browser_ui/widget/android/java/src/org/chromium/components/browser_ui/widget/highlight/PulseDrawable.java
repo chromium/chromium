@@ -335,7 +335,8 @@ public class PulseDrawable extends Drawable implements Animatable {
         if (mState.color == color) return;
 
         int alpha = getAlpha();
-        mState.color = mState.drawColor = color;
+        mState.color = color;
+        mState.drawColor = color;
         setAlpha(alpha);
         invalidateSelf();
     }

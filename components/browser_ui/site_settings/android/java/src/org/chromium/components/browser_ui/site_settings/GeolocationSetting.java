@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
@@ -39,7 +37,6 @@ public final class GeolocationSetting {
         return Objects.hash(mApproximate, mPrecise);
     }
 
-    @NonNull
     @Override
     public String toString() {
         return "GeolocationSetting{" + mApproximate + ", " + mPrecise + "}";

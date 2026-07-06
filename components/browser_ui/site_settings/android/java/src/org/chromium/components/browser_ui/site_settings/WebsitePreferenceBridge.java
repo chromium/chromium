@@ -126,12 +126,12 @@ public class WebsitePreferenceBridge {
 
     @CalledByNative
     private static void insertCookieIntoMap(Map<String, CookiesInfo> map, String origin) {
-        CookiesInfo cookies_info = map.get(origin);
-        if (cookies_info == null) {
-            cookies_info = new CookiesInfo();
-            map.put(origin, cookies_info);
+        CookiesInfo cookiesInfo = map.get(origin);
+        if (cookiesInfo == null) {
+            cookiesInfo = new CookiesInfo();
+            map.put(origin, cookiesInfo);
         }
-        cookies_info.increment();
+        cookiesInfo.increment();
     }
 
     public List<ContentSettingException> getContentSettingsExceptions(

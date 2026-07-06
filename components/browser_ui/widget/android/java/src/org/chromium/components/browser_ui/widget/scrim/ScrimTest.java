@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.filters.SmallTest;
 
@@ -126,7 +125,7 @@ public class ScrimTest {
                             new GestureDetector(
                                     new GestureDetector.SimpleOnGestureListener() {
                                         @Override
-                                        public boolean onDown(@NonNull MotionEvent e) {
+                                        public boolean onDown(MotionEvent e) {
                                             mDelegatedEventHelper.notifyCalled();
                                             return true;
                                         }

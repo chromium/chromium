@@ -10,13 +10,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -37,7 +36,7 @@ public class LocationPermissionOptionsPreference extends Preference
     private @MonotonicNonNull RadioButtonWithDescription mApproximate;
     private @MonotonicNonNull LocationPermissionSubpageSettings mSubpage;
     private boolean mIsPreciseSelected;
-    private @NonNull CharSequence mPreciseSummary = "";
+    private CharSequence mPreciseSummary = "";
 
     public LocationPermissionOptionsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,9 +66,9 @@ public class LocationPermissionOptionsPreference extends Preference
     }
 
     public void initialize(
-            @NonNull BrowserContextHandle browserContextHandle,
-            @NonNull Website site,
-            @NonNull LocationPermissionSubpageSettings subpage) {
+            BrowserContextHandle browserContextHandle,
+            Website site,
+            LocationPermissionSubpageSettings subpage) {
         mBrowserContextHandle = browserContextHandle;
         mSite = site;
         mSubpage = subpage;
@@ -87,7 +86,7 @@ public class LocationPermissionOptionsPreference extends Preference
     }
 
     @Override
-    public void onCheckedChanged(@NonNull RadioGroup radioGroup, int i) {
+    public void onCheckedChanged(RadioGroup radioGroup, int i) {
         assumeNonNull(mPrecise);
         assumeNonNull(mSetting);
         assumeNonNull(mSite);
@@ -112,7 +111,7 @@ public class LocationPermissionOptionsPreference extends Preference
         return mPrecise;
     }
 
-    public void setPreciseSummary(@NonNull CharSequence summary) {
+    public void setPreciseSummary(CharSequence summary) {
         mPreciseSummary = summary;
         notifyChanged();
     }

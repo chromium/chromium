@@ -7,8 +7,6 @@ package org.chromium.components.browser_ui.widget;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -24,7 +22,7 @@ public class HoverHighlightViewListener implements View.OnHoverListener {
     public HoverHighlightViewListener() {}
 
     @Override
-    public boolean onHover(@NonNull View view, @NonNull MotionEvent motionEvent) {
+    public boolean onHover(View view, MotionEvent motionEvent) {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_HOVER_ENTER:
                 view.setHovered(true);

@@ -612,27 +612,25 @@ public class SiteSettingsCategory {
         return null;
     }
 
-    /**
-     * Returns the message to display when per-app permission is blocked.
-     */
+    /** Returns the message to display when per-app permission is blocked. */
     protected String getMessageForEnablingOsPerAppPermission(Context context, String appName) {
         @ContentSettingsType.EnumType int type = this.getContentSettingsType();
-        int permission_string = R.string.android_permission_off;
+        int permissionString = R.string.android_permission_off;
         if (type == ContentSettingsType.GEOLOCATION
                 || type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
-            permission_string = R.string.android_location_permission_off;
+            permissionString = R.string.android_location_permission_off;
         } else if (type == ContentSettingsType.MEDIASTREAM_MIC) {
-            permission_string = R.string.android_microphone_permission_off;
+            permissionString = R.string.android_microphone_permission_off;
         } else if (type == ContentSettingsType.MEDIASTREAM_CAMERA) {
-            permission_string = R.string.android_camera_permission_off;
+            permissionString = R.string.android_camera_permission_off;
         } else if (type == ContentSettingsType.AR) {
-            permission_string = R.string.android_ar_camera_permission_off;
+            permissionString = R.string.android_ar_camera_permission_off;
         } else if (type == ContentSettingsType.HAND_TRACKING) {
-            permission_string = R.string.android_hand_tracking_permission_off;
+            permissionString = R.string.android_hand_tracking_permission_off;
         } else if (type == ContentSettingsType.NOTIFICATIONS) {
-            permission_string = R.string.android_notifications_permission_off;
+            permissionString = R.string.android_notifications_permission_off;
         }
-        return context.getString(permission_string, appName);
+        return context.getString(permissionString, appName);
     }
 
     /** Returns the message to display when per-app permission is blocked. */
