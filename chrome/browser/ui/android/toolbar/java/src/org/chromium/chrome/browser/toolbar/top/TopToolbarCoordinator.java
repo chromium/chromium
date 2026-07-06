@@ -20,6 +20,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -100,6 +101,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private static final int UNSPECIFIED_TOOLBAR_OFFSET = -1234;
+    private static final String TAG = "TopToolbarCoord";
 
     /** Observes toolbar color or expanding state change. */
     public interface ToolbarColorObserver {
@@ -1111,6 +1113,20 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                     Math.max(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
             int minControlContainerHeightMeasurement =
                     Math.min(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
+            if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+                Log.e(
+                        TAG,
+                        "[TopControlsPositioning] toolbarLayoutHeight="
+                                + toolbarLayoutHeight
+                                + ", hairlineHeight="
+                                + hairlineHeight
+                                + ", ccHeightExcludingTabStrip="
+                                + controlContainerHeightExcludingTabStrip
+                                + ", maxCCHeight="
+                                + maxControlContainerHeightMeasurement
+                                + ", minCCHeight="
+                                + minControlContainerHeightMeasurement);
+            }
             if (captureHeight >= maxControlContainerHeightMeasurement + tabStripHeight
                     && mTabStripTransitionCoordinator != null) {
                 // Capture includes extra height; use the full height.
@@ -1131,7 +1147,26 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             hairlineAdjustment = -mControlContainer.getToolbarHairlineHeight();
         }
 
-        assertNonNull(mOverlayCoordinator).setYOffset(mLayerYOffset - diff + hairlineAdjustment);
+        int finalYOffset = mLayerYOffset - diff + hairlineAdjustment;
+        if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+            Log.e(
+                    TAG,
+                    "[TopControlsPositioning] updateSceneLayerYOffset: mLayerYOffset="
+                            + mLayerYOffset
+                            + ", captureHeight="
+                            + captureHeight
+                            + ", tabStripHeightResource="
+                            + tabStripHeight
+                            + ", tabStripHeightReal="
+                            + getTabStripHeight()
+                            + ", diff="
+                            + diff
+                            + ", hairlineAdjustment="
+                            + hairlineAdjustment
+                            + ", finalYOffset="
+                            + finalYOffset);
+        }
+        assertNonNull(mOverlayCoordinator).setYOffset(finalYOffset);
     }
 
     /**

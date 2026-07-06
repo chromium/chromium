@@ -36,6 +36,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -92,6 +93,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class ToolbarControlContainer extends OptimizedFrameLayout
         implements ControlContainer, Observer, DesktopWindowStateManager.AppHeaderObserver {
+    private static final String TAG = "ToolbarCtrlContainer";
     private static final double SAMPLE_STALE_CAPTURE_PROBABILITY = 0.01;
     private static boolean sForceStaleCaptureHistogram;
 
@@ -123,6 +125,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable NonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
     private @Nullable View mTopLeftCornerOverlayView;
+    private @Nullable StringBuilder mMeasureLogBuilder;
 
     /**
      * Constructs a new control container.
@@ -238,6 +241,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     @Override
     protected void onSizeChanged(int newW, int newH, int oldW, int oldH) {
+        if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+            Log.i(TAG, "[TopControlsPositioning] onSizeChanged newH=" + newH + " oldH=" + oldH);
+        }
         if (newH != oldH && mHeightChangedSupplier != null) {
             mHeightChangedSupplier.set(newH);
         }
@@ -411,6 +417,64 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         // Run the measure pass once with the correct params already in place.
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+            if (mMeasureLogBuilder == null) mMeasureLogBuilder = new StringBuilder();
+            mMeasureLogBuilder.setLength(0);
+            mMeasureLogBuilder
+                    .append("[TopControlsPositioning] onMeasure control_container height=")
+                    .append(getMeasuredHeight())
+                    .append(" top=")
+                    .append(getTop())
+                    .append(" bottom=")
+                    .append(getBottom())
+                    .append(" left=")
+                    .append(getLeft())
+                    .append(" right=")
+                    .append(getRight())
+                    .append(" translationY=")
+                    .append(getTranslationY())
+                    .append(" visibility=")
+                    .append(getVisibility());
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                if (child == null) continue;
+                String childName = "";
+                try {
+                    childName = getResources().getResourceEntryName(child.getId());
+                } catch (Exception e) {
+                    childName = "id:" + child.getId();
+                }
+                mMeasureLogBuilder
+                        .append("\n  [")
+                        .append(childName)
+                        .append(" h=")
+                        .append(child.getMeasuredHeight())
+                        .append(" visibility=")
+                        .append(child.getVisibility());
+                ViewGroup.LayoutParams lp = child.getLayoutParams();
+                if (lp instanceof MarginLayoutParams) {
+                    MarginLayoutParams mlp = (MarginLayoutParams) lp;
+                    mMeasureLogBuilder
+                            .append(" marginT=")
+                            .append(mlp.topMargin)
+                            .append(" marginB=")
+                            .append(mlp.bottomMargin);
+                }
+                mMeasureLogBuilder.append("]");
+            }
+            if (mToolbar != null) {
+                mMeasureLogBuilder
+                        .append("\n  [mToolbar tabStripHeight=")
+                        .append(mToolbar.getTabStripHeight())
+                        .append("]");
+            }
+            mMeasureLogBuilder
+                    .append("\n  [mToolbarLayoutHeight=")
+                    .append(mToolbarLayoutHeight)
+                    .append("]");
+            Log.i(TAG, mMeasureLogBuilder.toString());
+        }
     }
 
     @Override
@@ -426,10 +490,25 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         new Handler()
                 .post(
                         () -> {
-                            setMinimumHeight(
+                            int minHeight =
                                     mToolbar.getTabStripHeight()
                                             + getToolbarHeight()
-                                            + getToolbarHairlineHeight());
+                                            + getToolbarHairlineHeight();
+                            if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+                                Log.i(
+                                        TAG,
+                                        "[TopControlsPositioning] onHeightTransitionFinished"
+                                                + " setting minHeight="
+                                                + minHeight
+                                                + " (tabStrip="
+                                                + mToolbar.getTabStripHeight()
+                                                + " toolbarHeight="
+                                                + getToolbarHeight()
+                                                + " hairline="
+                                                + getToolbarHairlineHeight()
+                                                + ")");
+                            }
+                            setMinimumHeight(minHeight);
                             ViewUtils.requestLayout(
                                     this, "ToolbarControlContainer.onHeightTransitionFinished");
                         });

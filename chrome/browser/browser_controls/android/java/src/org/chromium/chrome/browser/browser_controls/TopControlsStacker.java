@@ -418,7 +418,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (sDumpStatusLogs) {
             Log.i(
                     TAG,
-                    "*** repositionLayers *** initialTopOffset="
+                    "[TopControlsPositioning] *** repositionLayers *** initialTopOffset="
                             + initialTopOffset
                             + " minHeightOffset="
                             + initialTopControlsMinHeightOffset
@@ -750,7 +750,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
         Log.w(
                 TAG,
-                "Height mismatch observed."
+                "[TopControlsPositioning] Height mismatch observed."
                         + " [Expected]"
                         + " expectedHeight= "
                         + expectedHeight
@@ -766,7 +766,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private void dumpLayerStatus(TopControlLayer layer, int yOffset) {
         Log.i(
                 TAG,
-                "["
+                "[TopControlsPositioning] ["
                         + getName(layer.getTopControlType())
                         + "] yOffset="
                         + yOffset

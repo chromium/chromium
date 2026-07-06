@@ -412,18 +412,28 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param callsite The callsite requesting the transition.
      */
     private void onTabStripSizeChanged(int width, int topPadding, @Callsite int callsite) {
-        Log.i(
-                TAG,
-                "onTabStripSizeChanged: callsite=%s, width=%d, topPadding=%d,"
-                        + " controlContainerHeight=%d, forceUpdateHeight=%b, forceFadeIn=%b,"
-                        + " appHeaderState=%s",
-                getCallsiteName(callsite),
-                width,
-                topPadding,
-                controlContainerView().getHeight(),
-                mForceUpdateHeight,
-                mForceFadeInStrip,
-                mAppHeaderState);
+        if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+            Log.i(
+                    TAG,
+                    "[TopControlsPositioning] onTabStripSizeChanged: callsite=%s, width=%d,"
+                            + " topPadding=%d, controlContainerHeight=%d, forceUpdateHeight=%b,"
+                            + " forceFadeIn=%b, appHeaderState=%s",
+                    getCallsiteName(callsite),
+                    width,
+                    topPadding,
+                    controlContainerView().getHeight(),
+                    mForceUpdateHeight,
+                    mForceFadeInStrip,
+                    mAppHeaderState);
+
+            if (topPadding > 0 && topPadding != mTopPadding) {
+                Log.i(
+                        TAG,
+                        "[TopControlsPositioning] onTabStripSizeChanged topPadding>0! Dumping"
+                                + " stack:",
+                        new Throwable());
+            }
+        }
 
         // Avoid transitioning when strip width / control container height is invalid. This can
         // happen when the control container is created hidden after theme changes.
