@@ -60,9 +60,6 @@ def init(ctx):
         "properties": properties,
         "platforms": backend.platform_properties(ctx),
         "input_deps": {},
-        "bad_deps": {
-            "obj/base/base_nocompile_tests/language_tag_nocompile_placeholder.o": "https://crbug.com/530753949",
-        },
         "scandeps": {
             "step_inputs": {
                 "excludes": [

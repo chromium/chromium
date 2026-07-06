@@ -4797,7 +4797,10 @@ if (enable_nocompile_tests) {
       "values_nocompile.nc",
     ]
     sources += [ "containers/adapters_nocompile.nc" ]
-    deps = [ ":base" ]
+    deps = [
+      ":base",
+      "//base/i18n:language_tag",
+    ]
   }
 }
 
