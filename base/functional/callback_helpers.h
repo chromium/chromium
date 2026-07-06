@@ -226,9 +226,17 @@ constexpr auto DoNothingWithBoundArgs(Args&&... args) {
 // Widget widget = ...;
 // F(base::ReturnValueOnce(std::move(widget)));
 template <typename T>
+  requires(!std::is_reference_v<T>)
 constexpr OnceCallback<T(void)> ReturnValueOnce(T value) {
-  static_assert(!std::is_reference_v<T>);
   return base::BindOnce([](T value) { return value; }, std::move(value));
+}
+
+// Like ReturnValueOnce(), but returns a RepeatingCallback that can be invoked
+// multiple times, returning a copy of `value` on each invocation.
+template <typename T>
+  requires(!std::is_reference_v<T> && std::is_copy_constructible_v<T>)
+constexpr RepeatingCallback<T(void)> ReturnValueRepeating(T value) {
+  return base::BindRepeating([](T value) { return value; }, std::move(value));
 }
 
 // Useful for creating a Closure that will delete a pointer when invoked. Only

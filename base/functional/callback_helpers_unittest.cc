@@ -399,6 +399,16 @@ TEST(CallbackHelpersTest, ReturnValueOnce) {
   EXPECT_EQ(*std::move(unique_ptr_factory).Run(), 42);
 }
 
+TEST(CallbackHelpersTest, ReturnValueRepeating) {
+  // Check that copyable types are supported and the callback can be run
+  // multiple times.
+  auto string_factory = base::ReturnValueRepeating(std::string("test"));
+  static_assert(std::is_same_v<decltype(string_factory),
+                               base::RepeatingCallback<std::string(void)>>);
+  EXPECT_EQ(string_factory.Run(), "test");
+  EXPECT_EQ(string_factory.Run(), "test");
+}
+
 TEST(CallbackHelpersTest, DoNothingWithBoundArgs) {
   class DestructionObserver {
    public:

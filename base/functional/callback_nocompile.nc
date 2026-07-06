@@ -5,9 +5,11 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 
 namespace base {
 
@@ -65,6 +67,10 @@ void ChainingWithTypeMismatch() {
   std::move(returns_int_once).Then(std::move(takes_void_once));             // expected-error@*:* {{|then| callback must accept exactly one parameter if |this| has a non-void return type.}}
   returns_int_repeating.Then(takes_void_repeating1);                        // expected-error@*:* {{|then| callback must accept exactly one parameter if |this| has a non-void return type.}}
   std::move(returns_int_repeating).Then(std::move(takes_void_repeating2));  // expected-error@*:* {{|then| callback must accept exactly one parameter if |this| has a non-void return type.}}
+}
+
+void ReturnValueRepeatingWithMoveOnlyType() {
+  ReturnValueRepeating(std::make_unique<int>(42));  // expected-error@*:* {{no matching function for call to 'ReturnValueRepeating'}}
 }
 
 }  // namespace base
