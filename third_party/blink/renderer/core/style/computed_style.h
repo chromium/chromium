@@ -1789,8 +1789,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsDisplayMath() const { return IsDisplayMath(Display()); }
 
   bool BlockifiesChildren() const {
-    return IsDisplayFlex() || IsDisplayWebkitBox() || IsDisplayGrid() ||
-           IsDisplayGridLanes() || IsDisplayMath() || IsDisplayLayoutCustom() ||
+    return IsDisplayFlex() || IsDisplayGrid() || IsDisplayGridLanes() ||
+           IsDisplayMath() || IsDisplayLayoutCustom() ||
            (Display() == EDisplay::kContents && IsInBlockifyingDisplay()) ||
            ForcesBlockifiesChildren();
   }
