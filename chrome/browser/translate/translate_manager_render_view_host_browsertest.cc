@@ -359,7 +359,7 @@ constexpr auto kServerLanguageList = std::to_array<const char*>({
     "yi",
     "fr-FR",
     "tl",
-    "iw",
+    "he",
     "hz",
     "xx",
 });

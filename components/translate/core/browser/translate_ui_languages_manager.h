@@ -13,6 +13,10 @@
 
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace translate {
 
 // Handles index management and querying functions for language lists used in
@@ -90,7 +94,7 @@ class TranslateUILanguagesManager {
   std::unique_ptr<icu::Collator> CreateCollator(const std::string& locale);
 
   // ISO code (en, fr...) -> displayable name in the current locale
-  typedef std::pair<std::string, std::u16string> LanguageNamePair;
+  typedef std::pair<base::i18n::LanguageTag, std::u16string> LanguageNamePair;
 
   // The list of supported languages for translation.
   // The languages are sorted alphabetically based on the displayable name.

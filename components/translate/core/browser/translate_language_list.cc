@@ -12,10 +12,16 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/tags.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -32,278 +38,282 @@
 #include "url/gurl.h"
 
 namespace translate {
-
 namespace {
+
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
 
 // The default list of languages the Google translation server supports.
 // We use this list until we receive the list that the server exposes.
 // This list must be sorted in alphabetical order and contain no duplicates.
-constexpr auto kDefaultSupportedLanguages = std::to_array<std::string_view>({
-    "af",        // Afrikaans
-    "ak",        // Twi
-    "am",        // Amharic
-    "ar",        // Arabic
-    "as",        // Assamese
-    "ay",        // Aymara
-    "az",        // Azerbaijani
-    "be",        // Belarusian
-    "bg",        // Bulgarian
-    "bho",       // Bhojpuri
-    "bm",        // Bambara
-    "bn",        // Bengali
-    "bs",        // Bosnian
-    "ca",        // Catalan
-    "ceb",       // Cebuano
-    "ckb",       // Kurdish (Sorani)
-    "co",        // Corsican
-    "cs",        // Czech
-    "cy",        // Welsh
-    "da",        // Danish
-    "de",        // German
-    "doi",       // Dogri
-    "dv",        // Dhivehi
-    "ee",        // Ewe
-    "el",        // Greek
-    "en",        // English
-    "eo",        // Esperanto
-    "es",        // Spanish
-    "et",        // Estonian
-    "eu",        // Basque
-    "fa",        // Persian
-    "fi",        // Finnish
-    "fr",        // French
-    "fy",        // Frisian
-    "ga",        // Irish
-    "gd",        // Scots Gaelic
-    "gl",        // Galician
-    "gom",       // Konkani
-    "gu",        // Gujarati
-    "ha",        // Hausa
-    "haw",       // Hawaiian
-    "hi",        // Hindi
-    "hmn",       // Hmong
-    "hr",        // Croatian
-    "ht",        // Haitian Creole
-    "hu",        // Hungarian
-    "hy",        // Armenian
-    "id",        // Indonesian
-    "ig",        // Igbo
-    "ilo",       // Ilocano
-    "is",        // Icelandic
-    "it",        // Italian
-    "iw",        // Hebrew - Chrome uses "he"
-    "ja",        // Japanese
-    "jw",        // Javanese - Chrome uses "jv"
-    "ka",        // Georgian
-    "kk",        // Kazakh
-    "km",        // Khmer
-    "kn",        // Kannada
-    "ko",        // Korean
-    "kri",       // Krio
-    "ku",        // Kurdish
-    "ky",        // Kyrgyz
-    "la",        // Latin
-    "lb",        // Luxembourgish
-    "lg",        // Luganda
-    "ln",        // Lingala
-    "lo",        // Lao
-    "lt",        // Lithuanian
-    "lus",       // Mizo
-    "lv",        // Latvian
-    "mai",       // Maithili
-    "mg",        // Malagasy
-    "mi",        // Maori
-    "mk",        // Macedonian
-    "ml",        // Malayalam
-    "mn",        // Mongolian
-    "mni-Mtei",  // Manipuri (Meitei Mayek)
-    "mr",        // Marathi
-    "ms",        // Malay
-    "mt",        // Maltese
-    "my",        // Burmese
-    "ne",        // Nepali
-    "nl",        // Dutch
-    "no",        // Norwegian - Chrome uses "nb"
-    "nso",       // Sepedi
-    "ny",        // Nyanja
-    "om",        // Oromo
-    "or",        // Odia (Oriya)
-    "pa",        // Punjabi
-    "pl",        // Polish
-    "ps",        // Pashto
-    "pt",        // Portuguese
-    "qu",        // Quechua
-    "ro",        // Romanian
-    "ru",        // Russian
-    "rw",        // Kinyarwanda
-    "sa",        // Sanskrit
-    "sd",        // Sindhi
-    "si",        // Sinhala
-    "sk",        // Slovak
-    "sl",        // Slovenian
-    "sm",        // Samoan
-    "sn",        // Shona
-    "so",        // Somali
-    "sq",        // Albanian
-    "sr",        // Serbian
-    "st",        // Southern Sotho
-    "su",        // Sundanese
-    "sv",        // Swedish
-    "sw",        // Swahili
-    "ta",        // Tamil
-    "te",        // Telugu
-    "tg",        // Tajik
-    "th",        // Thai
-    "ti",        // Tigrinya
-    "tk",        // Turkmen
-    "tl",        // Tagalog - Chrome uses "fil"
-    "tr",        // Turkish
-    "ts",        // Tsonga
-    "tt",        // Tatar
-    "ug",        // Uyghur
-    "uk",        // Ukrainian
-    "ur",        // Urdu
-    "uz",        // Uzbek
-    "vi",        // Vietnamese
-    "xh",        // Xhosa
-    "yi",        // Yiddish
-    "yo",        // Yoruba
-    "zh-CN",     // Chinese (Simplified)
-    "zh-TW",     // Chinese (Traditional)
-    "zu",        // Zulu
-});
+constexpr auto kDefaultSupportedLanguages =
+    base::MakeFixedFlatSet<LanguageTag>({
+        GetKnownLanguageTag("af"),        // Afrikaans
+        GetKnownLanguageTag("ak"),        // Akan
+        GetKnownLanguageTag("am"),        // Amharic
+        GetKnownLanguageTag("ar"),        // Arabic
+        GetKnownLanguageTag("as"),        // Assamese
+        GetKnownLanguageTag("ay"),        // Aymara
+        GetKnownLanguageTag("az"),        // Azerbaijani
+        GetKnownLanguageTag("be"),        // Belarusian
+        GetKnownLanguageTag("bg"),        // Bulgarian
+        GetKnownLanguageTag("bho"),       // Bhojpuri
+        GetKnownLanguageTag("bm"),        // Bambara
+        GetKnownLanguageTag("bn"),        // Bengali
+        GetKnownLanguageTag("bs"),        // Bosnian
+        GetKnownLanguageTag("ca"),        // Catalan
+        GetKnownLanguageTag("ceb"),       // Cebuano
+        GetKnownLanguageTag("ckb"),       // Kurdish (Sorani)
+        GetKnownLanguageTag("co"),        // Corsican
+        GetKnownLanguageTag("cs"),        // Czech
+        GetKnownLanguageTag("cy"),        // Welsh
+        GetKnownLanguageTag("da"),        // Danish
+        GetKnownLanguageTag("de"),        // German
+        GetKnownLanguageTag("doi"),       // Dogri
+        GetKnownLanguageTag("dv"),        // Dhivehi
+        GetKnownLanguageTag("ee"),        // Ewe
+        GetKnownLanguageTag("el"),        // Greek
+        GetKnownLanguageTag("en"),        // English
+        GetKnownLanguageTag("eo"),        // Esperanto
+        GetKnownLanguageTag("es"),        // Spanish
+        GetKnownLanguageTag("et"),        // Estonian
+        GetKnownLanguageTag("eu"),        // Basque
+        GetKnownLanguageTag("fa"),        // Persian
+        GetKnownLanguageTag("fi"),        // Finnish
+        GetKnownLanguageTag("fr"),        // French
+        GetKnownLanguageTag("fy"),        // Frisian
+        GetKnownLanguageTag("ga"),        // Irish
+        GetKnownLanguageTag("gd"),        // Scots Gaelic
+        GetKnownLanguageTag("gl"),        // Galician
+        GetKnownLanguageTag("gu"),        // Gujarati
+        GetKnownLanguageTag("ha"),        // Hausa
+        GetKnownLanguageTag("haw"),       // Hawaiian
+        GetKnownLanguageTag("he"),        // Hebrew
+        GetKnownLanguageTag("hi"),        // Hindi
+        GetKnownLanguageTag("hmn"),       // Hmong
+        GetKnownLanguageTag("hr"),        // Croatian
+        GetKnownLanguageTag("ht"),        // Haitian Creole
+        GetKnownLanguageTag("hu"),        // Hungarian
+        GetKnownLanguageTag("hy"),        // Armenian
+        GetKnownLanguageTag("id"),        // Indonesian
+        GetKnownLanguageTag("ig"),        // Igbo
+        GetKnownLanguageTag("ilo"),       // Ilocano
+        GetKnownLanguageTag("is"),        // Icelandic
+        GetKnownLanguageTag("it"),        // Italian
+        GetKnownLanguageTag("ja"),        // Japanese
+        GetKnownLanguageTag("jv"),        // Javanese
+        GetKnownLanguageTag("ka"),        // Georgian
+        GetKnownLanguageTag("kk"),        // Kazakh
+        GetKnownLanguageTag("km"),        // Khmer
+        GetKnownLanguageTag("kn"),        // Kannada
+        GetKnownLanguageTag("ko"),        // Korean
+        GetKnownLanguageTag("kok"),       // Konkani
+        GetKnownLanguageTag("kri"),       // Krio
+        GetKnownLanguageTag("ku"),        // Kurdish (Kurmanji)
+        GetKnownLanguageTag("ky"),        // Kyrgyz
+        GetKnownLanguageTag("la"),        // Latin
+        GetKnownLanguageTag("lb"),        // Luxembourgish
+        GetKnownLanguageTag("lg"),        // Luganda
+        GetKnownLanguageTag("ln"),        // Lingala
+        GetKnownLanguageTag("lo"),        // Lao
+        GetKnownLanguageTag("lt"),        // Lithuanian
+        GetKnownLanguageTag("lus"),       // Mizo
+        GetKnownLanguageTag("lv"),        // Latvian
+        GetKnownLanguageTag("mai"),       // Maithili
+        GetKnownLanguageTag("mg"),        // Malagasy
+        GetKnownLanguageTag("mi"),        // Maori
+        GetKnownLanguageTag("mk"),        // Macedonian
+        GetKnownLanguageTag("ml"),        // Malayalam
+        GetKnownLanguageTag("mn"),        // Mongolian
+        GetKnownLanguageTag("mni-Mtei"),  // Meiteilon (Manipuri)
+        GetKnownLanguageTag("mr"),        // Marathi
+        GetKnownLanguageTag("ms"),        // Malay
+        GetKnownLanguageTag("mt"),        // Maltese
+        GetKnownLanguageTag("my"),        // Myanmar (Burmese)
+        GetKnownLanguageTag("ne"),        // Nepali
+        GetKnownLanguageTag("nl"),        // Dutch
+        GetKnownLanguageTag("no"),        // Norwegian
+        GetKnownLanguageTag("nso"),       // Sepedi
+        GetKnownLanguageTag("ny"),        // Chichewa
+        GetKnownLanguageTag("om"),        // Oromo
+        GetKnownLanguageTag("or"),        // Odia (Oriya)
+        GetKnownLanguageTag("pa"),        // Punjabi
+        GetKnownLanguageTag("pl"),        // Polish
+        GetKnownLanguageTag("ps"),        // Pashto
+        GetKnownLanguageTag("pt"),        // Portuguese
+        GetKnownLanguageTag("qu"),        // Quechua
+        GetKnownLanguageTag("ro"),        // Romanian
+        GetKnownLanguageTag("ru"),        // Russian
+        GetKnownLanguageTag("rw"),        // Kinyarwanda
+        GetKnownLanguageTag("sa"),        // Sanskrit
+        GetKnownLanguageTag("sd"),        // Sindhi
+        GetKnownLanguageTag("si"),        // Sinhala
+        GetKnownLanguageTag("sk"),        // Slovak
+        GetKnownLanguageTag("sl"),        // Slovenian
+        GetKnownLanguageTag("sm"),        // Samoan
+        GetKnownLanguageTag("sn"),        // Shona
+        GetKnownLanguageTag("so"),        // Somali
+        GetKnownLanguageTag("sq"),        // Albanian
+        GetKnownLanguageTag("sr"),        // Serbian
+        GetKnownLanguageTag("st"),        // Sesotho
+        GetKnownLanguageTag("su"),        // Sundanese
+        GetKnownLanguageTag("sv"),        // Swedish
+        GetKnownLanguageTag("sw"),        // Swahili
+        GetKnownLanguageTag("ta"),        // Tamil
+        GetKnownLanguageTag("te"),        // Telugu
+        GetKnownLanguageTag("tg"),        // Tajik
+        GetKnownLanguageTag("th"),        // Thai
+        GetKnownLanguageTag("ti"),        // Tigrinya
+        GetKnownLanguageTag("tk"),        // Turkmen
+        GetKnownLanguageTag("tl"),        // Tagalog
+        GetKnownLanguageTag("tr"),        // Turkish
+        GetKnownLanguageTag("ts"),        // Tsonga
+        GetKnownLanguageTag("tt"),        // Tatar
+        GetKnownLanguageTag("ug"),        // Uyghur
+        GetKnownLanguageTag("uk"),        // Ukrainian
+        GetKnownLanguageTag("ur"),        // Urdu
+        GetKnownLanguageTag("uz"),        // Uzbek
+        GetKnownLanguageTag("vi"),        // Vietnamese
+        GetKnownLanguageTag("xh"),        // Xhosa
+        GetKnownLanguageTag("yi"),        // Yiddish
+        GetKnownLanguageTag("yo"),        // Yoruba
+        GetKnownLanguageTag("zh-CN"),     // Chinese (Simplified)
+        GetKnownLanguageTag("zh-TW"),     // Chinese (Traditional)
+        GetKnownLanguageTag("zu"),        // Zulu
+    });
 
 // The default list of languages the Partial Translation service supports.
 // This list must be sorted in alphabetical order and contain no duplicates.
 // This list is identical to above except that it excludes
 // {ilo lus mni-Mtei gom doi bm ckb}.
 constexpr auto kDefaultSupportedPartialTranslateLanguages =
-    std::to_array<std::string_view>({
-        "af",     // Afrikaans
-        "ak",     // Twi
-        "am",     // Amharic
-        "ar",     // Arabic
-        "as",     // Assamese
-        "ay",     // Aymara
-        "az",     // Azerbaijani
-        "be",     // Belarusian
-        "bg",     // Bulgarian
-        "bho",    // Bhojpuri
-        "bn",     // Bengali
-        "bs",     // Bosnian
-        "ca",     // Catalan
-        "ceb",    // Cebuano
-        "co",     // Corsican
-        "cs",     // Czech
-        "cy",     // Welsh
-        "da",     // Danish
-        "de",     // German
-        "dv",     // Dhivehi
-        "ee",     // Ewe
-        "el",     // Greek
-        "en",     // English
-        "eo",     // Esperanto
-        "es",     // Spanish
-        "et",     // Estonian
-        "eu",     // Basque
-        "fa",     // Persian
-        "fi",     // Finnish
-        "fr",     // French
-        "fy",     // Frisian
-        "ga",     // Irish
-        "gd",     // Scots Gaelic
-        "gl",     // Galician
-        "gu",     // Gujarati
-        "ha",     // Hausa
-        "haw",    // Hawaiian
-        "hi",     // Hindi
-        "hmn",    // Hmong
-        "hr",     // Croatian
-        "ht",     // Haitian Creole
-        "hu",     // Hungarian
-        "hy",     // Armenian
-        "id",     // Indonesian
-        "ig",     // Igbo
-        "is",     // Icelandic
-        "it",     // Italian
-        "iw",     // Hebrew - Chrome uses "he"
-        "ja",     // Japanese
-        "jw",     // Javanese - Chrome uses "jv"
-        "ka",     // Georgian
-        "kk",     // Kazakh
-        "km",     // Khmer
-        "kn",     // Kannada
-        "ko",     // Korean
-        "kri",    // Krio
-        "ku",     // Kurdish
-        "ky",     // Kyrgyz
-        "la",     // Latin
-        "lb",     // Luxembourgish
-        "lg",     // Luganda
-        "ln",     // Lingala
-        "lo",     // Lao
-        "lt",     // Lithuanian
-        "lv",     // Latvian
-        "mai",    // Maithili
-        "mg",     // Malagasy
-        "mi",     // Maori
-        "mk",     // Macedonian
-        "ml",     // Malayalam
-        "mn",     // Mongolian
-        "mr",     // Marathi
-        "ms",     // Malay
-        "mt",     // Maltese
-        "my",     // Burmese
-        "ne",     // Nepali
-        "nl",     // Dutch
-        "no",     // Norwegian - Chrome uses "nb"
-        "nso",    // Sepedi
-        "ny",     // Nyanja
-        "om",     // Oromo
-        "or",     // Odia (Oriya)
-        "pa",     // Punjabi
-        "pl",     // Polish
-        "ps",     // Pashto
-        "pt",     // Portuguese
-        "qu",     // Quechua
-        "ro",     // Romanian
-        "ru",     // Russian
-        "rw",     // Kinyarwanda
-        "sa",     // Sanskrit
-        "sd",     // Sindhi
-        "si",     // Sinhala
-        "sk",     // Slovak
-        "sl",     // Slovenian
-        "sm",     // Samoan
-        "sn",     // Shona
-        "so",     // Somali
-        "sq",     // Albanian
-        "sr",     // Serbian
-        "st",     // Southern Sotho
-        "su",     // Sundanese
-        "sv",     // Swedish
-        "sw",     // Swahili
-        "ta",     // Tamil
-        "te",     // Telugu
-        "tg",     // Tajik
-        "th",     // Thai
-        "ti",     // Tigrinya
-        "tk",     // Turkmen
-        "tl",     // Tagalog - Chrome uses "fil"
-        "tr",     // Turkish
-        "ts",     // Tsonga
-        "tt",     // Tatar
-        "ug",     // Uyghur
-        "uk",     // Ukrainian
-        "ur",     // Urdu
-        "uz",     // Uzbek
-        "vi",     // Vietnamese
-        "xh",     // Xhosa
-        "yi",     // Yiddish
-        "yo",     // Yoruba
-        "zh-CN",  // Chinese (Simplified)
-        "zh-TW",  // Chinese (Traditional)
-        "zu",     // Zulu
+    base::MakeFixedFlatSet<LanguageTag>({
+        GetKnownLanguageTag("af"),     // Afrikaans
+        GetKnownLanguageTag("ak"),     // Akan
+        GetKnownLanguageTag("am"),     // Amharic
+        GetKnownLanguageTag("ar"),     // Arabic
+        GetKnownLanguageTag("as"),     // Assamese
+        GetKnownLanguageTag("ay"),     // Aymara
+        GetKnownLanguageTag("az"),     // Azerbaijani
+        GetKnownLanguageTag("be"),     // Belarusian
+        GetKnownLanguageTag("bg"),     // Bulgarian
+        GetKnownLanguageTag("bho"),    // Bhojpuri
+        GetKnownLanguageTag("bn"),     // Bengali
+        GetKnownLanguageTag("bs"),     // Bosnian
+        GetKnownLanguageTag("ca"),     // Catalan
+        GetKnownLanguageTag("ceb"),    // Cebuano
+        GetKnownLanguageTag("co"),     // Corsican
+        GetKnownLanguageTag("cs"),     // Czech
+        GetKnownLanguageTag("cy"),     // Welsh
+        GetKnownLanguageTag("da"),     // Danish
+        GetKnownLanguageTag("de"),     // German
+        GetKnownLanguageTag("dv"),     // Dhivehi
+        GetKnownLanguageTag("ee"),     // Ewe
+        GetKnownLanguageTag("el"),     // Greek
+        GetKnownLanguageTag("en"),     // English
+        GetKnownLanguageTag("eo"),     // Esperanto
+        GetKnownLanguageTag("es"),     // Spanish
+        GetKnownLanguageTag("et"),     // Estonian
+        GetKnownLanguageTag("eu"),     // Basque
+        GetKnownLanguageTag("fa"),     // Persian
+        GetKnownLanguageTag("fi"),     // Finnish
+        GetKnownLanguageTag("fil"),    // Filipino
+        GetKnownLanguageTag("fr"),     // French
+        GetKnownLanguageTag("fy"),     // Frisian
+        GetKnownLanguageTag("ga"),     // Irish
+        GetKnownLanguageTag("gd"),     // Scots Gaelic
+        GetKnownLanguageTag("gl"),     // Galician
+        GetKnownLanguageTag("gu"),     // Gujarati
+        GetKnownLanguageTag("ha"),     // Hausa
+        GetKnownLanguageTag("haw"),    // Hawaiian
+        GetKnownLanguageTag("he"),     // Hebrew
+        GetKnownLanguageTag("hi"),     // Hindi
+        GetKnownLanguageTag("hmn"),    // Hmong
+        GetKnownLanguageTag("hr"),     // Croatian
+        GetKnownLanguageTag("ht"),     // Haitian Creole
+        GetKnownLanguageTag("hu"),     // Hungarian
+        GetKnownLanguageTag("hy"),     // Armenian
+        GetKnownLanguageTag("id"),     // Indonesian
+        GetKnownLanguageTag("ig"),     // Igbo
+        GetKnownLanguageTag("is"),     // Icelandic
+        GetKnownLanguageTag("it"),     // Italian
+        GetKnownLanguageTag("ja"),     // Japanese
+        GetKnownLanguageTag("jv"),     // Javanese
+        GetKnownLanguageTag("ka"),     // Georgian
+        GetKnownLanguageTag("kk"),     // Kazakh
+        GetKnownLanguageTag("km"),     // Khmer
+        GetKnownLanguageTag("kn"),     // Kannada
+        GetKnownLanguageTag("ko"),     // Korean
+        GetKnownLanguageTag("kri"),    // Krio
+        GetKnownLanguageTag("ku"),     // Kurdish (Kurmanji)
+        GetKnownLanguageTag("ky"),     // Kyrgyz
+        GetKnownLanguageTag("la"),     // Latin
+        GetKnownLanguageTag("lb"),     // Luxembourgish
+        GetKnownLanguageTag("lg"),     // Luganda
+        GetKnownLanguageTag("ln"),     // Lingala
+        GetKnownLanguageTag("lo"),     // Lao
+        GetKnownLanguageTag("lt"),     // Lithuanian
+        GetKnownLanguageTag("lv"),     // Latvian
+        GetKnownLanguageTag("mai"),    // Maithili
+        GetKnownLanguageTag("mg"),     // Malagasy
+        GetKnownLanguageTag("mi"),     // Maori
+        GetKnownLanguageTag("mk"),     // Macedonian
+        GetKnownLanguageTag("ml"),     // Malayalam
+        GetKnownLanguageTag("mn"),     // Mongolian
+        GetKnownLanguageTag("mr"),     // Marathi
+        GetKnownLanguageTag("ms"),     // Malay
+        GetKnownLanguageTag("mt"),     // Maltese
+        GetKnownLanguageTag("my"),     // Myanmar (Burmese)
+        GetKnownLanguageTag("ne"),     // Nepali
+        GetKnownLanguageTag("nl"),     // Dutch
+        GetKnownLanguageTag("no"),     // Norwegian
+        GetKnownLanguageTag("nso"),    // Sepedi
+        GetKnownLanguageTag("ny"),     // Chichewa
+        GetKnownLanguageTag("om"),     // Oromo
+        GetKnownLanguageTag("or"),     // Odia (Oriya)
+        GetKnownLanguageTag("pa"),     // Punjabi
+        GetKnownLanguageTag("pl"),     // Polish
+        GetKnownLanguageTag("ps"),     // Pashto
+        GetKnownLanguageTag("pt"),     // Portuguese
+        GetKnownLanguageTag("qu"),     // Quechua
+        GetKnownLanguageTag("ro"),     // Romanian
+        GetKnownLanguageTag("ru"),     // Russian
+        GetKnownLanguageTag("rw"),     // Kinyarwanda
+        GetKnownLanguageTag("sa"),     // Sanskrit
+        GetKnownLanguageTag("sd"),     // Sindhi
+        GetKnownLanguageTag("si"),     // Sinhala
+        GetKnownLanguageTag("sk"),     // Slovak
+        GetKnownLanguageTag("sl"),     // Slovenian
+        GetKnownLanguageTag("sm"),     // Samoan
+        GetKnownLanguageTag("sn"),     // Shona
+        GetKnownLanguageTag("so"),     // Somali
+        GetKnownLanguageTag("sq"),     // Albanian
+        GetKnownLanguageTag("sr"),     // Serbian
+        GetKnownLanguageTag("st"),     // Sesotho
+        GetKnownLanguageTag("su"),     // Sundanese
+        GetKnownLanguageTag("sv"),     // Swedish
+        GetKnownLanguageTag("sw"),     // Swahili
+        GetKnownLanguageTag("ta"),     // Tamil
+        GetKnownLanguageTag("te"),     // Telugu
+        GetKnownLanguageTag("tg"),     // Tajik
+        GetKnownLanguageTag("th"),     // Thai
+        GetKnownLanguageTag("ti"),     // Tigrinya
+        GetKnownLanguageTag("tk"),     // Turkmen
+        GetKnownLanguageTag("tr"),     // Turkish
+        GetKnownLanguageTag("ts"),     // Tsonga
+        GetKnownLanguageTag("tt"),     // Tatar
+        GetKnownLanguageTag("ug"),     // Uyghur
+        GetKnownLanguageTag("uk"),     // Ukrainian
+        GetKnownLanguageTag("ur"),     // Urdu
+        GetKnownLanguageTag("uz"),     // Uzbek
+        GetKnownLanguageTag("vi"),     // Vietnamese
+        GetKnownLanguageTag("xh"),     // Xhosa
+        GetKnownLanguageTag("yi"),     // Yiddish
+        GetKnownLanguageTag("yo"),     // Yoruba
+        GetKnownLanguageTag("zh-CN"),  // Chinese (Simplified)
+        GetKnownLanguageTag("zh-TW"),  // Chinese (Traditional)
+        GetKnownLanguageTag("zu"),     // Zulu
     });
 
 // Constant URL string to fetch server supporting language list.
@@ -312,6 +322,12 @@ constexpr std::string_view kLanguageListFetchPath =
 
 // Retry parameter for fetching.
 constexpr int kMaxRetryOn5xx = 5;
+
+void SortAndUnique(std::vector<LanguageTag>& languages) {
+  std::sort(languages.begin(), languages.end());
+  languages.erase(std::unique(languages.begin(), languages.end()),
+                  languages.end());
+}
 
 }  // namespace
 
@@ -328,16 +344,8 @@ TranslateLanguageList::TranslateLanguageList(
       // We default to our hard coded list of languages in
       // |kDefaultSupportedLanguages|. This list will be overridden by a server
       // providing supported languages list.
-      supported_languages_(std::begin(kDefaultSupportedLanguages),
-                           std::end(kDefaultSupportedLanguages)),
-      language_list_fetcher_(std::move(fetcher)) {
-  // |kDefaultSupportedLanguages| should be sorted alphabetically and contain no
-  // duplicates.
-  DCHECK(
-      std::is_sorted(supported_languages_.begin(), supported_languages_.end()));
-  DCHECK(supported_languages_.end() ==
-         std::ranges::adjacent_find(supported_languages_));
-}
+      supported_languages_(std::from_range, kDefaultSupportedLanguages),
+      language_list_fetcher_(std::move(fetcher)) {}
 
 TranslateLanguageList::~TranslateLanguageList() = default;
 
@@ -345,7 +353,9 @@ void TranslateLanguageList::GetSupportedLanguages(
     bool translate_allowed,
     std::vector<std::string>* languages) {
   DCHECK(languages && languages->empty());
-  *languages = supported_languages_;
+  for (const LanguageTag& tag : supported_languages_) {
+    languages->emplace_back(tag.tag_string());
+  }
 
   // Update language lists if they are not updated after Chrome was launched
   // for later requests.
@@ -359,28 +369,38 @@ void TranslateLanguageList::GetSupportedPartialTranslateLanguages(
     std::vector<std::string>* languages) {
   DCHECK(languages && languages->empty());
 
-  *languages = std::vector<std::string>(
-      std::begin(kDefaultSupportedPartialTranslateLanguages),
-      std::end(kDefaultSupportedPartialTranslateLanguages));
+  for (const LanguageTag& tag : kDefaultSupportedPartialTranslateLanguages) {
+    languages->emplace_back(tag.tag_string());
+  }
 }
 
 std::string TranslateLanguageList::GetLanguageCode(std::string_view language) {
   // Only remove the country code for country specific languages we don't
   // support specifically yet.
-  if (IsSupportedLanguage(language))
+  if (IsSupportedLanguage(language)) {
     return std::string(language);
+  }
   return std::string(language::ExtractBaseLanguage(language));
 }
 
 bool TranslateLanguageList::IsSupportedLanguage(std::string_view language) {
-  return std::ranges::binary_search(supported_languages_, language);
+  std::optional<LanguageTag> tag =
+      LanguageTagConverter::GetInstance().FromString(language);
+  if (!tag) {
+    return false;
+  }
+  return supported_languages_.contains(*tag);
 }
 
 // static
 bool TranslateLanguageList::IsSupportedPartialTranslateLanguage(
     std::string_view language) {
-  return std::ranges::binary_search(kDefaultSupportedPartialTranslateLanguages,
-                                    language);
+  std::optional<LanguageTag> tag =
+      LanguageTagConverter::GetInstance().FromString(language);
+  if (!tag) {
+    return false;
+  }
+  return kDefaultSupportedPartialTranslateLanguages.contains(*tag);
 }
 
 // static
@@ -416,8 +436,9 @@ void TranslateLanguageList::RequestLanguageList() {
         // Use the strictest mode for request headers, since incognito state is
         // not known.
         /*is_incognito=*/true);
-    if (!result)
+    if (!result) {
       NotifyEvent(__LINE__, "Request is omitted due to retry limit");
+    }
   }
 }
 
@@ -461,8 +482,9 @@ void TranslateLanguageList::OnLanguageListFetchComplete(
   bool parsed_correctly = SetSupportedLanguages(data);
   language_list_fetcher_.reset();
 
-  if (parsed_correctly)
+  if (parsed_correctly) {
     last_updated_ = base::Time::Now();
+  }
 }
 
 void TranslateLanguageList::NotifyEvent(int line, std::string message) {
@@ -497,26 +519,30 @@ bool TranslateLanguageList::SetSupportedLanguages(
     return false;
   }
 
-  // Now we can clear language list.
-  supported_languages_.clear();
+  std::vector<LanguageTag> supported_languages_from_service;
   // ... and replace it with the values we just fetched from the server.
-  for (auto kv_pair : *target_languages) {
-    const std::string& lang = kv_pair.first;
+  for (auto [lang, language_name] : *target_languages) {
     if (!language::AcceptLanguagesService::CanBeAcceptLanguage(lang.c_str())) {
       // Don't include languages that can not be Accept-Languages
       continue;
     }
-    supported_languages_.push_back(lang);
+    if (std::optional<LanguageTag> language_tag =
+            LanguageTagConverter::GetInstance().FromString(lang);
+        language_tag) {
+      supported_languages_from_service.emplace_back(*language_tag);
+    }
   }
 
-  // Since the DictionaryValue was sorted by key, |supported_languages_| should
-  // already be sorted and have no duplicate values.
-  DCHECK(
-      std::is_sorted(supported_languages_.begin(), supported_languages_.end()));
-  DCHECK(supported_languages_.end() ==
-         std::ranges::adjacent_find(supported_languages_));
+  SortAndUnique(supported_languages_from_service);
+  supported_languages_ = base::flat_set<LanguageTag>(
+      base::sorted_unique, std::move(supported_languages_from_service));
 
-  NotifyEvent(__LINE__, base::JoinString(supported_languages_, ", "));
+  std::vector<std::string_view> languages_as_strings;
+  std::ranges::transform(supported_languages_,
+                         std::back_inserter(languages_as_strings),
+                         &LanguageTag::tag_string);
+
+  NotifyEvent(__LINE__, base::JoinString(languages_as_strings, ", "));
   return true;
 }
 

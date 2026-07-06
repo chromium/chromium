@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/time/time.h"
 
 class GURL;
@@ -116,7 +117,7 @@ class TranslateLanguageList {
   bool request_pending_;
 
   // The languages supported by the translation server, sorted alphabetically.
-  std::vector<std::string> supported_languages_;
+  base::flat_set<base::i18n::LanguageTag> supported_languages_;
 
   // A LanguageListFetcher instance to fetch a server providing supported
   // language list.

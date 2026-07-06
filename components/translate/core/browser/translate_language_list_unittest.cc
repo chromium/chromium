@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/i18n/tag_converters.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
@@ -19,6 +20,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -135,6 +137,154 @@ TEST_F(TranslateLanguageListTest, IsSupportedPartialTranslateLanguage) {
   EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("xx"));
   EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("ilo"));
   EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("mni-Mtei"));
+}
+
+// Test that all "old" languages are still supported.
+TEST_F(TranslateLanguageListTest, SanityCheckAllLanguages) {
+  TranslateLanguageList language_list(
+      std::make_unique<DummyTranslateUrlFetcher>());
+  const std::string_view kAllLanguages[] = {
+      "af",        // Afrikaans
+      "ak",        // Twi
+      "am",        // Amharic
+      "ar",        // Arabic
+      "as",        // Assamese
+      "ay",        // Aymara
+      "az",        // Azerbaijani
+      "be",        // Belarusian
+      "bg",        // Bulgarian
+      "bho",       // Bhojpuri
+      "bm",        // Bambara
+      "bn",        // Bengali
+      "bs",        // Bosnian
+      "ca",        // Catalan
+      "ceb",       // Cebuano
+      "ckb",       // Kurdish (Sorani)
+      "co",        // Corsican
+      "cs",        // Czech
+      "cy",        // Welsh
+      "da",        // Danish
+      "de",        // German
+      "doi",       // Dogri
+      "dv",        // Dhivehi
+      "ee",        // Ewe
+      "el",        // Greek
+      "en",        // English
+      "eo",        // Esperanto
+      "es",        // Spanish
+      "et",        // Estonian
+      "eu",        // Basque
+      "fa",        // Persian
+      "fi",        // Finnish
+      "fr",        // French
+      "fy",        // Frisian
+      "ga",        // Irish
+      "gd",        // Scots Gaelic
+      "gl",        // Galician
+      "kok",       // Konkani
+      "gu",        // Gujarati
+      "ha",        // Hausa
+      "haw",       // Hawaiian
+      "hi",        // Hindi
+      "hmn",       // Hmong
+      "hr",        // Croatian
+      "ht",        // Haitian Creole
+      "hu",        // Hungarian
+      "hy",        // Armenian
+      "id",        // Indonesian
+      "ig",        // Igbo
+      "ilo",       // Ilocano
+      "is",        // Icelandic
+      "it",        // Italian
+      "he",        // Hebrew - Chrome uses "he"
+      "ja",        // Japanese
+      "jv",        // Javanese - Chrome uses "jv"
+      "ka",        // Georgian
+      "kk",        // Kazakh
+      "km",        // Khmer
+      "kn",        // Kannada
+      "ko",        // Korean
+      "kri",       // Krio
+      "ku",        // Kurdish
+      "ky",        // Kyrgyz
+      "la",        // Latin
+      "lb",        // Luxembourgish
+      "lg",        // Luganda
+      "ln",        // Lingala
+      "lo",        // Lao
+      "lt",        // Lithuanian
+      "lus",       // Mizo
+      "lv",        // Latvian
+      "mai",       // Maithili
+      "mg",        // Malagasy
+      "mi",        // Maori
+      "mk",        // Macedonian
+      "ml",        // Malayalam
+      "mn",        // Mongolian
+      "mni-Mtei",  // Manipuri (Meitei Mayek)
+      "mr",        // Marathi
+      "ms",        // Malay
+      "mt",        // Maltese
+      "my",        // Burmese
+      "ne",        // Nepali
+      "nl",        // Dutch
+      "no",        // Norwegian - Chrome uses "nb"
+      "nso",       // Sepedi
+      "ny",        // Nyanja
+      "om",        // Oromo
+      "or",        // Odia (Oriya)
+      "pa",        // Punjabi
+      "pl",        // Polish
+      "ps",        // Pashto
+      "pt",        // Portuguese
+      "qu",        // Quechua
+      "ro",        // Romanian
+      "ru",        // Russian
+      "rw",        // Kinyarwanda
+      "sa",        // Sanskrit
+      "sd",        // Sindhi
+      "si",        // Sinhala
+      "sk",        // Slovak
+      "sl",        // Slovenian
+      "sm",        // Samoan
+      "sn",        // Shona
+      "so",        // Somali
+      "sq",        // Albanian
+      "sr",        // Serbian
+      "st",        // Southern Sotho
+      "su",        // Sundanese
+      "sv",        // Swedish
+      "sw",        // Swahili
+      "ta",        // Tamil
+      "te",        // Telugu
+      "tg",        // Tajik
+      "th",        // Thai
+      "ti",        // Tigrinya
+      "tk",        // Turkmen
+      "tl",        // Tagalog - Chrome uses "fil"
+      "tr",        // Turkish
+      "ts",        // Tsonga
+      "tt",        // Tatar
+      "ug",        // Uyghur
+      "uk",        // Ukrainian
+      "ur",        // Urdu
+      "uz",        // Uzbek
+      "vi",        // Vietnamese
+      "xh",        // Xhosa
+      "yi",        // Yiddish
+      "yo",        // Yoruba
+      "zh-CN",     // Chinese (Simplified)
+      "zh-TW",     // Chinese (Traditional)
+      "zu",        // Zulu
+  };
+
+  std::vector<std::string> languages;
+  language_list.GetSupportedLanguages(true, &languages);
+  for (std::string_view lang : kAllLanguages) {
+    EXPECT_TRUE(language_list.IsSupportedLanguage(lang))
+        << "Language " << lang << " should be supported";
+    EXPECT_THAT(languages, ::testing::Contains(lang));
+  }
 }
 
 // Sanity test for the default set of supported languages. The default set of

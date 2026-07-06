@@ -10,6 +10,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/tags.h"
 #include "components/language/core/common/language_util.h"
 #include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/views/format_constants.h"
@@ -290,9 +292,13 @@ views::View* TranslationViewWrapperBase::GetTranslateArrowIconForTesting() {
 
 void TranslationViewWrapperBase::SetTargetLanguageForTesting(
     const std::string& language_code) {
+  base::i18n::LanguageTag language_tag =
+      base::i18n::LanguageTagConverter::GetInstance()
+          .FromString(language_code)
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   for (size_t i = 0;
        i < translate_ui_languages_manager_->GetNumberOfLanguages(); ++i) {
-    if (language_code ==
+    if (language_tag.tag_string() ==
         translate_ui_languages_manager_->GetLanguageCodeAt(i)) {
       ExecuteCommand(/*target_language_code_index=*/i, /*event_flags=*/0);
     }
