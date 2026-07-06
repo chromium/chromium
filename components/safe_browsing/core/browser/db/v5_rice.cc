@@ -108,44 +108,95 @@ Uint256 Uint256::operator|(const Uint256& other) const {
 V5BitReader::V5BitReader(base::span<const uint8_t> data) : data_(data) {}
 
 bool V5BitReader::HasMore() const {
+  return buffer_.HasBits() || StreamHasMore();
+}
+
+bool V5BitReader::StreamHasMore() const {
   return byte_index_ < data_.size();
 }
 
-// TODO(crbug.com/362791941): Replace this implementation with uint32 buffer
-// optimization.
 bool V5BitReader::ReadSingleBit(bool* bit) {
-  if (!HasMore()) {
+  // Try to refill the buffer from the stream if it is empty.
+  if (!buffer_.HasBits() && !FillBuffer()) {
     return false;
   }
-  // Right shift the byte by the bit index we want to read, and then `& 1` to
-  // read the least significant bit. e.g. 00000100 would read a 1 into `bit`
-  // only for `bit_index_` = 2.
-  *bit = (data_[byte_index_] >> bit_index_) & 1;
-  bit_index_++;
-  if (bit_index_ == 8) {
-    bit_index_ = 0;
-    byte_index_++;
-  }
+  // Consume the least significant bit from the buffer. For example, if the
+  // buffer has bits `00000100` (binary), the first two reads return `false` (0)
+  // and the third returns `true` (1).
+  *bit = (buffer_.ConsumeBits(1) != 0);
   return true;
 }
 
-// TODO(crbug.com/362791941): Replace this implementation with uint32 buffer
-// optimization.
 template <typename T>
 bool V5BitReader::ReadMultipleBits(int num_bits, T* out) {
   T result{};
-  for (int i = 0; i < num_bits; ++i) {
-    bool bit;
-    if (!ReadSingleBit(&bit)) {
+  int bits_read = 0;
+  while (bits_read < num_bits) {
+    // Try to refill the buffer from the stream if it is empty.
+    if (!buffer_.HasBits() && !FillBuffer()) {
       return false;
     }
-    // Fill in the next least significant bit.
-    if (bit) {
-      result |= (static_cast<T>(1) << i);
-    }
+    // Consume as many bits as possible, up to the remaining requested bits.
+    int bits_to_take = std::min(num_bits - bits_read, buffer_.NumBits());
+
+    // Extract the bits from the buffer and append them to the result.
+    uint32_t chunk = buffer_.ConsumeBits(bits_to_take);
+    result |= (static_cast<T>(chunk) << bits_read);
+
+    bits_read += bits_to_take;
   }
   *out = result;
   return true;
+}
+
+bool V5BitReader::FillBuffer() {
+  bool filled = false;
+  // Load bytes from the stream into the buffer as long as there is room for
+  // at least one more full byte (8 bits) and data is available.
+  while (buffer_.HasRoomForOneByte() && StreamHasMore()) {
+    buffer_.AppendByte(data_[byte_index_]);
+    byte_index_++;
+    filled = true;
+  }
+  return filled;
+}
+
+// =============================================================================
+// V5BitReader::BitBuffer Implementation
+// =============================================================================
+
+bool V5BitReader::BitBuffer::HasBits() const {
+  return num_bits_ > 0;
+}
+
+int V5BitReader::BitBuffer::NumBits() const {
+  return num_bits_;
+}
+
+bool V5BitReader::BitBuffer::HasRoomForOneByte() const {
+  return num_bits_ <= 24;
+}
+
+void V5BitReader::BitBuffer::AppendByte(uint8_t byte) {
+  // Shift the new byte left to place it at the next available higher bit
+  // position in the buffer. This ensures that when we later read and shift
+  // right, bits are consumed in the correct LSB-first order.
+  stored_bits_ |= (static_cast<uint32_t>(byte) << num_bits_);
+  num_bits_ += 8;
+}
+
+uint32_t V5BitReader::BitBuffer::ConsumeBits(int count) {
+  // Extract the lowest `count` bits using a mask, then shift the buffer right
+  // to consume them, guarding against Undefined Behavior when shifting by 32.
+  uint32_t mask = 0xFFFFFFFFU >> (32 - count);
+  uint32_t result = stored_bits_ & mask;
+  if (count == 32) {
+    stored_bits_ = 0;
+  } else {
+    stored_bits_ >>= count;
+  }
+  num_bits_ -= count;
+  return result;
 }
 
 // =============================================================================

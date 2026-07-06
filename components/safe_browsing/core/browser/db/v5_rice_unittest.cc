@@ -410,6 +410,149 @@ TEST(V5RiceBitReaderTest, EmptyReader) {
   EXPECT_FALSE(reader.ReadMultipleBits(1, &val));
 }
 
+TEST(V5RiceBitReaderTest, HasMoreWithRefill) {
+  std::vector<uint8_t> data = {0xFF, 0xFF, 0xFF, 0xFF,
+                               0xFF};  // 5 bytes (40 bits)
+  V5BitReader reader(data);
+
+  // Read 10 bits with single bit API.
+  bool bit;
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_TRUE(reader.HasMore());
+    EXPECT_TRUE(reader.ReadSingleBit(&bit));
+  }
+
+  // Read 20 bits with multiple bits API.
+  uint32_t val;
+  EXPECT_TRUE(reader.HasMore());
+  EXPECT_TRUE(reader.ReadMultipleBits(20, &val));
+  EXPECT_EQ(val, static_cast<uint32_t>(0xFFFFF));
+
+  // Read last 10 bits with single bit API (will trigger refill on 33rd bit).
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_TRUE(reader.HasMore());
+    EXPECT_TRUE(reader.ReadSingleBit(&bit));
+  }
+
+  EXPECT_FALSE(reader.HasMore());
+  EXPECT_FALSE(reader.ReadSingleBit(&bit));
+  uint32_t val_end;
+  EXPECT_FALSE(reader.ReadMultipleBits(1, &val_end));
+}
+
+TEST(V5RiceBitReaderTest, ReadMultipleBitsCrossBoundary) {
+  // 16 bytes of data (128 bits), all 1s except a few markers
+  std::vector<uint8_t> data = {
+      0xFF, 0xFF, 0xFF, 0xFF,  // All ones.
+      0xFF, 0xFF, 0xFF, 0xAF,  // 60 ones, then 0101 (MSBs of byte 7).
+      0xF6, 0xFF, 0xFF, 0xFF,  // 0110 (LSBs of byte 8), then all ones.
+      0xFF, 0xFF, 0xFF, 0xFF   // All ones.
+  };
+  V5BitReader reader(data);
+
+  uint64_t val64;
+  // Consume 60 bits.
+  EXPECT_TRUE(reader.ReadMultipleBits(60, &val64));
+
+  // Request 12 bits. This should take 4 bits (0101) from first block,
+  // and 8 bits (0110 + ones) from next block.
+  // Result should be 0xF6A (binary 111101101010).
+  uint32_t val32;
+  EXPECT_TRUE(reader.ReadMultipleBits(12, &val32));
+  EXPECT_EQ(val32, 0xF6Au);
+}
+
+TEST(V5RiceBitReaderTest, ReadMultipleBitsUint256) {
+  // 32 bytes of 0xFF (256 bits of 1s)
+  std::vector<uint8_t> data(32, 0xFF);
+  V5BitReader reader(data);
+
+  Uint256 val;
+  // Read 250 bits.
+  EXPECT_TRUE(reader.ReadMultipleBits(250, &val));
+
+  // Verify that the lowest 250 bits are 1, and the top 6 bits are 0.
+  Uint256 expected = GetMaxVal<Uint256>() >> 6;
+  EXPECT_EQ(val, expected);
+}
+
+TEST(V5RiceBitReaderTest, TruncatedStreamUint256) {
+  std::vector<uint8_t> data(4, 0xFF);  // Only 32 bits available
+  V5BitReader reader(data);
+
+  Uint256 val;
+  // Try to read 250 bits. Should fail.
+  EXPECT_FALSE(reader.ReadMultipleBits(250, &val));
+}
+
+TEST(V5RiceBitReaderTest, TruncatedStreamFirstRead) {
+  std::vector<uint8_t> data = {0xFF, 0x00};  // Only 16 bits available
+  V5BitReader reader(data);
+
+  uint32_t val;
+  // Try to read 20 bits immediately. It should fail.
+  EXPECT_FALSE(reader.ReadMultipleBits(20, &val));
+}
+
+TEST(V5RiceBitReaderTest, TruncatedStreamEmptyRefill) {
+  std::vector<uint8_t> data = {0xFF, 0x00};  // Only 16 bits available
+  V5BitReader reader(data);
+
+  uint32_t val;
+  // 1. Read 10 bits. Should succeed.
+  EXPECT_TRUE(reader.ReadMultipleBits(10, &val));
+
+  // 2. Try to read 10 more bits. Only 6 left, so it should fail.
+  EXPECT_FALSE(reader.ReadMultipleBits(10, &val));
+}
+
+TEST(V5RiceBitReaderTest, TruncatedStreamPartialRefill) {
+  std::vector<uint8_t> data = {0xFF, 0xFF, 0xFF, 0xFF,
+                               0xFF};  // 5 bytes (40 bits)
+  V5BitReader reader(data);
+
+  uint32_t val;
+  // 1. Read 20 bits. Should succeed (leaves 12 in buffer, 8 in stream).
+  EXPECT_TRUE(reader.ReadMultipleBits(20, &val));
+
+  // 2. Try to read 22 bits. Should fail after a partial refill of 8 bits.
+  EXPECT_FALSE(reader.ReadMultipleBits(22, &val));
+}
+
+TEST(V5RiceBitReaderTest, MixedReads) {
+  std::vector<uint8_t> data = {0xAC, 0x0F};  // In LSB order: 00110101 11110000
+  V5BitReader reader(data);
+
+  bool bit;
+  uint32_t val;
+
+  // Read 2 single bits (0, 0)
+  EXPECT_TRUE(reader.ReadSingleBit(&bit));
+  EXPECT_FALSE(bit);
+  EXPECT_TRUE(reader.ReadSingleBit(&bit));
+  EXPECT_FALSE(bit);
+
+  // Read 4 bits (1, 1, 0, 1) -> 11 (binary 1011)
+  EXPECT_TRUE(reader.ReadMultipleBits(4, &val));
+  EXPECT_EQ(val, 11u);
+
+  // Read 2 single bits (0, 1)
+  EXPECT_TRUE(reader.ReadSingleBit(&bit));
+  EXPECT_FALSE(bit);
+  EXPECT_TRUE(reader.ReadSingleBit(&bit));
+  EXPECT_TRUE(bit);
+
+  // Read 4 bits (1, 1, 1, 1) -> 15 (binary 1111)
+  EXPECT_TRUE(reader.ReadMultipleBits(4, &val));
+  EXPECT_EQ(val, 15u);
+
+  // Read remaining 4 bits (0, 0, 0, 0) -> 0
+  EXPECT_TRUE(reader.ReadMultipleBits(4, &val));
+  EXPECT_EQ(val, 0u);
+
+  EXPECT_FALSE(reader.HasMore());
+}
+
 TEST(V5RiceSerializeTest, SerializeToBigEndianBytes) {
   // Test converting decoded values to big-endian raw bytes string.
   // For uint32_t:

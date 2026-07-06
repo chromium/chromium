@@ -113,12 +113,49 @@ class V5BitReader {
   bool ReadMultipleBits(int num_bits, T* out);
 
  private:
+  // Fills the buffer with bytes from the stream. Returns true if it loaded any
+  // bits.
+  bool FillBuffer();
+
+  // Returns true if the stream has bytes available.
+  bool StreamHasMore() const;
+
   // The underlying data stream.
   base::raw_span<const uint8_t> data_;
+
   // The index of the next byte to read from `data_`.
   size_t byte_index_ = 0;
-  // The index of the next bit to read within the current byte (0 to 7).
-  int bit_index_ = 0;
+
+  // A temporary buffer holding up to 32 bits read from the stream. Bit-reading
+  // operations consume directly from this buffer. Using this instead of reading
+  // from the stream directly significantly improves decoding speed.
+  class BitBuffer {
+   public:
+    // Returns true if there are bits available to read.
+    bool HasBits() const;
+
+    // Returns the number of valid bits currently in the buffer.
+    int NumBits() const;
+
+    // Returns true if we can load another 8-bit byte without overflowing the
+    // 32-bit limit.
+    bool HasRoomForOneByte() const;
+
+    // Appends a byte to the buffer at the next available higher-order bit
+    // position.
+    void AppendByte(uint8_t byte);
+
+    // Consumes up to 32 bits from the buffer (LSB-first) and returns them.
+    // Handles masking, shifting, and guards against UB.
+    uint32_t ConsumeBits(int count);
+
+   private:
+    // The accumulated bits loaded from the stream.
+    uint32_t stored_bits_ = 0;
+    // The number of valid bits currently in the buffer.
+    int num_bits_ = 0;
+  };
+  BitBuffer buffer_;
 };
 
 // Converts a vector of decoded values (in host-endianness) back to a raw
