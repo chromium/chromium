@@ -354,8 +354,11 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                   WaitForDialogToShow(), ScreenshotDialog());
 }
 
+// TODO(crbug.com/530120931): Re-enable once kUseNonGoogleFromDefaultList uses
+// synthetic non-Google search engine in test. See crrev.com/c/8027451 for to
+// see how to at least fix the list to static engine list.
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       ScreenshotPreviouslyNonGoogle) {
+                       DISABLED_ScreenshotPreviouslyNonGoogle) {
   RunTestSequence(
       InstrumentTab(kWebContentsId),
       SetNewSearchProvider(DefaultSearch::kUseNonGoogleFromDefaultList),
