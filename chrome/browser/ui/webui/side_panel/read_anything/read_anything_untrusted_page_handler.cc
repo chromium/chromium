@@ -1588,7 +1588,7 @@ void ReadAnythingUntrustedPageHandler::EvaluateDistillationQuality(
   tab_->GetContents()->RequestAXTreeSnapshot(
       base::BindOnce(
           &ReadAnythingUntrustedPageHandler::OnAXTreeSnapshotReceived,
-          weak_factory_.GetSafeRef(), distilled_html),
+          weak_factory_.GetWeakPtr(), distilled_html),
       ui::kAXModeWebContentsOnly,
       /* max_nodes= */ kMaxNodesForDistillationQualityEvaluation,
       /* timeout= */ {}, content::WebContents::AXTreeSnapshotPolicy::kAll);
@@ -1622,7 +1622,7 @@ void ReadAnythingUntrustedPageHandler::OnAXTreeSnapshotReceived(
       snapshot, distilled_html,
       base::BindOnce(
           &ReadAnythingUntrustedPageHandler::OnQualityMetricsEvaluated,
-          weak_factory_.GetSafeRef()));
+          weak_factory_.GetWeakPtr()));
 }
 
 void ReadAnythingUntrustedPageHandler::OnQualityMetricsEvaluated(
