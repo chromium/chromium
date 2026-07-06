@@ -136,15 +136,13 @@ void CheckPrerenderAttributes(const PrerenderAttributes& attributes) {
   if (attributes.IsBrowserInitiated()) {
     CHECK(!attributes.initiator_origin.has_value());
     CHECK(!attributes.initiator_frame_token.has_value());
-    CHECK_EQ(attributes.initiator_process_id,
-             ChildProcessHost::kInvalidUniqueID);
+    CHECK(attributes.initiator_process_id.is_null());
     CHECK_EQ(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
     CHECK(attributes.initiator_frame_tree_node_id.is_null());
   } else {
     CHECK(attributes.initiator_origin.has_value());
     CHECK(attributes.initiator_frame_token.has_value());
-    CHECK_NE(attributes.initiator_process_id,
-             ChildProcessHost::kInvalidUniqueID);
+    CHECK(attributes.initiator_process_id);
     CHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
     CHECK(attributes.initiator_frame_tree_node_id);
   }
@@ -598,7 +596,9 @@ bool PrerenderHost::StartPrerendering() {
   NavigationController::LoadURLParams load_url_params(
       attributes_.prerendering_url);
   load_url_params.initiator_origin = attributes_.initiator_origin;
-  load_url_params.initiator_process_id = attributes_.initiator_process_id;
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  load_url_params.initiator_process_id =
+      attributes_.initiator_process_id.GetUnsafeValue();
   load_url_params.initiator_frame_token = attributes_.initiator_frame_token;
   load_url_params.initiator_navigation_state =
       attributes_.initiator_navigation_state;

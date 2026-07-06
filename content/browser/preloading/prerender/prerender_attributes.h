@@ -16,6 +16,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/referrer.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
@@ -102,9 +103,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // (not by a renderer using Speculation Rules API).
   std::optional<url::Origin> initiator_origin;
 
-  // This is ChildProcessHost::kInvalidUniqueID when prerendering is initiated
-  // by the browser.
-  int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
+  // This is invalid when prerendering is initiated by the browser.
+  content::ChildProcessId initiator_process_id;
 
   // This hosts a primary page that is initiating this prerender attempt.
   base::WeakPtr<WebContents> initiator_web_contents;

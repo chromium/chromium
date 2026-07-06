@@ -59,8 +59,7 @@ PrerenderAttributes::PrerenderAttributes(
       form_submission(form_submission) {
   if (initiator_render_frame_host) {
     initiator_origin = initiator_render_frame_host->GetLastCommittedOrigin();
-    initiator_process_id =
-        initiator_render_frame_host->GetProcess()->GetDeprecatedID();
+    initiator_process_id = initiator_render_frame_host->GetProcess()->GetID();
     initiator_frame_token = initiator_render_frame_host->GetFrameToken();
     initiator_frame_tree_node_id =
         initiator_render_frame_host->GetFrameTreeNodeId();
