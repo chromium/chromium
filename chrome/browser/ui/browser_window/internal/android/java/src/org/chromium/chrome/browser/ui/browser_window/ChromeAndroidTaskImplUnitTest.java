@@ -8,6 +8,7 @@ import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
@@ -64,6 +65,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -79,6 +81,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.ActivityScopedObjects;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
@@ -517,6 +520,77 @@ public class ChromeAndroidTaskImplUnitTest {
         assertThrows(
                 AssertionError.class,
                 () -> chromeAndroidTask.addActivityScopedObjects(newActivityScopedObjects));
+    }
+
+    @Test
+    public void
+            addActivityScopedObjects_startedInIncognitoMode_createsBothRegularAndIncognitoWindows() {
+        // Arrange: Create Task with Mixed Profile support, but initially in Incognito mode.
+        int taskId = 1;
+        var activityWindowAndroidMocks =
+                ChromeAndroidTaskUnitTestSupport.createActivityWindowAndroidMocks(taskId);
+        ChromeAndroidTaskUnitTestSupport.mockDesktopWindowingMode(activityWindowAndroidMocks);
+        var activityWindowAndroid = activityWindowAndroidMocks.mMockActivityWindowAndroid;
+
+        // Move mock Activity to the "resumed" state.
+        var mockActivity = activityWindowAndroidMocks.mMockActivity;
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
+
+        // Set up profiles
+        var regularProfile = mock(Profile.class, "RegularProfile");
+        when(regularProfile.isOffTheRecord()).thenReturn(false);
+        var incognitoProfile = mock(Profile.class, "IncognitoProfile");
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        // Set up tab models
+        var regularTabModel = mock(TabModel.class, "RegularTabModel");
+        when(regularTabModel.getProfile()).thenReturn(regularProfile);
+
+        var incognitoTabModel = mock(IncognitoTabModel.class, "IncognitoTabModel");
+        when(incognitoTabModel.getProfile()).thenReturn(incognitoProfile);
+
+        // Set up selector where the CURRENT model is the Incognito one.
+        var tabModelSelector = mock(TabModelSelector.class);
+        when(tabModelSelector.getModel(false)).thenReturn(regularTabModel);
+        when(tabModelSelector.getModel(true)).thenReturn(incognitoTabModel);
+        when(tabModelSelector.getModels()).thenReturn(List.of(regularTabModel, incognitoTabModel));
+        when(tabModelSelector.getCurrentModel()).thenReturn(incognitoTabModel);
+
+        SettableMonotonicObservableSupplier<TabModel> tabModelSupplier =
+                ObservableSuppliers.createMonotonic();
+        tabModelSupplier.set(incognitoTabModel);
+        when(tabModelSelector.getCurrentTabModelSupplier()).thenReturn(tabModelSupplier);
+
+        var activityScopedObjects =
+                new ChromeAndroidTask.ActivityScopedObjects(
+                        activityWindowAndroid,
+                        tabModelSelector,
+                        BrowserWindowType.NORMAL,
+                        SupportedProfileType.MIXED,
+                        /* desktopWindowStateManager= */ null);
+
+        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
+
+        // Act: Obtain the task (which will call addActivityScopedObjectsInternal).
+        var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerImpl.getInstance();
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl)
+                        chromeAndroidTaskTracker.obtainTask(
+                                BrowserWindowType.NORMAL,
+                                activityScopedObjects,
+                                /* pendingId= */ null);
+        assertNonNull(chromeAndroidTask);
+        // Assert: 2 windows (Incognito AND Regular) are created eagerly at startup because we
+        // started in Incognito with MIXED mode, simulating process recreation.
+        assertEquals(2, chromeAndroidTask.getAllNativeBrowserWindowPtrs().size());
+        long regularPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(regularProfile);
+        long incognitoPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(incognitoProfile);
+        assertNotEquals(0, regularPtr);
+        assertNotEquals(0, incognitoPtr);
+        assertNotEquals(regularPtr, incognitoPtr);
+
+        chromeAndroidTaskTracker.removeAllForTesting();
     }
 
     @Test
