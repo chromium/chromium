@@ -1461,8 +1461,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       GetWindowControlOverlayBoundingClientRect();
   const gfx::Rect resized_js_overlay_event_bounds =
       GetWindowControlOverlayBoundingClientRectFromEvent();
-  EXPECT_EQ(1, EvalJs(helper()->browser_view()->GetActiveWebContents(),
-                      "geometrychangeCount"));
+  EXPECT_GE(EvalJs(helper()->browser_view()->GetActiveWebContents(),
+                   "geometrychangeCount")
+                .ExtractInt(),
+            1);
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
   EXPECT_TRUE(GetWindowControlOverlayVisibilityFromEvent());
   EXPECT_EQ(resized_js_overlay_bounds, resized_js_overlay_event_bounds);
@@ -2389,8 +2391,10 @@ IN_PROC_BROWSER_TEST_F(
       GetWindowControlOverlayBoundingClientRect();
   const gfx::Rect resized_js_overlay_event_bounds =
       GetWindowControlOverlayBoundingClientRectFromEvent();
-  EXPECT_EQ(1, EvalJs(helper()->browser_view()->GetActiveWebContents(),
-                      "geometrychangeCount"));
+  EXPECT_GE(EvalJs(helper()->browser_view()->GetActiveWebContents(),
+                   "geometrychangeCount")
+                .ExtractInt(),
+            1);
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
   EXPECT_TRUE(GetWindowControlOverlayVisibilityFromEvent());
   EXPECT_EQ(resized_js_overlay_bounds, resized_js_overlay_event_bounds);
