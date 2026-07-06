@@ -149,7 +149,7 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(
 // Returns the account info on the device with `email` or nullopt.
 std::optional<AccountInfo> GetAccountInfoOnDeviceWithEmail(
     signin::IdentityManager* identityManager,
-    std::string email);
+    std::string_view email);
 
 // Switch profile if needed in all windows then sign out from the current
 // profile, but switches to personal profile in all.

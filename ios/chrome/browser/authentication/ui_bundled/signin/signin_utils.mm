@@ -438,7 +438,7 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(
 
 std::optional<AccountInfo> GetAccountInfoOnDeviceWithEmail(
     signin::IdentityManager* identityManager,
-    std::string email) {
+    std::string_view email) {
   for (const AccountInfo& account_info :
        identityManager->GetAccountsOnDevice()) {
     if (gaia::AreEmailsSame(account_info.GetEmail(), email)) {
