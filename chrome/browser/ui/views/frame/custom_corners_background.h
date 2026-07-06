@@ -127,6 +127,10 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   using Cutout = std::variant<InverseOf, const views::View*>;
   using Cutouts = std::vector<Cutout>;
 
+  [[nodiscard]] inline SkPath GetBackgroundPath() const {
+    return GetBackgroundPath(view_->GetLocalBounds(), nullptr);
+  }
+
   // Cuts `cutouts` out of `this`. Works for views with a
   // `CustomCornersBackground` as well as for `CustomFloatingCorner`. Empty
   // clears the cutout.

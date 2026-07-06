@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/shadow_frame_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_background_blur_backdrop.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -789,6 +790,15 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     layout.AddChild(views().vertical_tab_strip_region_view,
                     vertical_tab_strip_bounds,
                     layout_data_->tab_strip_type == TabStripType::kVertical);
+  }
+
+  if (IsParentedTo(views().vertical_tab_strip_background_blur_backdrop,
+                   views().browser_view)) {
+    layout.AddChild(
+        views().vertical_tab_strip_background_blur_backdrop,
+        vertical_tab_strip_bounds,
+        features::kBackgroundBlurOpacity.Get() < 1.0 &&
+            layout_data_->vertical_tab_strip_animation.expand_on_hover > 0.0f);
   }
 
   // Position the vertical tabstrip top corner.
@@ -1557,6 +1567,12 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       // outline path.
       vertical_tabs_background->SetUseBackgroundBlur(animation.expand_on_hover >
                                                      0.0);
+      if (IsParentedToAndVisible(
+              views().vertical_tab_strip_background_blur_backdrop,
+              views().browser_view)) {
+        views().vertical_tab_strip_background_blur_backdrop->UpdateGeometry(
+            views().vertical_tab_strip_region_view, animation.expand_on_hover);
+      }
     }
   } else if (layout_data_->tab_strip_type == TabStripType::kHorizontal &&
              !is_fullscreen(layout_data_->window_state) &&

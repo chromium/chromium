@@ -168,6 +168,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_background_blur_backdrop.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
@@ -995,6 +996,10 @@ BrowserView::BrowserView(Browser* browser)
             vertical_tab_strip_state_controller,
             browser_->GetActions()->root_action_item(), this);
 
+    if (base::FeatureList::IsEnabled(features::kGlassFrame)) {
+      vertical_tab_strip_background_blur_backdrop_ = AddChildView(
+          std::make_unique<VerticalTabStripBackgroundBlurBackdrop>());
+    }
     vertical_tab_strip_region_view_ =
         AddChildView(std::move(vertical_tab_strip_container));
 
@@ -1148,6 +1153,7 @@ BrowserView::~BrowserView() {
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_region_view_ = nullptr;
+  vertical_tab_strip_background_blur_backdrop_ = nullptr;
   vertical_tab_strip_top_corner_ = nullptr;
   vertical_tab_strip_bottom_corner_ = nullptr;
   projects_panel_container_ = nullptr;
@@ -4948,6 +4954,8 @@ void BrowserView::AddedToWidget() {
   layout_views.horizontal_tab_strip_region_view =
       horizontal_tab_strip_region_view_;
   layout_views.vertical_tab_strip_region_view = vertical_tab_strip_region_view_;
+  layout_views.vertical_tab_strip_background_blur_backdrop =
+      vertical_tab_strip_background_blur_backdrop_;
   layout_views.vertical_tab_strip_bottom_corner =
       vertical_tab_strip_bottom_corner_;
   layout_views.vertical_tab_strip_top_corner = vertical_tab_strip_top_corner_;

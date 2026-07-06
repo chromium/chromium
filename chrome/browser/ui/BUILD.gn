@@ -4134,6 +4134,8 @@ static_library("ui") {
       "views/frame/top_container_view.cc",
       "views/frame/top_container_view.h",
       "views/frame/top_controls_slide_controller.h",
+      "views/frame/vertical_tab_strip_background_blur_backdrop.cc",
+      "views/frame/vertical_tab_strip_background_blur_backdrop.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
       "views/frame/web_contents_close_handler.cc",

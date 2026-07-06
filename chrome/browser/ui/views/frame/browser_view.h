@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_background_blur_backdrop.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -1238,6 +1239,8 @@ class BrowserView : public BrowserWindow,
 
   // The view responsible for housing the contents of the vertical tab strip.
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_region_view_ = nullptr;
+  raw_ptr<VerticalTabStripBackgroundBlurBackdrop>
+      vertical_tab_strip_background_blur_backdrop_ = nullptr;
 
   // Outward-projecting corners of the vertical tab strip.
   raw_ptr<CustomFloatingCorner> vertical_tab_strip_top_corner_ = nullptr;
