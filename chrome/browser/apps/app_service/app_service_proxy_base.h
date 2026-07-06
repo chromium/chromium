@@ -119,6 +119,8 @@ class AppServiceProxyBase : public KeyedService,
                      const IntentFilterPtr& first_filter,
                      const std::string& second_app_id,
                      const IntentFilterPtr& second_filter) override;
+  bool IsWebAppInExtendedScope(const GURL& url,
+                               const std::string& app_id) const override;
 
   // Convenience method that calls app_icon_loader()->LoadIcon to load app icons
   // with `app_id`. `callback` may be dispatched synchronously if it's possible

@@ -47,6 +47,9 @@ class WebApp;
 class WebAppProvider;
 
 // An app publisher (in the App Service sense) of Web Apps.
+// Note: Logic to check if a URL is in a Web App's extended scope
+// (IsWebAppInExtendedScope) is currently implemented in AppServiceProxyBase
+// to keep complexity out of publisher subclasses.
 class WebApps final : public apps::AppPublisher,
                       public WebAppPublisherHelper::Delegate {
  public:

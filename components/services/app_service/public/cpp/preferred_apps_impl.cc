@@ -97,6 +97,12 @@ bool PreferredAppsImpl::QueryConflict(const std::string& first_app_id,
                               second_filter);
 }
 
+bool PreferredAppsImpl::IsWebAppInExtendedScope(
+    const GURL& url,
+    const std::string& app_id) const {
+  return host_->IsWebAppInExtendedScope(url, app_id);
+}
+
 void PreferredAppsImpl::RemovePreferredApp(const std::string& app_id) {
   RunAfterPreferredAppsReady(
       base::BindOnce(&PreferredAppsImpl::RemovePreferredAppImpl,

@@ -37,6 +37,12 @@ class PreferredAppsList : public PreferredAppsListHandle {
                                const std::string& second_app_id,
                                const IntentFilterPtr& second_filter) = 0;
 
+    // Returns true if the given url falls within the scope extensions of the
+    // specified web app. This is used to deprioritize extended scope matches
+    // in favor of web app scope matches.
+    virtual bool IsWebAppInExtendedScope(const GURL& url,
+                                         const std::string& app_id) const = 0;
+
    protected:
     virtual ~Delegate() = default;
   };

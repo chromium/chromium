@@ -206,8 +206,18 @@ std::optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
   int best_match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
   size_t best_match_length = 0;
   DCHECK(intent);
+  std::vector<const PreferredApp*> web_apps_that_match_with_scope_extensions;
+
   for (auto& preferred_app : preferred_apps_) {
     if (intent->MatchFilter(preferred_app->intent_filter)) {
+      // If it is a scope extension, record it for fallback and continue.
+      if (delegate_ && intent->url.has_value() &&
+          delegate_->IsWebAppInExtendedScope(*intent->url,
+                                             preferred_app->app_id)) {
+        web_apps_that_match_with_scope_extensions.push_back(
+            preferred_app.get());
+        continue;
+      }
       int match_level = preferred_app->intent_filter->GetFilterMatchLevel();
       if (match_level < best_match_level) {
         continue;
@@ -229,6 +239,37 @@ std::optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
       best_match_app_id = preferred_app->app_id;
     }
   }
+  if (best_match_app_id.has_value()) {
+    return best_match_app_id;
+  }
+
+  // If code reached here, it is guaranteed that there are no apps that is the
+  // preferred app for capturing links. However, there can still be a web app
+  // that is the preferred app for capturing links based on the scope extensions
+  // stored in it. In that case, return that web app.
+  best_match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
+  best_match_length = 0;
+
+  for (const auto* candidate : web_apps_that_match_with_scope_extensions) {
+    int match_level = candidate->intent_filter->GetFilterMatchLevel();
+    if (match_level < best_match_level) {
+      continue;
+    }
+    size_t match_length = 0;
+    if (intent->url.has_value()) {
+      match_length = apps_util::IntentFilterUrlMatchLength(
+          candidate->intent_filter, *intent->url);
+    }
+    if (longest_prefix_match_enabled_ && match_level == best_match_level) {
+      if (match_length < best_match_length) {
+        continue;
+      }
+    }
+    best_match_level = match_level;
+    best_match_length = match_length;
+    best_match_app_id = candidate->app_id;
+  }
+
   return best_match_app_id;
 }
 
@@ -239,9 +280,9 @@ base::flat_set<std::string> PreferredAppsList::FindPreferredAppsForFilters(
 
   for (auto& intent_filter : intent_filters) {
     for (auto& entry : preferred_apps_) {
-      // Check if another app has a preferred filter that structurally overlaps
-      // with this filter. If so, query the conflict callback to determine if
-      // they actually conflict (cannot co-exist).
+      // Check if another app has a preferred filter that structurally
+      // overlaps with this filter. If so, query the conflict callback to
+      // determine if they actually conflict (cannot co-exist).
       if ((!app_id.has_value() || entry->app_id != *app_id) &&
           apps_util::FiltersHaveOverlap(intent_filter, entry->intent_filter)) {
         bool has_conflict = true;
@@ -249,8 +290,8 @@ base::flat_set<std::string> PreferredAppsList::FindPreferredAppsForFilters(
           has_conflict = delegate_->QueryConflict(
               entry->app_id, entry->intent_filter, *app_id, intent_filter);
         }
-        // If there is a conflict, we add the conflicting app to the set of apps
-        // to disable before enabling the new app.
+        // If there is a conflict, we add the conflicting app to the set of
+        // apps to disable before enabling the new app.
         if (has_conflict) {
           app_ids.insert(entry->app_id);
         }

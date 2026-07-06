@@ -48,6 +48,9 @@ class PreferredAppsImpl : public PreferredAppsList::Delegate {
                                const IntentFilterPtr& first_filter,
                                const std::string& second_app_id,
                                const IntentFilterPtr& second_filter) = 0;
+
+    virtual bool IsWebAppInExtendedScope(const GURL& url,
+                                         const std::string& app_id) const = 0;
   };
 
   PreferredAppsImpl(
@@ -70,6 +73,8 @@ class PreferredAppsImpl : public PreferredAppsList::Delegate {
                      const IntentFilterPtr& first_filter,
                      const std::string& second_app_id,
                      const IntentFilterPtr& second_filter) override;
+  bool IsWebAppInExtendedScope(const GURL& url,
+                               const std::string& app_id) const override;
 
   void SetLongestPrefixMatchEnabled(bool enabled) {
     preferred_apps_list_.SetLongestPrefixMatchEnabled(enabled);

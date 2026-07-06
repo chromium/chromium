@@ -370,16 +370,6 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
                        PrimaryScopeTakesPriorityOverExtendedScope) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/521860617): Under kV2DefaultOn on ChromeOS, auto-enablement yields
-  // to avoid conflicts, so App B is not auto-enabled and App A is not disabled.
-  // Skip this test under kV2DefaultOn until the default-on conflict behavior
-  // is resolved.
-  if (LinkCapturingEnabledByDefault()) {
-    GTEST_SKIP() << "Skipping due to default-on conflict yielding on ChromeOS";
-  }
-#endif
-
   // Install App A (regular scope on secondary_server_, no extended scope).
   GURL app_a_manifest_url =
       secondary_server_.GetURL("/web_apps/app_a.webmanifest");
@@ -416,38 +406,93 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
           R"({ "$1": { "scope": "/web_apps/longer/" } })",
           {app_b_page_url.spec()}, nullptr));
 
+  bool allow_overlapping_scopes = true;
+  // Overlapping scopes are only allowed if navigation capturing
+  // is on-by-default.
 #if BUILDFLAG(IS_CHROMEOS)
-  // On Chrome OS enabling link capturing for an app whose scope overlaps in any
-  // way with another apps scope disables capturing for the other app. As such
-  // the scope extensions for app B will have disabled the link capturing for
-  // app A.
-  EXPECT_EQ(std::nullopt, GetCapturingAppId(app_a_page_url));
-  EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_page_url));
+  allow_overlapping_scopes = LinkCapturingEnabledByDefault();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Re-enable link capturing for app A, which (on Chrome OS) disables capturing
-  // for app B.
-  ASSERT_THAT(
-      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_a_id),
-      base::test::HasValue());
-  EXPECT_EQ(app_a_id, GetCapturingAppId(app_a_page_url));
-  EXPECT_EQ(std::nullopt, GetCapturingAppId(app_b_page_url));
-#else
-  // On other platforms we only disable link capturing for other apps when the
-  // primary scopes of the two apps are identical, ignoring extended scopes, so
-  // links should still be captured by app A.
-  EXPECT_EQ(app_a_id, GetCapturingAppId(app_a_page_url));
-  EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_page_url));
-#endif
+  if (allow_overlapping_scopes) {
+    EXPECT_EQ(app_a_id, GetCapturingAppId(app_a_page_url));
+    EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_page_url));
+  } else {
+    // On Chrome OS enabling link capturing for an app whose scope overlaps in
+    // any way with another apps scope disables capturing for the other app. As
+    // such the scope extensions for app B will have disabled the link capturing
+    // for app A.
+    EXPECT_EQ(std::nullopt, GetCapturingAppId(app_a_page_url));
+    EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_page_url));
+
+    // Re-enable link capturing for app A, which (on Chrome OS) disables
+    // capturing for app B.
+    ASSERT_THAT(
+        apps::test::EnableLinkCapturingByUser(browser()->profile(), app_a_id),
+        base::test::HasValue());
+    EXPECT_EQ(app_a_id, GetCapturingAppId(app_a_page_url));
+    EXPECT_EQ(std::nullopt, GetCapturingAppId(app_b_page_url));
+  }
 
   GURL target_url = secondary_server_.GetURL("/web_apps/longer/page.html");
   url_overrides_[target_url] = R"(<html></html>)";
   EXPECT_EQ(app_a_id, GetCapturingAppId(target_url));
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  // After uninstalling app A, links should be captured by app B.
-  UninstallWebApp(app_a_id);
-  EXPECT_EQ(app_b_id, GetCapturingAppId(target_url));
-#endif
+  if (allow_overlapping_scopes) {
+    // After uninstalling app A, links should be captured by app B.
+    UninstallWebApp(app_a_id);
+    EXPECT_EQ(app_b_id, GetCapturingAppId(target_url));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
+                       CrossOriginCrossPathCoexistence) {
+  // Install App A (regular scope on secondary_server_, no extended scope).
+  GURL app_a_manifest_url =
+      secondary_server_.GetURL("/web_apps/app_a.webmanifest");
+  GURL app_a_page_url = secondary_server_.GetURL("/web_apps/page1.html");
+  url_overrides_[app_a_manifest_url] =
+      base::ReplaceStringPlaceholders(R"({
+          "name": "App A",
+          "start_url": "$1",
+          "scope": "/web_apps/"
+        })",
+                                      {app_a_page_url.GetPath()}, nullptr);
+  webapps::AppId app_a_id = InstallWebAppFromPage(
+      browser(), secondary_server_.GetURL(
+                     "/web_apps/get_manifest.html?app_a.webmanifest"));
+  if (!LinkCapturingEnabledByDefault()) {
+    ASSERT_EQ(
+        apps::test::EnableLinkCapturingByUser(browser()->profile(), app_a_id),
+        base::ok());
+  }
+
+  // Install App B (regular scope on primary_server_, extended scope on
+  // secondary_server_).
+  const GURL app_b_page_url =
+      primary_server_.GetURL("/web_apps/longer/page1.html");
+  webapps::AppId app_b_id = InstallScopeExtendedWebApp(
+      /*manifest_file=*/base::ReplaceStringPlaceholders(
+          R"({
+            "name": "App B",
+            "start_url": "$1",
+            "scope": "/",
+            "scope_extensions": [{ "type": "origin", "origin": "$2" }]
+          })",
+          {app_b_page_url.GetPath(), secondary_origin_.Serialize()}, nullptr),
+      /*association_file=*/base::ReplaceStringPlaceholders(
+          R"({ "$1": { "scope": "/web_apps_inner/page1.html" } })",
+          {app_b_page_url.spec()}, nullptr));
+
+  GURL app_b_extended_url =
+      secondary_server_.GetURL("/web_apps_inner/page1.html");
+  url_overrides_[app_b_extended_url] = R"(<html></html>)";
+
+  // Since the scopes do not overlap, App B installation should NOT disable
+  // App A on any platform/configuration. Both should be able to capture
+  // their respective URLs.
+  EXPECT_EQ(app_a_id, GetCapturingAppId(app_a_page_url));
+  EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_page_url));
+  EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_extended_url));
 }
 
 INSTANTIATE_TEST_SUITE_P(
