@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [17.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v17.0.0...chromium-bidi-v17.0.1) (2026-07-06)
+
+
+### Bug Fixes
+
+* adjust npm publish after gn migration ([185a2a7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/185a2a70eb08ec2e9f120671a22f6e6eadd18278))
+
 ## [17.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v16.0.1...chromium-bidi-v17.0.0) (2026-07-06)
 
 
