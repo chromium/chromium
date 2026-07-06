@@ -15,11 +15,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 
 class GURL;
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
+class OptimizationMetadata;
 }  // namespace optimization_guide
 
 namespace multistep_filter {
@@ -75,6 +77,17 @@ class OptimizationGuideAnnotationIndexClient : public AnnotationIndexClient {
 
   // Log router for the internals page.
   raw_ptr<MultistepFilterLogRouter> log_router_;
+
+  // Callback invoked by `OptimizationGuideDecider` when queried for
+  // `FILTER_TASKS_SUPPORTED`. Parses `metadata`, logs the result to
+  // `log_router_`, and invokes `callback` with the supported tasks (or an
+  // empty vector on failure).
+  void OnFilterTasksSupportedDecision(
+      const GURL& url,
+      int64_t navigation_id,
+      base::OnceCallback<void(std::vector<std::string>)> callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
 
   // Registers the optimization types with the `OptimizationGuideDecider`.
   void RegisterOptimizationTypes();
