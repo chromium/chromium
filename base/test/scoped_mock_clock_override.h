@@ -46,7 +46,7 @@ class ScopedMockClockOverride {
 
  private:
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_clock_overrides_;
-  TimeDelta offset_;
+  TimeDelta offset_from_windows_epoch_;
   static ScopedMockClockOverride* scoped_mock_clock_;
 };
 

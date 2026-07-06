@@ -783,7 +783,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, GetNextSampleTime_NormalExecution) {
   const auto& GetNextSampleTime =
       StackSamplingProfiler::TestPeer::GetNextSampleTime;
 
-  const TimeTicks scheduled_current_sample_time = TimeTicks::UnixEpoch();
+  const TimeTicks scheduled_current_sample_time = TimeTicks() + base::Hours(1);
   const TimeDelta sampling_interval = Milliseconds(10);
 
   // When executing the sample at exactly the scheduled time the next sample
@@ -812,7 +812,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, GetNextSampleTime_DelayedExecution) {
   const auto& GetNextSampleTime =
       StackSamplingProfiler::TestPeer::GetNextSampleTime;
 
-  const TimeTicks scheduled_current_sample_time = TimeTicks::UnixEpoch();
+  const TimeTicks scheduled_current_sample_time = TimeTicks() + base::Hours(1);
   const TimeDelta sampling_interval = Milliseconds(10);
 
   // When executing the sample between 0.5 and 1.5 intervals after the scheduled

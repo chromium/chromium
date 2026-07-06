@@ -13,6 +13,10 @@ namespace base {
 
 namespace {
 
+constexpr TimeTicks kOneYearAfterUnixEpoch =
+    TimeTicks() + Microseconds(Time::kMicrosecondsFromWindowsToUnixEpoch) +
+    Days(365);
+
 // Disabled on Android due to flakes; see https://crbug.com/1474884.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Time DISABLED_Time
@@ -49,24 +53,24 @@ TEST(ScopedMockClockOverrideTest, MAYBE_Time) {
 
 TEST(ScopedMockClockOverrideTest, TimeTicks) {
   // Override is not active. All Now() methods should return a sensible value.
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::Now());
+  EXPECT_LT(TimeTicks(), TimeTicks::Now());
   EXPECT_GT(TimeTicks::Max(), TimeTicks::Now());
-  EXPECT_LT(TimeTicks::UnixEpoch() + Days(365), TimeTicks::Now());
 
   {
     // Set override.
     ScopedMockClockOverride mock_clock;
 
-    EXPECT_NE(TimeTicks(), TimeTicks::Now());
     TimeTicks start = TimeTicks::Now();
+    EXPECT_LT(TimeTicks(), start);
+    EXPECT_LE(kOneYearAfterUnixEpoch, start);
+    EXPECT_GT(TimeTicks::Max(), start);
     mock_clock.Advance(Seconds(1));
     EXPECT_EQ(start + Seconds(1), TimeTicks::Now());
   }
 
   // All methods return real ticks again.
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::Now());
+  EXPECT_LT(TimeTicks(), TimeTicks::Now());
   EXPECT_GT(TimeTicks::Max(), TimeTicks::Now());
-  EXPECT_LT(TimeTicks::UnixEpoch() + Days(365), TimeTicks::Now());
 }
 
 TEST(ScopedMockClockOverrideTest, ThreadTicks) {

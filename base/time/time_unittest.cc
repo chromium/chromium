@@ -1451,6 +1451,10 @@ TEST(TimeTicks, LowRes) {
 }
 #endif
 
+constexpr TimeTicks kOneYearAfterUnixEpoch =
+    TimeTicks() + Microseconds(Time::kMicrosecondsFromWindowsToUnixEpoch) +
+    Days(365);
+
 class TimeTicksOverride {
  public:
   static TimeTicks Now() {
@@ -1465,13 +1469,13 @@ class TimeTicksOverride {
 TimeTicks TimeTicksOverride::now_ticks_;
 
 TEST(TimeTicks, NowOverride) {
-  TimeTicksOverride::now_ticks_ = TimeTicks::Min();
+  TimeTicksOverride::now_ticks_ = kOneYearAfterUnixEpoch;
 
   // Override is not active. All Now() methods should return a sensible value.
-  EXPECT_LT(TimeTicks::Min(), TimeTicks::UnixEpoch());
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::Now());
+  EXPECT_LT(TimeTicks::Min(), TimeTicks());
+  EXPECT_LT(TimeTicks(), TimeTicks::Now());
   EXPECT_GT(TimeTicks::Max(), TimeTicks::Now());
-  EXPECT_LT(TimeTicks::UnixEpoch(), subtle::TimeTicksNowIgnoringOverride());
+  EXPECT_LT(TimeTicks(), subtle::TimeTicksNowIgnoringOverride());
   EXPECT_GT(TimeTicks::Max(), subtle::TimeTicksNowIgnoringOverride());
 
   {
@@ -1480,21 +1484,21 @@ TEST(TimeTicks, NowOverride) {
                                                nullptr);
 
     // Overridden value is returned and incremented when Now() is called.
-    EXPECT_EQ(TimeTicks::Min() + Seconds(1), TimeTicks::Now());
-    EXPECT_EQ(TimeTicks::Min() + Seconds(2), TimeTicks::Now());
+    EXPECT_EQ(kOneYearAfterUnixEpoch + Seconds(1), TimeTicks::Now());
+    EXPECT_EQ(kOneYearAfterUnixEpoch + Seconds(2), TimeTicks::Now());
 
     // NowIgnoringOverride() still returns real ticks.
-    EXPECT_LT(TimeTicks::UnixEpoch(), subtle::TimeTicksNowIgnoringOverride());
+    EXPECT_LT(TimeTicks(), subtle::TimeTicksNowIgnoringOverride());
     EXPECT_GT(TimeTicks::Max(), subtle::TimeTicksNowIgnoringOverride());
 
     // IgnoringOverride methods didn't call NowOverrideTickClock::NowTicks().
-    EXPECT_EQ(TimeTicks::Min() + Seconds(3), TimeTicks::Now());
+    EXPECT_EQ(kOneYearAfterUnixEpoch + Seconds(3), TimeTicks::Now());
   }
 
   // All methods return real ticks again.
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::Now());
+  EXPECT_LT(TimeTicks(), TimeTicks::Now());
   EXPECT_GT(TimeTicks::Max(), TimeTicks::Now());
-  EXPECT_LT(TimeTicks::UnixEpoch(), subtle::TimeTicksNowIgnoringOverride());
+  EXPECT_LT(TimeTicks(), subtle::TimeTicksNowIgnoringOverride());
   EXPECT_GT(TimeTicks::Max(), subtle::TimeTicksNowIgnoringOverride());
 }
 
@@ -1516,10 +1520,9 @@ TEST(TimeTicks, LowResolutionNowOverride) {
 
   // Override is not active. All LowResolutionNow() methods should return a
   // sensible value.
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::LowResolutionNow());
+  EXPECT_LT(TimeTicks(), TimeTicks::LowResolutionNow());
   EXPECT_GT(TimeTicks::Max(), TimeTicks::LowResolutionNow());
-  EXPECT_LT(TimeTicks::UnixEpoch(),
-            subtle::TimeTicksLowResolutionNowIgnoringOverride());
+  EXPECT_LT(TimeTicks(), subtle::TimeTicksLowResolutionNowIgnoringOverride());
   EXPECT_GT(TimeTicks::Max(),
             subtle::TimeTicksLowResolutionNowIgnoringOverride());
 
@@ -1535,8 +1538,7 @@ TEST(TimeTicks, LowResolutionNowOverride) {
     EXPECT_EQ(TimeTicks::Min() + Seconds(2), TimeTicks::LowResolutionNow());
 
     // LowResolutionNowIgnoringOverride() still returns real ticks.
-    EXPECT_LT(TimeTicks::UnixEpoch(),
-              subtle::TimeTicksLowResolutionNowIgnoringOverride());
+    EXPECT_LT(TimeTicks(), subtle::TimeTicksLowResolutionNowIgnoringOverride());
     EXPECT_GT(TimeTicks::Max(),
               subtle::TimeTicksLowResolutionNowIgnoringOverride());
 
@@ -1546,10 +1548,9 @@ TEST(TimeTicks, LowResolutionNowOverride) {
   }
 
   // All methods return real ticks again.
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::LowResolutionNow());
+  EXPECT_LT(TimeTicks(), TimeTicks::LowResolutionNow());
   EXPECT_GT(TimeTicks::Max(), TimeTicks::LowResolutionNow());
-  EXPECT_LT(TimeTicks::UnixEpoch(),
-            subtle::TimeTicksLowResolutionNowIgnoringOverride());
+  EXPECT_LT(TimeTicks(), subtle::TimeTicksLowResolutionNowIgnoringOverride());
   EXPECT_GT(TimeTicks::Max(),
             subtle::TimeTicksLowResolutionNowIgnoringOverride());
 }

@@ -94,9 +94,11 @@ class BirchItemTest : public testing::Test {
         scoped_libc_timezone_("America/Los_Angeles") {
     BirchItem::set_action_count_for_test(0);
 
-    // The mock clock starts with a fixed but arbitrary time. Adjust the time
-    // to make the test times more readable (this makes "now" 5 PM).
-    mock_clock_override_.Advance(base::Minutes(53));
+    // ScopedMockClockOverride starts "now" at a fixed, known value:
+    // 1971-01-01 00:00:00 UTC, which is 4:00 PM in America/Los_Angeles (the
+    // timezone set above). Advance one hour so "now" is a round 5:00 PM PST,
+    // which keeps the times used throughout the tests readable.
+    mock_clock_override_.Advance(base::Hours(1));
   }
 
   ~BirchItemTest() override { BirchItem::set_action_count_for_test(0); }

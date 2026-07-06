@@ -13,8 +13,10 @@ namespace base {
 ScopedMockClockOverride* ScopedMockClockOverride::scoped_mock_clock_ = nullptr;
 
 ScopedMockClockOverride::ScopedMockClockOverride()
-    :  // Start the offset past zero so that it's not treated as a null value.
-      offset_(Days(365)) {
+    :  // Start the offset a year after the Unix epoch so that code handling
+       // wall-clock-like tick values gets a sensible non-null value.
+      offset_from_windows_epoch_(
+          Microseconds(Time::kMicrosecondsFromWindowsToUnixEpoch) + Days(365)) {
   DCHECK(!scoped_mock_clock_)
       << "Nested ScopedMockClockOverrides are not supported.";
 
@@ -30,21 +32,22 @@ ScopedMockClockOverride::~ScopedMockClockOverride() {
 }
 
 Time ScopedMockClockOverride::Now() {
-  return Time() + scoped_mock_clock_->offset_;
+  return Time::FromDeltaSinceWindowsEpoch(
+      scoped_mock_clock_->offset_from_windows_epoch_);
 }
 
 TimeTicks ScopedMockClockOverride::NowTicks() {
-  return TimeTicks() + scoped_mock_clock_->offset_;
+  return TimeTicks() + scoped_mock_clock_->offset_from_windows_epoch_;
 }
 
 ThreadTicks ScopedMockClockOverride::NowThreadTicks() {
-  return ThreadTicks() + scoped_mock_clock_->offset_;
+  return ThreadTicks() + scoped_mock_clock_->offset_from_windows_epoch_;
 }
 
 void ScopedMockClockOverride::Advance(TimeDelta delta) {
   DCHECK_GT(delta, base::TimeDelta())
       << "Monotonically increasing time may not go backwards";
-  offset_ += delta;
+  offset_from_windows_epoch_ += delta;
 }
 
 }  // namespace base

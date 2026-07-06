@@ -394,7 +394,7 @@ TEST_F(StackSamplerTest, CopyStackTimestamp) {
   const std::vector<uintptr_t> stack = {0};
   InjectModuleForContextInstructionPointer(stack, &module_cache_);
   std::vector<uintptr_t> stack_copy;
-  TimeTicks timestamp = TimeTicks::UnixEpoch();
+  TimeTicks timestamp = TimeTicks() + base::Hours(1);
   std::unique_ptr<StackSampler> stack_sampler = StackSampler::CreateForTesting(
       std::make_unique<TestStackCopier>(stack, timestamp),
       std::move(unwind_data),
