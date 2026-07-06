@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/mathml/mathml_anchor_element.h"
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -173,8 +174,8 @@ uint32_t EnumToBitmask(enumType outcome) {
 }
 
 // Populates context menu data common to all anchor element types (HTML <a>,
-// SVG <a>, etc.): suggested download filename, referrer policy suppression,
-// and link text.
+// SVG <a>, MathML <a> etc.): suggested download filename, referrer policy
+// suppression, and link text.
 template <typename AnchorType>
 void PopulateAnchorContextMenuData(AnchorType* anchor,
                                    const QualifiedName& download_attr,
@@ -828,6 +829,10 @@ bool ContextMenuController::ShowContextMenu(
                                   selected_frame, data);
   } else if (auto* svg_anchor = DynamicTo<SVGAElement>(result.URLElement())) {
     PopulateAnchorContextMenuData(svg_anchor, svg_names::kDownloadAttr,
+                                  selected_frame, data);
+  } else if (auto* mathml_anchor =
+                 DynamicTo<MathMLAnchorElement>(result.URLElement())) {
+    PopulateAnchorContextMenuData(mathml_anchor, html_names::kDownloadAttr,
                                   selected_frame, data);
   }
 

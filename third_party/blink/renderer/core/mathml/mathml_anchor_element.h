@@ -29,6 +29,8 @@ class CORE_EXPORT MathMLAnchorElement : public MathMLElement,
 
   bool IsGroupingElement() const override { return true; }
 
+  uint32_t GetLinkRelations() const { return link_relations_; }
+
   void Trace(Visitor*) const override;
 
   bool HasActivationBehavior() const override;

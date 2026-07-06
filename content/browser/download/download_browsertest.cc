@@ -969,7 +969,9 @@ class DownloadContentTest : public ContentBrowserTest {
  public:
   DownloadContentTest() {
     feature_list_.InitWithFeatures(
-        {},
+        {
+            blink::features::kMathMLAnchorElement,
+        },
         {
             download::features::kAllowDownloadResumptionWithoutStrongValidators,
         });
@@ -5511,6 +5513,31 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SVGAnchorDownloadAttribute) {
   EXPECT_EQ(FILE_PATH_LITERAL("svg-suggested-filename.txt"),
             downloads[0]->GetTargetFilePath().BaseName().value());
   VerifyFile(downloads[0]->GetFullPath(), "SVG download test content", 25);
+
+  DownloadManagerForShell(shell())->Shutdown();
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadContentTest, MathMLAnchorDownloadAttribute) {
+  GURL mathml_url =
+      embedded_test_server()->GetURL("/download/mathml_download_test.html");
+  EXPECT_TRUE(NavigateToURL(shell(), mathml_url));
+
+  std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
+
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+  auto click_result =
+      EvalJs(shell()->web_contents(), "clickMathMLDownloadLink();");
+  EXPECT_EQ("MathML download link clicked", click_result.ExtractString());
+  observer->WaitForFinished();
+
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+  EXPECT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
+
+  EXPECT_EQ(FILE_PATH_LITERAL("mathml-suggested-filename.txt"),
+            downloads[0]->GetTargetFilePath().BaseName().value());
+  VerifyFile(downloads[0]->GetFullPath(), "MathML download test content", 28);
 
   DownloadManagerForShell(shell())->Shutdown();
 }

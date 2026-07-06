@@ -7407,6 +7407,7 @@ data/download/gzip-content.gz.mock-http-headers
 data/download/hello.mhtml
 data/download/iframe-host.html
 data/download/iframe-host.html.mock-http-headers
+data/download/mathml_download_test.html
 data/download/octet-stream.abc
 data/download/octet-stream.abc.mock-http-headers
 data/download/page_with_data_image.html
