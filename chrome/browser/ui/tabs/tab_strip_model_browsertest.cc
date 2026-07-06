@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
@@ -532,12 +531,6 @@ class TabStripModelTestTabGroupEntryPointsEnabled
         features::kTabGroupMenuMoreEntryPoints);
   }
 
-  TabStrip* tabstrip() {
-    return views::AsViewClass<HorizontalTabStripRegionView>(
-               browser()->GetBrowserView().tab_strip_view())
-        ->tab_strip();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -549,10 +542,9 @@ IN_PROC_BROWSER_TEST_F(TabStripModelTestTabGroupEntryPointsEnabled,
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
   ASSERT_TRUE(tab_group_model);
 
-  TabStripController* tab_strip_controller = tabstrip()->controller();
-  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
-  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
-  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
+  chrome::AddTabAt(browser(), GURL(), -1, false);
+  chrome::AddTabAt(browser(), GURL(), -1, false);
+  chrome::AddTabAt(browser(), GURL(), -1, false);
 
   ASSERT_TRUE(tab_strip_model->count() == 4);
 
@@ -571,16 +563,16 @@ IN_PROC_BROWSER_TEST_F(TabStripModelTestTabGroupEntryPointsEnabled,
   EXPECT_TRUE(most_recently_used);
   EXPECT_EQ(*most_recently_used, group_3);
 
-  tab_strip_controller->RemoveTabFromGroup(3);
+  tab_strip_model->RemoveFromGroup({3});
   most_recently_used = tab_group_model->GetMostRecentTabGroupId();
   EXPECT_TRUE(most_recently_used);
   EXPECT_EQ(*most_recently_used, group_1);
 
-  tab_strip_controller->RemoveTabFromGroup(1);
+  tab_strip_model->RemoveFromGroup({1});
   most_recently_used = tab_group_model->GetMostRecentTabGroupId();
   EXPECT_TRUE(most_recently_used);
   EXPECT_EQ(*most_recently_used, group_2);
 
-  tab_strip_controller->RemoveTabFromGroup(2);
+  tab_strip_model->RemoveFromGroup({2});
   EXPECT_FALSE(tab_group_model->GetMostRecentTabGroupId());
 }

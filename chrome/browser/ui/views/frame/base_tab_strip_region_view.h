@@ -47,7 +47,7 @@ class BaseTabStripRegionView : public TabStripRegionView {
     return tab_strip_controller_.get();
   }
 
-  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
+  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen) override;
   virtual gfx::Rect GetTabStripDraggableBounds() const = 0;
 
   // TabStripRegionView:

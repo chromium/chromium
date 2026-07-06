@@ -64,7 +64,8 @@ class TabStripBrowsertest : public InProcessBrowserTest {
     // The TabStrip is not used in Vertical Tabs. Ensure this suite is not run
     // which would end up testing behavior that is not part of the browser.
     feature_list_.InitWithFeatures(
-        {}, {tabs::kVerticalTabs, features::kTabGroupHoverCards});
+        {}, {tabs::kVerticalTabs, tabs::kTabStripUnification,
+             features::kTabGroupHoverCards});
   }
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }

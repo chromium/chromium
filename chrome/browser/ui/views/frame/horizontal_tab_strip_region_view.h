@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/buildflags.h"
@@ -21,11 +22,9 @@ class BrowserView;
 namespace views {
 class ActionViewController;
 class Button;
-class LabelButton;
 }
 class NewTabButton;
 class TabStripActionContainer;
-class TabSearchButton;
 class TabStripComboButton;
 class TabStrip;
 class TabStripScrollContainer;
@@ -33,26 +32,21 @@ class TabStripControlButton;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
-class HorizontalTabStripRegionView final : public TabStripRegionView {
-  METADATA_HEADER(HorizontalTabStripRegionView, TabStripRegionView)
+class HorizontalTabStripRegionViewOld : public TabStripRegionView {
+  METADATA_HEADER(HorizontalTabStripRegionViewOld, TabStripRegionView)
 
  public:
-  explicit HorizontalTabStripRegionView(BrowserView* browser_view);
-  HorizontalTabStripRegionView(const HorizontalTabStripRegionView&) = delete;
-  HorizontalTabStripRegionView& operator=(const HorizontalTabStripRegionView&) =
+  explicit HorizontalTabStripRegionViewOld(BrowserView* browser_view);
+  HorizontalTabStripRegionViewOld(const HorizontalTabStripRegionViewOld&) =
       delete;
-  ~HorizontalTabStripRegionView() override;
+  HorizontalTabStripRegionViewOld& operator=(
+      const HorizontalTabStripRegionViewOld&) = delete;
+  ~HorizontalTabStripRegionViewOld() override;
 
   // Returns true if |point| falls within the window caption area of the
   // horizontal tab strip. Returns false if the point hits an interactive child
   // view. |point| is in the local coordinate space of |this|.
-  bool IsPositionInWindowCaption(const gfx::Point& point);
-
-  views::Button* new_tab_button_for_testing() { return new_tab_button_; }
-
-  views::View* reserved_grab_handle_space_for_testing() {
-    return reserved_grab_handle_space_;
-  }
+  bool IsPositionInWindowCaption(const gfx::Point& point) override;
 
   // views::View:
   // The TabSearchButton and NewTabButton may need to be rendered above the
@@ -71,11 +65,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   Profile* profile();
 
   TabStrip* tab_strip() { return tab_strip_; }
-
-  views::Button* GetTabSearchButton();
-  TabStripComboButton* GetComboButton() { return combo_button_; }
-
-  views::LabelButton* GetGlicButton();
 
   // TabStripRegionView:
   void InitializeTabStrip() override;
@@ -96,6 +85,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
   TabDragContext* GetDragContext() override;
+  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen) override;
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
       const ui::DropTargetEvent& event) override;
   BrowserRootView::DropTarget* GetDropTarget(
@@ -142,8 +132,51 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(
-          &HorizontalTabStripRegionView::UpdateButtonBorders,
+          &HorizontalTabStripRegionViewOld::UpdateButtonBorders,
           base::Unretained(this)));
 };
+
+class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
+  METADATA_HEADER(HorizontalTabStripRegionViewNew, BaseTabStripRegionView)
+
+ public:
+  explicit HorizontalTabStripRegionViewNew(BrowserView* browser_view);
+  HorizontalTabStripRegionViewNew(const HorizontalTabStripRegionViewNew&) =
+      delete;
+  HorizontalTabStripRegionViewNew& operator=(
+      const HorizontalTabStripRegionViewNew&) = delete;
+  ~HorizontalTabStripRegionViewNew() override;
+
+  bool IsPositionInWindowCaption(const gfx::Point& point) override;
+  views::View::Views GetChildrenInZOrder() override;
+  void Layout(PassKey) override;
+
+  Profile* profile();
+  bool HasLeadingButtons() const { return false; }
+
+  // TabStripRegionView:
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+  views::View* GetTabStripView() override;
+  gfx::Rect GetTabStripDraggableBounds() const override;
+  views::View* SetTabStripView(std::unique_ptr<views::View> view) override;
+  gfx::Point GetLinkDropArrowPosition(
+      const BrowserRootView::DropIndex& drop_index,
+      DropArrow::Direction* direction) override;
+
+ private:
+  raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
+  raw_ptr<TabStripComboButton> combo_button_ = nullptr;
+  raw_ptr<views::Button> new_tab_button_ = nullptr;
+
+  std::unique_ptr<views::ActionViewController> action_view_controller_;
+  base::CallbackListSubscription on_active_tab_changed_subscription_;
+};
+
+using HorizontalTabStripRegionView = HorizontalTabStripRegionViewOld;
+
+std::unique_ptr<TabStripRegionView> CreateHorizontalTabStripRegionView(
+    BrowserView* browser_view);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_

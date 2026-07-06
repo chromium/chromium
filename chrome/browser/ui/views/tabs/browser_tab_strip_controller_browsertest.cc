@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_creation_metrics_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -45,9 +46,7 @@ class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
   TabStrip* tabstrip() {
-    return views::AsViewClass<HorizontalTabStripRegionView>(
-               browser()->GetBrowserView().tab_strip_view())
-        ->tab_strip();
+    return browser()->GetBrowserView().horizontal_tab_strip_for_testing();
   }
   TabStripController* controller() { return tabstrip()->controller(); }
 
@@ -76,7 +75,7 @@ class BrowserTabStripControllerTestAddTabActiveGroupEnabled
  public:
   BrowserTabStripControllerTestAddTabActiveGroupEnabled() {
     scoped_feature_list_.InitWithFeatures({features::kNewTabAddsToActiveGroup},
-                                          {});
+                                          {tabs::kTabStripUnification});
   }
 
  private:
@@ -87,8 +86,8 @@ class BrowserTabStripControllerTestAddTabActiveGroupDisabled
     : public BrowserTabStripControllerTestBase {
  public:
   BrowserTabStripControllerTestAddTabActiveGroupDisabled() {
-    scoped_feature_list_.InitWithFeatures({},
-                                          {features::kNewTabAddsToActiveGroup});
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kNewTabAddsToActiveGroup, tabs::kTabStripUnification});
   }
 
  private:
@@ -389,7 +388,8 @@ class BrowserTabStripControllerTestFocusedGroup
     : public BrowserTabStripControllerTestBase {
  public:
   BrowserTabStripControllerTestFocusedGroup() {
-    scoped_feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+    scoped_feature_list_.InitWithFeatures({features::kTabGroupsFocusing},
+                                          {tabs::kTabStripUnification});
   }
   ~BrowserTabStripControllerTestFocusedGroup() override = default;
 

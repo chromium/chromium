@@ -32,9 +32,9 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
-#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -286,9 +286,7 @@ class BrowserView : public BrowserWindow,
   }
 
   // Accessor for the TabStrip.
-  TabStrip* horizontal_tab_strip_for_testing() {
-    return horizontal_tab_strip_region_view_->tab_strip();
-  }
+  TabStrip* horizontal_tab_strip_for_testing();
 
   // Accessor for the Toolbar.
   const ToolbarView* toolbar() const { return toolbar_; }
@@ -1165,8 +1163,7 @@ class BrowserView : public BrowserWindow,
   raw_ptr<views::Label> web_app_window_title_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
-  raw_ptr<HorizontalTabStripRegionView> horizontal_tab_strip_region_view_ =
-      nullptr;
+  raw_ptr<TabStripRegionView> horizontal_tab_strip_region_view_ = nullptr;
 
   // The insertion index of the HorizontalTabStripRegionView in the BrowserView
   // view tree. This is used to correctly reparent the tabstrip when exiting

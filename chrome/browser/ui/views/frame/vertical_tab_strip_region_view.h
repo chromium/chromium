@@ -89,7 +89,7 @@ class VerticalTabStripRegionView final
     return bottom_button_container_;
   }
 
-  bool IsPositionInWindowCaption(const gfx::Point& point);
+  bool IsPositionInWindowCaption(const gfx::Point& point) override;
 
   // These methods provide the toolbar height and exclusion width, before the
   // layout of this view, for use in calculating positioning of child views. If

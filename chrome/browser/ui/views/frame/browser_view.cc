@@ -112,6 +112,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
@@ -981,7 +982,7 @@ BrowserView::BrowserView(Browser* browser)
   // Tabstrip comes basically last because it should be before toolbar in the
   // focus order but also needs to paint on top of everything.
   horizontal_tab_strip_region_view_ =
-      AddChildView(std::make_unique<HorizontalTabStripRegionView>(this));
+      AddChildView(CreateHorizontalTabStripRegionView(this));
   horizontal_tab_strip_region_insertion_index_ =
       GetIndexOf(horizontal_tab_strip_region_view_.get());
 
@@ -1282,6 +1283,16 @@ std::vector<ContentsContainerView*> BrowserView::GetContentsContainerViews() {
   return multi_contents_view_->contents_container_views();
 }
 
+TabStrip* BrowserView::horizontal_tab_strip_for_testing() {
+  if (views::IsViewClass<HorizontalTabStripRegionViewOld>(
+          horizontal_tab_strip_region_view_)) {
+    return static_cast<HorizontalTabStripRegionViewOld*>(
+               horizontal_tab_strip_region_view_)
+        ->tab_strip();
+  }
+  return nullptr;
+}
+
 TabStripRegionView* BrowserView::tab_strip_view() const {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
   if (vertical_tab_strip_region_view_ && controller &&
@@ -1301,7 +1312,8 @@ views::LabelButton* BrowserView::GetGlicButton() {
     return nullptr;
   }
 
-  return horizontal_tab_strip_region_view_->GetGlicButton();
+  return BrowserElementsViews::From(browser_.get())
+      ->GetViewAs<views::LabelButton>(kGlicButtonElementId);
 }
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
@@ -1390,7 +1402,7 @@ bool BrowserView::ShouldDrawTabStrip() const {
   // since callers may otherwise try to access it. Note that we can't just check
   // this alone, as the tabstrip is created unconditionally even for windows
   // that won't display it.
-  return horizontal_tab_strip_region_view_->tab_strip() != nullptr;
+  return horizontal_tab_strip_region_view_->GetTabStripView() != nullptr;
 }
 
 bool BrowserView::ShouldDrawVerticalTabStrip() const {
@@ -2440,8 +2452,16 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 
 TabDragTarget* BrowserView::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
-  if (vertical_tab_strip_region_view_) {
-    if (auto* target = vertical_tab_strip_region_view_->GetTabDragTarget(
+  if (ShouldDrawVerticalTabStrip()) {
+    if (vertical_tab_strip_region_view_) {
+      if (auto* target = vertical_tab_strip_region_view_->GetTabDragTarget(
+              point_in_screen)) {
+        return target;
+      }
+    }
+  } else if (base::FeatureList::IsEnabled(tabs::kTabStripUnification) &&
+             horizontal_tab_strip_region_view_) {
+    if (auto* target = horizontal_tab_strip_region_view_->GetTabDragTarget(
             point_in_screen)) {
       return target;
     }
@@ -4185,7 +4205,9 @@ void BrowserView::UpdateTabSearchBubbleHost() {
         combo_button->end_button(), browser_.get());
     combo_button->SetTabSearchBubbleHost(tab_search_bubble_host_.get());
   } else {
-    auto* combo_button = horizontal_tab_strip_region_view_->GetComboButton();
+    auto* combo_button =
+        BrowserElementsViews::From(browser_.get())
+            ->GetViewAs<TabStripComboButton>(kTabStripComboButtonElementId);
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         combo_button->end_button(), browser_.get());
     combo_button->SetTabSearchBubbleHost(tab_search_bubble_host_.get());

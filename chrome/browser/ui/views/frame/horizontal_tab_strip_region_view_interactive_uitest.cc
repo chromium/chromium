@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -54,7 +55,8 @@ class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest 
   }
 
   views::View* new_tab_button() {
-    return tab_strip_region_view()->new_tab_button_for_testing();
+    return BrowserElementsViews::From(browser())->GetViewAs<views::View>(
+        kNewTabButtonElementId);
   }
 
  protected:
@@ -71,7 +73,8 @@ class HorizontalTabStripRegionViewBrowserTest : public HorizontalTabStripRegionV
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{features::kGlicLocaleFiltering,
-                               features::kGlicCountryFiltering});
+                               features::kGlicCountryFiltering,
+                               tabs::kTabStripUnification});
   }
   HorizontalTabStripRegionViewBrowserTest(const HorizontalTabStripRegionViewBrowserTest&) = delete;
   HorizontalTabStripRegionViewBrowserTest& operator=(

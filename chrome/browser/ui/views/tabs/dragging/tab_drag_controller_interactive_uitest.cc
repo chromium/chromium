@@ -39,6 +39,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -55,6 +56,7 @@
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
@@ -535,11 +537,9 @@ void ResizeUsingMouseEmulation(Browser* browser,
   }
 
   // Move the window.
-  auto* tab_strip_region_view =
-      views::AsViewClass<HorizontalTabStripRegionView>(
-          browser->GetBrowserView().tab_strip_view());
   auto* grab_handle_space =
-      tab_strip_region_view->reserved_grab_handle_space_for_testing();
+      BrowserElementsViews::From(browser)->GetViewAs<views::View>(
+          kTabStripFrameGrabHandleElementId);
   auto grab_coordinates =
       ui_test_utils::GetCenterInScreenCoordinates(grab_handle_space);
   gfx::Vector2d grab_offset = {grab_coordinates.x(), grab_coordinates.y()};

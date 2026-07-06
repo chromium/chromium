@@ -21,8 +21,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -386,26 +384,11 @@ class ExistingTabGroupSubMenuModelClosedSavedGroupsTest
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
-  TabStrip* tabstrip() {
-    return views::AsViewClass<HorizontalTabStripRegionView>(
-               browser()->GetBrowserView().tab_strip_view())
-        ->tab_strip();
-  }
-
   tab_groups::DeletionDialogController* deletion_dialog_controller() {
     return browser()
         ->browser_window_features()
         ->tab_group_deletion_dialog_controller();
   }
-
-  TabStripController* controller() { return tabstrip()->controller(); }
-
-  ui::MouseEvent dummy_event = ui::MouseEvent(ui::EventType::kMousePressed,
-                                              gfx::PointF(),
-                                              gfx::PointF(),
-                                              base::TimeTicks::Now(),
-                                              0,
-                                              0);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -563,14 +546,16 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelClosedSavedGroupsTest,
   ASSERT_TRUE(tab_group_sync_service()->GetGroup(green));
 
   // Select all of |blue|, but only one tab of |green|.
-  controller()->SelectTab(0, dummy_event);
-  controller()->ExtendSelectionTo(1);
+  ui::ListSelectionModel selection;
+  selection.SetSelectedIndex(1);
+  selection.AddIndexToSelection(0);
+  tab_strip_model()->SetSelectionFromModel(std::move(selection));
 
   // Now add all these to the closed saved tab group with the submenu.
-  ASSERT_TRUE(controller()->IsActiveTab(1));
-  ASSERT_TRUE(controller()->IsTabSelected(0));
-  ASSERT_TRUE(controller()->IsTabSelected(1));
-  ASSERT_FALSE(controller()->IsTabSelected(2));
+  ASSERT_EQ(tab_strip_model()->active_index(), 1);
+  ASSERT_TRUE(tab_strip_model()->IsTabSelected(0));
+  ASSERT_TRUE(tab_strip_model()->IsTabSelected(1));
+  ASSERT_FALSE(tab_strip_model()->IsTabSelected(2));
 
   std::unique_ptr<TabMenuModelDelegate> delegate =
       CreateTabMenuModelDelegate(browser());
@@ -664,9 +649,11 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelClosedSavedGroupsTest,
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), -1, true);
 
   // Select all the tabs, and add it the closed saved group.
-  controller()->SelectTab(0, dummy_event);
-  controller()->ExtendSelectionTo(1);
-  ASSERT_TRUE(controller()->IsActiveTab(1));
+  ui::ListSelectionModel selection;
+  selection.SetSelectedIndex(1);
+  selection.AddIndexToSelection(0);
+  tab_strip_model()->SetSelectionFromModel(std::move(selection));
+  ASSERT_EQ(tab_strip_model()->active_index(), 1);
 
   std::unique_ptr<TabMenuModelDelegate> delegate =
       CreateTabMenuModelDelegate(browser());

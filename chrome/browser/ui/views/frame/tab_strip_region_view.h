@@ -20,6 +20,7 @@ struct TabData;
 }
 
 class TabDragContext;
+class TabDragTarget;
 class TabStripObserver;
 
 class ExpandOnHoverLock {
@@ -64,6 +65,7 @@ class TabStripRegionView : public views::AccessiblePaneView,
   virtual std::optional<int> GetFocusedTabIndex() const = 0;
   virtual const tabs::TabData& GetTabData(const tabs::TabHandle& tab) = 0;
   virtual views::View* GetTabStripView() = 0;
+  virtual bool IsPositionInWindowCaption(const gfx::Point& point) = 0;
 
   // -- UI anchoring --
   virtual views::View* GetTabAnchorViewAt(int tab_index) = 0;
@@ -77,6 +79,8 @@ class TabStripRegionView : public views::AccessiblePaneView,
 
   // -- Drag and drop --
   virtual TabDragContext* GetDragContext() = 0;
+  virtual TabDragTarget* GetTabDragTarget(
+      const gfx::Point& point_in_screen) = 0;
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
       const ui::DropTargetEvent& event) override = 0;
   BrowserRootView::DropTarget* GetDropTarget(

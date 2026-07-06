@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -81,7 +83,9 @@ class HorizontalTabStripRegionViewTest : public InProcessBrowserTest {
  public:
   HorizontalTabStripRegionViewTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
-            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
+    feature_list_.InitAndDisableFeature(tabs::kTabStripUnification);
+  }
   HorizontalTabStripRegionViewTest(const HorizontalTabStripRegionViewTest&) = delete;
   HorizontalTabStripRegionViewTest& operator=(const HorizontalTabStripRegionViewTest&) = delete;
   ~HorizontalTabStripRegionViewTest() override = default;
@@ -110,7 +114,18 @@ class HorizontalTabStripRegionViewTest : public InProcessBrowserTest {
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
+  views::View* new_tab_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::View>(
+        kNewTabButtonElementId);
+  }
+
+  views::View* reserved_grab_handle_space() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::View>(
+        kTabStripFrameGrabHandleElementId);
+  }
+
  private:
+  base::test::ScopedFeatureList feature_list_;
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
@@ -129,10 +144,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
       RunScheduledLayouts();
       waiter.Wait();
     }
-    EXPECT_LE(tab_strip_region_view()
-                  ->reserved_grab_handle_space_for_testing()
-                  ->bounds()
-                  .right(),
+    EXPECT_LE(reserved_grab_handle_space()->bounds().right(),
               kTabStripRegionViewWidth);
   }
 }
@@ -152,9 +164,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
       RunScheduledLayouts();
       waiter.Wait();
     }
-    EXPECT_LE(
-        tab_strip_region_view()->new_tab_button_for_testing()->bounds().right(),
-        kTabStripRegionViewWidth);
+    EXPECT_LE(new_tab_button()->bounds().right(), kTabStripRegionViewWidth);
   }
 }
 
@@ -173,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
     waiter.Wait();
   }
 
-  EXPECT_EQ(tab_strip_region_view()->new_tab_button_for_testing()->bounds().x(),
+  EXPECT_EQ(new_tab_button()->bounds().x(),
             tab_strip()->tab_at(0)->bounds().right());
 }
 
@@ -189,8 +199,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, DISABLED_NewTabButtonIn
   // should not cause any crashes since the ink drop layer size as well as the
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/40563841.
-  auto* button = static_cast<TabStripControlButton*>(
-      tab_strip_region_view()->new_tab_button_for_testing());
+  auto* button = static_cast<TabStripControlButton*>(new_tab_button());
   for (int i = 0; i < 10; ++i) {
     button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
     chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -231,8 +240,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
 
   // The new tab button should sit flush with the top of the
   // |tab_strip_region_view()|.
-  gfx::Point new_tab_button_origin(
-      tab_strip_region_view()->new_tab_button_for_testing()->bounds().origin());
+  gfx::Point new_tab_button_origin(new_tab_button()->bounds().origin());
   views::View::ConvertPointToTarget(tab_strip(), tab_strip_region_view(),
                                     &new_tab_button_origin);
   EXPECT_EQ(0, new_tab_button_origin.y());

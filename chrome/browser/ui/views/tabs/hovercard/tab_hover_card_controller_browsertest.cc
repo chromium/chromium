@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
