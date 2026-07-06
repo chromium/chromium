@@ -14,7 +14,6 @@
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

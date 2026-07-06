@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/isolated_connection.h"
 
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_channel.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/invitation.h"
 
@@ -22,14 +21,9 @@ IsolatedConnection::~IsolatedConnection() {
   // terminating isolated connections, but this is a decision made to minimize
   // the API surface dedicated to isolated connections in anticipation of the
   // concept being deprecated eventually.
-  //
-  // This is not done with MojoIpcz enabled, because with MojoIpcz, isolated
-  // connections are not transient and can outlive this object.
-  if (!mojo_legacy::core::IsMojoIpczEnabled()) {
-    PlatformChannel channel;
-    OutgoingInvitation::SendIsolated(channel.TakeLocalEndpoint(),
-                                     token_.ToString());
-  }
+  PlatformChannel channel;
+  OutgoingInvitation::SendIsolated(channel.TakeLocalEndpoint(),
+                                   token_.ToString());
 }
 
 ScopedMessagePipeHandle IsolatedConnection::Connect(
