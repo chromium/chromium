@@ -39,7 +39,11 @@ NativeViewHostAura::NativeViewHostAura(NativeViewHost* host) : host_(host) {}
 NativeViewHostAura::~NativeViewHostAura() {
   if (host_->native_view()) {
     host_->native_view()->RemoveObserver(this);
-    host_->native_view()->ClearProperty(views::kHostViewKey);
+    if (host_->layer_managed_by_views()) {
+      host_->native_view()->SetLayerManagedByParent(true);
+    } else {
+      host_->native_view()->ClearProperty(views::kHostViewKey);
+    }
     host_->native_view()->ClearProperty(
         aura::client::kParentNativeViewAccessibleKey);
     if (owned_by_parent_) {
@@ -57,11 +61,23 @@ void NativeViewHostAura::AttachNativeView() {
   CHECK(host_->GetWidget()->GetNativeView());
   owned_by_parent_ = host_->native_view()->owned_by_parent();
   host_->native_view()->set_owned_by_parent(false);
+
+  if (!host_->layer_managed_by_views()) {
+    host_->native_view()->SetProperty(views::kHostViewKey,
+                                      static_cast<View*>(host_));
+  }
   Widget::ReparentNativeView(host_->native_view(),
                              host_->GetWidget()->GetNativeView());
+  if (host_->layer_managed_by_views()) {
+    host_->native_view()->SetLayerManagedByParent(false);
+    if (host_->create_layer()) {
+      host_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+    } else {
+      CHECK(host_->layer());
+    }
+    host_->layer()->Add(GetUILayer());
+  }
   host_->native_view()->AddObserver(this);
-  host_->native_view()->SetProperty(views::kHostViewKey,
-                                    static_cast<View*>(host_));
   original_transform_ = host_->native_view()->transform();
   original_transform_changed_ = false;
   UpdateInsets();
@@ -92,19 +108,26 @@ void NativeViewHostAura::NativeViewDetaching(bool destroyed) {
   CHECK(owned_by_parent_);
   host_->native_view()->set_owned_by_parent(*owned_by_parent_);
   owned_by_parent_.reset();
+  if (host_->native_view()->parent()) {
+    Widget::ReparentNativeView(host_->native_view(), nullptr);
+  }
+
   if (!destroyed) {
     host_->native_view()->RemoveObserver(this);
-    host_->native_view()->ClearProperty(views::kHostViewKey);
+    if (host_->layer_managed_by_views()) {
+      host_->native_view()->SetLayerManagedByParent(true);
+      if (host_->create_layer()) {
+        host_->DestroyLayer();
+      }
+    } else {
+      host_->native_view()->ClearProperty(views::kHostViewKey);
+    }
     host_->native_view()->ClearProperty(
         aura::client::kParentNativeViewAccessibleKey);
     if (original_transform_changed_) {
       host_->native_view()->SetTransform(original_transform_);
     }
     host_->native_view()->Hide();
-  }
-
-  if (host_->native_view()->parent()) {
-    Widget::ReparentNativeView(host_->native_view(), nullptr);
   }
   if (!host_->native_view()->is_destroying()) {
     host_->native_view()->SetEventTargeter(nullptr);
@@ -195,7 +218,7 @@ void NativeViewHostAura::ShowWidget(int x,
       host_->native_view()->SetTransform(transform);
       original_transform_changed_ = true;
     }
-    GetUILayer()->SetClipRect(clip_rect_.value_or({}));
+    GetUILayer()->SetClipRect(clip_rect_.value_or(gfx::Rect()));
   }
   ApplyRoundedCorners();
   host_->native_view()->SetBounds({x, y, native_w, native_h});

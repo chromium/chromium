@@ -16,6 +16,7 @@
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -23,7 +24,9 @@ namespace views {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, public:
 
-NativeViewHost::NativeViewHost() {
+NativeViewHost::NativeViewHost()
+    : layer_managed_by_views_(!base::FeatureList::IsEnabled(
+          views::features::kUseNativeViewHostAuraWithClipWindow)) {
   set_suppress_default_focus_handling();
 }
 
@@ -92,6 +95,22 @@ void NativeViewHost::SetNativeViewSize(const gfx::Size& size) {
   }
   native_view_size_ = size;
   InvalidateLayout();
+}
+
+void NativeViewHost::SetLayerManagedByViews(bool managed) {
+  if (layer_managed_by_views_ == managed) {
+    return;
+  }
+
+  CHECK(!managed || !base::FeatureList::IsEnabled(
+                        views::features::kUseNativeViewHostAuraWithClipWindow));
+
+  layer_managed_by_views_ = managed;
+  DCHECK(!native_view_);
+}
+
+void NativeViewHost::SetCreateLayer(bool create_layer) {
+  create_layer_ = create_layer;
 }
 
 gfx::NativeView NativeViewHost::GetNativeViewContainer() const {

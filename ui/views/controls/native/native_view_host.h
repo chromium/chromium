@@ -95,6 +95,19 @@ class VIEWS_EXPORT NativeViewHost : public View {
   void set_fast_resize(bool fast_resize) { fast_resize_ = fast_resize; }
   bool fast_resize() const { return fast_resize_; }
 
+  // Set whether the native view's layer should be managed by views.
+  // If set to true, NativeViewHost will manually manage the layer.
+  // If set to false, the native view's layer will be managed by its parent
+  // window's layer.
+  void SetLayerManagedByViews(bool managed);
+  bool layer_managed_by_views() const { return layer_managed_by_views_; }
+
+  // Set whether NativeViewHost should create a layer for views management.
+  // This only has effect when layer_managed_by_views() is true.
+  // If set to false, the host view must already have a layer.
+  void SetCreateLayer(bool create_layer);
+  bool create_layer() const { return create_layer_; }
+
   gfx::NativeView native_view() const { return native_view_; }
 
   void NativeViewDestroyed();
@@ -148,6 +161,12 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // True if the native view is being resized using the fast method described
   // in the setter/accessor above.
   bool fast_resize_ = false;
+
+  // True if the native view's layer is managed by views.
+  bool layer_managed_by_views_;
+
+  // True if NativeViewHost should create a layer for views management.
+  bool create_layer_ = true;
 
   // The color to use for repainting the background when the view is clipped.
   std::optional<SkColor> background_color_when_clipped_;

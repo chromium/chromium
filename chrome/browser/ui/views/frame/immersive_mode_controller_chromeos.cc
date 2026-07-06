@@ -228,20 +228,21 @@ void ImmersiveModeControllerChromeos::SetVisibleFraction(
   // means some gesture may not be recognized well during the animation, but
   // that's fine since a complicated gesture wouldn't be involved during the
   // animation duration. See: https://crbug.com/41424205.
-  if (browser_view_->GetSupportsTabStrip()) {
-    if (visible_fraction == 1.0) {
-      std::vector<ContentsWebView*> contents_views =
-          browser_view_->GetAllVisibleContentsWebViews();
-      for (ContentsWebView* contents_view : contents_views) {
-        contents_view->holder()->SetHitTestTopInset(
-            browser_view_->top_container()->height());
-      }
-    } else if (visible_fraction_ == 1.0) {
-      std::vector<ContentsWebView*> contents_views =
-          browser_view_->GetAllVisibleContentsWebViews();
-      for (ContentsWebView* contents_view : contents_views) {
-        contents_view->holder()->SetHitTestTopInset(0);
-      }
+  // TODO(crbug.com/434082728): As the NativeViewHost's attached layer can now
+  // be managed by views, the event targeting should now be handled by view's
+  // targeting logic.
+  if (visible_fraction == 1.0) {
+    std::vector<ContentsWebView*> contents_views =
+        browser_view_->GetAllVisibleContentsWebViews();
+    for (ContentsWebView* contents_view : contents_views) {
+      contents_view->holder()->SetHitTestTopInset(
+          browser_view_->top_container()->height());
+    }
+  } else if (visible_fraction_ == 1.0) {
+    std::vector<ContentsWebView*> contents_views =
+        browser_view_->GetAllVisibleContentsWebViews();
+    for (ContentsWebView* contents_view : contents_views) {
+      contents_view->holder()->SetHitTestTopInset(0);
     }
   }
 

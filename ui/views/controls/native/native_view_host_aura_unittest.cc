@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -148,7 +149,7 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
     test::NativeViewHostTestBase::TearDown();
   }
 
- private:
+ protected:
   std::unique_ptr<Widget> child_;
 };
 
@@ -163,10 +164,20 @@ TEST_F(NativeViewHostAuraTest, StopObservingNativeViewOnDestruct) {
   EXPECT_FALSE(child_win->HasObserver(aura_host));
 }
 
-// Tests that the kHostViewKey is correctly set and cleared.
-TEST_F(NativeViewHostAuraTest, HostViewPropertyKey) {
-  // Create the NativeViewHost and attach a NativeView.
-  CreateHost();
+// Tests that the kHostViewKey is correctly set and cleared in legacy mode
+// (layer managed by parent window).
+TEST_F(NativeViewHostAuraTest, HostViewPropertyKeyLegacy) {
+  if (base::FeatureList::IsEnabled(
+          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+    GTEST_SKIP();
+  }
+  CreateTopLevel();
+  CreateTestingHost();
+  host()->SetLayerManagedByViews(false);
+
+  child_ = CreateChildForHost(toplevel()->GetNativeView(),
+                              toplevel()->client_view(), new View, host());
+
   aura::Window* child_win = child_widget()->GetNativeView();
   EXPECT_EQ(native_view(), child_win);
   EXPECT_EQ(host(), child_win->GetProperty(views::kHostViewKey));
@@ -181,6 +192,35 @@ TEST_F(NativeViewHostAuraTest, HostViewPropertyKey) {
 
   DestroyHost();
   EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
+}
+
+// Tests that the kHostViewKey is NOT set in default mode (layer managed by
+// views).
+TEST_F(NativeViewHostAuraTest, HostViewPropertyKeyManaged) {
+  if (base::FeatureList::IsEnabled(
+          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+    GTEST_SKIP();
+  }
+
+  CreateTopLevel();
+  CreateTestingHost();
+  host()->SetLayerManagedByViews(true);
+
+  child_ = CreateChildForHost(toplevel()->GetNativeView(),
+                              toplevel()->client_view(), new View, host());
+
+  aura::Window* child_win = child_widget()->GetNativeView();
+  EXPECT_EQ(native_view(), child_win);
+  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
+
+  host()->Detach();
+  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
+
+  host()->Attach(child_win);
+  EXPECT_EQ(native_view(), child_win);
+  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
+
+  DestroyHost();
 }
 
 // Tests that the NativeViewHost reports the cursor set on its native view.
@@ -923,6 +963,153 @@ TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
   widget_delegate.set_window(nullptr);
   DestroyHost();
   DestroyTopLevel();
+}
+
+TEST(NativeViewHostFeatureTest, FeatureFlagControlsDefault) {
+  // When feature is disabled, default should be true (since flipped).
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        views::features::kUseNativeViewHostAuraWithClipWindow);
+    NativeViewHost host;
+    EXPECT_TRUE(host.layer_managed_by_views());
+  }
+
+  // When feature is enabled, default should be false.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        views::features::kUseNativeViewHostAuraWithClipWindow);
+    NativeViewHost host;
+    EXPECT_FALSE(host.layer_managed_by_views());
+  }
+}
+
+TEST_F(NativeViewHostAuraTest, LayerHierarchyManaged) {
+  if (base::FeatureList::IsEnabled(
+          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+    GTEST_SKIP();
+  }
+
+  CreateTopLevel();
+  CreateTestingHost();
+  host()->SetLayerManagedByViews(true);
+
+  child_ = CreateChildForHost(toplevel()->GetNativeView(),
+                              toplevel()->client_view(), new View, host());
+
+  aura::Window* child_win = child_widget()->GetNativeView();
+  ui::Layer* child_layer = child_win->layer();
+  ui::Layer* host_layer = host()->layer();
+
+  EXPECT_TRUE(host_layer);
+  EXPECT_EQ(host_layer, child_layer->parent());
+
+  host()->Detach();
+  EXPECT_FALSE(host()->layer());
+  // After detach, child_win is reparented to root window.
+  EXPECT_TRUE(child_win->parent());
+  EXPECT_EQ(child_win->parent()->layer(), child_layer->parent());
+
+  host()->Attach(child_win);
+  EXPECT_TRUE(host()->layer());
+  EXPECT_EQ(host()->layer(), child_layer->parent());
+
+  DestroyHost();
+}
+
+TEST_F(NativeViewHostAuraTest, LayerHierarchyLegacy) {
+  if (base::FeatureList::IsEnabled(
+          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+    GTEST_SKIP();
+  }
+
+  CreateTopLevel();
+  CreateTestingHost();
+  host()->SetLayerManagedByViews(false);
+
+  child_ = CreateChildForHost(toplevel()->GetNativeView(),
+                              toplevel()->client_view(), new View, host());
+
+  EXPECT_FALSE(host()->layer());
+
+  aura::Window* child_win = child_widget()->GetNativeView();
+  ui::Layer* child_layer = child_win->layer();
+  aura::Window* parent_win = toplevel()->GetNativeView();
+
+  EXPECT_EQ(parent_win->layer(), child_layer->parent());
+
+  host()->Detach();
+  EXPECT_FALSE(host()->layer());
+  // After detach, child_win is reparented to root window.
+  EXPECT_TRUE(child_win->parent());
+  EXPECT_EQ(child_win->parent()->layer(), child_layer->parent());
+
+  host()->Attach(child_win);
+  EXPECT_FALSE(host()->layer());
+  EXPECT_EQ(parent_win->layer(), child_layer->parent());
+
+  DestroyHost();
+}
+
+TEST_F(NativeViewHostAuraTest, NestedLayerHierarchy) {
+  if (base::FeatureList::IsEnabled(
+          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+    GTEST_SKIP();
+  }
+
+  CreateTopLevel();
+  toplevel()->SetBounds(gfx::Rect(0, 0, 500, 500));
+  toplevel()->Show();
+
+  View* parent_view = new View();
+  parent_view->SetPaintToLayer();
+  toplevel()->client_view()->AddChildView(parent_view);
+  parent_view->SetBounds(10, 10, 100, 100);
+
+  CreateTestingHost();
+  host()->SetLayerManagedByViews(true);
+
+  child_ = CreateChildForHost(toplevel()->GetNativeView(), parent_view,
+                              new View, host());
+  host()->SetBounds(5, 5, 50, 50);
+
+  test::RunScheduledLayout(toplevel());
+
+  aura::Window* child_win = child_widget()->GetNativeView();
+  ui::Layer* child_layer = child_win->layer();
+  ui::Layer* host_layer = host()->layer();
+  ui::Layer* parent_layer = parent_view->layer();
+
+  EXPECT_TRUE(host_layer);
+  EXPECT_EQ(parent_layer, host_layer->parent());
+  EXPECT_EQ(host_layer, child_layer->parent());
+
+  // Account for client view offset in widget.
+  gfx::Vector2d offset = toplevel()->client_view()->bounds().OffsetFromOrigin();
+  gfx::Point expected_origin = gfx::Point(15, 15) + offset;
+
+  EXPECT_EQ(gfx::Rect(expected_origin, gfx::Size(50, 50)), child_win->bounds());
+  EXPECT_EQ(gfx::Rect(5, 5, 50, 50), host_layer->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 50), child_layer->bounds());
+
+  EXPECT_TRUE(child_win->IsVisible());
+  EXPECT_TRUE(child_layer->visible());
+
+  parent_view->SetVisible(false);
+  EXPECT_FALSE(child_win->IsVisible());
+  EXPECT_FALSE(child_layer->visible());
+
+  parent_view->SetVisible(true);
+  test::RunScheduledLayout(toplevel());
+  EXPECT_TRUE(child_win->IsVisible());
+  EXPECT_TRUE(child_layer->visible());
+
+  host()->SetVisible(false);
+  EXPECT_FALSE(child_win->IsVisible());
+  EXPECT_FALSE(child_layer->visible());
+
+  DestroyHost();
 }
 
 }  // namespace views

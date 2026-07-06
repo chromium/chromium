@@ -298,6 +298,9 @@ ArcNotificationContentView::ArcNotificationContentView(
       message_view_(message_view),
       control_buttons_view_(message_view) {
   DCHECK(message_view);
+  // ArcNotificationContentsView creates its own layer, so NVH do not need
+  // to create one.
+  SetCreateLayer(false);
 
   control_buttons_view_.SetButtonIconColors(cros_tokens::kIconColorPrimary);
   control_buttons_view_.SetNotificationControlButtonFactory(
