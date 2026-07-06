@@ -200,13 +200,13 @@ void MarkupAccumulator::AppendString(const String& string) {
 
 void MarkupAccumulator::AppendEndTag(const Element& element,
                                      const AtomicString& prefix) {
-  formatter_.AppendEndMarkup(markup_, element, prefix, element.localName());
+  formatter_.AppendEndMarkup(element, prefix, element.localName(), markup_);
 }
 
 void MarkupAccumulator::AppendStartMarkup(const Node& node) {
   switch (node.getNodeType()) {
     case Node::kTextNode:
-      formatter_.AppendText(markup_, To<Text>(node));
+      formatter_.AppendText(To<Text>(node), markup_);
       break;
     case Node::kElementNode:
       NOTREACHED();
@@ -217,7 +217,7 @@ void MarkupAccumulator::AppendStartMarkup(const Node& node) {
                                       SerializationType::kXml, markup_);
       break;
     default:
-      formatter_.AppendStartMarkup(markup_, node);
+      formatter_.AppendStartMarkup(node, markup_);
       break;
   }
 }
@@ -288,7 +288,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
   ElementSerializationData data;
   data.serialized_prefix_ = element.prefix();
   if (SerializeAsHtml()) {
-    formatter_.AppendStartTagOpen(markup_, element);
+    formatter_.AppendStartTagOpen(element, markup_);
     return data;
   }
 
@@ -318,7 +318,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     // localName. The node's prefix if it exists, is dropped.
 
     // 11.4. Append the value of qualified name to markup.
-    formatter_.AppendStartTagOpen(markup_, g_null_atom, element.localName());
+    formatter_.AppendStartTagOpen(g_null_atom, element.localName(), markup_);
     data.serialized_prefix_ = g_null_atom;
     return data;
   }
@@ -339,8 +339,8 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     // 12.4.1. Append to qualified name the concatenation of candidate prefix,
     // ":" (U+003A COLON), and node's localName.
     // 12.4.3. Append the value of qualified name to markup.
-    formatter_.AppendStartTagOpen(markup_, candidate_prefix,
-                                  element.localName());
+    formatter_.AppendStartTagOpen(candidate_prefix, element.localName(),
+                                  markup_);
     data.serialized_prefix_ = candidate_prefix;
     // 12.4.2. If the local default namespace is not null (there exists a
     // locally-defined default namespace declaration attribute) and its value is
@@ -368,7 +368,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     // 12.5.3. Append to qualified name the concatenation of prefix, ":" (U+003A
     // COLON), and node's localName.
     // 12.5.4. Append the value of qualified name to markup.
-    formatter_.AppendStartTagOpen(markup_, prefix, element.localName());
+    formatter_.AppendStartTagOpen(prefix, element.localName(), markup_);
     data.serialized_prefix_ = prefix;
     // 12.5.5. Append the following to markup, in the order listed:
     MarkupFormatter::AppendAttribute(g_xmlns_atom, prefix, ns,
@@ -390,7 +390,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     // 12.6.3. Let the value of inherited ns be ns.
     namespace_context.SetContextNamespace(ns);
     // 12.6.4. Append the value of qualified name to markup.
-    formatter_.AppendStartTagOpen(markup_, element);
+    formatter_.AppendStartTagOpen(element, markup_);
     // 12.6.5. Append the following to markup, in the order listed:
     MarkupFormatter::AppendAttribute(g_null_atom, g_xmlns_atom, ns,
                                      SerializationType::kXml, markup_);
@@ -402,12 +402,12 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
   // of inherited ns be ns, and append the value of qualified name to markup.
   DCHECK(EqualIgnoringNullity(local_default_namespace, ns));
   namespace_context.SetContextNamespace(ns);
-  formatter_.AppendStartTagOpen(markup_, element);
+  formatter_.AppendStartTagOpen(element, markup_);
   return data;
 }
 
 void MarkupAccumulator::AppendStartTagClose(const Element& element) {
-  formatter_.AppendStartTagClose(markup_, element);
+  formatter_.AppendStartTagClose(element, markup_);
 }
 
 void MarkupAccumulator::AppendAttribute(const Element& element,

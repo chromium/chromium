@@ -478,10 +478,10 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(
 
   StringBuilder tagged_markup;
   tagged_markup.Append(markup.subview(0, fragment_start));
-  MarkupFormatter::AppendComment(tagged_markup, kFragmentMarkerTag);
+  MarkupFormatter::AppendComment(kFragmentMarkerTag, tagged_markup);
   tagged_markup.Append(markup.DeprecatedSubstring(
       fragment_start, fragment_end - fragment_start));
-  MarkupFormatter::AppendComment(tagged_markup, kFragmentMarkerTag);
+  MarkupFormatter::AppendComment(kFragmentMarkerTag, tagged_markup);
   tagged_markup.Append(markup.DeprecatedSubstring(fragment_end));
 
   DocumentFragment* tagged_fragment = CreateFragmentFromMarkup(

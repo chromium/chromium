@@ -85,38 +85,38 @@ class MarkupFormatter final {
                               const String& value,
                               SerializationType type,
                               StringBuilder& result);
-  static void AppendCdataSection(StringBuilder&, const String&);
-  static void AppendCharactersReplacingEntities(StringBuilder& result,
-                                                const StringView& source,
-                                                EntityMask entity_mask);
-  static void AppendComment(StringBuilder&, const String&);
-  static void AppendDocumentType(StringBuilder&, const DocumentType&);
-  static void AppendProcessingInstruction(StringBuilder&,
-                                          const String& target,
-                                          const String& data);
-  static void AppendXmlDeclaration(StringBuilder&, const Document&);
+  static void AppendCdataSection(const String&, StringBuilder&);
+  static void AppendCharactersReplacingEntities(const StringView& source,
+                                                EntityMask entity_mask,
+                                                StringBuilder&);
+  static void AppendComment(const String&, StringBuilder&);
+  static void AppendDocumentType(const DocumentType&, StringBuilder&);
+  static void AppendProcessingInstruction(const String& target,
+                                          const String& data,
+                                          StringBuilder&);
+  static void AppendXmlDeclaration(const Document&, StringBuilder&);
 
   MarkupFormatter(ResolveUrls, SerializationType);
   MarkupFormatter(const MarkupFormatter&) = delete;
   MarkupFormatter& operator=(const MarkupFormatter&) = delete;
 
-  void AppendStartMarkup(StringBuilder&, const Node&);
-  void AppendEndMarkup(StringBuilder&, const Element&);
-  void AppendEndMarkup(StringBuilder& result,
-                       const Element& element,
+  void AppendStartMarkup(const Node&, StringBuilder&);
+  void AppendEndMarkup(const Element&, StringBuilder&);
+  void AppendEndMarkup(const Element& element,
                        const AtomicString& prefix,
-                       const AtomicString& local_name);
+                       const AtomicString& local_name,
+                       StringBuilder& result);
 
   bool SerializeAsHtml() const;
 
-  void AppendText(StringBuilder&, const Text&);
+  void AppendText(const Text&, StringBuilder&);
   // Serialize '<' and the element name.
-  void AppendStartTagOpen(StringBuilder&, const Element&);
-  void AppendStartTagOpen(StringBuilder& result,
-                          const AtomicString& prefix,
-                          const AtomicString& local_name);
+  void AppendStartTagOpen(const Element&, StringBuilder&);
+  void AppendStartTagOpen(const AtomicString& prefix,
+                          const AtomicString& local_name,
+                          StringBuilder& result);
   // Serialize '>' or '/>'
-  void AppendStartTagClose(StringBuilder&, const Element&);
+  void AppendStartTagClose(const Element&, StringBuilder& result);
 
   EntityMask EntityMaskForText(const Text&) const;
   bool ShouldSelfClose(const Element&) const;

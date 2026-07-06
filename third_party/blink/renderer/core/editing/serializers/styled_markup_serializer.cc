@@ -559,7 +559,7 @@ void StyledMarkupTraverser<Strategy>::WrapWithNode(ContainerNode& node,
     return;
   StringBuilder markup;
   if (auto* document = DynamicTo<Document>(node)) {
-    MarkupFormatter::AppendXmlDeclaration(markup, *document);
+    MarkupFormatter::AppendXmlDeclaration(*document, markup);
     accumulator_->PushMarkup(markup.ToString());
     return;
   }
@@ -567,9 +567,9 @@ void StyledMarkupTraverser<Strategy>::WrapWithNode(ContainerNode& node,
   if (!element)
     return;
   if (ShouldApplyWrappingStyle(*element) || NeedsInlineStyle(*element))
-    accumulator_->AppendElementWithInlineStyle(markup, *element, style);
+    accumulator_->AppendElementWithInlineStyle(*element, style, markup);
   else
-    accumulator_->AppendElement(markup, *element);
+    accumulator_->AppendElement(*element, markup);
   accumulator_->PushMarkup(markup.ToString());
   accumulator_->AppendEndTag(*element);
 }

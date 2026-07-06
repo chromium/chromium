@@ -65,11 +65,11 @@ class StyledMarkupAccumulator final {
   void PushMarkup(const String&);
 
   void AppendElement(const Element&);
-  void AppendElement(StringBuilder&, const Element&);
-  void AppendElementWithInlineStyle(const Element&, EditingStyle*);
-  void AppendElementWithInlineStyle(StringBuilder&,
-                                    const Element&,
-                                    EditingStyle*);
+  void AppendElement(const Element&, StringBuilder&);
+  void AppendElementWithInlineStyle(const Element&, const EditingStyle*);
+  void AppendElementWithInlineStyle(const Element&,
+                                    const EditingStyle*,
+                                    StringBuilder&);
   // Serialize a Node, without its children and its end tag.
   void AppendStartMarkup(Node&);
 
@@ -88,7 +88,7 @@ class StyledMarkupAccumulator final {
   String RenderedText(Text&);
   String StringValueForRange(const Text&);
 
-  void AppendEndMarkup(StringBuilder&, const Element&);
+  void AppendEndMarkup(const Element&, StringBuilder&);
   void AppendAttribute(const Element& element,
                        const Attribute& attribute,
                        StringBuilder& result);
