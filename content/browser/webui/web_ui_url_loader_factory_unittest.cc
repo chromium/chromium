@@ -181,7 +181,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(kRangeRequestTestData));
 
 // TODO(crbug.com/482413371): Disabled on linux for being flaky.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_RangeRequest DISABLED_RangeRequest
 #else
 #define MAYBE_RangeRequest RangeRequest
