@@ -18,7 +18,6 @@ class OriginGatingConfiguration {
   // execute.
   //
   // The following internal/fallback states are strictly forbidden:
-  // - `DecisionSource::kCache`
   // - `DecisionSource::kNoVerdict`
   OriginGatingConfiguration(std::initializer_list<DecisionSource> predicates,
                             bool use_site_keyed_cache);

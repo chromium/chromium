@@ -33,7 +33,6 @@ TEST_P(OriginGatingConfigurationInvalidPredicateTest, CheckFails) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          OriginGatingConfigurationInvalidPredicateTest,
-                         ::testing::Values(DecisionSource::kNoVerdict,
-                                           DecisionSource::kCache));
+                         ::testing::Values(DecisionSource::kNoVerdict));
 
 }  // namespace origin_gating

@@ -305,6 +305,7 @@ TEST_F(OriginGatingCheckerTest,
       delegate_, OriginGatingConfiguration(
                      {
                          DecisionSource::kCacheWithUserConfirmation,
+                         DecisionSource::kCacheWithoutUserConfirmation,
                      },
                      /*use_site_keyed_cache=*/false));
 
@@ -323,7 +324,7 @@ TEST_F(OriginGatingCheckerTest,
   GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
       checker, nullptr, source, destination);
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.source, DecisionSource::kCache);
+  EXPECT_EQ(decision.source, DecisionSource::kCacheWithoutUserConfirmation);
 }
 
 }  // namespace

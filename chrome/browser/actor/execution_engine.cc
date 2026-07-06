@@ -151,7 +151,7 @@ ExecutionEngine::GatingDecision MapDecisionSourceToGatingDecision(
     case origin_gating::DecisionSource::kAllowSameOrigin:
       return ExecutionEngine::GatingDecision::kAllowSameOrigin;
     case origin_gating::DecisionSource::kCacheWithUserConfirmation:
-    case origin_gating::DecisionSource::kCache:
+    case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
     case origin_gating::DecisionSource::kNoVerdict:
       return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
   }
@@ -243,6 +243,7 @@ ExecutionEngine::ExecutionEngine(
               {
                   origin_gating::DecisionSource::kCacheWithUserConfirmation,
                   origin_gating::DecisionSource::kAllowSameOrigin,
+                  origin_gating::DecisionSource::kCacheWithoutUserConfirmation,
               },
               kGlicNavigationGatingUseSiteNotOrigin.Get())),
       dark_launch_origin_gating_cache_(
@@ -403,7 +404,8 @@ void ExecutionEngine::OnComputedGatingDecision(
   RecordNavigationGatingDecision(
       MapDecisionSourceToGatingDecision(decision.source));
 
-  if (decision.source == origin_gating::DecisionSource::kCache ||
+  if (decision.source ==
+          origin_gating::DecisionSource::kCacheWithoutUserConfirmation ||
       decision.source ==
           origin_gating::DecisionSource::kCacheWithUserConfirmation) {
     ukm::builders::Actor_OriginGating builder(actor_context->ukm_source_id);

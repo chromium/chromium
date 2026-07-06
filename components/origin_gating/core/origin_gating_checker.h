@@ -6,6 +6,8 @@
 #define COMPONENTS_ORIGIN_GATING_CORE_ORIGIN_GATING_CHECKER_H_
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -84,6 +86,7 @@ class OriginGatingChecker {
     url::Origin source_origin;
     GURL destination;
     url::Origin destination_origin;
+    std::optional<bool> requires_user_confirmation;
   };
 
   void RunNextPredicate(std::unique_ptr<GatingDecisionContext> context,
@@ -100,9 +103,11 @@ class OriginGatingChecker {
 
   void OnUserConfirmationRequiredAnswer(
       std::unique_ptr<GatingDecisionContext> context,
+      base::span<const DecisionSource> pending_predicates,
       DelegateInputs input,
       GatingDecisionCallback callback,
       bool requires_user_confirmation);
+
   void OnNoVerdictAnswer(std::unique_ptr<GatingDecisionContext> context,
                          const GURL& destination,
                          GatingDecisionCallback callback,

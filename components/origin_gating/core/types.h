@@ -29,9 +29,9 @@ enum class DecisionSource {
   // Predicate that allows if the user has already confirmed the origin in
   // question.
   kCacheWithUserConfirmation,
-  // Predicate that allows if the origin is already present in the cache (with
-  // or without user confirmation).
-  kCache,
+  // Predicate that allows if the origin is already present in the cache and the
+  // delegate does not require user confirmation for that origin.
+  kCacheWithoutUserConfirmation,
   // No decision was reached before the OriginGating framework ran out of
   // predicates to run.
   kNoVerdict,

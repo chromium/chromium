@@ -14,7 +14,6 @@ namespace origin_gating {
 namespace {
 
 constexpr DecisionSource kForbiddenPredicates[] = {
-    DecisionSource::kCache,
     DecisionSource::kNoVerdict,
 };
 
