@@ -21,6 +21,8 @@
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
+  // Overridden value for the scene session identifier.
+  std::string _sceneSessionID;
   // Used to check that -shutdown is called before -dealloc.
   BOOL _shutdown;
 }
@@ -31,7 +33,9 @@
 @synthesize appState = _appState;
 
 - (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile {
+                         profile:(ProfileIOS*)profile
+                  sceneSessionID:(std::string)sceneSessionID
+               commandDispatcher:(CommandDispatcher*)commandDispatcher {
   if ((self = [super initWithAppState:appState])) {
     DCHECK(profile);
     DCHECK(!profile->IsOffTheRecord());
@@ -42,6 +46,12 @@
     self.appState = appState;
 
     _browser = std::make_unique<TestBrowser>(profile, self);
+    if (commandDispatcher) {
+      // Only override the command dispatcher if non-nil (since TestBrowser
+      // creates a default command dispatcher in its constructor).
+      _browser->SetCommandDispatcher(commandDispatcher);
+    }
+
     browserProviderInterface.mainBrowserProvider.browser = _browser.get();
     std::ignore = _browser->CreateInactiveBrowser();
 
@@ -49,8 +59,31 @@
         std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
     browserProviderInterface.incognitoBrowserProvider.browser =
         _incognito_browser.get();
+
+    _sceneSessionID = std::move(sceneSessionID);
   }
   return self;
+}
+
+- (instancetype)initWithAppState:(AppState*)appState
+                         profile:(ProfileIOS*)profile
+                  sceneSessionID:(std::string)sceneSessionID {
+  return [self initWithAppState:appState
+                        profile:profile
+                 sceneSessionID:std::move(sceneSessionID)
+              commandDispatcher:nil];
+}
+
+- (instancetype)initWithAppState:(AppState*)appState
+                         profile:(ProfileIOS*)profile {
+  return [self initWithAppState:appState
+                        profile:profile
+                 sceneSessionID:{}
+              commandDispatcher:nil];
+}
+
+- (const std::string&)sceneSessionID {
+  return _sceneSessionID.empty() ? [super sceneSessionID] : _sceneSessionID;
 }
 
 - (void)dealloc {
