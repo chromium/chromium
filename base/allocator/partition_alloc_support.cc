@@ -1359,9 +1359,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   }
 #endif
 
-  partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated(
-      partition_alloc::internal::GetStackTop());
-
   for (size_t alloc_token = 0; alloc_token < allocator_shim::kNumPartitions;
        alloc_token++) {
     allocator_shim::internal::PartitionAllocMalloc::Allocator(

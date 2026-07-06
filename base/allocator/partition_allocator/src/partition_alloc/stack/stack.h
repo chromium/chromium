@@ -61,7 +61,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Stack final {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) StackTopRegistry {
  public:
   static StackTopRegistry& Get();
-  void NotifyThreadCreated(void* stack_top = GetStackPointer());
+  void NotifyThreadCreated();
   void NotifyThreadDestroyed();
   void* GetCurrentThreadStackTop() const;
 
