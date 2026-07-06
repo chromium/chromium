@@ -107,18 +107,18 @@ base::FilePath GetSpareFilePath(const base::FilePath& metrics_dir) {
 // LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java)
 
 // Logged to UMA - keep in sync with enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class InitResult {
-  kLocalMemorySuccess,
-  // TODO(crbug.com/512797313): This enum is not believed to be used. See if it
-  // can be obsoleted.
-  kLocalMemoryFailed,
-  kMappedFileSuccess,
-  kMappedFileFailed,
-  kMappedFileExists,
-  kNoSpareFile,
-  kNoUploadDir,
-  kPersistentHistogramsDisabled,
-  kMaxValue = kPersistentHistogramsDisabled
+  kLocalMemorySuccess = 0,
+  // kLocalMemoryFailed = 1,  // Removed: never used.
+  kMappedFileSuccess = 2,
+  kMappedFileFailed = 3,
+  kMappedFileExists = 4,
+  kNoSpareFile = 5,
+  kNoUploadDir = 6,
+  kPersistentHistogramsDisabled = 7,
+  kMaxValue = kPersistentHistogramsDisabled,
 };
 
 // Initializes persistent histograms with a memory-mapped file.

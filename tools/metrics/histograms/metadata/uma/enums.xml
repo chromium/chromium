@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PersistentHistogramsInitResult">
   <int value="0" label="Local-Memory Success"/>
-  <int value="1" label="Local-Memory Failure"/>
+  <int value="1" label="(Obsolete) Local-Memory Failure"/>
   <int value="2" label="Mapped-File Success"/>
   <int value="3" label="Mapped-File Failure"/>
   <int value="4" label="Mapped-File Already Exists"/>
