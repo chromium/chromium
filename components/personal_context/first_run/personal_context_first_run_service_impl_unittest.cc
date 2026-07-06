@@ -84,8 +84,7 @@ class PersonalContextFirstRunServiceImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kPersonalContextFirstRunNoticePhase2};
+
   TestingPrefServiceSimple pref_service_;
   MockPersonalContextEnablementService enablement_service_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -217,19 +216,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
-       ShouldShowPersonalContextAmbientAutofillNotice_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPersonalContextFirstRunNoticePhase2);
-
-  EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillRepeatedly(Return(PersonalContextEnablementState::kEnabled));
-
-  EXPECT_FALSE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
-}
-
-TEST_F(PersonalContextFirstRunServiceImplTest,
-       ShouldShowPersonalContextAmbientAutofillNotice_FeatureEnabled) {
+       ShouldShowPersonalContextAmbientAutofillNotice) {
   // Test kEnabled (and prefs true by default)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
       .WillOnce(Return(PersonalContextEnablementState::kEnabled));
@@ -264,19 +251,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
-       ShouldShowPersonalContextAtMemoryNotice_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPersonalContextFirstRunNoticePhase2);
-
-  EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillRepeatedly(Return(PersonalContextEnablementState::kEnabled));
-
-  EXPECT_FALSE(service()->ShouldShowPersonalContextAtMemoryNotice());
-}
-
-TEST_F(PersonalContextFirstRunServiceImplTest,
-       ShouldShowPersonalContextAtMemoryNotice_FeatureEnabled) {
+       ShouldShowPersonalContextAtMemoryNotice) {
   // Test kEnabled (and prefs true by default)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
       .WillOnce(Return(PersonalContextEnablementState::kEnabled));

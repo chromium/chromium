@@ -15,15 +15,8 @@ namespace personal_context::features {
 // and kept around as a kill-switch.
 BASE_DECLARE_FEATURE(kPersonalContext);
 
-// Controls whether the further evolution of the notice UI for the first run
-// experience is enabled.
-BASE_DECLARE_FEATURE(kPersonalContextFirstRunNoticePhase2);
-
 // Controls whether the opt-in flow for the first run experience is enabled.
 BASE_DECLARE_FEATURE(kPersonalContextFirstRunOptIn);
-
-// Returns true if the notice phase 2 of the first run experience is enabled.
-bool IsPersonalContextFirstRunNoticePhase2Enabled();
 
 // Returns true if the opt-in flow for the first run experience is enabled.
 bool IsPersonalContextFirstRunOptInEnabled();

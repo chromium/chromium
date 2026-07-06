@@ -48,7 +48,6 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -711,19 +710,16 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return;
 #else
-  if (personal_context::features::
-          IsPersonalContextFirstRunNoticePhase2Enabled()) {
-    if (!owner_->client().ShouldShowPersonalContextAtMemoryNotice()) {
-      return;
-    }
-    if (!suggestions.empty() &&
-        suggestions.back().type == SuggestionType::kPersonalContextNotice) {
-      return;
-    }
-    Suggestion& suggestion =
-        suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
-    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  if (!owner_->client().ShouldShowPersonalContextAtMemoryNotice()) {
+    return;
   }
+  if (!suggestions.empty() &&
+      suggestions.back().type == SuggestionType::kPersonalContextNotice) {
+    return;
+  }
+  Suggestion& suggestion =
+      suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 

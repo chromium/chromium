@@ -19,9 +19,6 @@ namespace {
 bool AreServicesAvailableAndAccountEligibleForPersonalIntelligence(
     PersonalContextEnablementService* enablement_service,
     PrefService* pref_service) {
-  if (!features::IsPersonalContextFirstRunNoticePhase2Enabled()) {
-    return false;
-  }
   if (!enablement_service || !pref_service) {
     return false;
   }

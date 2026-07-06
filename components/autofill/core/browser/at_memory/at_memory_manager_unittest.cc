@@ -41,7 +41,6 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
-#include "components/personal_context/core/personal_context_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -801,13 +800,9 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
       "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 1);
 }
 
-// Tests that the personal context notice is appended when the feature is
-// enabled and the user needs to see the notice.
-TEST_F(AtMemoryManagerTest, PersonalContextEnabled_AppendsNoticeSuggestion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      personal_context::features::kPersonalContextFirstRunNoticePhase2);
-
+// Tests that the personal context notice is appended when the user needs to see
+// the notice.
+TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(true);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
@@ -831,37 +826,10 @@ TEST_F(AtMemoryManagerTest, PersonalContextEnabled_AppendsNoticeSuggestion) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-// Tests that the personal context notice is not appended when the feature is
-// enabled but the user does not need to see the notice.
-TEST_F(AtMemoryManagerTest,
-       PersonalContextEnabled_DoesNotAppendNoticeSuggestion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      personal_context::features::kPersonalContextFirstRunNoticePhase2);
-
+// Tests that the personal context notice is not appended when the user does not
+// need to see the notice.
+TEST_F(AtMemoryManagerTest, PersonalContext_DoesNotAppendNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(false);
-
-  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
-                         /*is_context_secure=*/true, update_callback_.Get(),
-                         FormSignature(0), FieldSignature(0));
-
-  std::vector<Suggestion> suggestions;
-  EXPECT_CALL(update_callback_,
-              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
-      .WillOnce(SaveArg<0>(&suggestions));
-
-  manager().OnFilterChanged(u"");
-
-  EXPECT_TRUE(suggestions.empty());
-}
-
-// Tests that the personal context notice is not appended when the feature is
-// disabled.
-TEST_F(AtMemoryManagerTest,
-       PersonalContextDisabled_DoesNotAppendNoticeSuggestion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      personal_context::features::kPersonalContextFirstRunNoticePhase2);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback_.Get(),
