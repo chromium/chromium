@@ -701,7 +701,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [self destroyViewControllersAndMediators];
   [self notifyDestroyCompleted];
   self.exiting = NO;
-  [self.presentationEnvironment lensOverlayDidDisappear];
 }
 
 #pragma mark - Exit helpers
@@ -780,6 +779,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [self setInfobarBannerOverlaysEnabled:YES];
   [self.presentationEnvironment lensOverlayWillDisappear];
   [self indicateLensOverlayVisible:NO];
+}
+
+- (void)lensOverlayContainerPresenterDidDismissPresentation:
+    (LensOverlayContainerPresenter*)containerPresenter {
+  [self.presentationEnvironment lensOverlayDidDisappear];
 }
 
 - (void)lensOverlayContainerPresenterDidCompletePresentation:
