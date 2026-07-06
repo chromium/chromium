@@ -68,6 +68,7 @@ build_webui_tests("build") {
     "glic_subpage_test.ts",
     "google_services_page_test.ts",
     "help_page_test.ts",
+    "home_url_input_test.ts",
     "identity_docs_page_test.ts",
     "keyboard_shortcut_page_test.ts",
     "memory_page_test.ts",

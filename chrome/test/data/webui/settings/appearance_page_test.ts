@@ -502,11 +502,14 @@ suite('AppearancePage', function() {
   test('show home button toggling', async function() {
     assertFalse(
         !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
+    assertFalse(!!appearancePage.shadowRoot!.querySelector('#customHomePage'));
+
     appearancePage.setPrefValue('browser.show_home_button', true);
     await flushTasks();
 
     assertTrue(
         !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
+    assertTrue(!!appearancePage.shadowRoot!.querySelector('#customHomePage'));
   });
 
   test('show side panel options', async function() {

@@ -291,6 +291,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
   RunTest("settings/help_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, HomeUrlInput) {
+  RunTest("settings/home_url_input_test.js", "mocha.run()");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, ImportDataDialog) {
   RunTest("settings/import_data_dialog_test.js", "mocha.run()");

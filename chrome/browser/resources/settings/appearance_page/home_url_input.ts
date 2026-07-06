@@ -10,16 +10,18 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
-import type {CrPolicyPrefMixinInterface} from '/shared/settings/controls/cr_policy_pref_mixin.js';
-import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
+import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {AppearanceBrowserProxy} from './appearance_browser_proxy.js';
 import {AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
-import {getTemplate} from './home_url_input.html.js';
+import {getCss} from './home_url_input.css.js';
+import {getHtml} from './home_url_input.html.js';
 
 export interface HomeUrlInputElement {
   $: {
@@ -27,47 +29,52 @@ export interface HomeUrlInputElement {
   };
 }
 
+const HOMEPAGE_PREF_KEY = 'homepage';
+
 const HomeUrlInputElementBase =
-    CrPolicyPrefMixin(PrefControlMixin(PolymerElement)) as
-    {new (): PolymerElement & CrPolicyPrefMixinInterface};
+    CrPolicyPrefMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
 export class HomeUrlInputElement extends HomeUrlInputElementBase {
   static get is() {
     return 'home-url-input';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      /**
-       * The preference object to control.
-       */
-      pref: {observer: 'prefChanged_'},
+      pref: {type: Object},
 
       /* Set to true to disable editing the input. */
-      disabled: {type: Boolean, value: false, reflectToAttribute: true},
+      disabled: {
+        type: Boolean,
+        reflect: true,
+      },
 
-      canTab: Boolean,
+      canTab: {type: Boolean},
 
-      invalid: {type: Boolean, value: false},
+      invalid: {type: Boolean},
 
       /* The current value of the input, reflected to/from |pref|. */
-      value: {
-        type: String,
-        value: '',
-        notify: true,
-      },
+      value: {type: String},
+
+      label: {type: String},
     };
   }
 
-  declare pref: chrome.settingsPrivate.PrefObject<string>|undefined;
-  declare disabled: boolean;
-  declare canTab: boolean;
-  declare invalid: boolean;
-  declare value: string;
+  override accessor pref: chrome.settingsPrivate.PrefObject<string>|undefined =
+      undefined;
+  accessor disabled: boolean = false;
+  accessor canTab: boolean = false;
+  accessor invalid: boolean = false;
+  accessor value: string = '';
+  accessor label: string = '';
   private browserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
 
@@ -77,6 +84,19 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
     this.noExtensionIndicator = true;  // Prevent double indicator.
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(HOMEPAGE_PREF_KEY, 'pref');
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('pref')) {
+      this.setInputValueFromPref_();
+    }
+  }
+
   /**
    * Focuses the 'input' element.
    */
@@ -84,41 +104,31 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
     this.$.input.focus();
   }
 
-  /**
-   * Polymer changed observer for |pref|.
-   */
-  private prefChanged_() {
-    if (!this.pref) {
-      return;
-    }
-
-    this.setInputValueFromPref_();
-  }
-
   private setInputValueFromPref_() {
-    assert(this.pref!.type === chrome.settingsPrivate.PrefType.URL);
-    this.value = this.pref!.value;
+    assert(this.pref);
+    assert(this.pref.type === chrome.settingsPrivate.PrefType.URL);
+    this.value = this.pref.value;
   }
 
   /**
    * Gets a tab index for this control if it can be tabbed to.
    */
-  private getTabindex_(canTab: boolean): number {
-    return canTab ? 0 : -1;
+  protected getTabindex_(): number {
+    return this.canTab ? 0 : -1;
   }
 
   /**
    * Change event handler for cr-input. Updates the pref value.
    * settings-input uses the change event because it is fired by the Enter key.
    */
-  private onChange_() {
+  protected onChange_() {
     if (this.invalid) {
       this.resetValue_();
       return;
     }
 
     assert(this.pref!.type === chrome.settingsPrivate.PrefType.URL);
-    this.set('pref.value', this.value);
+    PrefService.getInstance().setPrefValue(HOMEPAGE_PREF_KEY, this.value);
   }
 
   private resetValue_() {
@@ -130,7 +140,7 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
   /**
    * Keydown handler to specify enter-key and escape-key interactions.
    */
-  private onKeydown_(event: KeyboardEvent) {
+  protected onKeydown_(event: KeyboardEvent) {
     // If pressed enter when input is invalid, do not trigger on-change.
     if (event.key === 'Enter' && this.invalid) {
       event.preventDefault();
@@ -138,23 +148,15 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
       this.resetValue_();
     }
 
-    this.stopKeyEventPropagation_(event);
-  }
-
-  /**
-   * This function prevents unwanted change of selection of the containing
-   * cr-radio-group, when the user traverses the input with arrow keys.
-   */
-  private stopKeyEventPropagation_(e: Event) {
-    e.stopPropagation();
+    event.stopPropagation();
   }
 
   /** @return Whether the element should be disabled. */
-  private isDisabled_(disabled: boolean) {
-    return disabled || this.isPrefEnforced();
+  protected isDisabled_() {
+    return this.disabled || this.isPrefEnforced();
   }
 
-  private validate_() {
+  protected onInput_() {
     if (this.value === '') {
       this.invalid = false;
       return;
@@ -163,6 +165,22 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
     this.browserProxy_.validateStartupPage(this.value).then(isValid => {
       this.invalid = !isValid;
     });
+  }
+
+  protected onKeyup_(e: KeyboardEvent) {
+    e.stopPropagation();
+  }
+
+  protected onKeypress_(e: KeyboardEvent) {
+    e.stopPropagation();
+  }
+
+  protected onValueChanged_(e: CustomEvent<{value: string}>) {
+    this.value = e.detail.value;
+  }
+
+  protected onInvalidChanged_(e: CustomEvent<{value: boolean}>) {
+    this.invalid = e.detail.value;
   }
 }
 
