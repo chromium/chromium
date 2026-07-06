@@ -238,6 +238,8 @@ source_set("v4_rice") {
 source_set("v5_rice") {
   if (safe_browsing_mode != 0 || is_ios) {
     sources = [
+      "v5_hash_list_rice_decoder.cc",
+      "v5_hash_list_rice_decoder.h",
       "v5_rice.cc",
       "v5_rice.h",
     ]
@@ -327,7 +329,10 @@ static_library("sb_update_protocol_manager") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ ":v4_protocol_config" ]
+  public_deps = [
+    ":v4_protocol_config",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+  ]
 
   deps = [
     ":safebrowsing_proto",
@@ -337,7 +342,6 @@ static_library("sb_update_protocol_manager") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//google_apis",
     "//net",
@@ -379,11 +383,7 @@ source_set("unit_tests_local_db") {
     "hash_prefix_map_unittest.cc",
     "sb_database_unittest.cc",
     "sb_local_database_manager_unittest.cc",
-    "v4_rice_unittest.cc",
-    "v4_store_unittest.cc",
     "v4_update_protocol_manager_unittest.cc",
-    "v5_rice_unittest.cc",
-    "v5_store_unittest.cc",
     "v5_update_protocol_manager_unittest.cc",
   ]
   deps = [
@@ -395,10 +395,8 @@ source_set("unit_tests_local_db") {
     ":unit_tests_shared",
     ":util",
     ":v4_protocol_manager_util",
-    ":v4_rice",
     ":v4_store_proto",
     ":v4_test_util",
-    ":v5_rice",
     "//base",
     "//build:branding_buildflags",
     "//components/crx_file",
@@ -414,6 +412,20 @@ source_set("unit_tests_local_db") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (safe_browsing_mode != 0 || is_ios) {
+    sources += [
+      "v4_rice_unittest.cc",
+      "v4_store_unittest.cc",
+      "v5_hash_list_rice_decoder_unittest.cc",
+      "v5_rice_unittest.cc",
+      "v5_store_unittest.cc",
+    ]
+    deps += [
+      ":v4_rice",
+      ":v5_rice",
+    ]
+  }
 }
 
 static_library("allowlist_checker_client") {
