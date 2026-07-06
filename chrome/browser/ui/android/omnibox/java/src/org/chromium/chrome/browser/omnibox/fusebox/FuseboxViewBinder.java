@@ -652,7 +652,9 @@ class FuseboxViewBinder {
         @ColorInt
         int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
         button.setCompoundDrawableTintList(ColorStateList.valueOf(colorOnSurface));
-        button.setForegroundTintList(ColorStateList.valueOf(colorOnSurface));
+        @ColorInt
+        int focusRingColor = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
+        button.setForegroundTintList(ColorStateList.valueOf(focusRingColor));
         button.setTextColor(colorOnSurface);
     }
 

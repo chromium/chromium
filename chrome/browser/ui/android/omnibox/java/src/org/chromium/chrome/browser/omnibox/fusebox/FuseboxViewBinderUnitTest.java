@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
@@ -715,6 +717,17 @@ public class FuseboxViewBinderUnitTest {
 
         mViewHolder.activationChip.performClick();
         verify(mRunnable).run();
+
+        Context context = mViewHolder.activationChip.getContext();
+        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                OmniboxResourceProvider.getColorPrimary(context, BrandedColorScheme.APP_DEFAULT),
+                mViewHolder.activationChip.getForegroundTintList().getDefaultColor());
+
+        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        assertEquals(
+                OmniboxResourceProvider.getColorPrimary(context, BrandedColorScheme.INCOGNITO),
+                mViewHolder.activationChip.getForegroundTintList().getDefaultColor());
     }
 
     private static class PopupButtonDataBuilder {

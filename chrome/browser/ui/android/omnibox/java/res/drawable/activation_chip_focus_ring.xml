@@ -22,9 +22,10 @@ found in the LICENSE file.
       <shape android:shape="rectangle">
         <solid android:color="@android:color/transparent" />
 
+        <!-- Color is overridden at runtime. -->
         <stroke
             android:width="2dp"
-            android:color="@macro/default_icon_color" />
+            android:color="@android:color/white" />
     <!--
     The activation chip visually has a height of 32dp, so the base radius
     should be 16dp. Then +3dp to account for the fact that we're 3dp wider on
