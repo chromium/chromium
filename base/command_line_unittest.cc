@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/command_line.h"
 
 #include <array>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
@@ -506,7 +502,7 @@ TEST_P(CommandLineQuoteAfterTest, TestCases) {
   std::wstring recreated_command_line;
   for (int i = 1; i < num_args; ++i) {
     recreated_command_line.append(
-        CommandLine::QuoteForCommandLineToArgvW(argv.get()[i]));
+        CommandLine::QuoteForCommandLineToArgvW(UNSAFE_TODO(argv.get()[i])));
 
     if (i + 1 < num_args) {
       recreated_command_line.push_back(L' ');

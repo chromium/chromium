@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "base/message_loop/message_pump_apple.h"
 
 #import <Foundation/Foundation.h>
 
+#include <array>
 #include <atomic>
 #include <limits>
 #include <memory>
@@ -21,6 +17,7 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -141,7 +138,7 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
   //  - com.apple.hitoolbox.windows.transitionmode
   //  - com.apple.hitoolbox.windows.flushmode
   const CFStringRef& mode() const {
-    static const CFStringRef modes[] = {
+    static const std::array<CFStringRef, kNumModes> modes = {
         // The standard Core Foundation "common modes" constant. Must always be
         // first in this list to match the value of kCommonModeMask.
         kCFRunLoopCommonModes,
@@ -156,7 +153,7 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     static_assert((1 << kNumModes) - 1 == kAllModesMask,
                   "kAllModesMask not large enough");
 
-    return modes[mode_index_];
+    return modes[static_cast<size_t>(mode_index_)];
   }
 
  private:
@@ -430,8 +427,8 @@ bool MessagePumpCFRunLoopBase::ShouldCreateAutoreleasePool() {
 void MessagePumpCFRunLoopBase::SetModeMask(int mode_mask) {
   for (size_t i = 0; i < kNumModes; ++i) {
     bool enable = mode_mask & (0x1 << i);
-    if (enable == !enabled_modes_[i]) {
-      enabled_modes_[i] =
+    if (enable == !UNSAFE_TODO(enabled_modes_[i])) {
+      UNSAFE_TODO(enabled_modes_[i]) =
           enable ? std::make_unique<ScopedModeEnabler>(this, i) : nullptr;
     }
   }
@@ -440,7 +437,7 @@ void MessagePumpCFRunLoopBase::SetModeMask(int mode_mask) {
 int MessagePumpCFRunLoopBase::GetModeMask() const {
   int mask = 0;
   for (size_t i = 0; i < kNumModes; ++i) {
-    mask |= enabled_modes_[i] ? (0x1 << i) : 0;
+    mask |= UNSAFE_TODO(enabled_modes_[i]) ? (0x1 << i) : 0;
   }
   return mask;
 }

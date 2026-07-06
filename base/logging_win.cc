@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/logging_win.h"
 
 #include <initguid.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging/logging_settings.h"
 #include "base/memory/singleton.h"
 
@@ -77,7 +73,7 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
   if (provider->enable_flags() & ENABLE_LOG_MESSAGE_ONLY) {
     EtwMofEvent<1> event(kLogEventId, LOG_MESSAGE, level);
     event.SetField(0, message.length() + 1 - message_start,
-                   message.c_str() + message_start);
+                   UNSAFE_TODO(message.c_str() + message_start));
 
     provider->Log(event.get());
   } else {
@@ -105,7 +101,7 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
     event.SetField(3, strlen(file) + 1, file);
     // And finally the message.
     event.SetField(4, message.length() + 1 - message_start,
-                   message.c_str() + message_start);
+                   UNSAFE_TODO(message.c_str() + message_start));
 
     provider->Log(event.get());
   }

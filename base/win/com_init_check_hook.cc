@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/com_init_check_hook.h"
 
 #include <objbase.h>
@@ -19,6 +14,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -260,28 +256,31 @@ class HookManager {
   }
 
   HotpatchPlaceholderFormat GetHotpatchPlaceholderFormat(const void* address) {
-    if (::memcmp(reinterpret_cast<void*>(co_create_instance_padded_address_),
-                 reinterpret_cast<const void*>(&g_hotpatch_placeholder_int3),
-                 sizeof(g_hotpatch_placeholder_int3)) == 0) {
+    if (UNSAFE_TODO(::memcmp(
+            reinterpret_cast<void*>(co_create_instance_padded_address_),
+            reinterpret_cast<const void*>(&g_hotpatch_placeholder_int3),
+            sizeof(g_hotpatch_placeholder_int3))) == 0) {
       return HotpatchPlaceholderFormat::INT3;
     }
 
-    if (::memcmp(reinterpret_cast<void*>(co_create_instance_padded_address_),
-                 reinterpret_cast<const void*>(&g_hotpatch_placeholder_nop),
-                 sizeof(g_hotpatch_placeholder_nop)) == 0) {
+    if (UNSAFE_TODO(::memcmp(
+            reinterpret_cast<void*>(co_create_instance_padded_address_),
+            reinterpret_cast<const void*>(&g_hotpatch_placeholder_nop),
+            sizeof(g_hotpatch_placeholder_nop))) == 0) {
       return HotpatchPlaceholderFormat::NOP;
     }
 
-    if (::memcmp(reinterpret_cast<void*>(co_create_instance_padded_address_),
-                 reinterpret_cast<const void*>(&g_hotpatch_placeholder_apphelp),
-                 sizeof(g_hotpatch_placeholder_apphelp)) == 0) {
+    if (UNSAFE_TODO(::memcmp(
+            reinterpret_cast<void*>(co_create_instance_padded_address_),
+            reinterpret_cast<const void*>(&g_hotpatch_placeholder_apphelp),
+            sizeof(g_hotpatch_placeholder_apphelp))) == 0) {
       return HotpatchPlaceholderFormat::APPHELP_SHIM;
     }
 
     const unsigned char* instruction_bytes =
         reinterpret_cast<const unsigned char*>(
             co_create_instance_padded_address_);
-    const unsigned char entry_point_byte = instruction_bytes[5];
+    const unsigned char entry_point_byte = UNSAFE_TODO(instruction_bytes[5]);
     // Check for all of the common jmp opcodes.
     if (entry_point_byte == 0xeb || entry_point_byte == 0xe9 ||
         entry_point_byte == 0xff || entry_point_byte == 0xea) {
@@ -292,9 +291,10 @@ class HookManager {
   }
 
   bool WasHotpatchChanged() {
-    if (::memcmp(reinterpret_cast<void*>(co_create_instance_padded_address_),
-                 reinterpret_cast<const void*>(&structured_hotpatch_),
-                 sizeof(structured_hotpatch_)) == 0) {
+    if (UNSAFE_TODO(::memcmp(
+            reinterpret_cast<void*>(co_create_instance_padded_address_),
+            reinterpret_cast<const void*>(&structured_hotpatch_),
+            sizeof(structured_hotpatch_))) == 0) {
       return false;
     }
 
@@ -336,9 +336,9 @@ class HookManager {
   static std::string FirstSevenBytesToString(uint32_t address) {
     const unsigned char* bytes =
         reinterpret_cast<const unsigned char*>(address);
-    return base::StringPrintf("%02x %02x %02x %02x %02x %02x %02x", bytes[0],
-                              bytes[1], bytes[2], bytes[3], bytes[4], bytes[5],
-                              bytes[6]);
+    return UNSAFE_TODO(base::StringPrintf(
+        "%02x %02x %02x %02x %02x %02x %02x", bytes[0], bytes[1], bytes[2],
+        bytes[3], bytes[4], bytes[5], bytes[6]));
   }
 
   // Synchronizes everything in this class.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/system/sys_info.h"
 
 #include <windows.h>
@@ -22,6 +17,7 @@
 
 #include "base/byte_size.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -65,19 +61,19 @@ std::vector<BYTE> GetCoreEfficiencyClasses() {
 
   std::vector<BYTE> efficiency_classes;
   BYTE* byte_ptr = buffer.data();
-  while (byte_ptr < buffer.data() + byte_length) {
+  while (byte_ptr < UNSAFE_TODO(buffer.data() + byte_length)) {
     const auto* structure_ptr =
         reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*>(byte_ptr);
     DCHECK_EQ(structure_ptr->Relationship, RelationProcessorCore);
-    DCHECK_LE(&structure_ptr->Processor.EfficiencyClass +
-                  sizeof(structure_ptr->Processor.EfficiencyClass),
-              buffer.data() + byte_length);
+    DCHECK_LE(UNSAFE_TODO(&structure_ptr->Processor.EfficiencyClass +
+                          sizeof(structure_ptr->Processor.EfficiencyClass)),
+              UNSAFE_TODO(buffer.data() + byte_length));
     efficiency_classes.push_back(structure_ptr->Processor.EfficiencyClass);
     DCHECK_GE(
         structure_ptr->Size,
         offsetof(std::remove_pointer_t<decltype(structure_ptr)>, Processor) +
             sizeof(structure_ptr->Processor));
-    byte_ptr = byte_ptr + structure_ptr->Size;
+    byte_ptr = UNSAFE_TODO(byte_ptr + structure_ptr->Size);
   }
 
   return efficiency_classes;

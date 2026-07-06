@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
 // This file contains intentional memory errors, some of which may lead to
@@ -78,21 +73,21 @@ NOOPT void ReadUninitializedValue(volatile char* ptr) {
 
 #ifndef HARMFUL_ACCESS_IS_NOOP
 void ReadValueOutOfArrayBoundsLeft(char* ptr) {
-  char c = ptr[-2];
+  char c = UNSAFE_TODO(ptr[-2]);
   VLOG(1) << "Reading a byte out of bounds: " << c;
 }
 
 void ReadValueOutOfArrayBoundsRight(char* ptr, size_t size) {
-  char c = ptr[size + 1];
+  char c = UNSAFE_TODO(ptr[size + 1]);
   VLOG(1) << "Reading a byte out of bounds: " << c;
 }
 
 void WriteValueOutOfArrayBoundsLeft(char* ptr) {
-  ptr[-1] = kMagicValue;
+  UNSAFE_TODO(ptr[-1] = kMagicValue);
 }
 
 void WriteValueOutOfArrayBoundsRight(char* ptr, size_t size) {
-  ptr[size] = kMagicValue;
+  UNSAFE_TODO(ptr[size] = kMagicValue);
 }
 #endif  // HARMFUL_ACCESS_IS_NOOP
 
@@ -145,7 +140,7 @@ TEST(ToolsSanityTest, MAYBE_LinksSanitizerOptions) {
 TEST(ToolsSanityTest, MemoryLeak) {
   // Without the |volatile|, clang optimizes away the next two lines.
   int* volatile leak = new int[256];  // Leak some memory intentionally.
-  leak[4] = 1;                        // Make sure the allocated memory is used.
+  UNSAFE_TODO(leak[4] = 1);           // Make sure the allocated memory is used.
 }
 
 TEST(ToolsSanityTest, AccessesToNewMemory) {
@@ -153,7 +148,7 @@ TEST(ToolsSanityTest, AccessesToNewMemory) {
   MakeSomeErrors(foo, 16);
   delete[] foo;
   // Use after delete.
-  HARMFUL_ACCESS(foo[5] = 0, "heap-use-after-free");
+  HARMFUL_ACCESS(UNSAFE_TODO(foo[5] = 0), "heap-use-after-free");
 }
 
 TEST(ToolsSanityTest, AccessesToMallocMemory) {
@@ -161,7 +156,7 @@ TEST(ToolsSanityTest, AccessesToMallocMemory) {
   MakeSomeErrors(foo, 16);
   free(foo);
   // Use after free.
-  HARMFUL_ACCESS(foo[5] = 0, "heap-use-after-free");
+  HARMFUL_ACCESS(UNSAFE_TODO(foo[5] = 0), "heap-use-after-free");
 }
 
 TEST(ToolsSanityTest, AccessesToStack) {
@@ -240,7 +235,7 @@ TEST(ToolsSanityTest, DISABLED_AddressSanitizerLocalOOBCrashTest) {
   // This test should not be run on bots.
   int array[5];  // Must not use std::array, lest hardening catch this first.
   // Work around the OOB warning reported by Clang.
-  int* volatile access = &array[5];
+  int* volatile access = UNSAFE_TODO(&array[5]);
   *access = 43;
 }
 
@@ -254,7 +249,7 @@ TEST(ToolsSanityTest, DISABLED_AddressSanitizerGlobalOOBCrashTest) {
   // This test should not be ran on bots.
 
   // Work around the OOB warning reported by Clang.
-  int* volatile access = g_asan_test_global_array - 1;
+  int* volatile access = UNSAFE_TODO(g_asan_test_global_array - 1);
   *access = 43;
 }
 

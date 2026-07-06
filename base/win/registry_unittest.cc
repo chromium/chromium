@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/registry.h"
 
 #include <windows.h>
@@ -173,9 +168,10 @@ TEST_F(RegistryTest, TruncatedCharTest) {
   ASSERT_EQ(std::size(kData), iterator.ValueSize());
   // Value() is NUL terminated.
   int end = (iterator.ValueSize() + sizeof(wchar_t) - 1) / sizeof(wchar_t);
-  EXPECT_NE('\0', iterator.Value()[end - 1]);
-  EXPECT_EQ('\0', iterator.Value()[end]);
-  EXPECT_EQ(0, std::memcmp(kData, iterator.Value(), std::size(kData)));
+  EXPECT_NE('\0', UNSAFE_TODO(iterator.Value()[end - 1]));
+  EXPECT_EQ('\0', UNSAFE_TODO(iterator.Value()[end]));
+  EXPECT_EQ(
+      0, UNSAFE_TODO(std::memcmp(kData, iterator.Value(), std::size(kData))));
   ++iterator;
   EXPECT_FALSE(iterator.Valid());
 }

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Implementation of a Windows event trace controller class.
 
 #include "base/win/event_trace_controller.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 
 constexpr size_t kDefaultRealtimeBufferSizeKb = 16;
@@ -20,7 +16,7 @@ namespace base {
 namespace win {
 
 EtwTraceProperties::EtwTraceProperties() {
-  memset(buffer_, 0, sizeof(buffer_));
+  UNSAFE_TODO(memset(buffer_, 0, sizeof(buffer_)));
   EVENT_TRACE_PROPERTIES* prop = get();
 
   prop->Wnode.BufferSize = sizeof(buffer_);
@@ -36,7 +32,8 @@ HRESULT EtwTraceProperties::SetLoggerName(const wchar_t* logger_name) {
     return E_INVALIDARG;
   }
 
-  memcpy(buffer_ + get()->LoggerNameOffset, logger_name, sizeof(wchar_t) * len);
+  UNSAFE_TODO(memcpy(buffer_ + get()->LoggerNameOffset, logger_name,
+                     sizeof(wchar_t) * len));
   return S_OK;
 }
 
@@ -46,8 +43,8 @@ HRESULT EtwTraceProperties::SetLoggerFileName(const wchar_t* logger_file_name) {
     return E_INVALIDARG;
   }
 
-  memcpy(buffer_ + get()->LogFileNameOffset, logger_file_name,
-         sizeof(wchar_t) * len);
+  UNSAFE_TODO(memcpy(buffer_ + get()->LogFileNameOffset, logger_file_name,
+                     sizeof(wchar_t) * len));
   return S_OK;
 }
 

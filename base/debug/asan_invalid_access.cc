@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/asan_invalid_access.h"
 
 #include <stddef.h>
@@ -44,7 +39,7 @@ NOINLINE void CorruptMemoryBlock(bool induce_crash) {
           GetProcAddress(GetModuleHandle(L"kernel32"), "InterlockedIncrement"));
   CHECK(InterlockedIncrementFn);
 
-  LONG volatile dummy = InterlockedIncrementFn(array.data() - 1);
+  LONG volatile dummy = InterlockedIncrementFn(UNSAFE_TODO(array.data() - 1));
   base::debug::Alias(const_cast<LONG*>(&dummy));
 
   if (induce_crash) {
@@ -94,7 +89,7 @@ void AsanHeapUnderflow() {
   // We need to store the underflow address in a temporary variable as trying to
   // access array[-1] will trigger a warning C4245: "conversion from 'int' to
   // 'size_t', signed/unsigned mismatch".
-  volatile int* underflow_address = &array[0] - 1;
+  volatile int* underflow_address = UNSAFE_TODO(&array[0] - 1);
   int dummy = *underflow_address;
   base::debug::Alias(&dummy);
 
@@ -109,7 +104,7 @@ void AsanHeapUseAfterFree() {
   auto array = base::HeapArray<volatile int>::Uninit(kArraySize);
   volatile int* dangling = array.data();
   array = base::HeapArray<volatile int>();
-  int dummy = dangling[kArraySize / 2];
+  int dummy = UNSAFE_TODO(dangling[kArraySize / 2]);
   base::debug::Alias(&dummy);
 
   MaybeImmediateCrash();

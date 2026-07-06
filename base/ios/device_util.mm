@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/ios/device_util.h"
 
 #include <CommonCrypto/CommonDigest.h>
@@ -22,6 +17,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/sysctl.h"
 #include "base/strings/stringprintf.h"
@@ -97,7 +93,7 @@ std::string GetMacAddress(const std::string& interface_name) {
     for (struct ifaddrs* address = addresses; address;
          address = address->ifa_next) {
       if ((address->ifa_addr->sa_family == AF_LINK) &&
-          strcmp(interface_name.c_str(), address->ifa_name) == 0) {
+          UNSAFE_TODO(strcmp(interface_name.c_str(), address->ifa_name)) == 0) {
         const struct sockaddr_dl* found_address_struct =
             reinterpret_cast<const struct sockaddr_dl*>(address->ifa_addr);
 
@@ -106,15 +102,16 @@ std::string GetMacAddress(const std::string& interface_name) {
         // the length of the name, that is, |found_address_struct->sdl_nlen|.
         const unsigned char* found_address =
             reinterpret_cast<const unsigned char*>(
-                &found_address_struct
-                     ->sdl_data[found_address_struct->sdl_nlen]);
+                UNSAFE_TODO(&found_address_struct
+                                 ->sdl_data[found_address_struct->sdl_nlen]));
 
         int found_address_length = found_address_struct->sdl_alen;
         for (int i = 0; i < found_address_length; ++i) {
           if (i != 0) {
             mac_string.push_back(':');
           }
-          base::StringAppendF(&mac_string, "%02X", found_address[i]);
+          base::StringAppendF(&mac_string, "%02X",
+                              UNSAFE_TODO(found_address[i]));
         }
         break;
       }

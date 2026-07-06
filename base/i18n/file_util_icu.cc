@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // File utilities that use the ICU library go in this file.
 
 #include "base/i18n/file_util_icu.h"
@@ -14,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/i18n/string_compare.h"
@@ -171,14 +167,14 @@ UChar32 GetNextCodePoint(const FilePath::StringType* const file_name,
   UChar32 code_point;
 #if BUILDFLAG(IS_WIN)
   // Windows uses UTF-16 encoding for filenames.
-  U16_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
-           code_point);
+  UNSAFE_TODO(U16_NEXT(file_name->data(), cursor,
+                       static_cast<int>(file_name->length()), code_point));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Mac and Chrome OS use UTF-8 encoding for filenames.
   // Linux doesn't actually define file system encoding. Try to parse as
   // UTF-8.
-  U8_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
-          code_point);
+  UNSAFE_TODO(U8_NEXT(file_name->data(), cursor,
+                      static_cast<int>(file_name->length()), code_point));
 #else
 #error Unsupported platform
 #endif

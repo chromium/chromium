@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/test_elf_image_builder.h"
 
 #include <cstring>
@@ -17,6 +12,7 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 
@@ -82,14 +78,14 @@ TestElfImageBuilder& TestElfImageBuilder::AddNoteSegment(
   nhdr.n_type = type;
   loc = AppendHdr(nhdr, loc);
 
-  memcpy(loc, name.data(), name.size());
-  *(loc + name.size()) = '\0';
-  loc += bits::AlignUp(name_with_null_size, size_t{4});
+  UNSAFE_TODO(memcpy(loc, name.data(), name.size()));
+  UNSAFE_TODO(*(loc + name.size()) = '\0');
+  UNSAFE_TODO(loc += bits::AlignUp(name_with_null_size, size_t{4}));
 
-  memcpy(loc, &desc.front(), desc.size());
-  loc += bits::AlignUp(desc.size(), size_t{4});
+  UNSAFE_TODO(memcpy(loc, &desc.front(), desc.size()));
+  UNSAFE_TODO(loc += bits::AlignUp(desc.size(), size_t{4}));
 
-  DCHECK_EQ(&buffer.front() + buffer.size(), loc);
+  DCHECK_EQ(UNSAFE_TODO(&buffer.front() + buffer.size()), loc);
 
   note_contents_.push_back(std::move(buffer));
 
@@ -123,7 +119,7 @@ Addr TestElfImageBuilder::GetVirtualAddressForOffset(
       return static_cast<Addr>(offset + kLoadBias);
 
     case NON_RELOCATABLE:
-      return reinterpret_cast<Addr>(elf_start + offset);
+      return reinterpret_cast<Addr>(UNSAFE_TODO(elf_start + offset));
   }
 }
 
@@ -197,7 +193,7 @@ TestElfImage TestElfImageBuilder::Build() {
   std::vector<uint8_t> buffer(load_bias + (kPageSize - 1) + measures.total_size,
                               '\0');
   uint8_t* const elf_start =
-      bits::AlignUp(&buffer.front() + load_bias, kPageSize);
+      bits::AlignUp(UNSAFE_TODO(&buffer.front() + load_bias), kPageSize);
   uint8_t* loc = elf_start;
 
   // Add the ELF header.
@@ -244,8 +240,8 @@ TestElfImage TestElfImageBuilder::Build() {
   // Add the notes.
   loc = bits::AlignUp(loc, kNoteAlign);
   for (const std::vector<uint8_t>& contents : note_contents_) {
-    memcpy(loc, &contents.front(), contents.size());
-    loc += contents.size();
+    UNSAFE_TODO(memcpy(loc, &contents.front(), contents.size()));
+    UNSAFE_TODO(loc += contents.size());
   }
 
   // Add the load segments.
@@ -253,8 +249,8 @@ TestElfImage TestElfImageBuilder::Build() {
     if (it != load_segments_.begin()) {
       loc = bits::AlignUp(loc, kLoadAlign);
     }
-    memset(loc, 0, it->size);
-    loc += it->size;
+    UNSAFE_TODO(memset(loc, 0, it->size));
+    UNSAFE_TODO(loc += it->size);
   }
 
   loc = bits::AlignUp(loc, kDynamicAlign);
@@ -279,22 +275,22 @@ TestElfImage TestElfImageBuilder::Build() {
 #else
   // Linux relocates this value on ELF load, so produce the pointer value after
   // relocation. That value will always be equal to the actual memory address.
-  strtab_dyn.d_un.d_ptr =
-      reinterpret_cast<uintptr_t>(elf_start + measures.strtab_start);
+  strtab_dyn.d_un.d_ptr = reinterpret_cast<uintptr_t>(
+      UNSAFE_TODO(elf_start + measures.strtab_start));
 #endif
   loc = AppendHdr(strtab_dyn, loc);
 
   // Add a string table with one entry for the soname, if necessary.
-  *loc++ = '\0';  // The first byte holds a null character.
+  UNSAFE_TODO(*loc++ = '\0');  // The first byte holds a null character.
   if (soname_) {
-    memcpy(loc, soname_->data(), soname_->size());
-    *(loc + soname_->size()) = '\0';
-    loc += soname_->size() + 1;
+    UNSAFE_TODO(memcpy(loc, soname_->data(), soname_->size()));
+    UNSAFE_TODO(*(loc + soname_->size()) = '\0');
+    UNSAFE_TODO(loc += soname_->size() + 1);
   }
 
   // The offset past the end of the contents should be consistent with the size
   // mmeasurement above.
-  DCHECK_EQ(loc, elf_start + measures.total_size);
+  DCHECK_EQ(loc, UNSAFE_TODO(elf_start + measures.total_size));
 
   return TestElfImage(std::move(buffer), elf_start);
 }
@@ -303,8 +299,8 @@ TestElfImage TestElfImageBuilder::Build() {
 template <typename T>
 uint8_t* TestElfImageBuilder::AppendHdr(const T& hdr, uint8_t* loc) {
   static_assert(std::is_trivially_copyable_v<T>, "T should be a plain struct");
-  memcpy(loc, &hdr, sizeof(T));
-  return loc + sizeof(T);
+  UNSAFE_TODO(memcpy(loc, &hdr, sizeof(T)));
+  return UNSAFE_TODO(loc + sizeof(T));
 }
 
 Ehdr TestElfImageBuilder::CreateEhdr(Half phnum) {

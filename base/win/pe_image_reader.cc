@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/pe_image_reader.h"
 
 #include <windows.h>
@@ -16,6 +11,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
@@ -110,7 +106,7 @@ const IMAGE_FILE_HEADER* PeImageReader::GetCoffFileHeader() {
 }
 
 span<const uint8_t> PeImageReader::GetOptionalHeaderData() {
-  return span(GetOptionalHeaderStart(), GetOptionalHeaderSize());
+  return UNSAFE_TODO(span(GetOptionalHeaderStart(), GetOptionalHeaderSize()));
 }
 
 size_t PeImageReader::GetNumberOfSections() {
@@ -120,9 +116,9 @@ size_t PeImageReader::GetNumberOfSections() {
 const IMAGE_SECTION_HEADER* PeImageReader::GetSectionHeaderAt(size_t index) {
   DCHECK_NE((validation_state_ & VALID_SECTION_HEADERS), 0U);
   DCHECK_LT(index, GetNumberOfSections());
-  return reinterpret_cast<const IMAGE_SECTION_HEADER*>(
+  return UNSAFE_TODO(reinterpret_cast<const IMAGE_SECTION_HEADER*>(
       GetOptionalHeaderStart() + GetOptionalHeaderSize() +
-      (sizeof(IMAGE_SECTION_HEADER) * index));
+      (sizeof(IMAGE_SECTION_HEADER) * index)));
 }
 
 span<const uint8_t> PeImageReader::GetExportSection() {
@@ -158,7 +154,7 @@ const IMAGE_DEBUG_DIRECTORY* PeImageReader::GetDebugEntry(
           debug_directory_data[index * sizeof(IMAGE_DEBUG_DIRECTORY)]);
   const uint8_t* debug_data = nullptr;
   if (GetStructureAt(entry.PointerToRawData, entry.SizeOfData, &debug_data)) {
-    raw_data = span(debug_data, entry.SizeOfData);
+    raw_data = UNSAFE_TODO(span(debug_data, entry.SizeOfData));
   }
   return &entry;
 }
@@ -175,11 +171,12 @@ bool PeImageReader::EnumCertificates(EnumCertificatesCallback callback,
         win_certificate->dwLength > data.size()) {
       return false;
     }
-    if (!(*callback)(
-            win_certificate->wRevision, win_certificate->wCertificateType,
-            base::span(&win_certificate->bCertificate[0],
-                       win_certificate->dwLength - kWinCertificateSize),
-            context)) {
+    if (!(*callback)(win_certificate->wRevision,
+                     win_certificate->wCertificateType,
+                     UNSAFE_TODO(base::span(
+                         &win_certificate->bCertificate[0],
+                         win_certificate->dwLength - kWinCertificateSize)),
+                     context)) {
       return false;
     }
     size_t padded_length = (win_certificate->dwLength + 7) & ~0x7u;
@@ -287,7 +284,7 @@ bool PeImageReader::ValidateOptionalHeader() {
 
 bool PeImageReader::ValidateSectionHeaders() {
   const uint8_t* first_section_header =
-      GetOptionalHeaderStart() + GetOptionalHeaderSize();
+      UNSAFE_TODO(GetOptionalHeaderStart() + GetOptionalHeaderSize());
   const size_t number_of_sections = GetNumberOfSections();
 
   // Do all section headers fit in the image?
@@ -320,7 +317,7 @@ const IMAGE_DATA_DIRECTORY* PeImageReader::GetDataDirectoryEntryAt(
   if (index >= optional_header_->GetDataDirectorySize()) {
     return nullptr;
   }
-  return &optional_header_->GetDataDirectoryEntries()[index];
+  return UNSAFE_TODO(&optional_header_->GetDataDirectoryEntries()[index]);
 }
 
 const IMAGE_SECTION_HEADER* PeImageReader::FindSectionFromRva(
