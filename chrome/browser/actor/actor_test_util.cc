@@ -558,6 +558,14 @@ std::unique_ptr<ToolRequest> MakeClickRequest(content::RenderFrameHost& rfh,
       mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
 }
 
+std::unique_ptr<ToolRequest> MakeDirectElementActivationClickRequest(
+    content::RenderFrameHost& rfh,
+    int content_node_id) {
+  return std::make_unique<ClickToolRequest>(
+      GetTabHandleForFrame(rfh), MakeTarget(rfh, content_node_id),
+      mojom::ClickType::kLeftOnOccludedTarget, mojom::ClickCount::kSingle);
+}
+
 std::unique_ptr<ToolRequest> MakeClickRequest(TabInterface& tab,
                                               const gfx::Point& click_point) {
   return std::make_unique<ClickToolRequest>(

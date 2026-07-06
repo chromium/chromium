@@ -200,6 +200,9 @@ optimization_guide::proto::Actions MakeMediaControl(
 
 std::unique_ptr<ToolRequest> MakeClickRequest(content::RenderFrameHost& rfh,
                                               int content_node_id);
+std::unique_ptr<ToolRequest> MakeDirectElementActivationClickRequest(
+    content::RenderFrameHost& rfh,
+    int content_node_id);
 std::unique_ptr<ToolRequest> MakeClickRequest(tabs::TabInterface& tab,
                                               const gfx::Point& click_point);
 std::unique_ptr<ToolRequest> MakeHistoryBackRequest(tabs::TabInterface& tab);

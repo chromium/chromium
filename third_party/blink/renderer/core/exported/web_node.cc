@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -147,6 +148,13 @@ WebNode WebNode::ParentNode() const {
 WebNode WebNode::ParentOrShadowHostNode() const {
   return WebNode(
       const_cast<ContainerNode*>(private_->ParentOrShadowHostNode()));
+}
+
+WebNode WebNode::ParentInFlatTree() const {
+  if (private_.IsNull()) {
+    return WebNode();
+  }
+  return WebNode(FlatTreeTraversal::Parent(*private_));
 }
 
 bool WebNode::IsInUserAgentShadowRoot() const {

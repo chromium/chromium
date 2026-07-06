@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      margin: 0;
+      height: 2000px;
+    }
+    #fixed-container {
+      position: fixed;
+      top: 200px;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      margin: 0;
+      background: rgba(0, 0, 255, 0.5); /* semi-transparent blue */
+      z-index: 10;
+    }
+    #panel-child {
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 255, 0, 0.2); /* semi-transparent green */
+    }
+    #target {
+      position: absolute;
+      top: 220px;
+      left: 10px;
+      width: 50px;
+      height: 50px;
+      background: red;
+    }
+    .actor-modal,
+    .actor-modal::backdrop {
+      /* Keep modal paint behavior without adding pointer interception. */
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="fixed-container">Fixed Container</div>
+  <div id="target">Target</div>
+
+  <script>
+    var click_log = [];
+
+    const params = new URLSearchParams(location.search);
+    const panel_type = params.get('panel') || 'fixed';
+    let panel = document.getElementById('fixed-container');
+    const target = document.getElementById('target');
+
+    if (['iframe', 'fencedframe', 'object', 'embed'].includes(panel_type)) {
+      const embedded_panel = document.createElement(panel_type);
+      embedded_panel.id = 'fixed-container';
+      embedded_panel.textContent = 'Embedded Panel';
+      const embedded_html =
+          '<body style="margin:0;background:rgba(0,0,255,0.5)">Embedded Panel</body>';
+      if (panel_type === 'iframe') {
+        embedded_panel.srcdoc = embedded_html;
+      } else if (panel_type !== 'fencedframe') {
+        embedded_panel.type = 'text/html';
+        embedded_panel.data =
+            'data:text/html;charset=utf-8,' + encodeURIComponent(embedded_html);
+        embedded_panel.src = embedded_panel.data;
+      }
+      panel.replaceWith(embedded_panel);
+      panel = embedded_panel;
+    }
+
+    if (panel_type === 'dialog' || panel_type === 'popover') {
+      const top_layer_panel =
+          document.createElement(panel_type === 'dialog' ? 'dialog' : 'div');
+      top_layer_panel.id = 'fixed-container';
+      top_layer_panel.textContent =
+          panel_type === 'dialog' ? 'Dialog Panel' : 'Popover Panel';
+      if (panel_type === 'popover') {
+        top_layer_panel.setAttribute('popover', 'manual');
+      }
+      panel.replaceWith(top_layer_panel);
+      panel = top_layer_panel;
+    }
+
+    if (panel_type === 'fullscreen') {
+      panel.style.top = '0';
+      panel.style.left = '0';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+      panel.style.width = '100vw';
+      panel.style.height = '100vh';
+    }
+
+    if (params.get('scroll_locked') === '1') {
+      // Scroll lock is a common sign that a foreground overlay owns input. The
+      // target remains in the background while the fixed panel covers it.
+      document.documentElement.style.overflowY = 'hidden';
+      document.body.style.overflowY = 'hidden';
+    }
+
+    if (panel_type === 'shared_absolute_ancestor' ||
+        panel_type === 'shared_relative_ancestor') {
+      const shared_ancestor = document.createElement('div');
+      shared_ancestor.id = 'shared-positioned-ancestor';
+      shared_ancestor.style.position =
+          panel_type === 'shared_absolute_ancestor' ? 'absolute' : 'relative';
+      shared_ancestor.style.top = '0';
+      shared_ancestor.style.left = '0';
+      shared_ancestor.style.width = '100%';
+      shared_ancestor.style.height = '400px';
+      panel.before(shared_ancestor);
+      shared_ancestor.appendChild(panel);
+      shared_ancestor.appendChild(target);
+    }
+
+    const panel_position = panel_type === 'shared_absolute_ancestor' ||
+        panel_type === 'shared_relative_ancestor'
+        ? 'absolute'
+        : ['fixed', 'absolute', 'relative', 'sticky'].includes(panel_type)
+            ? panel_type
+            : 'fixed';
+    panel.style.position =
+        panel_type === 'shadow_fixed_slot' ? 'static' : panel_position;
+
+    function ensureTargetParent() {
+      let target_parent = document.getElementById('target-parent');
+      if (target_parent) {
+        return target_parent;
+      }
+      target_parent = document.createElement('div');
+      target_parent.id = 'target-parent';
+      target.before(target_parent);
+      target_parent.appendChild(target);
+      return target_parent;
+    }
+
+    if (params.get('inert') === 'target-parent') {
+      ensureTargetParent().inert = true;
+    }
+
+    if (params.get('modeless_dialog_parent') === '1') {
+      const dialog_parent = document.createElement('dialog');
+      dialog_parent.id = 'modeless-dialog-parent';
+      // Keep the dialog in the DOM ancestor chain without moving the target.
+      // A modeless dialog is not an author barrier for direct activation.
+      dialog_parent.style.display = 'contents';
+      target.before(dialog_parent);
+      dialog_parent.appendChild(target);
+      dialog_parent.show();
+    }
+
+    if (params.get('target_pointer_events') === 'none') {
+      // The target's own hit-test opt-out should not be bypassed just because
+      // a separate panel is also on top.
+      target.style.pointerEvents = 'none';
+    }
+
+    if (params.get('child') === '1') {
+      const child = document.createElement('div');
+      child.id = 'panel-child';
+      child.textContent = 'Panel Child';
+      if (params.has('child_position')) {
+        child.style.position = params.get('child_position');
+        child.style.top = '200px';
+        child.style.left = '0';
+      }
+      if (params.get('child_size') === 'target') {
+        // Keep this child large enough to win the target-center hit test, but
+        // small enough that the viewport-covering parent remains the barrier.
+        child.style.width = '80px';
+        child.style.height = '100px';
+      }
+      panel.appendChild(child);
+    }
+
+    if (panel_type === 'shadow_fixed_slot') {
+      // The host is not the modeless panel. The fixed panel is inside the
+      // shadow tree and wraps a slotted light-DOM child that wins hit testing.
+      const shadow_root = panel.attachShadow({mode: 'open'});
+      shadow_root.innerHTML = `
+        <style>
+          #shadow-panel {
+            position: fixed;
+            top: 200px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: rgba(0, 0, 255, 0.5);
+            z-index: 10;
+          }
+        </style>
+        <div id="shadow-panel"><slot></slot></div>`;
+    }
+
+    if (panel_type === 'dialog') {
+      panel.showModal();
+    } else if (panel_type === 'popover') {
+      panel.showPopover();
+    }
+
+    if (params.get('modal') === '1') {
+      const modal_dialog = document.createElement('dialog');
+      modal_dialog.id = 'modal-dialog';
+      modal_dialog.className = 'actor-modal';
+      modal_dialog.textContent = 'Modal dialog';
+      document.body.appendChild(modal_dialog);
+      modal_dialog.showModal();
+    }
+
+    function recordEvents(id) {
+      const element = document.getElementById(id);
+      if (!element) {
+        return;
+      }
+      for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+        element.addEventListener(type, function(e) {
+          click_log.push(type + '[' + id + ']');
+        });
+      }
+    }
+    recordEvents('fixed-container');
+    recordEvents('panel-child');
+    recordEvents('target');
+  </script>
+</body>
+</html>

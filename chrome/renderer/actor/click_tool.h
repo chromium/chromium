@@ -41,6 +41,9 @@ class ClickTool : public ToolBase {
   void Cancel() override;
 
  private:
+  ResolveResult ResolveValidatedClickTarget(
+      TargetOcclusionMode occlusion_mode) const;
+
   mojom::ClickActionPtr action_;
   std::optional<ClickDispatcher> click_dispatcher_;
   std::optional<ResolvedTarget> validated_target_;
