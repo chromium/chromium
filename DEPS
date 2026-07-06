@@ -1061,35 +1061,73 @@ deps = {
     'condition': 'not rust_force_head_revision',
     'objects': [
       {
-        'object_name': 'Linux_x64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': '1ed58044571c647d0e29eb5ebcd2e846521fb930782a05c9578943af2da4a8ce',
-        'size_bytes': 274864712,
-        'generation': 1783004406878060,
+        'object_name': 'Linux_x64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '1753392d6fe791a5ce743bfc70f45e151ee27bcccede516fb221b023f2c06a05',
+        'size_bytes': 274786408,
+        'generation': 1783367871911099,
         'condition': 'host_os == "linux" and non_git_source',
       },
       {
-        'object_name': 'Mac/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': '2aac0abf4cd2d877b382fef7fc087b064e943395a4ebc9703d80556690b89f05',
-        'size_bytes': 262516480,
-        'generation': 1783004408846651,
+        'object_name': 'Mac/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '6925151e70efd917156f3d50925c5bd416b9adf4ff42ca4bf73b4a6610d785d2',
+        'size_bytes': 262413648,
+        'generation': 1783367875702343,
         'condition': 'host_os == "mac" and host_cpu == "x64"',
       },
       {
-        'object_name': 'Mac_arm64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': 'ad79dd8c5b7cf705f2c34a74f5383b84fc62581689157cf98b0d8dedb88150fa',
-        'size_bytes': 246801688,
-        'generation': 1783004410767133,
+        'object_name': 'Mac_arm64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '1765d9be3b30726f5f5ad60d8bc50ee66501220bc942019782cf423de3f7114e',
+        'size_bytes': 246837492,
+        'generation': 1783367879712419,
         'condition': 'host_os == "mac" and host_cpu == "arm64"',
       },
       {
-        'object_name': 'Win/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': '8cbe9daa40f9c664e207fabed0040c39767d8f3046e995e4e40bb93880d81998',
-        'size_bytes': 416027840,
-        'generation': 1783004412644906,
+        'object_name': 'Win/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': 'dfa5db1cef7e75fd4d3ea5827f0c5eff3543d55d9d9982f806154e8d6b05950a',
+        'size_bytes': 415992772,
+        'generation': 1783367883448269,
         'condition': 'host_os == "win"',
       },
     ],
   },
+
+  # Update prebuilt libclang.
+  'src/third_party/llvm-libclang': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-browser-clang',
+    'condition': 'not rust_force_head_revision',
+    'objects': [
+      {
+        'object_name': 'Linux_x64/rust-libclang-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '0f1d0864cabaa77adc6374b02bffe1c8dae13c0859a93fe094e2f833568079ae',
+        'size_bytes': 22601620,
+        'generation': 1783367873770989,
+        'condition': 'host_os == "linux" and non_git_source',
+      },
+      {
+        'object_name': 'Mac/rust-libclang-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '2dd39e8e981b5375551e758fcb4a0992b14ac932d94e6d93394f5d40d0592baf',
+        'size_bytes': 22963424,
+        'generation': 1783367877737200,
+        'condition': 'host_os == "mac" and host_cpu == "x64"',
+      },
+      {
+        'object_name': 'Mac_arm64/rust-libclang-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '00a9cc25a866286a4643f156e854de01677fd1704a7834c554d0dd2510818178',
+        'size_bytes': 20391888,
+        'generation': 1783367881537158,
+        'condition': 'host_os == "mac" and host_cpu == "arm64"',
+      },
+      {
+        'object_name': 'Win/rust-libclang-b998449636a48e2c4a362809085b600a0174e1f2-5-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '866525020d31552627c68d8e77b2e499b62312ca99d290f69634ef2df9c53295',
+        'size_bytes': 21292240,
+        'generation': 1783367885344404,
+        'condition': 'host_os == "win"',
+      },
+    ],
+  },
+
   'src/third_party/clang-format/script':
     Var('chromium_git') +
     '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +

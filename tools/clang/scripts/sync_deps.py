@@ -94,6 +94,15 @@ def GetRustObjectNames() -> list:
   return object_names
 
 
+def GetLibclangObjectNames() -> list:
+  object_names = []
+  for host_os in ['Linux_x64', 'Mac', 'Mac_arm64', 'Win']:
+    rust_version = (f'{RUST_REVISION}-{RUST_SUB_REVISION}')
+    clang_revision = CLANG_REVISION
+    object_name = f'{host_os}/rust-libclang-{rust_version}-{clang_revision}'
+    object_names.append(f'{object_name}.tar.xz')
+  return object_names
+
 def GetClangObjectNames() -> list:
   object_names = []
   clang_version = f'{CLANG_REVISION}-{CLANG_SUB_REVISION}'
@@ -114,6 +123,14 @@ def main():
   rust_deps_entry_path = 'src/third_party/rust-toolchain'
   setdep_revisions.append(
       f'--revision={rust_deps_entry_path}@{rust_object_infos_string}')
+
+  libclang_object_infos = [
+      GetDepsObjectInfo(o) for o in sorted(GetLibclangObjectNames())
+  ]
+  libclang_object_infos_string = '?'.join(libclang_object_infos)
+  libclang_deps_entry_path = 'src/third_party/llvm-libclang'
+  setdep_revisions.append(
+      f'--revision={libclang_deps_entry_path}@{libclang_object_infos_string}')
 
   clang_object_infos = [
       GetDepsObjectInfo(o) for o in sorted(GetClangObjectNames())
