@@ -42,6 +42,13 @@ public class TemplateUrl {
     }
 
     /**
+     * @return The unique id of the search engine.
+     */
+    public long getId() {
+        return TemplateUrlJni.get().getId(mTemplateUrlPtr);
+    }
+
+    /**
      * @return The prepopulated id of the search engine. For predefined engines, this field is a
      *     non-zero, for custom search engines, it will return 0.
      */
@@ -190,5 +197,7 @@ public class TemplateUrl {
 
         @JniType("std::string")
         String getProvidingExtensionId(long templateUrlPtr);
+
+        long getId(long templateUrlPtr);
     }
 }

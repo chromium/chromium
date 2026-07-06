@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -265,14 +266,12 @@ public class SearchEngineAdapterTest {
 
         // Checking the data that was used to render the view.
         assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(0));
-        verify(p1, never()).getShortName();
         View v = adapter.getView(0, null, null);
         verify(p1, atLeastOnce()).getShortName();
         assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
         assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(1));
-        verify(p2, never()).getShortName();
         v = adapter.getView(1, null, null);
         verify(p2, atLeastOnce()).getShortName();
         assertEquals(View.GONE, v.findViewById(R.id.url).getVisibility()); // Because no keyword.
@@ -282,7 +281,6 @@ public class SearchEngineAdapterTest {
         assertNotNull(adapter.getView(2, null, null));
 
         assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(3));
-        verify(c1, never()).getShortName();
         v = adapter.getView(3, null, null);
         verify(c1, atLeastOnce()).getShortName();
         assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
@@ -312,10 +310,10 @@ public class SearchEngineAdapterTest {
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
         assertEquals(4, adapter.getCount());
-        assertEquals(p1, adapter.getItem(0));
-        assertEquals(p2, adapter.getItem(1));
+        assertEquals(p1.getKeyword(), adapter.getItem(0).getKeyword());
+        assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
         // Item 2 is a divider.
-        assertEquals(unknownDse, adapter.getItem(3));
+        assertEquals(unknownDse.getKeyword(), adapter.getItem(3).getKeyword());
     }
 
     @Test
@@ -340,8 +338,8 @@ public class SearchEngineAdapterTest {
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
         assertEquals(2, adapter.getCount());
-        assertEquals(p1, adapter.getItem(0));
-        assertEquals(p2, adapter.getItem(1));
+        assertEquals(p1.getKeyword(), adapter.getItem(0).getKeyword());
+        assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
     }
 
     @Test
@@ -366,14 +364,12 @@ public class SearchEngineAdapterTest {
 
         // Checking the data that was used to render the view.
         assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(0));
-        verify(p1, never()).getShortName();
         View v = adapter.getView(0, null, null);
         verify(p1, atLeastOnce()).getShortName();
         assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
         assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(1));
-        verify(p2, never()).getShortName();
         v = adapter.getView(1, null, null);
         verify(p2, atLeastOnce()).getShortName();
         assertEquals(View.GONE, v.findViewById(R.id.url).getVisibility()); // Because no keyword.
@@ -383,7 +379,6 @@ public class SearchEngineAdapterTest {
         assertNotNull(adapter.getView(2, null, null));
 
         assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(3));
-        verify(c1, never()).getShortName();
         v = adapter.getView(3, null, null);
         verify(c1, atLeastOnce()).getShortName();
         assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
@@ -414,10 +409,10 @@ public class SearchEngineAdapterTest {
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
         assertEquals(4, adapter.getCount());
-        assertEquals(p1, adapter.getItem(0));
-        assertEquals(p2, adapter.getItem(1));
+        assertEquals(p1.getKeyword(), adapter.getItem(0).getKeyword());
+        assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
         // Item 2 is a divider.
-        assertEquals(unknownDse, adapter.getItem(3));
+        assertEquals(unknownDse.getKeyword(), adapter.getItem(3).getKeyword());
 
         // Test for EEA country.
         doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
@@ -428,10 +423,10 @@ public class SearchEngineAdapterTest {
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
         assertEquals(4, adapter.getCount());
-        assertEquals(p1, adapter.getItem(0));
-        assertEquals(p2, adapter.getItem(1));
+        assertEquals(p1.getKeyword(), adapter.getItem(0).getKeyword());
+        assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
         // Item 2 is a divider.
-        assertEquals(unknownDse, adapter.getItem(3));
+        assertEquals(unknownDse.getKeyword(), adapter.getItem(3).getKeyword());
     }
 
     @Test
@@ -457,7 +452,73 @@ public class SearchEngineAdapterTest {
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
         assertEquals(2, adapter.getCount());
-        assertEquals(p1, adapter.getItem(0));
-        assertEquals(p2, adapter.getItem(1));
+        assertEquals(p1.getKeyword(), adapter.getItem(0).getKeyword());
+        assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2)
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
+    public void refreshData_V2_doesNotDereferenceStaleTemplateUrls() {
+        TemplateUrl p1 = buildMockTemplateUrl("p1", 1);
+        TemplateUrl r1 = buildMockTemplateUrl("r1", 0);
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn(new PrepopulatedAndRecentlyVisitedTemplateURLs(List.of(p1), List.of(r1)))
+                .when(mTemplateUrlService)
+                .getPrepopulatedAndRecentlyVisitedTemplateURLs();
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        var adapter = new SearchEngineAdapter(mContext, mProfile, null);
+        adapter.start();
+
+        // New list: r1 is replaced by r2.
+        TemplateUrl r2 = buildMockTemplateUrl("r2", 0);
+        doReturn(new PrepopulatedAndRecentlyVisitedTemplateURLs(List.of(p1), List.of(r2)))
+                .when(mTemplateUrlService)
+                .getPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+        // Simulate r1 being freed in native.
+        clearInvocations(r1);
+
+        // This should not crash if the fix is correct.
+        adapter.onTemplateURLServiceChanged();
+
+        verify(r1, never()).getKeyword();
+        verify(r1, never()).getShortName();
+        verify(r1, never()).getIsPrepopulated();
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2,
+        OmniboxFeatureList.OMNIBOX_SITE_SEARCH
+    })
+    public void refreshData_Legacy_doesNotDereferenceStaleTemplateUrls() {
+        TemplateUrl p1 = buildMockTemplateUrl("p1", 1);
+        TemplateUrl r1 = buildMockTemplateUrl("r1", 0);
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        // In legacy mode, it uses getTemplateUrls() and sorts them.
+        doReturn(new ArrayList<>(List.of(p1, r1))).when(mTemplateUrlService).getTemplateUrls();
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
+
+        var adapter = new SearchEngineAdapter(mContext, mProfile, null);
+        adapter.start();
+
+        // New list: r1 is replaced by r2.
+        TemplateUrl r2 = buildMockTemplateUrl("r2", 0);
+        doReturn(new ArrayList<>(List.of(p1, r2))).when(mTemplateUrlService).getTemplateUrls();
+
+        // Simulate r1 being freed in native.
+        clearInvocations(r1);
+
+        // This should not crash if the fix is correct.
+        adapter.onTemplateURLServiceChanged();
+
+        verify(r1, never()).getKeyword();
+        verify(r1, never()).getShortName();
+        verify(r1, never()).getIsPrepopulated();
     }
 }

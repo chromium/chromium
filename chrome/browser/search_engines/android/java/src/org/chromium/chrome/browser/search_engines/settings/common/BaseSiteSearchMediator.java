@@ -147,7 +147,13 @@ public abstract class BaseSiteSearchMediator
             LargeIconBridge largeIconBridge,
             Map<GURL, Bitmap> iconCache) {
         SearchEngineIconUtils.updateIcon(
-                context, model, propertyKey, templateUrl, pageUrl, largeIconBridge, iconCache);
+                context,
+                model,
+                propertyKey,
+                templateUrl.getBuiltInSearchEngineIcon(),
+                pageUrl,
+                largeIconBridge,
+                iconCache);
     }
 
     /**

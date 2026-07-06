@@ -45,6 +45,7 @@ public class TemplateUrlTestHelpers {
         lenient().doReturn(lastVisitTime).when(templateUrl).getLastVisitedTime();
         lenient().doReturn(prepopulatedId != 0).when(templateUrl).getIsPrepopulated();
         lenient().doReturn(nativePtr).when(templateUrl).getNativePtr();
+        lenient().doReturn(nativePtr).when(templateUrl).getId();
         lenient()
                 .doReturn(
                         String.format(

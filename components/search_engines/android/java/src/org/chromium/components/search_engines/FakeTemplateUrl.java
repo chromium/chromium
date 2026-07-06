@@ -11,12 +11,19 @@ public class FakeTemplateUrl extends TemplateUrl {
     private final String mShortName;
     private final String mKeyword;
     private final int mPrepopulatedId;
+    private final long mId;
 
     public FakeTemplateUrl(String shortName, String keyword) {
         super(0);
         mShortName = shortName;
         mKeyword = keyword;
         mPrepopulatedId = ++sPrepopulatedInstanceCount;
+        mId = mPrepopulatedId;
+    }
+
+    @Override
+    public long getId() {
+        return mId;
     }
 
     @Override
