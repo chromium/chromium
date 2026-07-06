@@ -12,8 +12,6 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/file_system_chooser_test_helpers.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 
 class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
  protected:
@@ -298,28 +296,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadContextTestV2ForkFalse) {
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxDragAndDrop) {
   RunTest("new_tab_page/composebox/composebox_drag_drop_test.js",
-          "mocha.run()");
-}
-
-
-
-class NewTabPageFileInputsTest : public NewTabPageTest {
- public:
-  void SetUpOnMainThread() override {
-    NewTabPageTest::SetUpOnMainThread();
-    ui::SelectFileDialog::SetFactory(
-        std::make_unique<content::FakeSelectFileDialogFactory>(
-            std::vector<base::FilePath>{}));
-  }
-
-  void TearDownOnMainThread() override {
-    ui::SelectFileDialog::SetFactory(nullptr);
-    NewTabPageTest::TearDownOnMainThread();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(NewTabPageFileInputsTest, ComposeboxFileInputs) {
-  RunTest("new_tab_page/composebox/composebox_file_inputs_test.js",
           "mocha.run()");
 }
 

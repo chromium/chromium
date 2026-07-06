@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxFileInputsElement} from 'chrome://new-tab-page/lazy_load.js';
+import 'chrome://contextual-tasks/strings.m.js';
+
+import {ComposeboxFileInputsElement} from 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-suite('NewTabPageComposeboxFileInputsTest', () => {
+suite('ComposeboxFileInputsTest', () => {
   let fileUploadSlot: HTMLElement;
   let fileInputsElement: ComposeboxFileInputsElement;
 
