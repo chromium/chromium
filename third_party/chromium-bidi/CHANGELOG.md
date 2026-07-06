@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [17.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v16.0.1...chromium-bidi-v17.0.0) (2026-07-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 152.0.7923.0 ([#4194](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4194))
+* **chrome:** update the pinned browser version to 151.0.7888.0 ([#4174](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4174))
+* **chrome:** update the pinned browser version to 150.0.7863.0 ([#4164](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4164))
+
+### Features
+
+* **chrome:** update the pinned browser version to 150.0.7863.0 ([#4164](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4164)) ([257e79e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/257e79ea1acd57d6b643ed10d5640d411f607dcb))
+* **chrome:** update the pinned browser version to 151.0.7888.0 ([#4174](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4174)) ([b66d6ba](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b66d6bae722b9af50be4d880c5b65944c938a08c))
+* **chrome:** update the pinned browser version to 152.0.7923.0 ([#4194](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4194)) ([fededde](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fededde179302dcfe28417ce70c393961c5dba00))
+* implement digitalCredentials.setVirtualWalletBehavior ([#4196](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4196)) ([9046114](https://github.com/GoogleChromeLabs/chromium-bidi/commit/90461142c6810a527a1d474d5b068a6895960f80))
+
+
+### Bug Fixes
+
+* **network:** don't retain information on the heap ([#4147](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4147)) ([1290f1e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1290f1e8e037c1498dfae7adb404d04765648da3))
+
+
+### Performance Improvements
+
+* allow loggin per perfix ([#4169](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4169)) ([243f4b8](https://github.com/GoogleChromeLabs/chromium-bidi/commit/243f4b88155852883fd089d78a39f5e86802f8ff))
+
 ## [16.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v16.0.0...chromium-bidi-v16.0.1) (2026-05-12)
 
 
