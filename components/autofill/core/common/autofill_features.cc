@@ -407,7 +407,7 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
 // some of the logic in AndroidAutofillProvider.
 // TODO(crbug.com/456526604): Remove when launched.
 BASE_FEATURE(kAutofillAndroidFormDataCompareFieldGlobalId,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, on Android, the Autofill keyboard accessory will not be
 // displayed attached to the keyboard but will be placed below or above the
