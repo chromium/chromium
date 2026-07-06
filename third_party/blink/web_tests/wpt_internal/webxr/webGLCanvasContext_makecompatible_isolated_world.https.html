@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<script>
+
+// Calling makeXRCompatible() while a request is already pending should still
+// return a Promise from the calling world. Uses testRunner to evaluate script
+// in an isolated world, so this is an internal-only test.
+function testIsolatedWorld(t, gl, glContextType) {
+  assert_true(!!window.testRunner, 'testRunner is required');
+
+  return navigator.xr.test.simulateDeviceConnection(TRACKED_IMMERSIVE_DEVICE)
+      .then((controller) => {
+        gl.canvas.id = glContextType + '-canvas';
+
+        const mainPromise = gl.makeXRCompatible();
+        assert_equals(Object.getPrototypeOf(mainPromise), Promise.prototype,
+            'main world promise has main world Promise.prototype');
+
+        // Synchronously call makeXRCompatible() on the same canvas from an
+        // isolated world while the request started above is still pending.
+        const result = testRunner.evaluateScriptInIsolatedWorldAndReturnValue(1,
+            "var gl = document.getElementById('" + glContextType + "-canvas')" +
+                ".getContext('" + glContextType + "');" +
+            "var p = gl.makeXRCompatible();" +
+            "p.catch(() => {});" +
+            "Object.getPrototypeOf(p) === Promise.prototype;");
+        assert_true(result,
+            'isolated world promise has isolated world Promise.prototype');
+
+        return mainPromise;
+      }).then(() => {
+        assert_true(gl.getContextAttributes().xrCompatible);
+      });
+}
+
+xr_promise_test(
+  "makeXRCompatible() returns a Promise from the calling world for webgl",
+  (t, gl) => testIsolatedWorld(t, gl, 'webgl'), null, 'webgl');
+
+xr_promise_test(
+  "makeXRCompatible() returns a Promise from the calling world for webgl2",
+  (t, gl) => testIsolatedWorld(t, gl, 'webgl2'), null, 'webgl2');
+
+</script>
