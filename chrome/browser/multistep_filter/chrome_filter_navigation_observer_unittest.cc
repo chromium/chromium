@@ -86,11 +86,11 @@ class ChromeFilterNavigationObserverWrapper
  public:
   using ChromeFilterNavigationObserver::ChromeFilterNavigationObserver;
 
-  FilterNavigationObserver* observer() { return observer_.get(); }
+  ContentFilterNavigationObserver* observer() { return observer_.get(); }
 };
 
-// Verifies the lifecycle management of the internal FilterNavigationObserver
-// and tests the real UiDelegateImpl behavior.
+// Verifies the lifecycle management of the internal
+// ContentFilterNavigationObserver and tests the real UiDelegateImpl behavior.
 class ChromeFilterNavigationObserverTest
     : public ChromeRenderViewHostTestHarness {
  public:

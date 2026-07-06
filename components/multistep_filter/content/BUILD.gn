@@ -4,10 +4,10 @@
 
 source_set("content") {
   sources = [
+    "content_filter_navigation_observer.cc",
+    "content_filter_navigation_observer.h",
     "filter_initiated_navigation_marker.cc",
     "filter_initiated_navigation_marker.h",
-    "filter_navigation_observer.cc",
-    "filter_navigation_observer.h",
   ]
   public_deps = [ "//components/multistep_filter/core/data_models" ]
   deps = [
@@ -24,7 +24,7 @@ source_set("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "filter_navigation_observer_unittest.cc" ]
+  sources = [ "content_filter_navigation_observer_unittest.cc" ]
   deps = [
     ":content",
     "//base",

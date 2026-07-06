@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
-#include "components/multistep_filter/content/filter_navigation_observer.h"
+#include "components/multistep_filter/content/content_filter_navigation_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -23,7 +23,7 @@ namespace multistep_filter {
 
 // Observes navigations to trigger Multistep Filter feature logic.
 // This chrome-specific observer manages the lifetime of the component
-// FilterNavigationObserver and bridges it with the TabInterface.
+// ContentFilterNavigationObserver and bridges it with the TabInterface.
 //
 // Owned by `WebContents`, one instance per `WebContents`.
 class ChromeFilterNavigationObserver
@@ -50,7 +50,7 @@ class ChromeFilterNavigationObserver
   virtual void UpdateObserver(content::WebContents* web_contents);
 
   // The component-level observer that monitors navigations.
-  std::unique_ptr<FilterNavigationObserver> observer_;
+  std::unique_ptr<ContentFilterNavigationObserver> observer_;
 
  private:
   ui::ScopedUnownedUserData<ChromeFilterNavigationObserver>

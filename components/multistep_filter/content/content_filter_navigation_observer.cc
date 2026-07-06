@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/multistep_filter/content/filter_navigation_observer.h"
+#include "components/multistep_filter/content/content_filter_navigation_observer.h"
 
 #include <optional>
 
@@ -127,7 +127,7 @@ void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
 
 }  // namespace
 
-FilterNavigationObserver::FilterNavigationObserver(
+ContentFilterNavigationObserver::ContentFilterNavigationObserver(
     content::WebContents* web_contents,
     MultistepFilterService* service,
     MultistepFilterLogRouter* log_router,
@@ -139,9 +139,9 @@ FilterNavigationObserver::FilterNavigationObserver(
   CHECK(delegate_);
 }
 
-FilterNavigationObserver::~FilterNavigationObserver() = default;
+ContentFilterNavigationObserver::~ContentFilterNavigationObserver() = default;
 
-void FilterNavigationObserver::DidFinishNavigation(
+void ContentFilterNavigationObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   if (!service_) {
     return;
@@ -235,7 +235,7 @@ void FilterNavigationObserver::DidFinishNavigation(
                      delegate_->GetWeakPtr()));
 }
 
-void FilterNavigationObserver::PrimaryMainFrameRenderProcessGone(
+void ContentFilterNavigationObserver::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   delegate_->ClearSuggestion();
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MULTISTEP_FILTER_CONTENT_FILTER_NAVIGATION_OBSERVER_H_
-#define COMPONENTS_MULTISTEP_FILTER_CONTENT_FILTER_NAVIGATION_OBSERVER_H_
+#ifndef COMPONENTS_MULTISTEP_FILTER_CONTENT_CONTENT_FILTER_NAVIGATION_OBSERVER_H_
+#define COMPONENTS_MULTISTEP_FILTER_CONTENT_CONTENT_FILTER_NAVIGATION_OBSERVER_H_
 
 #include <memory>
 #include <optional>
@@ -27,17 +27,20 @@ class MultistepFilterUiDelegate;
 // This observer detects primary main frame navigations, clears existing
 // suggestions, and requests new suggestions from the MultistepFilterService for
 // eligible URLs.
-class FilterNavigationObserver : public content::WebContentsObserver {
+class ContentFilterNavigationObserver : public content::WebContentsObserver {
  public:
-  FilterNavigationObserver(content::WebContents* web_contents,
-                           MultistepFilterService* service,
-                           MultistepFilterLogRouter* log_router,
-                           std::unique_ptr<MultistepFilterUiDelegate> delegate);
+  ContentFilterNavigationObserver(
+      content::WebContents* web_contents,
+      MultistepFilterService* service,
+      MultistepFilterLogRouter* log_router,
+      std::unique_ptr<MultistepFilterUiDelegate> delegate);
 
-  FilterNavigationObserver(const FilterNavigationObserver&) = delete;
-  FilterNavigationObserver& operator=(const FilterNavigationObserver&) = delete;
+  ContentFilterNavigationObserver(const ContentFilterNavigationObserver&) =
+      delete;
+  ContentFilterNavigationObserver& operator=(
+      const ContentFilterNavigationObserver&) = delete;
 
-  ~FilterNavigationObserver() override;
+  ~ContentFilterNavigationObserver() override;
 
   // content::WebContentsObserver overrides:
   void DidFinishNavigation(
@@ -61,4 +64,4 @@ class FilterNavigationObserver : public content::WebContentsObserver {
 
 }  // namespace multistep_filter
 
-#endif  // COMPONENTS_MULTISTEP_FILTER_CONTENT_FILTER_NAVIGATION_OBSERVER_H_
+#endif  // COMPONENTS_MULTISTEP_FILTER_CONTENT_CONTENT_FILTER_NAVIGATION_OBSERVER_H_
