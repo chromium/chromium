@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -78,12 +79,16 @@ TEST_F(GlicOnboardingTrackerTest, InitialState_MigrationIncomplete) {
 
 TEST_F(GlicOnboardingTrackerTest, StateTransitions_StandardFlow) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   GlicOnboardingTracker tracker(profile_, enabling_.get());
 
   tracker.OnInvoke();
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kNotOptedInButInvoked);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetTime(prefs::kGlicLastInvokedTime).is_null());
+  histogram_tester.ExpectUniqueSample("Glic.Onboarding.Invoked.Status",
+                                      OnboardingStatus::kNoInteraction, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Invoked"), 1);
 
   profile_->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
@@ -93,6 +98,8 @@ TEST_F(GlicOnboardingTrackerTest, StateTransitions_StandardFlow) {
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kPromptAndOptIn);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetTime(prefs::kGlicLastPromptTime).is_null());
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("Glic.Onboarding.PromptSubmitted"), 1);
 }
 
 TEST_F(GlicOnboardingTrackerTest, StateTransitions_OptInFirst) {

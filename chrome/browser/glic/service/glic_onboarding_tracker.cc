@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -69,6 +70,9 @@ void GlicOnboardingTracker::MigrateInitialOnboardingStatus(Profile* profile) {
 void GlicOnboardingTracker::OnInvoke() {
   pref_service_->SetTime(prefs::kGlicLastInvokedTime, base::Time::Now());
   OnboardingStatus current_status = GetStatus();
+  base::RecordAction(base::UserMetricsAction("Glic.Onboarding.Invoked"));
+  base::UmaHistogramEnumeration("Glic.Onboarding.Invoked.Status",
+                                current_status);
   if (current_status == OnboardingStatus::kNoInteraction) {
     onboarding_status_.SetStatus(OnboardingStatus::kNotOptedInButInvoked);
   } else if (current_status == OnboardingStatus::kOptedInButNotInvoked) {
@@ -79,6 +83,8 @@ void GlicOnboardingTracker::OnInvoke() {
 void GlicOnboardingTracker::OnPrompt() {
   pref_service_->SetTime(prefs::kGlicLastPromptTime, base::Time::Now());
   OnboardingStatus current_status = GetStatus();
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Onboarding.PromptSubmitted"));
   if (current_status == OnboardingStatus::kNotOptedInButInvoked) {
     onboarding_status_.SetStatus(OnboardingStatus::kPromptWithNoOptIn);
   } else if (current_status == OnboardingStatus::kOptedInAndInvoked) {

@@ -15970,6 +15970,17 @@ should be able to be added at any place in this file.
   <description>The Glic instance WebUI is warmed.</description>
 </action>
 
+<action name="Glic.Onboarding.Invoked">
+  <owner>perrier@google.com</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Logged when Glic is invoked during onboarding. Invoked is defined as a new
+    embedder being shown for a tab or Floaty. Tab switching or focus events are
+    not considered invoking, but daisy chaining, conversation switching, or
+    re-opening on an already bound tab are considered invoking.
+  </description>
+</action>
+
 <action name="Glic.Onboarding.OptInAccept">
   <owner>basiaz@google.com</owner>
   <owner>dewittj@google.com</owner>
@@ -15986,6 +15997,14 @@ should be able to be added at any place in this file.
   <description>
     The Glic web client has signalled that an onboarding flow has been shown,
     and the instance is ready and visible.
+  </description>
+</action>
+
+<action name="Glic.Onboarding.PromptSubmitted">
+  <owner>perrier@google.com</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Logged when a prompt is submitted by the user during onboarding.
   </description>
 </action>
 

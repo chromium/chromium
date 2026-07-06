@@ -1898,6 +1898,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Onboarding.Invoked.Status" enum="GlicOnboardingStatus"
+    expires_after="2027-06-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <summary>
+    Records the onboarding status at the time Glic is invoked. Recorded when
+    Glic is invoked during onboarding. Invoked is defined as a new embedder
+    being shown for a tab or Floaty. Tab switching or focus events are not
+    considered invoking, but daisy chaining, conversation switching, or
+    re-opening on an already bound tab are considered invoking.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Onboarding.OptInImpression.FlowSource"
     enum="GlicOptInFlowSource" expires_after="2027-05-18">
   <owner>sauski@google.com</owner>
