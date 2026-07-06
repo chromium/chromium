@@ -111,26 +111,36 @@ git clone --depth 1 https://github.com/WICG/ua-client-hints.git "$BUILD_DIR/ua-c
 )
 cp "$BUILD_DIR/ua-client-hints/ua-client-hints.cddl" ./ua-client-hints.cddl
 
-# 6. Install chromium-bidi dependencies
+# 6. Build Digital Credentials CDDL
+echo "Checking out w3c-fedid/digital-credentials..."
+git clone --depth 1 https://github.com/w3c-fedid/digital-credentials.git "$BUILD_DIR/digital-credentials"
+(
+  cd "$BUILD_DIR/digital-credentials"
+  node ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl digital-credentials.cddl
+)
+cp "$BUILD_DIR/digital-credentials/digital-credentials.cddl" ./digital-credentials.cddl
+
+# 7. Install chromium-bidi dependencies
 echo "Installing npm dependencies for chromium-bidi..."
 npm ci
 
-# 7. Generate TypeScript and Zod types from CDDL files
+# 8. Generate TypeScript and Zod types from CDDL files
 echo "Generating types..."
 node tools/generate-bidi-types.mjs --cddl-file all.cddl
 node tools/generate-bidi-types.mjs --cddl-file permissions.cddl --ts-file src/protocol/generated/webdriver-bidi-permissions.ts --zod-file src/protocol-parser/generated/webdriver-bidi-permissions.ts
 node tools/generate-bidi-types.mjs --cddl-file web-bluetooth.cddl --ts-file src/protocol/generated/webdriver-bidi-bluetooth.ts --zod-file src/protocol-parser/generated/webdriver-bidi-bluetooth.ts
 node tools/generate-bidi-types.mjs --cddl-file nav-speculation.cddl --ts-file src/protocol/generated/webdriver-bidi-nav-speculation.ts --zod-file src/protocol-parser/generated/webdriver-bidi-nav-speculation.ts
 node tools/generate-bidi-types.mjs --cddl-file ua-client-hints.cddl --ts-file src/protocol/generated/webdriver-bidi-ua-client-hints.ts --zod-file src/protocol-parser/generated/webdriver-bidi-ua-client-hints.ts
+node tools/generate-bidi-types.mjs --cddl-file digital-credentials.cddl --ts-file src/protocol/generated/webdriver-bidi-digital-credentials.ts --zod-file src/protocol-parser/generated/webdriver-bidi-digital-credentials.ts
 
 # Remove the temporary CDDL files that we copied to the root (as they are gitignored)
-rm -f all.cddl permissions.cddl web-bluetooth.cddl nav-speculation.cddl ua-client-hints.cddl
+rm -f all.cddl permissions.cddl web-bluetooth.cddl nav-speculation.cddl ua-client-hints.cddl digital-credentials.cddl
 
-# 8. Run formatters
+# 9. Run formatters
 echo "Running code formatting..."
 npm run format || npm run format
 
-# 9. Check if changes were made and commit
+# 10. Check if changes were made and commit
 if [ -n "$(git status --porcelain src/protocol/generated/ src/protocol-parser/generated/)" ]; then
   COMMIT_MSG="build(spec): update WebDriverBiDi types"
   NEW_BRANCH="browser-automation-bot/update-bidi-types-$(date +%s)"

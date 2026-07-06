@@ -53,9 +53,10 @@ process.chdir(ROOT_DIR);
 
 const TYPES_FILE = tsFile;
 const ZOD_FILE = zodFile;
+const CURRENT_YEAR = new Date().getFullYear();
 const FILE_HEADER = `
 /**
- * Copyright 2024 Google LLC.
+ * Copyright ${CURRENT_YEAR} Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -115,6 +116,26 @@ async function getCddlconvVersion() {
 async function runCddlConv(file, options) {
   const cddlConv = await runCommand('cddlconv', options);
   let output = `${FILE_HEADER}${cddlConv}`;
+
+  if (!file.endsWith('webdriver-bidi.ts')) {
+    const isZod = options.includes('zod');
+    if (isZod) {
+      if (output.includes('EmptyResultSchema')) {
+        output = output.replace(
+          "import z from 'zod';",
+          "import z from 'zod';\nimport {EmptyResultSchema} from './webdriver-bidi.js';",
+        );
+      }
+    } else {
+      if (output.includes('EmptyResult')) {
+        output = output.replace(
+          FILE_HEADER,
+          `${FILE_HEADER}import type {EmptyResult} from './webdriver-bidi.js';\n\n`,
+        );
+      }
+    }
+  }
+
   await writeFile(file, output, 'utf8');
 }
 

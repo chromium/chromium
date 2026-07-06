@@ -27,6 +27,7 @@ import {InvalidArgumentException} from '../protocol/protocol.js';
 import * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
+import * as WebDriverBidiDigitalCredentials from './generated/webdriver-bidi-digital-credentials.js';
 import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export function parseObject<T extends ZodType>(
@@ -690,6 +691,18 @@ export namespace Bluetooth {
     ) as Protocol.Bluetooth.SimulateServiceParameters;
   }
   // keep-sorted end
+}
+
+export namespace DigitalCredentials {
+  export function parseSetVirtualWalletBehaviorParams(
+    params: unknown,
+  ): Protocol.DigitalCredentials.SetVirtualWalletBehaviorParameters {
+    return parseObject(
+      params,
+      WebDriverBidiDigitalCredentials.DigitalCredentials
+        .SetVirtualWalletBehaviorParametersSchema,
+    ) as Protocol.DigitalCredentials.SetVirtualWalletBehaviorParameters;
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-webExtension */

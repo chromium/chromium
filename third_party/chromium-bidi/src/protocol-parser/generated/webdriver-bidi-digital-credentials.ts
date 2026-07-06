@@ -25,38 +25,33 @@
 // @ts-nocheck Some types may be circular.
 
 import z from 'zod';
+import {EmptyResultSchema} from './webdriver-bidi.js';
 
-export const PermissionsCommandSchema = z.lazy(
-  () => Permissions.SetPermissionSchema,
-);
-export namespace Permissions {
-  export const PermissionDescriptorSchema = z.lazy(() =>
+export namespace DigitalCredentials {
+  export const VirtualWalletActionSchema = z.lazy(() =>
+    z.enum(['decline', 'respond', 'wait', 'clear']),
+  );
+}
+export namespace DigitalCredentials {
+  export const SetVirtualWalletBehaviorParametersSchema = z.lazy(() =>
     z.object({
-      name: z.string(),
+      action: DigitalCredentials.VirtualWalletActionSchema,
+      context: z.string().optional(),
+      protocol: z.string().optional(),
+      response: z.record(z.string(), z.any()).optional(),
     }),
   );
 }
-export namespace Permissions {
-  export const PermissionStateSchema = z.lazy(() =>
-    z.enum(['granted', 'denied', 'prompt']),
-  );
-}
-export namespace Permissions {
-  export const SetPermissionSchema = z.lazy(() =>
+export namespace DigitalCredentials {
+  export const SetVirtualWalletBehaviorSchema = z.lazy(() =>
     z.object({
-      method: z.literal('permissions.setPermission'),
-      params: Permissions.SetPermissionParametersSchema,
+      method: z.literal('digitalCredentials.setVirtualWalletBehavior'),
+      params: DigitalCredentials.SetVirtualWalletBehaviorParametersSchema,
     }),
   );
 }
-export namespace Permissions {
-  export const SetPermissionParametersSchema = z.lazy(() =>
-    z.object({
-      descriptor: Permissions.PermissionDescriptorSchema,
-      state: Permissions.PermissionStateSchema,
-      origin: z.string(),
-      embeddedOrigin: z.string().optional(),
-      userContext: z.string().optional(),
-    }),
+export namespace DigitalCredentials {
+  export const SetVirtualWalletBehaviorResultSchema = z.lazy(
+    () => EmptyResultSchema,
   );
 }

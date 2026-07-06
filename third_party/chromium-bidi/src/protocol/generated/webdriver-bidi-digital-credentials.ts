@@ -21,25 +21,32 @@
  * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
  */
 
-export namespace Speculation {
-  export const enum PreloadingStatus {
-    Pending = 'pending',
-    Ready = 'ready',
-    Success = 'success',
-    Failure = 'failure',
+import type {EmptyResult} from './webdriver-bidi.js';
+
+export namespace DigitalCredentials {
+  export const enum VirtualWalletAction {
+    Decline = 'decline',
+    Respond = 'respond',
+    Wait = 'wait',
+    Clear = 'clear',
   }
 }
-export type SpeculationEvent = Speculation.PrefetchStatusUpdated;
-export namespace Speculation {
-  export type PrefetchStatusUpdated = {
-    method: 'speculation.prefetchStatusUpdated';
-    params: Speculation.PrefetchStatusUpdatedParameters;
+export namespace DigitalCredentials {
+  export type SetVirtualWalletBehaviorParameters = {
+    action: DigitalCredentials.VirtualWalletAction;
+    context?: string;
+    protocol?: string;
+    response?: {
+      [key: string]: any;
+    };
   };
 }
-export namespace Speculation {
-  export type PrefetchStatusUpdatedParameters = {
-    context: string;
-    url: string;
-    status: Speculation.PreloadingStatus;
+export namespace DigitalCredentials {
+  export type SetVirtualWalletBehavior = {
+    method: 'digitalCredentials.setVirtualWalletBehavior';
+    params: DigitalCredentials.SetVirtualWalletBehaviorParameters;
   };
+}
+export namespace DigitalCredentials {
+  export type SetVirtualWalletBehaviorResult = EmptyResult;
 }

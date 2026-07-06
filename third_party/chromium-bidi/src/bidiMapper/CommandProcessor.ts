@@ -52,6 +52,7 @@ import type {EventManager} from './modules/session/EventManager.js';
 import {SessionProcessor} from './modules/session/SessionProcessor.js';
 import {StorageProcessor} from './modules/storage/StorageProcessor.js';
 import {WebExtensionProcessor} from './modules/webExtension/WebExtensionProcessor.js';
+import type {DigitalCredentialsProcessor} from './modules/digitalCredentials/DigitalCredentialsProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
 
 export const enum CommandProcessorEvents {
@@ -72,6 +73,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
+  #digitalCredentialsProcessor: DigitalCredentialsProcessor;
   #emulationProcessor: EmulationProcessor;
   #inputProcessor: InputProcessor;
   #networkProcessor: NetworkProcessor;
@@ -95,6 +97,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     networkStorage: NetworkStorage,
     contextConfigStorage: ContextConfigStorage,
     bluetoothProcessor: BluetoothProcessor,
+    digitalCredentialsProcessor: DigitalCredentialsProcessor,
     userContextStorage: UserContextStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
@@ -106,6 +109,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#logger = logger;
 
     this.#bluetoothProcessor = bluetoothProcessor;
+    this.#digitalCredentialsProcessor = digitalCredentialsProcessor;
 
     // keep-sorted start block=yes
     this.#browserProcessor = new BrowserProcessor(
@@ -332,6 +336,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'goog:cdp.sendCommand':
         return await this.#cdpProcessor.sendCommand(
           this.#parser.parseSendCommandParams(command.params),
+        );
+      // keep-sorted end
+
+      // DigitalCredentials module
+      // keep-sorted start block=yes
+      case 'digitalCredentials.setVirtualWalletBehavior':
+        return await this.#digitalCredentialsProcessor.setVirtualWalletBehavior(
+          this.#parser.parseSetVirtualWalletBehaviorParams(command.params),
         );
       // keep-sorted end
 

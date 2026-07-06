@@ -29,6 +29,7 @@ import type {
   Storage,
   WebExtension,
   UAClientHints,
+  DigitalCredentials,
 } from '../protocol/protocol.js';
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
@@ -404,6 +405,17 @@ export class BidiParser implements BidiCommandParameterParser {
   }
   parseUninstallParams(params: unknown): WebExtension.UninstallParameters {
     return Parser.WebModule.parseUninstallParams(params);
+  }
+  // keep-sorted end
+
+  // DigitalCredentials module
+  // keep-sorted start block=yes
+  parseSetVirtualWalletBehaviorParams(
+    params: unknown,
+  ): DigitalCredentials.SetVirtualWalletBehaviorParameters {
+    return Parser.DigitalCredentials.parseSetVirtualWalletBehaviorParams(
+      params,
+    );
   }
   // keep-sorted end
 }

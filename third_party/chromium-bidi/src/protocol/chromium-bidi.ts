@@ -20,6 +20,7 @@ import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetoo
 import type * as WebDriverBidiSpeculation from './generated/webdriver-bidi-nav-speculation.ts';
 import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import type * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
+import type * as WebDriverBidiDigitalCredentials from './generated/webdriver-bidi-digital-credentials.js';
 import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export type EventNames =
@@ -141,6 +142,7 @@ export type Command = (
   | ExternalSpecCommand<WebDriverBidiPermissions.PermissionsCommand>
   | ExternalSpecCommand<WebDriverBidiBluetooth.BluetoothCommand>
   | ExternalSpecCommand<WebDriverBidiUAClientHints.UserAgentClientHintsCommand>
+  | ExternalSpecCommand<WebDriverBidiDigitalCredentials.DigitalCredentials.SetVirtualWalletBehavior>
 ) & {'goog:channel'?: GoogChannel};
 
 export type CommandResponse =

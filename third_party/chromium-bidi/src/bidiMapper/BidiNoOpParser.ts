@@ -29,6 +29,7 @@ import type {
   Bluetooth,
   WebExtension,
   UAClientHints,
+  DigitalCredentials,
 } from '../protocol/protocol.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
@@ -407,6 +408,15 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   parseUninstallParams(params: unknown): WebExtension.UninstallParameters {
     return params as WebExtension.UninstallParameters;
+  }
+  // keep-sorted end
+
+  // DigitalCredentials module
+  // keep-sorted start block=yes
+  parseSetVirtualWalletBehaviorParams(
+    params: unknown,
+  ): DigitalCredentials.SetVirtualWalletBehaviorParameters {
+    return params as DigitalCredentials.SetVirtualWalletBehaviorParameters;
   }
   // keep-sorted end
 }
