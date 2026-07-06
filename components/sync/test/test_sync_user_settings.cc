@@ -132,6 +132,9 @@ DataTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
 #endif
   types.PutAll(ControlTypes());
+  if (service_->IsLocalSyncEnabled()) {
+    types.RetainAll(LocalSyncSupportedTypes());
+  }
   return types;
 }
 

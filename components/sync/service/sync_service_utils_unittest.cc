@@ -219,4 +219,19 @@ TEST(SyncServiceUtilsTest, UploadToGoogleEnabledDespiteInitialSetupIncomplete) {
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 }
 
+TEST(SyncServiceUtilsTest, LocalSyncPreferredDataTypes) {
+  TestSyncService service;
+  service.SetSignedIn(signin::ConsentLevel::kSync);
+
+  // By default local sync is disabled, so supported and non-supported types are
+  // preferred.
+  EXPECT_TRUE(service.GetPreferredDataTypes().Has(BOOKMARKS));
+  EXPECT_TRUE(service.GetPreferredDataTypes().Has(HISTORY));
+
+  // When local sync is enabled, only local sync supported types are preferred.
+  service.SetLocalSyncEnabled(true);
+  EXPECT_TRUE(service.GetPreferredDataTypes().Has(BOOKMARKS));
+  EXPECT_FALSE(service.GetPreferredDataTypes().Has(HISTORY));
+}
+
 }  // namespace syncer

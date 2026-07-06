@@ -510,10 +510,14 @@ TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_SyncServiceLocalSyncOnly) {
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.IbanUploadEnabled",
-      autofill_metrics::IbanUploadEnabledStatus::kLocalSyncEnabled, 1);
+      autofill_metrics::IbanUploadEnabledStatus::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.IbanUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::IbanUploadEnabledStatus::kLocalSyncEnabled, 1);
+      autofill_metrics::IbanUploadEnabledStatus::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
 }
 
 TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_Enabled) {
