@@ -77,7 +77,6 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/preload_activation_report_manager.h"
 #include "content/browser/preloading/preload_activation_report_utils.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -6030,19 +6029,6 @@ void NavigationRequest::OnStartChecksComplete(
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
 
-  // Create `PrefetchServingPageMetricsContainer` only if the initiator
-  // document has its `PrefetchDocumentManager`.
-  base::WeakPtr<PrefetchServingPageMetricsContainer>
-      serving_page_metrics_container;
-  if (!IsSameDocument() && initiator_document_token_ &&
-      PrefetchDocumentManager::FromDocumentToken(initiator_process_id_,
-                                                 *initiator_document_token_)) {
-    serving_page_metrics_container =
-        PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle(
-            *this)
-            ->GetWeakPtr();
-  }
-
   // DevTools throttling profiles are only associated with local frame roots,
   // not each individual frame.
   RenderFrameHostImpl* local_root_rfh = frame_tree_node_->current_frame_host();
@@ -6067,9 +6053,8 @@ void NavigationRequest::OnStartChecksComplete(
           devtools_navigation_token(), local_root_rfh->devtools_frame_token(),
           BuildClientSecurityStateForNavigationFetch(),
           devtools_accepted_stream_types, IsPdf(), GetInitiatorProcessId(),
-          initiator_document_token_, std::move(serving_page_metrics_container),
-          allow_cookies_from_browser_, navigation_id_,
-          shared_storage_writable_eligible_, is_ad_tagged_,
+          initiator_document_token_, allow_cookies_from_browser_,
+          navigation_id_, shared_storage_writable_eligible_, is_ad_tagged_,
           force_no_https_upgrade_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,

@@ -98,9 +98,6 @@ class MockContainer {
   // We don't test on this property.
   bool IsDecoy() const { return false; }
 
-  void SetServingPageMetrics(base::WeakPtr<PrefetchServingPageMetricsContainer>
-                                 serving_page_metrics_container) {}
-  void UpdateServingPageMetrics() {}
 
   const PrefetchKey& key() const { return key_; }
   MockPrefetchRequest request() const { return MockPrefetchRequest(); }
@@ -142,7 +139,6 @@ class CollectMatchCandidatesTestHelper {
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2718r0.html
     auto [candidates, _] = CollectMatchCandidatesGeneric(
         owned_prefetches_, navigated_key, is_nav_prerender,
-        /*serving_page_metrics_container=*/nullptr,
         /*key_ahead_of_prerender=*/nullptr,
         /*collect_result_ahead_of_prerender=*/nullptr);
     for (const auto* container : candidates) {

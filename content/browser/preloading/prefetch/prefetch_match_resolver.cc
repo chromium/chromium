@@ -104,8 +104,6 @@ void PrefetchMatchResolver::FindPrefetch(
     PrefetchService& prefetch_service,
     PrefetchKey navigated_key,
     PrefetchServiceWorkerState expected_service_worker_state,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container,
     Callback callback,
     perfetto::Flow flow) {
   TRACE_EVENT_BEGIN("loading", "PrefetchMatchResolver::FindPrefetch", flow);
@@ -162,9 +160,7 @@ void PrefetchMatchResolver::FindPrefetch(
       expected_service_worker_state,
       frame_tree_node->frame_tree().is_prerendering(),
       std::move(prerender_host), std::move(prerender_host_id),
-      std::move(preload_pipeline_info),
-      std::move(serving_page_metrics_container), std::move(callback),
-      std::move(flow));
+      std::move(preload_pipeline_info), std::move(callback), std::move(flow));
 }
 
 // static
@@ -173,16 +169,13 @@ void PrefetchMatchResolver::FindPrefetchForTesting(
     PrefetchKey navigated_key,
     PrefetchServiceWorkerState expected_service_worker_state,
     bool is_nav_prerender,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container,
     Callback callback) {
   PrefetchMatchResolver::FindPrefetchInternal1(
       /*navigation_request=*/nullptr, prefetch_service,
       std::move(navigated_key), expected_service_worker_state, is_nav_prerender,
       /*prerender_host=*/nullptr,
       /*prerender_host_id=*/PrerenderHostId(),
-      /*preload_pipeline_info=*/nullptr,
-      std::move(serving_page_metrics_container), std::move(callback),
+      /*preload_pipeline_info=*/nullptr, std::move(callback),
       perfetto::Flow::ProcessScoped(0));
 }
 
@@ -196,8 +189,6 @@ void PrefetchMatchResolver::FindPrefetchInternal1(
     base::WeakPtr<PrerenderHost> prerender_host,
     PrerenderHostId prerender_host_id,
     scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container,
     Callback callback,
     perfetto::Flow flow) {
   // TODO(crbug.com/342089123): Remove it when we don't need it.
@@ -215,8 +206,7 @@ void PrefetchMatchResolver::FindPrefetchInternal1(
   PrefetchMatchResolver& ref = *prefetch_match_resolver.get();
   ref.self_ = std::move(prefetch_match_resolver);
 
-  ref.FindPrefetchInternal2(prefetch_service,
-                            std::move(serving_page_metrics_container));
+  ref.FindPrefetchInternal2(prefetch_service);
 }
 
 std::ostream& operator<<(
@@ -286,9 +276,7 @@ std::ostream& operator<<(
 }
 
 void PrefetchMatchResolver::FindPrefetchInternal2(
-    PrefetchService& prefetch_service,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container) {
+    PrefetchService& prefetch_service) {
   TRACE_EVENT_BEGIN("loading", "PrefetchMatchResolver::FindPrefetch", flow_,
                     perfetto::Flow::FromPointer(this));
 
@@ -307,7 +295,6 @@ void PrefetchMatchResolver::FindPrefetchInternal2(
 
   auto [candidates, servable_states] = prefetch_service.CollectMatchCandidates(
       navigated_key_, is_nav_prerender_,
-      std::move(serving_page_metrics_container),
       prefetch_container_ahead_of_prerender
           ? &prefetch_container_ahead_of_prerender->key()
           : nullptr,

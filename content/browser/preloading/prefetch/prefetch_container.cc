@@ -29,7 +29,6 @@
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_single_redirect_hop.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
@@ -1112,13 +1111,6 @@ void PrefetchContainer::OnEligibilityCheckComplete(
     prefetch_container_metrics_.time_initial_eligibility_got =
         base::TimeTicks::Now();
 
-    if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
-      if (renderer_initiator_info->prefetch_document_manager()) {
-        renderer_initiator_info->prefetch_document_manager()
-            ->OnGotInitialEligibility(*this);
-      }
-    }
-
     NotifyObservers(&PrefetchContainerObserver::OnGotInitialEligibility);
   } else {
     // This case is for any URLs from redirects.
@@ -1421,14 +1413,6 @@ void PrefetchContainer::OnPrefetchCompleteInternal() {
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());
 
-  if (GetNonRedirectResponseReader()) {
-    UpdatePrefetchRequestMetrics(
-        GetNonRedirectResponseReader()->GetHead().get());
-    UpdateServingPageMetrics();
-  } else {
-    DVLOG(1) << *this << "::OnPrefetchComplete:"
-             << "no non redirect response reader";
-  }
 
   if (IsDecoy()) {
     SetPrefetchStatus(PrefetchStatus::kPrefetchIsPrivacyDecoy);
@@ -1452,7 +1436,6 @@ void PrefetchContainer::OnPrefetchCompleteInternal() {
     SetPrefetchStatus(net_error == net::OK
                           ? PrefetchStatus::kPrefetchSuccessful
                           : PrefetchStatus::kPrefetchFailedNetError);
-    UpdateServingPageMetrics();
   }
 
   if (net_error == net::OK) {
@@ -1500,16 +1483,6 @@ void PrefetchContainer::OnPrefetchComplete(
   }
 }
 
-void PrefetchContainer::UpdatePrefetchRequestMetrics(
-    const network::mojom::URLResponseHead* head) {
-  DVLOG(1) << *this << "::UpdatePrefetchRequestMetrics:"
-           << "head = " << head;
-
-  if (head) {
-    header_latency_ =
-        head->load_timing.receive_headers_end - head->load_timing.request_start;
-  }
-}
 
 PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction() const {
   const base::TimeDelta cacheable_duration = PrefetchCacheableDuration();
@@ -1583,25 +1556,6 @@ PrefetchContainer::GetPreviousSingleRedirectHopToPrefetch() const {
   return *redirect_chain_[redirect_chain_.size() - 2];
 }
 
-void PrefetchContainer::SetServingPageMetrics(
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container) {
-  serving_page_metrics_container_ = serving_page_metrics_container;
-}
-
-void PrefetchContainer::UpdateServingPageMetrics() {
-  if (!serving_page_metrics_container_) {
-    return;
-  }
-
-  serving_page_metrics_container_->SetRequiredPrivatePrefetchProxy(
-      request().prefetch_type().IsProxyRequiredWhenCrossOrigin());
-  serving_page_metrics_container_->SetPrefetchHeaderLatency(
-      GetPrefetchHeaderLatency());
-  if (HasPrefetchStatus()) {
-    serving_page_metrics_container_->SetPrefetchStatus(GetPrefetchStatus());
-  }
-}
 
 void PrefetchContainer::SimulatePrefetchEligibleForTest() {
   CHECK_EQ(redirect_chain_.size(), 1u);
@@ -1680,7 +1634,6 @@ void PrefetchContainer::OnDetectedCookiesChange(
 
   CHECK_NE(GetPrefetchStatus(), PrefetchStatus::kPrefetchNotUsedCookiesChanged);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-  UpdateServingPageMetrics();
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

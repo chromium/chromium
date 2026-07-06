@@ -54,7 +54,6 @@ class PrefetchRequest;
 class PrefetchResponseReader;
 class PrefetchService;
 class PrefetchServingHandle;
-class PrefetchServingPageMetricsContainer;
 class PrefetchSingleRedirectHop;
 class PrefetchStreamingURLLoader;
 enum class PrefetchPotentialCandidateServingResult;
@@ -593,17 +592,6 @@ class CONTENT_EXPORT PrefetchContainer
   // `time_prefetch_match_missed_` for more details.
   void SetPrefetchMatchMissedTimeForMetrics(base::TimeTicks time);
 
-  // Returns the time between the prefetch request was sent and the time the
-  // response headers were received. Not set if the prefetch request hasn't been
-  // sent or the response headers haven't arrived.
-  std::optional<base::TimeDelta> GetPrefetchHeaderLatency() const {
-    return header_latency_;
-  }
-
-  // Allow for the serving page to metrics when changes to the prefetch occur.
-  void SetServingPageMetrics(base::WeakPtr<PrefetchServingPageMetricsContainer>
-                                 serving_page_metrics_container);
-  void UpdateServingPageMetrics();
 
   const PrefetchContainerMetrics& GetPrefetchContainerMetrics() const {
     return prefetch_container_metrics_;
@@ -702,9 +690,6 @@ class CONTENT_EXPORT PrefetchContainer
   void RecordPrefetchPotentialCandidateServingResultHistogram(
       PrefetchPotentialCandidateServingResult matching_result);
 
-  // Updates metrics based on the result of the prefetch request.
-  void UpdatePrefetchRequestMetrics(
-      const network::mojom::URLResponseHead* head);
 
   // The prefetch request parameters of the very first initiator/requester of
   // this prefetch at the time of request creation.
@@ -798,8 +783,6 @@ class CONTENT_EXPORT PrefetchContainer
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       pre_prefetch_loader_client_receiver_;
 
-  // The amount of time it took for the headers to be received.
-  std::optional<base::TimeDelta> header_latency_;
 
   // Counts how many times this container has been served to the navigation.
   // Only used for the metrics.
@@ -813,10 +796,6 @@ class CONTENT_EXPORT PrefetchContainer
   // inferences about this logic less practical.
   bool is_cross_site_contaminated_ = false;
 
-  // Reference to metrics related to the page that considered using this
-  // prefetch.
-  base::WeakPtr<PrefetchServingPageMetricsContainer>
-      serving_page_metrics_container_;
 
   // Container id used by test utilities.
   const std::string container_id_for_testing_;

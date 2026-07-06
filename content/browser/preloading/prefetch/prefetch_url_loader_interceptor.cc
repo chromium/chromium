@@ -71,16 +71,12 @@ PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
     base::WeakPtr<ServiceWorkerMainResourceHandle>
         service_worker_handle_for_navigation,
     FrameTreeNodeId frame_tree_node_id,
-    std::optional<blink::DocumentToken> initiator_document_token,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container)
+    std::optional<blink::DocumentToken> initiator_document_token)
     : expected_service_worker_state_(expected_service_worker_state),
       service_worker_handle_for_navigation_(
           std::move(service_worker_handle_for_navigation)),
       frame_tree_node_id_(frame_tree_node_id),
-      initiator_document_token_(std::move(initiator_document_token)),
-      serving_page_metrics_container_(
-          std::move(serving_page_metrics_container)) {
+      initiator_document_token_(std::move(initiator_document_token)) {
   if (!features::IsPrefetchServiceWorkerEnabled(
           BrowserContextFromFrameTreeNodeId(frame_tree_node_id_))) {
     CHECK_EQ(expected_service_worker_state_,
@@ -213,12 +209,6 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     return;
   }
 
-  if (!initiator_document_token_.has_value()) {
-    // TODO(crbug.com/40288091): Currently PrefetchServingPageMetricsContainer
-    // is created only when the navigation is renderer-initiated and its
-    // initiator document has PrefetchDocumentManager.
-    CHECK(!serving_page_metrics_container_);
-  }
 
   auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
                                  url, std::move(get_prefetch_callback));
@@ -226,8 +216,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   TRACE_EVENT_END("loading");
   PrefetchMatchResolver::FindPrefetch(
       frame_tree_node_id_, *prefetch_service, std::move(key),
-      expected_service_worker_state_, serving_page_metrics_container_,
-      std::move(callback),
+      expected_service_worker_state_, std::move(callback),
       perfetto::Flow::FromPointer(
           const_cast<PrefetchURLLoaderInterceptor*>(this)));
 }

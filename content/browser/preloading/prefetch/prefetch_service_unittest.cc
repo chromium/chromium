@@ -36,7 +36,6 @@
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
@@ -861,8 +860,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     PrefetchMatchResolver::FindPrefetchForTesting(
         prefetch_service(), std::move(key),
         PrefetchServiceWorkerState::kDisallowed,
-        /*is_nav_prerender=*/false,
-        /*serving_page_metrics_container*/ nullptr, std::move(callback));
+        /*is_nav_prerender=*/false, std::move(callback));
   }
 
   PrefetchServingHandle GetPrefetchToServe(
@@ -926,7 +924,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     PrefetchMatchResolver::FindPrefetchForTesting(
         prefetch_service(), std::move(key),
         PrefetchServiceWorkerState::kDisallowed, is_nav_prerender,
-        /*serving_page_metrics_container*/ nullptr, std::move(callback));
+        std::move(callback));
 
     return res;
   }

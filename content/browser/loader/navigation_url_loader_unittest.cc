@@ -135,7 +135,6 @@ class NavigationURLLoaderTest : public testing::Test {
             false /* is_pdf */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
             std::nullopt /* initiator_document_token */,
-            nullptr /* serving_page_metrics_container */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
             false /* shared_storage_writable */, false /* is_ad_tagged */,
             false /* force_no_https_upgrade */));

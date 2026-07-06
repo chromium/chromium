@@ -224,8 +224,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         PrefetchServiceWorkerState::kDisallowed,
         /*service_worker_handle=*/nullptr,
         web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
-        std::move(initiator_document_token),
-        /*serving_page_metrics_container=*/nullptr);
+        std::move(initiator_document_token));
   }
 
   void MaybeCreateLoaderAndWait(const GURL& test_url) {

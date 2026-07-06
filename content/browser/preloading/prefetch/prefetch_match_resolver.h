@@ -197,8 +197,6 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchService& prefetch_service,
       PrefetchKey navigated_key,
       PrefetchServiceWorkerState expected_service_worker_state,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          serving_page_metrics_container,
       Callback callback,
       perfetto::Flow flow);
   static void FindPrefetchForTesting(
@@ -206,8 +204,6 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchKey navigated_key,
       PrefetchServiceWorkerState expected_service_worker_state,
       bool is_nav_prerender,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          serving_page_metrics_container,
       Callback callback);
 
   void AttachPrefetchMatchPrerenderDebugMetrics();
@@ -230,8 +226,6 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       base::WeakPtr<PrerenderHost> prerender_host,
       PrerenderHostId prerender_host_id,
       scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          serving_page_metrics_container,
       Callback callback,
       perfetto::Flow flow);
 
@@ -262,9 +256,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // - This implementation has timeout: `CandidateData::timeout_timer`.
   // - This implementation collects candidate prefetches first. So, it doesn't
   //   handle prefetches started after this method started.
-  void FindPrefetchInternal2(PrefetchService& prefetch_service,
-                             base::WeakPtr<PrefetchServingPageMetricsContainer>
-                                 serving_page_metrics_container);
+  void FindPrefetchInternal2(PrefetchService& prefetch_service);
   // Each candidate `PrefetchContainer` proceeds to
   //
   //    `RegisterCandidate()` (required)
@@ -369,8 +361,6 @@ concept MatchCandidate =
     requires(T& t,
              const GURL& url,
              base::TimeDelta cacheable_duration,
-             base::WeakPtr<PrefetchServingPageMetricsContainer>
-                 serving_page_metrics_container,
              std::ostream& ostream) {
       t.key();
       t.request();
@@ -382,8 +372,6 @@ concept MatchCandidate =
       t.HasPrefetchStatus();
       t.GetPrefetchStatus();
       t.IsDecoy();
-      t.SetServingPageMetrics(serving_page_metrics_container);
-      t.UpdateServingPageMetrics();
       ostream << t;
     };
 
@@ -502,18 +490,11 @@ CollectMatchCandidatesGeneric(
     const std::map<PrefetchKey, std::unique_ptr<T>>& prefetches,
     const PrefetchKey& navigated_key,
     bool is_nav_prerender,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container,
     const PrefetchKey* key_ahead_of_prerender,
     PrefetchPotentialCandidateCollectResult*
         collect_result_ahead_of_prerender) {
   std::vector<T*> candidates =
       CollectPotentialMatchPrefetchContainers(prefetches, navigated_key);
-
-  for (T* candidate : candidates) {
-    candidate->SetServingPageMetrics(serving_page_metrics_container);
-    candidate->UpdateServingPageMetrics();
-  }
 
   // Debug: Fill `kUnavailablePrefetchIsNotInPrefetchService` if prefetch ahead
   // of prerender is not in `candidates`.

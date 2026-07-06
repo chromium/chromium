@@ -327,7 +327,6 @@ source_set("browser_sources") {
     "prefetch_handle.cc",
     "prefetch_handle.h",
     "prefetch_headers_update_params.h",
-    "prefetch_metrics.h",
     "prefetch_priority.h",
     "prefetch_request_status_listener.h",
     "prefetch_service_delegate.cc",

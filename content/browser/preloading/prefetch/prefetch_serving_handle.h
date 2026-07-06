@@ -145,7 +145,6 @@ class CONTENT_EXPORT PrefetchServingHandle final {
       const std::vector<net::CookieWithAccessResult>& cookies,
       const std::vector<net::CookieWithAccessResult>& excluded_cookies) &&;
   void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
-                       base::TimeTicks probe_start_time,
                        PrefetchProbeResult probe_result) &&;
   void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
                             base::TimeTicks cookie_copy_start_time) &&;

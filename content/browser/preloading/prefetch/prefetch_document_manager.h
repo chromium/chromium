@@ -12,7 +12,6 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
-#include "content/public/browser/prefetch_metrics.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
 #include "url/gurl.h"
@@ -79,10 +78,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
   bool HaveCanaryChecksStarted() const { return have_canary_checks_started_; }
   void OnCanaryChecksStarted() { have_canary_checks_started_ = true; }
 
-  // Returns metrics for prefetches requested by the associated page load.
-  PrefetchReferringPageMetrics& GetReferringPageMetrics() {
-    return referring_page_metrics_;
-  }
 
   // Whether the prefetch attempt for target |url| failed or discarded
   bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);
@@ -103,7 +98,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   // TODO(crbug.com/480271813): Override `PrefetchContainer::Observer`.
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container);
-  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container);
   void OnPrefetchCompletedOrFailed(const PrefetchContainer& prefetch_container);
 
   base::WeakPtr<PrefetchDocumentManager> GetWeakPtr() {
@@ -163,8 +157,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
   std::vector<base::WeakPtr<PrefetchContainer>>
       completed_non_immediate_prefetches_;
 
-  // Metrics related to the prefetches requested by this page load.
-  PrefetchReferringPageMetrics referring_page_metrics_;
 
   // Callback that is run when a prefetch started by |this| is being destroyed.
   PrefetchDestructionCallback prefetch_destruction_callback_;

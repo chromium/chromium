@@ -23,7 +23,6 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -255,7 +254,6 @@ void PrefetchDocumentManager::PrefetchUrl(
       weak_method_factory_.GetWeakPtr(), std::move(preload_pipeline_info),
       attempt->GetWeakPtr());
 
-  referring_page_metrics_.prefetch_attempted_count++;
 
   all_prefetches_[all_prefetches_key] =
       prefetch_service->AddPrefetchRequestWithHandle(std::move(request));
@@ -304,21 +302,8 @@ PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
       ->GetPrefetchService();
 }
 
-void PrefetchDocumentManager::OnGotInitialEligibility(
-    const PrefetchContainer& prefetch_container) {
-  // Recording an eligiblity for PrefetchReferringPageMetrics.
-  // TODO(crbug.com/40946257): Current code doesn't support
-  // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
-  if (prefetch_container.GetInitialEligibility() ==
-      PreloadingEligibility::kEligible) {
-    referring_page_metrics_.prefetch_eligible_count++;
-  }
-}
-
 void PrefetchDocumentManager::OnPrefetchCompletedOrFailed(
     const PrefetchContainer& prefetch_container) {
-  // TODO(crbug.com/40946257): Current code doesn't support
-  // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
   // TODO(crbug.com/433057364): Currently `PrefetchStatus::kPrefetchSuccessful`
   // is used to preserve the existing behavior and metrics, but probably we
   // should revamp this, e.g. because currently we don't count
@@ -327,7 +312,6 @@ void PrefetchDocumentManager::OnPrefetchCompletedOrFailed(
       PrefetchStatus::kPrefetchSuccessful) {
     return;
   }
-  referring_page_metrics_.prefetch_successful_count++;
   if (IsImmediateSpeculationEagerness(
           prefetch_container.request().prefetch_type().GetEagerness())) {
     completed_immediate_prefetches_.push_back(

@@ -22,7 +22,6 @@
 
 namespace content {
 
-class PrefetchServingPageMetricsContainer;
 
 // A struct to hold the parameters needed to start a navigation request in
 // ResourceDispatcherHost. It is initialized on the UI thread, and then passed
@@ -50,8 +49,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool is_pdf,
       int initiator_process_id,
       std::optional<blink::DocumentToken> initiator_document_token,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          prefetch_serving_page_metrics_container,
       bool allow_cookies_from_browser,
       int64_t navigation_id,
       bool shared_storage_writable,
@@ -142,10 +139,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // The initiator document's token and its process ID.
   const int initiator_process_id;
   const std::optional<blink::DocumentToken> initiator_document_token;
-
-  // For per-navigation metrics of speculation rules prefetch.
-  base::WeakPtr<PrefetchServingPageMetricsContainer>
-      prefetch_serving_page_metrics_container;
 
   // Whether a Cookie header added to this request should not be overwritten by
   // the network service.

@@ -797,8 +797,7 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
         interceptors_.push_back(std::make_unique<PrefetchURLLoaderInterceptor>(
             PrefetchServiceWorkerState::kControlled,
             service_worker_handle_->AsWeakPtr(), frame_tree_node_id_,
-            request_info_->initiator_document_token,
-            request_info_->prefetch_serving_page_metrics_container));
+            request_info_->initiator_document_token));
       }
 
       interceptors_.push_back(std::move(service_worker_interceptor));
@@ -820,8 +819,7 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
   interceptors_.push_back(std::make_unique<PrefetchURLLoaderInterceptor>(
       PrefetchServiceWorkerState::kDisallowed,
       /*service_worker_handle=*/nullptr, frame_tree_node_id_,
-      request_info_->initiator_document_token,
-      request_info_->prefetch_serving_page_metrics_container));
+      request_info_->initiator_document_token));
 
   // See if embedders want to add interceptors.
   std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>

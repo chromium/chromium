@@ -15,7 +15,6 @@
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_single_redirect_hop.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -32,18 +31,6 @@
 namespace content {
 namespace {
 
-PrefetchServingPageMetricsContainer*
-PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
-    FrameTreeNodeId frame_tree_node_id) {
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (!frame_tree_node || !frame_tree_node->navigation_request()) {
-    return nullptr;
-  }
-
-  return PrefetchServingPageMetricsContainer::GetForNavigationHandle(
-      *frame_tree_node->navigation_request());
-}
 
 void RecordCookieWaitTime(base::TimeDelta wait_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -333,8 +320,7 @@ void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
       prober->Probe(probe_url,
                     BindOnceForRvalueMemberMethod<PrefetchProbeResult>(
                         &PrefetchServingHandle::OnProbeComplete,
-                        std::move(*this), std::move(state),
-                        /*probe_start_time=*/base::TimeTicks::Now()));
+                        std::move(*this), std::move(state)));
       // The probe is happening asynchronously (it took ownership of |state|),
       // and this algorithm will continue later.
       return;
@@ -408,12 +394,6 @@ void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
   // servable.
   OnPrefetchProbeResult(state->probe_result.value());
 
-  PrefetchServingPageMetricsContainer* serving_page_metrics_container =
-      PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
-          state->frame_tree_node_id);
-  if (serving_page_metrics_container) {
-    serving_page_metrics_container->SetPrefetchStatus(GetPrefetchStatus());
-  }
 
   std::move(state->callback).Run(std::move(*this));
 }
@@ -465,27 +445,14 @@ void PrefetchServingHandle::OnGotCookiesForValidation(
 // ORIGIN PROBING
 
 // Called when the `PrefetchOriginProber` check is done (if performed).
-// `probe_start_time` is used to calculate probe latency which is
-// reported to the tab helper.
 void PrefetchServingHandle::OnProbeComplete(
     std::unique_ptr<OnGotPrefetchToServeState> state,
-    base::TimeTicks probe_start_time,
     PrefetchProbeResult probe_result) && {
   state->probe_result = probe_result;
 
-  PrefetchServingPageMetricsContainer* serving_page_metrics_container =
-      PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
-          state->frame_tree_node_id);
-  if (serving_page_metrics_container) {
-    serving_page_metrics_container->SetProbeLatency(base::TimeTicks::Now() -
-                                                    probe_start_time);
-  }
 
   if (!PrefetchProbeResultIsSuccess(probe_result) && IsValid()) {
     OnPrefetchProbeResult(probe_result);
-    if (serving_page_metrics_container) {
-      serving_page_metrics_container->SetPrefetchStatus(GetPrefetchStatus());
-    }
   }
 
   std::move(*this).ContinueOnGotPrefetchToServe(std::move(state));

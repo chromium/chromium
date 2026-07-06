@@ -220,8 +220,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainerObserver {
             base::flat_map<PrefetchKey, PrefetchServableState>>
   CollectMatchCandidates(const PrefetchKey& key,
                          bool is_nav_prerender,
-                         base::WeakPtr<PrefetchServingPageMetricsContainer>
-                             serving_page_metrics_container,
                          const PrefetchKey* key_ahead_of_prerender,
                          PrefetchPotentialCandidateCollectResult*
                              collect_result_ahead_of_prerender);

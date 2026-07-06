@@ -31,8 +31,6 @@ NavigationRequestInfo::NavigationRequestInfo(
     bool is_pdf,
     int initiator_process_id,
     std::optional<blink::DocumentToken> initiator_document_token,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        prefetch_serving_page_metrics_container,
     bool allow_cookies_from_browser,
     int64_t navigation_id,
     bool shared_storage_writable_eligible,
@@ -57,8 +55,6 @@ NavigationRequestInfo::NavigationRequestInfo(
       is_pdf(is_pdf),
       initiator_process_id(initiator_process_id),
       initiator_document_token(std::move(initiator_document_token)),
-      prefetch_serving_page_metrics_container(
-          std::move(prefetch_serving_page_metrics_container)),
       allow_cookies_from_browser(allow_cookies_from_browser),
       navigation_id(navigation_id),
       shared_storage_writable_eligible(shared_storage_writable_eligible),
