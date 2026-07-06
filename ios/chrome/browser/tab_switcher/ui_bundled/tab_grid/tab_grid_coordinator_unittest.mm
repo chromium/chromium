@@ -379,7 +379,8 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
 
 // Tests that the tab grid coordinator sizes its view controller to the window.
 TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
-  CGRect rect = [UIScreen mainScreen].bounds;
+  ASSERT_NE(GetViewController().view.window, nil);
+  CGRect rect = GetViewController().view.window.screen.bounds;
   EXPECT_TRUE(CGRectEqualToRect(rect, GetViewController().view.frame));
 }
 

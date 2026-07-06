@@ -95,7 +95,8 @@ TEST_F(AlertCoordinatorTest, ValidateIsNotVisible) {
   // Setup.
   UIWindow* window = [[UIWindow alloc]
       initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
-  window.frame = [[UIScreen mainScreen] bounds];
+  ASSERT_NE(window.screen, nil);
+  window.frame = window.screen.bounds;
   UIViewController* view_controller = [[UIViewController alloc] init];
   [window setRootViewController:view_controller];
 
