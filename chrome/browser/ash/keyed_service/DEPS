@@ -3,7 +3,6 @@ include_rules = [
 
   "+chrome/browser/ash/keyed_service",
 
-  "+chrome/browser/accessibility/service",
   "+chrome/browser/apps/app_discovery_service",
   "+chrome/browser/apps/app_service/publishers",
   "+chrome/browser/ash/accessibility/live_caption",
