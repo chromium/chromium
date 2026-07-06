@@ -70,8 +70,8 @@ SystemPropertiesProviderImpl::ComputeModificationState() const {
   if (session_manager::SessionManager::Get()->IsScreenLocked())
     return mojom::BluetoothModificationState::kCannotModifyBluetooth;
 
-  return user_manager::UserManager::Get()->GetPrimaryUser() ==
-                 user_manager::UserManager::Get()->GetActiveUser()
+  return session_manager::SessionManager::Get()->GetActiveSession() ==
+                 session_manager::SessionManager::Get()->GetPrimarySession()
              ? mojom::BluetoothModificationState::kCanModifyBluetooth
              : mojom::BluetoothModificationState::kCannotModifyBluetooth;
 }

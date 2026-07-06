@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -105,7 +107,9 @@ void ClipboardImageModelFactoryImpl::StartNextRequest() {
     // Use the primary user instead of the active user to create the
     // `content::WebContents` that renders html.
     request_ = std::make_unique<ClipboardImageModelRequest>(
-        user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+        session_manager::SessionManager::Get()
+            ->GetPrimarySession()
+            ->account_id(),
         base::BindRepeating(&ClipboardImageModelFactoryImpl::StartNextRequest,
                             weak_ptr_factory_.GetWeakPtr()));
   }

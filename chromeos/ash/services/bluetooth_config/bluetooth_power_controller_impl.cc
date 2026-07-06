@@ -9,6 +9,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::bluetooth_config {
@@ -173,8 +174,8 @@ void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
     return;
   }
 
-  DCHECK_EQ(user_manager::UserManager::Get()->GetActiveUser(),
-            user_manager::UserManager::Get()->GetPrimaryUser());
+  DCHECK_EQ(session_manager::SessionManager::Get()->GetActiveSession(),
+            session_manager::SessionManager::Get()->GetPrimarySession());
 
   if (!has_attempted_apply_primary_user_pref_) {
     BLUETOOTH_LOG(EVENT)

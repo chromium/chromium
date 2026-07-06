@@ -23,6 +23,7 @@ static_library("clipboard") {
     "//ash/public/cpp",
     "//base",
     "//chromeos/ash/components/browser_context_helper",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",

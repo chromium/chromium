@@ -16,6 +16,8 @@
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -88,9 +90,10 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
                                         is_login_offline, is_ephemeral);
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
 
-  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  bool is_primary_user = !primary_user || primary_user->GetAccountId() ==
-                                              user_context.GetAccountId();
+  auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  bool is_primary_user = !primary_session || primary_session->account_id() ==
+                                                 user_context.GetAccountId();
   bool regular_or_child =
       user_context.GetUserType() == user_manager::UserType::kRegular ||
       user_context.GetUserType() == user_manager::UserType::kChild;

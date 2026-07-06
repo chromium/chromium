@@ -22,6 +22,8 @@
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager.h"
 
@@ -235,7 +237,12 @@ void AuthFactorConfig::IsConfiguredWithContext(
         return;
       }
       case mojom::AuthFactor::kPrefBasedPin: {
-        const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+        const session_manager::Session* primary_session =
+            session_manager::SessionManager::Get()->GetPrimarySession();
+        const auto* user = primary_session
+                               ? ::user_manager::UserManager::Get()->FindUser(
+                                     primary_session->account_id())
+                               : nullptr;
         if (!user) {
           LOG(ERROR) << "No logged in user";
           std::move(callback).Run(false);
@@ -310,7 +317,11 @@ void AuthFactorConfig::GetManagementType(
     base::OnceCallback<void(mojom::ManagementType)> callback) {
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+      const session_manager::Session* primary_session =
+          session_manager::SessionManager::Get()->GetPrimarySession();
+      CHECK(primary_session);
+      const auto* user = ::user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id());
       CHECK(user);
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
       CHECK(prefs);
@@ -325,7 +336,11 @@ void AuthFactorConfig::GetManagementType(
     case mojom::AuthFactor::kPrefBasedPin:
     case mojom::AuthFactor::kCryptohomePin:
     case mojom::AuthFactor::kCryptohomePinV2: {
-      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+      const session_manager::Session* primary_session =
+          session_manager::SessionManager::Get()->GetPrimarySession();
+      CHECK(primary_session);
+      const auto* user = ::user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id());
       CHECK(user);
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
       CHECK(prefs);
@@ -369,7 +384,11 @@ void AuthFactorConfig::IsEditableWithContext(
 
     switch (factor) {
       case mojom::AuthFactor::kRecovery: {
-        const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+        const session_manager::Session* primary_session =
+            session_manager::SessionManager::Get()->GetPrimarySession();
+        CHECK(primary_session);
+        const auto* user = ::user_manager::UserManager::Get()->FindUser(
+            primary_session->account_id());
         CHECK(user);
 
         const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
@@ -395,7 +414,11 @@ void AuthFactorConfig::IsEditableWithContext(
       case mojom::AuthFactor::kPrefBasedPin:
       case mojom::AuthFactor::kCryptohomePin:
       case mojom::AuthFactor::kCryptohomePinV2: {
-        const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+        const session_manager::Session* primary_session =
+            session_manager::SessionManager::Get()->GetPrimarySession();
+        CHECK(primary_session);
+        const auto* user = ::user_manager::UserManager::Get()->FindUser(
+            primary_session->account_id());
         CHECK(user);
         const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
         CHECK(prefs);

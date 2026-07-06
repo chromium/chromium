@@ -27,6 +27,8 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -187,8 +189,12 @@ bool ProxyConfigServiceImpl::IgnoreProxy(const PrefService* profile_prefs,
     return false;
   }
   if (onc_source == ::onc::ONC_SOURCE_DEVICE_POLICY) {
+    const session_manager::Session* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
     const user_manager::User* primary_user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
+        primary_session ? user_manager::UserManager::Get()->FindUser(
+                              primary_session->account_id())
+                        : nullptr;
     if (!primary_user || primary_user->IsAffiliated()) {
       VLOG(1) << "Respecting proxy for network, as the primary user belongs to "
               << "the domain the device is enrolled to.";

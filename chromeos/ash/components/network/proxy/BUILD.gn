@@ -19,6 +19,7 @@ source_set("proxy") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/proxy_config",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//dbus",
     "//net",
