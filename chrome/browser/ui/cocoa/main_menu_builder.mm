@@ -313,6 +313,7 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                   .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
               Item(IDS_VERTICAL_TABS_VIEW_MENU_TOGGLE_COLLAPSE)
                   .command_id(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE)
+                  .key_equivalent(@"L", NSEventModifierFlagCommand)
                   .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
               Item(IDS_CUSTOMIZE_TOUCH_BAR)
                   .tag(IDC_CUSTOMIZE_TOUCH_BAR)
