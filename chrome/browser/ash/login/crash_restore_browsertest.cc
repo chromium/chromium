@@ -22,12 +22,12 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -207,8 +207,9 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
     for (const auto& account_id : {account_id1_, account_id2_, account_id3_}) {
       const std::string user_id_hash =
           user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-      const base::FilePath user_profile_path =
-          user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
+      const base::FilePath user_profile_path = user_data_dir.Append(
+          base::FilePath(BrowserContextHelper::GetUserBrowserContextDirName(
+              user_id_hash)));
       ASSERT_TRUE(base::CreateDirectory(user_profile_path));
 
       ASSERT_TRUE(
