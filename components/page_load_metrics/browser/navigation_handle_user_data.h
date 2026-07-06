@@ -33,6 +33,7 @@ class NavigationHandleUserData
   // The enum is used for identifying the source of a navigation.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(NavigationInitiatorType)
   enum class InitiatorLocation {
     kOther = 0,
     kBookmarkBar = 1,
@@ -41,6 +42,7 @@ class NavigationHandleUserData
     kOmniboxDefaultSearchEngine = 4,
     kMaxValue = kOmniboxDefaultSearchEngine
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationInitiatorType)
 
   ~NavigationHandleUserData() override = default;
 
