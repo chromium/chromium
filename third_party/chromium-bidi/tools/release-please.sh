@@ -41,7 +41,6 @@ npx release-please manifest-pr \
   --target-branch="main" \
   --config-file="release-please-config.json" \
   --manifest-file=".release-please-manifest.json" \
-  --fork \
   "$@"
 
 # 4. Run manifest-release
