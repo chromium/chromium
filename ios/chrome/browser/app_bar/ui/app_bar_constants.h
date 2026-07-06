@@ -25,4 +25,11 @@ extern NSString* const kAppBarTabGridButtonIdentifier;
 // Accessibility identifier for the app bar new tab button.
 extern NSString* const kAppBarNewTabButtonIdentifier;
 
+// The histogram name for tracking when the assistant button is tapped.
+extern const char kAppBarAssistantButtonTappedHistogram[];
+
+// The histogram name for tracking the settled state of the assistant button
+// after startup.
+extern const char kAppBarAssistantButtonStateOnLoadHistogram[];
+
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSTANTS_H_

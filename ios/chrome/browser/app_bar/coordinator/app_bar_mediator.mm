@@ -8,6 +8,7 @@
 #import <set>
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/string_util.h"
@@ -21,6 +22,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
@@ -74,6 +76,8 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"
+
+using base::UmaHistogramEnumeration;
 
 @interface AppBarMediator () <GeminiBrowserAgentObserving,
                               GeminiServiceObserving,
@@ -130,6 +134,7 @@
   ToolbarButtonMenuFactory* _incognitoButtonMenuFactory;
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  BOOL _initialAssistantButtonStateRecorded;
 }
 
 - (instancetype)
@@ -546,6 +551,7 @@
 
 - (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state
                               fromView:(UIView*)sender {
+  UmaHistogramEnumeration(kAppBarAssistantButtonTappedHistogram, state);
   switch (state) {
     case AppBarAssistantButtonState::kAsk: {
       __weak __typeof(self) weakSelf = self;
@@ -779,6 +785,8 @@
     state = AppBarAssistantButtonState::kLens;
   }
 
+  [self recordAssistantButtonStateOnLoad:state];
+
   BOOL highlighted = NO;
   BOOL enabled = YES;
   if (state == AppBarAssistantButtonState::kAsk) {
@@ -806,6 +814,22 @@
                                  enabled:enabled
                                   avatar:avatar
                                 signedIn:signedIn];
+}
+
+// Records the assistant button state on load.
+- (void)recordAssistantButtonStateOnLoad:(AppBarAssistantButtonState)state {
+  if (_initialAssistantButtonStateRecorded) {
+    return;
+  }
+  // The policy check is only performed for signed-in users.
+  BOOL geminiCheckPending = IsPageActionMenuEnabled() && _geminiService &&
+                            _authenticationService &&
+                            _authenticationService->HasPrimaryIdentity() &&
+                            _geminiService->IsWorkspacePolicyCheckPending();
+  if (!geminiCheckPending) {
+    _initialAssistantButtonStateRecorded = YES;
+    UmaHistogramEnumeration(kAppBarAssistantButtonStateOnLoadHistogram, state);
+  }
 }
 
 // Updates for `incognito` being visible.

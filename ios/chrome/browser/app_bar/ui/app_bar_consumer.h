@@ -14,13 +14,15 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
   AppBarButtonTypeTabGrid,
 };
 
-// The states for the assistant button.
+// LINT.IfChange(AppBarAssistantButtonState)
 enum class AppBarAssistantButtonState {
   kLens,
   kAsk,
   kAIM,
   kAccount,
+  kMaxValue = kAccount,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSAppBarAssistantButtonState)
 
 // Consumer of the app bar.
 @protocol AppBarConsumer <NSObject>
