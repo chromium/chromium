@@ -214,6 +214,14 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     trigger_field_ids_.push_back(field_id);
   }
 
+  if (!tool_delegate().GetActorOneTimeTokenFillingService().IsFormFillingSecure(
+          GetTargetTab(), trigger_field_ids_)) {
+    // TODO(b/502908360): Introduce new ActionResultCode for insecure context.
+    return MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+                      /*requires_page_stabilization=*/false,
+                      "Failed to fill OTP.");
+  }
+
   return MakeOkResult();
 }
 
@@ -300,6 +308,19 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
         MakeResult(mojom::ActionResultCode::kToolTimeout,
                    /*requires_page_stabilization=*/false,
                    "Failed to retrieve OTP within timeout."));
+    return;
+  }
+
+  // While this has been checked before invoking the tool as an early exit
+  // signal, it is possible that the page changed in the meantime, so checking
+  // should be done again right before filling. Note: this depends on the form
+  // structure cache having been updated.
+  if (!tool_delegate().GetActorOneTimeTokenFillingService().IsFormFillingSecure(
+          GetTargetTab(), trigger_field_ids_)) {
+    // TODO(b/502908360): Introduce new ActionResultCode for insecure context.
+    std::move(callback).Run(MakeResult(
+        mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+        /*requires_page_stabilization=*/false, "Failed to fill OTP."));
     return;
   }
 

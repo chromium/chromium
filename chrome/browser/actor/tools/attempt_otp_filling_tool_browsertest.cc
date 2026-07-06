@@ -117,6 +117,8 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
     embedded_https_test_server().ServeFilesFromSourceDirectory(
         "chrome/test/data");
     ASSERT_TRUE(embedded_https_test_server().Start());
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void TearDownOnMainThread() override {
@@ -511,30 +513,27 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingFieldNotFound);
 }
 
-// The tool fails with an autofill error when targeting a non-OTP field (e.g. a
-// button).
+// TODO(crbug.com/502907795): Differentiate between no form on the page and
+// filling insecure and add a test for it.
+
+// `AttemptOtpFillingTool` fails when the form filling context is insecure (e.g.
+// mixed content form submission).
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       ToolFailsWhenFillingFails) {
+                       ToolFailsWhenFormFillingIsInsecure) {
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
-
-  // Target the submit button instead of the OTP field.
-  ASSERT_OK_AND_ASSIGN(
-      DomNode submit_button,
-      GetDomNodeOnPage(*main_frame(), "#single-submit-button"));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('single-otp-form').setAttribute('action', "
+      "'http://example.com/simple.html');"));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{submit_button},
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
-  actor_task()
-      .GetExecutionEngine()
-      .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url),
-                                /*should_use_strong_matching=*/true, {});
-  SetExpectedOtp("1234");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
