@@ -142,6 +142,7 @@ function createMockNavigationState() {
         popupOpen: false,
       },
       contentSettingImageStates: [],
+      pageActionStates: [],
       lhsChipsState: {
         securityChip: {
           icon: {handleId: 0n},

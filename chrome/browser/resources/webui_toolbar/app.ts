@@ -46,13 +46,15 @@ import {
   FocusRequestTarget,
   LhsChipIdentifier,
   OmniboxTextColor,
+  PageActionId,
+  PageActionTrigger,
   PermissionAction,
   PermissionChipTheme,
   PermissionPromptStyle,
   SplitTabActiveLocation,
 } from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {IconType} from '/shared/icon_handle.mojom-webui.js';
-import type {OmniboxAction, LocationBarState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import type {OmniboxAction, LocationBarState, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import {AppMenuButtonElement} from './app_menu_button.js';
@@ -60,6 +62,8 @@ import {ContentSettingIconElement} from './content_setting_icon.js';
 import {ContentSettingsIconsElement} from './content_settings_icons.js';
 import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
+import {PageActionIconElement} from './page_action_icon.js';
+import {PageActionIconsElement} from './page_action_icons.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
 import type {PointerProxy} from './pointer_proxy.js';
 import {PermissionChipElement} from './permission_chip.js';
@@ -90,6 +94,10 @@ export {
   LocationBarElement,
   LocationIconElement,
   OmniboxTextColor,
+  PageActionIconElement,
+  PageActionIconsElement,
+  PageActionId,
+  PageActionTrigger,
   PermissionAction,
   PermissionChipElement,
   PermissionChipTheme,
@@ -103,6 +111,7 @@ export type {
   IconFromTableElement,
   LocationBarState,
   OmniboxAction,
+  PageActionState,
   PermissionChipState,
   PermissionDashboardElement,
   PermissionDashboardState,

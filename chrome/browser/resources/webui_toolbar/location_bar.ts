@@ -5,6 +5,7 @@
 import './readonly_omnibox.js';
 import './location_icon.js';
 import './content_settings_icons.js';
+import './page_action_icons.js';
 import './permission_dashboard.js';
 import './selected_keyword.js';
 

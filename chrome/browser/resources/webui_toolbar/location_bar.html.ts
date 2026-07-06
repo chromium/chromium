@@ -45,6 +45,13 @@ ${this.locationBarState.selectedKeyword ? html`
     @chip-pointerleave="${this.onChipPointerleave_}"
     @chip-pointercancel="${this.onChipPointercancel_}">
 </content-settings-icons>
+<page-action-icons id="pageActions"
+    .pageActionStates=
+        "${this.locationBarState.pageActionStates}"
+    @chip-pointerenter="${this.onChipPointerenter_}"
+    @chip-pointerleave="${this.onChipPointerleave_}"
+    @chip-pointercancel="${this.onChipPointercancel_}">
+</page-action-icons>
 <!--_html_template_end_-->`;
   // clang-format on
 }
