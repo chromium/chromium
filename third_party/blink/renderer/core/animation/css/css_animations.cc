@@ -2991,11 +2991,14 @@ void CSSAnimations::CalculateTransitionUpdate(
   bool is_starting_style = old_style && old_style->IsStartingStyle();
 
   bool force_starting_style = false;
-  Element* originating_element =
-      animating_element.IsPseudoElement()
-          ? &To<PseudoElement>(animating_element).UltimateOriginatingElement()
-          : &animating_element;
-  probe::ForceStartingStyle(originating_element, &force_starting_style);
+  probe::ForceStartingStyle(&animating_element, &force_starting_style);
+  // Check all pseudo element parents and originating element for pseudo
+  // elements.
+  Element* parent_element = &animating_element;
+  while (!force_starting_style && parent_element->IsPseudoElement()) {
+    parent_element = parent_element->parentElement();
+    probe::ForceStartingStyle(parent_element, &force_starting_style);
+  }
 
   DCHECK(old_style == scope_old_style ||
          !scope_old_style && is_starting_style || force_starting_style)

@@ -1,0 +1,11 @@
+Test that forcing starting style on pseudo-element works
+--- NOT FORCED ---
+SUCCESS: starting-style rule not found
+Computed opacity: 1
+--- FORCED ---
+SUCCESS: starting-style rule found
+Computed opacity: 0
+--- DISABLED ---
+SUCCESS: starting-style rule not found
+Computed opacity: 1
+
