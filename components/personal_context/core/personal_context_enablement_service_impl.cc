@@ -24,6 +24,21 @@
 
 namespace personal_context {
 namespace {
+
+// Returns the forced enablement state as set via the feature parameter iff
+// it corresponds to a valid enum entry and `std::nullopt` otherwise.
+std::optional<PersonalContextEnablementState> GetForcedEnablementState() {
+  const auto unsafe_type = static_cast<PersonalContextEnablementState>(
+      features::debug::kPersonalContextForceEnablementStateParam.Get());
+  switch (unsafe_type) {
+    case PersonalContextEnablementState::kDisabledNotEligible:
+    case PersonalContextEnablementState::kDisabledNeedsOptIn:
+    case PersonalContextEnablementState::kEnabled:
+      return unsafe_type;
+  }
+  return std::nullopt;
+}
+
 // Helper function for debugging why a permissions check failed.
 void MaybeOutputReason(std::string* out, std::string_view message) {
   if (out) {
@@ -178,8 +193,7 @@ PersonalContextEnablementState
 PersonalContextEnablementServiceImpl::GetEnablementState() {
   if (base::FeatureList::IsEnabled(
           features::debug::kPersonalContextForceEnablementState)) {
-    return static_cast<PersonalContextEnablementState>(
-        features::debug::kPersonalContextForceEnablementStateParam.Get());
+    return GetForcedEnablementState().value_or(enablement_state_);
   }
 
   return enablement_state_;

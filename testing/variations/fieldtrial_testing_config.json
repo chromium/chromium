@@ -2389,7 +2389,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "state": "4"
+                        "state": "2"
                     },
                     "enable_features": [
                         "AutofillAtMemory",
