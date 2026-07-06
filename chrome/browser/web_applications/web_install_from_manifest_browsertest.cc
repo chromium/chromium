@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -41,6 +43,7 @@ namespace {
 
 constexpr char kAbortError[] = "AbortError";
 constexpr char kDataError[] = "DataError";
+constexpr char kSecurityError[] = "SecurityError";
 constexpr char kValidManifestNoId[] = "/banners/manifest.json";
 
 // Browser tests for the navigator.install({manifest: ...}) flow.
@@ -48,10 +51,7 @@ constexpr char kValidManifestNoId[] = "/banners/manifest.json";
 // ManifestManager mojo interface via ParseManifestFromStringJob.
 class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
  public:
-  WebInstallFromManifestBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebAppInstallation}, {});
-  }
+  WebInstallFromManifestBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     // Register a handler for dynamic test-specific responses (e.g., invalid
@@ -117,9 +117,34 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
     dynamic_manifest_json_ = json;
   }
 
+  // When the permission prompt shows, it must be granted or denied.
+  void SetPermissionResponse(bool permission_granted,
+                             content::WebContents* contents = nullptr) {
+    permissions::PermissionRequestManager::AutoResponseType response =
+        permission_granted
+            ? permissions::PermissionRequestManager::AutoResponseType::
+                  ACCEPT_ALL
+            : permissions::PermissionRequestManager::AutoResponseType::DENY_ALL;
+
+    permissions::PermissionRequestManager::FromWebContents(
+        contents ? contents : web_contents())
+        ->set_auto_response_for_test(response);
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleDynamicRequest(
       const net::test_server::HttpRequest& request) {
+    // A top-level document that disallows the "web-app-installation" feature
+    // via its Permissions-Policy response header.
+    if (request.relative_url == "/disallow_web_install.html") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->AddCustomHeader("Permissions-Policy",
+                                "web-app-installation=()");
+      response->set_content("<!doctype html><title>no install</title>");
+      return response;
+    }
     if (request.relative_url == "/dynamic_manifest.json") {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
@@ -131,17 +156,24 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
   }
 
   std::string dynamic_manifest_json_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppInstallation};
 };
 
 // Valid manifest with custom id, no id option provided.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
-                       Install_ManifestOnly) {
+                       ManifestOnly_Succeeds) {
   NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
   GURL manifest_url =
       embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
 
+  permissions::PermissionRequestObserver observer(web_contents());
   ASSERT_TRUE(TryInstallFromManifest(manifest_url));
+  observer.Wait();
+
+  // The permission prompt must have been surfaced before granting.
+  EXPECT_TRUE(observer.request_shown());
 
   // TODO(liahiscock): validation passes, but install is not yet implemented.
   EXPECT_FALSE(ResultExists());
@@ -151,20 +183,67 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
 
 // Valid manifest with custom id, matching id option.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
-                       Install_ManifestAndId) {
+                       ManifestAndId_Succeeds) {
   NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
   GURL manifest_url =
       embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
   // manifest_with_id.json has "id": "some_id", which resolves relative to
   // the manifest URL's origin.
   GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
 
+  permissions::PermissionRequestObserver observer(web_contents());
   ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id));
+  observer.Wait();
+
+  // The permission prompt must have been surfaced before granting.
+  EXPECT_TRUE(observer.request_shown());
 
   // TODO(liahiscock): validation passes, but install is not yet implemented.
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
+}
+
+// When the user denies the Web Install permission prompt, the install is
+// rejected with AbortError.
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       PermissionDenied_AbortError) {
+  NavigateToValidUrl();
+  GURL manifest_url =
+      embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
+
+  SetPermissionResponse(/*permission_granted=*/false);
+  permissions::PermissionRequestObserver observer(web_contents());
+  ASSERT_TRUE(TryInstallFromManifest(manifest_url));
+  observer.Wait();
+
+  // The permission prompt must have been surfaced before denial.
+  EXPECT_TRUE(observer.request_shown());
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kAbortError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       PermissionsPolicyDisallowed_SecurityError) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("/disallow_web_install.html")));
+
+  GURL manifest_url =
+      embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
+
+  permissions::PermissionRequestObserver observer(web_contents());
+  ASSERT_TRUE(TryInstallFromManifest(manifest_url));
+
+  // No prompt should ever be surfaced; the rejection is synchronous.
+  EXPECT_FALSE(observer.request_shown());
+
+  EXPECT_FALSE(ResultExists());
+  ASSERT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kSecurityError);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -131,7 +131,8 @@ class WebInstallServiceImpl
   // released on every exit path.
   void InstallFromManifestInternal(
       blink::mojom::ManifestInstallOptionsPtr options,
-      InstallFromManifestCallback callback);
+      InstallFromManifestCallback callback,
+      bool triggered_from_element);
 
   WebInstallServiceImpl(
       content::RenderFrameHost& render_frame_host,
@@ -216,16 +217,30 @@ class WebInstallServiceImpl
   void OnManifestFetched(
       InstallFromManifestCallbackWithGuard callback_with_guard,
       blink::mojom::ManifestInstallOptionsPtr options,
+      bool triggered_from_element,
       base::expected<std::string, WebInstallManifestFetchError> result);
 
   // Callback for when the manifest parse command completes.
   void OnManifestParsed(
       InstallFromManifestCallbackWithGuard callback_with_guard,
       blink::mojom::ManifestInstallOptionsPtr options,
+      bool triggered_from_element,
       blink::mojom::ManifestPtr manifest);
 
   void OnManifestInstallNotSupportedDialogClosed(
       InstallFromManifestCallbackWithGuard callback_with_guard);
+
+  // Callback for when the manifest URL permission prompt completes.
+  void OnManifestPermissionDecided(
+      InstallFromManifestCallbackWithGuard callback_with_guard,
+      blink::mojom::ManifestInstallOptionsPtr options,
+      const std::vector<content::PermissionResult>& permission_result);
+
+  // Shared "permission granted, proceed to install" step for the manifest URL
+  // flow.
+  void ContinueManifestInstall(
+      InstallFromManifestCallbackWithGuard callback_with_guard,
+      blink::mojom::ManifestInstallOptionsPtr options);
 
   // Only one install can be in progress at a time.
   bool install_in_progress_ = false;

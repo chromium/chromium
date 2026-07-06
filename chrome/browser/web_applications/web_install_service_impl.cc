@@ -321,12 +321,14 @@ void WebInstallServiceImpl::InstallFromElement(
 void WebInstallServiceImpl::InstallFromManifest(
     blink::mojom::ManifestInstallOptionsPtr options,
     InstallFromManifestCallback callback) {
-  InstallFromManifestInternal(std::move(options), std::move(callback));
+  InstallFromManifestInternal(std::move(options), std::move(callback),
+                              /*triggered_from_element=*/false);
 }
 
 void WebInstallServiceImpl::InstallFromManifestInternal(
     blink::mojom::ManifestInstallOptionsPtr options,
-    InstallFromManifestCallback callback) {
+    InstallFromManifestCallback callback,
+    bool triggered_from_element) {
   if (IsInstallInProgress()) {
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError);
     return;
@@ -367,12 +369,14 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
 
   manifest_fetcher_->Fetch(base::BindOnce(
       &WebInstallServiceImpl::OnManifestFetched, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback_with_guard), std::move(options)));
+      std::move(callback_with_guard), std::move(options),
+      triggered_from_element));
 }
 
 void WebInstallServiceImpl::OnManifestFetched(
     InstallFromManifestCallbackWithGuard callback_with_guard,
     blink::mojom::ManifestInstallOptionsPtr options,
+    bool triggered_from_element,
     base::expected<std::string, WebInstallManifestFetchError> result) {
   manifest_fetcher_.reset();
 
@@ -402,12 +406,14 @@ void WebInstallServiceImpl::OnManifestFetched(
           manifest_url, std::move(*result),
           base::BindOnce(&WebInstallServiceImpl::OnManifestParsed,
                          weak_ptr_factory_.GetWeakPtr(),
-                         std::move(callback_with_guard), std::move(options))));
+                         std::move(callback_with_guard), std::move(options),
+                         triggered_from_element)));
 }
 
 void WebInstallServiceImpl::OnManifestParsed(
     InstallFromManifestCallbackWithGuard callback_with_guard,
     blink::mojom::ManifestInstallOptionsPtr options,
+    bool triggered_from_element,
     blink::mojom::ManifestPtr parsed_manifest) {
   // Null manifest means the command failed (invalid JSON, empty, or missing
   // required fields like start_url/name).
@@ -451,16 +457,64 @@ void WebInstallServiceImpl::OnManifestParsed(
     return;
   }
 
-  // TODO(liahiscock): Initiate permission prompt and installation process.
-  NOTIMPLEMENTED();
-  std::move(callback_with_guard)
-      .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+  // Verify that the calling document has the Web Install permissions policy
+  // set. Both the JS API and the <install> element are gated by this policy.
+  // This check intentionally comes after the manifest fetch/parse so that
+  // DataErrors remain reachable regardless of permission outcome.
+  if (!render_frame_host().IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
+    std::move(callback_with_guard)
+        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
+  // Skip requesting the user permission prompt when install is triggered from
+  // the <install> element. The element handles user consent via its own UI
+  // (trusted user gesture on the element itself).
+  // TODO(liahiscock): Add test coverage for this branch once its publicly
+  // reachable.
+  if (triggered_from_element) {
+    ContinueManifestInstall(std::move(callback_with_guard), std::move(options));
+    return;
+  }
+
+  RequestWebInstallPermission(
+      base::BindOnce(&WebInstallServiceImpl::OnManifestPermissionDecided,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_with_guard), std::move(options)));
 }
 
 void WebInstallServiceImpl::OnManifestInstallNotSupportedDialogClosed(
     InstallFromManifestCallbackWithGuard callback_with_guard) {
   // This dialog is informational only; No "accepted" value is needed, closure
   // always results in an abort error.
+  std::move(callback_with_guard)
+      .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+}
+
+void WebInstallServiceImpl::OnManifestPermissionDecided(
+    InstallFromManifestCallbackWithGuard callback_with_guard,
+    blink::mojom::ManifestInstallOptionsPtr options,
+    const std::vector<content::PermissionResult>& permission_result) {
+  CHECK(options);
+  CHECK_EQ(permission_result.size(), 1u);
+
+  if (permission_result[0].status != PermissionStatus::GRANTED) {
+    std::move(callback_with_guard)
+        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
+  ContinueManifestInstall(std::move(callback_with_guard), std::move(options));
+}
+
+void WebInstallServiceImpl::ContinueManifestInstall(
+    InstallFromManifestCallbackWithGuard callback_with_guard,
+    blink::mojom::ManifestInstallOptionsPtr options) {
+  CHECK(options);
+
+  // TODO(liahiscock): Initiate installation process.
+  NOTIMPLEMENTED();
   std::move(callback_with_guard)
       .Run(blink::mojom::WebInstallServiceResult::kAbortError);
 }
