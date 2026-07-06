@@ -302,8 +302,7 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
   if (IsBrowserUnderAnyEnterpriseManagement(profile_) &&
       !is_google_internal_account) {
     if (!features::kIndigoAllowForEnterprise.Get()) {
-      // TODO(b:512247450): Use a new enum such as `kEnterpriseDisallowed`.
-      return LocalEligibility::kManagedDomain;
+      return LocalEligibility::kEnterpriseDisallowed;
     } else if (pref_service_) {
       int policy_val = pref_service_->GetInteger(prefs::kIndigoPolicy);
       // TODO(b:512247450): Also allow kAllowedWithoutModelImprovement when the

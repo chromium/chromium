@@ -108,6 +108,9 @@ void RecordTransformationResultCannotGenerateImage(
       case LocalEligibility::kGlicDisabledForProfile:
         result = IndigoTransformationResult::kGlicDisabledForProfile;
         break;
+      case LocalEligibility::kEnterpriseDisallowed:
+        result = IndigoTransformationResult::kEnterpriseDisallowed;
+        break;
       case LocalEligibility::kEligible:
         NOTREACHED();
     }
