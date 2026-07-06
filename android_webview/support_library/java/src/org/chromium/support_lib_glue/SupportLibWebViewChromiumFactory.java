@@ -149,8 +149,13 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.DOWNLOAD_FAVICONS_ENABLED,
                 Features.HTTP_CACHE_MANAGER,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
-                // when they're initially added (this can be removed in a future CL). The final
-                // feature should have a trailing comma for cleaner diffs.
+                // when they're initially added (this can be removed in a future CL). The one
+                // exception is when adding a new method to an interface that extends from
+                // FeatureFlagHolderBoundaryInterface - these may be added without the suffix.
+                // For more information, see:
+                // https://android.googlesource.com/platform/frameworks/support/+/androidx-main/webkit/webkit/CONTRIBUTING.md#feature-checking-callback-interfaces
+                //
+                // The final feature should have a trailing comma for cleaner diffs.
             };
 
     // ENQUEUE_PRECONNECT schedules a preconnect task to run asynchronously once native Chromium
