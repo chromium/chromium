@@ -42,10 +42,20 @@ void OmniboxPopupAimPresenter::Show() {
   if (GetWidget() && !widget_observation_.IsObserving()) {
     widget_observation_.Observe(GetWidget());
   }
+  if (GetWebUIContent()) {
+    auto* permission_manager =
+        permissions::PermissionRequestManager::FromWebContents(
+            GetWebUIContent()->GetWebContents());
+    if (permission_manager && !permission_observation_.IsObserving()) {
+      permission_observation_.Observe(permission_manager);
+    }
+  }
 }
 
 void OmniboxPopupAimPresenter::Hide() {
   widget_observation_.Reset();
+  permission_observation_.Reset();
+  is_handling_prompt_dismissal_ = false;
   OmniboxPopupPresenterBase::Hide();
 }
 
@@ -70,16 +80,26 @@ bool OmniboxPopupAimPresenter::ShouldDetachWebContentsOnHide() const {
 
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                          bool active) {
+  // Reset prompt dismissal tracking flag once focus/activation returns to the
+  // omnibox.
+  if (active) {
+    is_handling_prompt_dismissal_ = false;
+    return;
+  }
+
   // This method is called when the focus is transferred to or from this widget.
   // If a user clicks outside the popup, we will hide the popup.
   //
   // Separately, if a user opens a context menu inside this popup. The context
   // menu is a child widget so this popup widget is still considered active. We
   // will not hide the popup.
+  // If a permission prompt was just closed, ignore any out of focus events from
+  // that.
   if (!active &&
       controller()->popup_state_manager()->popup_state() ==
           OmniboxPopupState::kAim &&
-      !location_bar()->in_popup_state_transition()) {
+      !location_bar()->in_popup_state_transition() &&
+      !is_handling_prompt_dismissal_) {
     // Don't close popup if there's an active permission prompt. This check can
     // be reached when the permission prompt has just been shown for Voice
     // permission from the omnibox popup and interacting with the prompt has
@@ -94,6 +114,21 @@ void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
     }
     controller()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kNone);
+  }
+}
+
+void OmniboxPopupAimPresenter::OnPromptRemoved() {
+  // When a permission prompt is removed (e.g., accepted or dismissed), focus
+  // moves to the main web contents temporarily before returning to the omnibox
+  // popup. Set `is_handling_prompt_dismissal_` to true and explicitly request
+  // focus back to the omnibox (again, even though embedded prompt does so).
+  // There is a task queue delay for this to be processed (or other focus events
+  // before this), so the flag protects the omnibox from incorrectly closing due
+  // to out of focus events until the omnibox gains focus (as requested here).
+  is_handling_prompt_dismissal_ = true;
+  if (location_bar()) {
+    location_bar()->FocusLocation(/*is_user_initiated=*/false,
+                                  /*clear_focus_if_failed=*/false);
   }
 }
 
