@@ -1786,6 +1786,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   // Wait for the bubble to be replaced with the sign in promo and click the
   // sign in button.
   RunTestSequence(
+      WaitForShow(BubbleSignInPromoSignInButtonView::kPromoSignInButton),
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
       EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
