@@ -382,7 +382,10 @@ if (!is_android && !is_chromeos_device) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "permissions_security_model_interactive_uitest.cc" ]
+    sources = [
+      "one_time_permissions_tracker_helper_interactive_uitest.cc",
+      "permissions_security_model_interactive_uitest.cc",
+    ]
 
     deps = [
       ":permissions",
