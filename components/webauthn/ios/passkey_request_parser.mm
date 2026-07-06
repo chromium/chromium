@@ -578,9 +578,16 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
       if (!credential_id || credential_id->empty()) {
         return std::nullopt;
       }
+      std::optional<std::vector<uint8_t>> decoded_credential_id =
+          Base64UrlDecode(*credential_id);
+      if (!decoded_credential_id.has_value()) {
+        return std::nullopt;
+      }
+      std::string credential_id_str(decoded_credential_id->begin(),
+                                    decoded_credential_id->end());
       // Checks whether a passkey matching the provided rp ID and credential ID
       // is present in the currently logged in user's GPM passkeys.
-      bool is_gpm = is_gpm_passkey_func(*rp_id, *credential_id);
+      bool is_gpm = is_gpm_passkey_func(*rp_id, credential_id_str);
       return is_gpm ? PasskeyScriptEvent::kLogGetResolvedGpm
                     : PasskeyScriptEvent::kLogGetResolvedNonGpm;
     }

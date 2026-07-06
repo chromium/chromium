@@ -22,8 +22,9 @@ namespace {
 // An empty string for testing purposes.
 constexpr std::string kEmpty = "";
 
-// A base 64 encoded URL string.
+// A base 64 encoded URL string and its decoded string representation.
 constexpr std::string kBase64url = "TGVlcm95IEplbmtpbnM=";
+constexpr std::string kDecodedBase64url = "Leeroy Jenkins";
 constexpr std::string kBase64url_2 = "U2FsdCBCYWU=";
 
 // A malformed base 64 url encoded string.
@@ -781,16 +782,16 @@ TEST_F(PasskeyRequestParserTest, ParseLogGetResolvedEvent) {
                    .has_value());
 
   dict.Set(kRpId, kExampleRpId);
-  dict.Set(kCredentialId, kExampleCredId);
+  dict.Set(kCredentialId, kBase64url);
 
   // Test case 2: Lambda returns TRUE (Credential found in GPM).
-  auto result_gpm =
-      ParsePasskeyScriptEvent(dict, GetDefaultOrigin(),
-                              [](const std::string& rp, const std::string& id) {
-                                EXPECT_EQ(rp, kExampleRpId);
-                                EXPECT_EQ(id, kExampleCredId);
-                                return true;
-                              });
+  auto result_gpm = ParsePasskeyScriptEvent(
+      dict, GetDefaultOrigin(),
+      [](const std::string& rp, const std::string& id) {
+        EXPECT_EQ(rp, kExampleRpId);
+        EXPECT_EQ(id, kDecodedBase64url);
+        return true;
+      });
   ASSERT_TRUE(result_gpm.has_value());
   EXPECT_EQ(*result_gpm, PasskeyScriptEvent::kLogGetResolvedGpm);
 
@@ -800,6 +801,11 @@ TEST_F(PasskeyRequestParserTest, ParseLogGetResolvedEvent) {
       [](const std::string&, const std::string&) { return false; });
   ASSERT_TRUE(result_non_gpm.has_value());
   EXPECT_EQ(*result_non_gpm, PasskeyScriptEvent::kLogGetResolvedNonGpm);
+
+  // Test case 4: Malformed Base64URL credential ID.
+  dict.Set(kCredentialId, kNotBase64url);
+  EXPECT_FALSE(ParsePasskeyScriptEvent(dict, GetDefaultOrigin(), &IsGpmPasskey)
+                   .has_value());
 }
 
 // Tests ParsePasskeyScriptEvent logic for "logCreateResolved" based on the
