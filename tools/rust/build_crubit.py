@@ -134,8 +134,12 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
         shutil.copy(os.path.join(release_dir, bin),
                     os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin))
 
+    # `crubit_target_dir` below helps ensure that Chromium can use the same
+    # `#include` paths as other Crubit clients like google3 - e.g.
+    # `#include "third_party/crubit/support/rs_std/slice_ref.h"`.
     print(f'Installing `crubit/support` to {RUST_TOOLCHAIN_OUT_DIR} ...')
-    crubit_target_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib', 'crubit')
+    crubit_target_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib',
+                                     'third_party', 'crubit')
     for item in ["BUILD.gn", "LICENSE", "crubit.gni", "support"]:
         source_path = os.path.join(CRUBIT_SRC_DIR, item)
         target_path = os.path.join(crubit_target_dir, item)

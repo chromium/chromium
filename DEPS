@@ -1061,31 +1061,31 @@ deps = {
     'condition': 'not rust_force_head_revision',
     'objects': [
       {
-        'object_name': 'Linux_x64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-2-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': '88db954bdbaea527bebf832758d6ff8193eb214877b4eef362e97701d64c0b54',
-        'size_bytes': 274790504,
-        'generation': 1782418940816837,
+        'object_name': 'Linux_x64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '1ed58044571c647d0e29eb5ebcd2e846521fb930782a05c9578943af2da4a8ce',
+        'size_bytes': 274864712,
+        'generation': 1783004406878060,
         'condition': 'host_os == "linux" and non_git_source',
       },
       {
-        'object_name': 'Mac/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-2-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': '728aaa01b049cd5252915db4ed8a7492955b3d5d3939990f18e6b085cf8ad4ad',
-        'size_bytes': 262355184,
-        'generation': 1782418942567956,
+        'object_name': 'Mac/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '2aac0abf4cd2d877b382fef7fc087b064e943395a4ebc9703d80556690b89f05',
+        'size_bytes': 262516480,
+        'generation': 1783004408846651,
         'condition': 'host_os == "mac" and host_cpu == "x64"',
       },
       {
-        'object_name': 'Mac_arm64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-2-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': '00a11ecce7cebc2ce777518e6e51a150d980dd5f41392200b65f543767536b56',
-        'size_bytes': 246777680,
-        'generation': 1782418944301166,
+        'object_name': 'Mac_arm64/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': 'ad79dd8c5b7cf705f2c34a74f5383b84fc62581689157cf98b0d8dedb88150fa',
+        'size_bytes': 246801688,
+        'generation': 1783004410767133,
         'condition': 'host_os == "mac" and host_cpu == "arm64"',
       },
       {
-        'object_name': 'Win/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-2-llvmorg-23-init-19482-g53d18800.tar.xz',
-        'sha256sum': '482c5a8946869aae595adc7361b619e8af62dc002cd8f3a00b27fe59db4d74f3',
-        'size_bytes': 415939796,
-        'generation': 1782418946203516,
+        'object_name': 'Win/rust-toolchain-b998449636a48e2c4a362809085b600a0174e1f2-4-llvmorg-23-init-19482-g53d18800.tar.xz',
+        'sha256sum': '8cbe9daa40f9c664e207fabed0040c39767d8f3046e995e4e40bb93880d81998',
+        'size_bytes': 416027840,
+        'generation': 1783004412644906,
         'condition': 'host_os == "win"',
       },
     ],
@@ -4201,8 +4201,15 @@ include_rules = [
   '+third_party/google_benchmark/src/include/benchmark/benchmark.h',
   '+third_party/icu/source/common/unicode',
   '+third_party/icu/source/i18n/unicode',
-  '+third_party/rust-toolchain/lib/crubit/support',
   '+url',
+
+  # Everybody can use support libraries for C++/Rust interop based on Crubit.
+  #
+  # Actual headers location (under `third_party/rust-toolchain/lib`) should be
+  # treated as an implementation detail - code should instead use
+  # `third_party/crubit/support/...` as the canonical `#include` path (this is
+  # unified across other major Crubit clients).
+  '+third_party/crubit/support',
 
   # Abseil is allowed by default, but some features are banned. See
   # //styleguide/c++/c++-features.md.

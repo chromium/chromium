@@ -5,7 +5,7 @@
 #include "build/rust/std/rules/alloc.h"
 #include "build/rust/tests/test_cpp_api_from_rust/rust_lib.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/rust-toolchain/lib/crubit/support/rs_std/char.h"
+#include "third_party/crubit/support/rs_std/char.h"
 
 TEST(RustCcBindingsFromRs, TestI32) {
   EXPECT_EQ(12, rust_lib::mul_two_ints_via_rust(3, 4));

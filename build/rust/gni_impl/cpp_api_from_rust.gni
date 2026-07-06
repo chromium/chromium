@@ -67,8 +67,7 @@ template("cpp_api_from_rust") {
     _original_attributes.deps += [ "//build/rust/std:std_bindings" ]
   }
 
-  _crubit_support_path_format =
-      "\"third_party/rust-toolchain/lib/crubit/support/{header}\""
+  _crubit_support_path_format = "\"third_party/crubit/support/{header}\""
   _cpp_api_from_rust_exe_path =
       "//third_party/rust-toolchain/bin/cc_bindings_from_rs"
   _rustfmt_exe_path = "//third_party/rust-toolchain/bin/rustfmt"
