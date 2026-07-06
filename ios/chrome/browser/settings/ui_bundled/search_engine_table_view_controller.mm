@@ -139,11 +139,20 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   _updatingBackend = updatingBackend;
 
+  if (_updatingBackend) {
+    // When `YES`, the view is going to update the backend. The model should
+    // not be reloaded.
+    return;
+  }
   if (!self.searchEngineChangedInBackground) {
+    // If `-[<SearchEngineObserving> searchEngineChanged]` was not called while
+    // `_updatingBackend` was `YES`, there is no point to reload the search
+    // engines list.
     return;
   }
 
   [self loadSearchEngines];
+  self.searchEngineChangedInBackground = NO;
 
   BOOL hasSecondSection = [self.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierSecondList];
