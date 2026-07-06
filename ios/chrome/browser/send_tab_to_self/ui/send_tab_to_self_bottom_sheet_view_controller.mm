@@ -168,43 +168,10 @@ NSString* const kSendTabToSelfModalMenuButton =
     const send_tab_to_self::TargetDeviceInfo& device = _targetDeviceList[index];
 
     NSString* deviceName = base::SysUTF8ToNSString(device.device_name);
-    [self showLoadingState:deviceName];
-
     [_delegate sendTabToTargetDeviceCacheGUID:base::SysUTF8ToNSString(
                                                   device.cache_guid)
                              targetDeviceName:deviceName];
   }
-}
-
-- (void)showLoadingState:(NSString*)deviceName {
-  self.primaryActionButton.title = @"";
-  self.primaryActionButton.tunedDownStyle = YES;
-  self.primaryActionButton.primaryButtonImage = PrimaryButtonImageSpinner;
-  self.primaryActionButton.enabled = NO;
-
-  // Lock down interactions on the entire navigation controller to prevent taps
-  // on navigation bar items (like Close) or swiping the page sheet away.
-  if (self.navigationController) {
-    self.navigationController.view.userInteractionEnabled = NO;
-    self.navigationController.modalInPresentation = YES;
-  } else {
-    self.view.userInteractionEnabled = NO;
-  }
-
-  self.primaryActionButton.accessibilityLabel =
-      l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
-                              base::SysNSStringToUTF16(deviceName));
-  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
-                                  self.primaryActionButton.accessibilityLabel);
-}
-
-- (void)showSuccessState:(NSString*)deviceName {
-  self.primaryActionButton.primaryButtonImage = PrimaryButtonImageCheckmark;
-  self.primaryActionButton.accessibilityLabel =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                              base::SysNSStringToUTF16(deviceName));
-  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
-                                  self.primaryActionButton.accessibilityLabel);
 }
 
 #pragma mark - TableViewBottomSheetViewController

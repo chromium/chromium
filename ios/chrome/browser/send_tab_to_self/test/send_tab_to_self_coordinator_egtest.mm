@@ -80,6 +80,10 @@ void DismissSnackbar() {
       [self isRunningTest:@selector(testSendTabToSelfAndVerifyErrorSnackbar)]) {
     config.features_enabled.push_back(
         send_tab_to_self::kSendTabToSelfPostSendToast);
+  } else if ([self
+                 isRunningTest:@selector(testSendTabToSelfAndVerifySnackbar)]) {
+    config.features_disabled.push_back(
+        send_tab_to_self::kSendTabToSelfPostSendToast);
   }
   return config;
 }
@@ -269,22 +273,18 @@ void DismissSnackbar() {
                                           @"kSendTabToSelfModalSendButton")]
       performAction:grey_tap()];
 
-  // Wait for and verify the success checkmark state on the button.
-  NSString* successMessage =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                              base::SysNSStringToUTF16(kTargetDeviceName));
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_allOf(grey_accessibilityID(@"kSendTabToSelfModalSendButton"),
-                     grey_accessibilityLabel(successMessage), nil)];
-
   // Verify that the bottom sheet is dismissed.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       grey_accessibilityID(@"kSendTabToSelfModalSendButton")];
 
-  // Verify that no snackbar is shown.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
-      assertWithMatcher:grey_nil()];
+  // Wait for and verify the snackbar message.
+  NSString* snackbarMessage =
+      l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
+                              base::SysNSStringToUTF16(kTargetDeviceName));
+  id<GREYMatcher> snackbarMatcher = grey_allOf(
+      chrome_test_util::SnackbarViewMatcher(),
+      grey_descendant(grey_accessibilityLabel(snackbarMessage)), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 
   // Verify that the text fragment was successfully captured and attached to the
   // STTS entry in the model.
@@ -326,22 +326,18 @@ void DismissSnackbar() {
                                           @"kSendTabToSelfModalSendButton")]
       performAction:grey_tap()];
 
-  // Wait for and verify the success checkmark state on the button.
-  NSString* successMessage =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                              base::SysNSStringToUTF16(kTargetDeviceName));
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_allOf(grey_accessibilityID(@"kSendTabToSelfModalSendButton"),
-                     grey_accessibilityLabel(successMessage), nil)];
-
   // Verify that the bottom sheet is dismissed.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       grey_accessibilityID(@"kSendTabToSelfModalSendButton")];
 
-  // Verify that no snackbar is shown.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
-      assertWithMatcher:grey_nil()];
+  // Wait for and verify the success snackbar message.
+  NSString* snackbarMessage =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                              base::SysNSStringToUTF16(kTargetDeviceName));
+  id<GREYMatcher> snackbarMatcher = grey_allOf(
+      chrome_test_util::SnackbarViewMatcher(),
+      grey_descendant(grey_accessibilityLabel(snackbarMessage)), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 }
 
 - (void)testSendTabToSelfAndVerifyErrorSnackbar {

@@ -34,14 +34,6 @@ struct TargetDeviceInfo;
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
     NS_UNAVAILABLE;
 
-// Transitions the primary action button to a loading spinner state and
-// disables user interactions.
-- (void)showLoadingState:(NSString*)deviceName;
-
-// Transitions the primary action button to a success checkmark state and
-// announces it.
-- (void)showSuccessState:(NSString*)deviceName;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_UI_SEND_TAB_TO_SELF_BOTTOM_SHEET_VIEW_CONTROLLER_H_
