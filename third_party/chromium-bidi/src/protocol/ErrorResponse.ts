@@ -208,3 +208,8 @@ export class UnavailableNetworkDataException extends Exception {
     super(ErrorCode.UnavailableNetworkData, message, stacktrace);
   }
 }
+export class NoSuchScreencastException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchScreencast, message, stacktrace);
+  }
+}

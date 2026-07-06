@@ -303,6 +303,16 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#browsingContextProcessor.setViewport(
           this.#parser.parseSetViewportParams(command.params),
         );
+      case 'browsingContext.startScreencast':
+        this.#parser.parseStartScreencastParams(command.params);
+        throw new UnsupportedOperationException(
+          `Method ${command.method} is not implemented.`,
+        );
+      case 'browsingContext.stopScreencast':
+        this.#parser.parseStopScreencastParams(command.params);
+        throw new UnsupportedOperationException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'browsingContext.traverseHistory':
         return await this.#browsingContextProcessor.traverseHistory(
           this.#parser.parseTraverseHistoryParams(command.params),

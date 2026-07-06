@@ -312,6 +312,22 @@ export namespace BrowsingContext {
       WebDriverBidi.BrowsingContext.SetViewportParametersSchema,
     ) as Protocol.BrowsingContext.SetViewportParameters;
   }
+  export function parseStartScreencastParams(
+    params: unknown,
+  ): Protocol.BrowsingContext.StartScreencastParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.StartScreencastParametersSchema,
+    );
+  }
+  export function parseStopScreencastParams(
+    params: unknown,
+  ): Protocol.BrowsingContext.StopScreencastParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.StopScreencastParametersSchema,
+    );
+  }
   export function parseTraverseHistoryParams(
     params: unknown,
   ): Protocol.BrowsingContext.TraverseHistoryParameters {

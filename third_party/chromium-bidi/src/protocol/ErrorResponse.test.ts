@@ -40,6 +40,7 @@ describe('Exception', () => {
     [ErrorCode.NoSuchNetworkData]: undefined,
     [ErrorCode.NoSuchNode]: undefined,
     [ErrorCode.NoSuchRequest]: undefined,
+    [ErrorCode.NoSuchScreencast]: undefined,
     [ErrorCode.NoSuchScript]: undefined,
     [ErrorCode.NoSuchStoragePartition]: undefined,
     [ErrorCode.NoSuchUserContext]: undefined,

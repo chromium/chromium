@@ -112,6 +112,12 @@ export interface BidiCommandParameterParser {
   parseSetViewportParams(
     params: unknown,
   ): BrowsingContext.SetViewportParameters;
+  parseStartScreencastParams(
+    params: unknown,
+  ): BrowsingContext.StartScreencastParameters;
+  parseStopScreencastParams(
+    params: unknown,
+  ): BrowsingContext.StopScreencastParameters;
   parseTraverseHistoryParams(
     params: unknown,
   ): BrowsingContext.TraverseHistoryParameters;

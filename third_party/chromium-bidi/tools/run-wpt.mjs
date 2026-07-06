@@ -331,7 +331,10 @@ if ((runResult?.status ?? 0) !== 0) {
     exitCode = runResult.status;
   }
 }
-if ((updateResult?.status ?? 0) !== 0) {
+if (updateResult?.error) {
+  log('Update expectations failed to launch:', updateResult.error);
+  exitCode = 1;
+} else if ((updateResult?.status ?? 0) !== 0) {
   log('Update expectations failed');
   exitCode = updateResult.status;
 }

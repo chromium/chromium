@@ -171,6 +171,16 @@ export class BidiParser implements BidiCommandParameterParser {
   ): BrowsingContext.SetViewportParameters {
     return Parser.BrowsingContext.parseSetViewportParams(params);
   }
+  parseStartScreencastParams(
+    params: unknown,
+  ): BrowsingContext.StartScreencastParameters {
+    return Parser.BrowsingContext.parseStartScreencastParams(params);
+  }
+  parseStopScreencastParams(
+    params: unknown,
+  ): BrowsingContext.StopScreencastParameters {
+    return Parser.BrowsingContext.parseStopScreencastParams(params);
+  }
   parseTraverseHistoryParams(
     params: unknown,
   ): BrowsingContext.TraverseHistoryParameters {

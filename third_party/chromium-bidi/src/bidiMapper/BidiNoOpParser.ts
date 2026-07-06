@@ -170,6 +170,16 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): BrowsingContext.SetViewportParameters {
     return params as BrowsingContext.SetViewportParameters;
   }
+  parseStartScreencastParams(
+    params: unknown,
+  ): BrowsingContext.StartScreencastParameters {
+    return params as BrowsingContext.StartScreencastParameters;
+  }
+  parseStopScreencastParams(
+    params: unknown,
+  ): BrowsingContext.StopScreencastParameters {
+    return params as BrowsingContext.StopScreencastParameters;
+  }
   parseTraverseHistoryParams(
     params: unknown,
   ): BrowsingContext.TraverseHistoryParameters {

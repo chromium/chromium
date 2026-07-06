@@ -99,6 +99,7 @@ export const enum ErrorCode {
   NoSuchNetworkData = 'no such network data',
   NoSuchNode = 'no such node',
   NoSuchRequest = 'no such request',
+  NoSuchScreencast = 'no such screencast',
   NoSuchScript = 'no such script',
   NoSuchStoragePartition = 'no such storage partition',
   NoSuchUserContext = 'no such user context',
@@ -473,6 +474,8 @@ export type BrowsingContextCommand =
   | BrowsingContext.Reload
   | BrowsingContext.SetBypassCsp
   | BrowsingContext.SetViewport
+  | BrowsingContext.StartScreencast
+  | BrowsingContext.StopScreencast
   | BrowsingContext.TraverseHistory;
 export type BrowsingContextResult =
   | BrowsingContext.ActivateResult
@@ -487,6 +490,8 @@ export type BrowsingContextResult =
   | BrowsingContext.ReloadResult
   | BrowsingContext.SetBypassCspResult
   | BrowsingContext.SetViewportResult
+  | BrowsingContext.StartScreencastResult
+  | BrowsingContext.StopScreencastResult
   | BrowsingContext.TraverseHistoryResult;
 export type BrowsingContextEvent =
   | BrowsingContext.ContextCreated
@@ -927,6 +932,56 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type SetViewportResult = EmptyResult;
+}
+export namespace BrowsingContext {
+  export type StartScreencast = {
+    method: 'browsingContext.startScreencast';
+    params: BrowsingContext.StartScreencastParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type StartScreencastParameters = {
+    context: BrowsingContext.BrowsingContext;
+    mimeType?: string;
+    video?: BrowsingContext.MediaTrackConstraints;
+    /**
+     * @defaultValue `false`
+     */
+    audio?: boolean;
+  };
+}
+export namespace BrowsingContext {
+  export type MediaTrackConstraints = {
+    width?: JsUint;
+    height?: JsUint;
+    frameRate?: JsUint;
+  };
+}
+export namespace BrowsingContext {
+  export type StartScreencastResult = {
+    screencast: BrowsingContext.Screencast;
+    path: string;
+  };
+}
+export namespace BrowsingContext {
+  export type Screencast = string;
+}
+export namespace BrowsingContext {
+  export type StopScreencast = {
+    method: 'browsingContext.stopScreencast';
+    params: BrowsingContext.StopScreencastParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type StopScreencastParameters = {
+    screencast: BrowsingContext.Screencast;
+  };
+}
+export namespace BrowsingContext {
+  export type StopScreencastResult = {
+    path: string;
+    error?: string;
+  };
 }
 export namespace BrowsingContext {
   export type TraverseHistory = {

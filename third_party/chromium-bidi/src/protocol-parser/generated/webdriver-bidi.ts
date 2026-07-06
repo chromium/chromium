@@ -131,6 +131,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'no such network data',
     'no such node',
     'no such request',
+    'no such screencast',
     'no such script',
     'no such storage partition',
     'no such user context',
@@ -634,6 +635,8 @@ export const BrowsingContextCommandSchema = z.lazy(() =>
     BrowsingContext.ReloadSchema,
     BrowsingContext.SetBypassCspSchema,
     BrowsingContext.SetViewportSchema,
+    BrowsingContext.StartScreencastSchema,
+    BrowsingContext.StopScreencastSchema,
     BrowsingContext.TraverseHistorySchema,
   ]),
 );
@@ -651,6 +654,8 @@ export const BrowsingContextResultSchema = z.lazy(() =>
     BrowsingContext.ReloadResultSchema,
     BrowsingContext.SetBypassCspResultSchema,
     BrowsingContext.SetViewportResultSchema,
+    BrowsingContext.StartScreencastResultSchema,
+    BrowsingContext.StopScreencastResultSchema,
     BrowsingContext.TraverseHistoryResultSchema,
   ]),
 );
@@ -1132,6 +1137,67 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export const SetViewportResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace BrowsingContext {
+  export const StartScreencastSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.startScreencast'),
+      params: BrowsingContext.StartScreencastParametersSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const StartScreencastParametersSchema = z.lazy(() =>
+    z.object({
+      context: BrowsingContext.BrowsingContextSchema,
+      mimeType: z.string().optional(),
+      video: BrowsingContext.MediaTrackConstraintsSchema.optional(),
+      audio: z.boolean().default(false).optional(),
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const MediaTrackConstraintsSchema = z.lazy(() =>
+    z.object({
+      width: JsUintSchema.optional(),
+      height: JsUintSchema.optional(),
+      frameRate: JsUintSchema.optional(),
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const StartScreencastResultSchema = z.lazy(() =>
+    z.object({
+      screencast: BrowsingContext.ScreencastSchema,
+      path: z.string(),
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const ScreencastSchema = z.lazy(() => z.string());
+}
+export namespace BrowsingContext {
+  export const StopScreencastSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.stopScreencast'),
+      params: BrowsingContext.StopScreencastParametersSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const StopScreencastParametersSchema = z.lazy(() =>
+    z.object({
+      screencast: BrowsingContext.ScreencastSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const StopScreencastResultSchema = z.lazy(() =>
+    z.object({
+      path: z.string(),
+      error: z.string().optional(),
+    }),
+  );
 }
 export namespace BrowsingContext {
   export const TraverseHistorySchema = z.lazy(() =>
