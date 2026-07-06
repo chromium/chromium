@@ -172,7 +172,10 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
       buffer_size_, usage, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
   LOG_IF(ERROR, !client_shared_image_) << "Failed to create MappableSI";
-  sync_token_ = sii->GenVerifiedSyncToken();
+  if (client_shared_image_) {
+    sync_token_ = client_shared_image_->creation_sync_token();
+    sii->VerifySyncToken(sync_token_);
+  }
 
   // Clear the buffer before usage, since it may be uninitialized.
   // (http://b/168735625)

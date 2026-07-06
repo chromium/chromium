@@ -143,8 +143,8 @@ std::unique_ptr<UiResource> RoundedDisplayFrameFactory::CreateUiResource(
   auto resource = std::make_unique<UiResource>(std::move(sii),
                                                std::move(client_shared_image));
 
-  resource->sync_token =
-      resource->shared_image_interface->GenVerifiedSyncToken();
+  resource->sync_token = resource->client_shared_image()->creation_sync_token();
+  resource->shared_image_interface->VerifySyncToken(resource->sync_token);
   resource->damaged = true;
   resource->ui_source_id = ui_source_id;
   resource->is_overlay_candidate = is_overlay;
@@ -237,10 +237,10 @@ std::unique_ptr<UiResource> RoundedDisplayFrameFactory::Draw(
   Paint(gutter, resource.get());
 
   if (resource->damaged) {
-    resource->shared_image_interface->UpdateSharedImage(
-        resource->sync_token, resource->client_shared_image()->mailbox());
     resource->sync_token =
-        resource->shared_image_interface->GenVerifiedSyncToken();
+        resource->client_shared_image()->BackingWasExternallyUpdated(
+            resource->sync_token);
+    resource->shared_image_interface->VerifySyncToken(resource->sync_token);
     resource->damaged = false;
   }
 

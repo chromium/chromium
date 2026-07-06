@@ -164,10 +164,10 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   }
 
   if (resource->damaged) {
-    resource->shared_image_interface->UpdateSharedImage(
-        resource->sync_token, resource->client_shared_image()->mailbox());
     resource->sync_token =
-        resource->shared_image_interface->GenVerifiedSyncToken();
+        resource->client_shared_image()->BackingWasExternallyUpdated(
+            resource->sync_token);
+    resource->shared_image_interface->VerifySyncToken(resource->sync_token);
     resource->damaged = false;
   }
 

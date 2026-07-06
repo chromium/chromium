@@ -89,8 +89,8 @@ std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::CreateUiResource(
   auto resource = std::make_unique<UiResource>(std::move(sii),
                                                std::move(client_shared_image));
 
-  resource->sync_token =
-      resource->shared_image_interface->GenVerifiedSyncToken();
+  resource->sync_token = resource->client_shared_image()->creation_sync_token();
+  resource->shared_image_interface->VerifySyncToken(resource->sync_token);
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
   resource->ui_source_id = ui_source_id;
@@ -154,10 +154,10 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   Paint(total_damage_rect, rotation_transform, resource.get());
 
   if (resource->damaged) {
-    resource->shared_image_interface->UpdateSharedImage(
-        resource->sync_token, resource->client_shared_image()->mailbox());
     resource->sync_token =
-        resource->shared_image_interface->GenVerifiedSyncToken();
+        resource->client_shared_image()->BackingWasExternallyUpdated(
+            resource->sync_token);
+    resource->shared_image_interface->VerifySyncToken(resource->sync_token);
     resource->damaged = false;
   }
 
