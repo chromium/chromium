@@ -6310,18 +6310,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SHARING_HUB_SHEET_CLOSED" desc="Accessibility string read when the sharing hub is closed.">
         List of sharing options is closed.
       </message>
-
-      <!-- ClickToCall -->
-      <message name="IDS_CLICK_TO_CALL_NOTIFICATION_TEXT" desc="Text displayed in a click to call notification to call on a number.">
-        Tap to make call
-      </message>
-      <message name="IDS_CLICK_TO_CALL_DIALER_ABSENT_NOTIFICATION_TITLE" desc="Title of click to call notification when there is no dialer on device.">
-        Can't make calls
-      </message>
-      <message name="IDS_CLICK_TO_CALL_DIALER_ABSENT_NOTIFICATION_TEXT" desc="Text displayed in a click to call notification when there is no dialer on device.">
-        Make sure a phone app is enabled on this device
-      </message>
-
       <!-- Sms Fetcher -->
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE" desc="Title text shown when the Android Chrome receives a ONE_TIME_CODE from an incoming SMS and ask users for permission to submit the code to their linked Desktop Chrome">
         Submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="CLIENT_NAME">%2$s<ex>Zoe's Macbook</ex></ph>?

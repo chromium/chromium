@@ -3124,8 +3124,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridge.java",
       "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsNavigation.java",
       "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionController.java",
-      "java/src/org/chromium/chrome/browser/sharing/SharingJNIBridge.java",
-      "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandler.java",
       "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
       "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",
       "java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java",

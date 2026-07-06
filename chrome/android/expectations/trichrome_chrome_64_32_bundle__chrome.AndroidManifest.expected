@@ -867,10 +867,6 @@
       </intent-filter>  # DIFF-ANCHOR: 5458f2a2
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/search_widget_info"/>
     </receiver>  # DIFF-ANCHOR: a0d83ae5
-    <receiver  # DIFF-ANCHOR: 124ac9a1
-        android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$TapReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: 124ac9a1
     <receiver  # DIFF-ANCHOR: 420d0678
         android:name="org.chromium.chrome.browser.sharing.sms_fetcher.SmsFetcherMessageHandler$NotificationReceiver"
         android:exported="false">

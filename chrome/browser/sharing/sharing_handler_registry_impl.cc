@@ -21,7 +21,6 @@
 #include "components/sharing_message/sharing_message_sender.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/sharing/click_to_call/click_to_call_message_handler_android.h"
 #include "chrome/browser/sharing/sms/sms_fetch_request_handler.h"
 #else
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_desktop.h"
@@ -46,11 +45,6 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
                     {components_sharing_message::SharingMessage::kAckMessage});
 
 #if BUILDFLAG(IS_ANDROID)
-  // Note: IsClickToCallSupported() is not used as it requires JNI call.
-  AddSharingHandler(
-      std::make_unique<ClickToCallMessageHandler>(),
-      {components_sharing_message::SharingMessage::kClickToCallMessage});
-
   if (sharing_device_registration->IsSmsFetcherSupported()) {
     AddSharingHandler(
         std::make_unique<SmsFetchRequestHandler>(device_source, sms_fetcher),

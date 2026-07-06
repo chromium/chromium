@@ -9,10 +9,7 @@ source_set("click_to_call") {
   ]
   public_deps = [ "//url" ]
 
-  if (is_android) {
-    public += [ "click_to_call_message_handler_android.h" ]
-    public_deps += [ "//components/sharing_message" ]
-  } else {
+  if (!is_android) {
     public += [
       "click_to_call_context_menu_observer.h",
       "click_to_call_metrics.h",
@@ -43,15 +40,7 @@ source_set("impl") {
     "//third_party/re2",
   ]
 
-  if (is_android) {
-    sources += [ "click_to_call_message_handler_android.cc" ]
-    deps += [
-      "//base",
-      "//chrome/android:jni_headers",
-      "//components/sharing_message/proto",
-      "//url",
-    ]
-  } else {
+  if (!is_android) {
     sources += [
       "click_to_call_context_menu_observer.cc",
       "click_to_call_metrics.cc",
@@ -79,13 +68,7 @@ source_set("unit_tests") {
   sources = []
   deps = [ ":click_to_call" ]
 
-  if (is_android) {
-    sources += [ "click_to_call_message_handler_android_unittest.cc" ]
-    deps += [
-      "//components/sharing_message/proto",
-      "//testing/gtest",
-    ]
-  } else {
+  if (!is_android) {
     sources += [
       "click_to_call_context_menu_observer_unittest.cc",
       "click_to_call_ui_controller_unittest.cc",
