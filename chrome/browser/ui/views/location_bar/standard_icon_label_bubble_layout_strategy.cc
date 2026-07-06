@@ -80,7 +80,12 @@ StandardIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout(
   }
 
   const int image_x = host->GetInsets().left();
-  const gfx::Rect image_bounds(image_x, 0, image_width, height);
+  // If the icon's preferred size is different than the size bounds height,
+  // shift the start position to center the icon.
+  const int image_y = size_bounds.height().is_bounded()
+                          ? (size_bounds.height().value() - height) / 2
+                          : 0;
+  const gfx::Rect image_bounds(image_x, image_y, image_width, height);
 
   // There may be extra padding added if the label is shown.
   // The "_with_label" image values are used to compute the label's bounds,
@@ -102,7 +107,7 @@ StandardIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout(
   const int available_label_width = std::max(
       0, layout.host_size.width() - label_x - bubble_trailing_padding -
              host->GetWidthBetweenIconAndSeparator());
-  gfx::Rect label_bounds(label_x, 0, available_label_width, height);
+  gfx::Rect label_bounds(label_x, image_y, available_label_width, height);
   layout.child_layouts.emplace_back(
       host->label(),
       static_cast<views::LayoutManagerBase*>(host->GetLayoutManager())
