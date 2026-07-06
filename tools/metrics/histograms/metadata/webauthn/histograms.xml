@@ -184,6 +184,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Cmtg.BlockedDelay" units="ms"
+    expires_after="2026-12-31">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Measures the additional delay the CMTG device key fetch is adding to the
+    WebAuthn transaction. Recorded once per transaction when the flow is blocked
+    waiting for keys to become ready.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CmtgDeviceKeys.RequestDuration" units="ms"
     expires_after="2027-05-15">
   <owner>nsatragno@chromium.org</owner>

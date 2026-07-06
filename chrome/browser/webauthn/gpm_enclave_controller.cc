@@ -23,6 +23,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -756,6 +757,8 @@ void GPMEnclaveController::OnCmtgDeviceKeysFetched(
                     << static_cast<int>(keys.error());
   }
   if (transaction_waiting_for_cmtg_device_keys_) {
+    base::UmaHistogramTimes("WebAuthentication.Cmtg.BlockedDelay",
+                            cmtg_blocking_timer_.Elapsed());
     transaction_waiting_for_cmtg_device_keys_ = false;
     StartTransaction();
   }
@@ -765,6 +768,8 @@ void GPMEnclaveController::OnCmtgDeviceKeysTimeout() {
   FIDO_LOG(EVENT) << "CMTG device key fetch timed out";
   fetch_cmtg_keys_request_.reset();
   if (transaction_waiting_for_cmtg_device_keys_) {
+    base::UmaHistogramTimes("WebAuthentication.Cmtg.BlockedDelay",
+                            cmtg_blocking_timer_.Elapsed());
     transaction_waiting_for_cmtg_device_keys_ = false;
     StartTransaction();
   }
@@ -1419,6 +1424,7 @@ void GPMEnclaveController::StartTransaction() {
   if (fetch_cmtg_keys_request_) {
     FIDO_LOG(EVENT) << "Deferring transaction start until CMTG keys are ready";
     transaction_waiting_for_cmtg_device_keys_ = true;
+    cmtg_blocking_timer_ = base::ElapsedTimer();
     return;
   }
 

@@ -455,6 +455,11 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // CMTG device keys timer.
   base::OneShotTimer fetch_cmtg_keys_timeout_;
 
+  // Measures the added user-facing UI latency when the WebAuthn transaction
+  // must defer execution awaiting the completion of the CMTG device keys fetch.
+  // Counts both successful fetches and timed out fetches.
+  base::ElapsedTimer cmtg_blocking_timer_;
+
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};
 };
 

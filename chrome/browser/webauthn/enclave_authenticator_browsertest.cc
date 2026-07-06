@@ -4915,6 +4915,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyRoundTrip) {
   EXPECT_TRUE(base::StartsWith(get_script_result, "cmtg OK:"))
       << "Got: " << get_script_result;
   EXPECT_EQ(make_script_result, get_script_result);
+
+  histogram_tester_.ExpectTotalCount("WebAuthentication.Cmtg.BlockedDelay", 0);
 }
 
 // Tests creating a credential without a CMTG key, then asserting it with
@@ -4989,8 +4991,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyTimeout) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::ExecJs(web_contents, kMakeCredentialWithCmtg));
   delegate_observer()->WaitForUI();
-  timer_task_runner_->FastForwardBy(
-      GPMEnclaveController::kFetchDeviceKeysTimeout);
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
@@ -5003,8 +5003,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyTimeout) {
 
   dialog_model()->OnGPMPinEntered(u"123456");
 
+  // Fast forward only after the transaction is actively waiting for keys.
+  timer_task_runner_->FastForwardBy(
+      GPMEnclaveController::kFetchDeviceKeysTimeout);
+
   EXPECT_EQ(content::EvalJs(web_contents, "window.cmtgPromise").ExtractString(),
             "cmtg NONE");
+
+  histogram_tester_.ExpectTotalCount("WebAuthentication.Cmtg.BlockedDelay", 1);
 }
 
 // Tests that when the CMTG key fetch returns an empty list of keys, the flow
