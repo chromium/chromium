@@ -1441,6 +1441,7 @@ void ChromeDownloadManagerDelegate::ReserveVirtualPath(
     const base::FilePath& virtual_path,
     bool create_directory,
     DownloadPathReservationTracker::FilenameConflictAction conflict_action,
+    const base::FilePath& containment_directory,
     DownloadTargetDeterminerDelegate::ReservedPathCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!virtual_path.empty());
@@ -1449,7 +1450,8 @@ void ChromeDownloadManagerDelegate::ReserveVirtualPath(
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &document_dir);
   DownloadPathReservationTracker::GetReservedPath(
       download, virtual_path, download_prefs_->DownloadPath(), document_dir,
-      create_directory, conflict_action, std::move(callback));
+      create_directory, conflict_action, std::move(callback),
+      containment_directory);
 }
 
 #if BUILDFLAG(IS_ANDROID)

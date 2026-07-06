@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_PATH_RESERVATION_TRACKER_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_PATH_RESERVATION_TRACKER_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/download/public/common/download_export.h"
 
 namespace base {
-class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -89,9 +89,14 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadPathReservationTracker {
   //   with files that already exist on the file system or other download path
   //   reservations. Uniquifying is only done if |conflict_action| is UNIQUIFY.
   //
-  // - Posting a task back to the UI thread to invoke |completion_callback| with
-  //   the reserved path and a bool indicating whether the returned path was
-  //   verified as being writeable and unique.
+  // - Enforcing that the target path does not escape the containment directory
+  //   via symlinks or junctions. If |containment_directory| is empty,
+  //   |default_download_path| is used as the containment directory. If the
+  //   target path escapes the containment directory, it will be redirected to
+  //   reside inside the containment directory.
+  //
+  // - Posting a task back to the UI thread to invoke |callback| with the
+  //   PathValidationResult and the reserved path.
   //
   // In addition, if the target path of |download_item| is changed to a path
   // other than the reserved path, then the reservation will be updated to
@@ -100,20 +105,22 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadPathReservationTracker {
   // active paths to enforce uniqueness. It is only used for uniquifying new
   // reservations.
   //
-  // Once |completion_callback| is invoked, it is the caller's responsibility to
+  // Once |callback| is invoked, it is the caller's responsibility to
   // handle cases where the target path could not be verified and set the target
   // path of the |download_item| appropriately.
   //
   // The current implementation doesn't look at symlinks/mount points. E.g.: It
   // considers 'foo/bar/x.pdf' and 'foo/baz/x.pdf' to be two different paths,
   // even though 'bar' might be a symlink to 'baz'.
-  static void GetReservedPath(DownloadItem* download_item,
-                              const base::FilePath& requested_target_path,
-                              const base::FilePath& default_download_path,
-                              const base::FilePath& fallback_directory,
-                              bool create_directory,
-                              FilenameConflictAction conflict_action,
-                              ReservedPathCallback callback);
+  static void GetReservedPath(
+      DownloadItem* download_item,
+      const base::FilePath& requested_target_path,
+      const base::FilePath& default_download_path,
+      const base::FilePath& fallback_directory,
+      bool create_directory,
+      FilenameConflictAction conflict_action,
+      ReservedPathCallback callback,
+      const base::FilePath& containment_directory = base::FilePath());
 
   // Returns true if |path| is in use by an existing path reservation. Should
   // only be called on the task runner returned by
