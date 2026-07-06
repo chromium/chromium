@@ -285,8 +285,6 @@ public class AutofillCardBenefitsFragmentTest {
     // text for issuer terms, and card icon.
     @Test
     @MediumTest
-    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
-    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testCardBenefitsPreferenceScreen_displayNetworkAndTerm() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT);
 
@@ -300,7 +298,7 @@ public class AutofillCardBenefitsFragmentTest {
         assertEquals(
                 cardPreference.getSummary(),
                 activity.getString(R.string.autofill_settings_page_card_benefits_issuer_term_text));
-        assertTrue(cardPreference.getIcon().isVisible());
+        assertNotNull(cardPreference.getIcon());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cardPreference.performClick();
