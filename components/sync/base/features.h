@@ -114,11 +114,6 @@ BASE_DECLARE_FEATURE(kSyncWalletVehicleRegistrations);
 // the local and account data separation behind this feature flag.
 BASE_DECLARE_FEATURE(kSpellcheckSeparateLocalAndAccountDictionaries);
 
-// Normally, if kReplaceSyncPromosWithSignInPromos is disabled,
-// UserSelectableType::kBookmarks is disabled by default upon sign-in. This
-// flag makes the type enabled by default, for manual testing.
-BASE_DECLARE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting);
-
 // If enabled, avoids committing changes containing only favicon URL related
 // change.
 BASE_DECLARE_FEATURE(kSearchEngineAvoidFaviconOnlyCommits);

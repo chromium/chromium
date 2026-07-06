@@ -102,9 +102,7 @@ bool IsBookmarksSelectedByDefaultInTransportMode(PrefService& pref_service,
   // Note: If `kReplaceSyncPromosWithSignInPromos` gets disabled, the pref is
   // not reset and users will keep their bookmarks because that reduces the
   // risks of perceived dataloss.
-  return SigninPrefs(pref_service).GetBookmarksExplicitBrowserSignin(gaia_id) ||
-         base::FeatureList::IsEnabled(
-             kEnableBookmarksSelectedTypeOnSigninForTesting);
+  return SigninPrefs(pref_service).GetBookmarksExplicitBrowserSignin(gaia_id);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 }
 

@@ -119,9 +119,6 @@ BASE_FEATURE(kSyncWalletVehicleRegistrations,
 BASE_FEATURE(kSpellcheckSeparateLocalAndAccountDictionaries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSearchEngineAvoidFaviconOnlyCommits,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
