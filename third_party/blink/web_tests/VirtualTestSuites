@@ -552,7 +552,7 @@
     "args": [
       "--enable-features=CpuPerformance"
     ],
-    "expires": "Jun 30, 2026"
+    "expires": "Sep 30, 2026"
   },
   {
     "prefix": "declarative-performance-observer",
