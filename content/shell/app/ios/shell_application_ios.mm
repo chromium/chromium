@@ -84,18 +84,6 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
   return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication*)application {
-}
-
-- (void)applicationDidEnterBackground:(UIApplication*)application {
-}
-
-- (void)applicationWillEnterForeground:(UIApplication*)application {
-}
-
-- (void)applicationDidBecomeActive:(UIApplication*)application {
-}
-
 - (void)applicationWillTerminate:(UIApplication*)application {
 }
 
