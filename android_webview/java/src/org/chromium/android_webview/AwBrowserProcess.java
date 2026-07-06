@@ -670,7 +670,7 @@ public final class AwBrowserProcess {
 
         Context appContext = ContextUtils.getApplicationContext();
         if (!connection.bind(appContext, intent, Context.BIND_AUTO_CREATE)) {
-            Log.d(TAG, "Could not bind to MetricsBridgeService " + intent);
+            Log.d(TAG, "Could not bind to MetricsBridgeService %s", intent);
         }
     }
 

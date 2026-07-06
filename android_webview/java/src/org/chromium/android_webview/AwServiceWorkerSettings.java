@@ -57,7 +57,7 @@ public class AwServiceWorkerSettings {
 
     /** See {@link android.webkit.ServiceWorkerWebSettings#setCacheMode}. */
     public void setCacheMode(int mode) {
-        if (TRACE) Log.d(TAG, "setCacheMode=" + mode);
+        if (TRACE) Log.d(TAG, "setCacheMode=%d", mode);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mCacheMode != mode) {
                 mCacheMode = mode;
@@ -74,7 +74,7 @@ public class AwServiceWorkerSettings {
 
     /** See {@link android.webkit.ServiceWorkerWebSettings#setAllowContentAccess}. */
     public void setAllowContentAccess(boolean allow) {
-        if (TRACE) Log.d(TAG, "setAllowContentAccess=" + allow);
+        if (TRACE) Log.d(TAG, "setAllowContentAccess=%b", allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowContentUrlAccess != allow) {
                 mAllowContentUrlAccess = allow;
@@ -91,7 +91,7 @@ public class AwServiceWorkerSettings {
 
     /** See {@link android.webkit.ServiceWorkerWebSettings#setAllowFileAccess}. */
     public void setAllowFileAccess(boolean allow) {
-        if (TRACE) Log.d(TAG, "setAllowFileAccess=" + allow);
+        if (TRACE) Log.d(TAG, "setAllowFileAccess=%b", allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowFileUrlAccess != allow) {
                 mAllowFileUrlAccess = allow;
@@ -107,7 +107,7 @@ public class AwServiceWorkerSettings {
     }
 
     public void setBlockSpecialFileUrls(boolean block) {
-        if (TRACE) Log.d(TAG, "setBlockSpecialFileUrls=" + block);
+        if (TRACE) Log.d(TAG, "setBlockSpecialFileUrls=%b", block);
         synchronized (mAwServiceWorkerSettingsLock) {
             mBlockSpecialFileUrls = block;
         }
@@ -121,7 +121,7 @@ public class AwServiceWorkerSettings {
 
     /** See {@link android.webkit.ServiceWorkerWebSettings#setBlockNetworkLoads}. */
     public void setBlockNetworkLoads(boolean flag) {
-        if (TRACE) Log.d(TAG, "setBlockNetworkLoads=" + flag);
+        if (TRACE) Log.d(TAG, "setBlockNetworkLoads=%b", flag);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (!flag && !mHasInternetPermission) {
                 throw new SecurityException(

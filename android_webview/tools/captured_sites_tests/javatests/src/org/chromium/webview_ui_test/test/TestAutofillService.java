@@ -117,10 +117,10 @@ public class TestAutofillService extends AutofillService {
                     dataset.setValue(autofillId, value, createRemoteViews(fill));
                     break;
                 case View.AUTOFILL_TYPE_TOGGLE:
-                    Log.d(TAG, "Ignoring ViewNode: " + autofillId + "because it has type toggle.");
+                    Log.d(TAG, "Ignoring ViewNode: %s because it has type toggle.", autofillId);
                     break;
                 case View.AUTOFILL_TYPE_DATE:
-                    Log.d(TAG, "Ignoring ViewNode: " + autofillId + "because it has type date.");
+                    Log.d(TAG, "Ignoring ViewNode: %s because it has type date.", autofillId);
                     break;
                 default:
                     throw new Exception(

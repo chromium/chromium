@@ -29,7 +29,7 @@ public class AwNonembeddedUmaReplayer {
 
         int sample = proto.getSample();
         if (sample != 0 && sample != 1) {
-            Log.d(TAG, "Expected BooleanHistogram to have sample of 0 or 1, but was " + sample);
+            Log.d(TAG, "Expected BooleanHistogram to have sample of 0 or 1, but was %d", sample);
             return;
         }
 

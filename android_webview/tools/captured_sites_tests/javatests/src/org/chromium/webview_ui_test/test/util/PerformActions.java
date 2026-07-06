@@ -51,12 +51,7 @@ public class PerformActions {
         private ElementCoordinates(double x, double y) {
             this.mX = x;
             this.mY = y;
-            Log.d(
-                    TAG,
-                    "ElementCoordinates: x = "
-                            + Double.toString(this.mX)
-                            + ", y = "
-                            + Double.toString(this.mY));
+            Log.d(TAG, "ElementCoordinates: x = %f, y = %f", this.mX, this.mY);
         }
 
         @Override
@@ -65,21 +60,17 @@ public class PerformActions {
             view.getLocationOnScreen(xy);
             Log.d(
                     TAG,
-                    "WebView: top = "
-                            + Integer.toString(view.getTop())
-                            + ", left = "
-                            + Integer.toString(view.getLeft())
-                            + ", bottom = "
-                            + Integer.toString(view.getBottom())
-                            + ", right = "
-                            + Integer.toString(view.getRight())
-                            + ", width = "
-                            + Integer.toString(view.getWidth())
-                            + ", height ="
-                            + Integer.toString(view.getHeight()));
+                    "WebView: top = %d, left = %d, bottom = %d, right = %d, width = %d, height ="
+                            + " %d",
+                    view.getTop(),
+                    view.getLeft(),
+                    view.getBottom(),
+                    view.getRight(),
+                    view.getWidth(),
+                    view.getHeight());
             xy[0] = (int) (mX * view.getWidth());
             xy[1] = (int) (mY * view.getHeight());
-            Log.d(TAG, "x = " + Integer.toString(xy[0]) + ", y = " + Integer.toString(xy[1]));
+            Log.d(TAG, "x = %d, y = %d", xy[0], xy[1]);
             return new float[] {xy[0], xy[1]};
         }
     }
@@ -140,7 +131,7 @@ public class PerformActions {
         String js = getElemToXPath(xPath) + "elem.value;";
         String callback = findCallback(js);
         callback = callback.substring(1, callback.length() - 1);
-        Log.d(TAG, "Javascript Callback: " + callback);
+        Log.d(TAG, "Javascript Callback: %s", callback);
         return callback.equals(expected);
     }
 

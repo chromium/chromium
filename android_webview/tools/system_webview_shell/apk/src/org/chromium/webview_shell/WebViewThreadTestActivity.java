@@ -132,7 +132,7 @@ public class WebViewThreadTestActivity extends Activity {
                                 mWebView = null;
                                 break;
                             default:
-                                Log.d(TAG, "Unknown message: " + msg.what);
+                                Log.d(TAG, "Unknown message: %d", msg.what);
                                 break;
                         }
                     }
@@ -245,7 +245,7 @@ public class WebViewThreadTestActivity extends Activity {
             try {
                 mWebViewThread.join();
             } catch (Exception e) {
-                Log.d(TAG, "While joining mWebViewThread: " + e);
+                Log.d(TAG, "While joining mWebViewThread", e);
             }
         }
         super.onDestroy();
