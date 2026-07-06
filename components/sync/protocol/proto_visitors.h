@@ -25,6 +25,7 @@
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
+#include "components/sync/protocol/encrypted_tab_context_container_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -710,6 +711,11 @@ VISIT_PROTO_FIELDS(const sync_pb::EncryptedData& proto) {
   VISIT_BYTES(blob);
 }
 
+VISIT_PROTO_FIELDS(
+    const sync_pb::EncryptedTabContextContainerSpecifics& proto) {
+  // Empty.
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(client_tag_hash);
   VISIT(server_id);
@@ -740,7 +746,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(63 == GetNumDataTypes(),
+  static_assert(64 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -763,6 +769,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(cookie);
   VISIT(device_info);
   VISIT(dictionary);
+  VISIT(encrypted_tab_context_container);
   VISIT(extension);
   VISIT(extension_setting);
   VISIT(history);

@@ -198,11 +198,13 @@ enum DataType {
   // A theme object specifically for iOS devices.
   THEMES_IOS,
 
-
   // A theme object specifically for Android devices.
   THEMES_ANDROID,
 
-  LAST_USER_DATA_TYPE = THEMES_ANDROID,
+  // Encrypted tab context container.
+  ENCRYPTED_TAB_CONTEXT_CONTAINER,
+
+  LAST_USER_DATA_TYPE = ENCRYPTED_TAB_CONTEXT_CONTAINER,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -312,7 +314,8 @@ enum class DataTypeForHistograms {
   kThemesIos = 78,
   // kDeprecatedAccessibilityAnnotation = 79,
   kThemesAndroid = 80,
-  kMaxValue = kThemesAndroid,
+  kEncryptedTabContextContainer = 81,
+  kMaxValue = kEncryptedTabContextContainer,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 

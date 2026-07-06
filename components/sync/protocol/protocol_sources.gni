@@ -30,6 +30,7 @@ sync_protocol_sources = [
   "deletion_origin.proto",
   "device_info_specifics.proto",
   "dictionary_specifics.proto",
+  "encrypted_tab_context_container_specifics.proto",
   "encryption.proto",
   "entity_metadata.proto",
   "entity_specifics.proto",

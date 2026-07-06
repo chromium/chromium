@@ -71,7 +71,7 @@ using ::testing::Pointee;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(63 == syncer::GetNumDataTypes(),
+static_assert(64 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -93,6 +93,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(contact_info)
 DEFINE_SPECIFICS_TO_VALUE_TEST(cookie)
 DEFINE_SPECIFICS_TO_VALUE_TEST(device_info)
 DEFINE_SPECIFICS_TO_VALUE_TEST(dictionary)
+DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted_tab_context_container)
 DEFINE_SPECIFICS_TO_VALUE_TEST(extension)
 DEFINE_SPECIFICS_TO_VALUE_TEST(extension_setting)
 DEFINE_SPECIFICS_TO_VALUE_TEST(history)
