@@ -188,11 +188,13 @@ std::unique_ptr<Canvas2DResourceProvider> MakeCanvas2DResourceProvider(
 
 scoped_refptr<CanvasResource> UpdateResource(
     Canvas2DResourceProvider* provider) {
-  provider->Flush(FlushReason::kOther);
+  if (provider->Recorder().HasReleasableDrawOps()) {
+    provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
+  }
   provider->ProduceCanvasResource();
   // Resource updated after draw.
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   return provider->ProduceCanvasResource();
 }
 
@@ -233,7 +235,7 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageResourceRecycling) {
   EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
 
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   auto new_resource = provider->ProduceCanvasResource();
   EXPECT_NE(resource, new_resource);
   EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
@@ -242,7 +244,7 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageResourceRecycling) {
   EnsureResourceRecycled(std::move(resource));
 
   provider->GetCanvasForTesting().clear(SkColors::kBlack);
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   auto resource_again = provider->ProduceCanvasResource();
   EXPECT_EQ(resource_ptr, resource_again);
   EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
@@ -370,7 +372,7 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
 
   // Resource updated after draw.
   provider->GetCanvasForTesting().clear(SkColors::kWhite);
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   new_image = provider->Snapshot();
   EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
 
@@ -378,7 +380,7 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   auto original_shared_image = image->GetSharedImage();
   image.reset();
   provider->GetCanvasForTesting().clear(SkColors::kBlack);
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
@@ -410,7 +412,7 @@ TEST_F(Canvas2DResourceProviderTest, FlushForImage) {
   // Modify the canvas to trigger OnFlushForImage
   src_provider->GetCanvasForTesting().clear(SkColors::kWhite);
   // So that all the cached draws are executed
-  src_provider->Flush(FlushReason::kOther);
+  src_provider->RasterRecord(src_provider->Recorder().ReleaseMainRecording());
   src_provider->ProduceCanvasResource();
 
   // The paint canvas may have moved
@@ -463,7 +465,7 @@ TEST_F(Canvas2DResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
 
   // `FlushCanvas` releases all ops, leaving the canvas clean.
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
 }
@@ -486,7 +488,7 @@ TEST_F(Canvas2DResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_TRUE(provider->Recorder().HasSideRecording());
 
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_TRUE(provider->Recorder().HasSideRecording());
@@ -501,7 +503,7 @@ TEST_F(Canvas2DResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_FALSE(provider->Recorder().HasSideRecording());
 
-  provider->Flush(FlushReason::kOther);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_FALSE(provider->Recorder().HasSideRecording());
