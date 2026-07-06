@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -73,7 +74,7 @@ class AtMemoryMetricsRecorder {
   void OnPopupShown(AutofillSuggestionTriggerSource trigger_source);
 
   // Records that a search query was submitted during this session.
-  void OnQuerySubmitted(std::u16string query);
+  void OnQuerySubmitted(std::u16string_view query);
 
   // Records that a response for the pending query was received.
   void OnQueryResponseReceived(

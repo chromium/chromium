@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 
+#include <optional>
+#include <string_view>
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -119,7 +123,7 @@ void AtMemoryMetricsRecorder::OnPopupShown(
                                 *source_);
 }
 
-void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string query) {
+void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
   MaybeLogSuggestionAccepted();
   suggestion_accepted_ = false;
   ++query_count_;
