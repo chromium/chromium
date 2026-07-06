@@ -1383,7 +1383,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        SaasUsageReportingOnOpen) {
   // Set the policy to include the GiC virtual domain.

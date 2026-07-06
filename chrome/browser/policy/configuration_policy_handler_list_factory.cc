@@ -3080,19 +3080,22 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
-  handlers->AddHandler(std::make_unique<URLSchemeListPolicyHandler>(
-      key::kSaasUsageReportingDomainUrlsForBrowsers,
-      enterprise_reporting::kSaasUsageDomainUrlsForBrowser));
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
-      std::make_unique<URLSchemeListPolicyHandler>(
-          key::kSaasUsageReportingDomainUrlsForProfiles,
-          enterprise_reporting::kSaasUsageDomainUrlsForProfile)));
-
 #elif BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
+      std::make_unique<URLSchemeListPolicyHandler>(
+          key::kSaasUsageReportingDomainUrlsForProfiles,
+          enterprise_reporting::kSaasUsageDomainUrlsForProfile)));
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  handlers->AddHandler(std::make_unique<URLSchemeListPolicyHandler>(
+      key::kSaasUsageReportingDomainUrlsForBrowsers,
+      enterprise_reporting::kSaasUsageDomainUrlsForBrowser));
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kDeviceChromeVariations, nullptr,

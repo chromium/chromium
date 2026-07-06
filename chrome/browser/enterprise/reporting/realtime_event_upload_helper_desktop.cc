@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -70,6 +71,12 @@ RealtimeEventUploadHelper::PrepareUpload(bool per_profile) {
 
 std::optional<std::string> RealtimeEventUploadHelper::GetDMToken(
     bool per_profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, we must always use the profile DM token because
+  // BrowserDMTokenStorage does not exist, and policy::GetDMToken(nullptr)
+  // unconditionally returns an empty token.
+  return reporting::GetUserDmToken(profile_);
+#else
   if (per_profile) {
     return reporting::GetUserDmToken(profile_);
   }
@@ -79,7 +86,9 @@ std::optional<std::string> RealtimeEventUploadHelper::GetDMToken(
   if (dm_token.is_valid()) {
     return dm_token.value();
   }
+
   return std::nullopt;
+#endif
 }
 
 enterprise_connectors::RealtimeReportingClientBase*

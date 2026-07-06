@@ -21,6 +21,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user.h"
@@ -166,6 +167,7 @@ base::DictValue GetContext(Profile* profile) {
   if (!device_dm_token.empty()) {
     request.mutable_device()->set_dm_token(device_dm_token);
   }
+  request.mutable_device()->set_os_platform(policy::GetOSPlatform());
 #endif
 
   std::optional<std::string> user_dm_token = GetUserDmToken(profile);
