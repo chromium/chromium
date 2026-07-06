@@ -64,6 +64,7 @@ public class SettingsPageFragmentDelegateImpl
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mDependencyProvider;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mWideDisplayPaddingApplier;
+    private FragmentManager.@Nullable FragmentLifecycleCallbacks mSettingsMetricsReporter;
     private @Nullable Toolbar mToolbar;
     private @Nullable MultiColumnTitleUpdater mMultiColumnTitleUpdater;
 
@@ -135,6 +136,10 @@ public class SettingsPageFragmentDelegateImpl
         fragmentManager.registerFragmentLifecycleCallbacks(
                 mWideDisplayPaddingApplier, /* recursive= */ true);
 
+        mSettingsMetricsReporter = new SettingsMetricsReporter(mainFragmentTag);
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                mSettingsMetricsReporter, /* recursive= */ true);
+
         // Inflate the settings layout into the container view.
         // TODO(crbug.com/521895796): Rename settings_activity.xml since with settings-in-a-tab it
         // doesn't map directly to its own activity.
@@ -196,6 +201,10 @@ public class SettingsPageFragmentDelegateImpl
         assumeNonNull(mWideDisplayPaddingApplier);
         fragmentManager.unregisterFragmentLifecycleCallbacks(mWideDisplayPaddingApplier);
         mWideDisplayPaddingApplier = null;
+
+        assumeNonNull(mSettingsMetricsReporter);
+        fragmentManager.unregisterFragmentLifecycleCallbacks(mSettingsMetricsReporter);
+        mSettingsMetricsReporter = null;
 
         if (mMultiColumnTitleUpdater != null) {
             MultiColumnSettings multiColumnSettings = getMultiColumnSettings();

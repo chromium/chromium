@@ -96,7 +96,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * The Chrome settings activity.
@@ -282,7 +281,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         this, this::isTwoColumnSettingsVisible, MAIN_FRAGMENT_TAG),
                 /* recursive= */ true);
         fragmentManager.registerFragmentLifecycleCallbacks(
-                new SettingsMetricsReporter(), /* recursive= */ true);
+                new SettingsMetricsReporter(MAIN_FRAGMENT_TAG), /* recursive= */ true);
 
         if (isContainmentEnabled()) {
             mContainmentHelper.registerCallbacks(fragmentManager);
@@ -1118,43 +1117,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 mCurrentPageTitle = settingsFragment.getPageTitle();
                 mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mSetTitleCallback);
             }
-        }
-    }
-
-    private static class SettingsMetricsReporter
-            extends FragmentManager.FragmentLifecycleCallbacks {
-        @Override
-        public void onFragmentAttached(
-                FragmentManager fragmentManager, Fragment fragment, Context context) {
-            if (!(fragment instanceof SettingsFragment)
-                    && !MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
-                return;
-            }
-
-            String className = fragment.getClass().getSimpleName();
-            RecordHistogram.recordSparseHistogram(
-                    "Settings.FragmentAttached", className.hashCode());
-            // Log hashCode to easily add new class names to enums.xml.
-            Log.d(
-                    TAG,
-                    String.format(
-                            Locale.ENGLISH,
-                            "Settings.FragmentAttached: <int value=\"%d\" label=\"%s\"/>",
-                            className.hashCode(),
-                            className));
-
-            if (!(fragment instanceof SettingsFragment)) {
-                RecordHistogram.recordSparseHistogram(
-                        "Settings.NonSettingsFragmentAttached", className.hashCode());
-                Log.e(
-                        TAG,
-                        String.format(
-                                Locale.ENGLISH,
-                                "%s does not implement SettingsFragment",
-                                className));
-            }
-            assert fragment instanceof SettingsFragment
-                    : className + "does not implement SettingsFragment";
         }
     }
 
