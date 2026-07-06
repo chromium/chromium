@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties.ItemType;
@@ -98,12 +97,12 @@ public class AtMemoryHomeView extends LinearLayout {
         mNoticeSettingsLink.setOnClickListener(v -> listener.run());
     }
 
-    public void setOnQuerySubmittedCallback(Callback<String> callback) {
-        mSearchBarView.setOnQuerySubmittedCallback(callback);
+    public void setSearchBarDelegate(AtMemorySearchBarView.Delegate delegate) {
+        mSearchBarView.setDelegate(delegate);
     }
 
-    public void setOnQueryTextChangedCallback(Callback<String> callback) {
-        mSearchBarView.setOnQueryTextChangedCallback(callback);
+    public boolean searchHasFocus() {
+        return mSearchBarView.searchHasFocus();
     }
 
     public void setIsLoading(boolean isLoading) {

@@ -34,7 +34,7 @@ import java.util.List;
 
 /** Contains the business logic for the AtMemoryBottomSheet. */
 @NullMarked
-class AtMemoryBottomSheetMediator {
+class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     static final String NOTICE_INTERACTIONS_HISTOGRAM =
             "PersonalContext.AtMemory.NoticeInteractions";
 
@@ -234,11 +234,6 @@ class AtMemoryBottomSheetMediator {
         mDelegate.onChildSuggestionClicked(parentPosition, childPosition);
     }
 
-    void onQuerySubmitted(String query) {
-        mHomeModel.set(HomeProperties.IS_LOADING, true);
-        mDelegate.onQuerySubmitted(query);
-    }
-
     private void onSearchTileClicked() {
         ModelList sheetItems = mHomeModel.get(HomeProperties.SHEET_ITEMS);
         if (sheetItems.isEmpty()) return;
@@ -251,6 +246,22 @@ class AtMemoryBottomSheetMediator {
 
         mSearchDelegate.hideKeyboardAndClearFocus();
         onQuerySubmitted(query);
+    }
+
+    @Override
+    public void onQuerySubmitted(String query) {
+        mHomeModel.set(HomeProperties.IS_LOADING, true);
+        mDelegate.onQuerySubmitted(query);
+    }
+
+    @Override
+    public void onQueryTextChanged(String query) {
+        mDelegate.onQueryTextChanged(query);
+    }
+
+    @Override
+    public void onSearchFocus(boolean hasFocus) {
+        mDelegate.onSearchFocus(hasFocus);
     }
 
     private boolean isSearchAffordance(List<AutofillSuggestion> suggestions) {
@@ -273,8 +284,7 @@ class AtMemoryBottomSheetMediator {
                 .with(HomeProperties.IS_LOADING, false)
                 .with(HomeProperties.SHOW_SUGGESTIONS_BACKGROUND, false)
                 .with(HomeProperties.SHEET_ITEMS, new ModelList())
-                .with(HomeProperties.ON_QUERY_SUBMITTED_CALLBACK, this::onQuerySubmitted)
-                .with(HomeProperties.ON_QUERY_TEXT_CHANGED_CALLBACK, mDelegate::onQueryTextChanged)
+                .with(HomeProperties.SEARCH_BAR_DELEGATE, this)
                 .with(HomeProperties.IS_NOTICE_VISIBLE, shouldShowNotice)
                 .with(HomeProperties.NOTICE_OK_CLICK_LISTENER, this::onNoticeAcknowledged)
                 .with(HomeProperties.NOTICE_SETTINGS_CLICK_LISTENER, this::onNoticeSettingsClicked)

@@ -33,6 +33,12 @@ public class AtMemoryBottomSheetView implements SearchItemProperties.Delegate {
         viewFlipper.setDisplayedChild(getDisplayedChildForScreenId(screenId));
     }
 
+    @ScreenId
+    public int getCurrentScreen() {
+        ViewFlipper viewFlipper = mContentView.findViewById(R.id.at_memory_view_flipper);
+        return getScreenIdForDisplayedChild(viewFlipper.getDisplayedChild());
+    }
+
     public View getContentView() {
         return mContentView;
     }
@@ -58,6 +64,10 @@ public class AtMemoryBottomSheetView implements SearchItemProperties.Delegate {
         mHomeView.hideKeyboardAndClearFocus();
     }
 
+    public boolean searchHasFocus() {
+        return mHomeView.searchHasFocus();
+    }
+
     private int getDisplayedChildForScreenId(@ScreenId int screenId) {
         switch (screenId) {
             case ScreenId.HOME_SCREEN:
@@ -67,6 +77,17 @@ public class AtMemoryBottomSheetView implements SearchItemProperties.Delegate {
         }
         assert false : "Undefined ScreenId: " + screenId;
         return 0;
+    }
+
+    private @ScreenId int getScreenIdForDisplayedChild(int displayedChild) {
+        switch (displayedChild) {
+            case 0:
+                return ScreenId.HOME_SCREEN;
+            case 1:
+                return ScreenId.FLYOUT_SCREEN;
+        }
+        assert false : "Undefined displayedChild: " + displayedChild;
+        return ScreenId.HOME_SCREEN;
     }
 
     public void setNoticeSettingsClickListener(Runnable onClick) {

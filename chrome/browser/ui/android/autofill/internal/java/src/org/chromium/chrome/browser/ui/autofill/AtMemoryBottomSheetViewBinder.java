@@ -50,11 +50,8 @@ class AtMemoryBottomSheetViewBinder {
      */
     static void bindAtMemoryHomeView(
             PropertyModel model, AtMemoryHomeView view, PropertyKey propertyKey) {
-        if (propertyKey == HomeProperties.ON_QUERY_SUBMITTED_CALLBACK) {
-            view.setOnQuerySubmittedCallback(model.get(HomeProperties.ON_QUERY_SUBMITTED_CALLBACK));
-        } else if (propertyKey == HomeProperties.ON_QUERY_TEXT_CHANGED_CALLBACK) {
-            view.setOnQueryTextChangedCallback(
-                    model.get(HomeProperties.ON_QUERY_TEXT_CHANGED_CALLBACK));
+        if (propertyKey == HomeProperties.SEARCH_BAR_DELEGATE) {
+            view.setSearchBarDelegate(model.get(HomeProperties.SEARCH_BAR_DELEGATE));
         } else if (propertyKey == HomeProperties.IS_LOADING) {
             view.setIsLoading(model.get(HomeProperties.IS_LOADING));
         } else if (propertyKey == HomeProperties.SHOW_SUGGESTIONS_BACKGROUND) {

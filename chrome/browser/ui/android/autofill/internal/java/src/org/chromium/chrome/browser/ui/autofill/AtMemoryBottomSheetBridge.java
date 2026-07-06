@@ -114,6 +114,13 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     }
 
     @Override
+    public void onSearchFocus(boolean hasFocus) {
+        if (hasFocus) {
+            mCoordinator.expandSheet();
+        }
+    }
+
+    @Override
     public void onSuggestionClicked(int position) {
         if (mNativeAtMemoryBottomSheetBridge != 0) {
             AtMemoryBottomSheetBridgeJni.get()

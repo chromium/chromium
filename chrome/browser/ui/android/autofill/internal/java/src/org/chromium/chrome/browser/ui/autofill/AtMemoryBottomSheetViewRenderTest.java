@@ -159,8 +159,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                 () -> {
                     mView = new AtMemoryBottomSheetView(themeWrapper);
                     AtMemoryBottomSheetContent content =
-                            new AtMemoryBottomSheetContent(
-                                    mView.getContentView(), mBottomSheetController);
+                            new AtMemoryBottomSheetContent(mView, mBottomSheetController);
 
                     ModelList modelList = new ModelList();
                     PropertyModel itemModel1 =
@@ -208,8 +207,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                 () -> {
                     mView = new AtMemoryBottomSheetView(themeWrapper);
                     AtMemoryBottomSheetContent content =
-                            new AtMemoryBottomSheetContent(
-                                    mView.getContentView(), mBottomSheetController);
+                            new AtMemoryBottomSheetContent(mView, mBottomSheetController);
 
                     ModelList modelList = new ModelList();
                     PropertyModel itemModel =
@@ -249,8 +247,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                 () -> {
                     mView = new AtMemoryBottomSheetView(themeWrapper);
                     AtMemoryBottomSheetContent content =
-                            new AtMemoryBottomSheetContent(
-                                    mView.getContentView(), mBottomSheetController);
+                            new AtMemoryBottomSheetContent(mView, mBottomSheetController);
 
                     ModelList modelList = new ModelList();
                     PropertyModel searchTileModel =
@@ -291,8 +288,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                 () -> {
                     mView = new AtMemoryBottomSheetView(themeWrapper);
                     AtMemoryBottomSheetContent content =
-                            new AtMemoryBottomSheetContent(
-                                    mView.getContentView(), mBottomSheetController);
+                            new AtMemoryBottomSheetContent(mView, mBottomSheetController);
 
                     ModelList modelList = new ModelList();
                     modelList.add(
@@ -346,8 +342,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                 () -> {
                     mView = new AtMemoryBottomSheetView(themeWrapper);
                     AtMemoryBottomSheetContent content =
-                            new AtMemoryBottomSheetContent(
-                                    mView.getContentView(), mBottomSheetController);
+                            new AtMemoryBottomSheetContent(mView, mBottomSheetController);
 
                     mView.setCurrentScreen(ScreenId.FLYOUT_SCREEN);
 

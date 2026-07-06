@@ -49,12 +49,7 @@ class AtMemoryBottomSheetProperties {
         // Indicates whether the bottom sheet dialog should display a loading state.
         static final WritableBooleanPropertyKey IS_LOADING = new WritableBooleanPropertyKey();
 
-        // Invoked when the user submits a search query.
-        static final ReadableObjectPropertyKey<Callback<String>> ON_QUERY_SUBMITTED_CALLBACK =
-                new ReadableObjectPropertyKey<>();
-
-        // Invoked when the user changes the search query.
-        static final ReadableObjectPropertyKey<Callback<String>> ON_QUERY_TEXT_CHANGED_CALLBACK =
+        static final ReadableObjectPropertyKey<AtMemorySearchBarView.Delegate> SEARCH_BAR_DELEGATE =
                 new ReadableObjectPropertyKey<>();
 
         // Indicates whether the bottom sheet dialog should display the suggestions background.
@@ -79,8 +74,7 @@ class AtMemoryBottomSheetProperties {
 
         static final PropertyKey[] ALL_KEYS = {
             IS_LOADING,
-            ON_QUERY_SUBMITTED_CALLBACK,
-            ON_QUERY_TEXT_CHANGED_CALLBACK,
+            SEARCH_BAR_DELEGATE,
             SHOW_SUGGESTIONS_BACKGROUND,
             SHEET_ITEMS,
             IS_NOTICE_VISIBLE,

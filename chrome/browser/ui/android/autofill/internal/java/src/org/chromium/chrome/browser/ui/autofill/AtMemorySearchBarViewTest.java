@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
@@ -38,7 +37,7 @@ import org.chromium.ui.widget.LoadingView;
 public class AtMemorySearchBarViewTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Callback<String> mMockCallback;
+    @Mock private AtMemorySearchBarView.Delegate mMockDelegate;
 
     private Context mContext;
     private AtMemorySearchBarView mView;
@@ -73,9 +72,9 @@ public class AtMemorySearchBarViewTest {
 
     @Test
     public void testClearSearchText_emptyTextIsNoOp() {
-        mView.setOnQueryTextChangedCallback(mMockCallback);
+        mView.setDelegate(mMockDelegate);
         mView.clearSearchText();
-        Mockito.verifyNoInteractions(mMockCallback);
+        Mockito.verifyNoInteractions(mMockDelegate);
     }
 
     @Test
@@ -103,17 +102,17 @@ public class AtMemorySearchBarViewTest {
 
     @Test
     public void testOnQuerySubmittedCallback() {
-        mView.setOnQuerySubmittedCallback(mMockCallback);
+        mView.setDelegate(mMockDelegate);
         mSearchEditText.setText("test query");
 
         mSearchEditText.onEditorAction(EditorInfo.IME_ACTION_SEARCH);
-        verify(mMockCallback).onResult("test query");
+        verify(mMockDelegate).onQuerySubmitted("test query");
     }
 
     @Test
     public void testOnQueryTextChangedCallback() {
-        mView.setOnQueryTextChangedCallback(mMockCallback);
+        mView.setDelegate(mMockDelegate);
         mSearchEditText.setText("abc");
-        verify(mMockCallback).onResult("abc");
+        verify(mMockDelegate).onQueryTextChanged("abc");
     }
 }

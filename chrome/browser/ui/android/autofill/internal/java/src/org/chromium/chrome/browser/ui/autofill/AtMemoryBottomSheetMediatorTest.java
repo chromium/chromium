@@ -218,7 +218,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Test
     public void testOnQueryTextChanged() {
-        mHomeModel.get(HomeProperties.ON_QUERY_TEXT_CHANGED_CALLBACK).onResult("flight");
+        mHomeModel.get(HomeProperties.SEARCH_BAR_DELEGATE).onQueryTextChanged("flight");
         verify(mDelegate).onQueryTextChanged("flight");
 
         mMediator.show(List.of(createSearchAffordance("flight")));
@@ -366,5 +366,11 @@ public class AtMemoryBottomSheetMediatorTest {
         mediator.show(List.of()); // Second call should not log again.
 
         shownWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnSearchFocus() {
+        mHomeModel.get(HomeProperties.SEARCH_BAR_DELEGATE).onSearchFocus(true);
+        verify(mDelegate).onSearchFocus(true);
     }
 }

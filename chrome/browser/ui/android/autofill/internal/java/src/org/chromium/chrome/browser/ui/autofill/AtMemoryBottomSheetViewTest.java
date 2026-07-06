@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
 
@@ -36,8 +37,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -54,6 +58,7 @@ public class AtMemoryBottomSheetViewTest {
     @Mock private Runnable mMockBackClickListener;
     @Mock private Runnable mMockManageClickListener;
     @Mock private Callback<Integer> mMockSuggestionClickListener;
+    @Mock private BottomSheetController mBottomSheetController;
 
     private Context mContext;
     private AtMemoryBottomSheetView mView;
@@ -81,6 +86,7 @@ public class AtMemoryBottomSheetViewTest {
         View searchView = contentView.findViewById(R.id.search_query_input);
         assertNotNull(searchView);
         assertTrue(searchView.hasFocus());
+        assertTrue(mView.searchHasFocus());
     }
 
     @Test
@@ -249,6 +255,37 @@ public class AtMemoryBottomSheetViewTest {
         chip.performClick();
 
         verify(mMockSuggestionClickListener).onResult(0);
+    }
+
+    @Test
+    public void testHeightRatiosWhenSearchHasFocus() {
+        when(mBottomSheetController.getContainerHeight()).thenReturn(1000);
+
+        AtMemoryBottomSheetContent content =
+                new AtMemoryBottomSheetContent(mView, mBottomSheetController);
+
+        assertEquals(HeightMode.DISABLED, content.getHalfHeightRatio(), 0.01f);
+        assertTrue(content.getFullHeightRatio() <= 0.5f);
+
+        EditText searchView = mView.getContentView().findViewById(R.id.search_query_input);
+        searchView.requestFocus();
+
+        assertTrue(mView.searchHasFocus());
+        assertEquals(1.0f, content.getFullHeightRatio(), 0.01f);
+        assertEquals(HeightMode.DISABLED, content.getHalfHeightRatio(), 0.01f);
+    }
+
+    @Test
+    public void testHeightRatiosOnFlyoutScreen() {
+        when(mBottomSheetController.getContainerHeight()).thenReturn(1000);
+
+        AtMemoryBottomSheetContent content =
+                new AtMemoryBottomSheetContent(mView, mBottomSheetController);
+
+        mView.setCurrentScreen(ScreenId.FLYOUT_SCREEN);
+
+        assertEquals(HeightMode.DISABLED, content.getHalfHeightRatio(), 0.01f);
+        assertEquals(HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), 0.01f);
     }
 
     private List<ChipView> getChipViews(ViewGroup viewGroup) {

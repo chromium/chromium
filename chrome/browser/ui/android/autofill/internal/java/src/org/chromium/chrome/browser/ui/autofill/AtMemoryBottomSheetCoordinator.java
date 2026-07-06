@@ -47,6 +47,8 @@ public class AtMemoryBottomSheetCoordinator {
 
         void onQueryTextChanged(String query);
 
+        void onSearchFocus(boolean hasFocus);
+
         void onSuggestionClicked(int position);
 
         void onChildSuggestionClicked(int parentPosition, int childPosition);
@@ -65,7 +67,7 @@ public class AtMemoryBottomSheetCoordinator {
 
         mMediator = new AtMemoryBottomSheetMediator(context, profile, delegate, view);
 
-        mContent = new AtMemoryBottomSheetContent(view.getContentView(), mBottomSheetController);
+        mContent = new AtMemoryBottomSheetContent(view, mBottomSheetController);
 
         setUpModelChangeProcessors(view);
     }
@@ -81,6 +83,10 @@ public class AtMemoryBottomSheetCoordinator {
 
     public void hide() {
         mBottomSheetController.hideContent(mContent, /* animate= */ true);
+    }
+
+    public void expandSheet() {
+        mBottomSheetController.expandSheet(/* animate= */ true);
     }
 
     private void onDismissed() {

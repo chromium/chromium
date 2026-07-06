@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,9 +28,15 @@ public class AtMemorySearchBarView extends LinearLayout {
     private ImageView mSearchIcon;
     private LoadingView mSearchSpinner;
     private View mClearButton;
+    private @Nullable Delegate mDelegate;
 
-    private Callback<String> mOnQuerySubmittedCallback = s -> {};
-    private Callback<String> mOnQueryTextChangedCallback = s -> {};
+    interface Delegate {
+        void onQuerySubmitted(String query);
+
+        void onQueryTextChanged(String query);
+
+        void onSearchFocus(boolean hasFocus);
+    }
 
     public AtMemorySearchBarView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -52,7 +57,9 @@ public class AtMemorySearchBarView extends LinearLayout {
                     @Override
                     public void afterTextChanged(Editable s) {
                         mClearButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
-                        mOnQueryTextChangedCallback.onResult(s.toString());
+                        if (mDelegate != null) {
+                            mDelegate.onQueryTextChanged(s.toString());
+                        }
                     }
                 });
 
@@ -63,10 +70,19 @@ public class AtMemorySearchBarView extends LinearLayout {
                                     && event.getAction() == KeyEvent.ACTION_DOWN
                                     && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                         hideKeyboardAndClearFocus();
-                        mOnQuerySubmittedCallback.onResult(v.getText().toString());
+                        if (mDelegate != null) {
+                            mDelegate.onQuerySubmitted(v.getText().toString());
+                        }
                         return true;
                     }
                     return false;
+                });
+
+        mSearchEditText.setOnFocusChangeListener(
+                (v, hasFocus) -> {
+                    if (mDelegate != null) {
+                        mDelegate.onSearchFocus(hasFocus);
+                    }
                 });
     }
 
@@ -83,12 +99,12 @@ public class AtMemorySearchBarView extends LinearLayout {
         }
     }
 
-    public void setOnQuerySubmittedCallback(Callback<String> callback) {
-        mOnQuerySubmittedCallback = callback;
+    public boolean searchHasFocus() {
+        return mSearchEditText.hasFocus();
     }
 
-    public void setOnQueryTextChangedCallback(Callback<String> callback) {
-        mOnQueryTextChangedCallback = callback;
+    public void setDelegate(Delegate delegate) {
+        mDelegate = delegate;
     }
 
     public void hideKeyboardAndClearFocus() {

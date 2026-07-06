@@ -17,17 +17,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 /** Implements the content for the @memory bottom sheet. */
 @NullMarked
 class AtMemoryBottomSheetContent implements BottomSheetContent {
-    private final View mContentView;
+    private final AtMemoryBottomSheetView mView;
     private final BottomSheetController mBottomSheetController;
 
-    AtMemoryBottomSheetContent(View contentView, BottomSheetController bottomSheetController) {
-        mContentView = contentView;
+    AtMemoryBottomSheetContent(
+            AtMemoryBottomSheetView view, BottomSheetController bottomSheetController) {
+        mView = view;
         mBottomSheetController = bottomSheetController;
     }
 
     @Override
     public View getContentView() {
-        return mContentView;
+        return mView.getContentView();
     }
 
     @Override
@@ -65,14 +66,20 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return Math.min(
-                getSheetContentHeight() / (float) mBottomSheetController.getContainerHeight(),
-                0.9f);
+        return HeightMode.DISABLED;
     }
 
     @Override
     public float getFullHeightRatio() {
-        return 1.0f;
+        if (mView.searchHasFocus()) {
+            return 1.0f;
+        }
+        if (mView.getCurrentScreen() == AtMemoryBottomSheetProperties.ScreenId.FLYOUT_SCREEN) {
+            return HeightMode.WRAP_CONTENT;
+        }
+        return Math.min(
+                getSheetContentHeight() / (float) mBottomSheetController.getContainerHeight(),
+                0.5f);
     }
 
     @Override
@@ -108,11 +115,12 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     // Using HeightMode.WRAP_CONTENT for getFullHeightRatio() disables the view from being
     // expandable.
     private float getSheetContentHeight() {
-        mContentView.measure(
-                MeasureSpec.makeMeasureSpec(
-                        mBottomSheetController.getContainerWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(
-                        mBottomSheetController.getContainerHeight(), MeasureSpec.AT_MOST));
-        return mContentView.getMeasuredHeight();
+        mView.getContentView()
+                .measure(
+                        MeasureSpec.makeMeasureSpec(
+                                mBottomSheetController.getContainerWidth(), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(
+                                mBottomSheetController.getContainerHeight(), MeasureSpec.AT_MOST));
+        return mView.getContentView().getMeasuredHeight();
     }
 }
