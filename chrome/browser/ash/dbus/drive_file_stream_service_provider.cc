@@ -52,7 +52,7 @@ void DriveFileStreamServiceProvider::HandleOpenIpcChannel(
                                                  "Second argument is not FD."));
     return;
   }
-  if (!mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
+  if (!mojo_bootstrap::PendingConnectionManager::GetForDriveFs().OpenIpcChannel(
           id, std::move(fd))) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,

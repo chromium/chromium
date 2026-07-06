@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_MOJO_BOOTSTRAP_PENDING_CONNECTION_MANAGER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -53,7 +54,7 @@ class PendingConnectionManagerTest;
 //       invitation_.AttachMessagePipe("myservice-bootstrap");
 //
 //   base::UnguessableToken token = base::UnguessableToken::Create();
-//   PendingConnectionManager::Get().ExpectOpenIpcChannel(
+//   PendingConnectionManager::GetForMyService().ExpectOpenIpcChannel(
 //       token_, base::BindOnce(&MyClass::AcceptConnection,
 //                              base::Unretained(this)));
 //   StartMySystemService(token_.ToString());
@@ -71,7 +72,7 @@ class PendingConnectionManagerTest;
 //     dbus::ExportedObject::ResponseSender response_sender) {
 //   std::string token = // Pop token passed to StartMySystemService()
 //   base::ScopedFD fd = // Pop FD
-//   CHECK(PendingConnectionManager::Get().OpenIpcChannel(
+//   CHECK(PendingConnectionManager::GetForMyService().OpenIpcChannel(
 //       token, std::move(fd)));
 // }
 //
@@ -94,7 +95,11 @@ class COMPONENT_EXPORT(MOJO_BOOTSTRAP) PendingConnectionManager {
  public:
   using OpenIpcChannelCallback = base::OnceCallback<void(base::ScopedFD)>;
 
-  static PendingConnectionManager& Get();
+  // Returns the PendingConnectionManager for DriveFS.
+  static PendingConnectionManager& GetForDriveFs();
+
+  // Returns the PendingConnectionManager for SmbFs.
+  static PendingConnectionManager& GetForSmbFs();
 
   PendingConnectionManager(const PendingConnectionManager&) = delete;
   PendingConnectionManager& operator=(const PendingConnectionManager&) = delete;

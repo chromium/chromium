@@ -94,7 +94,7 @@ base::FilePath FakeDriveFsLauncherClient::MaybeMountDriveFs(
   }
   const std::string datadir = base::StrCat({"drivefs-", datadir_suffix});
   mojo::PlatformChannel channel;
-  mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
+  mojo_bootstrap::PendingConnectionManager::GetForDriveFs().OpenIpcChannel(
       identity, channel.TakeLocalEndpoint().TakePlatformHandle().TakeFD());
   launcher_->LaunchDriveFs(
       base::FilePath("/tmp").Append(datadir),

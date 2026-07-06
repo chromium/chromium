@@ -12,9 +12,15 @@
 namespace mojo_bootstrap {
 
 // static
-PendingConnectionManager& PendingConnectionManager::Get() {
-  static base::NoDestructor<PendingConnectionManager> connection_manager;
-  return *connection_manager;
+PendingConnectionManager& PendingConnectionManager::GetForDriveFs() {
+  static base::NoDestructor<PendingConnectionManager> instance;
+  return *instance;
+}
+
+// static
+PendingConnectionManager& PendingConnectionManager::GetForSmbFs() {
+  static base::NoDestructor<PendingConnectionManager> instance;
+  return *instance;
 }
 
 bool PendingConnectionManager::OpenIpcChannel(const std::string& token,

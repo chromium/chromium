@@ -667,25 +667,25 @@ TEST_F(SmbFsMounterE2eTest, MountSuccess) {
 
   EXPECT_CALL(mock_disk_mount_manager_,
               MountPath(StartsWith(kMountUrlPrefix), _, kMountDir, _, _, _, _))
-      .WillOnce(WithArgs<0,
-                         6>([this, &channel](
-                                const std::string& source_path,
-                                ash::disks::DiskMountManager::MountPathCallback
-                                    callback) {
-        // Emulates cros-disks mount success.
-        PostMountEvent(source_path, kMountPath, std::move(callback));
+      .WillOnce(WithArgs<0, 6>(
+          [this, &channel](
+              const std::string& source_path,
+              ash::disks::DiskMountManager::MountPathCallback callback) {
+            // Emulates cros-disks mount success.
+            PostMountEvent(source_path, kMountPath, std::move(callback));
 
-        // Emulates smbfs connecting to the org.chromium.SmbFs D-Bus service and
-        // providing a Mojo connection endpoint.
-        const std::string token =
-            source_path.substr(sizeof(kMountUrlPrefix) - 1);
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindLambdaForTesting([token, &channel]() {
-              mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
-                  token,
-                  channel.TakeLocalEndpoint().TakePlatformHandle().TakeFD());
-            }));
-      }));
+            // Emulates smbfs connecting to the org.chromium.SmbFs D-Bus service
+            // and providing a Mojo connection endpoint.
+            const std::string token =
+                source_path.substr(sizeof(kMountUrlPrefix) - 1);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindLambdaForTesting([token, &channel]() {
+                  mojo_bootstrap::PendingConnectionManager::GetForSmbFs()
+                      .OpenIpcChannel(token, channel.TakeLocalEndpoint()
+                                                 .TakePlatformHandle()
+                                                 .TakeFD());
+                }));
+          }));
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
       .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kSuccess));
   EXPECT_CALL(mock_delegate_, OnDisconnected()).Times(0);

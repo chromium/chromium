@@ -284,8 +284,8 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     token_ = StartMount();
     CallMountCallbackSuccess(token_);
 
-    ASSERT_TRUE(mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
-        token_, {}));
+    ASSERT_TRUE(mojo_bootstrap::PendingConnectionManager::GetForDriveFs()
+                    .OpenIpcChannel(token_, {}));
     {
       base::RunLoop run_loop;
       bootstrap_receiver_.set_disconnect_handler(run_loop.QuitClosure());
@@ -422,8 +422,9 @@ TEST_F(DriveFsHostTest, OnMountFailedFromDbus) {
   run_loop.Run();
 
   ASSERT_FALSE(host_->IsMounted());
-  EXPECT_FALSE(mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
-      token, {}));
+  EXPECT_FALSE(
+      mojo_bootstrap::PendingConnectionManager::GetForDriveFs().OpenIpcChannel(
+          token, {}));
 }
 
 TEST_F(DriveFsHostTest, DestroyBeforeMojoConnection) {
@@ -435,8 +436,9 @@ TEST_F(DriveFsHostTest, DestroyBeforeMojoConnection) {
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   host_.reset();
-  EXPECT_FALSE(mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
-      token, {}));
+  EXPECT_FALSE(
+      mojo_bootstrap::PendingConnectionManager::GetForDriveFs().OpenIpcChannel(
+          token, {}));
 
   run_loop.Run();
 }

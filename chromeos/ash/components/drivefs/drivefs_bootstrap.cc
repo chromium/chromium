@@ -21,15 +21,16 @@ DriveFsBootstrapListener::DriveFsBootstrapListener()
     : bootstrap_(invitation_.AttachMessagePipe("drivefs-bootstrap"),
                  mojom::DriveFsBootstrap::Version_),
       pending_token_(base::UnguessableToken::Create()) {
-  mojo_bootstrap::PendingConnectionManager::Get().ExpectOpenIpcChannel(
-      pending_token_,
-      base::BindOnce(&DriveFsBootstrapListener::AcceptMojoConnection,
-                     base::Unretained(this)));
+  mojo_bootstrap::PendingConnectionManager::GetForDriveFs()
+      .ExpectOpenIpcChannel(
+          pending_token_,
+          base::BindOnce(&DriveFsBootstrapListener::AcceptMojoConnection,
+                         base::Unretained(this)));
 }
 
 DriveFsBootstrapListener::~DriveFsBootstrapListener() {
   if (pending_token_) {
-    mojo_bootstrap::PendingConnectionManager::Get()
+    mojo_bootstrap::PendingConnectionManager::GetForDriveFs()
         .CancelExpectedOpenIpcChannel(pending_token_);
     pending_token_ = {};
   }
