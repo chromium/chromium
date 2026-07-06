@@ -285,6 +285,8 @@ source_set("test_support") {
   sources = [
     "dom_storage/leveldb/test_support/test_leveldb_utils.cc",
     "dom_storage/leveldb/test_support/test_leveldb_utils.h",
+    "dom_storage/sqlite/test_support/test_sqlite_utils.cc",
+    "dom_storage/sqlite/test_support/test_sqlite_utils.h",
     "dom_storage/test_support/dom_storage_database_testing.cc",
     "dom_storage/test_support/dom_storage_database_testing.h",
     "dom_storage/test_support/fake_dom_storage_database.cc",

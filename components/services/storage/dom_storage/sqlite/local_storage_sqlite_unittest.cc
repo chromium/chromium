@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
+#include "components/services/storage/dom_storage/sqlite/test_support/test_sqlite_utils.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -48,6 +49,8 @@ class LocalStorageSqliteTest : public testing::Test {
   void OpenOnDisk(std::unique_ptr<LocalStorageSqlite>* result);
 
   void OpenInMemory(std::unique_ptr<LocalStorageSqlite>* result);
+
+  void WriteDefaultMetadataToDisk();
 
   // Writes `metadata` to the database and verifies it was persisted correctly.
   void InitializeMetadata(DomStorageDatabase& database,
@@ -131,6 +134,19 @@ void LocalStorageSqliteTest::OpenInMemory(
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
+}
+
+void LocalStorageSqliteTest::WriteDefaultMetadataToDisk() {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({
+      .map_locator{kFirstMapLocator.Clone()},
+      .last_accessed = base::Time::UnixEpoch() + base::Days(1),
+  });
+  DbStatus status = database->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
 }
 
 void LocalStorageSqliteTest::InitializeMetadata(
@@ -335,18 +351,7 @@ TEST_F(LocalStorageSqliteTest, MetadataPersistence) {
 // database contains a storage key that cannot be deserialized.
 TEST_F(LocalStorageSqliteTest, ReadAllMetadataWithInvalidStorageKey) {
   // Write valid metadata to ensure the table exists and works.
-  {
-    std::unique_ptr<LocalStorageSqlite> database;
-    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
-
-    DomStorageDatabase::Metadata valid_metadata;
-    valid_metadata.map_metadata.push_back({
-        .map_locator{kFirstMapLocator.Clone()},
-        .last_accessed = base::Time::UnixEpoch() + base::Days(1),
-    });
-    DbStatus status = database->PutMetadata(std::move(valid_metadata));
-    EXPECT_TRUE(status.ok()) << status.ToString();
-  }
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
 
   // Use `sql::Database` directly to insert an invalid storage key.
   {
@@ -385,18 +390,7 @@ TEST_F(LocalStorageSqliteTest, ReadAllMetadataWithInvalidStorageKey) {
 // `base::ByteSize` (e.g., a negative value).
 TEST_F(LocalStorageSqliteTest, ReadAllMetadataWithInvalidTotalSize) {
   // Write valid metadata to ensure the table exists and works.
-  {
-    std::unique_ptr<LocalStorageSqlite> database;
-    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
-
-    DomStorageDatabase::Metadata valid_metadata;
-    valid_metadata.map_metadata.push_back({
-        .map_locator{kFirstMapLocator.Clone()},
-        .last_accessed = base::Time::UnixEpoch() + base::Days(1),
-    });
-    DbStatus status = database->PutMetadata(std::move(valid_metadata));
-    EXPECT_TRUE(status.ok()) << status.ToString();
-  }
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
 
   // Use `sql::Database` directly to insert a row with a negative `total_size`.
   {
@@ -914,18 +908,7 @@ TEST_F(LocalStorageSqliteTest, DatabaseErrorRecordsHistogram) {
   base::HistogramTester histograms;
 
   // Write valid metadata so the database file exists and has tables.
-  {
-    std::unique_ptr<LocalStorageSqlite> database;
-    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
-
-    DomStorageDatabase::Metadata valid_metadata;
-    valid_metadata.map_metadata.push_back({
-        .map_locator{kFirstMapLocator.Clone()},
-        .last_accessed = base::Time::UnixEpoch() + base::Days(1),
-    });
-    DbStatus status = database->PutMetadata(std::move(valid_metadata));
-    EXPECT_TRUE(status.ok());
-  }
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
 
   // Corrupt the database header on disk.
   base::FilePath database_path;
@@ -944,6 +927,104 @@ TEST_F(LocalStorageSqliteTest, DatabaseErrorRecordsHistogram) {
 
   histograms.ExpectTotalCount("Storage.LocalStorage.Database.Error",
                               /*expected_count=*/1);
+}
+
+// Verifies that corruption of an index B-tree, which is not detected when the
+// database is opened, is surfaced to the caller when a query that relies on the
+// index is executed.
+TEST_F(LocalStorageSqliteTest, IndexCorruptionSurfacesToCaller) {
+  // Write valid metadata so the `maps_by_storage_key` index is populated.
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
+
+  // Corrupt the root page of the `maps_by_storage_key` index on disk.
+  base::FilePath database_path;
+  ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+  ASSERT_TRUE(
+      sql::test::CorruptIndexRootPage(database_path, "maps_by_storage_key"));
+
+  // The corrupted index is not read during `Open()`, but `ReadMapKeyValues()`
+  // uses it to look up the map id.
+  {
+    std::unique_ptr<LocalStorageSqlite> database;
+    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+    StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
+        result = database->ReadMapKeyValues(kFirstMapLocator.Clone());
+    ASSERT_FALSE(result.has_value());
+    EXPECT_TRUE(result.error().IsCorruption());
+  }
+}
+
+// Verifies that opening a database whose file has been replaced with an empty
+// file recreates a fresh, empty database rather than failing.
+TEST_F(LocalStorageSqliteTest, OpenWithEmptyFileCreatesFreshDatabase) {
+  // Write valid metadata so the database file exists with a populated schema.
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
+
+  // Delete the database, then recreate it as a zero-length file.
+  base::FilePath database_path;
+  ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+  ASSERT_TRUE(sql::Database::Delete(database_path));
+  ASSERT_TRUE(base::WriteFile(database_path, std::string_view()));
+
+  // Re-opening the empty file must succeed and yield an empty database.
+  {
+    std::unique_ptr<LocalStorageSqlite> database;
+    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+    ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata metadata,
+                         database->ReadAllMetadata());
+    EXPECT_TRUE(metadata.map_metadata.empty());
+  }
+}
+
+// Verifies that opening a database with the `meta` table missing, but the data
+// tables still present, fails instead of treating it as a fresh database.
+TEST_F(LocalStorageSqliteTest, OpenRejectsHalfDroppedSchema) {
+  // Write valid metadata so the data tables and the meta table exist.
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
+
+  // Drop the meta table while leaving the data tables in place.
+  {
+    base::FilePath database_path;
+    ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+    ASSERT_NO_FATAL_FAILURE(DropMetaTableForTesting(database_path));
+  }
+
+  // Re-opening should fail because the data tables still exist.
+  {
+    base::FilePath database_path;
+    ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+
+    std::unique_ptr<LocalStorageSqlite> database =
+        std::make_unique<LocalStorageSqlite>(GetPassKey());
+    DbStatus status = database->Open(/*database_path=*/database_path,
+                                     /*memory_dump_id=*/std::nullopt);
+    EXPECT_TRUE(status.IsCorruption()) << status.ToString();
+  }
+}
+
+// Verifies that opening a database whose file header has been zeroed out, while
+// the rest of the file is left intact, fails because the file is no longer a
+// valid SQLite database.
+TEST_F(LocalStorageSqliteTest, OpenWithZeroedHeaderFails) {
+  // Write valid metadata so the database file exists with a populated schema.
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
+
+  // Zero out the database file header on disk.
+  base::FilePath database_path;
+  ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+  ASSERT_NO_FATAL_FAILURE(CorruptDatabaseHeaderForTesting(database_path));
+
+  // Re-opening the corrupted file must fail rather than silently recreating the
+  // database.
+  {
+    std::unique_ptr<LocalStorageSqlite> database =
+        std::make_unique<LocalStorageSqlite>(GetPassKey());
+    DbStatus status = database->Open(/*database_path=*/database_path,
+                                     /*memory_dump_id=*/std::nullopt);
+    EXPECT_TRUE(status.IsCorruption()) << status.ToString();
+  }
 }
 
 }  // namespace storage

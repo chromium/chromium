@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
+#include "components/services/storage/dom_storage/sqlite/test_support/test_sqlite_utils.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -55,6 +56,8 @@ class SessionStorageSqliteTest : public testing::Test {
   void OpenOnDisk(std::unique_ptr<SessionStorageSqlite>* result);
 
   void OpenInMemory(std::unique_ptr<SessionStorageSqlite>* result);
+
+  void WriteDefaultMetadataToDisk();
 
   // Writes `metadata` to the database and verifies it was persisted correctly.
   void InitializeMetadata(DomStorageDatabase& database,
@@ -126,6 +129,16 @@ void SessionStorageSqliteTest::OpenInMemory(
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
+}
+
+void SessionStorageSqliteTest::WriteDefaultMetadataToDisk() {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({.map_locator{kFirstMapLocator.Clone()}});
+  DbStatus status = database->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
 }
 
 void SessionStorageSqliteTest::InitializeMetadata(
@@ -1019,17 +1032,7 @@ TEST_F(SessionStorageSqliteTest, DatabaseErrorRecordsHistogram) {
   base::HistogramTester histograms;
 
   // Write valid metadata so the database file exists and has tables.
-  {
-    std::unique_ptr<SessionStorageSqlite> database;
-    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
-
-    DomStorageDatabase::Metadata valid_metadata;
-    valid_metadata.map_metadata.push_back({
-        .map_locator{kFirstSessionId, kFirstStorageKey, kFirstMapId},
-    });
-    DbStatus status = database->PutMetadata(std::move(valid_metadata));
-    EXPECT_TRUE(status.ok());
-  }
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
 
   // Corrupt the database header on disk.
   base::FilePath database_path;
@@ -1048,6 +1051,78 @@ TEST_F(SessionStorageSqliteTest, DatabaseErrorRecordsHistogram) {
 
   histograms.ExpectTotalCount("Storage.SessionStorage.Database.Error",
                               /*expected_count=*/1);
+}
+
+// Verifies that opening a database whose file has been replaced with an empty
+// file recreates a fresh, empty database rather than failing.
+TEST_F(SessionStorageSqliteTest, OpenWithEmptyFileCreatesFreshDatabase) {
+  // Write valid metadata so the database file exists with a populated schema.
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
+
+  // Delete the database, then recreate it as a zero-length file.
+  base::FilePath database_path;
+  ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+  ASSERT_TRUE(sql::Database::Delete(database_path));
+  ASSERT_TRUE(base::WriteFile(database_path, std::string_view()));
+
+  // Re-opening the empty file must succeed and yield an empty database.
+  {
+    std::unique_ptr<SessionStorageSqlite> database;
+    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+    ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata metadata,
+                         database->ReadAllMetadata());
+    EXPECT_TRUE(metadata.map_metadata.empty());
+  }
+}
+
+// Verifies that opening a database with the `meta` table missing, but the data
+// tables still present, fails instead of treating it as a fresh database.
+TEST_F(SessionStorageSqliteTest, OpenRejectsHalfDroppedSchema) {
+  // Write valid metadata so the data tables and the meta table exist.
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
+
+  // Drop the meta table while leaving the data tables in place.
+  {
+    base::FilePath database_path;
+    ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+    ASSERT_NO_FATAL_FAILURE(DropMetaTableForTesting(database_path));
+  }
+
+  // Re-opening should fail because the data tables still exist.
+  {
+    base::FilePath database_path;
+    ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+
+    std::unique_ptr<SessionStorageSqlite> database =
+        std::make_unique<SessionStorageSqlite>(GetPassKey());
+    DbStatus status = database->Open(/*database_path=*/database_path,
+                                     /*memory_dump_id=*/std::nullopt);
+    EXPECT_TRUE(status.IsCorruption()) << status.ToString();
+  }
+}
+
+// Verifies that opening a database whose file header has been zeroed out, while
+// the rest of the file is left intact, fails because the file is no longer a
+// valid SQLite database.
+TEST_F(SessionStorageSqliteTest, OpenWithZeroedHeaderFails) {
+  // Write valid metadata so the database file exists with a populated schema.
+  ASSERT_NO_FATAL_FAILURE(WriteDefaultMetadataToDisk());
+
+  // Zero out the database file header on disk.
+  base::FilePath database_path;
+  ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+  ASSERT_NO_FATAL_FAILURE(CorruptDatabaseHeaderForTesting(database_path));
+
+  // Re-opening the corrupted file must fail rather than silently recreating the
+  // database.
+  {
+    std::unique_ptr<SessionStorageSqlite> database =
+        std::make_unique<SessionStorageSqlite>(GetPassKey());
+    DbStatus status = database->Open(/*database_path=*/database_path,
+                                     /*memory_dump_id=*/std::nullopt);
+    EXPECT_TRUE(status.IsCorruption()) << status.ToString();
+  }
 }
 
 }  // namespace storage
