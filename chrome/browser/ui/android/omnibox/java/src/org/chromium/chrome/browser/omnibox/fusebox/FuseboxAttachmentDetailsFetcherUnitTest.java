@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.util.Size;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -55,6 +57,8 @@ import java.io.IOException;
 /** Unit tests for {@link FuseboxAttachmentDetailsFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxAttachmentDetailsFetcherUnitTest {
+    private static final int MAX_SQUARE_IMAGE_EDGE_SIZE =
+            (int) Math.sqrt(FuseboxAttachmentDetailsFetcher.MAX_IMAGE_AREA);
     private static final long FILE_SIZE_SMALL = 1L;
     private static final String SAMPLE_TITLE = "file.txt";
     private static final String SAMPLE_PNG_TITLE = "photo.png";
@@ -228,6 +232,15 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         assertEquals(expectedThumbnail, getThumbnailFromAttachment(attachment));
         assertEquals(expectedType, attachment.type);
         assertEquals(expectedButtonType, attachment.buttonType);
+    }
+
+    private static void verifyDownscaleTargetWithinLimits(@Nullable Size target, String message) {
+        assertWithMessage(message).that(target).isNotNull();
+
+        long targetArea = (long) target.getWidth() * target.getHeight();
+        long maxArea = FuseboxAttachmentDetailsFetcher.MAX_IMAGE_AREA;
+
+        assertWithMessage(message).that(targetArea).isAtMost(maxArea);
     }
 
     @Test
@@ -593,5 +606,49 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 thumbnail,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
+    }
+
+    @Test
+    public void testGetTargetSizeForDownscaling_areaUnder_edgesUnder_notScaled() {
+        int width = MAX_SQUARE_IMAGE_EDGE_SIZE;
+        int height = MAX_SQUARE_IMAGE_EDGE_SIZE / 2;
+
+        Size targetSize =
+                FuseboxAttachmentDetailsFetcher.getTargetSizeForDownscaling(width, height);
+
+        assertWithMessage("Area under limit, image should not be scaled").that(targetSize).isNull();
+    }
+
+    @Test
+    public void testGetTargetSizeForDownscaling_areaUnder_oneEdgeOver_notScaled() {
+        int width = MAX_SQUARE_IMAGE_EDGE_SIZE * 2;
+        int height = MAX_SQUARE_IMAGE_EDGE_SIZE / 2 - 1;
+
+        Size targetSize =
+                FuseboxAttachmentDetailsFetcher.getTargetSizeForDownscaling(width, height);
+
+        assertWithMessage("Area under limit, image should not be scaled").that(targetSize).isNull();
+    }
+
+    @Test
+    public void testGetTargetSizeForDownscaling_areaOver_edgesOver_scaled() {
+        int width = MAX_SQUARE_IMAGE_EDGE_SIZE * 2;
+        int height = MAX_SQUARE_IMAGE_EDGE_SIZE * 2;
+
+        Size targetSize =
+                FuseboxAttachmentDetailsFetcher.getTargetSizeForDownscaling(width, height);
+
+        verifyDownscaleTargetWithinLimits(targetSize, "Area over limit, image should be scaled");
+    }
+
+    @Test
+    public void testGetTargetSizeForDownscaling_areaOver_oneEdgeOver_scaled() {
+        int width = MAX_SQUARE_IMAGE_EDGE_SIZE * 3;
+        int height = MAX_SQUARE_IMAGE_EDGE_SIZE / 2;
+
+        Size targetSize =
+                FuseboxAttachmentDetailsFetcher.getTargetSizeForDownscaling(width, height);
+
+        verifyDownscaleTargetWithinLimits(targetSize, "Area over limit, image should be scaled");
     }
 }
