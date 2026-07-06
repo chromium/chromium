@@ -932,6 +932,11 @@ const char kIsolated[] = "isolated";
 // method, as older PWA launchers still using this switch will rely on Chrome to
 // update them to use the new method.
 const char kPwaLauncherVersion[] = "pwa-launcher-version";
+
+// Passes the Win32 HANDLE value (as an integer) of the parent process
+// to wait for during relaunch.
+const char kWaitForParentHandle[] = "wait-for-parent-handle";
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)

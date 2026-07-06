@@ -52,6 +52,7 @@
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/win/browser_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/install_static/install_util.h"
@@ -440,6 +441,33 @@ bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
   launch_options.current_directory = chrome_exe.DirName();
   // Give the new process the right to bring its windows to the foreground.
   launch_options.grant_foreground_privilege = true;
+
+  // Ensure this process is terminated before letting the child process reach
+  // ChromeMain(...).
+  base::win::ScopedHandle parent_handle_for_child;
+  if (base::FeatureList::IsEnabled(features::kRelaunchWaitForParentProcess)) {
+    // Create a real, inheritable duplicate of our own process handle.
+    HANDLE handle;
+    BOOL duplicate_ok =
+        ::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentProcess(),
+                          ::GetCurrentProcess(), &handle, SYNCHRONIZE,
+                          /*bInheritHandle=*/TRUE,
+                          /*dwOptions=*/0);
+
+    if (duplicate_ok) {
+      parent_handle_for_child.Set(handle);
+
+      // Pass the handle value (as an integer string) to the child.
+      chrome_exe_command_line.AppendSwitchASCII(
+          switches::kWaitForParentHandle,
+          base::NumberToString(
+              base::win::HandleToUint32(parent_handle_for_child.get())));
+
+      launch_options.handles_to_inherit.push_back(
+          parent_handle_for_child.get());
+    }
+  }
+
   return base::LaunchProcess(chrome_exe_command_line, launch_options).IsValid();
 }
 

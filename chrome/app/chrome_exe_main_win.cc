@@ -60,6 +60,32 @@ int main();
 
 namespace {
 
+// If the command line contains the wait-for-parent-handle switch,
+// block this bootstrap executable synchronously until the parent exits.
+void WaitForParentProcess(base::CommandLine* command_line) {
+  std::wstring handle_str =
+      command_line->GetSwitchValueNative(switches::kWaitForParentHandle);
+
+  // Remove the switch immediately so it does not persist in the command line
+  // (preventing it from showing up in about:version or being inherited by child
+  // processes).
+  command_line->RemoveSwitch(switches::kWaitForParentHandle);
+
+  uint32_t handle_val;
+  if (!base::StringToUint(handle_str, &handle_val) || handle_val == 0) {
+    return;
+  }
+  base::win::ScopedHandle parent_handle(
+      base::win::Uint32ToHandle(handle_val));
+  if (base::win::IsPseudoHandle(parent_handle.get())) {
+    return;
+  }
+
+  // Block synchronously for up to 60 seconds (prevents hangs if parent
+  // freezes).
+  ::WaitForSingleObject(parent_handle.get(), base::Minutes(1).InMilliseconds());
+}
+
 // Sets the current working directory for the process to the directory holding
 // the executable if this is the browser process. This avoids leaking a handle
 // to an arbitrary directory to child processes (e.g., the crashpad handler
@@ -249,8 +275,7 @@ int main() {
 
   // Initialize the CommandLine singleton from the environment.
   base::CommandLine::Init(0, nullptr);
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   const std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
@@ -331,6 +356,13 @@ int main() {
 
   // The exit manager is in charge of calling the dtors of singletons.
   base::AtExitManager exit_manager;
+
+  // If it is the browser process, wait for the parent process to exit
+  // before loading chrome.dll or touching any profile data.
+  if (process_type.empty() &&
+      command_line->HasSwitch(switches::kWaitForParentHandle)) {
+    WaitForParentProcess(command_line);
+  }
 
   if (AttemptFastNotify(*command_line))
     return 0;
