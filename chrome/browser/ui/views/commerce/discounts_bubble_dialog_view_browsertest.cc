@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
 
-#include "base/build_time.h"
-#include "base/time/default_clock.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"

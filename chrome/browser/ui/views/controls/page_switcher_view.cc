@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 

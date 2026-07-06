@@ -4,19 +4,11 @@
 
 #include "chrome/browser/ui/views/commerce/shopping_collection_iph_view.h"
 
-#include "base/feature_list.h"
-#include "base/metrics/user_metrics.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
-#include "url/gurl.h"
 
 namespace commerce {
 

@@ -19,7 +19,6 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
-#include "components/unified_consent/pref_names.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
