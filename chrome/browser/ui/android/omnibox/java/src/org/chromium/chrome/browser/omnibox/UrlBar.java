@@ -655,7 +655,7 @@ public class UrlBar extends AutocompleteEditText {
             if (mPointerDragActive) {
                 Editable text = getText();
                 if (text != null) {
-                    text.removeSpan(EllipsisSpan.INSTANCE);
+                    text.removeSpan(BoundsEllipsisSpan.INSTANCE);
                     // Re-hide very long URLs to prevent crashes.
                     limitDisplayableLength();
                 }
@@ -1035,7 +1035,7 @@ public class UrlBar extends AutocompleteEditText {
         if (truncationIndex < text.length()) {
             SpannableStringBuilder builder = new SpannableStringBuilder(text);
             builder.setSpan(
-                    EllipsisSpan.INSTANCE,
+                    BoundsEllipsisSpan.INSTANCE,
                     truncationIndex,
                     text.length(),
                     Editable.SPAN_INCLUSIVE_EXCLUSIVE);
