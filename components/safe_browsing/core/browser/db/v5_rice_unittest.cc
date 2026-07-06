@@ -648,6 +648,16 @@ TYPED_TEST(V5RiceDecoderTypedTest, NumEntriesZero) {
       /*expected_values=*/{first_value});
 }
 
+TYPED_TEST(V5RiceDecoderTypedTest, NumEntriesZeroAndRiceParameterZero) {
+  using T = TypeParam;
+  T first_value = ConvertTo<T>(100);
+  VerifyDecode<T>(first_value,
+                  /*rice_parameter=*/0,
+                  /*num_entries=*/0, /*stream=*/{},
+                  /*expected_result=*/V5DecodeResult::kSuccess,
+                  /*expected_values=*/{first_value});
+}
+
 TYPED_TEST(V5RiceDecoderTypedTest, NumEntriesOne) {
   using T = TypeParam;
   T first_value = ConvertTo<T>(100);
@@ -899,6 +909,43 @@ TYPED_TEST(V5RiceDecoderTypedTest, DecodePrefixesFailure) {
   VerifyDecodePrefixes<T>(first_value, min_rice_parameter, /*num_entries=*/1,
                           /*stream=*/{},
                           /*expected_result=*/V5DecodeResult::kRanOutOfBits);
+}
+
+template <typename T>
+class V5RiceInputValidatorTypedTest : public ::testing::Test {};
+
+TYPED_TEST_SUITE(V5RiceInputValidatorTypedTest, V5RiceTypes);
+
+TYPED_TEST(V5RiceInputValidatorTypedTest, Validate) {
+  using T = TypeParam;
+  using Traits = v5_rice_utils::V5TypeTraits<T>;
+
+  EXPECT_EQ(
+      V5InputValidationResult::kSuccess,
+      V5RiceInputValidator::Validate<T>(
+          /*rice_parameter=*/Traits::kMinRiceParameter, /*num_entries=*/2));
+  EXPECT_EQ(
+      V5InputValidationResult::kSuccess,
+      V5RiceInputValidator::Validate<T>(
+          /*rice_parameter=*/Traits::kMaxRiceParameter, /*num_entries=*/2));
+  EXPECT_EQ(
+      V5InputValidationResult::kNegativeNumEntries,
+      V5RiceInputValidator::Validate<T>(
+          /*rice_parameter=*/Traits::kMinRiceParameter, /*num_entries=*/-1));
+  EXPECT_EQ(
+      V5InputValidationResult::kRiceParameterTooSmall,
+      V5RiceInputValidator::Validate<T>(
+          /*rice_parameter=*/Traits::kMinRiceParameter - 1, /*num_entries=*/2));
+  EXPECT_EQ(
+      V5InputValidationResult::kRiceParameterTooLarge,
+      V5RiceInputValidator::Validate<T>(
+          /*rice_parameter=*/Traits::kMaxRiceParameter + 1, /*num_entries=*/2));
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            V5RiceInputValidator::Validate<T>(
+                /*rice_parameter=*/0, /*num_entries=*/0));
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            V5RiceInputValidator::Validate<T>(
+                /*rice_parameter=*/-1, /*num_entries=*/0));
 }
 
 }  // namespace safe_browsing

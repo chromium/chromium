@@ -266,6 +266,29 @@ template std::string SerializeToBigEndianBytes<Uint256>(std::vector<Uint256>);
 }  // namespace v5_rice_utils
 
 // =============================================================================
+// V5RiceInputValidator Implementation
+// =============================================================================
+
+// static
+template <typename T>
+V5InputValidationResult V5RiceInputValidator::Validate(int rice_parameter,
+                                                       int num_entries) {
+  if (num_entries < 0) {
+    return V5InputValidationResult::kNegativeNumEntries;
+  }
+  if (num_entries != 0) {
+    if (rice_parameter < v5_rice_utils::V5TypeTraits<T>::kMinRiceParameter) {
+      return V5InputValidationResult::kRiceParameterTooSmall;
+    }
+    if (rice_parameter > v5_rice_utils::V5TypeTraits<T>::kMaxRiceParameter) {
+      return V5InputValidationResult::kRiceParameterTooLarge;
+    }
+  }
+
+  return V5InputValidationResult::kSuccess;
+}
+
+// =============================================================================
 // V5RiceDecoder Implementation
 // =============================================================================
 
@@ -301,8 +324,10 @@ V5DecodeResult V5RiceDecoder::DecodeIntegers(
   CHECK(out);
   CHECK(out->empty());
   CHECK_GE(num_entries, 0);
-  CHECK_GE(rice_parameter, v5_rice_utils::V5TypeTraits<T>::kMinRiceParameter);
-  CHECK_LE(rice_parameter, v5_rice_utils::V5TypeTraits<T>::kMaxRiceParameter);
+  if (num_entries > 0) {
+    CHECK_GE(rice_parameter, v5_rice_utils::V5TypeTraits<T>::kMinRiceParameter);
+    CHECK_LE(rice_parameter, v5_rice_utils::V5TypeTraits<T>::kMaxRiceParameter);
+  }
 
   // Initialize the output vector and store the first value.
   out->reserve(num_entries + 1);
@@ -452,5 +477,16 @@ template V5DecodeResult V5RiceDecoder::DecodePrefixes<v5_rice_utils::Uint256>(
     int,
     base::span<const uint8_t>,
     std::string*);
+
+// Explicit template instantiation for validator methods.
+template V5InputValidationResult V5RiceInputValidator::Validate<uint32_t>(int,
+                                                                          int);
+template V5InputValidationResult V5RiceInputValidator::Validate<uint64_t>(int,
+                                                                          int);
+template V5InputValidationResult V5RiceInputValidator::Validate<absl::uint128>(
+    int,
+    int);
+template V5InputValidationResult
+V5RiceInputValidator::Validate<v5_rice_utils::Uint256>(int, int);
 
 }  // namespace safe_browsing

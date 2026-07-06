@@ -134,6 +134,31 @@ std::string SerializeToBigEndianBytes(std::vector<T> decoded);
 
 }  // namespace v5_rice_utils
 
+// Enumerate different results while validating the Rice-encoded inputs.
+enum class V5InputValidationResult {
+  // The input is valid.
+  kSuccess = 0,
+  // The number of entries is negative.
+  kNegativeNumEntries = 1,
+  // The Rice parameter is too small for the type.
+  kRiceParameterTooSmall = 2,
+  // The Rice parameter is too large for the type.
+  kRiceParameterTooLarge = 3,
+};
+
+// Validator for Safe Browsing V5 Rice-encoded inputs.
+class V5RiceInputValidator {
+ public:
+  V5RiceInputValidator() = delete;
+
+  // Validates the Rice-encoded inputs.
+  // Returns `V5InputValidationResult::kSuccess` if the inputs are valid and
+  // safe to decode, or an error code indicating why they are invalid.
+  template <typename T>
+  [[nodiscard]] static V5InputValidationResult Validate(int rice_parameter,
+                                                        int num_entries);
+};
+
 // Enumerate different results while decoding the Rice-encoded data.
 enum class V5DecodeResult {
   // Decoding was successful.
@@ -151,6 +176,8 @@ enum class V5DecodeResult {
 
 // Decoder for Golomb-Rice encoded Safe Browsing V5 database updates.
 // See https://en.wikipedia.org/wiki/Golomb_coding.
+// Callers are expected to validate their inputs using `V5RiceInputValidator`
+// before calling into this decoder.
 class V5RiceDecoder {
  public:
   // Decodes the Rice-encoded data in `encoded_data` as a sequence of hash
