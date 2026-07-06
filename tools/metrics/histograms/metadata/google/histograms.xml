@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdaterHealth.ScheduledTaskCount" units="tasks"
-    expires_after="2026-07-19">
+    expires_after="2026-12-31">
   <owner>ganesh@chromium.org</owner>
   <owner>omaha-support@google.com</owner>
   <summary>
@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdaterHealth.ScheduledTaskEnabled"
-    enum="BooleanEnabled" expires_after="2026-03-12">
+    enum="BooleanEnabled" expires_after="2026-12-31">
   <owner>ganesh@chromium.org</owner>
   <owner>omaha-support@google.com</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdaterHealth.ServiceEnabled.{Type}"
-    enum="BooleanEnabled" expires_after="2026-07-19">
+    enum="BooleanEnabled" expires_after="2026-12-31">
   <owner>ganesh@chromium.org</owner>
   <owner>omaha-support@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdaterHealth.ServicePresent.{Type}"
-    enum="BooleanPresent" expires_after="2026-07-19">
+    enum="BooleanPresent" expires_after="2026-12-31">
   <owner>ganesh@chromium.org</owner>
   <owner>omaha-support@google.com</owner>
   <summary>
