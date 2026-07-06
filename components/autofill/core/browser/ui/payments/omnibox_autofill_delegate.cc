@@ -358,7 +358,7 @@ void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form->ToFormData(), *form, *trigger_field, *trigger_field, *client_,
       /*four_digit_combinations_in_dom=*/{},
-      &manager->GetAmountExtractionManager(), manager->GetPaymentsBnplManager(),
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       manager->GetCreditCardFormEventLogger(),
       client_->GetPersonalDataManager()
           .payments_data_manager()
