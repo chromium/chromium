@@ -169,7 +169,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
 }
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(
-    int32_t transfer_size_diff) {
+    base::ByteSize transfer_size_diff) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {

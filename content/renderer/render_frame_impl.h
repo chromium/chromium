@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -399,8 +400,9 @@ class CONTENT_EXPORT RenderFrameImpl
       network::mojom::URLResponseHeadPtr head,
       network::mojom::RequestDestination request_destination,
       bool is_ad_resource) override;
-  void NotifyResourceTransferSizeUpdated(int64_t request_id,
-                                         int32_t transfer_size_diff) override;
+  void NotifyResourceTransferSizeUpdated(
+      int64_t request_id,
+      base::ByteSize transfer_size_diff) override;
   void NotifyResourceLoadCompleted(
       blink::mojom::ResourceLoadInfoPtr resource_load_info,
       const ::network::URLLoaderCompletionStatus& status) override;
@@ -750,7 +752,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCompleteResponse(int request_id,
                            const network::URLLoaderCompletionStatus& status);
   void DidCancelResponse(int request_id);
-  void DidReceiveTransferSizeUpdate(int request_id, int received_data_length);
+  void DidReceiveTransferSizeUpdate(int request_id,
+                                    base::ByteSize received_data_length);
 
   // Used in tests to install a fake URLLoaderFactory via
   // RenderViewTest::CreateFakeURLLoaderFactory().

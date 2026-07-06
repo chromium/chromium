@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -74,7 +75,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
                         bool is_ad_resource) override;
   void DidReceiveTransferSizeUpdate(
       int request_id,
-      base::ByteCount received_data_length) override;
+      base::ByteSize received_data_length) override;
   void DidCompleteResponse(
       int request_id,
       const network::URLLoaderCompletionStatus& status) override;

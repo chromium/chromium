@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/byte_size.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
@@ -31,7 +32,8 @@ interface ResourceLoadInfoNotifier {
                                  bool is_ad_resource);
 
   // Called to notify the transfer size is updated.
-  NotifyResourceTransferSizeUpdated(int64 request_id, int32 transfer_size_diff);
+  NotifyResourceTransferSizeUpdated(int64 request_id,
+                                    mojo_base.mojom.ByteSize transfer_size_diff);
 
   // Called to notify the request has been completed.
   NotifyResourceLoadCompleted(ResourceLoadInfo resource_load_info,

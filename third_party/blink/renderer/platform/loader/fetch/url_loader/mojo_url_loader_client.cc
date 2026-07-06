@@ -6,6 +6,7 @@
 
 #include <iterator>
 
+#include "base/byte_size.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -13,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -442,10 +444,14 @@ void MojoURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   network::RecordOnTransferSizeUpdatedUMA(
       network::OnTransferSizeUpdatedFrom::kMojoURLLoaderClient);
 
+  // This cast is safe because url_loader.mojom documents that
+  // `transfer_size_diff` must be positive.
+  const base::ByteSize transfer_byte_size_diff(
+      base::checked_cast<uint32_t>(transfer_size_diff));
   if (NeedsStoringMessage()) {
-    accumulated_transfer_size_diff_during_deferred_ += transfer_size_diff;
+    accumulated_transfer_size_diff_during_deferred_ += transfer_byte_size_diff;
   } else {
-    resource_request_sender_->OnTransferSizeUpdated(transfer_size_diff);
+    resource_request_sender_->OnTransferSizeUpdated(transfer_byte_size_diff);
   }
 }
 
@@ -470,7 +476,7 @@ void MojoURLLoaderClient::OnComplete(
 bool MojoURLLoaderClient::NeedsStoringMessage() const {
   return freeze_mode_ != LoaderFreezeMode::kNone ||
          deferred_messages_.size() > 0 ||
-         accumulated_transfer_size_diff_during_deferred_ > 0;
+         accumulated_transfer_size_diff_during_deferred_.is_positive();
 }
 
 void MojoURLLoaderClient::StoreAndDispatch(
@@ -479,7 +485,7 @@ void MojoURLLoaderClient::StoreAndDispatch(
   if (freeze_mode_ != LoaderFreezeMode::kNone) {
     deferred_messages_.emplace_back(std::move(message));
   } else if (deferred_messages_.size() > 0 ||
-             accumulated_transfer_size_diff_during_deferred_ > 0) {
+             accumulated_transfer_size_diff_during_deferred_.is_positive()) {
     deferred_messages_.emplace_back(std::move(message));
     FlushDeferredMessages();
   } else {
@@ -529,9 +535,10 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
   }
 
   // Dispatch the transfer size update.
-  if (accumulated_transfer_size_diff_during_deferred_ > 0) {
-    auto transfer_size_diff = accumulated_transfer_size_diff_during_deferred_;
-    accumulated_transfer_size_diff_during_deferred_ = 0;
+  if (accumulated_transfer_size_diff_during_deferred_.is_positive()) {
+    const base::ByteSize transfer_size_diff =
+        accumulated_transfer_size_diff_during_deferred_;
+    accumulated_transfer_size_diff_during_deferred_ = base::ByteSize(0);
     resource_request_sender_->OnTransferSizeUpdated(transfer_size_diff);
     if (!weak_this)
       return;

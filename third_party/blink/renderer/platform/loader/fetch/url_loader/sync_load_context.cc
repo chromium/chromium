@@ -252,7 +252,8 @@ void SyncLoadContext::OnReceivedResponse(
   body_watcher_.ArmOrNotify();
 }
 
-void SyncLoadContext::OnTransferSizeUpdated(int transfer_size_diff) {}
+void SyncLoadContext::OnTransferSizeUpdated(base::ByteSize transfer_size_diff) {
+}
 
 void SyncLoadContext::OnCompletedRequest(
     const network::URLLoaderCompletionStatus& status) {

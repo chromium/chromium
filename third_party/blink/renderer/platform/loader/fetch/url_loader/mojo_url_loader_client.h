@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -109,7 +110,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   bool has_received_response_body_ = false;
   bool has_received_complete_ = false;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
-  int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
+  base::ByteSize accumulated_transfer_size_diff_during_deferred_;
   const raw_ptr<ResourceRequestSender, DanglingUntriaged>
       resource_request_sender_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

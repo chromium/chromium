@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_RESOURCE_LOAD_INFO_NOTIFIER_WRAPPER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_RESOURCE_LOAD_INFO_NOTIFIER_WRAPPER_H_
 
+#include "base/byte_size.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -58,7 +59,7 @@ class BLINK_PLATFORM_EXPORT ResourceLoadInfoNotifierWrapper {
       network::mojom::URLResponseHeadPtr redirect_response);
   void NotifyResourceResponseReceived(
       network::mojom::URLResponseHeadPtr response_head);
-  void NotifyResourceTransferSizeUpdated(int32_t transfer_size_diff);
+  void NotifyResourceTransferSizeUpdated(base::ByteSize transfer_size_diff);
   void NotifyResourceLoadCompleted(
       const network::URLLoaderCompletionStatus& status);
   void NotifyResourceLoadCanceled(int net_error);

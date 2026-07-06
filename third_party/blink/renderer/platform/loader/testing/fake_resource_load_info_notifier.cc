@@ -29,7 +29,7 @@ void FakeResourceLoadInfoNotifier::NotifyResourceResponseReceived(
 
 void FakeResourceLoadInfoNotifier::NotifyResourceTransferSizeUpdated(
     int64_t request_id,
-    int32_t transfer_size_diff) {}
+    base::ByteSize transfer_size_diff) {}
 
 void FakeResourceLoadInfoNotifier::NotifyResourceLoadCompleted(
     blink::mojom::ResourceLoadInfoPtr resource_load_info,

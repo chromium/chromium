@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
@@ -178,7 +179,7 @@ class MockRequestClient : public ResourceRequestClient {
       data_ += ReadOneChunk(&body);
     }
   }
-  void OnTransferSizeUpdated(int transfer_size_diff) override {
+  void OnTransferSizeUpdated(base::ByteSize transfer_size_diff) override {
     transfer_size_updated_called_ = true;
   }
   void OnCompletedRequest(

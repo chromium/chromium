@@ -412,8 +412,10 @@ void NavigationBodyLoader::OnUploadProgress(int64_t current_position,
 void NavigationBodyLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   network::RecordOnTransferSizeUpdatedUMA(
       network::OnTransferSizeUpdatedFrom::kNavigationBodyLoader);
+  // This cast is safe because url_loader.mojom documents that
+  // `transfer_size_diff` must be positive.
   resource_load_info_notifier_wrapper_->NotifyResourceTransferSizeUpdated(
-      transfer_size_diff);
+      base::ByteSize(base::checked_cast<uint32_t>(transfer_size_diff)));
 }
 
 void NavigationBodyLoader::OnComplete(

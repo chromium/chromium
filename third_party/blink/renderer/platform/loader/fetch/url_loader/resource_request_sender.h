@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -135,7 +136,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Called when the transfer size is updated.
-  virtual void OnTransferSizeUpdated(int32_t transfer_size_diff);
+  virtual void OnTransferSizeUpdated(base::ByteSize transfer_size_diff);
 
   // Called as upload progress is made.
   virtual void OnUploadProgress(int64_t position, int64_t size);

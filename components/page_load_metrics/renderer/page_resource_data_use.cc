@@ -44,7 +44,7 @@ void PageResourceDataUse::DidStartResponse(
 }
 
 void PageResourceDataUse::DidReceiveTransferSizeUpdate(
-    base::ByteCount received_data_length) {
+    base::ByteSize received_data_length) {
   total_received_bytes_ += received_data_length;
 }
 
@@ -54,11 +54,10 @@ void PageResourceDataUse::DidCompleteResponse(
   is_complete_ = true;
   encoded_body_length_ = status.encoded_body_length.AsDeprecatedByteCount();
   decoded_body_length_ = status.decoded_body_length.AsDeprecatedByteCount();
-  base::ByteCount delta_bytes =
-      status.encoded_data_length.AsDeprecatedByteCount() -
-      total_received_bytes_;
+  base::ByteSizeDelta delta_bytes =
+      status.encoded_data_length - total_received_bytes_;
   if (delta_bytes.is_positive()) {
-    total_received_bytes_ += delta_bytes;
+    total_received_bytes_ += delta_bytes.AsByteSize();
   }
 }
 
@@ -92,12 +91,11 @@ void PageResourceDataUse::SetIsMainFrameResource(bool is_main_frame_resource) {
   is_main_frame_resource_ = is_main_frame_resource;
 }
 
-base::ByteCount PageResourceDataUse::CalculateNewlyReceivedBytes() {
-  base::ByteCount newly_received_bytes =
+base::ByteSize PageResourceDataUse::CalculateNewlyReceivedBytes() {
+  base::ByteSizeDelta newly_received_bytes =
       total_received_bytes_ - last_update_bytes_;
   last_update_bytes_ = total_received_bytes_;
-  DCHECK(!newly_received_bytes.is_negative());
-  return newly_received_bytes;
+  return newly_received_bytes.AsByteSize();
 }
 
 mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
@@ -105,8 +103,10 @@ mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
   mojom::ResourceDataUpdatePtr resource_data_update =
       mojom::ResourceDataUpdate::New();
   resource_data_update->request_id = resource_id();
-  resource_data_update->received_data_length = total_received_bytes_;
-  resource_data_update->delta_bytes = CalculateNewlyReceivedBytes();
+  resource_data_update->received_data_length =
+      total_received_bytes_.AsDeprecatedByteCount();
+  resource_data_update->delta_bytes =
+      CalculateNewlyReceivedBytes().AsDeprecatedByteCount();
   resource_data_update->is_complete = is_complete_;
   resource_data_update->reported_as_ad_resource = reported_as_ad_resource_;
   resource_data_update->is_main_frame_resource = is_main_frame_resource_;

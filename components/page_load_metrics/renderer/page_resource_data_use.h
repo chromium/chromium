@@ -6,6 +6,7 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_RESOURCE_DATA_USE_H_
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -43,7 +44,7 @@ class PageResourceDataUse {
                         bool is_ad_resource);
 
   // Updates received bytes.
-  void DidReceiveTransferSizeUpdate(base::ByteCount received_data_length);
+  void DidReceiveTransferSizeUpdate(base::ByteSize received_data_length);
 
   // Updates received bytes information and decoded body length using the final
   // state of the resource load.
@@ -74,12 +75,12 @@ class PageResourceDataUse {
  private:
   // Calculates the difference between |total_received_bytes_| and
   // |last_update_bytes_|, returns it, and updates |last_update_bytes_|.
-  base::ByteCount CalculateNewlyReceivedBytes();
+  base::ByteSize CalculateNewlyReceivedBytes();
 
   int resource_id_ = kUnknownResourceId;
 
-  base::ByteCount total_received_bytes_;
-  base::ByteCount last_update_bytes_;
+  base::ByteSize total_received_bytes_;
+  base::ByteSize last_update_bytes_;
   base::ByteCount encoded_body_length_;
   base::ByteCount decoded_body_length_;
 

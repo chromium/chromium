@@ -47,7 +47,7 @@ void WeakWrapperResourceLoadInfoNotifier::NotifyResourceResponseReceived(
 
 void WeakWrapperResourceLoadInfoNotifier::NotifyResourceTransferSizeUpdated(
     int64_t request_id,
-    int32_t transfer_size_diff) {
+    base::ByteSize transfer_size_diff) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   resource_load_info_notifier_->NotifyResourceTransferSizeUpdated(
       request_id, transfer_size_diff);

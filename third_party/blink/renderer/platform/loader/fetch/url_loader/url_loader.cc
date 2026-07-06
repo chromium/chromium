@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -123,7 +124,7 @@ class URLLoader::Context : public ResourceRequestClient {
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override;
-  void OnTransferSizeUpdated(int transfer_size_diff) override;
+  void OnTransferSizeUpdated(base::ByteSize transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
 
@@ -370,8 +371,10 @@ void URLLoader::Context::OnReceivedResponse(
                               std::move(cached_metadata));
 }
 
-void URLLoader::Context::OnTransferSizeUpdated(int transfer_size_diff) {
-  client_->DidReceiveTransferSizeUpdate(transfer_size_diff);
+void URLLoader::Context::OnTransferSizeUpdated(
+    base::ByteSize transfer_size_diff) {
+  client_->DidReceiveTransferSizeUpdate(
+      base::checked_cast<int>(transfer_size_diff.InBytes()));
 }
 
 void URLLoader::Context::OnCompletedRequest(

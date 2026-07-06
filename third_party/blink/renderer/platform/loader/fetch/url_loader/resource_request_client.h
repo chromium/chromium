@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -64,7 +65,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestClient
   // response (including both headers and the body) over the network.
   // |transfer_size_diff| is the difference from the value previously reported
   // one (including the one in OnReceivedResponse). It must be positive.
-  virtual void OnTransferSizeUpdated(int transfer_size_diff) = 0;
+  virtual void OnTransferSizeUpdated(base::ByteSize transfer_size_diff) = 0;
 
   // Called when the response is complete.  This method signals completion of
   // the resource load.

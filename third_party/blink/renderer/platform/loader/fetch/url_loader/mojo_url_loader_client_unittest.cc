@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -78,7 +79,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
     context_->body_handle = std::move(body);
   }
 
-  void OnTransferSizeUpdated(int transfer_size_diff) override {
+  void OnTransferSizeUpdated(base::ByteSize transfer_size_diff) override {
     EXPECT_TRUE(context_->received_response);
     EXPECT_FALSE(context_->complete);
     if (context_->cancelled)
@@ -128,7 +129,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
 
     // Total encoded data length, regardless of whether downloading to a file or
     // not.
-    int total_encoded_data_length = 0;
+    base::ByteSize total_encoded_data_length;
     bool defer_on_transfer_size_updated = false;
 
     bool complete = false;
@@ -338,10 +339,10 @@ TEST_P(WebMojoURLLoaderClientTest, OnTransferSizeUpdated) {
   url_loader_client_->OnTransferSizeUpdated(4);
 
   EXPECT_FALSE(context_->received_response);
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(context_->received_response);
-  EXPECT_EQ(8, context_->total_encoded_data_length);
+  EXPECT_EQ(8u, context_->total_encoded_data_length.InBytes());
 }
 
 TEST_P(WebMojoURLLoaderClientTest, OnCompleteWithResponseBody) {
@@ -741,7 +742,7 @@ TEST_P(WebMojoURLLoaderClientTest, DeferWithTransferSizeUpdated) {
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
   EXPECT_EQ("", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   client_->Freeze(LoaderFreezeMode::kStrict);
 
@@ -749,19 +750,19 @@ TEST_P(WebMojoURLLoaderClientTest, DeferWithTransferSizeUpdated) {
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
   EXPECT_EQ("", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   client_->Freeze(LoaderFreezeMode::kNone);
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
   EXPECT_EQ("", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(context_->received_response);
   EXPECT_TRUE(context_->complete);
   EXPECT_EQ("hello", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(4, context_->total_encoded_data_length);
+  EXPECT_EQ(4u, context_->total_encoded_data_length.InBytes());
 }
 
 TEST_P(WebMojoURLLoaderClientTest, SetDeferredDuringFlushingDeferredMessage) {
@@ -795,7 +796,7 @@ TEST_P(WebMojoURLLoaderClientTest, SetDeferredDuringFlushingDeferredMessage) {
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
   EXPECT_EQ("", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   client_->Freeze(LoaderFreezeMode::kStrict);
 
@@ -804,21 +805,21 @@ TEST_P(WebMojoURLLoaderClientTest, SetDeferredDuringFlushingDeferredMessage) {
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
   EXPECT_EQ("", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   client_->Freeze(LoaderFreezeMode::kNone);
   EXPECT_EQ(0, context_->seen_redirects);
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
   EXPECT_EQ("", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, context_->seen_redirects);
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
   EXPECT_EQ("", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
   EXPECT_FALSE(context_->cancelled);
 
   client_->Freeze(LoaderFreezeMode::kNone);
@@ -827,7 +828,7 @@ TEST_P(WebMojoURLLoaderClientTest, SetDeferredDuringFlushingDeferredMessage) {
   EXPECT_TRUE(context_->received_response);
   EXPECT_TRUE(context_->complete);
   EXPECT_EQ("hello", GetRequestPeerContextBody(context_));
-  EXPECT_EQ(4, context_->total_encoded_data_length);
+  EXPECT_EQ(4u, context_->total_encoded_data_length.InBytes());
   EXPECT_FALSE(context_->cancelled);
 }
 
@@ -852,31 +853,31 @@ TEST_P(WebMojoURLLoaderClientTest,
 
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   client_->Freeze(LoaderFreezeMode::kStrict);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   client_->Freeze(LoaderFreezeMode::kNone);
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
-  EXPECT_EQ(0, context_->total_encoded_data_length);
+  EXPECT_EQ(0u, context_->total_encoded_data_length.InBytes());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(context_->received_response);
   EXPECT_FALSE(context_->complete);
-  EXPECT_EQ(4, context_->total_encoded_data_length);
+  EXPECT_EQ(4u, context_->total_encoded_data_length.InBytes());
   EXPECT_FALSE(context_->cancelled);
 
   client_->Freeze(LoaderFreezeMode::kNone);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(context_->received_response);
   EXPECT_TRUE(context_->complete);
-  EXPECT_EQ(4, context_->total_encoded_data_length);
+  EXPECT_EQ(4u, context_->total_encoded_data_length.InBytes());
   EXPECT_FALSE(context_->cancelled);
 }
 

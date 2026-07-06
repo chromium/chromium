@@ -172,7 +172,7 @@ void PageTimingMetricsSender::DidStartResponse(
 
 void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(
     int resource_id,
-    base::ByteCount received_data_length) {
+    base::ByteSize received_data_length) {
   // Transfer size updates are called in a throttled manner.
   auto resource_it = page_resource_data_use_.find(resource_id);
 

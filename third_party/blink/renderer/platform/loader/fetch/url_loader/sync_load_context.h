@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
@@ -107,7 +108,7 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override;
-  void OnTransferSizeUpdated(int transfer_size_diff) override;
+  void OnTransferSizeUpdated(base::ByteSize transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
   void OnFinishCreatingBlob(const scoped_refptr<BlobDataHandle>& blob);

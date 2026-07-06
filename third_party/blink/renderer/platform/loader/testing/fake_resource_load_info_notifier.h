@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_FAKE_RESOURCE_LOAD_INFO_NOTIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_FAKE_RESOURCE_LOAD_INFO_NOTIFIER_H_
 
+#include "base/byte_size.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
@@ -35,8 +36,9 @@ class FakeResourceLoadInfoNotifier final
       network::mojom::URLResponseHeadPtr head,
       network::mojom::RequestDestination request_destination,
       bool is_ad_resource) override;
-  void NotifyResourceTransferSizeUpdated(int64_t request_id,
-                                         int32_t transfer_size_diff) override;
+  void NotifyResourceTransferSizeUpdated(
+      int64_t request_id,
+      base::ByteSize transfer_size_diff) override;
   void NotifyResourceLoadCompleted(
       blink::mojom::ResourceLoadInfoPtr resource_load_info,
       const ::network::URLLoaderCompletionStatus& status) override;

@@ -385,7 +385,7 @@ void MetricsRenderFrameObserver::DidCancelResponse(int request_id) {
 
 void MetricsRenderFrameObserver::DidReceiveTransferSizeUpdate(
     int request_id,
-    base::ByteCount received_data_length) {
+    base::ByteSize received_data_length) {
   if (provisional_frame_resource_data_use_ &&
       provisional_frame_resource_data_use_->resource_id() == request_id) {
     provisional_frame_resource_data_use_->DidReceiveTransferSizeUpdate(

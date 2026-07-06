@@ -421,7 +421,8 @@ void ResourceRequestSender::FollowPendingRedirect() {
   }
 }
 
-void ResourceRequestSender::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+void ResourceRequestSender::OnTransferSizeUpdated(
+    base::ByteSize transfer_size_diff) {
   if (ShouldDeferTask()) {
     pending_tasks_.emplace_back(
         blink::BindOnce(&ResourceRequestSender::OnTransferSizeUpdated,
@@ -429,13 +430,11 @@ void ResourceRequestSender::OnTransferSizeUpdated(int32_t transfer_size_diff) {
     return;
   }
 
-  DCHECK_GT(transfer_size_diff, 0);
+  DCHECK(transfer_size_diff.is_positive());
   if (!request_info_) {
     return;
   }
 
-  // TODO(yhirano): Consider using int64_t in
-  // ResourceRequestClient::OnTransferSizeUpdated.
   request_info_->client->OnTransferSizeUpdated(transfer_size_diff);
   if (!request_info_) {
     return;

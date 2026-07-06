@@ -2517,7 +2517,7 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
 
 void RenderFrameImpl::NotifyResourceTransferSizeUpdated(
     int64_t request_id,
-    int32_t transfer_size_diff) {
+    base::ByteSize transfer_size_diff) {
   DidReceiveTransferSizeUpdate(request_id, transfer_size_diff);
 }
 
@@ -4702,11 +4702,11 @@ void RenderFrameImpl::DidCancelResponse(int request_id) {
   }
 }
 
-void RenderFrameImpl::DidReceiveTransferSizeUpdate(int resource_id,
-                                                   int received_data_length) {
+void RenderFrameImpl::DidReceiveTransferSizeUpdate(
+    int resource_id,
+    base::ByteSize received_data_length) {
   for (auto& observer : observers_) {
-    observer.DidReceiveTransferSizeUpdate(
-        resource_id, base::ByteCount(received_data_length));
+    observer.DidReceiveTransferSizeUpdate(resource_id, received_data_length);
   }
 }
 
