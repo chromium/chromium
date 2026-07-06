@@ -104,7 +104,6 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
 [[nodiscard]] bool IsAtMemorySupported(
     personal_context::PersonalContextEnablementService*
         personal_context_service,
-    const GoogleGroupsManager* google_groups_manager,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service) {
   if (base::FeatureList::IsEnabled(
@@ -126,8 +125,7 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
     return false;
   }
 
-  // TODO(crbug.com/509479886) Add unit test to ensure this is checked last.
-  return IsAtMemoryFeatureEnabled(google_groups_manager);
+  return true;
 }
 
 [[nodiscard]] bool SatisfiesPersonalContextToggleRequirement(
@@ -163,12 +161,19 @@ bool MayPerformAtMemoryAction(
         subscription_eligibility_service,
     const PrefService* pref_service,
     const GoogleGroupsManager* google_groups_manager) {
-  if (!IsAtMemorySupported(personal_context_service, google_groups_manager,
+  if (!IsAtMemorySupported(personal_context_service,
                            subscription_eligibility_service)) {
     return false;
   }
 
-  return SatisfiesPersonalContextToggleRequirement(action, pref_service);
+  if (!SatisfiesPersonalContextToggleRequirement(action, pref_service)) {
+    return false;
+  }
+
+  // The feature flag check must be the last check to avoid polluting
+  // experiment groups. If a user is ineligible or has the personal context
+  // toggle off, we should return false before querying the feature flag.
+  return IsAtMemoryFeatureEnabled(google_groups_manager);
 }
 
 bool IsAtMemoryFeatureEnabled(
