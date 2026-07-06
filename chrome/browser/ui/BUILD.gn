@@ -4809,7 +4809,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/desktop_capture:impl",
       "//chrome/browser/ui/views/dictation",
       "//chrome/browser/ui/views/digital_credentials",
-      "//chrome/browser/ui/views/digital_credentials:impl",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/frame",
@@ -5128,9 +5127,6 @@ static_library("ui") {
       # - c/b/ui/browser.h,
       # - c/b/ui/views/frame/browser_view.h,
       "//chrome/browser/ui/views/accessibility:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular include annotation.
-      "//chrome/browser/ui/views/digital_credentials:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # the following headers get modularized:

@@ -7,7 +7,7 @@ import("//build/config/ui.gni")
 assert(toolkit_views)
 
 source_set("digital_credentials") {
-  sources = [
+  public = [
     "digital_identity_bluetooth_manual_dialog_controller.h",
     "digital_identity_multi_step_dialog.h",
     "digital_identity_safety_interstitial_controller_desktop.h",
@@ -19,16 +19,13 @@ source_set("digital_credentials") {
     "//content/public/browser",
     "//ui/views",
   ]
-}
 
-source_set("impl") {
   sources = [
     "digital_identity_bluetooth_manual_dialog_controller.cc",
     "digital_identity_multi_step_dialog.cc",
     "digital_identity_safety_interstitial_controller_desktop.cc",
   ]
   deps = [
-    ":digital_credentials",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources__strings_grit",
     "//chrome/app/vector_icons",
@@ -39,7 +36,6 @@ source_set("impl") {
     "//components/url_formatter",
     "//ui/base",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 if (!is_android) {
