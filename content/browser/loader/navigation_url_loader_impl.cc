@@ -2164,9 +2164,12 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       std::move(device_bound_session_observer),
       std::move(accept_ch_frame_observer));
 
+  allow_same_site_none_cookies_override_ =
+      ShouldAllowSameSiteNoneCookiesInSandbox(*frame_tree_node);
   network_loader_factory_ = CreateNetworkLoaderFactory(
       browser_context_, storage_partition_, frame_tree_node,
-      ukm::SourceIdObj::FromInt64(ukm_source_id_), &bypass_redirect_checks_);
+      ukm::SourceIdObj::FromInt64(ukm_source_id_), &bypass_redirect_checks_,
+      allow_same_site_none_cookies_override_);
 }
 
 // static
@@ -2250,7 +2253,8 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
     StoragePartitionImpl* storage_partition,
     FrameTreeNode* frame_tree_node,
     const ukm::SourceIdObj& ukm_id,
-    bool* bypass_redirect_checks) {
+    bool* bypass_redirect_checks,
+    bool allow_same_site_none_cookies_override) {
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
       header_client;
 
@@ -2282,7 +2286,7 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       devtools_params.agent_host(), devtools_cookie_overrides);
 
   net::CookieSettingOverrides cookie_overrides;
-  if (ShouldAllowSameSiteNoneCookiesInSandbox(*frame_tree_node)) {
+  if (allow_same_site_none_cookies_override) {
     // Include a CookieSettingOverride in the UrlLoaderFactoryParams for the
     // frame's SharedURLLoaderFactory if the frame contains the
     // `allow-same-site-none-cookies` value in its sandbox policy.
@@ -2362,6 +2366,27 @@ void NavigationURLLoaderImpl::FollowRedirect(
   resource_request_->UpdateOnRedirect(redirect_info_);
   resource_request_->navigation_redirect_chain.push_back(
       redirect_info_.new_url);
+
+  // The decision to apply the SameSite=None sandbox override depends on the
+  // navigation's tentative origin, which may change after a redirect. Recreate
+  // the network factory and reset the loader if the decision changes so the
+  // override is not applied to the redirected request.
+  if (FrameTreeNode* frame_tree_node =
+          FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+      frame_tree_node && frame_tree_node->navigation_request()) {
+    const bool allow_same_site_none_cookies_override =
+        ShouldAllowSameSiteNoneCookiesInSandbox(*frame_tree_node);
+    if (allow_same_site_none_cookies_override !=
+        allow_same_site_none_cookies_override_) {
+      allow_same_site_none_cookies_override_ =
+          allow_same_site_none_cookies_override;
+      network_loader_factory_ = CreateNetworkLoaderFactory(
+          browser_context_, storage_partition_, frame_tree_node,
+          ukm::SourceIdObj::FromInt64(ukm_source_id_), &bypass_redirect_checks_,
+          allow_same_site_none_cookies_override_);
+      default_loader_used_ = false;
+    }
+  }
 
   if (base::FeatureList::IsEnabled(
           network::features::kOffloadAcceptCHFrameCheck)) {

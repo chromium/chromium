@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -447,6 +448,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesContentSecurityPolicyBrowserTest,
 namespace {
 
 constexpr std::string_view kHostA = "a.test";
+constexpr std::string_view kHostSubA = "sub.a.test";
 constexpr std::string_view kHostB = "b.test";
 
 constexpr std::string_view kTopLevelPath = "/top-level.html";
@@ -793,6 +795,96 @@ IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
   EXPECT_FALSE(grandchild_iframe->GetCookieSettingOverrides().Has(
       net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
   EXPECT_EQ(FetchWithCredentials(grandchild_iframe, grandchild_iframe_url), "");
+}
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       NestedIframeNavigationCrossOriginRedirect) {
+  GURL top_level = https_server()->GetURL(kHostA, kTopLevelPath);
+  GURL middle_iframe_url = https_server()->GetURL(kHostA, kCrossSiteIframePath);
+  GURL grandchild_target_url =
+      https_server()->GetURL(kHostSubA, kCrossSiteIframePath);
+  GURL grandchild_redirect_url = https_server()->GetURL(
+      kHostA, "/server-redirect?" +
+                  base::EscapeQueryParamValue(grandchild_target_url.spec(),
+                                              /*use_plus=*/false));
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostSubA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  // Top a.test embeds a sandboxed a.test iframe which then embeds an inner
+  // iframe that navigates to a.test and is server-redirected to sub.a.test.
+  ASSERT_TRUE(NavigateToURL(shell(), top_level));
+  ASSERT_TRUE(
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
+             JsReplace(R"(document.body.innerHTML =
+                    '<iframe id="middle" src=$1 sandbox=$2></iframe>';)",
+                       middle_iframe_url.spec(), sandbox_iframe_policy())));
+  WaitForLoadStop(web_contents());
+  RenderFrameHost* middle_iframe = ChildFrameAt(shell(), 0);
+
+  ASSERT_TRUE(ExecJs(middle_iframe, JsReplace(R"(document.body.innerHTML =
+                    '<iframe id="grandchild" src=$1></iframe>';)",
+                                              grandchild_redirect_url.spec())));
+  WaitForLoadStop(web_contents());
+  RenderFrameHost* grandchild_iframe = ChildFrameAt(middle_iframe, 0);
+  ASSERT_TRUE(grandchild_iframe);
+  ASSERT_EQ(grandchild_iframe->GetLastCommittedURL(), grandchild_target_url);
+
+  // The override does not apply to the redirected navigation request because
+  // the grandchild's origin no longer matches each ancestor's origin (or
+  // precursor) after the redirect to sub.a.test.
+  EXPECT_FALSE(grandchild_iframe->GetCookieSettingOverrides().Has(
+      net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
+  EXPECT_EQ(EvalJs(grandchild_iframe, "document.body.textContent"), "");
+  EXPECT_EQ(FetchWithCredentials(grandchild_iframe, grandchild_target_url), "");
+}
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       NestedIframeNavigationSameOriginRedirect) {
+  GURL top_level = https_server()->GetURL(kHostA, kTopLevelPath);
+  GURL middle_iframe_url = https_server()->GetURL(kHostA, kCrossSiteIframePath);
+  GURL grandchild_target_url =
+      https_server()->GetURL(kHostA, kCrossSiteIframePath);
+  GURL grandchild_redirect_url = https_server()->GetURL(
+      kHostA, "/server-redirect?" +
+                  base::EscapeQueryParamValue(grandchild_target_url.spec(),
+                                              /*use_plus=*/false));
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  // Top a.test embeds a sandboxed a.test iframe which then embeds an inner
+  // iframe that navigates to a.test and is server-redirected to another
+  // a.test URL.
+  ASSERT_TRUE(NavigateToURL(shell(), top_level));
+  ASSERT_TRUE(
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
+             JsReplace(R"(document.body.innerHTML =
+                    '<iframe id="middle" src=$1 sandbox=$2></iframe>';)",
+                       middle_iframe_url.spec(), sandbox_iframe_policy())));
+  WaitForLoadStop(web_contents());
+  RenderFrameHost* middle_iframe = ChildFrameAt(shell(), 0);
+
+  ASSERT_TRUE(ExecJs(middle_iframe, JsReplace(R"(document.body.innerHTML =
+                    '<iframe id="grandchild" src=$1></iframe>';)",
+                                              grandchild_redirect_url.spec())));
+  WaitForLoadStop(web_contents());
+  RenderFrameHost* grandchild_iframe = ChildFrameAt(middle_iframe, 0);
+  ASSERT_TRUE(grandchild_iframe);
+  ASSERT_EQ(grandchild_iframe->GetLastCommittedURL(), grandchild_target_url);
+
+  // The override applies to the redirected navigation request because the
+  // grandchild's origin matches each ancestor's origin (or precursor) both
+  // before and after the redirect on a.test.
+  EXPECT_EQ(grandchild_iframe->GetCookieSettingOverrides().Has(
+                net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox),
+            include_allow_same_site_none_cookies());
+  EXPECT_EQ(EvalJs(grandchild_iframe, "document.body.textContent"),
+            include_allow_same_site_none_cookies() ? "foo=bar" : "");
+  EXPECT_EQ(FetchWithCredentials(grandchild_iframe, grandchild_target_url),
+            include_allow_same_site_none_cookies() ? "foo=bar" : "");
 }
 
 }  // namespace content

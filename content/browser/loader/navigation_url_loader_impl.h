@@ -168,7 +168,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
                              StoragePartitionImpl* storage_partition,
                              FrameTreeNode* frame_tree_node,
                              const ukm::SourceIdObj& ukm_id,
-                             bool* bypass_redirect_checks);
+                             bool* bypass_redirect_checks,
+                             bool allow_same_site_none_cookies_override);
 
   void BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
       const GURL& url,
@@ -315,6 +316,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   std::unique_ptr<NavigationUIData> navigation_ui_data_;
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
+
+  // Whether `network_loader_factory_` was created with the cookie-setting
+  // override that allows SameSite=None cookies in sandboxed contexts. Tracked
+  // so the factory can be recreated if the value changes after a redirect.
+  bool allow_same_site_none_cookies_override_ = false;
 
   SubresourceLoaderParams subresource_loader_params_;
 
