@@ -772,7 +772,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    @SuppressWarnings("NullAway")
+    @SuppressWarnings({"NullAway", "UseSharedPreferencesManagerFromChromeCheck"})
     public void onDestroy() {
         if (mVerticalTabsPreferenceListener != null) {
             ContextUtils.getAppSharedPreferences()
@@ -2284,6 +2284,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     private void maybeInitializeVerticalTabs(Profile profile) {
         if (!VerticalTabUtils.isVerticalTabsEligible(mActivity)) return;
 

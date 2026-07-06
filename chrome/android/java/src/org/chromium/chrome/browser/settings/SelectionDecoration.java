@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroupAdapter;
@@ -131,7 +130,7 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(@NonNull Canvas c, RecyclerView parent, @NonNull RecyclerView.State state) {
+    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         int currentColor =
                 SemanticColorUtils.getSettingsMainMenuSelectedBackgroundColor(parent.getContext());
         if (currentColor != mSelectedBackgroundColor || mSelectedBackground == null) {

@@ -105,7 +105,7 @@ public class WebApkInstaller {
                                 storage.updateSource(source);
                                 storage.updateTimeOfLastCheckForUpdatedWebManifest();
                                 WebApkSyncService.onWebApkUsed(
-                                        intentDataProvider, storage, true /* isInstall */);
+                                        intentDataProvider, storage, /* isInstall= */ true);
                             };
                     WebappRegistry.getInstance()
                             .register(

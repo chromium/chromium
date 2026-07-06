@@ -13,8 +13,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.BundleUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -98,8 +96,7 @@ public class SplitCompatContentProvider extends ContentProvider {
     }
 
     @Override
-    public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
-            throws FileNotFoundException {
+    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         return getImpl().openFile(uri, mode);
     }
 
@@ -145,8 +142,7 @@ public class SplitCompatContentProvider extends ContentProvider {
 
         public void dump(FileDescriptor fd, PrintWriter writer, String[] args) {}
 
-        public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
-                throws FileNotFoundException {
+        public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
             throw new FileNotFoundException();
         }
     }
