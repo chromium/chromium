@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <dwmapi.h>
+
 #include <set>
 
 #include "base/strings/stringprintf.h"
@@ -95,6 +97,13 @@ int GetSystemFrameThickness() {
 
 namespace {
 
+bool IsWindowCloaked(HWND hwnd) {
+  BOOL is_cloaked = FALSE;
+  CHECK(SUCCEEDED(::DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &is_cloaked,
+                                          sizeof(is_cloaked))));
+  return is_cloaked;
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     HeadlessModeBrowserTestWithStartWindowMode,
@@ -115,7 +124,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
                        BrowserDesktopWindowHidden) {
-  // On Windows, the Native Headless Chrome browser window exists and is
+  // On Windows, the Chrome Headless Mode browser window exists and is
   // visible, while the underlying platform window is hidden.
   EXPECT_TRUE(browser()->window()->IsVisible());
 
@@ -123,6 +132,8 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
       static_cast<DesktopWindowTreeHostWinWrapper*>(
           browser()->window()->GetNativeWindow()->GetHost());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_tree_host->GetHWND()));
+
+  EXPECT_TRUE(IsWindowCloaked(desktop_window_tree_host->GetHWND()));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
@@ -136,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+  EXPECT_TRUE(IsWindowCloaked(desktop_window_hwnd));
 
   // Verify fullscreen state.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
@@ -148,6 +160,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify still cloaked.
+  EXPECT_TRUE(IsWindowCloaked(desktop_window_hwnd));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
@@ -161,6 +176,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   ASSERT_FALSE(browser()->window()->IsMinimized());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+  EXPECT_TRUE(IsWindowCloaked(desktop_window_hwnd));
 
   // Verify minimized state.
   browser()->window()->Minimize();
@@ -173,6 +189,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   ASSERT_FALSE(browser()->window()->IsMinimized());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify still cloaked.
+  EXPECT_TRUE(IsWindowCloaked(desktop_window_hwnd));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
@@ -186,6 +205,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   ASSERT_FALSE(browser()->window()->IsMaximized());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+  EXPECT_TRUE(IsWindowCloaked(desktop_window_hwnd));
 
   // Verify maximized state.
   browser()->window()->Maximize();
@@ -198,6 +218,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   ASSERT_FALSE(browser()->window()->IsMaximized());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify still cloaked.
+  EXPECT_TRUE(IsWindowCloaked(desktop_window_hwnd));
 }
 
 // display::win::ScreenWinHeadless tests -------------------------------------

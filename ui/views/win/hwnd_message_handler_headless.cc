@@ -4,6 +4,8 @@
 
 #include "ui/views/win/hwnd_message_handler_headless.h"
 
+#include <dwmapi.h>
+
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -62,6 +64,10 @@ void HWNDMessageHandlerHeadless::Init(HWND parent, const gfx::Rect& bounds) {
   if (!weak_ptr) {
     return;
   }
+
+  // Tell DWM that we never want this window to be visible.
+  BOOL cloak = TRUE;
+  ::DwmSetWindowAttribute(hwnd(), DWMWA_CLOAK, &cloak, sizeof(cloak));
 
   // In headless mode remember the expected window bounds possibly adjusted
   // according to the scale factor.
