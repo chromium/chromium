@@ -211,6 +211,7 @@ static_library("test_support") {
     "//components/payments/core",
     "//components/webdata/common",
     "//components/webdata_services",
+    "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",

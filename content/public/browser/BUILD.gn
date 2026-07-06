@@ -113,6 +113,7 @@ source_set("browser_sources") {
     "clipboard_types.h",
     "commit_deferring_condition.cc",
     "commit_deferring_condition.h",
+    "connection_allowlist_util.h",
     "console_message.cc",
     "console_message.h",
     "contacts_picker_properties.h",

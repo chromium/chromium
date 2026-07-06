@@ -16,6 +16,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+namespace content {
+class WeakDocumentPtr;
+}  // namespace content
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -32,7 +36,8 @@ class PaymentManifestDownloaderAndroid {
       std::unique_ptr<ErrorLogger> log,
       base::WeakPtr<CSPChecker> csp_checker,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh);
+      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh,
+      content::WeakDocumentPtr initiator_document);
 
   PaymentManifestDownloaderAndroid(const PaymentManifestDownloaderAndroid&) =
       delete;

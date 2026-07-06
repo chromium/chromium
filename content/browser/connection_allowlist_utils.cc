@@ -10,6 +10,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/connection_allowlist_util.h"
+#include "content/public/browser/render_frame_host.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/features.h"
@@ -119,6 +122,47 @@ network::ConnectionAllowlists GetConnectionAllowlistsForWorker(
   }
 
   return network::ConnectionAllowlists();
+}
+
+bool FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
+    const RenderFrameHost* render_frame_host,
+    const GURL& url,
+    bool is_redirect) {
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    return true;
+  }
+
+  if (!render_frame_host) {
+    return true;
+  }
+
+  // The feature currently does not impact fenced frames.
+  // TODO(crbug.com/447954811): Revisit this if the feature needs to be enabled
+  // and fenced frames need to be supported.
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    return true;
+  }
+
+  const auto* rfh_impl =
+      static_cast<const RenderFrameHostImpl*>(render_frame_host);
+  if (!rfh_impl->HasPolicyContainerHost()) {
+    return true;
+  }
+
+  const PolicyContainerPolicies& policies =
+      rfh_impl->policy_container_host()->policies();
+  if (!EnforcesConnectionAllowlist(policies)) {
+    return true;
+  }
+
+  if (is_redirect) {
+    // For redirects, the connection allowlist either allows or blocks the
+    // redirect request based on its `redirects` directive. The request URL is
+    // irrelevant to the decision.
+    return IsRedirectAllowedByConnectionAllowlist(policies);
+  }
+
+  return ConnectionAllowlistAllowsUrlAndReportIfNeeded(policies, url);
 }
 
 }  // namespace content

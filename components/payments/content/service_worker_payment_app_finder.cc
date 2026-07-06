@@ -33,6 +33,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/stored_payment_app.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/gfx/image/image.h"
@@ -470,7 +471,8 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
             .GetBrowserContext()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        std::move(url_loader_factory));
+        std::move(url_loader_factory),
+        render_frame_host().GetWeakDocumentPtr());
   }
 
   self_delete_factory->GetAllPaymentApps(

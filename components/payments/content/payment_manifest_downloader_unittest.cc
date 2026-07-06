@@ -15,6 +15,8 @@
 #include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/error_logger.h"
 #include "components/payments/core/features.h"
+#include "content/public/browser/weak_document_ptr.h"
+#include "content/public/test/test_renderer_host.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -37,7 +39,8 @@ static constexpr char kNoResponseBody[] = "";
 
 }  // namespace
 
-class PaymentManifestDownloaderTestBase : public testing::Test {
+class PaymentManifestDownloaderTestBase
+    : public content::RenderViewHostTestHarness {
  public:
   enum class Headers {
     kSend,
@@ -56,7 +59,8 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
     test_factory_.Clone(url_loader_factory_rfh.BindNewPipeAndPassReceiver());
     downloader_ = std::make_unique<PaymentManifestDownloader>(
         std::make_unique<ErrorLogger>(), const_csp_checker_->GetWeakPtr(),
-        shared_url_loader_factory_, std::move(url_loader_factory_rfh));
+        shared_url_loader_factory_, std::move(url_loader_factory_rfh),
+        main_rfh()->GetWeakDocumentPtr());
   }
 
   MOCK_METHOD3(OnManifestDownload,
@@ -113,7 +117,6 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
 
  protected:
   GURL test_url_;
-  base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<ConstCSPChecker> const_csp_checker_;
@@ -123,7 +126,10 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
 class PaymentMethodManifestDownloaderTest
     : public PaymentManifestDownloaderTestBase {
  public:
-  PaymentMethodManifestDownloaderTest() {
+  PaymentMethodManifestDownloaderTest() = default;
+
+  void SetUp() override {
+    PaymentManifestDownloaderTestBase::SetUp();
     InitDownloader();
     downloader_->DownloadPaymentMethodManifest(
         url::Origin::Create(GURL("https://chromium.org")), test_url_,
@@ -605,7 +611,10 @@ TEST_F(PaymentMethodManifestDownloaderTest, NotAllowCrossSiteRedirects) {
 
 class WebAppManifestDownloaderTest : public PaymentManifestDownloaderTestBase {
  public:
-  WebAppManifestDownloaderTest() {
+  WebAppManifestDownloaderTest() = default;
+
+  void SetUp() override {
+    PaymentManifestDownloaderTestBase::SetUp();
     InitDownloader();
     downloader_->DownloadWebAppManifest(
         url::Origin::Create(test_url_), test_url_,

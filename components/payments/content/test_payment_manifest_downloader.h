@@ -19,6 +19,10 @@ class GURL;
 template <class T>
 class scoped_refptr;
 
+namespace content {
+class WeakDocumentPtr;
+}  // namespace content
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -55,7 +59,8 @@ class TestDownloader : public PaymentManifestDownloader {
   TestDownloader(
       base::WeakPtr<CSPChecker> csp_checker,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh);
+      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh,
+      content::WeakDocumentPtr initiator_document);
 
   TestDownloader(const TestDownloader&) = delete;
   TestDownloader& operator=(const TestDownloader&) = delete;

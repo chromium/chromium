@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/native_error_strings.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -64,6 +65,14 @@ std::string GenerateHttpStatusCodeError(const GURL& url,
       errors::kPaymentManifestDownloadFailedWithHttpStatusCode,
       {url.spec(), base::NumberToString(http_response_code),
        std::string(status_string)},
+      nullptr);
+}
+
+std::string GenerateNetworkErrorMessage(const GURL& url, int net_error) {
+  return base::ReplaceStringPlaceholders(
+      errors::kPaymentManifestDownloadFailedWithNetworkError,
+      {url.spec(), net::ErrorToShortString(net_error),
+       base::NumberToString(net_error)},
       nullptr);
 }
 

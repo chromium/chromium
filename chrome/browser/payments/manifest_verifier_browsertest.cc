@@ -21,7 +21,10 @@
 #include "components/payments/core/const_csp_checker.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -69,7 +72,8 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
             ->profile()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        std::move(renderer_url_loader_factory));
+        std::move(renderer_url_loader_factory),
+        web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
     test_downloader_->AddTestServerURL("https://", https_server_->GetURL("/"));
   }
 

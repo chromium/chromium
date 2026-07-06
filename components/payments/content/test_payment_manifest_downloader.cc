@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "components/payments/core/error_logger.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -17,11 +18,13 @@ namespace payments {
 TestDownloader::TestDownloader(
     base::WeakPtr<CSPChecker> csp_checker,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh)
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh,
+    content::WeakDocumentPtr initiator_document)
     : PaymentManifestDownloader(std::make_unique<ErrorLogger>(),
                                 csp_checker,
                                 url_loader_factory,
-                                std::move(url_loader_factory_rfh)) {}
+                                std::move(url_loader_factory_rfh),
+                                std::move(initiator_document)) {}
 
 TestDownloader::~TestDownloader() = default;
 

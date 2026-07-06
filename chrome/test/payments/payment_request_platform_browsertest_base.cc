@@ -18,7 +18,9 @@
 #include "components/payments/content/service_worker_payment_app_finder.h"
 #include "components/payments/content/test_payment_manifest_downloader.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/origin.h"
@@ -114,7 +116,7 @@ void PaymentRequestPlatformBrowserTestBase::
       GetCSPCheckerForTests(),
       context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      std::move(renderer_url_loader_factory));
+      std::move(renderer_url_loader_factory), frame->GetWeakDocumentPtr());
 
   for (const auto& method : payment_methods) {
     downloader->AddTestServerURL("https://" + method.first + "/",

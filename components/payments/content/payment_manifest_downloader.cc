@@ -24,6 +24,9 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
+#include "content/public/browser/connection_allowlist_util.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -55,6 +58,15 @@ void RespondWithHttpStatusCodeError(const GURL& final_url,
                                     PaymentManifestDownloadCallback callback) {
   std::string error_message =
       GenerateHttpStatusCodeError(final_url, response_code);
+  log.Error(error_message);
+  std::move(callback).Run(final_url, std::string(), error_message);
+}
+
+void RespondWithNetworkError(const GURL& final_url,
+                             int net_error,
+                             const ErrorLogger& log,
+                             PaymentManifestDownloadCallback callback) {
+  std::string error_message = GenerateNetworkErrorMessage(final_url, net_error);
   log.Error(error_message);
   std::move(callback).Run(final_url, std::string(), error_message);
 }
@@ -128,9 +140,11 @@ PaymentManifestDownloader::PaymentManifestDownloader(
     std::unique_ptr<ErrorLogger> log,
     base::WeakPtr<CSPChecker> csp_checker,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh)
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh,
+    content::WeakDocumentPtr initiator_document)
     : log_(std::move(log)),
       csp_checker_(csp_checker),
+      initiator_document_(std::move(initiator_document)),
       url_loader_factory_(std::move(url_loader_factory)),
       url_loader_factory_rfh_(std::move(url_loader_factory_rfh)) {
   CHECK(log_);
@@ -262,13 +276,8 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
 
   if (net_error != net::OK &&
       net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    std::string error_message = base::ReplaceStringPlaceholders(
-        errors::kPaymentManifestDownloadFailedWithNetworkError,
-        {final_url.spec(), net::ErrorToShortString(net_error),
-         base::NumberToString(net_error)},
-        nullptr);
-    log_->Error(error_message);
-    std::move(download->callback).Run(final_url, std::string(), error_message);
+    RespondWithNetworkError(final_url, net_error, *log_,
+                            std::move(download->callback));
     return;
   }
 
@@ -446,6 +455,33 @@ void PaymentManifestDownloader::InitiateDownload(
   download->loader = std::move(loader);
   download->callback = std::move(callback);
   download->allowed_number_of_redirects = allowed_number_of_redirects;
+
+  content::RenderFrameHost* initiator_frame =
+      initiator_document_.AsRenderFrameHostIfValid();
+  if (!initiator_frame) {
+    // The initiator frame is gone. No request should be made.
+    RespondWithError(errors::kPaymentManifestDownloadFailed,
+                     download->original_url, *log_,
+                     std::move(download->callback));
+    return;
+  }
+
+  if (!(use_url_loader_factory_rfh &&
+        base::FeatureList::IsEnabled(
+            features::kPaymentRequestUseRendererUrlLoader)) &&
+      !FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
+          initiator_frame, download->original_url, did_follow_redirect)) {
+    // The download request is going to use the url loader factory for the
+    // browser process, which does not have the network restriction id of the
+    // initiator frame. The url loader factory does not check the connection
+    // allowlist. The request URL has to be checked here.
+    RespondWithNetworkError(download->original_url,
+                            did_follow_redirect
+                                ? net::ERR_UNSAFE_REDIRECT
+                                : net::ERR_NETWORK_ACCESS_REVOKED,
+                            *log_, std::move(download->callback));
+    return;
+  }
 
   if (!csp_checker_) {  // Can be null when the webpage closes.
     RespondWithError(errors::kPaymentManifestDownloadFailed,
