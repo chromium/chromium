@@ -1831,14 +1831,95 @@ TEST_F(DiceWebSigninInterceptorTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
       account_info, AccountInfo(), SkColor(),
       /*show_link_data_option=*/true, /*show_managed_disclaimer=*/false);
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
-                  testing::_));
+                  testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
   MaybeIntercept(account_info.account_id);
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced, 1);
+
+  // Signin.SignIn.Offered should be recorded for enterprise.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception, 1);
+
+  ASSERT_TRUE(bubble_callback);
+  // Signin.SignIn.Started should not be recorded yet.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+
+  // Simulate user accepting the bubble.
+  std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
+
+  // Signin.SignIn.Started should now be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception, 1);
+}
+
+TEST_F(
+    DiceWebSigninInterceptorTest,
+    ConsumerAccountForcedEnterpriseInterceptionOnEmptyProfile_AcceptWithExistingProfile) {
+  base::ListValue profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("notexample.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@gmail.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Account info is already available, interception happens immediately.
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
+      account_info, AccountInfo(), SkColor(),
+      /*show_link_data_option=*/true, /*show_managed_disclaimer=*/false);
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+  MaybeIntercept(account_info.account_id);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced, 1);
+
+  // Signin.SignIn.Offered should be recorded for enterprise.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception, 1);
+
+  ASSERT_TRUE(bubble_callback);
+  // Signin.SignIn.Started should not be recorded yet.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+
+  // Simulate user accepting the bubble with existing profile.
+  std::move(bubble_callback)
+      .Run(SigninInterceptionResult::kAcceptedWithExistingProfile);
+
+  // Signin.SignIn.Started should now be recorded under
+  // kEnterpriseDialogAfterSigninInterception.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception, 1);
 }
 
 TEST_F(DiceWebSigninInterceptorTest, ConsumerAccountAllowedOnEmptyProfile) {

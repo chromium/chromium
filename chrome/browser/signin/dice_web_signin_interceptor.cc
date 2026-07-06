@@ -900,6 +900,22 @@ void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   state_->was_interception_ui_displayed_ = true;
   state_->interception_type_ = bubble_parameters.interception_type;
+  switch (bubble_parameters.interception_type) {
+    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+      signin_metrics::LogSignInOffered(
+          signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception,
+          signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+      break;
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+      break;
+  }
   state_->interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
       state_->web_contents_.get(), bubble_parameters, std::move(callback));
 }
@@ -1508,12 +1524,18 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
           profile_, state_->intercepted_account_management_accepted_);
       Reset();
     } else {
+      signin_metrics::LogSignInStarted(
+          signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception,
+          profile_metrics_service_.get());
       OnProfileCreationChoice(account_info, profile_color,
                               SigninInterceptionResult::kAccepted);
     }
   } else if (create == SigninInterceptionResult::kAcceptedWithExistingProfile) {
     state_->intercepted_account_management_accepted_ = true;
     if (GetPrimaryAccountInfo(identity_manager_).IsEmpty()) {
+      signin_metrics::LogSignInStarted(
+          signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception,
+          profile_metrics_service_.get());
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin,
           signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception);
