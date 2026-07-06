@@ -1386,6 +1386,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "IndexedDBConnectionDeduplication",
                 "Enables connection deduplication for IndexedDB."),
+        Flag.baseFeature(
+                CcFeatures.SCROLL_JANK_V4_METRIC_FAST_SCROLL_CONTINUITY_REQUIRES_SAME_DIRECTION,
+                "When enabled, the fast scroll continuity rule of the V4 scroll jank metric only"
+                    + " applies if the previous and current frames' total raw scroll deltas have"
+                    + " the same sign."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
