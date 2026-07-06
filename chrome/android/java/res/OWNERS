@@ -1,3 +1,4 @@
 file://ui/android/java/res/LAYOUT_OWNERS
 
 per-file composeplate_loop_*.json=hanxi@chromium.org
+per-file ...clear_browsing_data*=file://chrome/android/java/src/org/chromium/chrome/browser/browsing_data/OWNERS
