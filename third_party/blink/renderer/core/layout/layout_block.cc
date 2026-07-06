@@ -173,10 +173,9 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
                                            LayoutObject* before_descendant) {
   NOT_DESTROYED();
   DCHECK(!IsLayoutBlockFlow());
-  DCHECK(!new_child->IsTablePart());
   DCHECK_NE(before_descendant->Parent(), this);
 
-  if (!new_child->IsInline()) {
+  if (!new_child->IsInline() && !new_child->IsTablePart()) {
     LayoutObject* before_child =
         SplitAnonymousBoxesAroundChild(before_descendant);
 
@@ -208,7 +207,7 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
   // here.
   DCHECK(!ChildrenInline());
 
-  if (new_child->IsInline()) {
+  if (new_child->IsInline() || new_child->IsTablePart()) {
     // If we're inserting an inline child but all of our children are blocks,
     // then we have to make sure it is put into an anomyous block box. We try to
     // use an existing anonymous box if possible, otherwise a new one is created
