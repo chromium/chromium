@@ -3,9 +3,5 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 optimize_resources.py
-proto/Configuration_pb2.py
-proto/Resources_pb2.py
-proto/__init__.py
 util/__init__.py
 util/build_utils.py
-util/protoresources.py

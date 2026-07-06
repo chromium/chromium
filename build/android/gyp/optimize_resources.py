@@ -10,33 +10,8 @@ import os
 import sys
 
 from util import build_utils
-from util import protoresources
 
-from proto import Resources_pb2  # prororesources adds proto to sys.path
 import action_helpers  # build_utils adds //build to sys.path.
-
-
-# Workaround for b/512191270. Returns true if something was edited, and we need
-# to rewrite the resources file.
-def _SanitizeProtoTable(msg):
-  has_changes = False
-  # Reference is a leaf node, so we don't need to care about recursing.
-  if hasattr(msg, 'DESCRIPTOR') and msg.DESCRIPTOR.name == 'Reference':
-    # aapt2 convert can't handle misnamed entries like
-    # com.google.android.apps.chrome.tests:style/
-    if msg.name and msg.name.endswith('/'):
-      msg.name = ""
-      return True
-    return False
-  for field_descriptor, field_value in msg.ListFields():
-    if field_descriptor.type == field_descriptor.TYPE_MESSAGE:
-      if field_descriptor.label == field_descriptor.LABEL_REPEATED:
-        for item in field_value:
-          if _SanitizeProtoTable(item):
-            has_changes = True
-      elif _SanitizeProtoTable(field_value):
-        has_changes = True
-  return has_changes
 
 
 def _ParseArgs(args):
@@ -167,18 +142,6 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
                           print_stderr=False)
 
   if output_format != current_format:
-    if current_format == 'proto':
-
-      def process_proto_resources(filename, data):
-        if filename == 'resources.pb':
-          table = Resources_pb2.ResourceTable()
-          table.ParseFromString(data)
-          if _SanitizeProtoTable(table):
-            data = table.SerializeToString()
-        return data
-
-      protoresources.ProcessZip(optimize_output, process_proto_resources)
-
     logging.debug('Running aapt2 convert (%s -> %s)', current_format,
                   output_format)
     convert_command = [
