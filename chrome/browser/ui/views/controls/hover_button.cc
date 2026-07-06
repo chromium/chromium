@@ -44,7 +44,10 @@ std::unique_ptr<views::Border> CreateBorderWithVerticalSpacing(
       gfx::Insets::VH(vertical_spacing, horizontal_spacing));
 }
 
-int GetVerticalSpacing() {
+// The vertical space that must exist on the top and the bottom of the item
+// to ensure the proper spacing is maintained between items when stacking
+// vertically.
+int GetItemVerticalSpacing() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
              views::DISTANCE_CONTROL_LIST_VERTICAL) /
          2;
@@ -107,7 +110,7 @@ HoverButton::HoverButton()
   SetInstallFocusRingOnFocus(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  SetBorder(CreateBorderWithVerticalSpacing(GetVerticalSpacing()));
+  SetBorder(CreateBorderWithVerticalSpacing(GetItemVerticalSpacing()));
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
@@ -138,15 +141,12 @@ HoverButton::HoverButton(PressedCallback callback,
   SetImageModel(STATE_NORMAL, icon);
 }
 
-HoverButton::HoverButton(PressedCallback callback,
-                         std::unique_ptr<views::View> icon_view,
-                         const std::u16string& title,
-                         const std::u16string& subtitle,
-                         std::unique_ptr<views::View> secondary_view,
-                         bool add_vertical_label_spacing,
-                         const std::u16string& footer,
-                         int icon_label_spacing,
-                         bool multiline_subtitle)
+HoverButton::Params::Params() = default;
+HoverButton::Params::~Params() = default;
+HoverButton::Params::Params(Params&&) = default;
+HoverButton::Params& HoverButton::Params::operator=(Params&&) = default;
+
+HoverButton::HoverButton(PressedCallback callback, Params params)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -157,13 +157,13 @@ HoverButton::HoverButton(PressedCallback callback,
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  // The vertical space that must exist on the top and the bottom of the item
-  // to ensure the proper spacing is maintained between items when stacking
-  // vertically.
-  const int vertical_spacing = GetVerticalSpacing();
-  if (icon_view) {
+  const int item_vertical_spacing = GetItemVerticalSpacing();
+  if (params.icon_view) {
+    const int icon_vertical_spacing =
+        std::max(0, item_vertical_spacing + params.icon_vertical_offset);
     icon_wrapper_ = AddChildView(std::make_unique<IconWrapper>(
-        std::move(icon_view), vertical_spacing, icon_label_spacing));
+        std::move(params.icon_view), icon_vertical_spacing,
+        params.icon_label_spacing));
     icon_view_ = static_cast<IconWrapper*>(icon_wrapper_)->icon();
   }
 
@@ -172,7 +172,7 @@ HoverButton::HoverButton(PressedCallback callback,
   auto label_wrapper = std::make_unique<views::View>();
 
   title_ = label_wrapper->AddChildView(std::make_unique<views::Label>());
-  title_->SetText(title);
+  title_->SetText(params.title);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   // Hover the whole button when hovering |title_|. This is OK because |title_|
   // will never have a link in it.
@@ -184,14 +184,15 @@ HoverButton::HoverButton(PressedCallback callback,
       base::BindRepeating(&HoverButton::UpdateTooltipAndAccessibleName,
                           base::Unretained(this))));
 
-  if (!subtitle.empty()) {
+  if (!params.subtitle.empty()) {
     std::unique_ptr<views::Label> subtitle_label =
-        CreateSecondaryLabel(subtitle);
-    subtitle_label->SetMultiLine(multiline_subtitle);
+        CreateSecondaryLabel(params.subtitle);
+    subtitle_label->SetMultiLine(params.multiline_subtitle);
     subtitle_ = label_wrapper->AddChildView(std::move(subtitle_label));
   }
-  if (!footer.empty()) {
-    std::unique_ptr<views::Label> footer_label = CreateSecondaryLabel(footer);
+  if (!params.footer.empty()) {
+    std::unique_ptr<views::Label> footer_label =
+        CreateSecondaryLabel(params.footer);
     footer_ = label_wrapper->AddChildView(std::move(footer_label));
   }
 
@@ -206,33 +207,56 @@ HoverButton::HoverButton(PressedCallback callback,
   label_wrapper->SetCanProcessEventsWithinSubtree(false);
   label_wrapper->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::VH(add_vertical_label_spacing ? vertical_spacing : 0, 0));
+      gfx::Insets::VH(
+          params.add_vertical_label_spacing ? item_vertical_spacing : 0, 0));
   label_wrapper_ = AddChildView(std::move(label_wrapper));
   // Observe |label_wrapper_| bounds changes to ensure the HoverButton tooltip
   // is kept in sync with the size.
   label_observation_.Observe(label_wrapper_.get());
 
-  if (secondary_view) {
-    secondary_view->SetCanProcessEventsWithinSubtree(false);
+  if (params.secondary_view) {
+    params.secondary_view->SetCanProcessEventsWithinSubtree(false);
     // |secondary_view| needs a layer otherwise it's obscured by the layer
     // used in drawing ink drops.
-    secondary_view->SetPaintToLayer();
-    secondary_view->layer()->SetFillsBoundsOpaquely(false);
-    const int secondary_icon_label_spacing = icon_label_spacing;
+    params.secondary_view->SetPaintToLayer();
+    params.secondary_view->layer()->SetFillsBoundsOpaquely(false);
+    const int secondary_icon_label_spacing = params.icon_label_spacing;
 
     // Set vertical margins such that the vertical distance between HoverButtons
     // is maintained.
-    secondary_view->SetProperty(
+    params.secondary_view->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::TLBR(vertical_spacing, secondary_icon_label_spacing,
-                          vertical_spacing, 0));
-    secondary_view_ = AddChildView(std::move(secondary_view));
+        gfx::Insets::TLBR(item_vertical_spacing, secondary_icon_label_spacing,
+                          item_vertical_spacing, 0));
+    secondary_view_ = AddChildView(std::move(params.secondary_view));
   }
 
   // Create the appropriate border with no vertical insets. The required spacing
   // will be met via margins set on the containing views.
   SetBorder(CreateBorderWithVerticalSpacing(0));
 }
+
+HoverButton::HoverButton(PressedCallback callback,
+                         std::unique_ptr<views::View> icon_view,
+                         const std::u16string& title,
+                         const std::u16string& subtitle,
+                         std::unique_ptr<views::View> secondary_view,
+                         bool add_vertical_label_spacing,
+                         const std::u16string& footer,
+                         int icon_label_spacing,
+                         bool multiline_subtitle)
+    : HoverButton(std::move(callback), [&]() {
+        HoverButton::Params params;
+        params.icon_view = std::move(icon_view);
+        params.title = title;
+        params.subtitle = subtitle;
+        params.secondary_view = std::move(secondary_view);
+        params.add_vertical_label_spacing = add_vertical_label_spacing;
+        params.footer = footer;
+        params.icon_label_spacing = icon_label_spacing;
+        params.multiline_subtitle = multiline_subtitle;
+        return params;
+      }()) {}
 
 HoverButton::~HoverButton() = default;
 
@@ -321,10 +345,11 @@ void HoverButton::AddExtraAccessibleText(const std::u16string& text) {
 }
 
 void HoverButton::SetIconHorizontalMargins(int left, int right) {
-  int vertical_spacing = GetVerticalSpacing();
+  gfx::Insets* current_margins = icon_wrapper_->GetProperty(views::kMarginsKey);
+  CHECK(current_margins);
   icon_wrapper_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(vertical_spacing, left, vertical_spacing, right));
+      views::kMarginsKey, gfx::Insets::TLBR(current_margins->top(), left,
+                                            current_margins->bottom(), right));
 }
 
 void HoverButton::UpdateTooltipAndAccessibleName() {

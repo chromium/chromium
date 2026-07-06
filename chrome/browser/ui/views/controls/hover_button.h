@@ -57,15 +57,49 @@ class HoverButton : public views::LabelButton {
               const ui::ImageModel& icon,
               const std::u16string& text);
 
-  // Creates a HoverButton with custom subviews. |icon_view| replaces the
-  // LabelButton icon, and titles appear on separate rows. An empty |subtitle|
-  // and |footer| will vertically center |title|. |footer| will be shown below
-  // |title| and |subtitle|. |secondary_view|, when set, is shown on the
-  // opposite side of the button from |icon_view|. When
-  // |add_vertical_label_spacing| is false it will not add vertical spacing to
-  // the label wrapper. Warning: |icon_view| must have a fixed size and be
-  // correctly set during its constructor for the HoverButton to layout
-  // correctly.
+  // Configuration options for creating a HoverButton with custom subviews.
+  // Warning: `icon_view` must have a fixed size and be correctly set during
+  // its constructor for the HoverButton to layout correctly.
+  struct Params {
+    Params();
+    ~Params();
+    Params(Params&&);
+    Params& operator=(Params&&);
+
+    // LabelButton icon.
+    std::unique_ptr<views::View> icon_view;
+
+    // Title text. Appears on a separate row.
+    std::u16string title;
+
+    // Subtitle text. An empty `subtitle` and `footer` will vertically center
+    // `title`.
+    std::u16string subtitle;
+
+    // Shown on the opposite side of the button from `icon_view`.
+    std::unique_ptr<views::View> secondary_view;
+
+    // When false, does not add vertical spacing to the label wrapper.
+    bool add_vertical_label_spacing = true;
+
+    // Vertical offset applied to the top and bottom spacing of the icon
+    // wrapper.
+    int icon_vertical_offset = 0;
+
+    // Shown below `title` and `subtitle`.
+    std::u16string footer;
+
+    // Horizontal spacing between icon and labels.
+    int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+    bool multiline_subtitle = false;
+  };
+
+  // Creates a HoverButton with custom subviews described by `params`.
+  HoverButton(PressedCallback callback, Params params);
+
+  // Legacy constructor for HoverButton. Prefer using the Params struct instead.
   HoverButton(
       PressedCallback callback,
       std::unique_ptr<views::View> icon_view,
