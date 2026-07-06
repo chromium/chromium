@@ -732,7 +732,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "vertical_tab_strip_state_controller_interactive_uitest.cc" ]
 
-    sources += [ "tab_dialog_manager_uitest.cc" ]
+    sources += [ "tab_dialog_manager_interactive_uitest.cc" ]
 
     deps = [
       ":tabs",
