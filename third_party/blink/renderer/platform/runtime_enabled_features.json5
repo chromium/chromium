@@ -3505,13 +3505,6 @@
       name: "HTMLElementScrollParent",
       status: "experimental",
     },
-    // Return a natural width/height of zero from
-    // HTMLImageElement.naturalWidth/Height for SVG images that don't have a
-    // natural width/height set.
-    {
-      name: "HTMLImageElementActualNaturalSize",
-      status: "test",
-    },
     // Remove support for `::-webkit-clear-button`.
     // This shipped in M149 and the flag can be removed in M151.,
     // NOTE: when this flag is removed, be sure to also remove "clear"

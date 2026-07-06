@@ -4603,7 +4603,7 @@ enum WebFeature {
   kV8Window_Close_Method = 5296,
   kV8Window_Focus_Method = 5297,
   kV8Window_PostMessage_Method = 5298,
-  kHTMLImageElementNaturalSizeDiffersForSvgImage = 5299,
+  kOBSOLETE_HTMLImageElementNaturalSizeDiffersForSvgImage = 5299,
   kWindowProxyIndexedGetter = 5300,
   kWindowProxyNamedGetter = 5301,
   // The items above roughly this point are available in the M134 branch.

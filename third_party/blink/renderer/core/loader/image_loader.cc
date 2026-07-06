@@ -949,22 +949,14 @@ gfx::Size ImageLoader::AccessNaturalSize() const {
   gfx::Size size = image.Size(kRespectImageOrientation);
 
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    gfx::Size concrete_object_size;
     if (std::optional<NaturalSizingInfo> sizing_info =
             SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr)) {
-      concrete_object_size =
+      size =
           ToRoundedSize(PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
               *sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
                                        LayoutReplaced::kDefaultHeight))));
-      size = ToRoundedSize(PhysicalSize::FromSizeFFloor(
-          blink::ConcreteObjectSize(*sizing_info, gfx::SizeF())));
-    }
-    if (size != concrete_object_size) {
-      element_->GetDocument().CountUse(
-          WebFeature::kHTMLImageElementNaturalSizeDiffersForSvgImage);
-    }
-    if (!RuntimeEnabledFeatures::HTMLImageElementActualNaturalSizeEnabled()) {
-      size = concrete_object_size;
+    } else {
+      size = gfx::Size();
     }
   }
   return size;
