@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -72,29 +70,6 @@ public class CustomTabActivityLifecycleUmaTracker
                 "CustomTabs.IncognitoCctCallerId",
                 incognitoCctCallerId,
                 BrowserServicesIntentDataProvider.IncognitoCctCallerId.NUM_ENTRIES);
-
-        // Record which 1P app launched Incognito CCT.
-        if (incognitoCctCallerId
-                == BrowserServicesIntentDataProvider.IncognitoCctCallerId.GOOGLE_APPS) {
-            String sendersPackageName = mIntentDataProvider.getClientPackageName();
-            @IntentHandler.ExternalAppId
-            int externalId = IntentHandler.mapPackageToExternalAppId(sendersPackageName);
-            if (externalId != IntentHandler.ExternalAppId.OTHER) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "CustomTabs.ClientAppId.Incognito",
-                        externalId,
-                        IntentHandler.ExternalAppId.NUM_ENTRIES);
-            } else {
-                // Using package name didn't give any meaningful insight on who launched the
-                // Incognito CCT, falling back to check if they provided EXTRA_APPLICATION_ID.
-                var intent = assertNonNull(mIntentDataProvider.getIntent());
-                externalId = IntentHandler.determineExternalIntentSource(intent, mActivity);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "CustomTabs.ClientAppId.Incognito",
-                        externalId,
-                        IntentHandler.ExternalAppId.NUM_ENTRIES);
-            }
-        }
     }
 
     private void recordUserAction() {
@@ -108,12 +83,6 @@ public class CustomTabActivityLifecycleUmaTracker
     private void recordMetrics() {
         if (mIntentDataProvider.isOffTheRecord()) {
             recordIncognitoLaunchReason();
-        } else {
-            var intent = assertNonNull(mIntentDataProvider.getIntent());
-            @IntentHandler.ExternalAppId
-            int externalId = IntentHandler.determineExternalIntentSource(intent, mActivity);
-            RecordHistogram.recordEnumeratedHistogram(
-                    "CustomTabs.ClientAppId", externalId, IntentHandler.ExternalAppId.NUM_ENTRIES);
         }
     }
 
