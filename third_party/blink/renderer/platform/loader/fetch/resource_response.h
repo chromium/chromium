@@ -366,7 +366,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   int64_t EncodedDataLength() const { return encoded_data_length_; }
   void SetEncodedDataLength(int64_t value);
 
-  int64_t EncodedBodyLength() const { return encoded_body_length_; }
+  uint64_t EncodedBodyLength() const { return encoded_body_length_; }
   void SetEncodedBodyLength(uint64_t value);
 
   int64_t DecodedBodyLength() const { return decoded_body_length_; }

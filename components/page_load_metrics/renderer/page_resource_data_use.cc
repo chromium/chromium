@@ -52,8 +52,8 @@ void PageResourceDataUse::DidCompleteResponse(
     const network::URLLoaderCompletionStatus& status) {
   // Report the difference in received bytes.
   is_complete_ = true;
-  encoded_body_length_ = status.encoded_body_length.AsDeprecatedByteCount();
-  decoded_body_length_ = status.decoded_body_length.AsDeprecatedByteCount();
+  encoded_body_length_ = status.encoded_body_length;
+  decoded_body_length_ = status.decoded_body_length;
   base::ByteSizeDelta delta_bytes =
       status.encoded_data_length - total_received_bytes_;
   if (delta_bytes.is_positive()) {
@@ -67,7 +67,7 @@ void PageResourceDataUse::DidCancelResponse() {
 
 void PageResourceDataUse::DidLoadFromMemoryCache(
     const GURL& response_url,
-    base::ByteCount encoded_body_length,
+    base::ByteSize encoded_body_length,
     const std::string& mime_type) {
   // Resource id was set in the constructor.
   CHECK_NE(resource_id_, kUnknownResourceId);
@@ -111,8 +111,10 @@ mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
   resource_data_update->reported_as_ad_resource = reported_as_ad_resource_;
   resource_data_update->is_main_frame_resource = is_main_frame_resource_;
   resource_data_update->mime_type = mime_type_;
-  resource_data_update->encoded_body_length = encoded_body_length_;
-  resource_data_update->decoded_body_length = decoded_body_length_;
+  resource_data_update->encoded_body_length =
+      encoded_body_length_.AsDeprecatedByteCount();
+  resource_data_update->decoded_body_length =
+      decoded_body_length_.AsDeprecatedByteCount();
   resource_data_update->cache_type = cache_type_;
   resource_data_update->is_secure_scheme = is_secure_scheme_;
   resource_data_update->proxy_used = proxy_used_;

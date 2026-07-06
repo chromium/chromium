@@ -82,7 +82,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   void DidCancelResponse(int request_id) override;
   void DidLoadResourceFromMemoryCache(const GURL& response_url,
                                       int request_id,
-                                      base::ByteCount encoded_body_length,
+                                      base::ByteSize encoded_body_length,
                                       const std::string& mime_type,
                                       bool from_archive) override;
   void DidStartNavigation(

@@ -84,7 +84,7 @@ class PageTimingMetricsSender {
   void DidCancelResponse(int resource_id);
   void DidLoadResourceFromMemoryCache(const GURL& response_url,
                                       int request_id,
-                                      base::ByteCount encoded_body_length,
+                                      base::ByteSize encoded_body_length,
                                       const std::string& mime_type);
   void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect);
   void OnMainFrameViewportRectangleChanged(

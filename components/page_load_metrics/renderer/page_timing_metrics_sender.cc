@@ -207,7 +207,7 @@ void PageTimingMetricsSender::DidCancelResponse(int resource_id) {
 void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
     const GURL& response_url,
     int request_id,
-    base::ByteCount encoded_body_length,
+    base::ByteSize encoded_body_length,
     const std::string& mime_type) {
   // In general, we should not observe the same resource being loaded twice in
   // the frame. This is possible due to an existing workaround in

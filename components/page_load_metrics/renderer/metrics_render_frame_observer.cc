@@ -400,7 +400,7 @@ void MetricsRenderFrameObserver::DidReceiveTransferSizeUpdate(
 void MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache(
     const GURL& response_url,
     int request_id,
-    base::ByteCount encoded_body_length,
+    base::ByteSize encoded_body_length,
     const std::string& mime_type,
     bool from_archive) {
   // Resources from archives, such as subresources from a MHTML archive, do not

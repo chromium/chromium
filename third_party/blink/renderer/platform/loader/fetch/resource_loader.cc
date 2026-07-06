@@ -1297,7 +1297,6 @@ void ResourceLoader::RequestSynchronously() {
   if (!IsLoading()) {
     return;
   }
-  DCHECK_GE(response_out.ToResourceResponse().EncodedBodyLength(), 0);
 
   // Follow the async case convention of not calling DidReceiveData or
   // appending data to m_resource if the response body is empty. Copying the

@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -4650,13 +4649,13 @@ void RenderFrameImpl::DidLoadResourceFromMemoryCache(
   if (load_from_memory_cache_callback_) {
     load_from_memory_cache_callback_.Run(
         request.Url(), response.RequestId(),
-        base::ByteCount(response.EncodedBodyLength()),
+        base::ByteSize(response.EncodedBodyLength()),
         response.MimeType().Utf8(), response.FromArchive());
   } else {
     for (auto& observer : observers_) {
       observer.DidLoadResourceFromMemoryCache(
           request.Url(), response.RequestId(),
-          base::ByteCount(response.EncodedBodyLength()),
+          base::ByteSize(response.EncodedBodyLength()),
           response.MimeType().Utf8(), response.FromArchive());
     }
   }

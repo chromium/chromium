@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -307,7 +306,7 @@ class CONTENT_EXPORT RenderFrameObserver {
   virtual void DidLoadResourceFromMemoryCache(
       const GURL& response_url,
       int request_id,
-      base::ByteCount encoded_body_length,
+      base::ByteSize encoded_body_length,
       const std::string& mime_type,
       bool from_archive) {}
 

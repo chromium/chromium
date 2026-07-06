@@ -612,7 +612,7 @@ void WebURLResponse::SetEncodedDataLength(int64_t length) {
   resource_response_->SetEncodedDataLength(length);
 }
 
-int64_t WebURLResponse::EncodedBodyLength() const {
+uint64_t WebURLResponse::EncodedBodyLength() const {
   return resource_response_->EncodedBodyLength();
 }
 

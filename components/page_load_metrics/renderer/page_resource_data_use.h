@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_RESOURCE_DATA_USE_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_RESOURCE_DATA_USE_H_
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -56,7 +55,7 @@ class PageResourceDataUse {
   // Called when this resource was loaded from the memory cache. Resources
   // loaded from the memory cache only receive a single update.
   void DidLoadFromMemoryCache(const GURL& response_url,
-                              base::ByteCount encoded_body_length,
+                              base::ByteSize encoded_body_length,
                               const std::string& mime_type);
 
   // Checks if the resource has completed loading or if the response was
@@ -81,8 +80,8 @@ class PageResourceDataUse {
 
   base::ByteSize total_received_bytes_;
   base::ByteSize last_update_bytes_;
-  base::ByteCount encoded_body_length_;
-  base::ByteCount decoded_body_length_;
+  base::ByteSize encoded_body_length_;
+  base::ByteSize decoded_body_length_;
 
   bool is_complete_ = false;
   bool is_canceled_ = false;

@@ -11,7 +11,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/supports_user_data.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
@@ -241,7 +241,7 @@ class CONTENT_EXPORT RenderFrame :
   using LoadFromMemoryCacheCallback =
       base::RepeatingCallback<void(const GURL& response_url,
                                    int request_id,
-                                   base::ByteCount encoded_body_length,
+                                   base::ByteSize encoded_body_length,
                                    const std::string& mime_type,
                                    bool from_archive)>;
   virtual void SetLoadFromMemoryCacheCallback(
