@@ -256,10 +256,7 @@ void MultistepFilterService::GenerateFilterSuggestions(
   }
 
   if (!HasUserProvidedConsent(navigation_id, url.GetHost())) {
-    if (observer_for_test_) {
-      observer_for_test_->OnSuggestionGenerated(std::nullopt);
-    }
-    std::move(callback).Run(std::nullopt);
+    OnSuggestionGenerated(std::move(callback), std::nullopt);
     return;
   }
 
@@ -278,10 +275,7 @@ void MultistepFilterService::OnUrlAllowedForSuggestion(
   if (supported_task_types.empty()) {
     LogSuggestionSuppressed(log_router_, navigation_id, url.GetHost(),
                             "no_supported_tasks");
-    if (observer_for_test_) {
-      observer_for_test_->OnSuggestionGenerated(std::nullopt);
-    }
-    std::move(callback).Run(std::nullopt);
+    OnSuggestionGenerated(std::move(callback), std::nullopt);
     return;
   }
 

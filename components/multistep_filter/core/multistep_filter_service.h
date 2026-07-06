@@ -89,6 +89,8 @@ class MultistepFilterService : public KeyedService,
   // Parses the given url to extract a `FilterAnnotation`. A filter annotation
   // is a set of normalized filter attributes. The eventual extraction is
   // delegated to `filter_extractor_` which takes care of storing the results.
+  // `ExtractAnnotation` is guaranteed to call `OnExtractionFinished`. The
+  // `annotation` will be nullopt in case of failures.
   virtual void ExtractAnnotation(
       int64_t navigation_id,
       const GURL& url,
