@@ -494,7 +494,7 @@ export class ActionsModel extends EventTarget {
 
 /**
  * List of common actions, used both internally and externally (custom actions).
- * Keep in sync with file_system_provider.idl.
+ * Keep in sync with file_system_provider.webidl.
  */
 export enum CommonActionId {
   SHARE = 'SHARE',

@@ -978,7 +978,7 @@ dictionary Provider {
   ProviderSource source;
 };
 
-// chrome/common/extensions/api/file_system_provider.idl:Action
+// chrome/common/extensions/api/file_system_provider.webidl:Action
 // Information about an action for an entry.
 dictionary FileSystemProviderAction {
   // The identifier of the action. Any string or $(ref:CommonActionId) for
