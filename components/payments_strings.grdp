@@ -278,6 +278,11 @@
   <message name="IDS_PAYMENTS_ERROR_MESSAGE" desc="The text that informs the user that there is error in verifying and charging the payment." formatter_data="android_java">
     There was an error processing your order. Please try again.
   </message>
+  <if expr="not is_android">
+    <message name="IDS_PAYMENTS_MANDATORY_PAYMENT_APP_UI_ERROR_MESSAGE" desc="The text that informs the user that there is error in verifying and charging the payment.">
+      There was an error processing your order on <ph name="MERCHANT_ORIGIN">$1<ex>merchant.com</ex></ph> via <ph name="PAYMENT_APP_ORIGIN">$2<ex>bobpay.xyz</ex></ph>.
+    </message>
+  </if>
   <message name="IDS_PAYMENTS_CARD_AND_ADDRESS_SETTINGS" desc="Label of the section containing the link to go to the settings page for card and address options." formatter_data="android_java">
     You can manage cards and addresses in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph>.
   </message>

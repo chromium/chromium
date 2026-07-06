@@ -2,16 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/views/controls/label.h"
 
 namespace payments {
+
+constexpr std::string_view kPaymentAppOrigin = "payment_app.com";
+constexpr std::string_view kMerchantOrigin = "merchant.com";
 
 using PaymentRequestErrorMessageTest = PaymentRequestBrowserTestBase;
 
@@ -106,6 +114,62 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
   // There should be no scroll view.
   EXPECT_EQ(nullptr, GetChildByDialogViewID(
                          top_view, DialogViewID::PAYMENT_SHEET_SCROLL_VIEW));
+}
+
+class PaymentRequestErrorMessageMandatoryUiEnabledTest
+    : public PaymentRequestErrorMessageTest {
+ protected:
+  PaymentRequestErrorMessageMandatoryUiEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPaymentRequestMandatoryPaymentAppUi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageMandatoryUiEnabledTest,
+                       ErrorMessageContainsOrigins) {
+  std::string method_name;
+  InstallPaymentApp(std::string(kPaymentAppOrigin),
+                    "/payment_handler_sw_error_without_user_interaction.js",
+                    &method_name);
+  NavigateTo(std::string(kMerchantOrigin), "/payment_handler.html");
+
+  // Trigger PaymentRequest. We expect the error message sheet to be shown
+  // because the app rejects the payment immediately before any user interaction
+  // occurs.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  // Verify the error message contains the origins.
+  views::View* error_sheet =
+      dialog_view()->GetViewByID(static_cast<int>(DialogViewID::ERROR_SHEET));
+  ASSERT_NE(nullptr, error_sheet);
+
+  views::View* content_view =
+      GetChildByDialogViewID(error_sheet, DialogViewID::CONTENT_VIEW);
+  ASSERT_NE(nullptr, content_view);
+  ASSERT_EQ(1u, content_view->children().size());
+
+  views::Label* label = static_cast<views::Label*>(content_view->children()[0]);
+  std::u16string_view label_text = label->GetText();
+
+  EXPECT_TRUE(label_text.contains(base::ASCIIToUTF16(kMerchantOrigin)));
+  EXPECT_TRUE(label_text.contains(base::ASCIIToUTF16(kPaymentAppOrigin)));
 }
 
 }  // namespace payments

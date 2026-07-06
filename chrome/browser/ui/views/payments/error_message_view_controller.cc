@@ -7,7 +7,11 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
+#include "components/payments/content/payment_app.h"
+#include "components/payments/content/payment_request_state.h"
+#include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -17,6 +21,8 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -24,8 +30,7 @@ class PaymentsErrorLabel : public views::Label {
   METADATA_HEADER(PaymentsErrorLabel, views::Label)
 
  public:
-  PaymentsErrorLabel()
-      : Label(l10n_util::GetStringUTF16(IDS_PAYMENTS_ERROR_MESSAGE)) {
+  explicit PaymentsErrorLabel(const std::u16string& text) : Label(text) {
     SetMultiLine(true);
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
@@ -91,7 +96,30 @@ void ErrorMessageViewController::FillContentView(views::View* content_view) {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   content_view->SetLayoutManager(std::move(layout));
-  content_view->AddChildView(std::make_unique<PaymentsErrorLabel>());
+
+  std::u16string message;
+
+  if (state() && state()->selected_app() &&
+      state()->selected_app()->type() == PaymentApp::Type::SERVICE_WORKER_APP &&
+      base::FeatureList::IsEnabled(
+          features::kPaymentRequestMandatoryPaymentAppUi)) {
+    std::u16string merchant_origin =
+        url_formatter::FormatOriginForSecurityDisplay(
+            url::Origin::Create(state()->GetTopOrigin()),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+
+    std::u16string app_origin = url_formatter::FormatOriginForSecurityDisplay(
+        url::Origin::Create(GURL(state()->selected_app()->GetId())),
+        url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+
+    message = l10n_util::GetStringFUTF16(
+        IDS_PAYMENTS_MANDATORY_PAYMENT_APP_UI_ERROR_MESSAGE, merchant_origin,
+        app_origin);
+  } else {
+    message = l10n_util::GetStringUTF16(IDS_PAYMENTS_ERROR_MESSAGE);
+  }
+
+  content_view->AddChildView(std::make_unique<PaymentsErrorLabel>(message));
 }
 
 bool ErrorMessageViewController::GetSheetId(DialogViewID* sheet_id) {
