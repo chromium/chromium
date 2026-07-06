@@ -52,6 +52,7 @@ def __step_config(ctx, step_config):
             "command_prefix": platform.python_bin + " ../../third_party/node/node.py ../../third_party/devtools-frontend/src/scripts/build/esbuild.js",
             "remote": config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "platform_ref": "large",
         },
         {
             "name": "devtools-frontend/build/generate_css_js_files",
