@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/editing/selection_editor.h"
 
+#include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -42,6 +44,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -175,9 +178,30 @@ void SelectionEditor::SetContainsSelectionFocusFlag(LayoutObject* style_owner,
 
   style_owner->SetContainsSelectionFocus(value);
 
-  // ShouldTruncateOverflowingText() is evaluated during each child block's
-  // inline layout. LayoutNG caches child results, so children must be
-  // explicitly marked dirty to re-evaluate truncation.
+  // Children must be marked dirty so LayoutNG re-evaluates truncation (results
+  // are cached per child). Defer via a task: this runs during
+  // selection/input/focus handling, where dirtying layout synchronously would
+  // trip hit-test DCHECKs (crbug.com/406853131).
+  Node* style_node = style_owner->GetNode();
+  if (!style_node) {
+    return;
+  }
+  style_node->GetDocument()
+      .GetTaskRunner(TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE,
+                 BindOnce(&SelectionEditor::InvalidateTextOverflowLayoutForNode,
+                          WrapWeakPersistent(style_node)));
+}
+
+void SelectionEditor::InvalidateTextOverflowLayoutForNode(
+    Node* style_owner_node) {
+  if (!style_owner_node) {
+    return;
+  }
+  LayoutObject* style_owner = style_owner_node->GetLayoutObject();
+  if (!style_owner) {
+    return;
+  }
   style_owner->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
   for (LayoutObject* child = style_owner->SlowFirstChild(); child;
        child = child->NextSibling()) {

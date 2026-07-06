@@ -227,6 +227,11 @@ class CORE_EXPORT FrameSelection final
 
   void DidChangeFocus();
 
+  // Restores |element|'s text-overflow ellipsis as it loses or
+  // gains focus while the selection focus stays inside it. The caller guards on
+  // the feature flag (see SelectionEditor::SetContainsSelectionFocusFlag()).
+  void UpdateTextOverflowOfSelectionFocus(const Element& element, bool focused);
+
   const SelectionInDomTree& GetSelectionInDomTree() const;
   bool IsDirectional() const;
 

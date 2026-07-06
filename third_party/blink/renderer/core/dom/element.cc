@@ -8927,6 +8927,15 @@ void Element::FocusStateChanged() {
   InvalidateIfHasEffectiveAppearance();
   FocusVisibleStateChanged();
   FocusWithinStateChanged();
+
+  // Keep text-overflow in sync with focus: a selection focus inside this
+  // editable field hides its ellipsis, so restore it on focus loss and re-hide
+  // it on focus gain while the selection stays inside.
+  if (RuntimeEnabledFeatures::TextOverflowClipWithSelectionEnabled()) {
+    if (LocalFrame* frame = GetDocument().GetFrame()) {
+      frame->Selection().UpdateTextOverflowOfSelectionFocus(*this, IsFocused());
+    }
+  }
 }
 
 void Element::FocusVisibleStateChanged() {

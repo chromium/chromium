@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reference: text-overflow ellipsis restores after Tab moves focus away</title>
+<style>
+* { outline: none; caret-color: transparent; }
+::selection, ::selection:window-inactive {
+  background-color: transparent;
+  color: inherit;
+}
+.container {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: 16px/20px monospace;
+  margin: 10px;
+}
+</style>
+<div id="first" class="container" contenteditable="true">Test long long long long long long long name</div>
+<div id="second" class="container" tabindex="0">Another long long long long long name</div>
+<script>
+document.getElementById('second').focus();
+</script>

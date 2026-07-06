@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>text-overflow ellipsis restores after Tab moves focus away</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow/#ellipsis-interaction">
+<meta name="assert" content="When DOM focus moves away via Tab from an editable element containing selection focus, text-overflow ellipsis should be restored.">
+<style>
+* { outline: none; caret-color: transparent; }
+::selection, ::selection:window-inactive {
+  background-color: transparent;
+  color: inherit;
+}
+.container {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: 16px/20px monospace;
+  margin: 10px;
+}
+</style>
+<div id="first" class="container" contenteditable="true">Test long long long long long long long name</div>
+<div id="second" class="container" tabindex="0">Another long long long long long name</div>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+runAfterLayoutAndPaint(function() {
+  if (window.eventSender) {
+    // Click inside the editable field to place the selection caret, which hides
+    // its ellipsis while it holds DOM focus.
+    var first = document.getElementById('first');
+    var rect = first.getBoundingClientRect();
+    eventSender.mouseMoveTo(rect.left + 10, rect.top + 10);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    // Tab moves DOM focus away; the first field's ellipsis should be restored.
+    eventSender.keyDown('Tab');
+  }
+}, true);
+</script>

@@ -86,6 +86,11 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor> {
   Document& GetDocument() const;
   LocalFrame* GetFrame() const { return frame_.Get(); }
 
+  // Marks |style_owner_node| and its block children for layout to re-evaluate
+  // text-overflow truncation. Posted as a deferred task (see
+  // SetContainsSelectionFocusFlag()) to avoid dirtying layout synchronously.
+  static void InvalidateTextOverflowLayoutForNode(Node* style_owner_node);
+
   void AssertSelectionValid() const;
   void ClearVisibleSelection();
   bool ShouldAlwaysUseDirectionalSelection() const;

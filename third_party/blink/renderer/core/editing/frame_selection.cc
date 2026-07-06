@@ -518,6 +518,31 @@ void FrameSelection::DidChangeFocus() {
   UpdateAppearance();
 }
 
+void FrameSelection::UpdateTextOverflowOfSelectionFocus(const Element& element,
+                                                        bool focused) {
+  DCHECK(RuntimeEnabledFeatures::TextOverflowClipWithSelectionEnabled());
+  Node* focus_node = GetSelectionInDomTree().Focus().AnchorNode();
+  if (!focus_node || !focus_node->GetLayoutObject() ||
+      !IsEditable(*focus_node)) {
+    return;
+  }
+  LayoutObject* style_owner =
+      focus_node->GetLayoutObject()->ContainingBlockForTextOverflow();
+  if (!style_owner || style_owner->ContainsSelectionFocus() == focused) {
+    return;
+  }
+  // Ignore focus changes on elements unrelated to the truncation style owner.
+  // Anchor to |element| because Document::FocusedElement() is not updated yet
+  // while a blur is being processed.
+  Node* style_node = style_owner->GetNode();
+  if (!style_node ||
+      (!style_node->IsDescendantOf(&element) && style_node != &element &&
+       !element.IsDescendantOf(style_node))) {
+    return;
+  }
+  SelectionEditor::SetContainsSelectionFocusFlag(style_owner, focused);
+}
+
 static DispatchEventResult DispatchSelectStart(
     const VisibleSelection& selection) {
   Node* select_start_target = selection.Focus().ComputeContainerNode();
