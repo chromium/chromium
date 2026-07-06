@@ -2580,6 +2580,11 @@ const SchemaValidatingPolicyToPreferenceMapEntry kSchemaValidatingPolicyMap[] =
     SCHEMA_ALLOW_UNKNOWN,
     SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
     SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
+  { key::kDeviceOnlinePasswordMismatchBehavior,
+    ash::prefs::kDeviceOnlinePasswordMismatchBehavior,
+    SCHEMA_ALLOW_UNKNOWN,
+    SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+    SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
 #endif  // BUILDFLAG(IS_CHROMEOS)
   // Policies for ChromeOS - End.
 };
