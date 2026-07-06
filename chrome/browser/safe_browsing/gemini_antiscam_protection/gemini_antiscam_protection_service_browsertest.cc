@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -18,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/gemini_antiscam_protection.pb.h"
 #include "components/prefs/pref_service.h"
@@ -87,6 +89,22 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
                 any_result, nullptr));
   }
 
+  void SetUpEmptyModelExecution() {
+    OptimizationGuideKeyedServiceFactory::GetInstance()
+        ->GetForProfile(browser()->profile())
+        ->AddExecutionResultForTesting(
+            optimization_guide::ModelBasedCapabilityKey::
+                kGeminiAntiscamProtection,
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                nullptr));
+  }
+
   optimization_guide::TestModelQualityLogsUploaderService* logs_uploader() {
     return static_cast<
         optimization_guide::TestModelQualityLogsUploaderService*>(
@@ -153,15 +171,8 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   EXPECT_NE(nullptr, service);
 }
 
-// TODO(crbug.com/521197173): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_EnhancedProtection_EmptyResponse \
-  DISABLED_EnhancedProtection_EmptyResponse
-#else
-#define MAYBE_EnhancedProtection_EmptyResponse EnhancedProtection_EmptyResponse
-#endif
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
-                       MAYBE_EnhancedProtection_EmptyResponse) {
+                       EnhancedProtection_EmptyResponse) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
   ASSERT_TRUE(
@@ -170,6 +181,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
       browser()->profile());
   ASSERT_NE(nullptr, service);
+  SetUpEmptyModelExecution();
   service->MaybeStartAntiscamProtection(
       GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
           web_contents()),
