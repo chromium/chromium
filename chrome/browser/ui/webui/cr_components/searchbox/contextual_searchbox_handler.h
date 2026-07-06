@@ -406,6 +406,11 @@ class ContextualSearchboxHandler
       desktop_delegate_;
   std::unique_ptr<contextual_tasks::QueryContextualizer> query_contextualizer_;
 
+  class ActiveTabNavigationObserver;
+  std::unique_ptr<ActiveTabNavigationObserver> active_tab_nav_observer_;
+
+  void OnActiveTabNavigated();
+
   raw_ptr<contextual_tasks::ContextualTasksContextService>
       contextual_tasks_context_service_;
 
