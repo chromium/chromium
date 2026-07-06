@@ -62,7 +62,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       public viz::ContextLostObserver,
       public ScopedRasterTimer::Host {
  public:
-  static std::unique_ptr<WebGpuRecyclableResourceProvider> CreateForWebGPU(
+  static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -122,15 +122,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
-  static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
-
   WebGpuRecyclableResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,

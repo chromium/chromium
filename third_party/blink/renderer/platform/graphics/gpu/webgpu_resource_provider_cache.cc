@@ -51,7 +51,7 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
   std::unique_ptr<WebGpuRecyclableResourceProvider> provider =
       AcquireCachedProvider(size, format, alpha_type, color_space);
   if (!provider) {
-    provider = WebGpuRecyclableResourceProvider::CreateForWebGPU(
+    provider = WebGpuRecyclableResourceProvider::Create(
         size, format, alpha_type, color_space, hdr_metadata);
     if (!provider)
       return nullptr;
