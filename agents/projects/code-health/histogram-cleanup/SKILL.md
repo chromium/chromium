@@ -56,13 +56,25 @@ supersedes the autonomous loops in `edit-code`.
 
 ### Scope & Proactivity
 
-- **Strict Scope:** Focus exclusively on the identified histogram. Do NOT
-  suggest removing additional histograms, even if they are related or also
-  expired.
+- **Primary Scope:** Focus exclusively on the identified histogram by default.
+  Do NOT suggest removing random additional histograms across the file or
+  component just because they are expired.
+- **Exception for Coupled/Shared Recording Code:** If you discover that other
+  histograms share the exact same recording logic, helper methods, or calculated
+  variables (e.g., co-located in the same helper function or branching from the
+  same condition) as the target histogram, you MAY bundle their removal into the
+  same cleanup plan IF AND ONLY IF:
+  1. **Expiry Verification:** You confirm in `histograms.xml` that the co-located
+     histograms are also expired and lack the `<expired_intentionally>` tag.
+  2. **Safety Verification:** You perform the same safety checks (no test
+     dependencies, no external repo references) for each bundled histogram.
+  3. **Atomic Benefit:** Removing them together cleanly eliminates shared boilerplate
+     (e.g., timer calculations, string building, parameter passing) that would
+     otherwise be left as dead or awkward code.
 - **Related Dead Code:** If you find dead code (e.g., constants, enums, or
-  helper methods) that is directly and exclusively related to the histogram
-  being removed, include its removal in the cleanup plan. Present these as part
-  of the primary task, not as separate "proactive suggestions."
+  helper methods, or calculated variables like timers) that is directly related
+  to the histogram(s) being removed, include its removal in the cleanup plan.
+  Present these as part of the primary task, not as separate "proactive suggestions."
 
 ## Workflow
 

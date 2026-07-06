@@ -68,7 +68,9 @@ following exact workflow for the histogram `<HistogramName>`:
    test dependencies (HistogramTester is fine); < 7/10 = multiple sites, complex
    mocks; 0/10 = external repository dependencies).
 4. **Removal Plan:** Formulate a concise plan for removal (e.g., 'Files to edit:
-   X, Y; Entry to remove: Z').
+   X, Y; Entry to remove: Z'). If co-located histograms sharing the same recording
+   code are identified and verified as expired and safe to remove, include them in
+   the bundled Removal Plan.
 
 **Return ONLY a concise summary of the affected files and tests, any identified
 risks, the final Confidence Score, a brief justification, and the Removal
