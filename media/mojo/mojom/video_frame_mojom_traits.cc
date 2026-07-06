@@ -360,9 +360,16 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
         planes[i].stride = strides[i];
         planes[i].offset = base::strict_cast<size_t>(offsets[i]);
-        planes[i].size =
-            media::VideoFrame::Rows(i, format, coded_size.height()) *
-            strides[i];
+        size_t rows = media::VideoFrame::Rows(i, format, coded_size.height());
+        size_t row_bytes =
+            media::VideoFrame::RowBytes(i, format, coded_size.width());
+        if (strides[i] < row_bytes) {
+          LOG(ERROR) << "Stride is smaller than row bytes for plane " << i
+                     << ": stride=" << strides[i]
+                     << ", row bytes=" << row_bytes;
+          return false;
+        }
+        planes[i].size = rows > 0 ? (rows - 1) * strides[i] + row_bytes : 0;
       }
 
       auto layout =
@@ -559,14 +566,23 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
       const size_t plane_height =
           media::VideoFrame::Rows(i, format, coded_size.height());
-      base::CheckedNumeric<size_t> min_plane_size = base::CheckMul(
-          base::strict_cast<size_t>(planes[i].stride), plane_height);
+      const size_t plane_width =
+          media::VideoFrame::RowBytes(i, format, coded_size.width());
+      base::CheckedNumeric<size_t> min_plane_size = 0;
+      if (plane_height > 0) {
+        min_plane_size =
+            base::CheckMul(base::strict_cast<size_t>(planes[i].stride),
+                           plane_height - 1) +
+            plane_width;
+      }
       if (!min_plane_size.IsValid<uint64_t>() ||
           min_plane_size.ValueOrDie<uint64_t>() > planes[i].size) {
         LOG(ERROR) << "Invalid plane size at index " << i
                    << ": stride=" << planes[i].stride
                    << ", height=" << plane_height
-                   << ", plane size=" << planes[i].size;
+                   << ", plane size=" << planes[i].size
+                   << ", minimum plane size="
+                   << static_cast<size_t>(min_plane_size.ValueOrDefault(0));
         return false;
       }
 
