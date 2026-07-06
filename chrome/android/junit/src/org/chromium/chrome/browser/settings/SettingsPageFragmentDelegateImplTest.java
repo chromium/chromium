@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -25,7 +26,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.core.app.ApplicationProvider;
@@ -39,14 +39,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.stubbing.Answer;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -61,7 +66,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private FragmentActivity mActivity;
+    @Mock private ChromeBaseAppCompatActivity mActivity;
     @Mock private FragmentManager mFragmentManager;
     @Mock private FragmentTransaction mFragmentTransaction;
     @Mock private Profile mProfile;
@@ -77,15 +82,37 @@ public class SettingsPageFragmentDelegateImplTest {
     @Mock private LinearLayout mTitleContainer;
 
     private SettingsPageFragmentDelegateImpl mDelegate;
+    private View mInflatedSettingsView;
 
     @Before
     public void setUp() {
+        SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogSupplier =
+                ObservableSuppliers.createMonotonic();
+        modalDialogSupplier.set(mModalDialogManager);
+        when(mActivity.getModalDialogManagerSupplier()).thenReturn(modalDialogSupplier);
+
         when(mActivity.getSupportFragmentManager()).thenReturn(mFragmentManager);
         when(mFragmentManager.beginTransaction()).thenReturn(mFragmentTransaction);
         when(mFragmentTransaction.add(anyInt(), any(Fragment.class), anyString()))
                 .thenReturn(mFragmentTransaction);
         when(mFragmentTransaction.remove(any(Fragment.class))).thenReturn(mFragmentTransaction);
         when(mContainerView.getId()).thenReturn(CONTAINER_ID);
+
+        Answer<Void> captureSettingsView =
+                (invocation) -> {
+                    mInflatedSettingsView = invocation.getArgument(0);
+                    return null;
+                };
+        doAnswer(captureSettingsView).when(mContainerView).addView(any(View.class));
+
+        when(mActivity.findViewById(anyInt()))
+                .thenAnswer(
+                        invocation -> {
+                            int id = invocation.getArgument(0);
+                            return mInflatedSettingsView != null
+                                    ? mInflatedSettingsView.findViewById(id)
+                                    : null;
+                        });
 
         // Mock LayoutInflater with correct theme to support inflating settings_activity.
         Context context =
@@ -301,5 +328,66 @@ public class SettingsPageFragmentDelegateImplTest {
         // Case 3: getMultiColumnSettings() is non-null and two column.
         when(mMultiColumnSettings.isTwoColumn()).thenReturn(true);
         assertTrue(mDelegate.isTwoColumnSettingsVisible());
+    }
+
+    @Test
+    public void testInitSettings_createsSearchCoordinator() {
+        when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
+        mDelegate.initSettings(mContainerView);
+
+        // Capture all registered FragmentLifecycleCallbacks.
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
+        verify(mFragmentManager, atLeastOnce())
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+
+        when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
+                .thenReturn(mTitleContainer);
+
+        // Run the view creation callback for all registered callbacks.
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
+            callback.onFragmentViewCreated(
+                    mFragmentManager, mMultiColumnSettings, mFragmentView, null);
+        }
+
+        // Verify that the search coordinator was created and registered as an observer of
+        // MultiColumnSettings.
+        SettingsSearchCoordinator searchCoordinator = mDelegate.getSearchCoordinator();
+        assertNotNull(searchCoordinator);
+        verify(mMultiColumnSettings).addObserver(searchCoordinator);
+    }
+
+    @Test
+    public void testDestroySettings_destroysSearchCoordinator() {
+        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+                .thenReturn(mMockSettingsHostFragment);
+        mDelegate.initSettings(mContainerView);
+
+        // Capture lifecycle callbacks.
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
+        verify(mFragmentManager, atLeastOnce())
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+
+        // Set up mocks.
+        when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
+                .thenReturn(mTitleContainer);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+
+        // Trigger view creation.
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
+            callback.onFragmentViewCreated(
+                    mFragmentManager, mMultiColumnSettings, mFragmentView, null);
+        }
+
+        SettingsSearchCoordinator searchCoordinator = mDelegate.getSearchCoordinator();
+        assertNotNull(searchCoordinator);
+
+        // Destroy settings.
+        mDelegate.destroySettings();
+
+        // Verify that the observer was removed.
+        verify(mMultiColumnSettings).removeObserver(searchCoordinator);
     }
 }

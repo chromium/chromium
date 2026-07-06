@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.settings;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.content.ComponentCallbacks;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -58,6 +61,7 @@ public class SettingsPageFragmentDelegateImpl
     private final SnackbarManager mSnackbarManager;
     private final BottomSheetController mBottomSheetController;
     private final ModalDialogManager mModalDialogManager;
+    private final SettableMonotonicObservableSupplier<ModalDialogManager> mModalDialogSupplier;
     private final ContainmentHelper mContainmentHelper;
 
     private @Nullable SettingsHostFragment mSettingsHostFragment;
@@ -67,6 +71,8 @@ public class SettingsPageFragmentDelegateImpl
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mSettingsMetricsReporter;
     private @Nullable Toolbar mToolbar;
     private @Nullable MultiColumnTitleUpdater mMultiColumnTitleUpdater;
+    private @Nullable SettingsSearchCoordinator mSearchCoordinator;
+    private @Nullable ComponentCallbacks mComponentCallbacks;
 
     public SettingsPageFragmentDelegateImpl(
             Activity activity,
@@ -83,6 +89,8 @@ public class SettingsPageFragmentDelegateImpl
         mSnackbarManager = snackbarManager;
         mBottomSheetController = bottomSheetController;
         mModalDialogManager = modalDialogManager;
+        mModalDialogSupplier = ObservableSuppliers.<ModalDialogManager>createMonotonic();
+        mModalDialogSupplier.set(mModalDialogManager);
         mContainmentHelper = new ContainmentHelper(activity, this);
     }
 
@@ -102,9 +110,6 @@ public class SettingsPageFragmentDelegateImpl
                 new OneshotSupplierImpl<>();
         bottomSheetSupplier.set(mBottomSheetController);
 
-        var modalDialogSupplier = ObservableSuppliers.<ModalDialogManager>createMonotonic();
-        modalDialogSupplier.set(mModalDialogManager);
-
         mDependencyProvider =
                 new FragmentDependencyProvider(
                         mActivity,
@@ -113,8 +118,8 @@ public class SettingsPageFragmentDelegateImpl
                         mActivityResultTracker,
                         snackbarSupplier,
                         bottomSheetSupplier,
-                        modalDialogSupplier,
-                        () -> null);
+                        mModalDialogSupplier,
+                        () -> mSearchCoordinator);
 
         fragmentManager.registerFragmentLifecycleCallbacks(
                 mDependencyProvider, /* recursive= */ true);
@@ -124,6 +129,21 @@ public class SettingsPageFragmentDelegateImpl
         mTitleUpdaterLifecycleCallbacks = new TitleUpdaterLifecycleCallbacks();
         fragmentManager.registerFragmentLifecycleCallbacks(
                 mTitleUpdaterLifecycleCallbacks, /* recursive= */ true);
+
+        // Update the search coordinator on configuration change.
+        mComponentCallbacks =
+                new ComponentCallbacks() {
+                    @Override
+                    public void onConfigurationChanged(Configuration newConfig) {
+                        if (mSearchCoordinator != null) {
+                            mSearchCoordinator.onConfigurationChanged(newConfig);
+                        }
+                    }
+
+                    @Override
+                    public void onLowMemory() {}
+                };
+        mActivity.registerComponentCallbacks(mComponentCallbacks);
 
         // TODO(crbug.com/521895796): Used for settings fragments that are shown using a
         // new activity, where we want to apply padding and record histograms. Sort out if
@@ -164,8 +184,6 @@ public class SettingsPageFragmentDelegateImpl
         mToolbar.setNavigationOnClickListener(v -> mActivity.onBackPressed());
 
         mToolbar.setTitle(R.string.settings);
-
-        // TODO(crbug.com/521895796): Set up search coordinator.
 
         // Set up Help Menu on Toolbar.
         SettingsMenuHelper.onCreateOptionsMenu(mToolbar.getMenu(), mActivity);
@@ -211,6 +229,19 @@ public class SettingsPageFragmentDelegateImpl
             assumeNonNull(multiColumnSettings);
             multiColumnSettings.removeObserver(mMultiColumnTitleUpdater);
             mMultiColumnTitleUpdater = null;
+        }
+
+        if (mSearchCoordinator != null) {
+            MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
+            assumeNonNull(multiColumnSettings);
+            multiColumnSettings.removeObserver(mSearchCoordinator);
+            mSearchCoordinator.destroy();
+            mSearchCoordinator = null;
+        }
+
+        if (mComponentCallbacks != null) {
+            mActivity.unregisterComponentCallbacks(mComponentCallbacks);
+            mComponentCallbacks = null;
         }
 
         fragmentManager.beginTransaction().remove(mSettingsHostFragment).commitAllowingStateLoss();
@@ -261,8 +292,7 @@ public class SettingsPageFragmentDelegateImpl
 
     @Override
     public @Nullable SettingsSearchCoordinator getSearchCoordinator() {
-        // TODO(crbug.com/521895796): Set up search coordinator.
-        return null;
+        return mSearchCoordinator;
     }
 
     @Override
@@ -301,6 +331,29 @@ public class SettingsPageFragmentDelegateImpl
         mContainmentHelper.postUpdateContainmentOnLayout(fragment);
     }
 
+    private void createSearchCoordinator(MultiColumnSettings multiColumnSettings, View view) {
+        assert mSearchCoordinator == null;
+
+        mSearchCoordinator =
+                new SettingsSearchCoordinator(
+                        (FragmentActivity) mActivity,
+                        view.findViewById(R.id.action_bar),
+                        this::isTwoColumnSettingsVisible,
+                        multiColumnSettings,
+                        mContainmentHelper.getItemDecorations(),
+                        mProfile,
+                        this::updateFirstVisibleTitle,
+                        mModalDialogSupplier);
+
+        multiColumnSettings.setOnCreateViewRunnable(
+                () -> assumeNonNull(mSearchCoordinator).initializeSearchUi(null));
+        multiColumnSettings.addObserver(mSearchCoordinator);
+    }
+
+    private void updateFirstVisibleTitle(int index) {
+        assumeNonNull(mMultiColumnTitleUpdater).setFirstVisibleTitleIndex(index);
+    }
+
     /** Utility class to handle creating the title updater. */
     private class TitleUpdaterLifecycleCallbacks
             extends FragmentManager.FragmentLifecycleCallbacks {
@@ -309,6 +362,7 @@ public class SettingsPageFragmentDelegateImpl
                 FragmentManager fm, Fragment f, View v, @Nullable Bundle savedFragmentState) {
             if (f instanceof MultiColumnSettings multiColumnSettings) {
                 createMultiColumnTitleUpdater(multiColumnSettings, v);
+                createSearchCoordinator(multiColumnSettings, v);
             }
         }
     }

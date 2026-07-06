@@ -499,9 +499,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 isMultiColumnSettingEnabled()
                         ? this::updateFirstVisibleTitle
                         : CallbackUtils.emptyCallback();
+        Toolbar actionBar = findViewById(R.id.action_bar);
         mSearchCoordinator =
                 new SettingsSearchCoordinator(
                         this,
+                        actionBar,
                         this::isTwoColumnSettingsVisible,
                         mMultiColumnSettings,
                         mContainmentHelper.getItemDecorations(),
@@ -512,7 +514,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (savedState != null) {
                 // Title text view gets temporarily hidden while restoring the
                 // search UI to avoid flickering. See https://crbug.com/482952320.
-                Toolbar actionBar = findViewById(R.id.action_bar);
                 assumeNonNull(ToolbarUtils.getTitleTextView(actionBar))
                         .setVisibility(View.INVISIBLE);
             }
