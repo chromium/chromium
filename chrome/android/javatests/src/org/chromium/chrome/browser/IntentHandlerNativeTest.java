@@ -186,7 +186,7 @@ public class IntentHandlerNativeTest {
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
                                 "app1",
-                                Origin.create(headersIntent.getData()),
+                                Origin.create(IntentHandler.getUrlFromIntent(headersIntent)),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 
         String extraHeaders = IntentHandler.getExtraHeadersFromIntent(headersIntent);
@@ -219,7 +219,7 @@ public class IntentHandlerNativeTest {
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
                                 "app2",
-                                Origin.create(headersIntent.getData()),
+                                Origin.create(IntentHandler.getUrlFromIntent(headersIntent)),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 
         String extraHeaders = IntentHandler.getExtraHeadersFromIntent(headersIntent);

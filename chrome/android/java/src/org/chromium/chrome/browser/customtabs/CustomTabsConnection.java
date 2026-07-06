@@ -1010,7 +1010,10 @@ public class CustomTabsConnection {
         SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
         if (session == null) return false;
 
-        Origin origin = Origin.create(intent.getData());
+        String url = IntentHandler.getUrlFromIntent(intent);
+        if (url == null) return false;
+
+        Origin origin = Origin.create(url);
         if (origin == null) return false;
 
         return mClientManager.isFirstPartyOriginForSession(session, origin);

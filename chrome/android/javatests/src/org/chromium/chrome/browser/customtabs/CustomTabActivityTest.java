@@ -362,7 +362,7 @@ public class CustomTabActivityTest {
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
                                 "app1",
-                                Origin.create(intent.getData()),
+                                Origin.create(IntentHandler.getUrlFromIntent(intent)),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 
         final var session = warmUpAndLaunchUrlWithSession(intent);
