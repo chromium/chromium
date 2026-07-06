@@ -575,13 +575,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ContinueJsTest();
 }
 
-// TODO(crbug.com/530946737): Failing on tablet builders.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_testGetFormFactor DISABLED_testGetFormFactor
-#else
-#define MAYBE_testGetFormFactor testGetFormFactor
-#endif
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testGetFormFactor) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFormFactor) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
