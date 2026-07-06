@@ -671,5 +671,14 @@ void ToastService::RegisterToasts(
                                         : vector_icons::kErrorOldIcon,
                                     IDS_DICTATION_ERROR_TOAST)
             .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kDictationStopped,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kMicIcon
+                : vector_icons::kMicChromeRefreshOldIcon,
+            IDS_DICTATION_STOPPED_TOAST)
+            .SetPersistOnNavigation()
+            .Build());
   }
 }  // RegisterToasts() end.

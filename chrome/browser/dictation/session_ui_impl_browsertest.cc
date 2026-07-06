@@ -81,6 +81,18 @@ class DictationSessionUiImplBrowserTest
     });
   }
 
+  auto CheckShowingDictationStoppedToast(bool showing) {
+    return Check([this, showing]() {
+      ToastController* const toast_controller =
+          browser()->GetFeatures().toast_controller();
+      CHECK(toast_controller);
+      const bool is_showing_dictation_stopped_toast =
+          toast_controller->IsShowingToast() &&
+          toast_controller->GetCurrentToastId() == ToastId::kDictationStopped;
+      return is_showing_dictation_stopped_toast == showing;
+    });
+  }
+
  private:
   base::WeakPtr<ListenerStreamProvider> last_started_provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -280,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     StartSession(),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
 
-    // Switch to the second tab. The the session should be ended but only after
+    // Switch to the second tab. The session should be ended but only after
     // finalization.
     SelectTab(kTabStripElementId, 1),
     WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
@@ -294,6 +306,26 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     // Switch back to the first tab and ensure the UI does not reappear.
     SelectTab(kTabStripElementId, 0),
     EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       TabSwitchShowsDictationStoppedToast) {
+  // Add a second tab with the first tab in the foreground.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Switch to the second tab and verify that the Dictation stopped toast
+    // is shown.
+    SelectTab(kTabStripElementId, 1),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckShowingDictationStoppedToast(true)
   );
   // clang-format on
 }

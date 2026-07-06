@@ -107,6 +107,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="Enterprise copy audit monitored toast"/>
   <int value="47" label="Enterprise copy kept in managed chrome toast"/>
   <int value="48" label="Dictation error"/>
+  <int value="49" label="Dictation stopped"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

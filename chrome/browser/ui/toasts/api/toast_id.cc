@@ -105,6 +105,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "EnterpriseCopyKeptInManagedChrome";
     case ToastId::kDictationError:
       return "DictationError";
+    case ToastId::kDictationStopped:
+      return "DictationStopped";
   }
 
   NOTREACHED();
