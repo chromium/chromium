@@ -106,6 +106,10 @@ extern NSString* const kToolsMenuShareId;
 // Identity item accessibility Identifier.
 extern NSString* const kToolsMenuIdentityId;
 
+// The identifier for the custom detent matching the preferred height of the
+// overflow menu on the NTP.
+extern NSString* const kOverflowMenuNTPPreferredHeightDetentId;
+
 // Alpha for the background color of the highlighted items.
 extern const CGFloat kSelectedItemBackgroundAlpha;
 // Duration of the highlight animation of the popup menu.
