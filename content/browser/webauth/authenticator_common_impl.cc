@@ -1947,6 +1947,11 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
     ctap_get_assertion_request->get_cred_blob = true;
   }
 
+  if (public_key_options->extensions->cmtg_key) {
+    req_state_->requested_extensions.insert(RequestExtension::kCmtgKey);
+    ctap_get_assertion_request->cmtg_key = true;
+  }
+
   ctap_get_assertion_options->large_blob_read =
       public_key_options->extensions->large_blob_read;
   ctap_get_assertion_options->large_blob_write =
@@ -3117,7 +3122,13 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
         }
         break;
       case RequestExtension::kCmtgKey:
-        NOTIMPLEMENTED();
+        if (response_data.cmtg_key) {
+          response_extensions->cmtg_key = blink::mojom::CmtgKeyResponse::New();
+          response_extensions->cmtg_key->cmtg_key =
+              std::move(response_data.cmtg_key->key);
+          response_extensions->cmtg_key->signature =
+              std::move(response_data.cmtg_key->signature);
+        }
         break;
       case RequestExtension::kPRF: {
         response_extensions->echo_prf = true;

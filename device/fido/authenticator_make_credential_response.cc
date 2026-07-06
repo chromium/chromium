@@ -19,21 +19,6 @@
 
 namespace device {
 
-AuthenticatorMakeCredentialResponse::CmtgKeyResponse::CmtgKeyResponse(
-    std::vector<uint8_t> in_key,
-    std::vector<uint8_t> in_signature)
-    : key(std::move(in_key)), signature(std::move(in_signature)) {}
-
-AuthenticatorMakeCredentialResponse::CmtgKeyResponse::~CmtgKeyResponse() =
-    default;
-
-AuthenticatorMakeCredentialResponse::CmtgKeyResponse::CmtgKeyResponse(
-    CmtgKeyResponse&&) = default;
-
-AuthenticatorMakeCredentialResponse::CmtgKeyResponse&
-AuthenticatorMakeCredentialResponse::CmtgKeyResponse::operator=(
-    CmtgKeyResponse&&) = default;
-
 // static
 std::optional<AuthenticatorMakeCredentialResponse>
 AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(

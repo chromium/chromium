@@ -97,9 +97,11 @@ constexpr char kMakeCredentialRequestJson[] = R"({
 
 // Hex outputs are encoded CBOR serializations of test responses.
 constexpr char kGetAssertionHexResponse[] =
-    "81A1626F6BA168726573706F6E7365A3697369676E6174757265445369676E6A7573657248"
+    "81A1626F6BA367636D74674B6579A267636D74674B65794401020304697369676E61747572"
+    "65440506070868726573706F6E7365A3697369676E6174757265445369676E6A7573657248"
     "616E646C654261627161757468656E74696361746F724461746158251194228DA8FDBDEEFD"
-    "261BD7B6595CFD70A50D70C6407BCF013DE96D4EFB17DE010000003B";
+    "261BD7B6595CFD70A50D70C6407BCF013DE96D4EFB17DE010000003B69656E637279707465"
+    "644401020304";
 constexpr char kMakeCredentialHexResponse[] =
     "81A1626F6BA567636D74674B6579A267636D74674B65794401020304697369676E61747572"
     "654405060708677075625F6B6579440506070869656E637279707465644401020304726175"
@@ -323,7 +325,8 @@ TEST_P(EnclaveProtocolUtilsTestStripParameters,
   BuildCommandRequestBody(
       BuildGetAssertionCommand(std::move(entity), json_request, kClientDataJson,
                                /*claimed_pin=*/nullptr, wrapped_secret(),
-                               /*secret=*/std::nullopt),
+                               /*secret=*/std::nullopt,
+                               kCmtgHardcodedDeviceKey),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -335,6 +338,13 @@ TEST_P(EnclaveProtocolUtilsTestStripParameters,
       ValidateRequestFormatAndReturnCommandList(*request_cbor);
   auto& command_element = decoded_command->GetArray()[0];
   auto& command_map = command_element.GetMap();
+
+  auto cmtg_it = command_map.find(cbor::Value(kRequestCmtgDeviceKey));
+  ASSERT_NE(cmtg_it, command_map.end());
+  ASSERT_TRUE(cmtg_it->second.is_bytestring());
+  EXPECT_EQ(cmtg_it->second.GetBytestring(),
+            std::vector<uint8_t>(kCmtgHardcodedDeviceKey.begin(),
+                                 kCmtgHardcodedDeviceKey.end()));
   EXPECT_EQ(command_map.find(cbor::Value("cmd"))->second.GetString(),
             "passkeys/assert");
   EXPECT_TRUE(command_map.find(cbor::Value("claimed_pin")) ==
@@ -384,7 +394,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
   BuildCommandRequestBody(
       BuildGetAssertionCommand(std::move(entity), json_request, kClientDataJson,
                                std::move(claimed_pin), wrapped_secret(),
-                               /*secret=*/std::nullopt),
+                               /*secret=*/std::nullopt,
+                               /*cmtg_device_key=*/std::nullopt),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -528,6 +539,15 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Success) {
   EXPECT_EQ(assertion_response.user_entity->id,
             std::vector<uint8_t>({'a', 'b'}));
   EXPECT_EQ(assertion_response.credential->id, std::vector<uint8_t>({0, 1, 2}));
+
+  ASSERT_TRUE(assertion_response.cmtg_key.has_value());
+  EXPECT_THAT(assertion_response.cmtg_key->key,
+              testing::ElementsAre(1, 2, 3, 4));
+  EXPECT_THAT(assertion_response.cmtg_key->signature,
+              testing::ElementsAre(5, 6, 7, 8));
+  ASSERT_TRUE(assertion_response.updated_encrypted_passkey.has_value());
+  EXPECT_THAT(*assertion_response.updated_encrypted_passkey,
+              testing::ElementsAre(1, 2, 3, 4));
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Failures) {
@@ -795,7 +815,8 @@ TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveRequest) {
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
   cbor::Value request_cbor = BuildGetAssertionCommand(
       std::move(entity), json_request, kClientDataJson,
-      /*claimed_pin=*/nullptr, /*wrapped_secret=*/std::nullopt, secret());
+      /*claimed_pin=*/nullptr, /*wrapped_secret=*/std::nullopt, secret(),
+      /*cmtg_device_key=*/std::nullopt);
   cbor::Value redacted = RedactEnclaveRequest(request_cbor);
   ASSERT_TRUE(redacted.is_map());
   const auto& redacted_map = redacted.GetMap();

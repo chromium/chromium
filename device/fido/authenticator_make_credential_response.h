@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "device/fido/attestation_object.h"
+#include "device/fido/cmtg_key_response.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 
@@ -26,23 +27,6 @@ namespace device {
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorMakeCredential
 class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
  public:
-  // The response to a CMTG key request.
-  struct COMPONENT_EXPORT(DEVICE_FIDO) CmtgKeyResponse {
-    CmtgKeyResponse(std::vector<uint8_t> key, std::vector<uint8_t> signature);
-    ~CmtgKeyResponse();
-
-    CmtgKeyResponse(CmtgKeyResponse&&);
-    CmtgKeyResponse& operator=(CmtgKeyResponse&&);
-    CmtgKeyResponse(const CmtgKeyResponse&) = delete;
-    CmtgKeyResponse& operator=(const CmtgKeyResponse&) = delete;
-
-    // The CMTG public key, in the same format as the credential public key.
-    std::vector<uint8_t> key;
-
-    // The CMTG key signature over the WebAuthn signed data.
-    std::vector<uint8_t> signature;
-  };
-
   static std::optional<AuthenticatorMakeCredentialResponse>
   CreateFromU2fRegisterResponse(
       std::optional<FidoTransportProtocol> transport_used,

@@ -378,6 +378,32 @@ static constexpr char kMakeCredentialWithCmtg[] = R"(
   "this string avoids having the expression evaluate into a promise";
 )";
 
+static constexpr char kGetAssertionWithCmtg[] = R"(
+  window.cmtgPromise = new Promise(async (resolve) => {
+    try {
+      let c = await navigator.credentials.get({ publicKey: {
+        challenge: new Uint8Array([0]),
+        timeout: 10000,
+        userVerification: "discouraged",
+        allowCredentials: [],
+        extensions: { cmtgKey: true },
+      }});
+      const ext = c.getClientExtensionResults();
+      if (ext?.cmtgKey?.cmtgKey) {
+        const hex = Array.from(new Uint8Array(ext.cmtgKey.cmtgKey))
+                        .map(b => b.toString(16).padStart(2, '0'))
+                        .join('');
+        resolve('cmtg OK: ' + hex.substring(0, 16));
+      } else {
+        resolve('cmtg NONE');
+      }
+    } catch (e) {
+      resolve('error ' + e);
+    }
+  });
+  "this string avoids having the expression evaluate into a promise";
+)";
+
 static constexpr char kMakeCredentialGoogle[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { id: "google.com", name: "google.com" },
@@ -4824,8 +4850,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   model_observer()->WaitForStep();
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       MakeCredentialWithCmtg) {
+// Tests creating a credential with a CMTG key, then asserting it.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyRoundTrip) {
   SetTrustedVaultEmpty();
 
   content::WebContents* web_contents =
@@ -4845,9 +4871,83 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   model_observer()->WaitForStep();
 
   dialog_model()->OnGPMPinEntered(u"123456");
-  std::string result =
+  std::string make_script_result =
       content::EvalJs(web_contents, "window.cmtgPromise").ExtractString();
-  EXPECT_TRUE(base::StartsWith(result, "cmtg OK:")) << "Got: " << result;
+  EXPECT_TRUE(base::StartsWith(make_script_result, "cmtg OK:"))
+      << "Got: " << make_script_result;
+
+  ASSERT_TRUE(content::ExecJs(web_contents, kGetAssertionWithCmtg));
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->WaitForStep();
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+
+  std::string get_script_result =
+      content::EvalJs(web_contents, "window.cmtgPromise").ExtractString();
+  EXPECT_TRUE(base::StartsWith(get_script_result, "cmtg OK:"))
+      << "Got: " << get_script_result;
+  EXPECT_EQ(make_script_result, get_script_result);
+}
+
+// Tests creating a credential without a CMTG key, then asserting it with
+// a CMTG key to verify that the enclave creates one on demand. We run one final
+// assertion to verify that the second assertion uses the same key from the
+// first.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       CmtgKeyAssertionCreatesKey) {
+  SetTrustedVaultEmpty();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMCreationConfirmed();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionWithCmtg);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->WaitForStep();
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+
+  std::string get_script_result_1 =
+      content::EvalJs(web_contents, "window.cmtgPromise").ExtractString();
+  EXPECT_TRUE(base::StartsWith(get_script_result_1, "cmtg OK:"))
+      << "Got: " << get_script_result_1;
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionWithCmtg);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->WaitForStep();
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+
+  std::string get_script_result_2 =
+      content::EvalJs(web_contents, "window.cmtgPromise").ExtractString();
+  EXPECT_TRUE(base::StartsWith(get_script_result_2, "cmtg OK:"))
+      << "Got: " << get_script_result_2;
+
+  EXPECT_EQ(get_script_result_1, get_script_result_2);
 }
 
 }  // namespace

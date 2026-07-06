@@ -139,6 +139,11 @@ std::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           return std::nullopt;
         }
         request.get_cred_blob = true;
+      } else if (extension_id == kExtensionCmtgKey) {
+        if (!extension.second.is_bool() || !extension.second.GetBool()) {
+          return std::nullopt;
+        }
+        request.cmtg_key = true;
       } else if (extension_id == kExtensionPRF) {
         if (!extension.second.is_map()) {
           return std::nullopt;

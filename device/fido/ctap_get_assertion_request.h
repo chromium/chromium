@@ -118,6 +118,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   std::optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;
   bool get_cred_blob = false;
+  bool cmtg_key = false;
 
   // prf_inputs is non-empty if the `prf` extension is contained in the request.
   // The WebAuthn-level `prf` extension is implemented at the CTAP level by

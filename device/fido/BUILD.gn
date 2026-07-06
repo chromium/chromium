@@ -118,6 +118,8 @@ component("fido") {
         "cable/fido_tunnel_device.h",
         "cable/v2_discovery.cc",
         "cable/v2_discovery.h",
+        "cmtg_key_response.cc",
+        "cmtg_key_response.h",
         "credential_management.cc",
         "credential_management.h",
         "credential_management_handler.cc",

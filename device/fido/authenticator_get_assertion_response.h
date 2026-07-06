@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "device/fido/authenticator_data.h"
+#include "device/fido/cmtg_key_response.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
@@ -92,6 +93,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // The transport used to generate this response. This is unknown when using
   // the Windows WebAuthn API.
   std::optional<FidoTransportProtocol> transport_used;
+
+  // Contains the CMTG public key and signature if requested and supported.
+  std::optional<CmtgKeyResponse> cmtg_key;
 };
 
 }  // namespace device

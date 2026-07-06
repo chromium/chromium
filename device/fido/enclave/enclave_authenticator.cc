@@ -361,7 +361,11 @@ void EnclaveAuthenticator::DispatchGetAssertion() {
           pending_get_assertion_request_->request.client_data_json,
           std::move(ui_request_->claimed_pin),
           std::move(ui_request_->wrapped_secret),
-          std::move(ui_request_->secret)),
+          std::move(ui_request_->secret),
+          pending_get_assertion_request_->request.cmtg_key
+              ? std::make_optional<base::span<const uint8_t>>(
+                    kCmtgHardcodedDeviceKey)
+              : std::nullopt),
       std::move(ui_request_->signing_callback),
       base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
                      weak_factory_.GetWeakPtr()));
@@ -382,7 +386,11 @@ void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
       std::move(pending_get_assertion_request_->options.json),
       pending_get_assertion_request_->request.client_data_json,
       std::move(ui_request_->claimed_pin),
-      std::move(ui_request_->wrapped_secret), std::move(ui_request_->secret)));
+      std::move(ui_request_->wrapped_secret), std::move(ui_request_->secret),
+      pending_get_assertion_request_->request.cmtg_key
+          ? std::make_optional<base::span<const uint8_t>>(
+                kCmtgHardcodedDeviceKey)
+          : std::nullopt));
 
   pending_transaction_ = Transact(
       network_context_factory_, GetEnclaveIdentity(),
