@@ -51,11 +51,12 @@ namespace autofill {
 
 namespace {
 
+using ::accessibility_annotator::MemoryDataType;
 using ::accessibility_annotator::MemoryEntrySource;
 using ::accessibility_annotator::MemoryEntrySourceType;
 using ::accessibility_annotator::MemorySearchResult;
 using ::accessibility_annotator::MemorySearchResults;
-using MemoryDataType = ::accessibility_annotator::MemoryDataType;
+using ::accessibility_annotator::MemorySearchStatus;
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::test::RunOnceCallback;
@@ -162,7 +163,7 @@ class AtMemoryManagerTest : public testing::Test,
 
   void MockQueryResultsAndExpectCallback(
       std::u16string_view query,
-      accessibility_annotator::MemorySearchStatus status,
+      MemorySearchStatus status,
       std::vector<MemorySearchResult> entries,
       std::vector<Suggestion>& final_suggestions) {
     EXPECT_CALL(mock_query_service(), Query(query, _))
@@ -270,9 +271,8 @@ TEST_F(AtMemoryManagerTest,
   std::vector<MemorySearchResult> entries;
   entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
                        u"Full Address");
-  MemorySearchResults results(
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries));
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                              std::move(entries));
 
   // Expect that when search results arrive, suggestions are updated.
   std::vector<Suggestion> final_suggestions;
@@ -298,10 +298,9 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
   std::vector<MemorySearchResult> entries;
   entries.emplace_back(MemoryDataType::kUnknown, u"", u"Some Value");
 
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries), final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
 
   manager().OnSearchSubmitted(u"query");
 
@@ -320,10 +319,9 @@ TEST_F(AtMemoryManagerTest,
                          FormSignature(0), FieldSignature(0));
 
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kNoConnectionFailure,
-      /*entries=*/{}, final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kNoConnectionFailure,
+                                    /*entries=*/{}, final_suggestions);
 
   manager().OnSearchSubmitted(u"query");
 
@@ -555,9 +553,8 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
                                          u"IBAN meta", u"1234");
   entries.push_back(std::move(mixed_entry));
 
-  MemorySearchResults results(
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries));
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                              std::move(entries));
 
   search_callback.Run(std::move(results));
 
@@ -590,9 +587,8 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
                                          u"Number", u"56789");
   entries.push_back(std::move(mixed_entry));
 
-  MemorySearchResults results(
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries));
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                              std::move(entries));
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -652,9 +648,8 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
                                          u"IBAN meta", u"1234");
   entries.push_back(std::move(mixed_entry));
 
-  MemorySearchResults results(
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries));
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                              std::move(entries));
 
   search_callback.Run(std::move(results));
 
@@ -895,9 +890,9 @@ TEST_F(
                          FormSignature(0), FieldSignature(0));
 
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query", accessibility_annotator::MemorySearchStatus::kUnsupportedQuery,
-      /*entries=*/{}, final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kUnsupportedQuery,
+                                    /*entries=*/{}, final_suggestions);
 
   manager().OnSearchSubmitted(u"query");
 
@@ -919,9 +914,9 @@ TEST_F(AtMemoryManagerTest,
                          FormSignature(0), FieldSignature(0));
 
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query", accessibility_annotator::MemorySearchStatus::kUnsupportedQuery,
-      /*entries=*/{}, final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kUnsupportedQuery,
+                                    /*entries=*/{}, final_suggestions);
 
   manager().OnSearchSubmitted(u"query");
 
@@ -940,10 +935,9 @@ TEST_F(AtMemoryManagerTest,
   std::vector<MemorySearchResult> entries;
   entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
                        u"Full Address");
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess,
-      std::move(entries), final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kPartialResponseSuccess,
+                                    std::move(entries), final_suggestions);
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
@@ -962,10 +956,9 @@ TEST_F(AtMemoryManagerTest,
   std::vector<MemorySearchResult> entries;
   entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
                        u"Full Address");
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries), final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
@@ -1052,10 +1045,9 @@ TEST_P(AtMemoryManagerIconTest,
       });
 
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries), final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
 
   manager().OnSearchSubmitted(u"query");
 
