@@ -16,13 +16,13 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/signin_internals_resources.h"
-#include "components/version_info/channel.h"
 #include "components/grit/signin_internals_resources_map.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -243,10 +243,19 @@ void SignInInternalsHandler::OnCookieAccountsFetched(
 }
 
 bool SignInInternalsHandler::AreAccountCapabilitiesOverridesAllowed() const {
-  // Do not allow capability overrides on non-dev builds, as this is only
+  // Do not allow capability overrides on Beta or Stable builds, as this is only
   // intended for testing purposes.
   //
-  // TODO: crbug.com/526865387 - Also allow overrides for test accounts in
-  // non-dev builds.
-  return chrome::GetChannel() == version_info::Channel::UNKNOWN;
+  // TODO: crbug.com/526865387 - Also allow overrides for test accounts on
+  // Beta and Stable builds.
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::UNKNOWN:
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+      return true;
+    case version_info::Channel::BETA:
+    case version_info::Channel::STABLE:
+      return false;
+  }
+  NOTREACHED();
 }
