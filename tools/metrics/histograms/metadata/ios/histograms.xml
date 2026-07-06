@@ -1929,7 +1929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EnhancedCalendar.ResponseStatus"
-    enum="EnhancedCalendarResponseStatus" expires_after="2026-06-30">
+    enum="EnhancedCalendarResponseStatus" expires_after="2026-12-15">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>Status of the enhanced calendar response.</summary>
