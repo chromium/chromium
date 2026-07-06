@@ -139,4 +139,36 @@ TEST_F(StyleInvalidatorTest, SiblingIndexAndNthChildInvalidation) {
   }
 }
 
+TEST_F(StyleInvalidatorTest, PseudoElementSiblingFunctionInvalidation) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #sibling::before { content: ""; font-size: calc(10px * sibling-index()); }
+    </style>
+    <div id="parent">
+      <div></div>
+      <div id="sibling"></div>
+      <div id="rm"></div>
+    </div>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* sibling = GetDocument().getElementById(AtomicString("sibling"));
+  Element* rm = GetDocument().getElementById(AtomicString("rm"));
+
+  rm->remove();
+
+  GetDocument().GetStyleEngine().InvalidateStyle();
+
+  // Only #sibling depends on sibling-index(), via its ::before pseudo-element.
+  for (const Element& child : ElementTraversal::ChildrenOf(*parent)) {
+    if (child == sibling) {
+      EXPECT_TRUE(child.NeedsStyleRecalc());
+    } else {
+      EXPECT_FALSE(child.NeedsStyleRecalc());
+    }
+  }
+}
+
 }  // namespace blink

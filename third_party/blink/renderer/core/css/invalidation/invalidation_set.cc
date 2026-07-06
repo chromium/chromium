@@ -173,7 +173,11 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
 
   if (invalidation_flags_.InvalidatesTreeCounting()) {
     if (const ComputedStyle* style = element.GetComputedStyle()) {
-      if (style->HasSiblingFunctions()) {
+      auto has_sibling_functions = [](const ComputedStyle& style) {
+        return style.HasSiblingFunctions();
+      };
+      if (has_sibling_functions(*style) ||
+          element.PseudoElementStylesDependOnFunc(has_sibling_functions)) {
         TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
             element, kInvalidationSetInvalidatesTreeCounting, *this,
             g_empty_atom);
