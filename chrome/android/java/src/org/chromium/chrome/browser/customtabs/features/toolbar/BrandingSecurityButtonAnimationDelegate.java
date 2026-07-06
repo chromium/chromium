@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -53,9 +52,10 @@ class BrandingSecurityButtonAnimationDelegate {
 
     /**
      * The animation delegate that will apply a rotation transition for image view.
+     *
      * @param imageView The image view that the animation will performed on.
      */
-    BrandingSecurityButtonAnimationDelegate(@NonNull ImageView imageView) {
+    BrandingSecurityButtonAnimationDelegate(ImageView imageView) {
         mImageView = imageView;
     }
 
@@ -146,12 +146,12 @@ class BrandingSecurityButtonAnimationDelegate {
     }
 
     /**
-     * Add padding around the |drawable| until |targetWidth| and |targetHeight|, and convert it
-     * to a {@link BitmapDrawable}.
+     * Add padding around the |drawable| until |targetWidth| and |targetHeight|, and convert it to a
+     * {@link BitmapDrawable}.
      */
     @VisibleForTesting
     static BitmapDrawable resizeToBitmapDrawable(
-            Resources resource, @NonNull Drawable drawable, int targetWidth, int targetHeight)
+            Resources resource, Drawable drawable, int targetWidth, int targetHeight)
             throws IllegalArgumentException {
         int width = drawable.getIntrinsicWidth();
         int height = drawable.getIntrinsicHeight();

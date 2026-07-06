@@ -16,7 +16,6 @@ import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
 import android.util.Pair;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
@@ -288,8 +287,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      * FileNotFoundException} is thrown.
      */
     @Override
-    public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
-            throws FileNotFoundException {
+    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         try (var t = TraceEvent.scoped("PageContentProviderImpl.openFile")) {
             ThreadUtils.assertOnBackgroundThread();
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)) {

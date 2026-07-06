@@ -325,7 +325,7 @@ public class OfflinePageEvaluationBridge {
         void getAllPages(
                 long nativeOfflinePageEvaluationBridge,
                 List<OfflinePageItem> offlinePages,
-                final Callback<List<OfflinePageItem>> callback);
+                Callback<List<OfflinePageItem>> callback);
 
         void savePageLater(
                 long nativeOfflinePageEvaluationBridge,
@@ -338,11 +338,11 @@ public class OfflinePageEvaluationBridge {
                 long nativeOfflinePageEvaluationBridge, Callback<Boolean> callback);
 
         void getRequestsInQueue(
-                long nativeOfflinePageEvaluationBridge, final Callback<SavePageRequest[]> callback);
+                long nativeOfflinePageEvaluationBridge, Callback<SavePageRequest[]> callback);
 
         void removeRequestsFromQueue(
                 long nativeOfflinePageEvaluationBridge,
                 long[] requestIds,
-                final Callback<Integer> callback);
+                Callback<Integer> callback);
     }
 }
