@@ -1,8 +1,9 @@
 include_rules = [
   # This code cannot depend on anything from //base, except for the current
-  # directory.
+  # directory, or compiler specific macros.
   "-base",
   "+base/android/linker",
+  "+base/compiler_specific.h",
   "+third_party/jni_zero/jni_export.h",
 ]
 

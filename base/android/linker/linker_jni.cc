@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <android/dlext.h>
+#include <android/log.h>
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -19,12 +15,12 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
+#include <sys/system_properties.h>
 #include <unistd.h>
 
 #include <memory>
 
-#include <android/log.h>
-#include <sys/system_properties.h>
+#include "base/compiler_specific.h"
 
 #define LOG_E(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "linker-jni", __VA_ARGS__))
 
@@ -92,9 +88,9 @@ bool ScanRegionInBuffer(const char* buf,
 
   const char* line_start = position;
   while (line_start > buf) {
-    line_start--;
+    line_start = UNSAFE_TODO(line_start - 1);
     if (*line_start == '\n') {
-      line_start++;
+      line_start = UNSAFE_TODO(line_start + 1);
       break;
     }
   }
@@ -107,8 +103,8 @@ bool ScanRegionInBuffer(const char* buf,
   // Example line from proc(5):
   // address           perms offset  dev   inode   pathname
   // 00400000-00452000 r-xp 00000000 08:02 173521  /usr/bin/dbus-daemon
-  if (sscanf(line_start, "%" SCNxPTR "-%" SCNxPTR " %4c", &vma_start, &vma_end,
-             permissions) < 3) {
+  if (UNSAFE_TODO(sscanf(line_start, "%" SCNxPTR "-%" SCNxPTR " %4c",
+                         &vma_start, &vma_end, permissions)) < 3) {
     return false;
   }
 
@@ -152,8 +148,8 @@ bool FindRegionInOpenFile(int fd, uintptr_t* out_address, size_t* out_size) {
     // end.
     size_t bytes_read = 0;
     do {
-      ssize_t rv = HANDLE_EINTR(
-          read(fd, buf + pos + bytes_read, bytes_requested - bytes_read));
+      ssize_t rv = HANDLE_EINTR(read(fd, UNSAFE_TODO(buf + pos + bytes_read),
+                                     bytes_requested - bytes_read));
       if (rv == 0) {
         reached_end = true;
       } else if (rv < 0) {
@@ -175,7 +171,7 @@ bool FindRegionInOpenFile(int fd, uintptr_t* out_address, size_t* out_size) {
 
     // The buffer is filled to the end. Copy the end bytes to the beginning,
     // allowing to scan these bytes on the next iteration.
-    memcpy(buf, buf + kReadSize, kMaxLineLength);
+    UNSAFE_TODO(memcpy(buf, buf + kReadSize, kMaxLineLength));
     pos = kMaxLineLength;
     bytes_requested = kReadSize;
   }
@@ -264,8 +260,8 @@ String::String(JNIEnv* env, jstring str) {
   // Note: GetStringUTFChars() returns Java UTF-8 bytes. This is good
   // enough for the linker though.
   const char* bytes = env->GetStringUTFChars(str, nullptr);
-  ::memcpy(ptr_, bytes, size_);
-  ptr_[size_] = '\0';
+  UNSAFE_TODO(::memcpy(ptr_, bytes, size_));
+  UNSAFE_TODO(ptr_[size_] = '\0');
 
   env->ReleaseStringUTFChars(str, bytes);
 }
@@ -360,11 +356,13 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
   LOG_INFO("Called for 0x%" PRIxPTR, load_address_);
 
   // Check that an ELF library starts at the |load_address_|.
-  if (memcmp(reinterpret_cast<void*>(load_address_), ELFMAG, SELFMAG) != 0) {
+  if (UNSAFE_TODO(memcmp(reinterpret_cast<void*>(load_address_), ELFMAG,
+                         SELFMAG)) != 0) {
     LOG_ERROR("Wrong magic number");
     return false;
   }
-  auto class_type = *reinterpret_cast<uint8_t*>(load_address_ + EI_CLASS);
+  auto class_type =
+      UNSAFE_TODO(*reinterpret_cast<uint8_t*>(load_address_ + EI_CLASS));
   if (class_type == ELFCLASS32) {
     LOG_INFO("ELFCLASS32");
   } else if (class_type == ELFCLASS64) {
@@ -397,7 +395,7 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
       reinterpret_cast<const ElfW(Phdr)*>(load_address_ + ehdr->e_phoff);
   const size_t kPageSize = GetPageSize();
   for (int i = 0; i < ehdr->e_phnum; i++) {
-    const ElfW(Phdr)* phdr = &phdrs[i];
+    const ElfW(Phdr)* phdr = UNSAFE_TODO(&phdrs[i]);
     switch (phdr->p_type) {
       case PT_LOAD:
         if (phdr->p_vaddr < min_vaddr) {
@@ -509,7 +507,7 @@ bool NativeLibInfo::CreateSharedRelroFd() {
 
   // Populate the shared memory region with the contents of RELRO.
   void* relro_addr = reinterpret_cast<void*>(relro_start_);
-  memcpy(relro_copy_addr, relro_addr, relro_size_);
+  UNSAFE_TODO(memcpy(relro_copy_addr, relro_addr, relro_size_));
 
   // Protect the underlying physical pages from further modifications from all
   // processes including the forked ones.
@@ -626,8 +624,8 @@ bool NativeLibInfo::RelroIsIdentical(
     return false;
   }
   void* current_relro_address = reinterpret_cast<void*>(relro_start_);
-  int not_equal =
-      memcmp(shared_relro_address, current_relro_address, relro_size_);
+  int not_equal = UNSAFE_TODO(
+      memcmp(shared_relro_address, current_relro_address, relro_size_));
   munmap(shared_relro_address, relro_size_);
   if (not_equal) {
     LOG_ERROR("Relocations are not identical, giving up.");
