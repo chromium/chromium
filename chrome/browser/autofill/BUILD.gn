@@ -407,4 +407,15 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    sources += [ "personal_context_access_manager_factory_unittest.cc" ]
+    deps += [
+      ":autofill",
+      "//chrome/browser/personal_context",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/personal_context/core",
+    ]
+  }
 }
