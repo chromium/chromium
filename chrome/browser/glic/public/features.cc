@@ -44,6 +44,8 @@ const base::FeatureParam<bool> kGlicSelectionEnableSiteSettings{
     &kGlicSelectionPrompt, "enable_site_settings", false};
 const base::FeatureParam<bool> kGlicSelectionShowCopyButtons{
     &kGlicSelectionPrompt, "show_copy_buttons", false};
+const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt{
+    &kGlicSelectionPrompt, "auto_send_prompt", false};
 
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);
