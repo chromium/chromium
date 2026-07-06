@@ -64,7 +64,7 @@ class MockUnexportableKeyProvider : public StatefulUnexportableKeyProvider {
               (override));
   MOCK_METHOD(std::optional<size_t>,
               DeleteKeysSlowly,
-              (base::span<const crypto::UnexportableKey* const> keys),
+              (base::span<const crypto::UnexportableSigningKey* const> keys),
               (override));
   MOCK_METHOD(std::optional<size_t>, DeleteAllKeysSlowly, (), (override));
 };

@@ -335,6 +335,11 @@ class AppleKeyImpl : public BaseInterface, public StatefulKey {
     return this;
   }
 
+  std::optional<std::vector<uint8_t>> SignSlowly(
+      base::span<const uint8_t> data) override {
+    return SignSlowlyImpl(GetSecKeyRef(), data, TPMOperation::kMessageSigning);
+  }
+
   // StatefulKey:
   std::string GetKeyTag() const override { return application_tag_; }
 
@@ -363,11 +368,6 @@ class UnexportableSigningKeyApple
     : public AppleKeyImpl<UnexportableSigningKey> {
  public:
   using AppleKeyImpl<UnexportableSigningKey>::AppleKeyImpl;
-
-  std::optional<std::vector<uint8_t>> SignSlowly(
-      base::span<const uint8_t> data) override {
-    return SignSlowlyImpl(GetSecKeyRef(), data, TPMOperation::kMessageSigning);
-  }
 };
 
 class UnexportableAttestationKeyApple
@@ -693,7 +693,7 @@ std::optional<size_t> UnexportableKeyProviderApple::DeleteWrappedKeysSlowly(
 }
 
 std::optional<size_t> UnexportableKeyProviderApple::DeleteKeysSlowly(
-    base::span<const UnexportableKey* const> keys) {
+    base::span<const UnexportableSigningKey* const> keys) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 

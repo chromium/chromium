@@ -87,7 +87,7 @@ class UnexportableKeyProviderApple : public StatefulUnexportableKeyProvider {
   std::optional<size_t> DeleteWrappedKeysSlowly(
       base::span<const base::span<const uint8_t>> wrapped_keys) override;
   std::optional<size_t> DeleteKeysSlowly(
-      base::span<const UnexportableKey* const> keys) override;
+      base::span<const UnexportableSigningKey* const> keys) override;
   std::optional<size_t> DeleteAllKeysSlowly() override;
 
  private:

@@ -36,11 +36,11 @@ UnexportableKeyProvider::FromWrappedAttestationKeySlowly(
 VirtualUnexportableSigningKey::~VirtualUnexportableSigningKey() = default;
 VirtualUnexportableKeyProvider::~VirtualUnexportableKeyProvider() = default;
 
-bool UnexportableKey::IsHardwareBacked() const {
+bool UnexportableSigningKey::IsHardwareBacked() const {
   return false;
 }
 
-const StatefulKey* UnexportableKey::AsStatefulKey() const {
+const StatefulKey* UnexportableSigningKey::AsStatefulKey() const {
   return nullptr;
 }
 

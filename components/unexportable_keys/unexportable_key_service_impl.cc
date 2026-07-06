@@ -870,19 +870,19 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
 ServiceErrorOr<std::vector<uint8_t>>
 UnexportableKeyServiceImpl::GetSubjectPublicKeyInfo(
     UnexportableKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   return key->GetSubjectPublicKeyInfo();
 }
 
 ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyServiceImpl::GetWrappedKey(
     UnexportableKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   return key->GetWrappedKey();
 }
 
 ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
 UnexportableKeyServiceImpl::GetAlgorithm(UnexportableKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   return key->Algorithm();
 }
 
@@ -900,7 +900,7 @@ ServiceErrorOr<base::Time> UnexportableKeyServiceImpl::GetCreationTime(
   return stateful_key->GetCreationTime();
 }
 
-ServiceErrorOr<const crypto::UnexportableKey*>
+ServiceErrorOr<const crypto::UnexportableSigningKey*>
 UnexportableKeyServiceImpl::GetKey(UnexportableKeyId key_id) const {
   if (auto* key = signing_keys_->GetKey(UnexportableSigningKeyId(key_id))) {
     return &key->key();
@@ -917,7 +917,7 @@ UnexportableKeyServiceImpl::GetKey(UnexportableKeyId key_id) const {
 
 ServiceErrorOr<const crypto::StatefulKey*>
 UnexportableKeyServiceImpl::GetStatefulKey(UnexportableKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   if (const crypto::StatefulKey* stateful_key = key->AsStatefulKey()) {
     return stateful_key;
   }

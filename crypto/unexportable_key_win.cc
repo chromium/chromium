@@ -19,6 +19,7 @@
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -634,6 +635,21 @@ class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
   AttestationKeyWin(ProviderType provider_type, KeyDetails details)
       : WinKeyImpl(provider_type, std::move(details)) {}
 
+  // UnexportableSigningKey:
+  std::optional<std::vector<uint8_t>> SignSlowly(
+      base::span<const uint8_t> data) override {
+    // TODO(crbug.com/530828835): Implement.
+    NOTIMPLEMENTED();
+    return std::nullopt;
+  }
+
+  bool SupportsTls13() override {
+    // TODO(crbug.com/530828835): Implement.
+    NOTIMPLEMENTED();
+    return false;
+  }
+
+  // UnexportableAttestationKey:
   std::optional<AttestationStatement> CertifySlowly(
       const UnexportableSigningKey& signing_key,
       base::span<const uint8_t> challenge) override {
@@ -1218,7 +1234,7 @@ class VirtualUnexportableKeyProviderWin
 
 }  // namespace
 
-ScopedNCryptKey DuplicatePlatformKeyHandle(const UnexportableKey& key) {
+ScopedNCryptKey DuplicatePlatformKeyHandle(const UnexportableSigningKey& key) {
   return LoadWrappedKey(
       key.GetWrappedKey(),
       key.IsHardwareBacked() ? ProviderType::kTPM : ProviderType::kSoftware,

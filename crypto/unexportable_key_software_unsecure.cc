@@ -179,6 +179,15 @@ class SoftwareKeyImpl : public BaseInterface {
   NCRYPT_KEY_HANDLE GetNCryptKeyHandle() const override { NOTREACHED(); }
 #endif
 
+  std::optional<std::vector<uint8_t>> SignSlowly(
+      base::span<const uint8_t> data) override {
+    return sign::Sign(GetSignatureKind(), key(), data);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  bool SupportsTls13() override { return true; }
+#endif  // BUILDFLAG(IS_WIN)
+
  protected:
   const crypto::keypair::PrivateKey& key() const { return key_; }
 
@@ -200,15 +209,6 @@ class SoftwareSigningKey : public SoftwareKeyImpl<UnexportableSigningKey> {
  public:
   explicit SoftwareSigningKey(crypto::keypair::PrivateKey key)
       : SoftwareKeyImpl<UnexportableSigningKey>(std::move(key)) {}
-
-  std::optional<std::vector<uint8_t>> SignSlowly(
-      base::span<const uint8_t> data) override {
-    return sign::Sign(GetSignatureKind(), key(), data);
-  }
-
-#if BUILDFLAG(IS_WIN)
-  bool SupportsTls13() override { return true; }
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 class SoftwareAttestationKey

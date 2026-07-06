@@ -164,7 +164,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // if it is not found. The returned pointer is guaranteed to be non-null on
   // success. The returned pointer is only valid for as long as the key is
   // present in the service (i.e., not deleted and not garbage collected).
-  ServiceErrorOr<const crypto::UnexportableKey*> GetKey(
+  ServiceErrorOr<const crypto::UnexportableSigningKey*> GetKey(
       UnexportableKeyId key_id) const;
   ServiceErrorOr<const crypto::StatefulKey*> GetStatefulKey(
       UnexportableKeyId key_id) const;

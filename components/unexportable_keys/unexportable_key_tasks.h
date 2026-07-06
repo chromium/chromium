@@ -28,7 +28,7 @@ class RefCountedUnexportableKey;
 class RefCountedUnexportableSigningKey;
 class RefCountedUnexportableAttestationKey;
 
-// A `BackgroundTask` to retrieve all `crypto::UnexportableKey`s from the
+// A `BackgroundTask` to retrieve all `crypto::UnexportableSigningKey`s from the
 // key provider.
 class GetAllKeysTask
     : public internal::BackgroundTaskImpl<ServiceErrorOr<
@@ -82,7 +82,8 @@ class SignTask : public internal::BackgroundTaskImpl<
       const ServiceErrorOr<std::vector<uint8_t>>& result) const override;
 };
 
-// A `BackgroundTask` to delete a collection of `crypto::UnexportableKey`.
+// A `BackgroundTask` to delete a collection of
+// `crypto::UnexportableSigningKey`.
 class DeleteKeysTask
     : public internal::BackgroundTaskImpl<ServiceErrorOr<size_t>> {
  public:
@@ -93,8 +94,8 @@ class DeleteKeysTask
       base::OnceCallback<void(DeleteKeysTask::ReturnType, size_t)> callback);
 };
 
-// A `BackgroundTask` to delete all `crypto::UnexportableKey`s matching the key
-// provider config.
+// A `BackgroundTask` to delete all `crypto::UnexportableSigningKey`s matching
+// the key provider config.
 class DeleteAllKeysTask
     : public internal::BackgroundTaskImpl<ServiceErrorOr<size_t>> {
  public:

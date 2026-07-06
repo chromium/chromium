@@ -103,7 +103,7 @@ class MockTrackingUnexportableKeyProvider
   }
 
   std::optional<size_t> DeleteKeysSlowly(
-      base::span<const UnexportableKey* const> keys) override {
+      base::span<const UnexportableSigningKey* const> keys) override {
     if (StatefulUnexportableKeyProvider* stateful_key_provider =
             key_provider_->AsStatefulUnexportableKeyProvider()) {
       stateful_key_provider->DeleteKeysSlowly(keys);

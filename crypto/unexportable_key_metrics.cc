@@ -219,7 +219,7 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
     return;
   }
 
-  auto delete_key = [&provider](UnexportableKey* key) {
+  auto delete_key = [&provider](UnexportableSigningKey* key) {
     if (StatefulUnexportableKeyProvider* stateful_provider =
             provider->AsStatefulUnexportableKeyProvider()) {
       stateful_provider->DeleteWrappedKeysSlowly({key->GetWrappedKey()});
