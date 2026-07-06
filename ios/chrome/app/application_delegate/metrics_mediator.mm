@@ -498,8 +498,6 @@ BOOL _credentialExtensionWasUsed = NO;
     [self recordStartupDuplicatedTabCount:duplicatedTabCount];
     [self recordTabsAgeAtStartup:timesSinceCreation];
     [self recordAndResetWarmStartCount];
-    crypto::apple::RecordKeychainMigrationStatus(
-        base::SysNSStringToUTF8(app_group::ApplicationGroup()));
     ui_util::RecordSystemFontSizeMetrics();
   } else {
     [[PreviousSessionInfo sharedInstance] incrementWarmStartCount];
