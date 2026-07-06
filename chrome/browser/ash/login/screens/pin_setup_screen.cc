@@ -296,7 +296,8 @@ void PinSetupScreen::DoShow() {
       IsInSetupMode(PinSetupMode::kRecovery, *context());
 
   bool cannot_skip_flow = false;
-  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+  if (features::IsManagedLocalPinAndPasswordEnabled() &&
+      using_pin_as_main_factor) {
     CHECK(account_id_.has_value());
     CHECK(is_saml_flow_.has_value());
     auto allowed_factors = AuthPolicyConnector::Get()->AllowedLocalAuthFactors(

@@ -877,6 +877,33 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,
   test::OobeJS().ExpectEnabledPath(kSkipButton);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,
+    SAMLSkipButtonVisibleWhenQuickUnlockPinAllowedAsSecondaryFactor) {
+  // Quick unlock policy allows PIN.
+  SetAllowPinUnlockPolicyForEnterpriseUsers();
+
+  LoginAndWaitForCryptohomeSetupScreenExit();
+  SetSAMLAuthFlow();
+  CryptohomeRecoverySetupContinue();
+
+  // PIN will not be offered as a main factor as this hasn't been configured by
+  // policy.
+  WaitForScreenExit();
+
+  // No password selection screen for user's where the policy does not allow it.
+  // They must use their online password.
+  WaitForFingerprintScreenExit();
+  ExpectFingerprintScreenExitedAndContinue();
+
+  // PIN should be offered as a secondary factor instead.
+  WaitForScreenShown();
+
+  // Skip button should be enabled for secondary factor setup, even if local
+  // password is NOT allowed for a SAML user.
+  test::OobeJS().ExpectEnabledPath(kSkipButton);
+}
+
 // Test fixture for PIN complexity policies during OOBE setup.
 class PinSetupScreenComplexityTest : public PinSetupScreenTest {
  public:
