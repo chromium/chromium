@@ -48,7 +48,7 @@ void SkillsDialogLauncher::CreateForTab(tabs::TabInterface* tab,
     return;
   }
   // Page is already loaded, show immediately.
-  if (!contents->IsLoading()) {
+  if (!contents->HasUncommittedNavigationInPrimaryMainFrame()) {
     TriggerDialog(tab, std::move(skill), dialog_type, std::move(target),
                   std::move(callback));
     return;
