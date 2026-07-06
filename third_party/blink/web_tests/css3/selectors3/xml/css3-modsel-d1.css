@@ -1,3 +1,0 @@
-
-   #test { background: red; display: block; padding: 1em; }
-   #test:not(:empty) { background: lime; }

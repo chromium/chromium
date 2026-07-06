@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-182.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml">
-<foo:bar xmlns:foo="http://www.example.org/">
-This text should be green.
-</foo:bar>
-</p>
-</test>
