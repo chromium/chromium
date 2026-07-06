@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import fnmatch
 import os
 import posixpath
 import re
@@ -75,67 +76,37 @@ def _FilterDataDeps(abs_host_files):
   return [p for p in abs_host_files if not exclusions_re.search(p)]
 
 
-def DevicePathComponentsFor(host_path, output_directory=None):
-  """Returns the device path components for a given host path.
+def DevicePathFor(host_path, output_directory=None):
+  """Returns the device path for a given host path.
 
-  This returns the device path as a list of joinable path components,
-  with None as the first element to indicate that the path should be
-  rooted at $EXTERNAL_STORAGE.
-
-  e.g., given
-
-    '$RUNTIME_DEPS_ROOT_DIR/foo/bar/baz.txt'
-
-  this would return
-
-    [None, 'foo', 'bar', 'baz.txt']
-
-  This handles a couple classes of paths differently than it otherwise would:
-    - All .pak files get mapped to top-level paks/
-    - All other dependencies get mapped to the top level directory
-        - If a file is not in the output directory then it's relative path to
-          the output directory will start with .. strings, so we remove those
-          and then the path gets mapped to the top-level directory
-        - If a file is in the output directory then the relative path to the
-          output directory gets mapped to the top-level directory
-
-  e.g. given
-
-    '$RUNTIME_DEPS_ROOT_DIR/out/Release/icu_fake_dir/icudtl.dat'
-
-  this would return
-
-    [None, 'icu_fake_dir', 'icudtl.dat']
+  This returns the device path as a relative posix path string,
+  which should be rooted at the device's external storage.
 
   Args:
     host_path: The absolute path to the host file.
+    output_directory: The absolute path to the build output directory.
   Returns:
-    A list of device path components.
+    A relative device path string.
   """
   output_directory = output_directory or constants.GetOutDirectory()
   if (host_path.startswith(output_directory) and
       os.path.splitext(host_path)[1] == '.pak'):
-    return [None, 'paks', os.path.basename(host_path)]
+    return posixpath.join('paks', os.path.basename(host_path))
 
   rel_host_path = os.path.relpath(host_path, output_directory)
 
-  device_path_components = [None]
-  p = rel_host_path
-  while p:
-    p, d = os.path.split(p)
-    # The relative path from the output directory to a file under the runtime
-    # deps root directory may start with multiple .. strings, so they need to
-    # be skipped.
-    if d and d != os.pardir:
-      device_path_components.insert(1, d)
-  return device_path_components
+  # Split the path and filter out '..' components to keep it relative.
+  parts = rel_host_path.split(os.sep)
+  clean_parts = [p for p in parts if p and p != os.pardir]
+  return posixpath.join(*clean_parts)
 
 
-def GetDataDependencies(runtime_deps_path):
+def GetDataDependencies(runtime_deps_path, device_data_filters=None):
   """Returns a list of device data dependencies.
 
   Args:
     runtime_deps_path: A str path to the .runtime_deps file.
+    device_data_filters: A list of glob patterns to filter the dependencies.
   Returns:
     A list of (host_path, device_path) tuples.
   """
@@ -150,19 +121,23 @@ def GetDataDependencies(runtime_deps_path):
   abs_host_files = [
       os.path.abspath(os.path.join(output_directory, r))
       for r in rel_host_files]
+
+  # TODO(crbug.com/525859933): Apply filter after ExpandDataDependencies().
   filtered_abs_host_files = _FilterDataDeps(abs_host_files)
-  # TODO(crbug.com/40533647): Filter out host executables, and investigate
-  # whether other files could be filtered as well.
-  return [(f, DevicePathComponentsFor(f, output_directory))
-          for f in filtered_abs_host_files]
+  host_device_tuples = [(f, DevicePathFor(f, output_directory))
+                        for f in filtered_abs_host_files]
+
+  if device_data_filters:
+    host_device_tuples = ExpandDataDependencies(host_device_tuples)
+    host_device_tuples = FilterDataDependencies(host_device_tuples,
+                                                device_data_filters)
+  return host_device_tuples
 
 
 def SubstituteDeviceRootSingle(device_path, device_root):
   if not device_path:
     return device_root
-  if isinstance(device_path, list):
-    return posixpath.join(*(p if p else device_root for p in device_path))
-  return device_path
+  return posixpath.join(device_root, device_path)
 
 
 def SubstituteDeviceRoot(host_device_tuples, device_root):
@@ -171,14 +146,64 @@ def SubstituteDeviceRoot(host_device_tuples, device_root):
 
 
 def ExpandDataDependencies(host_device_tuples):
+  """Expands directory dependencies into file dependencies.
+
+  Args:
+    host_device_tuples: A list of (host_path, device_path) tuples,
+      where:
+        - host_path (str): Absolute path to a host file or directory.
+        - device_path (str): Device path for the dependency.
+  Returns:
+    A list of (host_path, device_path) tuples where all host_paths
+    are files (directories are expanded recursively).
+  """
   ret = []
   for h, d in host_device_tuples:
+    assert isinstance(d, str), f"Expected str for device path, got {type(d)}"
     if os.path.isdir(h):
       for root, _, filenames in os.walk(h):
         for filename in filenames:
           subpath = os.path.join(root, filename)
-          new_part = subpath[len(h):]
-          ret.append((subpath, d + new_part))
+          rel_to_dir = os.path.relpath(subpath, h)
+          # Convert rel_to_dir to posix path (device uses forward slashes)
+          rel_to_dir_posix = rel_to_dir.replace(os.sep, '/')
+          ret.append((subpath, posixpath.join(d, rel_to_dir_posix)))
     else:
       ret.append((h, d))
   return ret
+
+
+def FilterDataDependencies(host_device_tuples, filters):
+  if not filters:
+    return host_device_tuples
+
+  for f in filters:
+    if not f or f[0] not in ('+', '-'):
+      raise ValueError(f"Invalid filter: '{f}'. Must start with '+' or '-'.")
+
+  filtered_tuples = []
+  for host_path, device_path in host_device_tuples:
+    # Make host_path relative to source root for matching
+    rel_path = os.path.relpath(host_path, constants.DIR_SOURCE_ROOT)
+
+    # Default to KEEP (blocklist approach)
+    keep = True
+
+    for f in filters:
+      op = f[0]
+      pattern = f[1:]
+      # Strip '//' from pattern if present
+      if pattern.startswith('//'):
+        pattern = pattern[2:]
+
+      if fnmatch.fnmatch(rel_path, pattern):
+        if op == '+':
+          keep = True
+        elif op == '-':
+          keep = False
+        break
+
+    if keep:
+      filtered_tuples.append((host_path, device_path))
+
+  return filtered_tuples

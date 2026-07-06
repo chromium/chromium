@@ -635,10 +635,9 @@ class LocalDeviceInstrumentationTestRun(
           webview_flags.append('--webview-verbose-logging')
 
         def _get_variations_seed_path_arg(seed_path):
-          seed_path_components = device_dependencies.DevicePathComponentsFor(
-              seed_path)
+          seed_path_on_device = device_dependencies.DevicePathFor(seed_path)
           test_seed_path = device_dependencies.SubstituteDeviceRootSingle(
-              seed_path_components, test_data_root_dir)
+              seed_path_on_device, test_data_root_dir)
           return '--variations-test-seed-path={0}'.format(test_seed_path)
 
         if self._test_instance.variations_test_seed_path:

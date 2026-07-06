@@ -3685,6 +3685,7 @@ if (!is_robolectric && enable_java_templates) {
                                "data",
                                "data_deps",
                                "deps",
+                               "device_data_filters",
                                "extra_args",
                                "fake_modules",
                                "ignore_all_data_deps",
@@ -3831,8 +3832,12 @@ if (!is_robolectric && enable_java_templates) {
     assert(defined(invoker.apk_name))
     _apk_target_name = "${target_name}__test_apk"
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
     android_test_apk(_apk_target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(
+          invoker,
+          "*",
+          TESTONLY_AND_VISIBILITY + [ "device_data_filters" ])
     }
     instrumentation_test_runner(target_name) {
       forward_variables_from(invoker,
@@ -3842,6 +3847,7 @@ if (!is_robolectric && enable_java_templates) {
                                "data",
                                "data_deps",
                                "deps",
+                               "device_data_filters",
                                "extra_args",
                                "ignore_all_data_deps",
                                "is_unit_test",

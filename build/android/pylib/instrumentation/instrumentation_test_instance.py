@@ -752,6 +752,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._data_deps_delegate = data_deps_delegate
     self._store_data_dependencies_in_temp = args.store_data_dependencies_in_temp
     self._runtime_deps_path = args.runtime_deps_path
+    self._device_data_filters = getattr(args, 'device_data_filters', [])
 
     if not self._runtime_deps_path:
       logging.warning('No data dependencies will be pushed.')
@@ -1097,8 +1098,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     if self.wait_for_java_debugger and not self._test_apk.GetIsDebuggable():
       raise Exception('Passed --wait-for-java-debugger flag but did not set '
                       'debuggable_apks = true in GN args')
-    self._data_deps.extend(
-        self._data_deps_delegate(self._runtime_deps_path))
+    deps = self._data_deps_delegate(
+        self._runtime_deps_path, device_data_filters=self._device_data_filters)
+    self._data_deps.extend(deps)
     if self._proguard_mapping_path:
       self._deobfuscator = deobfuscator.DeobfuscatorPool(
           self._proguard_mapping_path)

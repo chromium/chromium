@@ -808,6 +808,12 @@ template("test_runner_script") {
       ]
     }
 
+    if (defined(invoker.device_data_filters)) {
+      foreach(filter, invoker.device_data_filters) {
+        executable_args += [ "--device-data-filter=$filter" ]
+      }
+    }
+
     # apk_target is not used for native executable tests
     # (e.g. breakpad_unittests).
     if (defined(invoker.apk_target)) {

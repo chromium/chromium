@@ -2444,6 +2444,18 @@ if (_is_default_toolchain) {
       ]
     }
 
+    device_data_filters = [
+      "+//chrome/browser/thumbnail/generator/test/data/*",
+      "+//chrome/browser/ui/side_panel_container/test/data/*",
+      "+//chrome/test/data/*",
+      "+//components/test/data/payments/*",
+      "+//content/test/data/*",
+      "+//media/test/data/*",
+      "+//net/data/ssl/certificates/*",
+      "+//pdf/test/data/hello_world2.pdf",
+      "-*",
+    ]
+
     data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]
 
     if (enable_chrome_android_internal) {
