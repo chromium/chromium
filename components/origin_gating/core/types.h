@@ -23,8 +23,17 @@ enum class Decision {
 
 // Enumerates the source of any positive/negative decision.
 enum class DecisionSource {
+  // Predicate that allows if the origins in question are same-origin with each
+  // other.
   kAllowSameOrigin,
+  // Predicate that allows if the user has already confirmed the origin in
+  // question.
+  kCacheWithUserConfirmation,
+  // Predicate that allows if the origin is already present in the cache (with
+  // or without user confirmation).
   kCache,
+  // No decision was reached before the OriginGating framework ran out of
+  // predicates to run.
   kNoVerdict,
 };
 

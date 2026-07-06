@@ -77,30 +77,40 @@ class OriginGatingChecker {
   const OriginGatingCache& cache() const { return cache_; }
 
  private:
+  // Holds various inputs provided by the delegate (and data derived thereof),
+  // to avoid needless recomputations.
+  struct DelegateInputs {
+    GURL source;
+    url::Origin source_origin;
+    GURL destination;
+    url::Origin destination_origin;
+  };
+
   void RunNextPredicate(std::unique_ptr<GatingDecisionContext> context,
                         base::span<const DecisionSource> pending_predicates,
-                        const GURL& source,
-                        const GURL& destination,
+                        DelegateInputs input,
                         GatingDecisionCallback callback);
 
   void OnPredicateVerdict(std::unique_ptr<GatingDecisionContext> context,
                           base::span<const DecisionSource> remaining_predicates,
                           DecisionSource attribution,
-                          const GURL& source,
-                          const GURL& destination,
+                          DelegateInputs input,
                           GatingDecisionCallback callback,
                           Decision decision);
 
   void OnUserConfirmationRequiredAnswer(
       std::unique_ptr<GatingDecisionContext> context,
-      const GURL& source,
-      const GURL& destination,
+      DelegateInputs input,
       GatingDecisionCallback callback,
       bool requires_user_confirmation);
   void OnNoVerdictAnswer(std::unique_ptr<GatingDecisionContext> context,
                          const GURL& destination,
                          GatingDecisionCallback callback,
                          Delegate::NoVerdictResult result);
+
+  // Predicate that returns `kAllowed` if `destination` is in the cache with
+  // user confirmation; `kNoDecision` otherwise.
+  Decision IsCachedWithUserConfirmation(const url::Origin& origin) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
   const raw_ref<Delegate> delegate_;

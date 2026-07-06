@@ -17,9 +17,6 @@ class OriginGatingConfiguration {
   // `predicates` specifies the ordered sequence of decision predicates to
   // execute.
   //
-  // Only the following decision-making predicates are allowed:
-  // - `DecisionSource::kAllowSameOrigin`
-  //
   // The following internal/fallback states are strictly forbidden:
   // - `DecisionSource::kCache`
   // - `DecisionSource::kNoVerdict`

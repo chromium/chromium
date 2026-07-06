@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/origin_gating/core/origin_gating_configuration.h"
+#include "components/origin_gating/core/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -22,6 +23,7 @@
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
+using ::testing::Pointer;
 using ::testing::Return;
 
 namespace origin_gating {
@@ -195,8 +197,7 @@ TEST_F(OriginGatingCheckerTest, PlumbsContext) {
                                 future.GetCallback());
 
   auto [returned_context, decision] = future.Take();
-  ASSERT_TRUE(returned_context);
-  EXPECT_EQ(returned_context.get(), expected_context_ptr);
+  EXPECT_THAT(returned_context, Pointer(expected_context_ptr));
   EXPECT_TRUE(decision.is_allowed);
 }
 
@@ -244,7 +245,11 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        CacheHit_UserConfirmedOrigin_ShortCircuitsImmediately) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_, OriginGatingConfiguration(
+                     {
+                         DecisionSource::kCacheWithUserConfirmation,
+                     },
+                     /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -259,13 +264,17 @@ TEST_F(OriginGatingCheckerTest,
   GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
       checker, nullptr, source, destination);
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.source, DecisionSource::kCache);
+  EXPECT_EQ(decision.source, DecisionSource::kCacheWithUserConfirmation);
 }
 
 TEST_F(OriginGatingCheckerTest,
        CacheMiss_NonConfirmedOrigin_SensitiveDestination_QueriesDelegate) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_, OriginGatingConfiguration(
+                     {
+                         DecisionSource::kCacheWithUserConfirmation,
+                     },
+                     /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -293,7 +302,11 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        CacheHit_NonConfirmedOrigin_NonSensitiveDestination_ShortCircuits) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_, OriginGatingConfiguration(
+                     {
+                         DecisionSource::kCacheWithUserConfirmation,
+                     },
+                     /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
