@@ -77,6 +77,11 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
     }
 
     @Override
+    public @StringRes int getSheetHiddenAccessibilityStringId() {
+        return R.string.glic_bottom_sheet_hidden_a11y_label;
+    }
+
+    @Override
     public @Nullable GlowSpec getSheetBackgroundGlowSpecOverride() {
         return new GlowSpec(
                 getContentView().getContext().getColor(R.color.default_bg_color_blue),
