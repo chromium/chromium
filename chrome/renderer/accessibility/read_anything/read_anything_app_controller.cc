@@ -3252,6 +3252,11 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
     ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
   }
 
+  // Ignore updates from non-active trees.
+  if (tree_id != model_.active_tree_id()) {
+    return;
+  }
+
   // If there's been a selection on the main page, the selection should be
   // processed so that Immersive can open to the correctly selected text.
   if (IsReadabilitySelectTextEnabled() &&
