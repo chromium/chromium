@@ -5434,13 +5434,6 @@ test("unit_tests") {
         [ "../browser/signin/signin_ui_delegate_impl_android_unittest.cc" ]
   }
 
-  if (enable_downgrade_processing) {
-    sources += [
-      "../browser/downgrade/snapshot_manager_unittest.cc",
-      "../browser/downgrade/user_data_downgrade_unittest.cc",
-    ]
-  }
-
   if (enable_webui_certificate_viewer) {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
@@ -5606,6 +5599,7 @@ test("unit_tests") {
     "//chrome/browser/diagnostics:unit_tests",
     "//chrome/browser/digital_credentials:unit_tests",
     "//chrome/browser/domain_reliability",
+    "//chrome/browser/downgrade:unit_tests",
     "//chrome/browser/download",
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/download:test_support",
@@ -10014,7 +10008,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_win) {
       sources += [
-        "../browser/downgrade/user_data_downgrade_browsertest.cc",
         "../browser/ui/send_mouse_move_uitest_win.cc",
         "../browser/ui/views/touch_events_interactive_uitest_win.cc",
         "//ui/base/clipboard/clipboard_win_unittest.cc",
@@ -10083,8 +10076,10 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enable_downgrade_processing) {
-      sources += [ "../browser/downgrade/user_data_snapshot_browsertest.cc" ]
-      deps += [ "//chrome/browser/downgrade" ]
+      deps += [
+        "//chrome/browser/downgrade",
+        "//chrome/browser/downgrade:interactive_ui_tests",
+      ]
     }
 
     if (is_android) {

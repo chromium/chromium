@@ -78,3 +78,57 @@ source_set("impl") {
     }
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+  deps = []
+
+  if (enable_downgrade_processing) {
+    sources += [
+      "snapshot_manager_unittest.cc",
+      "user_data_downgrade_unittest.cc",
+    ]
+    deps += [
+      ":impl",
+      "//base",
+      "//chrome/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+  deps = []
+
+  if (enable_downgrade_processing) {
+    sources += [ "user_data_snapshot_browsertest.cc" ]
+    deps += [
+      ":impl",
+      "//base",
+      "//chrome/browser:chrome_browser_main",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "user_data_downgrade_browsertest.cc" ]
+    deps += [
+      ":impl",
+      "//base",
+      "//chrome/browser:chrome_browser_main",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+}
