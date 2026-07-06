@@ -33,6 +33,7 @@
 #include <variant>
 
 #include "base/feature_list.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -169,6 +170,22 @@ inline bool ShouldUpdateHeaderAfterRevalidation(const AtomicString& header) {
 
 const base::Clock* g_clock_for_testing = nullptr;
 
+constexpr base::MemoryConsumerTraits kResourceTraits(
+    // Encoded and decoded data size varies widely, can reach tens of MBs.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    // Pruning destroys decoded data without traversing complex structures.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    // Data can be re-decoded from the encoded payload.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Pruning runs synchronously on the renderer thread.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // Holds references managed by Blink Oilpan GC.
+    base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
+    // Does not maintain a lasting memory limit; performs one-time eviction.
+    base::MemoryConsumerTraits::IsStateful::kNo,
+    // Re-decoding from the encoded payload is computationally expensive.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
+
 }  // namespace
 
 static inline base::Time Now() {
@@ -189,7 +206,7 @@ Resource::Resource(const ResourceRequestHead& request,
       overhead_size_(CalculateOverheadSize()),
       memory_consumer_registration_(
           "Resource",
-          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          kResourceTraits,
           this,
           MemoryConsumerRegistration::CheckUnregister::kDisabled) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceCounter);
