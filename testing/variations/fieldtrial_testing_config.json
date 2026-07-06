@@ -13373,6 +13373,21 @@
             ]
         }
     ],
+    "HeliosUpdatedEligibility": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiUpdatedEligibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosWithReaderMode": [
         {
             "platforms": [

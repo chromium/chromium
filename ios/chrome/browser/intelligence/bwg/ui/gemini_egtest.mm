@@ -84,9 +84,11 @@ id<GREYMatcher> GeminiButton() {
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  [SigninEarlGreyAppInterface
-       addFakeIdentity:fakeIdentity
-      withCapabilities:@{@(kCanUseModelExecutionFeaturesName) : @YES}];
+  [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity
+                             withCapabilities:@{
+                               @(kCanUseModelExecutionFeaturesName) : @YES,
+                               @(kCanUseGeminiInChromeCapabilityName) : @YES
+                             }];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
