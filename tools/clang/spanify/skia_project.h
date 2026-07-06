@@ -57,7 +57,13 @@ class SkiaProject : public Project {
     return "PATH_TO_RAW_SPAN_H_NOT_AVAILABLE";
   }
   std::string_view GetAutoSpanificationHelperIncludePath() const override {
-    return "NOT_AVAILABLE base/containers/auto_spanification_helper.h";
+    return "include/core/SkSpan.h";
+  }
+  std::string_view GetPreIncrementSpanName() const override {
+    return "SkPreIncrementSpan";
+  }
+  std::string_view GetPostIncrementSpanName() const override {
+    return "SkPostIncrementSpan";
   }
   const std::vector<FuncMapping>& GetFuncMappingTable() const override {
     static const std::vector<FuncMapping> kFuncMappingTable = {};

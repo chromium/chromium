@@ -2127,15 +2127,17 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
   clang::SourceRange end_replacement_range;
 
   if (is_prefix) {
-    begin_insert_text = "base::PreIncrementSpan(";
-    // Replace the '++' with "base::PreIncrementSpan(".
+    begin_insert_text =
+        std::string(GetProject()->GetPreIncrementSpanName()) + "(";
+    // Replace the '++' with the helper call.
     begin_replacement_range = op_token_range;
     // Insert ")" at the end of the operand.
     end_replacement_range =
         clang::SourceRange(operand_range.getEnd(), operand_range.getEnd());
   } else {
-    begin_insert_text = "base::PostIncrementSpan(";
-    // Insert "base::PostIncrementSpan(" at the beginning of the operand.
+    begin_insert_text =
+        std::string(GetProject()->GetPostIncrementSpanName()) + "(";
+    // Insert the helper call at the beginning of the operand.
     begin_replacement_range =
         clang::SourceRange(operand_range.getBegin(), operand_range.getBegin());
     // Replace "++"" with ")".
