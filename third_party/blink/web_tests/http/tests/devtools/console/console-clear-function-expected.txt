@@ -20,5 +20,5 @@ console-clear-function.js:26 Console was cleared
 console-clear-function.js:19 one
 console-clear-function.js:20 two
 console-clear-function.js:21 three
-console-clear-function.js:26 console.clear() was prevented due to 'Preserve log'
+console-clear-function.js:26 console.clear() was prevented due to 'Keep log'
 
