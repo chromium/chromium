@@ -2493,7 +2493,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForRelPositioned() const {
   const auto* container = To<LayoutBoxModelObject>(Container());
 
   if (const auto* box = DynamicTo<LayoutBox>(container)) {
-    return box->ContentLogicalHeight();
+    const PhysicalSize size = box->PhysicalContentBoxRect().size;
+    return box->StyleRef().IsHorizontalWritingMode() ? size.height : size.width;
   }
 
   // TODO(ikilpatrick): This is resolving percentages against incorrectly if

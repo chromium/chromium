@@ -1934,21 +1934,16 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
 
 static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
                                           CanvasChildPaintState& paint_state) {
-  gfx::Size canvas_device_pixel_content_box =
+  const LayoutReplaced* replaced = To<LayoutReplaced>(canvas->GetLayoutBox());
+  const ComputedStyle& style = replaced->StyleRef();
+
+  paint_state.canvas_content_size =
+      gfx::SizeF(replaced->ReplacedContentRect().size);
+  paint_state.canvas_device_pixel_content_box =
       ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-          LogicalSize(canvas->GetLayoutBox()->ContentLogicalWidth(),
-                      canvas->GetLayoutBox()->ContentLogicalHeight()),
-          *canvas->GetLayoutBox(), canvas->GetLayoutBox()->StyleRef());
-
-  PhysicalRect canvas_content_size;
-  if (auto* replaced = DynamicTo<LayoutReplaced>(canvas->GetLayoutBox())) {
-    canvas_content_size = replaced->ReplacedContentRect();
-  } else {
-    canvas_content_size = canvas->GetLayoutBox()->PhysicalContentBoxRect();
-  }
-
-  paint_state.canvas_content_size = gfx::SizeF(canvas_content_size.size);
-  paint_state.canvas_device_pixel_content_box = canvas_device_pixel_content_box;
+          ToLogicalSize(replaced->PhysicalContentBoxRect().size,
+                        style.GetWritingMode()),
+          *replaced, style);
   paint_state.canvas_node_id = canvas->GetDomNodeId();
   paint_state.animated_image_frame_index_map =
       canvas->GetDocument().View()->GetAnimatedImageFrameIndexes();

@@ -294,6 +294,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return PhysicalContractedBoxRect(kContractToContentEdge);
   }
 
+  LayoutUnit ContentLogicalWidth() const {
+    NOT_DESTROYED();
+    const PhysicalSize size = PhysicalContentBoxRect().size;
+    return IsHorizontalWritingMode() ? size.width : size.height;
+  }
+
   // The content box converted to absolute coords (taking transforms into
   // account).
   gfx::QuadF AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
@@ -372,16 +378,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalSize ContentSize() const {
     NOT_DESTROYED();
     return PhysicalSize(ContentWidth(), ContentHeight());
-  }
-  LayoutUnit ContentLogicalWidth() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? ContentWidth()
-                                                : ContentHeight();
-  }
-  LayoutUnit ContentLogicalHeight() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? ContentHeight()
-                                                : ContentWidth();
   }
 
   // CSS intrinsic sizing getters.
