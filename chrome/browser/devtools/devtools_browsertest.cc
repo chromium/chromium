@@ -2936,6 +2936,48 @@ class DevToolsDisallowedForForceInstalledExtensionsPolicyTest
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+                       AllowedForEmbeddedPdfViewer) {
+  // DevTools are disallowed for policy-installed extensions by default,
+  // but embedding a component extension like PDF viewer should not block
+  // DevTools for the embedding page.
+
+  // Set profile to managed.
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a page with an embedded PDF.
+  GURL main_url = embedded_test_server()->GetURL("/pdf/test-iframe.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
+
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Wait until ANY child frame commits a non-empty, non-about URL.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    bool found_valid_child = false;
+    web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+        [&](content::RenderFrameHost* frame) {
+          if (frame != web_contents->GetPrimaryMainFrame() &&
+              !frame->GetLastCommittedURL().is_empty() &&
+              !frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme)) {
+            found_valid_child = true;
+            return content::RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        });
+    return found_valid_child;
+  }));
+
+  // Try to open DevTools for the main page.
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsOpenedByAction::kUnknown);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+
+  // It should be allowed.
+  EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
                        DisallowedForExternalPolicyDownloadExtension) {
   // DevTools are disallowed for policy-installed extensions by default.
   content::WebContents* web_contents = nullptr;
