@@ -58,6 +58,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 using ::performance_manager::testing::ScopedSetAllPagesDiscardableForTesting;
 
@@ -521,10 +525,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId));
 }
 
-#if !(BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
-// TODO(crbug.com/40863331): Linux Wayland doesn't support window activation
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        UiShowsOnlyOnActiveWindow) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/40863331): Linux Wayland doesn't support window activation
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Linux Wayland doesn't support window activation";
+  }
+#endif
   // Create two browser windows with tabs and ensure the second browser window
   // is active
   Browser* const first_browser = browser();
@@ -578,6 +586,12 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 // shown on a non-active window.
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        NonactiveInterventionButtonHides) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/40863331): Linux Wayland doesn't support window activation
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Linux Wayland doesn't support window activation";
+  }
+#endif
   Browser* const first_browser = browser();
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
@@ -632,7 +646,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
   NotifyActionableTabListChange({}, first_browser);
   EXPECT_FALSE(intervention_button->GetVisible());
 }
-#endif
 
 // We can only have one non-off record profile open at a time on ChromeOS so
 // users will not encounter this case.

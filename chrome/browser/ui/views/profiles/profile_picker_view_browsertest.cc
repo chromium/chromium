@@ -169,6 +169,10 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 // This is needed to resolve a conflict with a Windows specific macro for
 // `GetUserName`.
@@ -1176,15 +1180,15 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 // TODO(https://crbug.com/447636989): Flaky on Linux Wayland
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-#define MAYBE_CreateSignedInProfileClosePicker \
-  DISABLED_CreateSignedInProfileClosePicker
-#else
 #define MAYBE_CreateSignedInProfileClosePicker CreateSignedInProfileClosePicker
-#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 // Regression test for https://crbug.com/40902259
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        MAYBE_CreateSignedInProfileClosePicker) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Linux Wayland";
+  }
+#endif
   // Closes the picker at the same time the new browser is created.
   class ClosePickerOnBrowserAddedObserver : public BrowserCollectionObserver {
    public:

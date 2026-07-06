@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -82,6 +83,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 void FocusNextView(views::FocusManager* focus_manager) {
@@ -545,10 +550,12 @@ class LocationBarViewPageActionsMigrationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Wayland doesn't support changing window activation programmatically.
+// This test fails on both X11 and Wayland on Linux. The root cause for X11
+// might be different from Wayland (where programmatically changing window
+// activation is not supported).
 // TODO(crbug.com/376285664): Remove this test altogether once the migration
 // is complete.
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_LocationBarFocusOrder DISABLED_LocationBarFocusOrder
 #else
 #define MAYBE_LocationBarFocusOrder LocationBarFocusOrder
@@ -558,6 +565,12 @@ class LocationBarViewPageActionsMigrationTest
 // actions first, followed by the legacy page actions.
 IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionsMigrationTest,
                        MAYBE_LocationBarFocusOrder) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
+  }
+#endif
   actions::ActionItem* const lens_action =
       actions::ActionManager::Get().FindAction(
           kActionSidePanelShowLensOverlayResults);

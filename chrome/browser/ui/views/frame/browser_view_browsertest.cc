@@ -1067,13 +1067,13 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
       inactive_contents_container_view()->devtools_web_view()->GetVisible());
 }
 
-// TODO(crbug.com/425715421): Re-enable when wayland supports drag and drop
-#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-#define MAYBE_DragNotSupportedInFullscreen DragNotSupportedInFullscreen
-#else
-#define MAYBE_DragNotSupportedInFullscreen DISABLED_DragNotSupportedInFullscreen
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, DragNotSupportedInFullscreen) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/425715421): Re-enable when wayland supports drag and drop
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support drag and drop in fullscreen";
+  }
 #endif
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_DragNotSupportedInFullscreen) {
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   // Add tabs to splits.

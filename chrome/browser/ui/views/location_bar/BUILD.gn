@@ -4,6 +4,7 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 
@@ -286,9 +287,13 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:ozone_buildflags",
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/views:test_support",
   ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
   if (is_chromeos) {
     deps += [ "//chromeos/ui/frame:test_support" ]
   }

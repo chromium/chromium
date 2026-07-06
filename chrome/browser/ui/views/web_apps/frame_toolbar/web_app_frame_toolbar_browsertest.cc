@@ -158,6 +158,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #endif
@@ -2905,8 +2909,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(https://crbug.com/498907676) This test is flaky on Mac.
 // TODO(https://crbug.com/498769559) This test is flaky on Wayland.
-#if BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MinimizeAndRestoreWindowWithApi \
   DISABLED_MinimizeAndRestoreWindowWithApi
 #else
@@ -2915,6 +2918,11 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MAYBE_MinimizeAndRestoreWindowWithApi) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Wayland";
+  }
+#endif
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
@@ -2997,8 +3005,7 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(https://crbug.com/458599317) Maximizing fullscreen window doesn't work
 // correctly on Mac
 // TODO(https://crbug.com/498769559) This test is flaky on Wayland.
-#if BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FullscreenMaximizeAndRestoreWindowWithApi \
   DISABLED_FullscreenMaximizeAndRestoreWindowWithApi
 #else
@@ -3008,6 +3015,11 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MAYBE_FullscreenMaximizeAndRestoreWindowWithApi) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Wayland";
+  }
+#endif
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
@@ -3117,17 +3129,17 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/498769559) This test is flaky on Wayland.
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-#define MAYBE_WindowSetResizableDoNotBlockResizingWebApis \
-  DISABLED_WindowSetResizableDoNotBlockResizingWebApis
-#else
 #define MAYBE_WindowSetResizableDoNotBlockResizingWebApis \
   WindowSetResizableDoNotBlockResizingWebApis
-#endif
 // windows.setResizable API should block only user-initiated requests
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MAYBE_WindowSetResizableDoNotBlockResizingWebApis) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Wayland";
+  }
+#endif
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
@@ -3200,16 +3212,16 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/498769559) This test is flaky on Wayland.
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-#define MAYBE_WindowSetResizableDoNotBlockFullscreenWebAPI \
-  DISABLED_WindowSetResizableDoNotBlockFullscreenWebAPI
-#else
 #define MAYBE_WindowSetResizableDoNotBlockFullscreenWebAPI \
   WindowSetResizableDoNotBlockFullscreenWebAPI
-#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MAYBE_WindowSetResizableDoNotBlockFullscreenWebAPI) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Wayland";
+  }
+#endif
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* browser_view = helper()->browser_view();
@@ -3229,8 +3241,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(https://crbug.com/498907676) This test is flaky on Mac.
 // TODO(https://crbug.com/498769559) This test is flaky on Wayland.
-#if BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WindowSetResizableDoNotBlockExitingFullscreen \
   DISABLED_WindowSetResizableDoNotBlockExitingFullscreen
 #else
@@ -3241,6 +3252,11 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MAYBE_WindowSetResizableDoNotBlockExitingFullscreen) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Wayland";
+  }
+#endif
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* browser_view = helper()->browser_view();

@@ -104,6 +104,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -2140,13 +2144,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 }
 
-// Wayland-chrome doesn't cancel tab dragging on esc.
-#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 
 // Canceling tab dragging while the detached tab is reattached should
 // not cause dangling ptr. (crbug.com/459242414)
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachAndAttachThenCancel) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland-chrome doesn't cancel tab dragging on esc.";
+  }
+#endif
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -2187,8 +2194,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ("100", IDString(browser2->tab_strip_model()));
   EXPECT_EQ("0 1", IDString(browser()->tab_strip_model()));
 }
-
-#endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 
 #if BUILDFLAG(IS_WIN)
 
@@ -2536,7 +2541,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // TODO(crbug.com/40934892): ChromeOS and Wayland flakes for tests that involve
 // detaching to a new window.
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_CHROMEOS)
 class TabDragTargetTest : public DetachToBrowserTabDragControllerTest {
  public:
   TabDragTargetTest() {
@@ -2548,12 +2553,21 @@ class TabDragTargetTest : public DetachToBrowserTabDragControllerTest {
 
   ~TabDragTargetTest() override = default;
 
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_OZONE)
+    if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+      GTEST_SKIP() << "Wayland has drag and drop limitations";
+    }
+#endif
+    DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
+  }
+
  protected:
   std::unique_ptr<test::FakeTabDragTarget> delegate_;
   std::unique_ptr<test::FakeTabDragPointResolver> resolver_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     TabDragTargetTest,

@@ -66,6 +66,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using base::ASCIIToUTF16;
 using content::WebContents;
 using ui_test_utils::IsViewFocused;
@@ -1164,15 +1168,14 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, FindBarWidgetIsNotActivatable) {
 //
 // Disabled on Linux Wayland: Linux Wayland doesn't support window activation.
 // See crbug.com/40863331.
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-#define MAYBE_FindBarTextfieldActivatesBrowserOnClick \
-  DISABLED_FindBarTextfieldActivatesBrowserOnClick
-#else
-#define MAYBE_FindBarTextfieldActivatesBrowserOnClick \
-  FindBarTextfieldActivatesBrowserOnClick
-#endif
+// Ensure FindBarTextfieldActivatesBrowserOnClick.
 IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
-                       MAYBE_FindBarTextfieldActivatesBrowserOnClick) {
+                       FindBarTextfieldActivatesBrowserOnClick) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Linux Wayland doesn't support window activation";
+  }
+#endif
   // Browser A: The browser window that comes with the test fixture.
   Browser* browser_a = browser();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser_a));

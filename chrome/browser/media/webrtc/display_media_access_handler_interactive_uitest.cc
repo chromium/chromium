@@ -24,6 +24,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 // Wait for a NativeWindow to receive window focus.
@@ -103,16 +107,15 @@ IN_PROC_BROWSER_TEST_P(DisplayMediaAccessHandlerInteractiveUITest,
   const bool focus_opener = std::get<0>(GetParam());
   const bool request_from_opener = std::get<1>(GetParam());
 #if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   // Wayland doesn't support changing window activation programmatically, so we
   // can't focus the opener.  The pip window will have the focus when it opens.
   // Note that if it doesn't have focus for some reason (i.e., something
   // changes), then the `FocusAndWait()` call, below, will time out waiting for
   // it to become focused.
-  if (focus_opener) {
-    GTEST_SKIP();
+  if (focus_opener && ::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
   }
-#endif
 #endif
 
   // Navigate to an empty page.
@@ -170,11 +173,12 @@ INSTANTIATE_TEST_SUITE_P(DisplayMediaAccessHandlerInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerInteractiveUITest,
                        PickerShowsUpEvenIfOpenerIsHidden) {
 #if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   // Wayland doesn't support changing window activation programmatically, so we
   // can't re-focus the pip window.
-  GTEST_SKIP();
-#endif
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
+  }
 #endif
 
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -24,6 +24,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/drop_helper.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 using ::ui::mojom::DragOperation;
@@ -604,14 +608,20 @@ void MenuViewDragAndDropTestNestedDrag::StartDrag() {
 // after the drag.
 // TODO(pkasting): https://crbug.com/41445629 Fails on Mac.
 // TODO(crbug.com/41496561): Test is failing under ChromeRefresh2023 on wayland.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MenuViewDragAndDropNestedDrag \
   DISABLED_MenuViewDragAndDropNestedDrag
 #else
 #define MAYBE_MenuViewDragAndDropNestedDrag MenuViewDragAndDropNestedDrag
 #endif
-VIEW_TEST(MenuViewDragAndDropTestNestedDrag,
-          MAYBE_MenuViewDragAndDropNestedDrag)
+TEST_F(MenuViewDragAndDropTestNestedDrag, MAYBE_MenuViewDragAndDropNestedDrag) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Skipping for Wayland";
+  }
+#endif
+  StartMessageLoopAndRunTest();
+}
 
 class MenuViewDragAndDropForDropStayOpen : public MenuViewDragAndDropTest {
  public:

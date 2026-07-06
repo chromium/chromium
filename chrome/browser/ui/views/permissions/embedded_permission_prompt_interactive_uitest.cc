@@ -63,6 +63,10 @@
 #include "ui/views/widget/widget_deletion_observer.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPEPCVisibleEvent);
@@ -1029,13 +1033,13 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 }
 
 // Linux wayland does not support window activation.
-#if (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
-#define MAYBE_TestOsSystemAutoResolves DISABLED_TestOsSystemAutoResolves
-#else
-#define MAYBE_TestOsSystemAutoResolves TestOsSystemAutoResolves
-#endif
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_TestOsSystemAutoResolves) {
+                       TestOsSystemAutoResolves) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Linux Wayland does not support window activation";
+  }
+#endif
   std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
       scoped_system_permission_camera = std::make_unique<
           system_permission_settings::ScopedSettingsForTesting>(

@@ -19,6 +19,10 @@
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/ozone_buildflags.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace webid {
 namespace {
 
@@ -97,14 +101,14 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, SelectAccount) {
 }
 
 // TODO(https://crbug.com/441413537): Fix this on linux-wayland-mutter-rel
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) && BUILDFLAG(USE_DBUS)
-#define MAYBE_BubbleHidesWhenModalUIShown DISABLED_BubbleHidesWhenModalUIShown
-#else
-#define MAYBE_BubbleHidesWhenModalUIShown BubbleHidesWhenModalUIShown
-#endif
 // Shows the bubble account picker. It should hide when a modal UI is shown. It
 // should re-show when the modal UI goes away.
-IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_BubbleHidesWhenModalUIShown) {
+IN_PROC_BROWSER_TEST_F(FedCmCUJTest, BubbleHidesWhenModalUIShown) {
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(USE_DBUS)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Fix this on linux-wayland-mutter-rel";
+  }
+#endif
   RunTestSequence(
       OpenAccountsBubble(),
       WaitForShow(kFedCmAccountChooserDialogAccountElementId), ShowTabModalUI(),
