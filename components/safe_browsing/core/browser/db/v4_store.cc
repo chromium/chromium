@@ -1158,6 +1158,18 @@ bool V4Store::VerifyChecksum() {
   base::ElapsedThreadTimer thread_timer;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  // TODO(crbug.com/362791941): Remove this once have confirmed assumption that
+  // empty checksums are rare for valid stores.
+  if (has_valid_data_) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty" +
+            GetUmaSuffixForStore(store_path_),
+        expected_checksum_.empty());
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty",
+        expected_checksum_.empty());
+  }
+
   if (expected_checksum_.empty()) {
     // Nothing to check here folks!
     // TODO(vakh): Do not allow empty checksums.

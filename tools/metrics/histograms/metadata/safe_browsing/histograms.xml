@@ -4264,6 +4264,21 @@ and applied correctly. -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty{SafeBrowsing_SBStore_Metrics}"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the expected checksum is empty when verifying the checksum
+    of a V4 store. Logged when verifying checksum of a store with valid data.
+  </summary>
+  <token key="SafeBrowsing_SBStore_Metrics"
+      variants="SafeBrowsing_SBStore_Metrics">
+    <variant name=""/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.V4StoreRead.Result"
     enum="SafeBrowsingV4StoreReadResult" expires_after="2026-11-15">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
