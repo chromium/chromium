@@ -524,6 +524,29 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
+    public void allowOmniboxActions_HubPageClassificationSkipsChips() {
+        // When the ANDROID_HUB PageClassification is seen, action chips are skipped.
+        mInput.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+
+        createSuggestionWithActions(
+                OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED,
+                /* isSearch= */ true,
+                TEST_URL,
+                List.of(
+                        new OmniboxActionInSuggest(
+                                0,
+                                "hint",
+                                "accessibility",
+                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                "https://google.com",
+                                /* tabId= */ 0,
+                                ActionPresentationMode.CHIP)));
+
+        var chips = mModel.get(ActionChipsProperties.ACTION_CHIPS);
+        assertEquals(null, chips);
+    }
+
+    @Test
     public void addTabSwitchActionButton() {
         createSuggestionWithActions(
                 OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED,

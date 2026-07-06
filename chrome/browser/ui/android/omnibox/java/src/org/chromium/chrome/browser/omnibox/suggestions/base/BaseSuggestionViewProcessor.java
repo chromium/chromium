@@ -263,7 +263,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     () -> onSuggestionTouchDownEvent(suggestion, position));
         }
 
-        if (allowOmniboxActions()) {
+        // Action chips should not be provided in the hub.
+        if (input.getPageClassification() != PageClassification.ANDROID_HUB_VALUE
+                && allowOmniboxActions()) {
             mActionChipsProcessor.populateModel(suggestion, model, position);
         }
 
