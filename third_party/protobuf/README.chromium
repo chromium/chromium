@@ -324,8 +324,5 @@ Description of the patches:
   zlib, so instead of making Chromium's protobuf depend on zlib, the utility is
   compiled as a separate target, and not exported.
 
-- 0066-add-placeholder-cc.patch
 
-  Creates placeholder.cc, which is a placeholder file used to ensure that
-  wrapper libraries get built on all platforms.
 

@@ -107,6 +107,16 @@
 #       symbols from being stripped. If you're not using dllexports in
 #       cc_generator_options, it's usually best to leave this false.
 #
+#   force_component (Default=false)
+#       When set true the generated code will be compiled as a component.
+#       In a component build, this compiles as a shared library. In a static
+#       build, this compiles as a static library.
+#       This is useful to avoid ODR violations when the generated proto library
+#       is loaded by multiple other components.
+#       Note that developers using this option might need to use
+#       `cc_generator_options` with an EXPORT macro (e.g.,
+#       'dllexport_decl=FOO_EXPORT:') and a `cc_include` to export symbols.
+#
 #   defines (optional)
 #       Defines to supply to the source set that compiles the generated source
 #       code.
@@ -682,6 +692,8 @@ template("proto_library") {
     # If only descriptor is required, just generate a group wrapper for action
     # output.
     _library_type = "group"
+  } else if (defined(invoker.force_component) && invoker.force_component) {
+    _library_type = "component"
   } else if ((defined(invoker.force_source_set) && invoker.force_source_set) ||
              (defined(invoker.component_build_force_source_set) &&
               invoker.component_build_force_source_set && is_component_build)) {

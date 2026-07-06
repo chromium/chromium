@@ -57,45 +57,22 @@ template("proto_wkt") {
       _full_visibility += invoker.full_target_visibility
     }
 
-    # Full protos are registered globally and registering them twice causes a
-    # crash. To avoid this we make them components, which are shared libraries
-    # in component builds.
-    _proto_target_name = "${invoker.full_target_name}__proto"
-    proto_library(_proto_target_name) {
+    proto_library(invoker.full_target_name) {
+      visibility = _full_visibility
       sources = invoker.sources
-      visibility = [ ":${invoker.full_target_name}" ]
       proto_in_dir = "src"
       proto_out_dir = "$_proto_out_dir_full"
       use_protobuf_full = true
-      component_build_force_source_set = true
+
+      # Full protos are registered globally and registering them twice causes a
+      # crash. To avoid this we make them components, which are shared libraries
+      # in component builds.
+      force_component = true
 
       if (!is_win) {
         # Ensure symbols are exported across shared library boundaries.
         extra_configs = [ "//build/config/gcc:symbol_visibility_default" ]
       }
-    }
-
-    # Other proto_library targets depending on this target expect it to be a
-    # proto_library, which automatically generates these helper targets. Since
-    # the public target is defined as a component instead, we must manually
-    # define these targets and forward dependencies to the internal
-    # proto_library's helper targets.
-    group("${invoker.full_target_name}_input_group") {
-      public_deps = [ ":${_proto_target_name}_input_group" ]
-    }
-    group("${invoker.full_target_name}_gen") {
-      public_deps = [ ":${_proto_target_name}_gen" ]
-    }
-
-    component(invoker.full_target_name) {
-      if (defined(invoker.full_target_visibility)) {
-        visibility = _full_visibility
-      }
-      sources = [ "placeholder.cc" ]
-      public_deps = [
-        ":$_proto_target_name",
-        "//third_party/protobuf:protobuf_full",
-      ]
     }
   } else {
     not_needed([ "_proto_out_dir_full" ])

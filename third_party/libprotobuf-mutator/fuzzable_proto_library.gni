@@ -73,8 +73,7 @@ template("fuzzable_proto_library") {
     _dir_suffix = string_replace(_dir_suffix, ".", "_")
     _export_macro_name = "FUZZABLE_PROTO_EXPORT_${_dir_suffix}_${target_name}"
 
-    _fuzzable_proto_target = "${target_name}_fuzzable__proto"
-    proto_library(_fuzzable_proto_target) {
+    proto_library("${target_name}_fuzzable") {
       forward_variables_from(invoker,
                              "*",
                              [
@@ -126,7 +125,11 @@ template("fuzzable_proto_library") {
           deps += [ get_label_info(dep, "label_no_toolchain") + "_fuzzable" ]
         }
       }
-      component_build_force_source_set = true
+
+      # Full protos are registered globally and registering them twice causes a
+      # crash. To avoid this we make them components, which are shared libraries
+      # in component builds.
+      force_component = true
 
       # Override LITE_RUNTIME settings in the protobuf files and export symbols.
       cc_generator_options =
@@ -134,37 +137,14 @@ template("fuzzable_proto_library") {
       cc_include = "third_party/libprotobuf-mutator/fuzzable_proto_export.h"
       extra_configs = [ "//third_party/protobuf:protobuf_config" ]
 
-      if (!defined(defines)) {
-        defines = []
-      }
-      defines += [ "IS_${_export_macro_name}_IMPL=1" ]
-    }
-
-    # These groups are required by proto_library template in proto_library.gni.
-    group("${target_name}_fuzzable_input_group") {
-      testonly = true
-      public_deps = [ ":${_fuzzable_proto_target}_input_group" ]
-    }
-    group("${target_name}_fuzzable_gen") {
-      testonly = true
-      public_deps = [ ":${_fuzzable_proto_target}_gen" ]
-    }
-
-    # In component builds, we build fuzzable proto libraries as shared
-    # components rather than static libraries. If they were static libraries,
-    # multiple components depending on them would statically link duplicate
-    # copies of the generated proto code. If a binary depends on multiple of
-    # these components it result in ODR violations and crashes due to duplicate
-    # full proto descriptor registrations since the protobuf library is a shared
-    # library. By making the target a `component`, we ensure the generated code
-    # is compiled exactly once into a single shared library.
-    component("${target_name}_fuzzable") {
-      testonly = true
-      sources = [ "//third_party/libprotobuf-mutator/dummy.cc" ]
-      public_deps = [
-        ":$_fuzzable_proto_target",
-        "//third_party/libprotobuf-mutator:protobuf_full_for_fuzzing",
-      ]
+      # proto_library has a use_protobuf_full option which automatically adds
+      # the protobuf_full dependency. Unfortunately using that option would
+      # force all fuzzable_proto_libraries to be added to the visibility list of
+      # protobuf_full. To avoid this, use protobuf_full_for_fuzzing which is a
+      # wrapper group that provides protobuf_full to fuzzing and test targets
+      # without having to add them to protobuf's visibility list.
+      link_public_deps =
+          [ "//third_party/libprotobuf-mutator:protobuf_full_for_fuzzing" ]
 
       if (!defined(defines)) {
         defines = []
@@ -180,19 +160,18 @@ template("fuzzable_proto_library") {
     }
   } else if (use_fuzzing_engine_with_lpm &&
              current_toolchain != "//build/toolchain/cros:target") {
-    _proto_target_name = "${target_name}__proto"
-    proto_library(_proto_target_name) {
+    proto_library(target_name) {
       forward_variables_from(invoker,
                              "*",
                              [
                                "proto_library_deps",
                                "component_build_force_source_set",
-                               "visibility",
                              ])
-      if (defined(invoker.visibility)) {
-        visibility = invoker.visibility + [ ":${target_name}" ]
-      }
-      component_build_force_source_set = true
+
+      # Full protos are registered globally and registering them twice causes a
+      # crash. To avoid this we make them components, which are shared libraries
+      # in component builds.
+      force_component = true
 
       if (defined(invoker.proto_library_deps)) {
         if (!defined(deps)) {
@@ -208,36 +187,14 @@ template("fuzzable_proto_library") {
         # Ensure symbols are exported across shared library boundaries.
         extra_configs += [ "//build/config/gcc:symbol_visibility_default" ]
       }
-    }
 
-    # These groups are required by proto_library template in proto_library.gni.
-    group("${target_name}_input_group") {
-      public_deps = [ ":${_proto_target_name}_input_group" ]
-    }
-    group("${target_name}_gen") {
-      public_deps = [ ":${_proto_target_name}_gen" ]
-    }
-
-    # In component builds, we build fuzzable proto libraries as shared
-    # components rather than static libraries. If they were static libraries,
-    # multiple components depending on them would statically link duplicate
-    # copies of the generated proto code. If a binary depends on multiple of
-    # these components it result in ODR violations and crashes due to duplicate
-    # full proto descriptor registrations since the protobuf library is a shared
-    # library. By making the target a `component`, we ensure the generated code
-    # is compiled exactly once into a single shared library.
-    component(target_name) {
-      if (defined(invoker.testonly)) {
-        testonly = invoker.testonly
-      }
-      if (defined(invoker.visibility)) {
-        visibility = invoker.visibility
-      }
-      sources = [ "//third_party/libprotobuf-mutator/dummy.cc" ]
-      public_deps = [
-        ":$_proto_target_name",
-        "//third_party/libprotobuf-mutator:protobuf_full",
-      ]
+      # proto_library has a use_protobuf_full option which automatically adds
+      # the protobuf_full dependency. Unfortunately using that option would
+      # force all fuzzable_proto_libraries to be added to the visibility list of
+      # protobuf_full. To avoid this, use protobuf_full which is a wrapper
+      # target that provides protobuf_full to fuzzing and test targets without
+      # having to add them to protobuf's visibility list.
+      link_public_deps = [ "//third_party/libprotobuf-mutator:protobuf_full" ]
     }
   } else {
     # fuzzable_proto_library should behave like a proto_library when
