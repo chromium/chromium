@@ -640,6 +640,82 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   }
 }
 
+// Ensure same-document navigation to a text-fragment is blocked when initiated
+// from a different origin and the destination intercepts the navigation via the
+// navigation API.
+IN_PROC_BROWSER_TEST_F(
+    TextFragmentAnchorBrowserTest,
+    SameDocumentScriptNavigationCrossOriginWithNavigationIntercept) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL(
+      "a.test", "/scrollable_page_with_content.html"));
+  GURL target_text_url(embedded_test_server()->GetURL(
+      "a.test", "/scrollable_page_with_content.html#:~:text=hidden"));
+  GURL cross_origin_inner_url(
+      embedded_test_server()->GetURL("b.test", "/hello.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* main_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = main_contents->GetPrimaryFrameTree().root();
+
+  // Register a navigate handler that intercepts the same-document navigation
+  // and add a hidden=until-found target so we can detect whether the text
+  // directive was processed via the beforematch event.
+  EXPECT_TRUE(ExecJs(main_contents,
+                     R"JS(
+        let target = document.createElement('div');
+        target.hidden = 'until-found';
+        target.textContent = 'hidden text';
+        document.body.appendChild(target);
+        var did_match = false;
+        target.addEventListener('beforematch', () => { did_match = true; });
+        navigation.addEventListener('navigate', e => {
+          if (e.canIntercept) {
+            e.intercept({handler: async () => {}});
+          }
+        });
+      )JS",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Insert a cross-origin iframe from which we'll execute script.
+  {
+    const auto script = JsReplace(
+        R"JS(
+            let f = document.createElement("iframe");
+            f.src=$1;
+            document.body.appendChild(f);
+          )JS",
+        cross_origin_inner_url);
+
+    TestNavigationObserver observer(main_contents);
+    EXPECT_TRUE(ExecJs(main_contents, script, EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+    ASSERT_EQ(1u, root->child_count());
+  }
+
+  // Try navigating the top frame to a same-document text fragment from inside
+  // the iframe via location.replace(). The destination page intercepts the
+  // navigation, but the text directive should still be blocked because the
+  // initiator is cross-origin.
+  {
+    TestNavigationObserver observer(main_contents);
+    RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+    EXPECT_TRUE(ExecJs(child_rfh, JsReplace("window.top.location.replace($1);",
+                                            target_text_url)));
+    observer.Wait();
+    EXPECT_EQ(target_text_url, main_contents->GetLastCommittedURL());
+
+    WaitForPageLoad(main_contents);
+    RunUntilInputProcessed(GetWidgetHost());
+    RunUntilInputProcessed(GetWidgetHost());
+    EXPECT_EQ(false, EvalJs(main_contents, "did_match;",
+                            EXECUTE_SCRIPT_NO_USER_GESTURE));
+    EXPECT_DID_SCROLL(false);
+  }
+}
+
 // Test that when ForceLoadAtTop document policy is explicitly turned off,
 // scrolling to a text fragment is allowed.
 IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, EnabledByDocumentPolicy) {

@@ -253,7 +253,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       PerformanceTimelineEntryIdInfo interaction_id =
           PerformanceTimelineEntryIdInfo::kNone,
       bool is_browser_initiated = false,
-      bool is_synchronously_committed = true);
+      bool is_synchronously_committed = true,
+      const SecurityOrigin* initiator_origin = nullptr);
 
   // |is_synchronously_committed| is described in comment for
   // CommitSameDocumentNavigation.

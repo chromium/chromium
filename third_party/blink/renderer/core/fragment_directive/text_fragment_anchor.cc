@@ -141,9 +141,12 @@ bool TextFragmentAnchor::GenerateNewTokenForSameDocument(
     mojom::blink::SameDocumentNavigationType same_document_navigation_type) {
   if ((load_type != WebFrameLoadType::kStandard &&
        load_type != WebFrameLoadType::kReplaceCurrentItem) ||
-      same_document_navigation_type !=
-          mojom::blink::SameDocumentNavigationType::kFragment)
+      (same_document_navigation_type !=
+           mojom::blink::SameDocumentNavigationType::kFragment &&
+       same_document_navigation_type !=
+           mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept)) {
     return false;
+  }
 
   // Same-document text fragment navigations are allowed only when initiated
   // from the browser process (e.g. typing in the omnibox) or a same-origin

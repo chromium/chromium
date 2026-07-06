@@ -20,6 +20,7 @@ namespace blink {
 
 class Element;
 class HistoryItem;
+class SecurityOrigin;
 class SerializedScriptValue;
 
 enum class NavigateEventType {
@@ -44,6 +45,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   Member<Element> source_element;
   scoped_refptr<SerializedScriptValue> state_object;
   Member<HistoryItem> destination_item;
+  scoped_refptr<const SecurityOrigin> initiator_origin;
   bool is_browser_initiated = false;
   bool has_ua_visual_transition = false;
   bool is_synchronously_committed_same_document = true;
