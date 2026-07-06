@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -30,6 +31,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,13 +70,22 @@ public abstract class OriginVerifier {
 
     public @Nullable WebContents mWebContents;
 
-    public enum VerifierResult {
-        ONLINE_SUCCESS,
-        ONLINE_FAILURE,
-        OFFLINE_SUCCESS,
-        OFFLINE_FAILURE,
-        HTTPS_FAILURE,
-        REQUEST_FAILURE,
+    @IntDef({
+        VerifierResult.ONLINE_SUCCESS,
+        VerifierResult.ONLINE_FAILURE,
+        VerifierResult.OFFLINE_SUCCESS,
+        VerifierResult.OFFLINE_FAILURE,
+        VerifierResult.HTTPS_FAILURE,
+        VerifierResult.REQUEST_FAILURE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface VerifierResult {
+        int ONLINE_SUCCESS = 0;
+        int ONLINE_FAILURE = 1;
+        int OFFLINE_SUCCESS = 2;
+        int OFFLINE_FAILURE = 3;
+        int HTTPS_FAILURE = 4;
+        int REQUEST_FAILURE = 5;
     }
 
     /** Small helper class to post a result of origin verification. */
@@ -370,7 +382,7 @@ public abstract class OriginVerifier {
     public abstract boolean wasPreviouslyVerified(Origin origin);
 
     /** Implement for logging of VerifierResult for different embedders. */
-    public abstract void recordResultMetrics(VerifierResult result);
+    public abstract void recordResultMetrics(@VerifierResult int result);
 
     /** Implement for logging of VerificationTimeMetrics for different embedders. */
     public abstract void recordVerificationTimeMetrics(long duration, boolean online);

@@ -78,7 +78,6 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * @param relation Digital Asset Links {@link Relation} to use during verification.
      * @param webContents The web contents of the tab used for reporting errors to DevTools. Can be
      *     null if unavailable.
-     * @param externalAuthUtils The auth utils used to check if an origin is allowlisted to bypass/
      * @param verificationResultStore The {@link ChromeVerificationResultStore} for persisting
      *     results.
      */
@@ -234,24 +233,24 @@ public class ChromeOriginVerifier extends OriginVerifier {
     }
 
     @Override
-    public void recordResultMetrics(OriginVerifier.VerifierResult result) {
+    public void recordResultMetrics(@OriginVerifier.VerifierResult int result) {
         switch (result) {
-            case ONLINE_SUCCESS:
+            case VerifierResult.ONLINE_SUCCESS:
                 recordVerificationResult(VerificationResult.ONLINE_SUCCESS);
                 break;
-            case ONLINE_FAILURE:
+            case VerifierResult.ONLINE_FAILURE:
                 recordVerificationResult(VerificationResult.ONLINE_FAILURE);
                 break;
-            case OFFLINE_SUCCESS:
+            case VerifierResult.OFFLINE_SUCCESS:
                 recordVerificationResult(VerificationResult.OFFLINE_SUCCESS);
                 break;
-            case OFFLINE_FAILURE:
+            case VerifierResult.OFFLINE_FAILURE:
                 recordVerificationResult(VerificationResult.OFFLINE_FAILURE);
                 break;
-            case HTTPS_FAILURE:
+            case VerifierResult.HTTPS_FAILURE:
                 recordVerificationResult(VerificationResult.HTTPS_FAILURE);
                 break;
-            case REQUEST_FAILURE:
+            case VerifierResult.REQUEST_FAILURE:
                 recordVerificationResult(VerificationResult.REQUEST_FAILURE);
                 break;
         }
