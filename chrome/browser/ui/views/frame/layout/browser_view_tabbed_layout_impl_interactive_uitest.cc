@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/scoped_feature_list.h"
@@ -38,8 +39,10 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -349,6 +352,20 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
     return steps;
   }
 
+  void SetBookmarkBarVisible(bool visible = true) {
+    PrefService* const prefs = user_prefs::UserPrefs::Get(GetProfile());
+    if (base::FeatureList::IsEnabled(
+            ntp_features::kNtpSimplificationBookmarkBar)) {
+      prefs->SetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState,
+          static_cast<int>(
+              visible ? bookmarks::BookmarkBarVisibilityState::kAlwaysShow
+                      : bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+    } else {
+      prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, visible);
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   const gfx::AnimationTestApi::RenderModeResetter render_mode_resetter_;
@@ -399,8 +416,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
                        VerticalTabsWithoutBookmarks) {
-  PrefService* const prefs = user_prefs::UserPrefs::Get(GetProfile());
-  prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, false);
+  SetBookmarkBarVisible(false);
   tabs::VerticalTabStripStateController::From(browser())
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
@@ -422,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
                        VerticalTabsWithBookmarks) {
-  PrefService* const prefs = user_prefs::UserPrefs::Get(GetProfile());
-  prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, true);
+  SetBookmarkBarVisible();
   tabs::VerticalTabStripStateController::From(browser())
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();

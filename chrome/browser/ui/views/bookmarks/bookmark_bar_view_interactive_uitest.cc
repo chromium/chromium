@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -21,6 +22,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ozone_buildflags.h"
@@ -43,8 +45,15 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
-        bookmarks::prefs::kShowBookmarkBar, true);
+    if (base::FeatureList::IsEnabled(
+            ntp_features::kNtpSimplificationBookmarkBar)) {
+      browser()->profile()->GetPrefs()->SetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState,
+          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+    } else {
+      browser()->profile()->GetPrefs()->SetBoolean(
+          bookmarks::prefs::kShowBookmarkBar, true);
+    }
   }
 
   auto NameBookmarkButton(std::string name,
