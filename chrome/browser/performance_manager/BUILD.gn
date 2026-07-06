@@ -316,7 +316,7 @@ source_set("unit_tests") {
     "//third_party/fuzztest",
   ]
 
-  if (is_linux || is_chromeos) {
+  if ((is_linux || is_chromeos) && use_dbus) {
     deps += [ "//dbus:test_support" ]
   }
 
