@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
@@ -161,17 +163,20 @@ TEST_F(ClipboardRequestHandlerTest, Text) {
   TestContentAnalysisInfo info(cloud_settings());
 
   auto handler = ClipboardRequestHandler::Create(
-      &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
-      ClipboardRequestHandler::Type::kText, DeepScanAccessPoint::PASTE,
-      GetSource(), kSourceEmail, kContentTransferMethodFilePaste,
-      CreateTestData(kMaxSize), base::BindOnce([](RequestHandlerResult result) {
+      &info, &binary_upload_service_,
+      ReportingEventRouterFactory::GetForBrowserContext(profile_.get()),
+      GURL(kUrl), ClipboardRequestHandler::Type::kText,
+      DeepScanAccessPoint::PASTE, GetSource(), kSourceEmail,
+      kContentTransferMethodFilePaste, CreateTestData(kMaxSize),
+      base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::FAILURE);
         EXPECT_EQ(result.complies, false);
         EXPECT_EQ(result.custom_rule_message.message_segments_size(), 1);
         EXPECT_EQ(result.custom_rule_message.message_segments(0).text(),
                   kMessage);
         EXPECT_EQ(result.tag, "dlp");
-      }));
+      }),
+      base::BindRepeating(&GetBrowserPolicyConnector));
 
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();
@@ -254,17 +259,20 @@ TEST_F(ClipboardRequestHandlerTest, CopyText) {
   TestContentAnalysisInfo info(cloud_settings());
 
   auto handler = ClipboardRequestHandler::Create(
-      &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
-      ClipboardRequestHandler::Type::kText, DeepScanAccessPoint::COPY,
-      GetSource(), kSourceEmail, kContentTransferMethodClipboardCopy,
-      CreateTestData(kMaxSize), base::BindOnce([](RequestHandlerResult result) {
+      &info, &binary_upload_service_,
+      ReportingEventRouterFactory::GetForBrowserContext(profile_.get()),
+      GURL(kUrl), ClipboardRequestHandler::Type::kText,
+      DeepScanAccessPoint::COPY, GetSource(), kSourceEmail,
+      kContentTransferMethodClipboardCopy, CreateTestData(kMaxSize),
+      base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::FAILURE);
         EXPECT_EQ(result.complies, false);
         EXPECT_EQ(result.custom_rule_message.message_segments_size(), 1);
         EXPECT_EQ(result.custom_rule_message.message_segments(0).text(),
                   kMessage);
         EXPECT_EQ(result.tag, "dlp");
-      }));
+      }),
+      base::BindRepeating(&GetBrowserPolicyConnector));
 
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();
@@ -346,17 +354,20 @@ TEST_F(ClipboardRequestHandlerTest, Image) {
   TestContentAnalysisInfo info(cloud_settings());
 
   auto handler = ClipboardRequestHandler::Create(
-      &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
-      ClipboardRequestHandler::Type::kImage, DeepScanAccessPoint::DRAG_AND_DROP,
-      GetSource(), kSourceEmail, kContentTransferMethodFilePaste,
-      CreateTestData(kMaxSize), base::BindOnce([](RequestHandlerResult result) {
+      &info, &binary_upload_service_,
+      ReportingEventRouterFactory::GetForBrowserContext(profile_.get()),
+      GURL(kUrl), ClipboardRequestHandler::Type::kImage,
+      DeepScanAccessPoint::DRAG_AND_DROP, GetSource(), kSourceEmail,
+      kContentTransferMethodFilePaste, CreateTestData(kMaxSize),
+      base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::FAILURE);
         EXPECT_EQ(result.complies, false);
         EXPECT_EQ(result.custom_rule_message.message_segments_size(), 1);
         EXPECT_EQ(result.custom_rule_message.message_segments(0).text(),
                   kMessage);
         EXPECT_EQ(result.tag, "dlp");
-      }));
+      }),
+      base::BindRepeating(&GetBrowserPolicyConnector));
 
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();
@@ -442,13 +453,16 @@ TEST_F(ClipboardRequestHandlerTest, CancelledByUser) {
                                      ContentAnalysisResponse());
 
   auto handler = ClipboardRequestHandler::Create(
-      &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
-      ClipboardRequestHandler::Type::kText, DeepScanAccessPoint::PASTE,
-      GetSource(), kSourceEmail, kContentTransferMethodFilePaste,
-      CreateTestData(kMaxSize), base::BindOnce([](RequestHandlerResult result) {
+      &info, &binary_upload_service_,
+      ReportingEventRouterFactory::GetForBrowserContext(profile_.get()),
+      GURL(kUrl), ClipboardRequestHandler::Type::kText,
+      DeepScanAccessPoint::PASTE, GetSource(), kSourceEmail,
+      kContentTransferMethodFilePaste, CreateTestData(kMaxSize),
+      base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::CANCELLED);
         EXPECT_EQ(result.complies, false);
-      }));
+      }),
+      base::BindRepeating(&GetBrowserPolicyConnector));
 
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();

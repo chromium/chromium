@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_ANALYSIS_REQUEST_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_ANALYSIS_REQUEST_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLIPBOARD_ANALYSIS_REQUEST_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLIPBOARD_ANALYSIS_REQUEST_H_
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
@@ -18,7 +18,8 @@ class ClipboardAnalysisRequest : public BinaryUploadRequest {
   ClipboardAnalysisRequest(
       CloudOrLocalAnalysisSettings settings,
       std::string text,
-      BinaryUploadRequest::ContentAnalysisCallback callback);
+      BinaryUploadRequest::ContentAnalysisCallback callback,
+      BrowserPolicyConnectorGetter policy_connector_getter);
   ~ClipboardAnalysisRequest() override;
 
   ClipboardAnalysisRequest(const ClipboardAnalysisRequest&) = delete;
@@ -34,4 +35,4 @@ class ClipboardAnalysisRequest : public BinaryUploadRequest {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_ANALYSIS_REQUEST_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLIPBOARD_ANALYSIS_REQUEST_H_

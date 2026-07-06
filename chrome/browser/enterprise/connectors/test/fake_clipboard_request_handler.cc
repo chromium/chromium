@@ -13,9 +13,9 @@ namespace enterprise_connectors::test {
 // static
 std::unique_ptr<ClipboardRequestHandler> FakeClipboardRequestHandler::Create(
     FakeContentAnalysisDelegate* delegate,
-    ContentAnalysisInfo* content_analysis_info,
+    ContentAnalysisInfoBase* content_analysis_info,
     BinaryUploadService* upload_service,
-    Profile* profile,
+    ReportingEventRouter* router,
     GURL url,
     Type type,
     DeepScanAccessPoint access_point,
@@ -23,12 +23,13 @@ std::unique_ptr<ClipboardRequestHandler> FakeClipboardRequestHandler::Create(
     std::string source_content_area_email,
     std::string content_transfer_method,
     std::string data,
-    CompletionCallback callback) {
+    CompletionCallback callback,
+    BinaryUploadRequest::BrowserPolicyConnectorGetter policy_getter) {
   auto handler = base::WrapUnique(new FakeClipboardRequestHandler(
-      content_analysis_info, upload_service, profile, std::move(url), type,
+      content_analysis_info, upload_service, router, std::move(url), type,
       access_point, std::move(clipboard_source),
       std::move(source_content_area_email), std::move(content_transfer_method),
-      std::move(data), std::move(callback)));
+      std::move(data), std::move(callback), std::move(policy_getter)));
   handler->delegate_ = delegate;
   return handler;
 }

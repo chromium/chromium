@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_analysis_request.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -11,10 +11,12 @@
 namespace enterprise_connectors {
 
 // Calling GetRequestData() twice should return the same valid region.
-TEST(ClipboardAnalysisRequest, GetRequestData) {
+TEST(ClipboardAnalysisRequestTest, GetRequestData) {
   std::string contents("contents");
-  ClipboardAnalysisRequest request(AnalysisSettings().cloud_or_local_settings,
-                                   contents, base::DoNothing());
+  ClipboardAnalysisRequest request(
+      AnalysisSettings().cloud_or_local_settings, contents, base::DoNothing(),
+      base::BindRepeating(
+          []() -> policy::BrowserPolicyConnector* { return nullptr; }));
 
   BinaryUploadRequest::Data data1;
   request.GetRequestData(base::BindLambdaForTesting(

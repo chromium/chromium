@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_analysis_request.h"
 
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 
 namespace enterprise_connectors {
@@ -13,10 +12,11 @@ namespace enterprise_connectors {
 ClipboardAnalysisRequest::ClipboardAnalysisRequest(
     CloudOrLocalAnalysisSettings settings,
     std::string text,
-    BinaryUploadRequest::ContentAnalysisCallback callback)
+    BinaryUploadRequest::ContentAnalysisCallback callback,
+    BrowserPolicyConnectorGetter policy_connector_getter)
     : BinaryUploadRequest(std::move(callback),
                           std::move(settings),
-                          base::BindRepeating(&GetBrowserPolicyConnector)) {
+                          std::move(policy_connector_getter)) {
   DCHECK_GT(text.size(), 0u);
   data_.size = text.size();
 

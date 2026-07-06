@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CLIPBOARD_REQUEST_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 
 namespace enterprise_connectors::test {
 
@@ -16,9 +16,9 @@ class FakeClipboardRequestHandler : public ClipboardRequestHandler {
  public:
   static std::unique_ptr<ClipboardRequestHandler> Create(
       FakeContentAnalysisDelegate* delegate,
-      ContentAnalysisInfo* content_analysis_info,
+      ContentAnalysisInfoBase* content_analysis_info,
       BinaryUploadService* upload_service,
-      Profile* profile,
+      ReportingEventRouter* router,
       GURL url,
       Type type,
       DeepScanAccessPoint access_point,
@@ -26,7 +26,8 @@ class FakeClipboardRequestHandler : public ClipboardRequestHandler {
       std::string source_content_area_email,
       std::string content_transfer_method,
       std::string data,
-      CompletionCallback callback);
+      CompletionCallback callback,
+      BinaryUploadRequest::BrowserPolicyConnectorGetter policy_getter);
 
  protected:
   using ClipboardRequestHandler::ClipboardRequestHandler;

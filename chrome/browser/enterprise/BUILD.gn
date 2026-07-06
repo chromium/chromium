@@ -366,8 +366,6 @@ source_set("enterprise") {
 
   if (enterprise_cloud_content_analysis) {
     public += [
-      "connectors/analysis/clipboard_analysis_request.h",
-      "connectors/analysis/clipboard_request_handler.h",
       "connectors/analysis/content_analysis_delegate.h",
       "connectors/analysis/content_analysis_dialog_controller.h",
       "connectors/analysis/content_analysis_dialog_delegate.h",
@@ -795,8 +793,6 @@ source_set("impl") {
 
   if (enterprise_cloud_content_analysis) {
     sources += [
-      "connectors/analysis/clipboard_analysis_request.cc",
-      "connectors/analysis/clipboard_request_handler.cc",
       "connectors/analysis/content_analysis_delegate.cc",
       "connectors/analysis/content_analysis_dialog_controller.cc",
       "connectors/analysis/content_analysis_dialog_delegate.cc",

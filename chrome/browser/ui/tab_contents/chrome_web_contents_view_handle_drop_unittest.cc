@@ -22,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -35,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/files_scan_data.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -58,9 +58,9 @@ class TestDragDropRequestHandler
  public:
   static std::unique_ptr<ClipboardRequestHandler> Create(
       enterprise_connectors::test::FakeContentAnalysisDelegate* delegate,
-      enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
+      enterprise_connectors::ContentAnalysisInfoBase* content_analysis_info,
       enterprise_connectors::BinaryUploadService* upload_service,
-      Profile* profile,
+      enterprise_connectors::ReportingEventRouter* router,
       GURL url,
       Type type,
       enterprise_connectors::DeepScanAccessPoint access_point,
@@ -68,13 +68,15 @@ class TestDragDropRequestHandler
       std::string source_content_area_email,
       std::string content_transfer_method,
       std::string data,
-      CompletionCallback callback) {
+      CompletionCallback callback,
+      enterprise_connectors::BinaryUploadRequest::BrowserPolicyConnectorGetter
+          policy_getter) {
     auto handler = base::WrapUnique(new TestDragDropRequestHandler(
-        content_analysis_info, upload_service, profile, std::move(url), type,
+        content_analysis_info, upload_service, router, std::move(url), type,
         access_point, std::move(clipboard_source),
         std::move(source_content_area_email),
         std::move(content_transfer_method), std::move(data),
-        std::move(callback)));
+        std::move(callback), std::move(policy_getter)));
     handler->delegate_ = delegate;
     return handler;
   }

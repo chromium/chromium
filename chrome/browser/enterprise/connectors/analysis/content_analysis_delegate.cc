@@ -25,8 +25,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
@@ -34,6 +32,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,6 +48,8 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_analysis_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -765,12 +766,14 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
     std::fill(result_.text_results.begin(), result_.text_results.end(), true);
   } else {
     text_request_handler_ = ClipboardRequestHandler::Create(
-        this, GetBinaryUploadService(), profile_, url_,
+        this, GetBinaryUploadService(),
+        ReportingEventRouterFactory::GetForBrowserContext(profile_), url_,
         ClipboardRequestHandler::Type::kText, access_point_,
         data_.clipboard_source, data_.source_content_area_email,
         GetContentTransferMethod(), std::move(full_text),
         base::BindOnce(&ContentAnalysisDelegate::TextRequestCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&GetBrowserPolicyConnector));
 
     text_request_handler_->UploadData();
   }
@@ -808,12 +811,14 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
     result_.image_result = true;
   } else {
     image_request_handler_ = ClipboardRequestHandler::Create(
-        this, GetBinaryUploadService(), profile_, url_,
+        this, GetBinaryUploadService(),
+        ReportingEventRouterFactory::GetForBrowserContext(profile_), url_,
         ClipboardRequestHandler::Type::kImage, access_point_,
         data_.clipboard_source, data_.source_content_area_email,
         GetContentTransferMethod(), data_.image,
         base::BindOnce(&ContentAnalysisDelegate::ImageRequestCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&GetBrowserPolicyConnector));
 
     image_request_handler_->UploadData();
   }

@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 
 #include "base/logging.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "base/memory/ptr_util.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/content_analysis_info_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
@@ -27,9 +25,9 @@ ClipboardRequestHandler::TestFactory* TestFactoryStorage() {
 
 // static
 std::unique_ptr<ClipboardRequestHandler> ClipboardRequestHandler::Create(
-    ContentAnalysisInfo* content_analysis_info,
+    ContentAnalysisInfoBase* content_analysis_info,
     BinaryUploadService* upload_service,
-    Profile* profile,
+    ReportingEventRouter* router,
     GURL url,
     Type type,
     DeepScanAccessPoint access_point,
@@ -37,20 +35,21 @@ std::unique_ptr<ClipboardRequestHandler> ClipboardRequestHandler::Create(
     std::string source_content_area_email,
     std::string content_transfer_method,
     std::string data,
-    CompletionCallback callback) {
+    CompletionCallback callback,
+    BinaryUploadRequest::BrowserPolicyConnectorGetter policy_getter) {
   if (!TestFactoryStorage()->is_null()) {
-    return TestFactoryStorage()->Run(content_analysis_info, upload_service,
-                                     profile, std::move(url), type,
-                                     access_point, std::move(clipboard_source),
-                                     std::move(source_content_area_email),
-                                     std::move(content_transfer_method),
-                                     std::move(data), std::move(callback));
+    return TestFactoryStorage()->Run(
+        content_analysis_info, upload_service, router, std::move(url), type,
+        access_point, std::move(clipboard_source),
+        std::move(source_content_area_email),
+        std::move(content_transfer_method), std::move(data),
+        std::move(callback), std::move(policy_getter));
   }
   return base::WrapUnique(new ClipboardRequestHandler(
-      content_analysis_info, upload_service, profile, std::move(url), type,
+      content_analysis_info, upload_service, router, std::move(url), type,
       access_point, std::move(clipboard_source),
       std::move(source_content_area_email), std::move(content_transfer_method),
-      std::move(data), std::move(callback)));
+      std::move(data), std::move(callback), std::move(policy_getter)));
 }
 
 // static
@@ -66,9 +65,9 @@ void ClipboardRequestHandler::ResetFactoryForTesting() {
 ClipboardRequestHandler::~ClipboardRequestHandler() = default;
 
 ClipboardRequestHandler::ClipboardRequestHandler(
-    ContentAnalysisInfo* content_analysis_info,
+    ContentAnalysisInfoBase* content_analysis_info,
     BinaryUploadService* upload_service,
-    Profile* profile,
+    ReportingEventRouter* router,
     GURL url,
     Type type,
     DeepScanAccessPoint access_point,
@@ -76,7 +75,8 @@ ClipboardRequestHandler::ClipboardRequestHandler(
     std::string source_content_area_email,
     std::string content_transfer_method,
     std::string data,
-    CompletionCallback callback)
+    CompletionCallback callback,
+    BinaryUploadRequest::BrowserPolicyConnectorGetter policy_getter)
     : RequestHandlerBase(content_analysis_info,
                          upload_service,
                          std::move(url),
@@ -87,14 +87,14 @@ ClipboardRequestHandler::ClipboardRequestHandler(
       clipboard_source_(std::move(clipboard_source)),
       source_content_area_email_(std::move(source_content_area_email)),
       content_transfer_method_(std::move(content_transfer_method)),
-      profile_(profile),
-      callback_(std::move(callback)) {}
+      reporting_event_router_(router),
+      callback_(std::move(callback)),
+      browser_policy_getter_(std::move(policy_getter)) {}
 
 void ClipboardRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
-      ReportingEventRouterFactory::GetForBrowserContext(profile_),
-      content_analysis_info_.get(),
+      reporting_event_router_, content_analysis_info_.get(),
       /*source*/
       ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
       /*destination*/ url_.spec(),
@@ -124,7 +124,8 @@ bool ClipboardRequestHandler::UploadDataImpl() {
       content_analysis_info_->settings().cloud_or_local_settings,
       std::move(data_),
       base::BindOnce(&ClipboardRequestHandler::OnContentAnalysisResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(browser_policy_getter_));
 
   content_analysis_info_->InitializeRequest(
       request.get(), /*include_enterprise_only_fields=*/true);
@@ -181,8 +182,7 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      ReportingEventRouterFactory::GetForBrowserContext(profile_),
-      content_analysis_info_.get(),
+      reporting_event_router_, content_analysis_info_.get(),
       /*source*/
       ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
       /*destination*/ url_.spec(),

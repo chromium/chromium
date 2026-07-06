@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_REQUEST_HANDLER_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_REQUEST_HANDLER_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLIPBOARD_REQUEST_HANDLER_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLIPBOARD_REQUEST_HANDLER_H_
 
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_analysis_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 
-class Profile;
-
 namespace enterprise_connectors {
 
-class ContentAnalysisInfo;
+class ContentAnalysisInfoBase;
+class ReportingEventRouter;
 
 // Handles the management of a `ClipboardAnalysisRequest` and reporting for a
 // single paste user action. This class should be kept alive by for as long as
@@ -27,9 +26,9 @@ class ClipboardRequestHandler : public RequestHandlerBase {
   enum class Type { kText, kImage };
 
   static std::unique_ptr<ClipboardRequestHandler> Create(
-      ContentAnalysisInfo* content_analysis_info,
+      ContentAnalysisInfoBase* content_analysis_info,
       BinaryUploadService* upload_service,
-      Profile* profile,
+      ReportingEventRouter* router,
       GURL url,
       Type type,
       DeepScanAccessPoint access_point,
@@ -37,7 +36,8 @@ class ClipboardRequestHandler : public RequestHandlerBase {
       std::string source_content_area_email,
       std::string content_transfer_method,
       std::string data,
-      CompletionCallback callback);
+      CompletionCallback callback,
+      BinaryUploadRequest::BrowserPolicyConnectorGetter policy_getter);
 
   using TestFactory = base::RepeatingCallback<decltype(Create)>;
   static void SetFactoryForTesting(TestFactory factory);
@@ -60,17 +60,19 @@ class ClipboardRequestHandler : public RequestHandlerBase {
   virtual void UploadForDeepScanning(
       std::unique_ptr<ClipboardAnalysisRequest> request);
 
-  ClipboardRequestHandler(ContentAnalysisInfo* content_analysis_info,
-                          BinaryUploadService* upload_service,
-                          Profile* profile,
-                          GURL url,
-                          Type type,
-                          DeepScanAccessPoint access_point,
-                          ContentMetaData::CopiedTextSource clipboard_source,
-                          std::string source_content_area_email,
-                          std::string content_transfer_method,
-                          std::string data,
-                          CompletionCallback callback);
+  ClipboardRequestHandler(
+      ContentAnalysisInfoBase* content_analysis_info,
+      BinaryUploadService* upload_service,
+      ReportingEventRouter* router,
+      GURL url,
+      Type type,
+      DeepScanAccessPoint access_point,
+      ContentMetaData::CopiedTextSource clipboard_source,
+      std::string source_content_area_email,
+      std::string content_transfer_method,
+      std::string data,
+      CompletionCallback callback,
+      BinaryUploadRequest::BrowserPolicyConnectorGetter policy_getter);
 
   // Protected instead of private for test sub-classes.
   Type type_;
@@ -91,7 +93,7 @@ class ClipboardRequestHandler : public RequestHandlerBase {
   ContentMetaData::CopiedTextSource clipboard_source_;
   std::string source_content_area_email_;
   std::string content_transfer_method_;
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<ReportingEventRouter> reporting_event_router_ = nullptr;
 
   // The response obtained by `OnContentAnalysisResponse()`. This might be left
   // unchanged in error cases where a proper response couldn't be obtained.
@@ -101,9 +103,11 @@ class ClipboardRequestHandler : public RequestHandlerBase {
   // `BinaryUploadService::Result` was received.
   CompletionCallback callback_;
 
+  BinaryUploadRequest::BrowserPolicyConnectorGetter browser_policy_getter_;
+
   base::WeakPtrFactory<ClipboardRequestHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_REQUEST_HANDLER_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLIPBOARD_REQUEST_HANDLER_H_
