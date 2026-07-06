@@ -5727,6 +5727,43 @@ TEST_P(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
   EXPECT_FALSE(open_result->has_value());
 }
 
+// Tests that when `DoomEntry` is called with a `res_id` that is present in the
+// in-memory index for the key's hash bucket but belongs to a different
+// `cache_key` in the database (so the operation returns `kNotFound`), the
+// optimistic in-memory index removal is rolled back to keep the index
+// consistent with the database.
+TEST_P(SqlPersistentStoreTest, DoomEntryRecoversIndexOnNotFound) {
+  CreateAndInitStore();
+  ASSERT_TRUE(LoadInMemoryIndex());
+
+  // Two distinct keys with the same `CacheEntryKey::hash()`.
+  const CacheEntryKey kExistingKey("colliding-key-2018");
+  const CacheEntryKey kCollidingKey("colliding-key-3000");
+  ASSERT_NE(kExistingKey, kCollidingKey);
+  ASSERT_EQ(kExistingKey.hash(), kCollidingKey.hash());
+
+  const auto res_id = CreateEntryAndGetResId(kExistingKey);
+  ASSERT_EQ(store_->GetIndexStateForHash(kExistingKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Attempt to doom `kCollidingKey` using `kExistingKey`'s `res_id`. The
+  // database row's `cache_key` does not match, so the operation must report
+  // `kNotFound` without modifying the database.
+  EXPECT_EQ(DoomEntry(kCollidingKey, res_id),
+            SqlPersistentStore::Error::kNotFound);
+
+  // The existing entry must remain in the in-memory index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kExistingKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // The existing entry must remain unaffected in the database as well.
+  EXPECT_EQ(GetEntryCount(), 1);
+  auto open_result = OpenEntry(kExistingKey);
+  ASSERT_TRUE(open_result.has_value());
+  ASSERT_TRUE(open_result->has_value());
+  EXPECT_EQ((*open_result)->res_id, res_id);
+}
+
 TEST_P(SqlPersistentStoreTest,
        DoomedEntryDuringEvictionRemovedFromIndexAfterReturn) {
   const int64_t kMaxBytes = 10000;

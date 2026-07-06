@@ -2408,6 +2408,73 @@ TEST_F(SqlBackendImplTest, DoomEntryWithInMemoryIndex) {
   EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
 }
 
+// Tests that dooming a non-existent key whose hash collides with an existing
+// entry's key does not affect the existing entry. The in-memory index is keyed
+// by hash only, so a single-entry hash bucket may resolve to a different key's
+// `res_id`; the backend must still keep the existing entry openable and avoid
+// creating duplicate rows for it.
+TEST_F(SqlBackendImplTest, DoomEntryWithInMemoryIndexHashCollision) {
+  // Two distinct keys with the same `CacheEntryKey::hash()`.
+  const std::string kExistingKey = "colliding-key-2018";
+  const std::string kCollidingKey = "colliding-key-3000";
+  const CacheEntryKey kExistingEntryKey(kExistingKey);
+  ASSERT_EQ(kExistingEntryKey.hash(), CacheEntryKey(kCollidingKey).hash());
+
+  auto backend = CreateBackendAndInit();
+
+  // 1. Create an entry for `kExistingKey` and close it so it is no longer
+  //    active.
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(kExistingKey, net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  create_result.ReleaseEntry()->Close();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  // 2. Load the in-memory index. `kExistingKey` is the sole occupant of its
+  //    hash bucket.
+  ASSERT_TRUE(LoadInMemoryIndex(*backend));
+  ASSERT_EQ(backend->GetSqlStoreForTest()->GetIndexStateForHash(
+                kExistingEntryKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // 3. Doom `kCollidingKey`, which does not exist but shares its hash with
+  //    `kExistingKey`.
+  net::TestCompletionCallback cb_doom;
+  EXPECT_THAT(cb_doom.GetResult(backend->DoomEntry(kCollidingKey, net::HIGHEST,
+                                                   cb_doom.callback())),
+              IsOk());
+  backend->RunUntilAllTasksCompleteForTest();
+
+  // 4. The existing entry must remain in the in-memory index.
+  EXPECT_EQ(backend->GetSqlStoreForTest()->GetIndexStateForHash(
+                kExistingEntryKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // 5. Opening `kExistingKey` must still succeed.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kExistingKey, net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  open_result.ReleaseEntry()->Close();
+
+  // 6. OpenOrCreateEntry must open the existing entry rather than creating a
+  //    duplicate row.
+  TestEntryResultCompletionCallback cb_ooc;
+  disk_cache::EntryResult ooc_result =
+      cb_ooc.GetResult(backend->OpenOrCreateEntry(kExistingKey, net::HIGHEST,
+                                                  cb_ooc.callback()));
+  ASSERT_THAT(ooc_result.net_error(), IsOk());
+  EXPECT_TRUE(ooc_result.opened());
+  ooc_result.ReleaseEntry()->Close();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  base::test::TestFuture<int32_t> count_future;
+  EXPECT_EQ(backend->GetEntryCount(count_future.GetCallback()),
+            base::unexpected(net::ERR_IO_PENDING));
+  EXPECT_EQ(count_future.Get(), 1);
+}
+
 TEST_F(SqlBackendImplTest, SetDataHintsAndDoomAndWriteOptimistically) {
   auto backend = CreateBackendAndInit();
   const std::string kKey = "my-key";

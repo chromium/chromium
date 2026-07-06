@@ -122,15 +122,17 @@ void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
              bool need_recovery_on_failure, CacheEntryKey::Hash hash,
              ResId res_id, ErrorCallback callback, ErrorAndStoreStatus result) {
             if (weak_ptr) {
-              // If the DoomEntry operation fails in the database, the entry
-              // needs to be re-inserted into the in-memory index to maintain
-              // consistency.
+              // If the DoomEntry operation did not mark the row as doomed in
+              // the database (including `kNotFound`, which can occur when the
+              // `res_id` belongs to a different `cache_key` whose hash
+              // collides with `key`'s hash), the entry needs to be re-inserted
+              // into the in-memory index so that the index remains consistent
+              // with the unchanged database state.
               // Note: Optimistic write failure may trigger a call to DoomEntry,
               // which occurs without exclusive control. In this case, if
               // eviction runs immediately after Backend::DoomEntry, the index
               // might be missing.
               if (need_recovery_on_failure && result.result != Error::kOk &&
-                  result.result != Error::kNotFound &&
                   weak_ptr->index_.has_value()) {
                 weak_ptr->index_->Insert(hash, res_id);
               }
