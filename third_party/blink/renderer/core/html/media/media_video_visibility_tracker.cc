@@ -285,7 +285,7 @@ void RecordVideoOcclusionState(
     occluding_rects_stream << String::Format(
         "[x: %d, y: %d, width: %d, height: %d]", rect.x(), rect.y(),
         rect.width(), rect.height());
-    if (i >= 0 && i < occluding_rects.size() - 1) {
+    if (i < occluding_rects.size() - 1) {
       occluding_rects_stream << ", ";
     }
   }

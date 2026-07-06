@@ -415,7 +415,7 @@ std::optional<PlainTextRange> StylusWritingGestureDelete::AdjustRange(
     return PlainTextRange(range->Start() + 1, range->End());
   }
   // When there are spaces either side of the gesture, include one.
-  if (input_text.length() > range->End() && range->Start() - 1 >= 0 &&
+  if (input_text.length() > range->End() && range->Start() > 0 &&
       IsHTMLSpaceNotLineBreak(input_text[range->Start() - 1]) &&
       !IsHTMLSpaceNotLineBreak(input_text[range->End() - 1])) {
     return PlainTextRange(range->Start() - 1, range->End());

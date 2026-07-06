@@ -470,8 +470,8 @@ CSSParserToken CSSTokenizer::ConsumeUnicodeRange() {
 
 // https://drafts.csswg.org/css-syntax/#non-printable-code-point
 static bool IsNonPrintableCodePoint(UChar cc) {
-  return (cc >= '\0' && cc <= '\x8') || cc == '\xb' ||
-         (cc >= '\xe' && cc <= '\x1f') || cc == '\x7f';
+  return cc <= '\x8' || cc == '\xb' || (cc >= '\xe' && cc <= '\x1f') ||
+         cc == '\x7f';
 }
 
 // https://drafts.csswg.org/css-syntax/#consume-url-token

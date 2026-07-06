@@ -1118,7 +1118,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNamesInfo(
       const String& name = item.key;
 
       for (const wtf_size_t index : item.value) {
-        if (index < 0 || index >= positions.size()) {
+        if (index >= positions.size()) {
           continue;
         }
         const LayoutUnit track =

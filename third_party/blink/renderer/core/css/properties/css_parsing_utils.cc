@@ -6741,11 +6741,11 @@ CSSValue* ParseFontLanguageOverrideString(CSSParserTokenStream& stream) {
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1814408
   // we do not apply padding during parsing. Instead, 1–4 ASCII characters
   // are accepted as-is, this ensures consistency with shipped behavior.
-  wtf_size_t end = language_override.length() - 1;
-  while (end >= 0 && IsCSSSpace(language_override[end])) {
+  wtf_size_t end = language_override.length();
+  while (end > 0 && IsCSSSpace(language_override[end - 1])) {
     --end;
   }
-  language_override = language_override.substr(0, end + 1);
+  language_override = language_override.substr(0, end);
 
   // "All tags are four-character strings composed of a limited set of ASCII
   // characters" per
