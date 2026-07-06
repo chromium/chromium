@@ -1229,6 +1229,54 @@ TEST_F(WebViewTest, FinishComposingTextDoesNotAssert) {
       WebInputMethodController::kKeepSelection);
 }
 
+TEST_F(WebViewTest, IMECompositionAndCommitUserActivation) {
+  RegisterMockedHttpURLLoad("input_field_default.html");
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "input_field_default.html");
+  web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
+
+  LocalFrame* frame = web_view->MainFrameImpl()->GetFrame();
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+  EXPECT_FALSE(frame->HasStickyUserActivation());
+
+  WebInputMethodController* active_input_method_controller =
+      web_view->MainFrameImpl()
+          ->FrameWidget()
+          ->GetActiveWebInputMethodController();
+
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
+
+  // 1. Calling SetComposition with an empty string should NOT trigger user
+  // activation.
+  active_input_method_controller->SetComposition(
+      WebString::FromUtf8(""), empty_ime_text_spans, WebRange(), 0, 0);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+  EXPECT_FALSE(frame->HasStickyUserActivation());
+
+  // 2. Calling SetComposition with a non-empty string SHOULD trigger user
+  // activation.
+  active_input_method_controller->SetComposition(
+      WebString::FromUtf8("hello"), empty_ime_text_spans, WebRange(), 5, 5);
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(frame));
+  EXPECT_TRUE(frame->HasStickyUserActivation());
+
+  // Consume transient activation for the next steps.
+  LocalFrame::ConsumeTransientUserActivation(frame);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+
+  // 3. Calling CommitText with an empty string should NOT trigger user
+  // activation.
+  active_input_method_controller->CommitText(
+      WebString::FromUtf8(""), empty_ime_text_spans, WebRange(), 0);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+
+  // 4. Calling CommitText with a non-empty string SHOULD trigger user
+  // activation.
+  active_input_method_controller->CommitText(
+      WebString::FromUtf8("world"), empty_ime_text_spans, WebRange(), 0);
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(frame));
+}
+
 // Regression test for https://crbug.com/873999
 TEST_F(WebViewTest, LongPressOutsideInputShouldNotSelectPlaceholderText) {
   RegisterMockedHttpURLLoad("input_placeholder.html");
