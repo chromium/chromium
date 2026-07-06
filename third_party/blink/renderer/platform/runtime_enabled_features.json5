@@ -37,7 +37,7 @@
     // shipped stable can have its runtime flag removed soon after.
     status: {
       valid_values: ["stable", "experimental", "test"],
-      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Linux", "iOS"]
+      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Linux", "iOS", "Fuchsia"]
     },
 
     // "implied_by" or "depends_on" specifies relationship to other features:
@@ -1285,7 +1285,13 @@
     {
       name: "CompositedSelectionUpdate",
       public: true,
-      status: {"Android": "stable"},
+      status: {
+        "Android": "stable",
+        "ChromeOS": "stable",
+        "Fuchsia": "stable",
+        "Linux": "stable",
+        "Win": "stable",
+      },
       base_feature: "none",
     },
     {
@@ -2415,6 +2421,9 @@
       name: "DisplayCutoutAPI",
       base_feature: "none",
       public: true,
+      // There is an override later to ensure this is only enabled for
+      // Android P+.
+      status: { "Android": "stable" },
     },
     {
       // https://chromestatus.com/feature/5067126381215744
@@ -4000,6 +4009,7 @@
       name: "MediaControlsExpandGesture",
       base_feature: "none",
       public: true,
+      status: { "Android": "stable" },
     },
     {
       name: "MediaControlsOverlayPlayButton",

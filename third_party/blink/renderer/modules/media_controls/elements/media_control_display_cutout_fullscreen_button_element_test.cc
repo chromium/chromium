@@ -45,14 +45,16 @@ class MockDisplayCutoutChromeClient : public EmptyChromeClient {
 
 class MediaControlDisplayCutoutFullscreenButtonElementTest
     : public PageTestBase,
-      private ScopedDisplayCutoutAPIForTest {
+      private ScopedDisplayCutoutAPIForTest,
+      private ScopedMediaControlsExpandGestureForTest {
  public:
   static TouchEventInit* GetValidTouchEventInit() {
     return TouchEventInit::Create();
   }
 
   MediaControlDisplayCutoutFullscreenButtonElementTest()
-      : ScopedDisplayCutoutAPIForTest(true) {}
+      : ScopedDisplayCutoutAPIForTest(true),
+        ScopedMediaControlsExpandGestureForTest(false) {}
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<MockDisplayCutoutChromeClient>();
     SetupPageWithClients(chrome_client_,

@@ -63,39 +63,6 @@ using blink::WebRuntimeFeatures;
 
 namespace {
 
-// Sets blink runtime features for specific platforms.
-// This should be a last resort vs runtime_enabled_features.json5.
-void SetRuntimeFeatureDefaultsForPlatform(
-    const base::CommandLine& command_line) {
-  // Please consider setting up feature defaults for different platforms
-  // in runtime_enabled_features.json5 instead of here
-  // TODO(rodneyding): Move the more common cases here
-  // to baseFeature/switch functions below and move more complex
-  // ones to special case functions.
-#if defined(USE_AURA)
-  WebRuntimeFeatures::EnableCompositedSelectionUpdate(true);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  if (command_line.HasSwitch(switches::kDisableMediaSessionAPI)) {
-    WebRuntimeFeatures::EnableMediaSession(false);
-  }
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::android_info::sdk_int() >=
-      base::android::android_info::SDK_VERSION_P) {
-    // Display Cutout is limited to Android P+.
-    WebRuntimeFeatures::EnableDisplayCutoutAPI(true);
-  }
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  WebRuntimeFeatures::EnableMediaControlsExpandGesture(
-      base::FeatureList::IsEnabled(media::kMediaControlsExpandGesture));
-#endif
-}
-
 enum RuntimeFeatureEnableOptions {
   // - If the base::Feature default is overridden by field trial or command
   //   line, set Blink feature to the state of the base::Feature;
@@ -466,6 +433,9 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        true},
       {wrf::EnableWebAudioBypassOutputBufferingOptOut,
        blink::switches::kWebAudioBypassOutputBufferingOptOut, true},
+#if BUILDFLAG(IS_ANDROID)
+      {wrf::EnableMediaSession, switches::kDisableMediaSessionAPI, false},
+#endif
   };
 
   for (const auto& mapping : switchToFeatureMapping) {
@@ -501,6 +471,13 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
     const base::CommandLine& command_line) {
   // CAUTION: Only add custom enabling logic here if it cannot
   // be covered by the other functions.
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_P) {
+    WebRuntimeFeatures::EnableDisplayCutoutAPI(false);
+  }
+#endif
 
   // These checks are custom wrappers around base::FeatureList::IsEnabled
   // They're moved here to distinguish them from actual base checks
@@ -675,8 +652,6 @@ void SetRuntimeFeaturesDefaultsAndUpdateFromArgs(
   if (enable_experimental_web_platform_features) {
     WebRuntimeFeatures::EnableExperimentalFeatures(true);
   }
-
-  SetRuntimeFeatureDefaultsForPlatform(command_line);
 
   // Sets origin trial features.
   if (command_line.HasSwitch(

@@ -1193,10 +1193,6 @@ BASE_FEATURE(kMediaCodecBlockModel, base::FEATURE_DISABLED_BY_DEFAULT);
 // Allow selection of low latency decoders in low delay mode.
 BASE_FEATURE(kMediaCodecLowDelayMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable a gesture to make the media controls expanded into the display cutout.
-// TODO(beccahughes): Remove this.
-BASE_FEATURE(kMediaControlsExpandGesture, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // An experimental feature to enable persistent-license type support in MediaDrm
 // when using Encrypted Media Extensions (EME) API.
 // TODO(xhwang): Remove this after feature launch. See http://crbug.com/493521
