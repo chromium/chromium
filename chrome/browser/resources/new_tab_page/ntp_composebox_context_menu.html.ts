@@ -47,13 +47,6 @@ export function getHtml(this: NtpComposeboxElement) {
       ?upload-button-disabled="${this.uploadButtonDisabled}"
       ?show-context-menu-description="${this.showContextMenuDescription}">
   </cr-composebox-contextual-entrypoint-and-menu>
-  ${this.shouldShowVoiceSearch() ? html`
-    <cr-icon-button id="voiceSearchButton" class="voice-icon"
-        part="voice-icon" iron-icon="cr:mic"
-        @click="${this.onVoiceSearchButtonClick}"
-        title="${this.i18n('voiceSearchButtonLabel')}">
-    </cr-icon-button>
-  ` : ''}
 </div>
   `;
   // clang-format on

@@ -736,6 +736,108 @@ suite('NewTabPageComposeboxTest', () => {
         await testProxy.element.updateComplete;
       });
 
+      if (useForked) {
+        test(
+            'voice search button tab order precedes cancel button' +
+                ' and context entrypoint',
+            () => {
+              const composeboxInput =
+                  testProxy.element.shadowRoot.querySelector(
+                      'cr-composebox-input');
+              assertTrue(!!composeboxInput);
+
+              const voiceSearchButton =
+                  testProxy.element.shadowRoot.querySelector(
+                      '#voiceSearchButton');
+              assertTrue(!!voiceSearchButton);
+              assertEquals(
+                  'action-buttons', voiceSearchButton.getAttribute('slot'));
+
+              const input = composeboxInput.shadowRoot.querySelector('#input');
+              assertTrue(!!input);
+
+              const actionButtonsSlot =
+                  composeboxInput.shadowRoot.querySelector(
+                      'slot[name="action-buttons"]');
+              assertTrue(!!actionButtonsSlot);
+
+              const cancelContainer =
+                  composeboxInput.shadowRoot.querySelector('#cancelContainer');
+              assertTrue(!!cancelContainer);
+
+              const contextEntrypoint =
+                  testProxy.element.shadowRoot.querySelector(
+                      '#contextEntrypoint');
+              assertTrue(!!contextEntrypoint);
+
+              // Assert accessibility tabbing order:
+              // Verify #input comes BEFORE actionButtonsSlot (Voice Search)
+              assertTrue(
+                  (input.compareDocumentPosition(actionButtonsSlot) &
+                   Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+
+              // Verify actionButtonsSlot (Voice Search) comes
+              // BEFORE cancelContainer (Clear "X")
+              assertTrue(
+                  (actionButtonsSlot.compareDocumentPosition(cancelContainer) &
+                   Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+
+              // Verify composeboxInput (Voice Search + Clear)
+              // comes BEFORE contextEntrypoint (+)
+              assertTrue(
+                  (composeboxInput.compareDocumentPosition(contextEntrypoint) &
+                   Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+            });
+      } else {
+        test(
+            'voice search button tab order succeeds cancel button' +
+                ' and context entrypoint',
+            () => {
+              const composeboxInput =
+                  testProxy.element.shadowRoot.querySelector(
+                      'cr-composebox-input');
+              assertTrue(!!composeboxInput);
+
+              const voiceSearchButton =
+                  testProxy.element.shadowRoot.querySelector(
+                      '#voiceSearchButton');
+              assertTrue(!!voiceSearchButton);
+              assertFalse(voiceSearchButton.hasAttribute('slot'));
+
+              const input = composeboxInput.shadowRoot.querySelector('#input');
+              assertTrue(!!input);
+
+              const cancelContainer =
+                  composeboxInput.shadowRoot.querySelector('#cancelContainer');
+              assertTrue(!!cancelContainer);
+
+              const contextEntrypoint =
+                  testProxy.element.shadowRoot.querySelector(
+                      '#contextEntrypoint');
+              assertTrue(!!contextEntrypoint);
+
+              // Assert accessibility tabbing order:
+              // Verify #input comes BEFORE #cancelContainer (Clear "X")
+              assertTrue(
+                  (input.compareDocumentPosition(cancelContainer) &
+                   Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+
+              // Verify composeboxInput (Input + Clear) comes
+              // BEFORE contextEntrypoint (+)
+              assertTrue(
+                  (composeboxInput.compareDocumentPosition(contextEntrypoint) &
+                   Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+
+              // Verify contextEntrypoint (+) comes BEFORE voiceSearchButton
+              // (Voice Search)
+              assertTrue(
+                  (contextEntrypoint.compareDocumentPosition(
+                       voiceSearchButton) &
+                   Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+            });
+      }
+
+
       async function enterVoiceSearchMode() {
         const voiceSearchButton =
             testProxy.element.shadowRoot.querySelector<HTMLElement>(
