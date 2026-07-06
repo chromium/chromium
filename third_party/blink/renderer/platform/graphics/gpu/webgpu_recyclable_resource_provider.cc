@@ -12,13 +12,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
-#include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -28,19 +28,15 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_feature_type.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
@@ -178,8 +174,6 @@ WebGpuRecyclableResourceProvider::CreateForWebGPU(
       delegate);
 }
 
-
-
 WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -195,7 +189,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
-      is_software_(false),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
@@ -238,19 +231,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
       }
 
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
-      if (is_software_) {
-        // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
-        // image usage flag here since mailbox will be used for CPU writes by
-        // the client. But doing that stops us from using CompoundImagebacking
-        // as many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
-        // TODO(https://crbug.com/40280504): Add that usage flag back here once
-        // the issue is resolved.
-        buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-        if (base::FeatureList::IsEnabled(kAppendCpuUsages)) {
-          shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CPU_READ |
-                                      gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
-        }
-      }
 
       gpu::ImageInfo image_info(size, format, shared_image_usage_flags,
                                 color_space, kTopLeft_GrSurfaceOrigin,
@@ -266,8 +246,7 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
           gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii,
-          !is_software_ ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
+          image_info, sii, "CanvasResourceRaster",
           is_single_buffered ? 0 : kMaxRecycledCanvasResources,
           expiration_time);
     }
@@ -289,13 +268,8 @@ WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
-  }
 
-  if (!is_software_) {
-    FlushForImageListener::Get()->RemoveObserver(this);
-  }
+  FlushForImageListener::Get()->RemoveObserver(this);
 
   // Last chance for outstanding GPU timers to record metrics.
   if (RasterInterface()) {
@@ -320,13 +294,8 @@ WebGpuRecyclableResourceProvider::NewOrRecycledResource() {
   CHECK(!IsSingleBuffered() || !resource->IsInitialized());
 
   if (!resource->IsInitialized()) {
-    if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(
-          CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
-    } else {
-      resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           hdr_metadata_, !is_software_);
-    }
+    resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
+                         hdr_metadata_, /*is_accelerated=*/true);
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {
       max_inflight_resources_ = num_inflight_resources_;
@@ -337,12 +306,6 @@ WebGpuRecyclableResourceProvider::NewOrRecycledResource() {
 }
 
 bool WebGpuRecyclableResourceProvider::IsValid() const {
-  if (IsSoftware()) {
-    return shared_image_interface_provider_ &&
-           shared_image_interface_provider_->SharedImageInterface() &&
-           GetSkSurface();
-  }
-
   return !IsGpuContextLost();
 }
 
@@ -353,9 +316,7 @@ WebGpuRecyclableResourceProvider::GetSharedImageUsageFlags() const {
 
 void WebGpuRecyclableResourceProvider::EnsureWriteAccess() {
   DCHECK(resource_);
-  // In software mode, we don't need write access to the resource during
-  // drawing since it is executed on CPU memory managed by Skia.
-  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || is_software_)
+  DCHECK(resource_->HasOneRef() || IsSingleBuffered())
       << "Write access requires exclusive access to the resource";
   DCHECK(!resource()->is_cross_thread())
       << "Write access is only allowed on the owning thread";
@@ -371,16 +332,6 @@ void WebGpuRecyclableResourceProvider::EndWriteAccess() {
 
   if (!current_resource_has_write_access_ || IsGpuContextLost()) {
     return;
-  }
-
-  if (is_software_) {
-    if (ShouldReplaceTargetBuffer()) {
-      resource_ = NewOrRecycledResource();
-    }
-    if (!resource() || !GetSkSurface()) {
-      return;
-    }
-    resource()->UploadSoftwareRenderingResults(GetSkSurface());
   }
 
   current_resource_has_write_access_ = false;
@@ -402,14 +353,7 @@ void WebGpuRecyclableResourceProvider::OnContextLost() {
   notified_context_lost_ = true;
 }
 
-void WebGpuRecyclableResourceProvider::OnGpuChannelLost() {
-  OnContextLost();
-}
-
 void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
-  if (skia_canvas_) {
-    skia_canvas_->reset_image_provider();
-  }
   canvas_image_provider_.reset();
   if (image_pool_) {
     image_pool_->Clear();
@@ -512,11 +456,9 @@ bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer(
   // Its possible to have deferred work in skia which uses this resource. Try
   // flushing once to see if that releases the read refs. We can avoid a copy
   // by queuing this work before writing to this resource.
-  if (!is_software_) {
-    // Another context may have a read reference to this resource. Flush the
-    // deferred queue in that context so that we don't need to copy.
-    FlushForImageListener::Get()->NotifyFlushForImage(content_id);
-  }
+  // Another context may have a read reference to this resource. Flush the
+  // deferred queue in that context so that we don't need to copy.
+  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
 
   return !resource_->HasOneRef();
 }
@@ -530,8 +472,6 @@ void WebGpuRecyclableResourceProvider::PrepareForWebGPUDummyMailbox() {
 scoped_refptr<gpu::ClientSharedImage>
 WebGpuRecyclableResourceProvider::BeginExternalOverwrite(
     gpu::SyncToken& internal_access_sync_token) {
-  DCHECK(!is_software_);
-
   if (IsGpuContextLost()) {
     return nullptr;
   }
@@ -563,30 +503,13 @@ WebGpuRecyclableResourceProvider::DoExternalOverdrawAndProduceResource(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
 
-  if (!IsSoftware() && IsGpuContextLost()) {
+  if (IsGpuContextLost()) {
     return nullptr;
-  }
-
-  scoped_refptr<CanvasResource> software_resource;
-  if (IsSoftware()) {
-    software_resource = NewOrRecycledResource();
-    if (!software_resource) {
-      return nullptr;
-    }
   }
 
   draw_callback(recorder_for_external_draws_->getRecordingCanvas());
   if (recorder_for_external_draws_->HasReleasableDrawOps()) {
     FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
-  }
-
-  if (IsSoftware()) {
-    // Note that the resource *must* be a CanvasResourceSharedImage as this
-    // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(software_resource.get())
-        ->UploadSoftwareRenderingResults(GetSkSurface());
-
-    return software_resource;
   }
 
   // We are about to give the caller read access to this resource (and its
@@ -624,10 +547,7 @@ WebGpuRecyclableResourceProvider::WillDrawInternal() {
   // for these writes.
   cached_snapshot_.reset();
 
-  // Determine if a new resource is needed for accelerated resources. Note that
-  // for unaccelerated resources, writes to the SharedImage are deferred to
-  // ProduceCanvasResource.
-  if (is_software_ || !ShouldReplaceTargetBuffer(cached_content_id_)) {
+  if (!ShouldReplaceTargetBuffer(cached_content_id_)) {
     return resource_->BeginAccess(/*readonly=*/false);
   }
 
@@ -652,8 +572,6 @@ bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     uint32_t src_x,
     uint32_t src_y) {
-  CHECK(!is_software_);
-
   const int dest_width = Size().width();
   const int dest_height = Size().height();
 
@@ -691,7 +609,6 @@ bool WebGpuRecyclableResourceProvider::CopyToBackingSharedImage(
     uint32_t src_y,
     const gpu::SyncToken& ready_sync_token,
     gpu::SyncToken& completion_sync_token) {
-  CHECK(!is_software_);
   gpu::raster::RasterInterface* raster = RasterInterface();
   if (!raster) {
     return false;
@@ -730,20 +647,6 @@ scoped_refptr<CanvasResource>
 WebGpuRecyclableResourceProvider::ProduceCanvasResource() {
   TRACE_EVENT0("blink",
                "WebGpuRecyclableResourceProvider::ProduceCanvasResource");
-  if (IsSoftware()) {
-    DCHECK(GetSkSurface());
-    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
-    if (!output_resource) {
-      return nullptr;
-    }
-
-    // Note that the resource *must* be a CanvasResourceSharedImage as this
-    // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(output_resource.get())
-        ->UploadSoftwareRenderingResults(GetSkSurface());
-
-    return output_resource;
-  }
 
   if (IsGpuContextLost()) {
     return nullptr;
@@ -761,39 +664,6 @@ scoped_refptr<StaticBitmapImage> WebGpuRecyclableResourceProvider::Snapshot(
   TRACE_EVENT0("blink", "WebGpuRecyclableResourceProvider::Snapshot");
   if (!IsValid()) {
     return nullptr;
-  }
-
-  // We don't need to EndWriteAccess here since that's required to upload the
-  // rendering results to the resource's SharedImage (e.g., for GPU compositing)
-  // while in this case we are simply returning the rendered CPU-side results to
-  // the client.
-  if (is_software_) {
-    cc::PaintImage paint_image;
-
-    auto sk_image = GetSkSurface()->makeImageSnapshot();
-    if (sk_image) {
-      auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
-      snapshot_sk_image_id_ = sk_image->uniqueID();
-
-      // Ensure that a new PaintImage::ContentId is used only when the
-      // underlying SkImage changes. This is necessary to ensure that the same
-      // image results in a cache hit in cc's ImageDecodeCache.
-      if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
-          last_snapshot_sk_image_id != snapshot_sk_image_id_) {
-        snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
-      }
-
-      paint_image =
-          PaintImageBuilder::WithDefault()
-              .set_id(snapshot_paint_image_id_)
-              .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
-              .set_hdr_metadata(hdr_metadata_)
-              .TakePaintImage();
-    }
-
-    DCHECK(!paint_image.IsTextureBacked());
-    return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                                  orientation);
   }
 
   if (!cached_snapshot_) {
@@ -822,39 +692,23 @@ scoped_refptr<StaticBitmapImage> WebGpuRecyclableResourceProvider::Snapshot(
 CanvasImageProvider*
 WebGpuRecyclableResourceProvider::GetOrCreateImageProvider() {
   if (!canvas_image_provider_) {
-    if (!is_software_) {
-      if (!IsGpuContextLost()) {
-        // Create an ImageDecodeCache for half float images only if the canvas
-        // is using half float back storage.
-        cc::ImageDecodeCache* cache_f16 = nullptr;
-        if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-          cache_f16 =
-              context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-                  kRGBA_F16_SkColorType);
-        }
-
-        cc::ImageDecodeCache* cache_rgba8 =
-            context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-                kN32_SkColorType);
-
-        canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-            cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-            cc::PlaybackImageProvider::RasterMode::kGpu);
-      }
-    } else {
+    if (!IsGpuContextLost()) {
       // Create an ImageDecodeCache for half float images only if the canvas
       // is using half float back storage.
       cc::ImageDecodeCache* cache_f16 = nullptr;
       if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-        cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
+        cache_f16 =
+            context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+                kRGBA_F16_SkColorType);
       }
 
       cc::ImageDecodeCache* cache_rgba8 =
-          &Image::SharedCCDecodeCache(kN32_SkColorType);
+          context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+              kN32_SkColorType);
 
       canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
           cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-          cc::PlaybackImageProvider::RasterMode::kSoftware);
+          cc::PlaybackImageProvider::RasterMode::kGpu);
     }
   }
   return canvas_image_provider_.get();
@@ -862,14 +716,7 @@ WebGpuRecyclableResourceProvider::GetOrCreateImageProvider() {
 
 void WebGpuRecyclableResourceProvider::FlushRecording(
     cc::PaintRecord last_recording) {
-  if (is_software_) {
-    if (!skia_canvas_) {
-      auto* image_provider = GetOrCreateImageProvider();
-      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          GetSkSurface()->getCanvas(), image_provider);
-    }
-    skia_canvas_->drawPicture(std::move(last_recording));
-  } else if (!IsGpuContextLost()) {
+  if (!IsGpuContextLost()) {
     auto access = WillDrawInternal();
     EnsureWriteAccess();
 
@@ -936,30 +783,6 @@ base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
 
 void WebGpuRecyclableResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (IsSoftware()) {
-    if (!surface_) {
-      return;
-    }
-
-    std::string dump_name =
-        base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
-                           reinterpret_cast<uintptr_t>(surface_.get()));
-    auto* dump = pmd->CreateAllocatorDump(dump_name);
-
-    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                    GetSize());
-    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                    base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
-
-    if (const char* system_allocator_name =
-            base::trace_event::MemoryDumpManager::GetInstance()
-                ->system_allocator_pool_name()) {
-      pmd->AddSuballocation(dump->guid(), system_allocator_name);
-    }
-    return;
-  }
-
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                         reinterpret_cast<uintptr_t>(this));
 
@@ -970,18 +793,7 @@ void WebGpuRecyclableResourceProvider::OnMemoryDump(
 }
 
 size_t WebGpuRecyclableResourceProvider::GetSize() const {
-  if (!surface_) {
-    return 0;
-  }
-  SkImageInfo info = surface_->imageInfo();
-  return info.computeByteSize(info.minRowBytes());
-}
-
-SkSurface* WebGpuRecyclableResourceProvider::GetSkSurface() const {
-  if (!surface_) {
-    surface_ = CreateSkSurface();
-  }
-  return surface_.get();
+  return base::checked_cast<size_t>(EstimatedSizeInBytes().InBytes());
 }
 
 void WebGpuRecyclableResourceProvider::RecordingCleared() {}
@@ -991,37 +803,6 @@ void WebGpuRecyclableResourceProvider::InitializeForRecording(
   if (delegate_) {
     delegate_->InitializeForRecording(canvas);
   }
-}
-
-SkSurfaceProps WebGpuRecyclableResourceProvider::GetSkSurfaceProps() const {
-  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
-  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-}
-
-sk_sp<SkSurface> WebGpuRecyclableResourceProvider::CreateSkSurface() const {
-  TRACE_EVENT0("blink", "WebGpuRecyclableResourceProvider::CreateSkSurface");
-
-  CHECK(is_software_);
-
-  if (is_software_) {
-    const auto props = GetSkSurfaceProps();
-    const auto info = SkImageInfo::Make(
-        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-        alpha_type_, color_space_.ToSkColorSpace());
-    return SkSurfaces::Raster(info, &props);
-  }
-
-  if (IsGpuContextLost() || !resource_) {
-    return nullptr;
-  }
-
-  const auto props = GetSkSurfaceProps();
-
-  // When using software raster with GPU compositing, we render into CPU memory
-  // managed internally by SkSurface and copy the rendered results to the
-  // current resource's backing SharedImage before dispatching that SharedImage
-  // to the display compositor.
-  return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
 }
 
 }  // namespace blink

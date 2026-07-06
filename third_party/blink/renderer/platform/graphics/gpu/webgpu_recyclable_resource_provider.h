@@ -39,7 +39,6 @@
 namespace cc {
 class AnimatedImageFrameIndexMap;
 class PaintCanvas;
-class SkiaPaintCanvas;
 }  // namespace cc
 
 namespace gfx {
@@ -59,7 +58,6 @@ namespace blink {
 
 class CanvasImageProvider;
 class CanvasResourceProviderDelegate;
-class WebGraphicsSharedImageInterfaceProvider;
 
 class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     : public CanvasMemoryDumpClient,
@@ -68,7 +66,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
-      public BitmapGpuChannelLostObserver,
       public ScopedRasterTimer::Host {
  public:
   static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
@@ -103,14 +100,11 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool IsSingleBuffered() const;
 
-  bool IsSoftware() const { return is_software_; }
   bool IsGpuContextLost() const;
 
   CanvasImageProvider* GetOrCreateImageProvider();
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
-
-  SkSurface* GetSkSurface() const;
 
   gfx::Size Size() const { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
@@ -140,8 +134,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // MemoryManagedPaintRecorder::Client implementation.
   void RecordingCleared() override;
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
-
-  SkSurfaceProps GetSkSurfaceProps() const;
 
   void EnsureWriteAccess();
   void EndWriteAccess();
@@ -204,7 +196,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // via raster or the compositor) waits on this token.
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
-  sk_sp<SkSurface> CreateSkSurface() const;
   gpu::raster::RasterInterface* RasterInterface() const;
 
   base::WeakPtr<WebGpuRecyclableResourceProvider> CreateWeakPtr();
@@ -232,9 +223,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
 
-  // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override;
-
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
   void FlushRecording(cc::PaintRecord last_recording);
@@ -248,16 +236,9 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   const gfx::HDRMetadata hdr_metadata_;
   const raw_ptr<CanvasResourceProviderDelegate> delegate_;
 
-  const bool is_software_;
-
-  mutable sk_sp<SkSurface> surface_;
-  uint32_t snapshot_sk_image_id_ = 0u;
   const cc::PaintImage::Id snapshot_paint_image_id_;
-  cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
-      cc::PaintImage::kInvalidContentId;
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
-  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
@@ -276,8 +257,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   bool notified_context_lost_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-      shared_image_interface_provider_;
 
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the
