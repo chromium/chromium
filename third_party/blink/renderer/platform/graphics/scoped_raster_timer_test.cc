@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -95,9 +97,10 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
 
   base::HistogramTester histograms;
 
-  // Trigger a flush, which will capture a raster duration measurement.
-  provider->GetCanvasForTesting().clear(SkColors::kBlue);
-  provider->Flush(FlushReason::kOther);
+  // Trigger a rasterization, which will capture a raster duration measurement.
+  cc::PaintOpBuffer buffer;
+  buffer.push<cc::DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc);
+  provider->RasterRecord(buffer.ReleaseAsRecord());
   provider->ProduceCanvasResource();
   provider = nullptr;
 
@@ -126,9 +129,10 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
 
   provider->AlwaysEnableRasterTimersForTesting(true);
 
-  // Trigger a flush, which will capture a raster duration measurement.
-  provider->GetCanvasForTesting().clear(SkColors::kBlue);
-  provider->Flush(FlushReason::kOther);
+  // Trigger a rasterization, which will capture a raster duration measurement.
+  cc::PaintOpBuffer buffer;
+  buffer.push<cc::DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc);
+  provider->RasterRecord(buffer.ReleaseAsRecord());
   provider->ProduceCanvasResource();
 
   base::HistogramTester histograms;
