@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizer_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
@@ -696,8 +697,9 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
 
       unsafe_options_for_policy->setSanitizer(sanitizer);
     }
-    result = default_policy->createParserOptions(unsafe_options_for_policy,
-                                                 exception_state);
+    result = default_policy->createParserOptions(
+        execution_context->GetIsolate(), unsafe_options_for_policy,
+        exception_state);
   }
 
   if (exception_state.HadException()) {

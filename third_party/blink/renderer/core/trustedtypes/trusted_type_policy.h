@@ -41,7 +41,8 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
                                     const String&,
                                     const HeapVector<ScriptValue>&,
                                     ExceptionState&);
-  TrustedParserOptions* createParserOptions(const SetHTMLUnsafeOptions*,
+  TrustedParserOptions* createParserOptions(v8::Isolate*,
+                                            const SetHTMLUnsafeOptions*,
                                             ExceptionState&);
   // These methods do the bulk of the work, but they return a value with a
   // null-ish string. This is meant to support

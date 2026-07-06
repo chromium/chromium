@@ -96,6 +96,12 @@ Sanitizer* Sanitizer::CreateEmpty() {
   return sanitizer;
 }
 
+Sanitizer* Sanitizer::Clone() const {
+  Sanitizer* clone = MakeGarbageCollected<Sanitizer>();
+  clone->setFrom(*this);
+  return clone;
+}
+
 Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
                      std::unique_ptr<SanitizerNameSet> remove_elements,
                      std::unique_ptr<SanitizerNameSet> replace_elements,

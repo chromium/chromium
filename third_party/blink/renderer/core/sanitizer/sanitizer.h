@@ -51,6 +51,8 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
 
   static Sanitizer* CreateEmpty();
 
+  Sanitizer* Clone() const;
+
   Sanitizer() = default;
   ~Sanitizer() override = default;
   Sanitizer(const Sanitizer&) = delete;  // Use MakeGarbageCollected + setFrom.
