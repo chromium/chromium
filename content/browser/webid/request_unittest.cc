@@ -733,6 +733,7 @@ class TestDialogController
       case AccountsDialogAction::kNone:
         break;
     }
+    std::move(accounts_displayed_callback).Run();
     did_show_ui_ = true;
     return true;
   }
@@ -853,6 +854,7 @@ class TestDialogController
 
     state_->sign_in_mode = sign_in_mode;
     state_->all_accounts_for_display = {account};
+    std::move(accounts_displayed_callback).Run();
     did_show_ui_ = true;
     return true;
   }

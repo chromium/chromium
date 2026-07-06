@@ -69,6 +69,7 @@ bool FakeIdentityRequestDialogController::ShowAccountsDialog(
                                        *selected_account_,
                                        /* is_sign_in= */ true));
   }
+  std::move(accounts_displayed_callback).Run();
   did_show_ui_ = true;
   return true;
 }
@@ -129,6 +130,7 @@ bool FakeIdentityRequestDialogController::ShowVerifyingDialog(
                ? "Signing you in"
                : "Verifying";
   subtitle_ = "";
+  std::move(accounts_displayed_callback).Run();
   did_show_ui_ = true;
   return true;
 }
