@@ -31,6 +31,7 @@ import org.robolectric.Shadows;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -968,6 +969,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testNavBarColorAnimationsOverlayPanel() {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 PanelState.CLOSED, OVERLAY_PANEL_COLOR);
@@ -997,6 +999,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testNavBarColorAnimationsBottomSheet() {
         mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(null, false);
@@ -1018,6 +1021,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testNavBarColorAnimationsBrowserControls() {
         mColorChangeObserver.assertState(null, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(

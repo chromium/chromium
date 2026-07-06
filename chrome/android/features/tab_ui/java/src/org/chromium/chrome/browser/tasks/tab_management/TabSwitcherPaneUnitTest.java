@@ -27,6 +27,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -215,7 +216,10 @@ public class TabSwitcherPaneUnitTest {
     public void setUp() {
         TabSwitcherPaneBase.setShowIphForTesting(true);
 
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_Chromium_TabbedMode);
 
         when(mHubContainerView.getContext()).thenReturn(mContext);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);

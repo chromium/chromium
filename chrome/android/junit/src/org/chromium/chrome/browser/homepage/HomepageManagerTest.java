@@ -708,6 +708,7 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsHomepageEnabled_HomeButtonRemovalEverywhere() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
@@ -734,6 +735,7 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowHomepageSettings_HomeButtonRemovalEverywhere() {
         Locale.setDefault(Locale.US);
         Assert.assertFalse(
@@ -756,6 +758,7 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowHomeButtonOnToolbar_KeepOnNtp() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()
@@ -792,6 +795,7 @@ public class HomepageManagerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowHomepageMenuItem_KeepOnNtp() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         ChromeSharedPreferences.getInstance()

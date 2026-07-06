@@ -199,7 +199,10 @@ public class SadTabTest {
     @Feature({"SadTab"})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // Browser controls don't move in auto
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
+    @DisableFeatures({
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481443873
     public void testSadTabBrowserControlsVisibility() {
         ThreadUtils.runOnUiThreadBlocking(

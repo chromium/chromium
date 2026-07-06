@@ -79,7 +79,10 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link TabbedNavigationBarColorController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+@Features.DisableFeatures({
+    ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
+    ChromeFeatureList.ANDROID_BOTTOM_BAR
+})
 @SuppressLint("NewApi")
 public class TabbedNavigationBarColorControllerTest {
     @Rule

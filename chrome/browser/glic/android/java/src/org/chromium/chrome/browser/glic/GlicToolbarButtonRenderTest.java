@@ -46,7 +46,10 @@ import org.chromium.ui.test.util.RenderTestRule;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
+@DisableFeatures({
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+    ChromeFeatureList.ANDROID_BOTTOM_BAR
+})
 public class GlicToolbarButtonRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =

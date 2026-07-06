@@ -172,6 +172,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsHomepageProviderAvailableAndEnabled_DisablePartnerHomepageEnabled() {
         Locale.setDefault(Locale.US);
         PartnerBrowserCustomizations partnerBrowserCustomizations =
@@ -197,6 +198,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID
                 + ":disable_partner_homepage_android_for_zero_tabs/true"
     })
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void
             testIsHomepageProviderAvailableAndEnabledForZeroTabs_DisablePartnerHomepageEnabled() {
         Locale.setDefault(Locale.US);

@@ -72,6 +72,7 @@ import java.util.concurrent.atomic.AtomicReference;
     "hide-scrollbars"
 })
 @Batch(Batch.PER_CLASS)
+@DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
 public class ViewTransitionPixelTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

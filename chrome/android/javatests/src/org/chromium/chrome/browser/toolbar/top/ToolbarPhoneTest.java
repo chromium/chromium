@@ -291,6 +291,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testLocationBarLengthWithOptionalButton() {
         // The purpose of this test is to document the expected behavior for setting
         // paddings and sizes of toolbar elements based on the visibility of the menu button.
@@ -457,7 +458,7 @@ public class ToolbarPhoneTest {
                                         == View.VISIBLE);
 
         // Replace the coordinator with a mock, and set the button to visible with 0 width.
-        View optionalButtonView = mToolbar.findViewById(R.id.optional_toolbar_button_container);
+        View optionalButtonView = mToolbar.getOptionalButtonViewForTesting();
         when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
         when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(0);
         when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.VISIBLE);
@@ -476,6 +477,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     public void testOptionalButton_NotDrawnWhenNotVisible() {
+
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
@@ -499,7 +501,7 @@ public class ToolbarPhoneTest {
                                         == View.VISIBLE);
 
         // Replace the coordinator with a mock, and set the button to gone with regular width.
-        View optionalButtonView = mToolbar.findViewById(R.id.optional_toolbar_button_container);
+        View optionalButtonView = mToolbar.getOptionalButtonViewForTesting();
         when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
         when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(optionalButtonView.getWidth());
         when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.GONE);
@@ -518,6 +520,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     public void testOptionalButton_DrawnWhenVisible() {
+
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
@@ -539,7 +542,7 @@ public class ToolbarPhoneTest {
                 allOf(equalTo(mToolbar.getOptionalButtonViewForTesting()), isDisplayed()));
 
         // Replace the coordinator with a mock, and set the button to visible with regular width.
-        View optionalButtonView = mToolbar.findViewById(R.id.optional_toolbar_button_container);
+        View optionalButtonView = mToolbar.getOptionalButtonViewForTesting();
         when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
         when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(optionalButtonView.getWidth());
         when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.VISIBLE);
@@ -785,6 +788,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShortCircuitFocusAnimation() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -1163,6 +1163,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateButtonVisibility_TransitionsNtp() {
         initControlContainer(R.layout.toolbar_phone);
         ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
@@ -1180,6 +1181,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateOptionalButton_TransitionsNtp() {
         initControlContainer(R.layout.toolbar_phone);
         ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);

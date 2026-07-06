@@ -245,7 +245,10 @@ public class AdaptiveToolbarStatePredictorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
-    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    @DisableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
     public void testGlicEnabled_GlicNotRecommendedInAuto() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 
@@ -271,7 +274,10 @@ public class AdaptiveToolbarStatePredictorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
-    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    @DisableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
     public void testGlicManualOverride() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 

@@ -265,6 +265,7 @@ public class NewTabPageTest {
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
     @Feature({"NewTabPage"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testToolBar_Phone() {
         ViewGroup toolBar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         int[] toolbarContentIds =
@@ -833,6 +834,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40901674")
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testRecordHistogramHomeButtonClick_Ntp() {
         HistogramWatcher histogramWatcher = expectHomeButtonRecordForNtpModuleClick();
         onView(withId(R.id.home_button)).perform(click());
@@ -902,6 +904,7 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testRecordHistogramMenuButtonClick_Ntp() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

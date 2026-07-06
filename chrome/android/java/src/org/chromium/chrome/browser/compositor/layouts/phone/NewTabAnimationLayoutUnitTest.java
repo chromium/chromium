@@ -50,6 +50,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -627,6 +628,7 @@ public class NewTabAnimationLayoutUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOnTabCreated_NtpToWebPage_bottomToolbarCoordination() throws Exception {
         // Configure bottom toolbar preference
         java.lang.reflect.Field field =
@@ -684,6 +686,7 @@ public class NewTabAnimationLayoutUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOnTabCreated_WebPageToNtp_bottomToolbarCoordination() throws Exception {
         // Configure bottom toolbar preference
         java.lang.reflect.Field field =

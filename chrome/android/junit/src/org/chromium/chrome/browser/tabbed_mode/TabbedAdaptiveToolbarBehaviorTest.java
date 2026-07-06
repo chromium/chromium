@@ -123,7 +123,10 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @Test
     @Config(qualifiers = "w390dp-h820dp")
     @EnableFeatures(ChromeFeatureList.GLIC)
-    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    @DisableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
     public void testResultFilterWithGlicEnabled() {
         when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
@@ -139,7 +142,10 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @Test
     @Config(qualifiers = "w390dp-h820dp")
     @EnableFeatures(ChromeFeatureList.GLIC)
-    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    @DisableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
     public void testResultFilter_VerticalTabAndGlicPinned() {
         when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
@@ -172,6 +178,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
 
     @Test
     @Config(qualifiers = "w390dp-h820dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testGetTopSegmentationResultOnPhone() {
         assertTopResult(
                 /* segmentationResults= */ List.of(
