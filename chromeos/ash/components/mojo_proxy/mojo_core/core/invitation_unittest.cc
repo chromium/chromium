@@ -20,13 +20,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/shared_memory_mapping.h"
-#include "base/memory/writable_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
-#include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -37,7 +33,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/ipcz_api.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/test_switches.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/named_platform_channel.h"
@@ -1025,166 +1020,6 @@ DEFINE_TEST_CLIENT(NonBrokerToNonBrokerClient) {
   MojoClose(host);
   MojoClose(pipe_to_test);
 }
-
-TEST_F(MAYBE_InvitationTest, MultiBrokerNetwork) {
-  // Regression test for https://crbug.com/1432382, ensuring that a non-broker
-  // can communicate with brokers other than its own and can transmit platform
-  // handles between them.
-
-  if (!mojo_legacy::core::IsMojoIpczEnabled()) {
-    // Mutli-broker networks are only supported with ipcz enabled.
-    GTEST_SKIP() << "This tests functionality which is only supported when "
-                 << "MojoIpcz is enabled, but MojoIpcz is not enabled.";
-  }
-
-  ASSERT_TRUE(mojo_legacy::core::GetIpczNodeOptions().is_broker);
-
-  // First we launch a second broker and connect to it.
-  MojoHandle secondary_broker;
-  base::Process secondary_broker_process = LaunchChildTestClient(
-      "SecondaryBroker", base::span_from_ref(secondary_broker),
-      MOJO_LEGACY_SEND_INVITATION_FLAG_ISOLATED);
-
-  // Then launch a non-broker and connect to it.
-  MojoHandle client;
-  base::Process client_process = LaunchChildTestClient(
-      "MultiBrokerNetworkClient", base::span_from_ref(client),
-      MOJO_LEGACY_SEND_INVITATION_FLAG_NONE);
-
-  // Pass them each one end of the same pipe.
-  MessagePipe pipe;
-  MojoHandle broker_to_client = pipe.handle0.release().value();
-  MojoHandle client_to_broker = pipe.handle1.release().value();
-  WriteMessageWithHandles(secondary_broker, "hi", &broker_to_client, 1);
-  WriteMessageWithHandles(client, "hi", &client_to_broker, 1);
-
-  // Signal to the host that it's OK to terminate, then wait for acks.
-  WriteMessage(secondary_broker, "bye");
-  WriteMessage(client, "bye");
-  WaitForProcessToTerminate(secondary_broker_process);
-  WaitForProcessToTerminate(client_process);
-  MojoClose(secondary_broker);
-  MojoClose(client);
-}
-
-MojoHandle CreateMemory(std::string_view contents) {
-  auto region = base::WritableSharedMemoryRegion::Create(contents.size());
-  auto mapping = region.Map();
-  mapping.GetMemoryAsSpan<char>().copy_prefix_from(base::span(contents));
-  auto buffer = WrapReadOnlySharedMemoryRegion(
-      base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region)));
-  return buffer.release().value();
-}
-
-std::string ReadMemory(MojoHandle handle) {
-  auto region = UnwrapReadOnlySharedMemoryRegion(
-      ScopedSharedBufferHandle{SharedBufferHandle{handle}});
-  auto mapping = region.Map();
-  auto span = mapping.GetMemoryAsSpan<const char>();
-  return std::string(span.begin(), span.end());
-}
-
-constexpr size_t kNumMultiBrokerMessageIterations = 100;
-
-DEFINE_TEST_CLIENT(SecondaryBroker) {
-  ASSERT_TRUE(mojo_legacy::core::GetIpczNodeOptions().is_broker);
-  MojoHandle invitation =
-      AcceptInvitation(MOJO_LEGACY_ACCEPT_INVITATION_FLAG_ISOLATED);
-  MojoHandle test_runner = ExtractPipeFromInvitation(invitation);
-
-  MojoHandle client;
-  EXPECT_EQ("hi", ReadMessageWithHandles(test_runner, &client, 1));
-
-  // Note that handle passing can succeed even if communication is broken
-  // between non-brokers and secondary brokers, as long as no direct link
-  // between them has been fully negotiated yet. We perform many iterations of
-  // handle passing to ensure adequate coverage.
-  for (size_t i = 0; i < kNumMultiBrokerMessageIterations; ++i) {
-    MojoHandle buffer = CreateMemory("lol");
-    WriteMessageWithHandles(client, "aaa", &buffer, 1);
-    EXPECT_EQ("bbb", ReadMessageWithHandles(client, &buffer, 1));
-    EXPECT_EQ("lmao", ReadMemory(buffer));
-  }
-
-  EXPECT_EQ("bye", ReadMessage(test_runner));
-
-  MojoClose(test_runner);
-  MojoClose(client);
-}
-
-DEFINE_TEST_CLIENT(MultiBrokerNetworkClient) {
-  ASSERT_FALSE(mojo_legacy::core::GetIpczNodeOptions().is_broker);
-  MojoHandle invitation =
-      AcceptInvitation(MOJO_LEGACY_ACCEPT_INVITATION_FLAG_NONE);
-  MojoHandle test_runner = ExtractPipeFromInvitation(invitation);
-
-  MojoHandle secondary_broker;
-  EXPECT_EQ("hi", ReadMessageWithHandles(test_runner, &secondary_broker, 1));
-
-  for (size_t i = 0; i < kNumMultiBrokerMessageIterations; ++i) {
-    MojoHandle buffer = CreateMemory("lmao");
-    WriteMessageWithHandles(secondary_broker, "bbb", &buffer, 1);
-    EXPECT_EQ("aaa", ReadMessageWithHandles(secondary_broker, &buffer, 1));
-    EXPECT_EQ("lol", ReadMemory(buffer));
-  }
-
-  EXPECT_EQ("bye", ReadMessage(test_runner));
-
-  MojoClose(test_runner);
-  MojoClose(secondary_broker);
-}
-
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
-TEST_F(MAYBE_InvitationTest, NoLeakOnFailedSend) {
-  if (!mojo_legacy::core::IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test is specific to the MojoIpcz driver.";
-  }
-
-  // Helper lambda to retrieve the number of open handles.
-  auto get_open_handle_count = []() {
-#if BUILDFLAG(IS_WIN)
-    DWORD handle_count = 0;
-    ::GetProcessHandleCount(::GetCurrentProcess(), &handle_count);
-    return static_cast<int>(handle_count);
-#else  // BUILDFLAG(IS_POSIX)
-    return base::ProcessMetrics::CreateCurrentProcessMetrics()
-        ->GetOpenFdCount();
-#endif
-  };
-
-  const int initial_count = get_open_handle_count();
-  const int iterations = 100;
-
-  for (int i = 0; i < iterations; i++) {
-    PlatformChannel channel;
-    MojoPlatformHandle endpoint_handle;
-    endpoint_handle.struct_size = sizeof(endpoint_handle);
-    PlatformHandle::ToMojoPlatformHandle(
-        channel.TakeLocalEndpoint().TakePlatformHandle(), &endpoint_handle);
-
-    MojoInvitationTransportEndpoint endpoint;
-    endpoint.struct_size = sizeof(endpoint);
-    endpoint.type = MOJO_LEGACY_INVITATION_TRANSPORT_TYPE_CHANNEL;
-    endpoint.num_platform_handles = 1;
-    endpoint.platform_handles = &endpoint_handle;
-
-    MojoHandle invitation;
-    EXPECT_EQ(MOJO_LEGACY_RESULT_OK,
-              MojoCreateInvitation(nullptr, &invitation));
-
-    // Send without attaching any pipes. This should fail.
-    EXPECT_EQ(MOJO_LEGACY_RESULT_FAILED_PRECONDITION,
-              MojoSendInvitation(invitation, nullptr, &endpoint, nullptr, 0,
-                                 nullptr));
-    MojoClose(invitation);
-  }
-
-  // Check that we haven't leaked a handle for every iteration.
-  // We allow some margin for other threads / noise.
-  const int final_count = get_open_handle_count();
-  EXPECT_LT(final_count, initial_count + iterations / 2);
-}
-#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace core

@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/ipcz_driver/shared_buffer.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/core.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/handle.h"
@@ -48,12 +47,6 @@ namespace {
 
 template <typename T>
 MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
-  if (IsMojoIpczEnabled()) {
-    *handle = ipcz_driver::SharedBuffer::Box(
-        ipcz_driver::SharedBuffer::MakeForRegion(std::move(region)));
-    return MOJO_LEGACY_RESULT_OK;
-  }
-
 #if BUILDFLAG(MOJO_LEGACY_SUPPORT_LEGACY_CORE)
   scoped_refptr<SharedBufferDispatcher> buffer;
   MojoResult result =
@@ -73,24 +66,18 @@ MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
 template <typename T>
 MojoResult ExtractRegionFromSharedBuffer(MojoHandle handle, T* region) {
   base::subtle::PlatformSharedMemoryRegion platform_region;
-  if (IsMojoIpczEnabled()) {
-    platform_region =
-        std::move(ipcz_driver::SharedBuffer::Unbox(handle)->region());
-  } else {
 #if BUILDFLAG(MOJO_LEGACY_SUPPORT_LEGACY_CORE)
-    scoped_refptr<Dispatcher> dispatcher =
-        Core::Get()->GetAndRemoveDispatcher(handle);
-    if (!dispatcher ||
-        dispatcher->GetType() != Dispatcher::Type::SHARED_BUFFER) {
-      return MOJO_LEGACY_RESULT_INVALID_ARGUMENT;
-    }
-
-    auto* buffer = static_cast<SharedBufferDispatcher*>(dispatcher.get());
-    platform_region = buffer->PassPlatformSharedMemoryRegion();
-#else
-    NOTREACHED();
-#endif
+  scoped_refptr<Dispatcher> dispatcher =
+      Core::Get()->GetAndRemoveDispatcher(handle);
+  if (!dispatcher || dispatcher->GetType() != Dispatcher::Type::SHARED_BUFFER) {
+    return MOJO_LEGACY_RESULT_INVALID_ARGUMENT;
   }
+
+  auto* buffer = static_cast<SharedBufferDispatcher*>(dispatcher.get());
+  platform_region = buffer->PassPlatformSharedMemoryRegion();
+#else
+  NOTREACHED();
+#endif
 
   *region = T::Deserialize(std::move(platform_region));
   return MOJO_LEGACY_RESULT_OK;

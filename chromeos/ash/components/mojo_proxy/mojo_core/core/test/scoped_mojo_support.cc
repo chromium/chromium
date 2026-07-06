@@ -6,7 +6,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_io_thread.h"
@@ -56,7 +55,9 @@ class ScopedMojoSupport::CoreInstance {
       mojo_config.dont_advertise_capabilities = true;
     }
 
-    mojo_legacy::core::InitFeatures();
+    // The frozen clone has no runtime features to initialize (no
+    // InitFeatures()); it always runs as legacy Mojo Core at its default
+    // configuration.
     mojo_legacy::core::Init(mojo_config);
 
     static TestSupportInitializer initializer;

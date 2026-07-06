@@ -18,8 +18,7 @@
 #include "base/rand_util.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/ipcz_driver/mojo_message.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_channel.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/buffer.h"
@@ -739,15 +738,13 @@ TEST_F(MessageTest, PreallocateEnoughMemoryForMessage) {
   MojoMessageHandle message;
   EXPECT_EQ(MOJO_LEGACY_RESULT_OK, MojoCreateMessage(nullptr, &message));
 
-  // We need to calculate our payload sizes based on `kMinimumBufferSize` here,
-  // because if we use a total payload size smaller than that, the buffer may
-  // not be reallocated when we expect it to (since at least
-  // `kMinimumBufferSize` bytes of capacity will be allocated).
-  const size_t kMinimumBufferSize =
-      IsMojoIpczEnabled() ? ipcz_driver::MojoMessage::kMinBufferSize
-                          : kLegacyMinimumPayloadBufferSize;
-  const std::string kMsgPart1(kMinimumBufferSize / 2, 'x');
-  const std::string kMsgPart2(kMinimumBufferSize, 'y');
+  // We need to calculate our payload sizes based on
+  // `kLegacyMinimumPayloadBufferSize` here, because if we use a total payload
+  // size smaller than that, the buffer may not be reallocated when we expect it
+  // to (since at least `kLegacyMinimumPayloadBufferSize` bytes of capacity will
+  // be allocated).
+  const std::string kMsgPart1(kLegacyMinimumPayloadBufferSize / 2, 'x');
+  const std::string kMsgPart2(kLegacyMinimumPayloadBufferSize, 'y');
   const std::string kCombined = kMsgPart1 + kMsgPart2;
   // Overestimate the amount of memory required. 16 is picked as it should
   // be larger than adjustments due to memory alignment.
@@ -809,15 +806,13 @@ TEST_F(MessageTest, PreallocateNotEnoughMemoryForMessage) {
   MojoMessageHandle message;
   EXPECT_EQ(MOJO_LEGACY_RESULT_OK, MojoCreateMessage(nullptr, &message));
 
-  // We need to calculate our payload sizes based on `kMinimumBufferSize` here,
-  // because if we use a total payload size smaller than that, the buffer may
-  // not be reallocated when we expect it to (since at least
-  // `kMinimumBufferSize` bytes of capacity will be allocated).
-  const size_t kMinimumBufferSize =
-      IsMojoIpczEnabled() ? ipcz_driver::MojoMessage::kMinBufferSize
-                          : kLegacyMinimumPayloadBufferSize;
-  const std::string kMsgPart1(kMinimumBufferSize / 2, 'x');
-  const std::string kMsgPart2(kMinimumBufferSize, 'y');
+  // We need to calculate our payload sizes based on
+  // `kLegacyMinimumPayloadBufferSize` here, because if we use a total payload
+  // size smaller than that, the buffer may not be reallocated when we expect it
+  // to (since at least `kLegacyMinimumPayloadBufferSize` bytes of capacity will
+  // be allocated).
+  const std::string kMsgPart1(kLegacyMinimumPayloadBufferSize / 2, 'x');
+  const std::string kMsgPart2(kLegacyMinimumPayloadBufferSize, 'y');
   const std::string kCombined = kMsgPart1 + kMsgPart2;
   // Underestimate the amount of memory required. 16 is picked as it should
   // be larger than adjustments due to memory alignment.
