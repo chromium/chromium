@@ -1,0 +1,37 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+const tags = ['b', 'strong', 'i', 'em', 'u', 's', 'strike', 'sub', 'sup'];
+for (const tag of tags) {
+  test(() => assert_selection(
+    `<div contenteditable>a<${tag}>b|</${tag}>c</div>`,
+    selection => {
+      selection.document.execCommand('delete');
+      selection.document.execCommand('insertText', false, 'x');
+    },
+    `<div contenteditable>a<${tag}>x|</${tag}>c</div>`),
+    `Delete all text in <${tag}> then typing preserves the tag`);
+}
+
+const nestedTagPairs = [
+  ['b', 'i'],
+  ['strong', 'em'],
+  ['strong', 'u'],
+  ['strong', 's'],
+  ['u', 's'],
+  ['u', 'sub'],
+  ['u', 'sup'],
+];
+for (const [outerTag, innerTag] of nestedTagPairs) {
+  test(() => assert_selection(
+    `<div contenteditable>a<${outerTag}><${innerTag}>b|</${innerTag}></${outerTag}>c</div>`,
+    selection => {
+      selection.document.execCommand('delete');
+      selection.document.execCommand('insertText', false, 'x');
+    },
+    `<div contenteditable>a<${outerTag}><${innerTag}>x|</${innerTag}></${outerTag}>c</div>`),
+    `Delete all text in nested <${outerTag}><${innerTag}> then typing preserves both tags`);
+}
+</script>

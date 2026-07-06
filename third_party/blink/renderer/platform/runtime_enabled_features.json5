@@ -4765,6 +4765,10 @@
       status: "stable",
     },
     {
+      name: "PreserveHtmlEquivalentTagsInTypingStyle",
+      status: "stable",
+    },
+    {
       // When enabled, fixes selection jumping when drag-selecting out of
       // a float box boundary.
       // See https://crbug.com/41340914

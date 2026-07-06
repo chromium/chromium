@@ -417,6 +417,70 @@ static bool ShouldNotInheritStyleFrom(const Node& node) {
   return !node.CanContainRangeEndPoint();
 }
 
+namespace {
+
+struct HtmlEquivalentTagDefinition {
+  const HTMLQualifiedName* tag;
+  CSSPropertyID property;
+  CSSValueID value_id;
+};
+
+const HtmlEquivalentTagDefinition* FindHtmlEquivalentTag(
+    const HTMLElement& element) {
+  static const HtmlEquivalentTagDefinition kHtmlEquivalentTags[] = {
+      {&html_names::kStrongTag, CSSPropertyID::kFontWeight, CSSValueID::kBold},
+      {&html_names::kBTag, CSSPropertyID::kFontWeight, CSSValueID::kBold},
+      {&html_names::kEmTag, CSSPropertyID::kFontStyle, CSSValueID::kItalic},
+      {&html_names::kITag, CSSPropertyID::kFontStyle, CSSValueID::kItalic},
+      {&html_names::kUTag, CSSPropertyID::kTextDecorationLine,
+       CSSValueID::kUnderline},
+      {&html_names::kSTag, CSSPropertyID::kTextDecorationLine,
+       CSSValueID::kLineThrough},
+      {&html_names::kStrikeTag, CSSPropertyID::kTextDecorationLine,
+       CSSValueID::kLineThrough},
+      {&html_names::kSubTag, CSSPropertyID::kVerticalAlign, CSSValueID::kSub},
+      {&html_names::kSupTag, CSSPropertyID::kVerticalAlign, CSSValueID::kSuper},
+  };
+
+  for (const auto& def : kHtmlEquivalentTags) {
+    if (element.HasTagName(*def.tag)) {
+      return &def;
+    }
+  }
+  return nullptr;
+}
+
+bool HasHtmlEquivalentTagToPreserve(const Position& position) {
+  for (Node* node = position.AnchorNode(); node; node = node->parentNode()) {
+    if (auto* element = DynamicTo<HTMLElement>(node)) {
+      if (FindHtmlEquivalentTag(*element)) {
+        return true;
+      }
+    }
+    if (!IsEditable(*node)) {
+      break;
+    }
+  }
+  return false;
+}
+
+void RecordHtmlEquivalentTagsForTypingStyle(EditingStyle* typing_style,
+                                            const Position& position) {
+  for (Node* node = position.AnchorNode(); node; node = node->parentNode()) {
+    if (auto* element = DynamicTo<HTMLElement>(node)) {
+      if (const auto* def = FindHtmlEquivalentTag(*element)) {
+        typing_style->RecordOriginalHtmlEquivalentTag(
+            def->property, def->value_id, element->TagQName());
+      }
+    }
+    if (!IsEditable(*node)) {
+      break;
+    }
+  }
+}
+
+}  // namespace
+
 void DeleteSelectionCommand::SaveTypingStyleState() {
   // A common case is deleting characters that are all from the same text node.
   // In that case, the style at the start of the selection before deletion will
@@ -425,9 +489,17 @@ void DeleteSelectionCommand::SaveTypingStyleState() {
   // to save the typing style at the start of the selection, nor is there a
   // reason to compute the style at the start of the selection after deletion
   // (see the early return in calculateTypingStyleAfterDelete).
+  const bool preserve_html_equivalent_tags =
+      RuntimeEnabledFeatures::PreserveHtmlEquivalentTagsInTypingStyleEnabled();
   if (upstream_start_.AnchorNode() == downstream_end_.AnchorNode() &&
-      upstream_start_.AnchorNode()->IsTextNode())
-    return;
+      upstream_start_.AnchorNode()->IsTextNode()) {
+    // Still save the typing style when the deleted text is inside an HTML
+    // equivalent tag that should be preserved for later insertion.
+    if (!preserve_html_equivalent_tags ||
+        !HasHtmlEquivalentTagToPreserve(selection_to_delete_.Start())) {
+      return;
+    }
+  }
 
   if (ShouldNotInheritStyleFrom(*selection_to_delete_.Start().AnchorNode()))
     return;
@@ -437,6 +509,14 @@ void DeleteSelectionCommand::SaveTypingStyleState() {
       selection_to_delete_.Start(), EditingStyle::kEditingPropertiesInEffect);
   typing_style_->RemoveStyleAddedByElement(
       EnclosingAnchorElement(selection_to_delete_.Start()));
+
+  if (preserve_html_equivalent_tags) {
+    // Record which HTML equivalent tags produced the styling, so we can
+    // preserve them (e.g. <strong> vs <b>, <sub>) when re-applying the typing
+    // style later.
+    RecordHtmlEquivalentTagsForTypingStyle(typing_style_,
+                                           selection_to_delete_.Start());
+  }
 
   // If we're deleting into a Mail blockquote, save the style at end() instead
   // of start(). We'll use this later in computeTypingStyleAfterDelete if we end

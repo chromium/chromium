@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -161,6 +162,16 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
                    bool important,
                    SecureContextMode);
 
+  // Records the original HTML equivalent tag that produced a CSS
+  // property/value. For example, recording that font-weight:bold came from
+  // <strong> rather than <b>, or vertical-align:sub came from <sub>, so the tag
+  // can be preserved when re-applying the style.
+  void RecordOriginalHtmlEquivalentTag(CSSPropertyID property,
+                                       CSSValueID value_id,
+                                       const QualifiedName& tag);
+  const QualifiedName* OriginalHtmlEquivalentTag(CSSPropertyID property,
+                                                 CSSValueID value_id) const;
+
   void Trace(Visitor*) const;
   static EditingTriState SelectionHasStyle(const LocalFrame&,
                                            CSSPropertyID,
@@ -206,6 +217,16 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
   float font_size_delta_ = kNoFontDelta;
   bool is_vertical_align_ = false;
 
+  // Maps CSS property/value pairs to their original HTML equivalent tags.
+  // Used to preserve tags (e.g. <strong> vs <b>) when re-applying styles after
+  // deletion.
+  struct HtmlEquivalentTagMapping {
+    CSSPropertyID property;
+    CSSValueID value_id;
+    QualifiedName tag;
+  };
+  Vector<HtmlEquivalentTagMapping> original_html_equivalent_tags_;
+
   friend class HTMLElementEquivalent;
   friend class HTMLAttributeEquivalent;
 };
@@ -220,7 +241,13 @@ class StyleChange {
         apply_underline_(false),
         apply_line_through_(false),
         apply_subscript_(false),
-        apply_superscript_(false) {}
+        apply_superscript_(false),
+        bold_tag_(g_null_atom),
+        italic_tag_(g_null_atom),
+        underline_tag_(g_null_atom),
+        line_through_tag_(g_null_atom),
+        subscript_tag_(g_null_atom),
+        superscript_tag_(g_null_atom) {}
 
   StyleChange(EditingStyle*, const Position&);
 
@@ -239,6 +266,13 @@ class StyleChange {
   String FontFace() { return apply_font_face_; }
   String FontSize() { return apply_font_size_; }
 
+  const QualifiedName& BoldTag() const { return bold_tag_; }
+  const QualifiedName& ItalicTag() const { return italic_tag_; }
+  const QualifiedName& UnderlineTag() const { return underline_tag_; }
+  const QualifiedName& LineThroughTag() const { return line_through_tag_; }
+  const QualifiedName& SubscriptTag() const { return subscript_tag_; }
+  const QualifiedName& SuperscriptTag() const { return superscript_tag_; }
+
   bool operator==(const StyleChange& other) const {
     return css_style_ == other.css_style_ && apply_bold_ == other.apply_bold_ &&
            apply_italic_ == other.apply_italic_ &&
@@ -248,13 +282,23 @@ class StyleChange {
            apply_superscript_ == other.apply_superscript_ &&
            apply_font_color_ == other.apply_font_color_ &&
            apply_font_face_ == other.apply_font_face_ &&
-           apply_font_size_ == other.apply_font_size_;
+           apply_font_size_ == other.apply_font_size_ &&
+           bold_tag_ == other.bold_tag_ && italic_tag_ == other.italic_tag_ &&
+           underline_tag_ == other.underline_tag_ &&
+           line_through_tag_ == other.line_through_tag_ &&
+           subscript_tag_ == other.subscript_tag_ &&
+           superscript_tag_ == other.superscript_tag_;
   }
 
  private:
   void ExtractTextStyles(Document*,
                          MutableCSSPropertyValueSet*,
                          bool is_monospace_font);
+  void MaybeApplyOriginalSubOrSupTag(const EditingStyle& style,
+                                     MutableCSSPropertyValueSet* mutable_style);
+  void MaybeApplyOriginalHtmlEquivalentTags(
+      const EditingStyle& style,
+      MutableCSSPropertyValueSet* mutable_style);
 
   String css_style_;
   bool apply_bold_;
@@ -266,6 +310,15 @@ class StyleChange {
   String apply_font_color_;
   String apply_font_face_;
   String apply_font_size_;
+
+  // Original HTML equivalent tag names to use instead of hardcoded tags.
+  // Defaults are <b>, <i>, <u>, <strike>, <sub>, and <sup>.
+  QualifiedName bold_tag_;
+  QualifiedName italic_tag_;
+  QualifiedName underline_tag_;
+  QualifiedName line_through_tag_;
+  QualifiedName subscript_tag_;
+  QualifiedName superscript_tag_;
 };
 
 // FIXME: Remove these functions or make them non-global to discourage using

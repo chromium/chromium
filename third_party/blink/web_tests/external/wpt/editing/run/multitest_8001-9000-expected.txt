@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\\"vertical-align:sub; font-size:small\\">a</span>bar"
 [FAIL] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -38,10 +38,6 @@ Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>a</i>baz" but got "foo<span style=\\"font-style:italic\\">a</span>baz"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<s>[bar]</s>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s>a</s>baz" but got "foo<span style=\\"text-decoration-line:line-through\\">a</span>baz"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<sub>[bar]</sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\\"font-size:13.3333px\\">a</span>baz"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<sup>[bar]</sup>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>baz" but got "foo<span style=\\"font-size:13.3333px\\">a</span>baz"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<u>[bar]</u>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>baz" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>baz"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar]</a>baz" compare innerHTML
@@ -66,24 +62,16 @@ Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "fooabaz"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar]</a></u>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>baz"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar]</font></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\\"font-size:small\\">a</span>baz"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar]</sub></font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"1\\"><sub>a</sub></font>baz" but got "foo<span style=\\"font-size:10.8333px\\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"1\\"><sub>a</sub></font>baz" but got "foo<sub>a</sub>baz"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar]</font></sub>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"3\\"><sub>a</sub></font>baz" but got "fooabaz"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar]</sub></font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\\"font-size:13.3333px\\">a</span>baz"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<b>[bar</b>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<b>a</b>" but got "foo<span style=\\"font-weight:700\\">a</span>"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<i>[bar</i>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>a</i>" but got "foo<span style=\\"font-style:italic\\">a</span>"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<s>[bar</s>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s>a</s>" but got "foo<span style=\\"text-decoration-line:line-through\\">a</span>"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<sub>[bar</sub>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>" but got "foo<span style=\\"font-size:13.3333px\\">a</span>"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<sup>[bar</sup>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>" but got "foo<span style=\\"font-size:13.3333px\\">a</span>"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<u>[bar</u>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar</a>baz]" compare innerHTML

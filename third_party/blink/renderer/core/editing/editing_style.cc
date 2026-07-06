@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -778,6 +779,7 @@ void EditingStyle::Clear() {
   mutable_style_.Clear();
   is_monospace_font_ = false;
   font_size_delta_ = kNoFontDelta;
+  original_html_equivalent_tags_.clear();
 }
 
 EditingStyle* EditingStyle::Copy() const {
@@ -786,6 +788,7 @@ EditingStyle* EditingStyle::Copy() const {
     copy->mutable_style_ = mutable_style_->MutableCopy();
   copy->is_monospace_font_ = is_monospace_font_;
   copy->font_size_delta_ = font_size_delta_;
+  copy->original_html_equivalent_tags_ = original_html_equivalent_tags_;
   return copy;
 }
 
@@ -1826,7 +1829,13 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
       apply_underline_(false),
       apply_line_through_(false),
       apply_subscript_(false),
-      apply_superscript_(false) {
+      apply_superscript_(false),
+      bold_tag_(html_names::kBTag),
+      italic_tag_(html_names::kITag),
+      underline_tag_(html_names::kUTag),
+      line_through_tag_(html_names::kStrikeTag),
+      subscript_tag_(html_names::kSubTag),
+      superscript_tag_(html_names::kSupTag) {
   Document* document = position.GetDocument();
   if (!style || !style->Style() || !document || !document->GetFrame())
     return;
@@ -1846,6 +1855,7 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
 
   ReconcileTextDecorationProperties(
       mutable_style, document->GetExecutionContext()->GetSecureContextMode());
+  MaybeApplyOriginalHtmlEquivalentTags(*style, mutable_style);
   if (!document->GetFrame()->GetEditor().ShouldStyleWithCss()) {
     ExtractTextStyles(document, mutable_style,
                       computed_style->IsMonospaceFont());
@@ -1865,6 +1875,87 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
 
   // Save the result for later
   css_style_ = mutable_style->AsText().StripWhiteSpace();
+}
+
+void StyleChange::MaybeApplyOriginalSubOrSupTag(
+    const EditingStyle& style,
+    MutableCSSPropertyValueSet* mutable_style) {
+  const CSSValueID vertical_align =
+      GetIdentifierValue(mutable_style, CSSPropertyID::kVerticalAlign);
+  const QualifiedName* original_subscript_tag = style.OriginalHtmlEquivalentTag(
+      CSSPropertyID::kVerticalAlign, CSSValueID::kSub);
+  const QualifiedName* original_superscript_tag =
+      style.OriginalHtmlEquivalentTag(CSSPropertyID::kVerticalAlign,
+                                      CSSValueID::kSuper);
+
+  const QualifiedName* tag_to_apply = nullptr;
+  bool is_subscript = false;
+
+  switch (vertical_align) {
+    case CSSValueID::kSub:
+      tag_to_apply = original_subscript_tag;
+      is_subscript = true;
+      break;
+    case CSSValueID::kSuper:
+      tag_to_apply = original_superscript_tag;
+      break;
+    case CSSValueID::kInvalid:
+      if (original_subscript_tag && !original_superscript_tag) {
+        tag_to_apply = original_subscript_tag;
+        is_subscript = true;
+      } else if (original_superscript_tag && !original_subscript_tag) {
+        tag_to_apply = original_superscript_tag;
+      }
+      break;
+    default:
+      break;
+  }
+
+  if (!tag_to_apply) {
+    return;
+  }
+
+  mutable_style->RemoveProperty(CSSPropertyID::kVerticalAlign);
+  mutable_style->RemoveProperty(CSSPropertyID::kFontSize);
+  if (is_subscript) {
+    subscript_tag_ = *tag_to_apply;
+    apply_subscript_ = true;
+  } else {
+    superscript_tag_ = *tag_to_apply;
+    apply_superscript_ = true;
+  }
+}
+
+void StyleChange::MaybeApplyOriginalHtmlEquivalentTags(
+    const EditingStyle& style,
+    MutableCSSPropertyValueSet* mutable_style) {
+  if (!RuntimeEnabledFeatures::
+          PreserveHtmlEquivalentTagsInTypingStyleEnabled()) {
+    return;
+  }
+
+  // Preserve original <sub>/<sup> tags even when CSS styling is requested;
+  // otherwise vertical-align and font-size would be serialized as CSS.
+  MaybeApplyOriginalSubOrSupTag(style, mutable_style);
+
+  // Preserve original HTML tags (e.g. <strong> over <b>) from the
+  // deleted content when reapplying styles.
+  if (const QualifiedName* tag = style.OriginalHtmlEquivalentTag(
+          CSSPropertyID::kFontWeight, CSSValueID::kBold)) {
+    bold_tag_ = *tag;
+  }
+  if (const QualifiedName* tag = style.OriginalHtmlEquivalentTag(
+          CSSPropertyID::kFontStyle, CSSValueID::kItalic)) {
+    italic_tag_ = *tag;
+  }
+  if (const QualifiedName* tag = style.OriginalHtmlEquivalentTag(
+          CSSPropertyID::kTextDecorationLine, CSSValueID::kUnderline)) {
+    underline_tag_ = *tag;
+  }
+  if (const QualifiedName* tag = style.OriginalHtmlEquivalentTag(
+          CSSPropertyID::kTextDecorationLine, CSSValueID::kLineThrough)) {
+    line_through_tag_ = *tag;
+  }
 }
 
 static void SetTextDecorationProperty(MutableCSSPropertyValueSet* style,
@@ -2231,6 +2322,29 @@ EditingTriState EditingStyle::SelectionHasStyle(const LocalFrame& frame,
                                             secure_context_mode)
       ->TriStateOfStyle(frame.Selection().ComputeVisibleSelectionInDomTree(),
                         secure_context_mode);
+}
+
+void EditingStyle::RecordOriginalHtmlEquivalentTag(CSSPropertyID property,
+                                                   CSSValueID value_id,
+                                                   const QualifiedName& tag) {
+  for (const auto& mapping : original_html_equivalent_tags_) {
+    if (mapping.property == property && mapping.value_id == value_id) {
+      return;
+    }
+  }
+  original_html_equivalent_tags_.push_back(
+      HtmlEquivalentTagMapping{property, value_id, tag});
+}
+
+const QualifiedName* EditingStyle::OriginalHtmlEquivalentTag(
+    CSSPropertyID property,
+    CSSValueID value_id) const {
+  for (const auto& mapping : original_html_equivalent_tags_) {
+    if (mapping.property == property && mapping.value_id == value_id) {
+      return &mapping.tag;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink

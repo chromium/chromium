@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar</font></a>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>" but got "fooa"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar</a></font>baz]" compare innerHTML
@@ -14,14 +14,10 @@ Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>" but got "fooa"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar</a></u>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar</font></sub>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>" but got "foo<span style=\\"font-size:small\\">a</span>"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"1\\"><sub>a</sub></font>" but got "foo<span style=\\"font-size:10.8333px\\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"1\\"><sub>a</sub></font>" but got "foo<sub>a</sub>"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"3\\"><sub>a</sub></font>" but got "fooa"
-[FAIL] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar</sub></font>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>" but got "foo<span style=\\"font-size:13.3333px\\">a</span>"
 [FAIL] [["delete",""],["inserttext","a"]] "<blockquote><font color=blue>[foo]</font></blockquote>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><font color=\\"blue\\">a</font></blockquote>" but got "<blockquote><span style=\\"color:rgb(0, 0, 255)\\">a</span></blockquote>"
 [FAIL] [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") before
