@@ -53,7 +53,7 @@ if (!is_win && !is_mac && !is_ios) {
         !is_official_build &&
         # Exclude Cronet because it crashes on dlopen(), see crbug.com/525305888
         !is_cronet_build &&
-        current_os == "android" &&
+        (current_os == "android" || current_os == "linux") &&
         (current_cpu == "x64" || current_cpu == "arm64" ||
          current_cpu == "x86" || current_cpu == "arm")
   }
