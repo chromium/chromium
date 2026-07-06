@@ -45,10 +45,6 @@ namespace {
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
 
-constexpr char kCookieControlsActivatedRefreshCountHistogram[] =
-    "Privacy.CookieControlsActivated.PageRefreshCount";
-constexpr char kCookieControlsActivatedSiteDataAccessHistogram[] =
-    "Privacy.CookieControlsActivated.SiteDataAccessType";
 constexpr char kUrl[] = "https://example.com";
 
 class MockCookieControlsObserver
@@ -220,8 +216,6 @@ TEST_F(CookieControlsUserBypassTest, CookieBlockingChanged) {
 }
 
 TEST_F(CookieControlsUserBypassTest, SiteCounts) {
-  base::HistogramTester t;
-
   // Visiting a website should enable the UI.
   NavigateAndCommit(GURL(kUrl));
 
@@ -248,21 +242,6 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
       CreateUnpartitionedStorageKey(GURL("https://anotherthirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/true);
-
-  // Enabling third-party cookies records metrics.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsState::kAllowed3pc,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
-  EXPECT_CALL(*mock(),
-              OnCookieControlsIconStatusChanged(
-                  /*icon_visible=*/true, CookieControlsState::kAllowed3pc))
-      .Times(2);
-  cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
-  t.ExpectUniqueSample(
-      kCookieControlsActivatedSiteDataAccessHistogram,
-      ThirdPartySiteDataAccessType::kAnyBlockedThirdPartySiteAccesses, 1);
 }
 
 TEST_F(CookieControlsUserBypassTest, NewTabPage) {
@@ -298,7 +277,6 @@ TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
-  base::HistogramTester t;
   NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsState::kBlocked3pc,
@@ -327,10 +305,6 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
-  t.ExpectUniqueSample(kCookieControlsActivatedSiteDataAccessHistogram,
-                       ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses,
-                       1);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -526,7 +500,6 @@ TEST_F(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
 }
 
 TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
-  base::HistogramTester t;
   cookie_controls()->Update(web_contents());
 
   NavigateAndCommit(GURL(kUrl));
@@ -581,10 +554,6 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 2, 1);
-  t.ExpectUniqueSample(
-      kCookieControlsActivatedSiteDataAccessHistogram,
-      ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
       /*storage_access_api_requested=*/false,
@@ -595,7 +564,6 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
 }
 
 TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
-  base::HistogramTester t;
   NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsState::kBlocked3pc,
@@ -652,10 +620,6 @@ TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 1, 1);
-  t.ExpectUniqueSample(
-      kCookieControlsActivatedSiteDataAccessHistogram,
-      ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
       /*storage_access_api_requested=*/false,

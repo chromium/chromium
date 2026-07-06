@@ -360,19 +360,9 @@ void CookieControlsController::RemoveObserver(CookieControlsObserver* obs) {
 
 void CookieControlsController::RecordActivationMetrics() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
-
-  // Metrics, related to confidence signals:
-  base::UmaHistogramCounts100(
-      "Privacy.CookieControlsActivated.PageRefreshCount",
-      recent_reloads_count_);
-
   auto site_data_access_type =
       GetSiteDataAccessType(GetAllowedThirdPartyCookiesSitesCount(),
                             GetBlockedThirdPartyCookiesSitesCount());
-  base::UmaHistogramEnumeration(
-      "Privacy.CookieControlsActivated.SiteDataAccessType",
-      site_data_access_type);
-
   // Record activation UKM.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto ukm_source_id =
