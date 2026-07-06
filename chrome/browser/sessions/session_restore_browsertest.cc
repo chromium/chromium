@@ -157,6 +157,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #endif
@@ -1072,15 +1076,22 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, WindowBoundsAreRestored) {
   // Navigate to trigger SessionService creation and compare the bounds.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(restored, GetUrl1()));
 
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-  // On Linux Wayland, the client cannot set top-level window positions.
-  EXPECT_EQ(expected_bounds.size(), restored->GetWindow()->GetBounds().size());
-#elif BUILDFLAG(IS_MAC)
-  // On MacOS, relaunch behavior differs from other platforms so evaluating
-  // window size restore is difficult. See https://crrev.com/c/8006276.
-#else
-  EXPECT_EQ(expected_bounds, restored->GetWindow()->GetBounds());
+  bool is_wayland = false;
+#if BUILDFLAG(IS_OZONE)
+  is_wayland = ::ui::OzonePlatform::RunningOnWaylandForTest();
 #endif
+  if (is_wayland) {
+    // On Linux Wayland, the client cannot set top-level window positions.
+    EXPECT_EQ(expected_bounds.size(),
+              restored->GetWindow()->GetBounds().size());
+  } else {
+#if BUILDFLAG(IS_MAC)
+    // On MacOS, relaunch behavior differs from other platforms so evaluating
+    // window size restore is difficult. See https://crrev.com/c/8006276.
+#else
+    EXPECT_EQ(expected_bounds, restored->GetWindow()->GetBounds());
+#endif
+  }
 }
 
 namespace {

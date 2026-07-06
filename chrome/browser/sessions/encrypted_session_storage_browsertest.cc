@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -77,6 +78,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ozone_buildflags.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace sessions {
 
 using SessionType = sessions::CommandStorageManager::SessionType;
@@ -119,12 +124,16 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
   }
 
   void VerifyWindowBounds(gfx::Rect expected, gfx::Rect actual) {
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-    // On Linux Wayland, the client cannot set top-level window positions.
-    EXPECT_EQ(expected.size(), actual.size());
-#else
-    EXPECT_EQ(expected, actual);
+    bool is_wayland = false;
+#if BUILDFLAG(IS_OZONE)
+    is_wayland = ::ui::OzonePlatform::RunningOnWaylandForTest();
 #endif
+    if (is_wayland) {
+      // On Linux Wayland, the client cannot set top-level window positions.
+      EXPECT_EQ(expected.size(), actual.size());
+    } else {
+      EXPECT_EQ(expected, actual);
+    }
   }
 
   void AssertCommandStorageBackendFilesExist(SessionType session_type,

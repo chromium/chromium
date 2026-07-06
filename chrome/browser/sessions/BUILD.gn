@@ -308,6 +308,10 @@ if (!is_android) {
       "//ui/base:ozone_buildflags",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     # Some of these tests have pre-existing size_t-vs-int comparisons that only
     # compiled in //chrome/test because it transitively depends on
     # //third_party/fuzztest, whose public config propagates -Wno-sign-compare.
