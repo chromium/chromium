@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 
-#include "chrome/grit/generated_resources.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "components/login/localized_values_builder.h"
 
 namespace ash {

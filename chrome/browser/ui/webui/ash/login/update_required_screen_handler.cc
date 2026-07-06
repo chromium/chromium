@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"

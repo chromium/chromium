@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/fjord_image_download_screen_handler.h"
 
-#include "chrome/grit/generated_resources.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 
 namespace ash {
 

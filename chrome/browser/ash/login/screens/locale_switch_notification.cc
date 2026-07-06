@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/vector_icons/vector_icons.h"

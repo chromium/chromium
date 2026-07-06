@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"

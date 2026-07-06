@@ -1829,6 +1829,248 @@
       <message name="IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE" desc="Subtitle on the security token PIN input dialog during the SAML user sign-in.">
         Provide the PIN that’s associated with your smart card.
       </message>
+
+      <!-- Update Screen Strings -->
+      <message name="IDS_CHECKING_FOR_UPDATES" desc="Notification for checking for update">
+        Checking for updates
+      </message>
+
+      <message name="IDS_DOWNLOADING_TIME_LEFT_LONG" desc="The status text for downloading estimated time left, when estimated time is more than one hour">
+        More than 1 hour left
+      </message>
+      <message name="IDS_DOWNLOADING_TIME_LEFT_STATUS_ONE_HOUR" desc="The status text for downloading estimated time when about one hour remaining.">
+        About 1 hour left
+      </message>
+      <message name="IDS_DOWNLOADING_TIME_LEFT_STATUS_MINUTES" desc="The status text for downloading estimated time left in minutes. In the localized version instead of |minutes| some abbreviation like |mins| should be used.">
+        About <ph name="TIME">$1<ex>2</ex></ph> minutes left
+      </message>
+      <message name="IDS_DOWNLOADING_TIME_LEFT_SMALL" desc="The status text for downloading estimated time left, when estimated time is less than one minute">
+        Less than 1 minute left
+      </message>
+
+      <message name="IDS_FJORD_WELCOME_MESSAGE" desc="Welcome message shown when user is setting up their device. Google Beam is the name of a product.">
+        Set up Google Beam
+      </message>
+
+      <message name="IDS_NEW_WELCOME_SCREEN_GREETING" desc="Greeting message on the OOBE welcome screen">
+        Welcome to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+
+      <message name="IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME" desc="OOBE network screen list entry that opens proxy settings dialog">
+        Proxy settings
+      </message>
+
+      <message name="IDS_ENTERPRISE_ENROLLMENT_WORKING_MESSAGE" desc="Message to show while enrollment is in progress">
+        Enrolling device...
+      </message>
+
+      <message name="IDS_HID_DETECTION_INVITATION_TEXT" desc="Text shown on top of HID detection screen inviting user to connect an input device.">
+        Searching for Bluetooth and USB devices
+      </message>
+      <message name="IDS_HID_DETECTION_PRECONDITION_TEXT" desc="Text shown on HID detection screen beneath invitation.">
+        Connect a keyboard or mouse. If you are using Bluetooth devices, make sure your devices are ready to pair.
+      </message>
+      <message name="IDS_HID_DETECTION_PRECONDITION_TOUCHSCREEN_TEXT" desc="Text shown on HID detection screen beneath invitation.">
+        Connect a keyboard or mouse, or continue setup using your touchscreen. If you are using Bluetooth devices, make sure your devices are ready to pair.
+      </message>
+      <message name="IDS_HID_DETECTION_SEARCHING_MOUSE" desc="Text shown on HID detection screen next to mouse icon while device searching.">
+        Searching for pointing device
+      </message>
+      <message name="IDS_HID_DETECTION_SEARCHING_KEYBOARD" desc="Text shown on HID detection screen next to keyboard icon while device searching.">
+        Searching for keyboard
+      </message>
+      <message name="IDS_HID_DETECTION_CONNECTED_USB_MOUSE" desc="Text shown on HID detection screen next to mouse icon after USB mouse is connected.">
+        USB mouse connected
+      </message>
+      <message name="IDS_HID_DETECTION_CONNECTED_POINTING_DEVICE" desc="Text shown on HID detection screen next to mouse icon after other pointing device is connected.">
+        Pointing device connected
+      </message>
+      <message name="IDS_HID_DETECTION_CONNECTED_USB_KEYBOARD" desc="Text shown on HID detection screen next to keyboard icon after USB keyboard is connected.">
+        USB keyboard connected
+      </message>
+      <message name="IDS_HID_DETECTION_DETECTED_TOUCHSCREEN" desc="Text shown on HID detection screen next to touchscreen icon if a touch screen was detected.">
+        Touchscreen detected
+      </message>
+      <message name="IDS_HID_DETECTION_PAIRED_BLUETOOTH_MOUSE" desc="Text shown on HID detection screen next to mouse icon after Bluetooth mouse is connected.">
+        Bluetooth mouse paired
+      </message>
+      <message name="IDS_HID_DETECTION_PAIRED_BLUETOOTH_KEYBOARD" desc="Text shown on HID detection screen next to keyboard icon after Bluetooth keyboard is connected.">
+        "<ph name="DEVICE_NAME">$1<ex>Bluetooth Keyboard</ex></ph>" paired
+      </message>
+      <message name="IDS_HID_DETECTION_PAIRING_BLUETOOTH_KEYBOARD" desc="Bluetooth pairing message displayed on HID detection screen when pairing a Bluetooth keyboard.">
+        Pairing with "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>" ...
+      </message>
+      <message name="IDS_HID_DETECTION_PAIRING_BLUETOOTH_KEYBOARD_PIN_DIALOG_TITLE" desc="Dialog title for PIN input on HID detection screen when pairing a Bluetooth keyboard.">
+        Pair with "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>"?
+      </message>
+      <message name="IDS_HID_DETECTION_BLUETOOTH_PAIRING_CODE" desc="Bluetooth pairing code inside the PIN input dialog on the HID detection screen.">
+        Bluetooth pairing code:
+      </message>
+      <message name="IDS_HID_DETECTION_BLUETOOTH_PAIRING_CODE_EXPLANATION" desc="Explanation to the user on how to type in the PIN while connecting to a bluetooth keyboard on the HID detection screen.">
+        Type the bluetooth pairing code then press Return or Enter.
+      </message>
+      <message name="IDS_HID_DETECTION_BLUETOOTH_ENTER_KEY" meaning="Label on the button representing Enter key at the HID detection screen.">
+        enter
+      </message>
+      <message name="IDS_HID_DETECTION_CONTINUE_BUTTON" desc="Text shown on continue button" meaning="Continue button label of HID detection screen.">
+        Continue
+      </message>
+      <message name="IDS_HID_DETECTION_A11Y_CONTINUE_BUTTON_ENABLED" desc="Accessibility label for enabled continue button in HID detection screen">
+        Continue button enabled
+      </message>
+      <message name="IDS_HID_DETECTION_A11Y_CONTINUE_BUTTON_DISABLED" desc="Accessibility label for disabled continue button in HID detection screen">
+        Continue button disabled
+      </message>
+
+      <message name="IDS_LANGUAGE_DROPDOWN_TITLE" desc="Title of language selection dropdown menu" meaning="Small title near language dropdown menu suggesting that this is a language selector.">
+        Language
+      </message>
+      <message name="IDS_KEYBOARD_DROPDOWN_TITLE" desc="Title of keyboard selection dropdown menu" meaning="Small title near keyboard dropdown menu suggesting that this is a keyboard layout selector.">
+        Input method
+      </message>
+      <message name="IDS_COUNTRY_DROPDOWN_TITLE" desc="Title of country selection dropdown menu" meaning="Small title near country dropdown menu suggesting that this is a country selector.">
+        Country
+      </message>
+
+      <message name="IDS_LANGUAGE_BUTTON_LABEL" desc="Navigation label attached to the 'Select Language' button on ChromeOS initial device setup screen" meaning="The button itself displays only current language name. But for accessibility mode we need full description of this button. So this label suggests that pressing on a button will allow to change current language and input method. And it should also include the name of currently selected language.">
+        Select language and keyboard button. Currently selected language is <ph name="LANGUAGE">$1<ex>English (United States)</ex></ph>.
+      </message>
+      <message name="IDS_LANGUAGE_SECTION_TITLE" desc="Title of language selection screen" meaning="A title of the dialog where user should select ChromeOS UI language and default keyboard layout during initial device setup.">
+        Language and input method
+      </message>
+      <message name="IDS_LANGUAGE_SECTION_HINT" desc="Under-title line on the language selection screen" meaning="A hint to the user that language files are shared among users.">
+        Language files are shared among users to save disk space.
+      </message>
+      <message name="IDS_ACCESSIBILITY_SECTION_TITLE" desc="Title of accessibility options screen" meaning="A title of the dialog where user can control ChromeOS UI accessibility (like large cursor or screen reader) options during initial device setup.">
+        Accessibility settings
+      </message>
+      <message name="IDS_ACCESSIBILITY_SECTION_HINT" desc="Under-title line on the accessibility options screen" meaning="A hint to the user what these settings do and how to update them later.">
+        You can customize this device to fit your needs. These accessibility features can be changed later in Settings.
+      </message>
+      <message name="IDS_NETWORK_SELECTION_TITLE" desc="Title of network selection screen" meaning="A title of the dialog where user should select network to connect to Internet">
+        Get connected to enjoy all the features on your new <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_NETWORK_SELECTION_SUBTITLE" desc="Subtitle of the network selection screen">
+        We will remember your network the next time you use the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_NETWORK_SELECTION_ERROR" desc="Error shown when connection to network failed or timed out.">
+        <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> was unable to connect to <ph name="NETWORK_ID">$2<ex>Public Wifi</ex></ph>. Please select another network or try again.
+      </message>
+
+      <message name="IDS_A11Y_SETTING_TOGGLE_OPTION_OFF" desc="A value for an accessibility toggle option when it is off.">
+        Off
+      </message>
+      <message name="IDS_A11Y_SETTING_TOGGLE_OPTION_ON" desc="A value for an accessibility toggle option when it is on.">
+        On
+      </message>
+
+      <message name="IDS_LARGE_CURSOR_OPTION_OFF" desc="A value for Large Mouse Cursor accessibility option when it is off.">
+        Normal
+      </message>
+      <message name="IDS_LARGE_CURSOR_OPTION_ON" desc="A value for Large Mouse Cursor accessibility option when it is on.">
+        Large
+      </message>
+
+      <message name="IDS_LANGUAGE_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of languages' dropdown menu on ChromeOS Language and keyboard initial device setup screen" meaning="The menu itself displays only current language name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current language.">
+        Select language
+      </message>
+      <message name="IDS_KEYBOARD_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of keyboards' dropdown menu on ChromeOS Language and keyboard initial device setup screen" meaning="The menu itself displays only current keyboard layout name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current input method.">
+        Select keyboard
+      </message>
+      <message name="IDS_COUNTRY_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of countries' dropdown menu on ChromeOS Demo Mode setup screen" meaning="The menu itself displays only current country name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current country.">
+        Select country
+      </message>
+
+      <!-- Strings for the OOBE consumer update screen -->
+      <message name="IDS_CONSUMER_UPDATE_ACCEPT_BUTTON" desc="Label on the button that accept using cellular data for the consumer update screen">
+        Install update
+      </message>
+      <message name="IDS_CONSUMER_UPDATE_CELLULAR_TITLE" desc="Title of the dialog shown to the user in ChromeOS OOBE before consumer update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges.">
+        Software update available
+      </message>
+      <message name="IDS_CONSUMER_UPDATE_SKIP_BUTTON" desc="Label on the button that skip the consumer update screen.">
+        Skip and remind me later
+      </message>
+      <message name="IDS_CONSUMER_UPDATE_PROGRESS_TITLE" desc="Title of the dialog shown to the user  consumer update screen when update in progress.">
+        Installing the latest update
+      </message>
+      <message name="IDS_CONSUMER_UPDATE_PROGRESS_SUBTITLE" desc="Subtitle of the dialog shown to the user consumer update screen when update in progress.">
+        You’re getting the latest software update for enhanced security and the newest Chromebook features. This update includes an improved setup experience to help you get off to a smooth start on your Chromebook.
+      </message>
+      <message name="IDS_CONSUMER_UPDATE_PROGRESS_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog shown to the user  consumer update screen when update in progress.">
+        Your Chromebook will restart once the download is complete and you can continue setup.
+      </message>
+
+      <!-- Strings for the Fjord variant of OOBE -->
+      <message name="IDS_FJORD_STATION_SETUP_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
+        Next
+      </message>
+      <message name="IDS_FJORD_STATION_SETUP_DONE_BUTTON_TEXT" desc="Button shown to the user to indicate they have finished the setup flow.">
+        Done
+      </message>
+      <message name="IDS_FJORD_FW_UPDATE_TITLE" desc="Title of OOBE screen to indicate that device peripherals are updating.">
+        Updating device peripherals
+      </message>
+      <message name="IDS_FJORD_FW_UPDATE_SUBTITLE" desc="Subtitle shown to indicate the peripheral updates may take up to 30 minutes.">
+        This may take up to 30 minutes
+      </message>
+      <message name="IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
+        Next
+      </message>
+      <message name="IDS_FJORD_IMAGE_SELECTION_TITLE" desc="Title of the OOBE screen for choosing the device enrollment type.">
+        Choose device enrollment type
+      </message>
+      <message name="IDS_FJORD_IMAGE_SELECTION_MEET_LABEL" desc="Label for the radio button option to enroll the device as Google Beam for Meet.">
+        Google Beam for Meet
+      </message>
+      <message name="IDS_FJORD_IMAGE_SELECTION_ZOOM_LABEL" desc="Label for the radio button option to enroll the device as Google Beam for Zoom.">
+        Google Beam for Zoom
+      </message>
+      <message name="IDS_FJORD_IMAGE_SELECTION_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
+        Next
+      </message>
+      <message name="IDS_FJORD_IMAGE_SELECTION_ERROR_SUBTITLE" desc="Subtitle shown on the image selection screen when the image download has failed.">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_FJORD_IMAGE_DOWNLOAD_TITLE" desc="Title of the OOBE screen shown while the device image download is in progress.">
+        Installing software
+      </message>
+
+      <!-- Strings for the locale switch notification inside the OOBE. -->
+      <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TITLE" desc="Title of the notification that is displayed at the bottom-right corner of the screen.">
+        Switch device language?
+      </message>
+      <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TEXT" desc="Message that proposes users to change their locale inside a notification that is displayed at the bottom-right corner of the screen.">
+        You can use your preferred Google Account language (<ph name="NEW_LOCALE_FROM_GAIA">$1<ex>Spanish (Latin America)</ex></ph>)
+      </message>
+      <message name="IDS_LOCALE_SWITCH_NOTIFICATION_CONFIRM_BUTTON_LABEL" desc="Label of a button that user will use to accept the locale sync. Displayed inside a notification at the bottom-right corner of the screen.">
+        Switch
+      </message>
+      <message name="IDS_LOCALE_SWITCH_NOTIFICATION_CANCEL_BUTTON_LABEL" desc="Label of a button that user will use to cancel the locale sync. Displayed inside a notification at the bottom-right corner of the screen.">
+        Don't switch
+      </message>
+
+      <!-- Gaia Info -->
+      <message name="IDS_GAIA_INFO_TITLE" desc="Title of the Gaia Info screen.">
+        Use your Google Account on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_GAIA_INFO_DESCRIPTION" desc="Description of the Gaia Info screen.">
+        Your Google Account is the same account you use for Gmail, YouTube, Chrome, and other Google products.
+        Use your account to easily access all of your bookmarks, files, and more. If you don't have an account, you can create one on the next screen.
+      </message>
+      <message name="IDS_GAIA_INFO_DESCRIPTION_QUICK_START_P1" desc="Paragraph 1 of description of the Gaia Info screen for quick start flow.">
+        Your Google Account is the same account you use for Gmail, YouTube, Chrome, and other Google products.
+        Use your account to easily access all of your bookmarks, files, and more.
+      </message>
+      <message name="IDS_GAIA_INFO_DESCRIPTION_QUICK_START_P2" desc="Paragraph 2 of description of the Gaia Info screen for quick start flow.">
+        If you don't have an account, select the first option to create one.
+      </message>
+      <message name="IDS_GAIA_INFO_MANUAL_FLOW" desc="Label for the option on the Gaia Info screen to manually enter account and credentials.">
+        Enter your Google Account and password
+      </message>
+      <message name="IDS_GAIA_INFO_QUICK_START_FLOW" desc="Label for the option on the Gaia Info screen to use quick start to enter account and credentials.">
+        Automatically get account from Android phone
+      </message>
     </messages>
   </release>
 </grit>

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/grit/generated_resources.h"
