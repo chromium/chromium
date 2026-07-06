@@ -426,9 +426,6 @@ void ModelQualityLogsUploader::SetOpenFormQuality(
     }
   }
 
-  final_log_data_.mutable_password_change_submission()->MergeFrom(
-      *logging_data);
-
   open_form_quality->mutable_request()->CopyFrom(logging_data->request());
   if (logging_data->has_model_execution_info()) {
     open_form_quality->mutable_model_execution_info()->CopyFrom(
@@ -466,9 +463,6 @@ void ModelQualityLogsUploader::SetSubmitFormQuality(
     }
   }
 
-  final_log_data_.mutable_password_change_submission()->MergeFrom(
-      *logging_data);
-
   submit_form_quality->mutable_request()->CopyFrom(logging_data->request());
   if (logging_data->has_model_execution_info()) {
     submit_form_quality->mutable_model_execution_info()->CopyFrom(
@@ -491,8 +485,6 @@ void ModelQualityLogsUploader::SetVerifySubmissionQuality(
               ->mutable_verify_submission();
 
   QualityStatus quality_status = GetVerifySubmissionQualityStatus(response);
-  final_log_data_.mutable_password_change_submission()->MergeFrom(
-      *logging_data);
 
   final_log_data_.mutable_password_change_submission()
       ->mutable_quality()
