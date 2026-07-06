@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/db/sb_store.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
@@ -485,6 +486,13 @@ template SBStoreUpdateResult SBStore::MergeUpdateLoop(
     base::span<const uint8_t> old_prefixes,
     base::span<const uint8_t> new_prefixes,
     const google::protobuf::RepeatedField<int32_t>* raw_removals,
+    const std::string& expected_checksum,
+    HashPrefixContainer* out_container);
+template SBStoreUpdateResult SBStore::MergeUpdateLoop(
+    PrefixSize prefix_size,
+    base::span<const uint8_t> old_prefixes,
+    base::span<const uint8_t> new_prefixes,
+    const std::vector<uint32_t>* raw_removals,
     const std::string& expected_checksum,
     HashPrefixContainer* out_container);
 

@@ -662,6 +662,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ChecksumMismatchFailure"/>
   <int value="5" label="RiceDecodingAdditionsFailure"/>
   <int value="6" label="RiceDecodingRemovalsFailure"/>
+  <int value="7" label="AdditionsHasExistingPrefixFailure"/>
+  <int value="8" label="RemovalsIndexTooLargeFailure"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_list.h:V5ApplyUpdateResult) -->
@@ -969,6 +971,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="MismatchedPrefixLengthError"/>
   <int value="5" label="NegativeDurationError"/>
   <int value="6" label="InvalidRiceFieldError"/>
+  <int value="7" label="ChecksumMissingError"/>
+  <int value="8" label="ChecksumSizeError"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_update_protocol_manager.h:V5ParseResult) -->

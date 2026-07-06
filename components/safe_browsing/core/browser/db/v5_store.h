@@ -205,14 +205,19 @@ class V5Store : public SBStore {
       uint64_t* file_size);
 
   // Common update processing logic for both full and partial updates.
-  // `response` contains the V5 HashList update.
-  // `metric` is the base metric string to be used for histograms.
-  // `is_full_update` is true if the update is a full update, false if it is
-  // a partial update. This is used for metrics.
-  // Returns the result of the update process.
+  //  - `response` contains the V5 HashList update.
+  //  - `metric` is the base metric string to be used for histograms.
+  //  - `is_full_update` is true if the update is a full update, false if it is
+  //    a partial update. This is used for metrics.
+  //  - `old_prefixes_list` contains the existing sorted hash prefixes in the
+  //    store (for partial updates).
+  // Returns `V5ApplyUpdateResult::kSuccess` if the update is successfully
+  // processed and merged. Returns other `V5ApplyUpdateResult` values on failure
+  // (e.g. decoding failure, checksum mismatch).
   V5ApplyUpdateResult ProcessUpdate(std::unique_ptr<V5::HashList> response,
                                     const std::string& metric,
-                                    bool is_full_update);
+                                    bool is_full_update,
+                                    HashPrefixesView old_prefixes_list);
 
   std::unique_ptr<HashPrefixList> hash_prefix_list_;
 

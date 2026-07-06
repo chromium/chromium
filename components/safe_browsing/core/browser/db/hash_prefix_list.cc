@@ -70,10 +70,18 @@ void HashPrefixList::ClearOnTaskRunner() {
 
 HashPrefixMapView HashPrefixList::view() const {
   HashPrefixMapView view;
-  if (file_info_ && file_info_->IsReadable()) {
-    view.emplace(prefix_size_, file_info_->GetView());
+  HashPrefixesView raw_view = GetRawView();
+  if (!raw_view.empty()) {
+    view.emplace(prefix_size_, raw_view);
   }
   return view;
+}
+
+HashPrefixesView HashPrefixList::GetRawView() const {
+  if (file_info_ && file_info_->IsReadable()) {
+    return file_info_->GetView();
+  }
+  return HashPrefixesView();
 }
 
 void HashPrefixList::Append(PrefixSize size, HashPrefixesView prefix) {

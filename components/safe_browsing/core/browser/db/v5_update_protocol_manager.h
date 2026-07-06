@@ -63,8 +63,12 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
     kNegativeDurationError = 5,
     // The Rice-encoded parameters in the response are invalid.
     kInvalidRiceFieldError = 6,
+    // The checksum in the response is missing when there are changes.
+    kChecksumMissingError = 7,
+    // The checksum in the response has an invalid size.
+    kChecksumSizeError = 8,
 
-    kMaxValue = kInvalidRiceFieldError,
+    kMaxValue = kChecksumSizeError,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:V5ParseResult)
 

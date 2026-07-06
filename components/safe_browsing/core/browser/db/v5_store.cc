@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/browser/db/hash_prefix_container.h"
@@ -514,8 +515,10 @@ void V5Store::ApplyUpdate(
   bool is_full_update = !v5_response->partial_update();
   std::string metric = is_full_update ? "SafeBrowsing.V5ProcessFullUpdate"
                                       : "SafeBrowsing.V5ProcessPartialUpdate";
-  V5ApplyUpdateResult apply_update_result =
-      new_store->ProcessUpdate(std::move(v5_response), metric, is_full_update);
+  HashPrefixesView old_prefixes =
+      is_full_update ? HashPrefixesView() : hash_prefix_list_->GetRawView();
+  V5ApplyUpdateResult apply_update_result = new_store->ProcessUpdate(
+      std::move(v5_response), metric, is_full_update, old_prefixes);
 
   if (apply_update_result == V5ApplyUpdateResult::kSuccess) {
     new_store->has_valid_data_ = true;
@@ -541,7 +544,9 @@ void V5Store::ApplyUpdate(
 V5ApplyUpdateResult V5Store::ProcessUpdate(
     std::unique_ptr<V5::HashList> response,
     const std::string& metric,
-    bool is_full_update) {
+    bool is_full_update,
+    HashPrefixesView old_prefixes_list) {
+  // Decode removals.
   std::vector<uint32_t> removals;
   V5DecodeResult decode_removals_result =
       v5_hash_list_rice_decoder::DecodeRemovals(*response, removals);
@@ -551,6 +556,7 @@ V5ApplyUpdateResult V5Store::ProcessUpdate(
   }
   RecordRemovalsHashesCount(metric, removals.size(), store_path_);
 
+  // Decode additions.
   std::string additions;
   V5DecodeResult decode_additions_result =
       v5_hash_list_rice_decoder::DecodeAdditions(*response, additions);
@@ -561,10 +567,12 @@ V5ApplyUpdateResult V5Store::ProcessUpdate(
   RecordAdditionsHashesCount(metric, is_full_update,
                              additions.size() / prefix_size_, store_path_);
 
-  // TODO(crbug.com/362791941): Implement merging of additions and removals into
-  // hash_prefix_list_.
+  // Merge the additions and removals into the existing list.
+  base::span<const uint8_t> old_prefixes =
+      base::as_byte_span(old_prefixes_list);
+  base::span<const uint8_t> new_prefixes = base::as_byte_span(additions);
+  CHECK_EQ(new_prefixes.size() % prefix_size_, 0u);
 
-  version_ = response->version();
   if (!response->sha256_checksum().empty()) {
     expected_checksum_ = response->sha256_checksum();
   }
@@ -573,7 +581,22 @@ V5ApplyUpdateResult V5Store::ProcessUpdate(
   if (expected_checksum_.empty()) {
     return V5ApplyUpdateResult::kChecksumMismatchFailure;
   }
-  return V5ApplyUpdateResult::kSuccess;
+
+  SBStoreUpdateResult result =
+      MergeUpdateLoop(prefix_size_, old_prefixes, new_prefixes, &removals,
+                      expected_checksum_, hash_prefix_list_.get());
+
+  switch (result) {
+    case SBStoreUpdateResult::kSuccess:
+      version_ = response->version();
+      return V5ApplyUpdateResult::kSuccess;
+    case SBStoreUpdateResult::kAdditionsHasExistingPrefixFailure:
+      return V5ApplyUpdateResult::kAdditionsHasExistingPrefixFailure;
+    case SBStoreUpdateResult::kRemovalsIndexTooLargeFailure:
+      return V5ApplyUpdateResult::kRemovalsIndexTooLargeFailure;
+    case SBStoreUpdateResult::kChecksumMismatchFailure:
+      return V5ApplyUpdateResult::kChecksumMismatchFailure;
+  }
 }
 
 const std::string& V5Store::GetStoreState() const {
