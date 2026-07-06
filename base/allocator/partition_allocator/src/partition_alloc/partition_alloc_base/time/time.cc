@@ -141,7 +141,7 @@ time_t Time::ToTimeT() const {
     return 0;  // Preserve 0 so we can tell it doesn't exist.
   }
   if (!is_inf() && ((std::numeric_limits<int64_t>::max() -
-                     kTimeTToMicrosecondsOffset) > us_)) {
+                     kMicrosecondsFromWindowsToUnixEpoch) > us_)) {
     return (*this - UnixEpoch()).InSeconds();
   }
   return (us_ < 0) ? std::numeric_limits<time_t>::min()
@@ -217,16 +217,17 @@ bool Time::FromMillisecondsSinceUnixEpoch(int64_t unix_milliseconds,
   // microseconds since the Windows epoch (1601), avoiding overflows.
   CheckedNumeric<int64_t> checked_microseconds_win_epoch = unix_milliseconds;
   checked_microseconds_win_epoch *= kMicrosecondsPerMillisecond;
-  checked_microseconds_win_epoch += kTimeTToMicrosecondsOffset;
+  checked_microseconds_win_epoch += kMicrosecondsFromWindowsToUnixEpoch;
   *time = Time(checked_microseconds_win_epoch.ValueOrDefault(0));
   return checked_microseconds_win_epoch.IsValid();
 }
 
 int64_t Time::ToRoundedDownMillisecondsSinceUnixEpoch() const {
   constexpr int64_t kEpochOffsetMillis =
-      kTimeTToMicrosecondsOffset / kMicrosecondsPerMillisecond;
-  static_assert(kTimeTToMicrosecondsOffset % kMicrosecondsPerMillisecond == 0,
-                "assumption: no epoch offset sub-milliseconds");
+      kMicrosecondsFromWindowsToUnixEpoch / kMicrosecondsPerMillisecond;
+  static_assert(
+      kMicrosecondsFromWindowsToUnixEpoch % kMicrosecondsPerMillisecond == 0,
+      "assumption: no epoch offset sub-milliseconds");
 
   // Compute the milliseconds since UNIX epoch without the possibility of
   // under/overflow. Round the result towards -infinity.

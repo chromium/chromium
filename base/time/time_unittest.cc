@@ -922,7 +922,7 @@ TEST_F(TimeTest, TimeTOverflow) {
   // We also expect the same behaviour for Min plus the Unix Epoch.
   constexpr Time kMinPlusUnix =
       Time() + base::Microseconds(std::numeric_limits<int64_t>::min() +
-                                  Time::kTimeTToMicrosecondsOffset);
+                                  Time::kMicrosecondsFromWindowsToUnixEpoch);
   static_assert(!kMinPlusUnix.is_min());
   EXPECT_EQ(std::numeric_limits<time_t>::min(), kMinPlusUnix.ToTimeT());
 
@@ -932,8 +932,9 @@ TEST_F(TimeTest, TimeTOverflow) {
   // time_t, but not on a 32 bit time_t, which can only represent values
   // starting from 1901-12-13
   constexpr Time kMinPlusUnixPlusOne =
-      Time() + base::Microseconds(std::numeric_limits<int64_t>::min() +
-                                  Time::kTimeTToMicrosecondsOffset + 1);
+      Time() +
+      base::Microseconds(std::numeric_limits<int64_t>::min() +
+                         Time::kMicrosecondsFromWindowsToUnixEpoch + 1);
   static_assert(!kMinPlusUnixPlusOne.is_min());
   if (time_t_is_32_bit) {
     EXPECT_EQ(std::numeric_limits<time_t>::min(),
@@ -975,7 +976,7 @@ TEST_F(TimeTest, Explode_Y10KCompliance) {
 
   // The Y2038 issue occurs when a 32-bit signed integer overflows.
   constexpr int64_t kYear2038MicrosOffset =
-      Time::kTimeTToMicrosecondsOffset +
+      Time::kMicrosecondsFromWindowsToUnixEpoch +
       (std::numeric_limits<int32_t>::max() * Time::kMicrosecondsPerSecond);
 
   // 1 March 10000 at noon.
@@ -983,7 +984,7 @@ TEST_F(TimeTest, Explode_Y10KCompliance) {
   constexpr int kExtraLeapDaysOverThoseYears = 1947;
   constexpr int kDaysFromJanToMar10000 = 31 + 29;
   constexpr int64_t kMarch10000MicrosOffset =
-      Time::kTimeTToMicrosecondsOffset +
+      Time::kMicrosecondsFromWindowsToUnixEpoch +
       Days(kYear10000YearsOffset * kDaysPerYear + kExtraLeapDaysOverThoseYears +
            kDaysFromJanToMar10000)
           .InMicroseconds() +
@@ -1000,7 +1001,7 @@ TEST_F(TimeTest, Explode_Y10KCompliance) {
   constexpr int64_t kMaxIntegerAsDoubleMillis =
       int64_t{1} << std::numeric_limits<double>::digits;
   constexpr int64_t kIcuMaxMicrosOffset =
-      Time::kTimeTToMicrosecondsOffset +
+      Time::kMicrosecondsFromWindowsToUnixEpoch +
       (kMaxIntegerAsDoubleMillis * Time::kMicrosecondsPerMillisecond + 999);
 
   const auto make_time = [](int64_t micros) {
@@ -1021,11 +1022,11 @@ TEST_F(TimeTest, Explode_Y10KCompliance) {
       {make_time(kHalfYearInMicros), Time::Exploded{1601, 7, 1, 2, 0, 0, 0, 0}},
 
       // Before/On/After 1 Jan 1970.
-      {make_time(Time::kTimeTToMicrosecondsOffset - kHalfYearInMicros),
+      {make_time(Time::kMicrosecondsFromWindowsToUnixEpoch - kHalfYearInMicros),
        Time::Exploded{1969, 7, 4, 3, 0, 0, 0, 0}},
-      {make_time(Time::kTimeTToMicrosecondsOffset),
+      {make_time(Time::kMicrosecondsFromWindowsToUnixEpoch),
        Time::Exploded{1970, 1, 4, 1, 0, 0, 0, 0}},
-      {make_time(Time::kTimeTToMicrosecondsOffset + kHalfYearInMicros),
+      {make_time(Time::kMicrosecondsFromWindowsToUnixEpoch + kHalfYearInMicros),
        Time::Exploded{1970, 7, 4, 2, 0, 0, 0, 0}},
 
       // Before/On/After 19 January 2038.

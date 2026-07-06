@@ -69,7 +69,7 @@ struct timeval Time::ToTimeVal() const {
 
   // TODO(crbug.com/41405098): Handle negative values including Time::Min().
 
-  const int64_t us = us_ - kTimeTToMicrosecondsOffset;
+  const int64_t us = us_ - kMicrosecondsFromWindowsToUnixEpoch;
   return {
       .tv_sec = is_max()
                     ? std::numeric_limits<time_t>::max()

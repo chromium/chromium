@@ -44,7 +44,7 @@ Time Time::FromTimeVal(struct timeval t) {
     return Max();
   }
   return Time((static_cast<int64_t>(t.tv_sec) * Time::kMicrosecondsPerSecond) +
-              t.tv_usec + kTimeTToMicrosecondsOffset);
+              t.tv_usec + kMicrosecondsFromWindowsToUnixEpoch);
 }
 
 struct timeval Time::ToTimeVal() const {
@@ -59,7 +59,7 @@ struct timeval Time::ToTimeVal() const {
     result.tv_usec = static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1;
     return result;
   }
-  int64_t us = us_ - kTimeTToMicrosecondsOffset;
+  int64_t us = us_ - kMicrosecondsFromWindowsToUnixEpoch;
   result.tv_sec = us / Time::kMicrosecondsPerSecond;
   result.tv_usec = us % Time::kMicrosecondsPerSecond;
   return result;

@@ -818,7 +818,8 @@ bool MigrateDatabase(unsigned current_version,
     fix_time_format.Assign(db->GetUniqueStatement(
         "UPDATE logins SET date_created = (date_created * ?) + ?"));
     fix_time_format.BindInt64(0, base::Time::kMicrosecondsPerSecond);
-    fix_time_format.BindInt64(1, base::Time::kTimeTToMicrosecondsOffset);
+    fix_time_format.BindInt64(1,
+                              base::Time::kMicrosecondsFromWindowsToUnixEpoch);
     if (!fix_time_format.Run()) {
       return false;
     }

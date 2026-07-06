@@ -50,7 +50,8 @@ function dateToMojoTime(date: Date) {
   // milliseconds.
   const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
   const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
-  // `epochDeltaInMs` is equal to `base::Time::kTimeTToMicrosecondsOffset`.
+  // `epochDeltaInMs` is equal to
+  // `base::Time::kMicrosecondsFromWindowsToUnixEpoch`.
   const epochDeltaInMs = unixEpoch - windowsEpoch;
   const internalValue = BigInt(date.valueOf() + epochDeltaInMs) * BigInt(1000);
   return {internalValue} as Time;

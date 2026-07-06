@@ -174,16 +174,17 @@ bool Time::FromMillisecondsSinceUnixEpoch(int64_t unix_milliseconds,
   // microseconds since the Windows epoch (1601), avoiding overflows.
   CheckedNumeric<int64_t> checked_microseconds_win_epoch = unix_milliseconds;
   checked_microseconds_win_epoch *= kMicrosecondsPerMillisecond;
-  checked_microseconds_win_epoch += kTimeTToMicrosecondsOffset;
+  checked_microseconds_win_epoch += kMicrosecondsFromWindowsToUnixEpoch;
   *time = Time(checked_microseconds_win_epoch.ValueOrDefault(0));
   return checked_microseconds_win_epoch.IsValid();
 }
 
 int64_t Time::ToRoundedDownMillisecondsSinceUnixEpoch() const {
   constexpr int64_t kEpochOffsetMillis =
-      kTimeTToMicrosecondsOffset / kMicrosecondsPerMillisecond;
-  static_assert(kTimeTToMicrosecondsOffset % kMicrosecondsPerMillisecond == 0,
-                "assumption: no epoch offset sub-milliseconds");
+      kMicrosecondsFromWindowsToUnixEpoch / kMicrosecondsPerMillisecond;
+  static_assert(
+      kMicrosecondsFromWindowsToUnixEpoch % kMicrosecondsPerMillisecond == 0,
+      "assumption: no epoch offset sub-milliseconds");
 
   // Compute the milliseconds since UNIX epoch without the possibility of
   // under/overflow. Round the result towards -infinity.

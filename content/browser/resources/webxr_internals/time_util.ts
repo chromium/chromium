@@ -13,7 +13,7 @@ export function formatMojoTime(mojoTime: Time) {
   // conversion from microseconds to milliseconds.
   const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
   const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
-  // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
+  // |epochDeltaInMs| equals to base::Time::kMicrosecondsFromWindowsToUnixEpoch.
   const epochDeltaInMs = unixEpoch - windowsEpoch;
   const timeInMs = Number(mojoTime.internalValue) / 1000;
 

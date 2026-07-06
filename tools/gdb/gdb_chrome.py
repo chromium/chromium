@@ -285,7 +285,8 @@ pp_set.add_printer('base::TimeTicks', '^base::TimeTicks$', TimeTicksPrinter)
 class TimePrinter(object):
 
   def __init__(self, val):
-    timet_offset = gdb.parse_and_eval('base::Time::kTimeTToMicrosecondsOffset')
+    timet_offset = gdb.parse_and_eval(
+        'base::Time::kMicrosecondsFromWindowsToUnixEpoch')
     self._datetime = (
         datetime.datetime.fromtimestamp(0) + datetime.timedelta(
             microseconds=int(val['us_']['value_']) - int(timet_offset)))

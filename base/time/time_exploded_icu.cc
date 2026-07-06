@@ -47,10 +47,12 @@ bool ExplodeUsingIcuCalendar(int64_t millis_since_unix_epoch,
   // Windows only works for values on/after 1601-01-01 00:00:00 UTC, just use
   // that as a reasonable lower-bound here as well.
   constexpr int64_t kInputLowerBound =
-      -Time::kTimeTToMicrosecondsOffset / Time::kMicrosecondsPerMillisecond;
-  static_assert(
-      Time::kTimeTToMicrosecondsOffset % Time::kMicrosecondsPerMillisecond == 0,
-      "assumption: no epoch offset sub-milliseconds");
+      -Time::kMicrosecondsFromWindowsToUnixEpoch /
+      Time::kMicrosecondsPerMillisecond;
+  static_assert(Time::kMicrosecondsFromWindowsToUnixEpoch %
+                        Time::kMicrosecondsPerMillisecond ==
+                    0,
+                "assumption: no epoch offset sub-milliseconds");
 
   // The input to icu::Calendar is a double-typed value. To ensure no loss of
   // precision when converting int64_t to double, an upper-bound must also be

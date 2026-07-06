@@ -156,7 +156,8 @@ export class GeolocationMock {
     // sets the |internalValue|. See more info in //base/time/time.h.
     const windowsEpoch = Date.UTC(1601,0,1,0,0,0,0);
     const unixEpoch = Date.UTC(1970,0,1,0,0,0,0);
-    // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
+    // |epochDeltaInMs| equals to
+    // base::Time::kMicrosecondsFromWindowsToUnixEpoch.
     const epochDeltaInMs = unixEpoch - windowsEpoch;
     const timestamp =
         {internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)};

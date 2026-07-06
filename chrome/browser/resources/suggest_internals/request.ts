@@ -220,7 +220,8 @@ export class SuggestRequestElement extends CrLitElement {
     // conversion from microseconds to milliseconds.
     const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
     const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
-    // |epochDeltaMs| is equivalent to base::Time::kTimeTToMicrosecondsOffset.
+    // |epochDeltaMs| is equivalent to
+    // base::Time::kMicrosecondsFromWindowsToUnixEpoch.
     const epochDeltaMs = unixEpoch - windowsEpoch;
     const startTimeMs = Number(this.request.startTime.internalValue) / 1000;
     return (new Date(startTimeMs - epochDeltaMs)).toLocaleTimeString();

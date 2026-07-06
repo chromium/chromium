@@ -74,7 +74,7 @@ Time TimeNowIgnoringOverride() {
   // Unix (1970) to Windows (1601) epoch.
   return Time() +
          Microseconds((tv.tv_sec * Time::kMicrosecondsPerSecond + tv.tv_usec) +
-                      Time::kTimeTToMicrosecondsOffset);
+                      Time::kMicrosecondsFromWindowsToUnixEpoch);
 }
 
 Time TimeNowFromSystemTimeIgnoringOverride() {
