@@ -15,13 +15,10 @@ import type {SkillsClient, SkillsHost} from './skills_types.js';
 export function skillPreviewToClient(
     preview: SkillPreviewMojo, isContextual: boolean): SkillPreview {
   return {
-    id: preview.id,
-    name: preview.name,
-    icon: preview.icon,
+    ...preview,
     source: enumToClient(preview.source),
-    description: optionalToClient(preview.description),
-    curated_by: optionalToClient(preview.curatedBy),
-    image_url: urlToClient(preview.imageUrl),
+    curatedBy: optionalToClient(preview.curatedBy),
+    imageUrl: urlToClient(preview.imageUrl),
     isContextual,
   };
 }

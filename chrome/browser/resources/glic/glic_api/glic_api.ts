@@ -2408,11 +2408,11 @@ export declare interface SkillPreview {
   /** The source of the skill. */
   source: SkillSource;
   /** The description of the skill. */
-  description?: string;
-  /** The image URL to show when rendering this skill. */
-  image_url?: string;
-  /** The name of the curator for this skill. */
-  curated_by?: string;
+  description: string;
+  /** The image URL to show when rendering this skill. Added M152*/
+  imageUrl?: string;
+  /** The name of the curator for this skill. Added M152*/
+  curatedBy?: string;
   /** Whether the skill is contextually relevant to the current tab. */
   isContextual?: boolean;
 }
