@@ -25,6 +25,17 @@ Additional files, not in the original library:
   charntorune_fuzzer.cc
   libphonenumber_fuzzer.cc
   phonenumber_api.h
+  phonenumber_brotli.h
+  phonenumber_brotli.cc
+  gen_compressed_metadata.py
+
+The production metadata table is stored brotli-compressed to reduce binary
+size. At build time gen_compressed_metadata.py compresses the upstream
+lite_metadata.cc blob and emits a replacement GetMetadata() that decompresses
+it on first use via phonenumber_brotli.{h,cc}. This relies on the upstream
+MetadataBytes accessor API (cpp/src/phonenumbers/metadata_bytes.h), which lets
+GetMetadata() return an owning buffer that is freed once PhoneNumberUtil has
+parsed it.
 
 The library is mapped through the DEPS file into the Chromium sources root
 folder. To update:

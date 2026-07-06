@@ -79,15 +79,62 @@ static_library("libphonenumber_without_metadata") {
   ]
 }
 
+# Brotli-compresses the upstream lite_metadata.cc blob at build time. The
+# generated .cc keeps the compressed bytes in .rodata (~42KB instead of
+# ~191KB) and reconstitutes them on the first (and only) call to
+# GetMetadata(). The decompressed buffer is owned by the returned
+# MetadataBytes and freed once the singleton has parsed it; see
+# gen_compressed_metadata.py and phonenumber_brotli.h.
+_brotli_target = "//third_party/brotli:brotli($host_toolchain)"
+_brotli_executable = get_label_info(_brotli_target, "root_out_dir") + "/" +
+                     get_label_info(_brotli_target, "name")
+if (host_os == "win") {
+  _brotli_executable += ".exe"
+}
+
+action("gen_lite_metadata_compressed") {
+  script = "gen_compressed_metadata.py"
+  inputs = [
+    "src/cpp/src/phonenumbers/lite_metadata.cc",
+    _brotli_executable,
+  ]
+  outputs = [ "$target_gen_dir/lite_metadata_compressed.cc" ]
+  args = [
+    "--input",
+    rebase_path(inputs[0], root_build_dir),
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+    "--brotli",
+    rebase_path(_brotli_executable, root_build_dir),
+    "--header",
+    "phonenumbers/metadata.h",
+    "--fn",
+    "GetMetadata",
+    "--symbol",
+    "kLiteMetadata",
+  ]
+  deps = [ _brotli_target ]
+}
+
 # Library used by clients that includes production metadata.
 static_library("libphonenumber") {
   sources = [
-    # Comment next line and uncomment the line after, if complete metadata
-    # (with examples) is needed.
-    "src/cpp/src/phonenumbers/lite_metadata.cc",
-    #"src/cpp/src/phonenumbers/metadata.cc",
+    "phonenumber_brotli.cc",
+    "phonenumber_brotli.h",
+  ]
+  sources += get_target_outputs(":gen_lite_metadata_compressed")
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":libphonenumber_config_internal",
   ]
 
+  deps = [
+    ":gen_lite_metadata_compressed",
+    "//base",
+    "//third_party/brotli:dec",
+  ]
   public_deps = [ ":libphonenumber_without_metadata" ]
 }
 

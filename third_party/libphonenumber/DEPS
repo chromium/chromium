@@ -1,0 +1,8 @@
+include_rules = [
+  # phonenumber_brotli.h and the generated metadata .cc use the same
+  # "phonenumbers/..." include paths as the upstream sources (resolved via
+  # the src/cpp/src include dir in BUILD.gn).
+  "+phonenumbers",
+  # The Chromium-authored phonenumber_brotli.cc glue uses CHECK_EQ.
+  "+base/check_op.h",
+]
