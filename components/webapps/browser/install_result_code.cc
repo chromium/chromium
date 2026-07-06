@@ -9,16 +9,42 @@
 namespace webapps {
 
 bool IsSuccess(InstallResultCode code) {
-  // TODO(crbug.com/40821686): enumerate all the constants instead of the
-  // default clause to prevent accidentally implicitly returning false on any
-  // newly added value.
   switch (code) {
     case InstallResultCode::kSuccessNewInstall:
     case InstallResultCode::kSuccessAlreadyInstalled:
     case InstallResultCode::kSuccessOfflineOnlyInstall:
     case InstallResultCode::kSuccessOfflineFallbackInstall:
       return true;
-    default:
+    case InstallResultCode::kGetWebAppInstallInfoFailed:
+    case InstallResultCode::kPreviouslyUninstalled:
+    case InstallResultCode::kWebContentsDestroyed:
+    case InstallResultCode::kWriteDataFailed:
+    case InstallResultCode::kUserInstallDeclined:
+    case InstallResultCode::kNotValidManifestForWebApp:
+    case InstallResultCode::kIntentToPlayStore:
+    case InstallResultCode::kWebAppDisabled:
+    case InstallResultCode::kInstallURLRedirected:
+    case InstallResultCode::kInstallURLLoadFailed:
+    case InstallResultCode::kExpectedAppIdCheckFailed:
+    case InstallResultCode::kInstallURLLoadTimeOut:
+    case InstallResultCode::kFailedPlaceholderUninstall:
+    case InstallResultCode::kNotInstallable:
+    case InstallResultCode::kApkWebAppInstallFailed:
+    case InstallResultCode::kCancelledOnWebAppProviderShuttingDown:
+    case InstallResultCode::kWebAppProviderNotReady:
+    case InstallResultCode::kInstallTaskDestroyed:
+    case InstallResultCode::kUpdateTaskFailed:
+    case InstallResultCode::kAppNotInRegistrarAfterCommit:
+    case InstallResultCode::kHaltedBySyncUninstall:
+    case InstallResultCode::kInstallURLInvalid:
+    case InstallResultCode::kIconDownloadingFailed:
+    case InstallResultCode::kCancelledDueToMainFrameNavigation:
+    case InstallResultCode::kNoValidIconsInManifest:
+    case InstallResultCode::kNoCustomManifestId:
+    case InstallResultCode::kManifestIdMismatch:
+    case InstallResultCode::kFallbackInstallUsingTrustedIcons:
+    case InstallResultCode::kNoValidMigrationSource:
+    case InstallResultCode::kInvalidManifestId:
       return false;
   }
 }
