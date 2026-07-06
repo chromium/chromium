@@ -114,10 +114,12 @@ void WebContentsSensorProviderProxy::RemoveObserver(Observer* observer) {
 
 void WebContentsSensorProviderProxy::GetSensor(
     SensorType type,
-    mojo::PendingRemote<device::mojom::SensorConnectionWatcher> watcher,
+    mojo::PendingReceiver<device::mojom::SensorClientController> controller,
+    bool initially_suspended,
     device::mojom::SensorProvider::GetSensorCallback callback) {
   EnsureDeviceServiceConnection();
-  sensor_provider_->GetSensor(type, std::move(watcher), std::move(callback));
+  sensor_provider_->GetSensor(type, std::move(controller), initially_suspended,
+                              std::move(callback));
 }
 
 void WebContentsSensorProviderProxy::CreateVirtualSensor(

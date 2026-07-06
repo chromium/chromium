@@ -137,11 +137,12 @@ class InterceptingFakeSensorProvider : public device::FakeSensorProvider {
 
   void GetSensor(
       device::mojom::SensorType type,
-      mojo::PendingRemote<device::mojom::SensorConnectionWatcher> watcher,
+      mojo::PendingReceiver<device::mojom::SensorClientController> controller,
+      bool initially_suspended,
       GetSensorCallback callback) override {
     std::move(interception_callback_).Run();
-    device::FakeSensorProvider::GetSensor(type, std::move(watcher),
-                                          std::move(callback));
+    device::FakeSensorProvider::GetSensor(
+        type, std::move(controller), initially_suspended, std::move(callback));
   }
 
  private:
@@ -202,7 +203,7 @@ TEST_F(WebContentsSensorProviderProxyTest,
   ASSERT_TRUE(fake_sensor);
 
   base::RunLoop run_loop;
-  fake_sensor->SetWatcherDisconnectCallback(run_loop.QuitClosure());
+  fake_sensor->SetControllerDisconnectCallback(run_loop.QuitClosure());
 
   // Trigger permission revocation.
   TestPermissionManager* permission_manager =

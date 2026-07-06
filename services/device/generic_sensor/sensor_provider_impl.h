@@ -45,9 +45,11 @@ class SensorProviderImpl final : public mojom::SensorProvider {
 
  private:
   // mojom::SensorProvider implementation.
-  void GetSensor(mojom::SensorType type,
-                 mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
-                 GetSensorCallback callback) override;
+  void GetSensor(
+      mojom::SensorType type,
+      mojo::PendingReceiver<mojom::SensorClientController> controller,
+      bool initially_suspended,
+      GetSensorCallback callback) override;
   void CreateVirtualSensor(mojom::SensorType type,
                            mojom::VirtualSensorMetadataPtr metadata,
                            CreateVirtualSensorCallback callback) override;
@@ -63,7 +65,8 @@ class SensorProviderImpl final : public mojom::SensorProvider {
   // Helper callback method to return created sensors.
   void SensorCreated(
       base::ReadOnlySharedMemoryRegion cloned_region,
-      mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+      mojo::PendingReceiver<mojom::SensorClientController> controller,
+      bool initially_suspended,
       GetSensorCallback callback,
       scoped_refptr<PlatformSensor> sensor);
 

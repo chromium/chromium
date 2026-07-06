@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/public/mojom/sensor.mojom.h"
+#include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace device {
 
@@ -20,7 +21,8 @@ class SensorProviderImpl;
 class SensorImpl final : public mojom::Sensor, public PlatformSensor::Client {
  public:
   SensorImpl(scoped_refptr<PlatformSensor> sensor,
-             mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+             mojo::PendingReceiver<mojom::SensorClientController> controller,
+             bool initially_suspended,
              SensorProviderImpl* provider);
 
   SensorImpl(const SensorImpl&) = delete;
@@ -48,11 +50,19 @@ class SensorImpl final : public mojom::Sensor, public PlatformSensor::Client {
   bool IsSuspended() override;
 
  private:
+  class SensorClientControllerImpl;
+
+  void OnControllerSuspend();
+  void OnControllerResume();
+  void OnControllerDisconnect();
+
+  std::unique_ptr<SensorClientControllerImpl> client_controller_;
+
   scoped_refptr<PlatformSensor> sensor_;
   mojo::Remote<mojom::SensorClient> client_;
   bool reading_notification_enabled_;
-  bool suspended_;
-  mojo::Remote<mojom::SensorConnectionWatcher> watcher_;
+  bool client_suspended_;
+  bool controller_suspended_;
   raw_ptr<SensorProviderImpl> provider_;
 };
 

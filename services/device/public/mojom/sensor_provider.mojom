@@ -79,6 +79,19 @@ struct VirtualSensorInformation {
   double sampling_frequency;
 };
 
+// Interface used by the browser process to control the lifetime and state of a
+// sensor connection held by a renderer. Closing this interface forcefully
+// revokes the sensor connection and destroys the sensor session.
+interface SensorClientController {
+  // Suppresses sensor reading updates and hardware polling. Gated such that
+  // requests from the untrusted Sensor interface (renderer) cannot resume
+  // updates until the SensorClientController calls Resume().
+  Suspend();
+
+  // Resumes sensor updates if the renderer had also requested updates.
+  Resume();
+};
+
 // Manages Sensor interfaces. This interface is responsible for creating or
 // retrieving a Sensor via GetSensor() and for managing virtual sensors.
 interface SensorProvider {
@@ -93,12 +106,16 @@ interface SensorProvider {
   //          SensorCreationResult describing the failure reason.
   // |init_params| on success will contain the SensorInitParams describing
   //               the sensor, contains null on failure.
-  // |watcher| is used to monitor the connection. When the watcher pipe is
-  //           closed, the device service will destroy the sensor and terminate
-  //           the data stream. Can be null if the caller does not need to
-  //           sever the connection on permission revocation.
+  // |controller| is used by the browser process to supervise the sensor
+  //              session. When the pipe is closed, the device service will
+  //              destroy the sensor and terminate the data stream. Can be null
+  //              if the caller does not need supervisory control.
+  // |initially_suspended| indicates whether the sensor should be created in a
+  //                       suspended state (e.g. if the frame is already in
+  //                       BFCache or hidden).
   GetSensor(SensorType type,
-            pending_remote<SensorConnectionWatcher>? watcher)
+            pending_receiver<SensorClientController>? controller,
+            bool initially_suspended)
       => (SensorCreationResult result, SensorInitParams? init_params);
 
   // Creates a new virtual sensor of a given |type|, or fails if one already

@@ -8,7 +8,6 @@
 #include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/device/public/mojom/sensor.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace device {
@@ -24,9 +23,11 @@ class DEVICE_VR_EXPORT FakeXRSensorProvider : public mojom::SensorProvider {
   void CallCallback(mojom::SensorInitParamsPtr param);
 
   // device::mojom::SensorProvider overrides.
-  void GetSensor(mojom::SensorType type,
-                 mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
-                 GetSensorCallback callback) override;
+  void GetSensor(
+      mojom::SensorType type,
+      mojo::PendingReceiver<mojom::SensorClientController> controller,
+      bool initially_suspended,
+      GetSensorCallback callback) override;
   void CreateVirtualSensor(
       mojom::SensorType type,
       mojom::VirtualSensorMetadataPtr metadata,

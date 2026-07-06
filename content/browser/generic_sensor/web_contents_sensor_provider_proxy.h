@@ -46,7 +46,8 @@ class CONTENT_EXPORT WebContentsSensorProviderProxy final
 
   void GetSensor(
       device::mojom::SensorType type,
-      mojo::PendingRemote<device::mojom::SensorConnectionWatcher> watcher,
+      mojo::PendingReceiver<device::mojom::SensorClientController> controller,
+      bool initially_suspended,
       device::mojom::SensorProvider::GetSensorCallback callback);
 
   // Attempts to create and return a ScopedVirtualSensorForDevTools instance of

@@ -61,7 +61,8 @@ void FakeWebSensorProvider::Bind(
 void FakeWebSensorProvider::GetSensor(device::mojom::blink::SensorType type,
                                       bool user_gesture,
                                       GetSensorCallback callback) {
-  sensor_provider_remote_->GetSensor(type, mojo::NullRemote(),
+  sensor_provider_remote_->GetSensor(type, mojo::NullReceiver(),
+                                     /*initially_suspended=*/false,
                                      std::move(callback));
 }
 

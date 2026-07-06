@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "device/vr/orientation/orientation_session.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
@@ -62,7 +63,8 @@ VROrientationDevice::VROrientationDevice(mojom::SensorProvider* sensor_provider,
     : VRDeviceBase(mojom::XRDeviceId::ORIENTATION_DEVICE_ID),
       ready_callback_(std::move(ready_callback)) {
   DVLOG(2) << __func__;
-  sensor_provider->GetSensor(kOrientationSensorType, mojo::NullRemote(),
+  sensor_provider->GetSensor(kOrientationSensorType, mojo::NullReceiver(),
+                             /*initially_suspended=*/false,
                              base::BindOnce(&VROrientationDevice::SensorReady,
                                             base::Unretained(this)));
 

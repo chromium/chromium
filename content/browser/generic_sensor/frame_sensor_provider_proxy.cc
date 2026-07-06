@@ -67,8 +67,9 @@ std::vector<device::mojom::SensorType>& GetUnavailableSensorsCache() {
 
 FrameSensorProviderProxy::FrameSensorProviderProxy(
     RenderFrameHost* render_frame_host)
-    : DocumentUserData<FrameSensorProviderProxy>(render_frame_host) {
-  watcher_receivers_.set_disconnect_handler(
+    : DocumentUserData<FrameSensorProviderProxy>(render_frame_host),
+      WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)) {
+  client_controllers_.set_disconnect_handler(
       base::BindRepeating(&FrameSensorProviderProxy::OnSensorDisconnect,
                           weak_factory_.GetWeakPtr()));
 }
@@ -84,7 +85,7 @@ FrameSensorProviderProxy::~FrameSensorProviderProxy() {
   // Notify the delegate for each active connection that is being cleared.
   auto* delegate = GetContentClient()->browser()->GetSensorDelegate();
   if (delegate) {
-    for (size_t i = 0; i < watcher_receivers_.size(); ++i) {
+    for (size_t i = 0; i < client_controllers_.size(); ++i) {
       delegate->OnSensorStopped(&render_frame_host());
     }
   }
@@ -97,6 +98,7 @@ void FrameSensorProviderProxy::Bind(
 
 void FrameSensorProviderProxy::OnMojoConnectionError() {
   receiver_set_.Clear();
+  client_controllers_.Clear();
 }
 
 void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
@@ -144,7 +146,7 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
             WebContents::FromRenderFrameHost(&render_frame_host()));
 
     web_contents_sensor_provider->GetSensor(
-        type, mojo::NullRemote(),
+        type, mojo::NullReceiver(), /*initially_suspended=*/false,
         base::BindOnce(
             &FrameSensorProviderProxy::OnHardwareCheckForBlockedSensor,
             weak_factory_.GetWeakPtr(), type));
@@ -158,33 +160,37 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
     scoped_observation_.Observe(web_contents_sensor_provider);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kSeverSensorConnectionsOnPermissionRevocation) &&
-      !permission_subscription_id_) {
-    permission_subscription_id_ =
-        permission_controller->SubscribeToPermissionResultChange(
-            content::PermissionDescriptorUtil::
-                CreatePermissionDescriptorForPermissionType(
-                    blink::PermissionType::SENSORS),
-            nullptr, &render_frame_host(),
-            render_frame_host().GetLastCommittedOrigin().GetURL(),
-            /*should_include_device_status=*/false,
-            base::BindRepeating(&FrameSensorProviderProxy::OnPermissionChanged,
-                                weak_factory_.GetWeakPtr()));
-  }
+  mojo::PendingReceiver<device::mojom::SensorClientController>
+      controller_receiver;
+  mojo::PendingRemote<device::mojom::SensorClientController> controller;
+  bool initially_suspended = false;
 
-  // Create watcher but defer binding until success
-  mojo::PendingRemote<device::mojom::SensorConnectionWatcher> watcher;
-  mojo::PendingReceiver<device::mojom::SensorConnectionWatcher> receiver;
   if (ShouldTrackSensorConnection()) {
-    receiver = watcher.InitWithNewPipeAndPassReceiver();
+    if (!permission_subscription_id_) {
+      permission_subscription_id_ =
+          permission_controller->SubscribeToPermissionResultChange(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::SENSORS),
+              nullptr, &render_frame_host(),
+              render_frame_host().GetLastCommittedOrigin().GetURL(),
+              /*should_include_device_status=*/false,
+              base::BindRepeating(
+                  &FrameSensorProviderProxy::OnPermissionChanged,
+                  weak_factory_.GetWeakPtr()));
+    }
+
+    controller_receiver = controller.InitWithNewPipeAndPassReceiver();
+    if (base::FeatureList::IsEnabled(features::kSensorPrivacyMitigations)) {
+      initially_suspended = ShouldSuspendSensors();
+    }
   }
 
   web_contents_sensor_provider->GetSensor(
-      type, std::move(watcher),
+      type, std::move(controller_receiver), initially_suspended,
       base::BindOnce(&FrameSensorProviderProxy::OnHardwareCheckCompleted,
                      weak_factory_.GetWeakPtr(), type, permission_status,
-                     has_valid_gesture, std::move(receiver),
+                     has_valid_gesture, std::move(controller),
                      std::move(callback)));
 }
 
@@ -192,7 +198,7 @@ void FrameSensorProviderProxy::OnHardwareCheckCompleted(
     device::mojom::SensorType type,
     blink::mojom::PermissionStatus permission_status,
     bool user_gesture,
-    mojo::PendingReceiver<device::mojom::SensorConnectionWatcher> receiver,
+    mojo::PendingRemote<device::mojom::SensorClientController> controller,
     GetSensorCallback callback,
     device::mojom::SensorCreationResult result,
     device::mojom::SensorInitParamsPtr params) {
@@ -207,7 +213,7 @@ void FrameSensorProviderProxy::OnHardwareCheckCompleted(
   }
 
   if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
-    FinalizeSensorConnection(std::move(receiver));
+    FinalizeSensorConnection(std::move(controller));
     std::move(callback).Run(result, std::move(params));
     return;
   }
@@ -227,7 +233,7 @@ void FrameSensorProviderProxy::OnHardwareCheckCompleted(
                                    user_gesture),
       base::BindOnce(&FrameSensorProviderProxy::OnPermissionRequestCompleted,
                      weak_factory_.GetWeakPtr(), std::move(params),
-                     std::move(callback), std::move(receiver)));
+                     std::move(callback), std::move(controller)));
 }
 
 void FrameSensorProviderProxy::OnHardwareCheckForBlockedSensor(
@@ -256,7 +262,7 @@ void FrameSensorProviderProxy::OnHardwareCheckForBlockedSensor(
 void FrameSensorProviderProxy::OnPermissionRequestCompleted(
     device::mojom::SensorInitParamsPtr params,
     GetSensorCallback callback,
-    mojo::PendingReceiver<device::mojom::SensorConnectionWatcher> receiver,
+    mojo::PendingRemote<device::mojom::SensorClientController> controller,
     PermissionResult permission_result) {
   if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(
@@ -264,7 +270,7 @@ void FrameSensorProviderProxy::OnPermissionRequestCompleted(
     return;
   }
 
-  FinalizeSensorConnection(std::move(receiver));
+  FinalizeSensorConnection(std::move(controller));
 
   std::move(callback).Run(device::mojom::SensorCreationResult::SUCCESS,
                           std::move(params));
@@ -277,15 +283,49 @@ void FrameSensorProviderProxy::OnPermissionChanged(
         GetContentClient()->browser()->GetSensorDelegate();
     if (delegate) {
       // Notify the delegate for each active connection that is being cleared.
-      for (size_t i = 0; i < watcher_receivers_.size(); ++i) {
+      for (size_t i = 0; i < client_controllers_.size(); ++i) {
         delegate->OnSensorStopped(&render_frame_host());
       }
     }
-    watcher_receivers_.Clear();
+    client_controllers_.Clear();
   }
 }
 
-void FrameSensorProviderProxy::OnSensorDisconnect() {
+void FrameSensorProviderProxy::OnVisibilityChanged(
+    content::Visibility visibility) {
+  UpdateSensorSessionControllers();
+}
+
+void FrameSensorProviderProxy::RenderFrameHostStateChanged(
+    RenderFrameHost* render_frame_host,
+    RenderFrameHost::LifecycleState old_state,
+    RenderFrameHost::LifecycleState new_state) {
+  if (render_frame_host == &this->render_frame_host()) {
+    UpdateSensorSessionControllers();
+  }
+}
+
+bool FrameSensorProviderProxy::ShouldSuspendSensors() const {
+  return !web_contents() || !render_frame_host().IsActive() ||
+         web_contents()->GetVisibility() == content::Visibility::HIDDEN;
+}
+
+void FrameSensorProviderProxy::UpdateSensorSessionControllers() {
+  bool suspended = ShouldSuspendSensors();
+  if (is_suspended_ && *is_suspended_ == suspended) {
+    return;
+  }
+  is_suspended_ = suspended;
+  for (auto& controller : client_controllers_) {
+    if (suspended) {
+      controller->Suspend();
+    } else {
+      controller->Resume();
+    }
+  }
+}
+
+void FrameSensorProviderProxy::OnSensorDisconnect(mojo::RemoteSetElementId id) {
   SensorDelegate* delegate = GetContentClient()->browser()->GetSensorDelegate();
   if (delegate) {
     delegate->OnSensorStopped(&render_frame_host());
@@ -293,29 +333,28 @@ void FrameSensorProviderProxy::OnSensorDisconnect() {
 }
 
 void FrameSensorProviderProxy::FinalizeSensorConnection(
-    mojo::PendingReceiver<device::mojom::SensorConnectionWatcher> receiver) {
+    mojo::PendingRemote<device::mojom::SensorClientController> controller) {
   SensorDelegate* delegate = GetContentClient()->browser()->GetSensorDelegate();
-  bool bound_watcher = false;
-  if (ShouldTrackSensorConnection() && receiver.is_valid()) {
-    watcher_receivers_.Add(this, std::move(receiver));
-    bound_watcher = true;
+  bool bound_controller = false;
+  if (ShouldTrackSensorConnection() && controller.is_valid()) {
+    client_controllers_.Add(std::move(controller));
+    bound_controller = true;
   }
 
   if (delegate) {
     delegate->SetRequestedSensorIsAvailable(&render_frame_host(), true);
-    if (bound_watcher) {
+    if (bound_controller) {
       delegate->OnSensorStarted(&render_frame_host());
     }
   }
 }
 
 bool FrameSensorProviderProxy::ShouldTrackSensorConnection() {
-  if (base::FeatureList::IsEnabled(
-          features::kSeverSensorConnectionsOnPermissionRevocation)) {
-    return true;
-  }
   return base::FeatureList::IsEnabled(
-      content_settings::features::kLeftHandSideSensorActivityIndicators);
+             features::kSensorsAllowAskBlockPermissionModel) ||
+         base::FeatureList::IsEnabled(features::kSensorPrivacyMitigations) ||
+         base::FeatureList::IsEnabled(
+             content_settings::features::kLeftHandSideSensorActivityIndicators);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(FrameSensorProviderProxy);

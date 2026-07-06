@@ -99,13 +99,9 @@ void SensorProviderImpl::OnSensorDisconnected() {
 
 void SensorProviderImpl::GetSensor(
     mojom::SensorType type,
-    mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+    mojo::PendingReceiver<mojom::SensorClientController> controller,
+    bool initially_suspended,
     GetSensorCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSeverSensorConnectionsOnPermissionRevocation)) {
-    watcher.reset();
-  }
-
   if (!base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses) &&
       IsExtraSensorClass(type)) {
     std::move(callback).Run(mojom::SensorCreationResult::ERROR_NOT_AVAILABLE,
@@ -133,20 +129,21 @@ void SensorProviderImpl::GetSensor(
     // If we are here, it means there is no virtual sensor of this type,
     // otherwise the GetSensor() call above would have returned it.
     provider->CreateSensor(
-        type,
-        base::BindOnce(&SensorProviderImpl::SensorCreated,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(cloned_region),
-                       std::move(watcher), std::move(callback)));
+        type, base::BindOnce(&SensorProviderImpl::SensorCreated,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(cloned_region), std::move(controller),
+                             initially_suspended, std::move(callback)));
     return;
   }
 
-  SensorCreated(std::move(cloned_region), std::move(watcher),
-                std::move(callback), std::move(sensor));
+  SensorCreated(std::move(cloned_region), std::move(controller),
+                initially_suspended, std::move(callback), std::move(sensor));
 }
 
 void SensorProviderImpl::SensorCreated(
     base::ReadOnlySharedMemoryRegion cloned_region,
-    mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+    mojo::PendingReceiver<mojom::SensorClientController> controller,
+    bool initially_suspended,
     GetSensorCallback callback,
     scoped_refptr<PlatformSensor> sensor) {
   if (!sensor) {
@@ -157,8 +154,8 @@ void SensorProviderImpl::SensorCreated(
 
   auto init_params = mojom::SensorInitParams::New();
 
-  auto sensor_impl =
-      std::make_unique<SensorImpl>(sensor, std::move(watcher), this);
+  auto sensor_impl = std::make_unique<SensorImpl>(sensor, std::move(controller),
+                                                  initially_suspended, this);
   init_params->client_receiver = sensor_impl->GetClient();
 
   SensorImpl* sensor_impl_ptr = sensor_impl.get();
