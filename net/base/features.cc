@@ -106,6 +106,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "fallback_time",
                    TcpConnectJob::kIPv6FallbackTime);
 
+BASE_FEATURE(kCacheControlImmutable, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHttpCacheZstdDecompression, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHttpCacheZstdCompression, base::FEATURE_DISABLED_BY_DEFAULT);

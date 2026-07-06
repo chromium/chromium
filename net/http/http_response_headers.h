@@ -122,6 +122,7 @@ class NET_EXPORT HttpResponseHeaders
   static constexpr char kCacheControl[] = "cache-control";
   static constexpr char kNoStore[] = "no-store";
   static constexpr char kNoCache[] = "no-cache";
+  static constexpr char kImmutable[] = "immutable";
   static constexpr char kMustRevalidate[] = "must-revalidate";
   static constexpr char kMaxAge[] = "max-age=";
   static constexpr char kStaleWhileRevalidate[] = "stale-while-revalidate=";
@@ -462,6 +463,8 @@ class NET_EXPORT HttpResponseHeaders
   };
 
   struct CacheControlFreshnessDirectives {
+    // Whether the 'immutable' directive is present.
+    bool immutable = false;
     // Whether the 'must-revalidate' directive is present
     bool must_revalidate = false;
     // Value of the 'max-age' directive in seconds, if present
@@ -537,7 +540,7 @@ class NET_EXPORT HttpResponseHeaders
   bool HasCacheRestriction() const;
 
   // Parses Cache-Control headers to extract directives related to response
-  // freshness. Processes "must-revalidate", "max-age", and
+  // freshness. Processes "immutable", "must-revalidate", "max-age", and
   // "stale-while-revalidate" directives, which control how long a cached
   // response can be considered fresh and whether it can be used while
   // asynchronously revalidating in the background.

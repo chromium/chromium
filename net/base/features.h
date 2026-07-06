@@ -137,6 +137,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAdjustIPv6FallbackTime);
 // The duration to use for the slow timer if the feature is enabled.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kIPv6FallbackTime);
 
+// Allows Cache-Control: immutable to override Pragma: no-cache.
+NET_EXPORT BASE_DECLARE_FEATURE(kCacheControlImmutable);
+
 // Enables transparent zstd decompression of cached HTTP response bodies
 // written by the CDT (Compression Dictionary Transport) cache compression
 // feature. When disabled, compressed cache entries are doomed and the

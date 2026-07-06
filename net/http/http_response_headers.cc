@@ -1212,7 +1212,9 @@ HttpResponseHeaders::ParseCacheControlDirectivesForFreshness() const {
     // Result of calling base::RemovePrefix() for values that have prefixes.
     // nullopt if the prefix that is searched for is not present.
     std::optional<std::string_view> with_prefix_removed;
-    if (base::EqualsCaseInsensitiveASCII(*value, kMustRevalidate)) {
+    if (base::EqualsCaseInsensitiveASCII(*value, kImmutable)) {
+      directives.immutable = true;
+    } else if (base::EqualsCaseInsensitiveASCII(*value, kMustRevalidate)) {
       directives.must_revalidate = true;
     } else if (!directives.max_age &&
                (with_prefix_removed = base::RemovePrefix(
@@ -1256,14 +1258,23 @@ HttpResponseHeaders::GetFreshnessLifetimes(Time response_time) const {
   FreshnessLifetimes lifetimes;
   // Check for headers that force a response to never be fresh.  For backwards
   // compat, we treat "Pragma: no-cache" as a synonym for "Cache-Control:
-  // no-cache" even though RFC 2616 does not specify it.
+  // no-cache" even though RFC 2616 does not specify it. "Cache-Control:
+  // immutable" overrides the legacy Pragma behavior when the
+  // kCacheControlImmutable feature is enabled.
+  // TODO(crbug.com/41253661): Override LOAD_VALIDATE_CACHE load flag when
+  // immutable.
 
-  if (HasCacheRestriction() || HasHeaderValue("pragma", "no-cache")) {
+  if (HasCacheRestriction()) {
     return lifetimes;
   }
 
-  auto [must_revalidate, max_age, stale_while_revalidate] =
+  auto [immutable, must_revalidate, max_age, stale_while_revalidate] =
       ParseCacheControlDirectivesForFreshness();
+  if (HasHeaderValue("pragma", "no-cache") &&
+      (!immutable ||
+       !base::FeatureList::IsEnabled(features::kCacheControlImmutable))) {
+    return lifetimes;
+  }
   // Cache-Control directive must_revalidate overrides stale-while-revalidate.
   lifetimes.staleness =
       must_revalidate ? base::TimeDelta()
