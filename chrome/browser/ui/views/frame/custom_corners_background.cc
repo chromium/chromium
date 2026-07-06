@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
@@ -137,6 +138,28 @@ CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner(
     }
   }
   return corner;
+}
+
+void CustomCornersBackground::SetUseBackgroundBlur(bool use_background_blur) {
+  static const bool background_blur_enabled =
+      features::kBackgroundBlurOpacity.Get() < 1.0f;
+  static const float background_blur_radius =
+      features::kBackgroundBlurBlurRadius.Get();
+  use_background_blur &=
+      background_blur_enabled && background_blur_radius > 0.0f;
+  if (!view_->layer()) {
+    CHECK(!use_background_blur);
+    return;
+  }
+  auto* const layer = view_->layer();
+  CHECK(!layer->fills_bounds_opaquely());
+  if (!use_background_blur) {
+    layer->SetBackgroundBlur(0.0f);
+    return;
+  }
+  layer->SetBackgroundBlur(background_blur_radius);
+  layer->SetBackdropFilterBounds(GetBackgroundPath(view_->GetLocalBounds()));
+  SchedulePaintHost();
 }
 
 SkPath CustomCornersBackground::GetBackgroundPath(const gfx::Rect& in_bounds,

@@ -1423,22 +1423,11 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
           std::powf(static_cast<float>(animation.expand_on_hover), 0.2f);
       auto vertical_tabs_background_color = frame_color;
       static const float expand_on_hover_opacity =
-          static_cast<float>(features::kExpandOnHoverOpacity.Get());
+          static_cast<float>(features::kBackgroundBlurOpacity.Get());
       vertical_tabs_background_color.opacity =
           (1.0f - scaled_percent) * frame_color.opacity +
           scaled_percent * expand_on_hover_opacity;
       vertical_tabs_background->SetPrimaryColor(vertical_tabs_background_color);
-      auto* const layer = views().vertical_tab_strip_region_view->layer();
-
-      // TODO(https://crbug.com/526614803): Move the following to a feature of
-      // CustomCornersBackground, clip corners appropriately.
-      if (animation.expand_on_hover > 0 && expand_on_hover_opacity < 1.0f) {
-        static const float expand_on_hover_blur_radius =
-            static_cast<float>(features::kExpandOnHoverBlurRadius.Get());
-        layer->SetBackgroundBlur(expand_on_hover_blur_radius);
-      } else {
-        layer->SetBackgroundBlur(0.0f);
-      }
     }
 
     // Ensure that corners of the window remain rounded.
@@ -1563,6 +1552,11 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       views().vertical_tab_strip_top_corner->SetAlpha(frame_color.opacity);
       views().vertical_tab_strip_bottom_corner->SetAlpha(frame_color.opacity);
       vertical_tabs_background->SetCutoutFrom(tab_strip_cutout_views);
+
+      // Has to be done after most other adjustments to ensure the correct
+      // outline path.
+      vertical_tabs_background->SetUseBackgroundBlur(animation.expand_on_hover >
+                                                     0.0);
     }
   } else if (layout_data_->tab_strip_type == TabStripType::kHorizontal &&
              !is_fullscreen(layout_data_->window_state) &&

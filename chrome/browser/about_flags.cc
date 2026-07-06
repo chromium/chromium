@@ -4751,9 +4751,9 @@ const FeatureEntry::FeatureVariation kToolbarGlowUpVariations[] = {
      kToolbarGlowUpNoReloadBackForward, nullptr}};
 
 const FeatureEntry::FeatureParam kGlassFrameEoH95[] = {
-    {"ExpandOnHoverOpacity", "0.95"}};
+    {"BackgroundBlurOpacity", "0.95"}};
 const FeatureEntry::FeatureParam kGlassFrameEoH90[] = {
-    {"ExpandOnHoverOpacity", "0.90"}};
+    {"BackgroundBlurOpacity", "0.90"}};
 const FeatureEntry::FeatureVariation kGlassFrameVariations[] = {
     {"expand-on-hover 5% glass", kGlassFrameEoH95, nullptr},
     {"expand-on-hover 10% glass", kGlassFrameEoH90, nullptr}};
