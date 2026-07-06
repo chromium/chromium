@@ -189,7 +189,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
@@ -253,7 +252,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
   }
 
   resource_ = NewOrRecycledResource();
-  FlushForImageListener::Get()->AddObserver(this);
 
   if (resource_) {
     EnsureWriteAccess();
@@ -268,8 +266,6 @@ WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
-
-  FlushForImageListener::Get()->RemoveObserver(this);
 
   // Last chance for outstanding GPU timers to record metrics.
   if (RasterInterface()) {
@@ -383,17 +379,6 @@ void WebGpuRecyclableResourceProvider::OnDestroyRecyclableCanvasResource(
   resource()->WaitSyncToken(sync_token);
 }
 
-void WebGpuRecyclableResourceProvider::OnFlushForImage(
-    cc::PaintImage::ContentId content_id) {
-  if (cached_snapshot_ &&
-      cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
-          content_id) {
-    // This handles the case where the cached snapshot is referenced by an
-    // ImageBitmap that is being transferred to a worker.
-    cached_snapshot_.reset();
-  }
-}
-
 void WebGpuRecyclableResourceProvider::ClearUnusedResources() {
   if (image_pool_) {
     image_pool_->Clear();
@@ -432,8 +417,7 @@ void WebGpuRecyclableResourceProvider::SetAnimatedImageFrameIndexes(
   canvas_image_provider_->SetAnimatedImageFrameIndexes(indexes);
 }
 
-bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer(
-    PaintImage::ContentId content_id) {
+bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer() {
   // If the canvas is single buffered, concurrent read/writes to the resource
   // are allowed. Note that we ignore the resource lost case as well since
   // that only indicates that we did not get a sync token for read/write
@@ -447,19 +431,8 @@ bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer(
     return true;
   }
 
-  // We have the only ref to the resource which implies there are no active
-  // readers.
-  if (resource_->HasOneRef()) {
-    return false;
-  }
-
-  // Its possible to have deferred work in skia which uses this resource. Try
-  // flushing once to see if that releases the read refs. We can avoid a copy
-  // by queuing this work before writing to this resource.
-  // Another context may have a read reference to this resource. Flush the
-  // deferred queue in that context so that we don't need to copy.
-  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
-
+  // Replace the target buffer if there are active readers (i.e. we don't have
+  // the only ref to the resource).
   return !resource_->HasOneRef();
 }
 
@@ -501,8 +474,6 @@ void WebGpuRecyclableResourceProvider::EndExternalWrite(
 scoped_refptr<CanvasResource>
 WebGpuRecyclableResourceProvider::DoExternalOverdrawAndProduceResource(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  cached_snapshot_.reset();
-
   if (IsGpuContextLost()) {
     return nullptr;
   }
@@ -520,44 +491,20 @@ WebGpuRecyclableResourceProvider::DoExternalOverdrawAndProduceResource(
   return resource_;
 }
 
-scoped_refptr<StaticBitmapImage>
-WebGpuRecyclableResourceProvider::DoExternalOverdrawAndSnapshot(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-    ImageOrientation orientation) {
-  cached_snapshot_.reset();
-
-  if (!IsValid()) {
-    return nullptr;
-  }
-
-  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
-  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
-  }
-  return Snapshot(orientation);
-}
-
 std::unique_ptr<gpu::RasterScopedAccess>
 WebGpuRecyclableResourceProvider::WillDrawInternal() {
   DCHECK(resource_);
 
-  // Since the resource will be updated, the cached snapshot is no longer valid.
-  // Note that this is valid for single buffered mode also, since while the
-  // resource/mailbox remains the same, the snapshot needs an updated sync token
-  // for these writes.
-  cached_snapshot_.reset();
-
-  if (!ShouldReplaceTargetBuffer(cached_content_id_)) {
+  if (!ShouldReplaceTargetBuffer()) {
     return resource_->BeginAccess(/*readonly=*/false);
   }
 
-  std::unique_ptr<gpu::RasterScopedAccess> dst_access;
-  cached_content_id_ = PaintImage::kInvalidContentId;
   DCHECK(!current_resource_has_write_access_)
       << "Write access must be released before sharing the resource";
 
   resource_ = NewOrRecycledResource();
-  dst_access = resource_->BeginAccess(/*readonly=*/false);
+  std::unique_ptr<gpu::RasterScopedAccess> dst_access =
+      resource_->BeginAccess(/*readonly=*/false);
 
   // As the image might have just been created, we need to ensure that it is
   // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
@@ -657,36 +604,6 @@ WebGpuRecyclableResourceProvider::ProduceCanvasResource() {
   EndWriteAccess();
 
   return resource_;
-}
-
-scoped_refptr<StaticBitmapImage> WebGpuRecyclableResourceProvider::Snapshot(
-    ImageOrientation orientation) {
-  TRACE_EVENT0("blink", "WebGpuRecyclableResourceProvider::Snapshot");
-  if (!IsValid()) {
-    return nullptr;
-  }
-
-  if (!cached_snapshot_) {
-    EndWriteAccess();
-    cached_snapshot_ = resource_->Bitmap();
-
-    // We'll record its content_id to be used by the FlushForImageListener.
-    // This will be needed in WillDrawInternal, but we are doing it now, as we
-    // don't know if later on we will be in the same thread the
-    // cached_snapshot_ was created and we wouldn't be able to
-    // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
-    // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
-    // other contexts know to flush to avoid unnecessary copy-on-writes.
-    if (cached_snapshot_) {
-      cached_content_id_ =
-          cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
-              0u);
-    }
-  }
-
-  DCHECK(cached_snapshot_);
-  DCHECK(!current_resource_has_write_access_);
-  return cached_snapshot_;
 }
 
 CanvasImageProvider*

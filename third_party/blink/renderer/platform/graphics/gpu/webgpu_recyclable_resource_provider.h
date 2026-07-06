@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
-#include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
@@ -63,7 +62,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     : public CanvasMemoryDumpClient,
       public MemoryManagedPaintRecorder::Client,
       public CanvasResourceSharedImage::Client,
-      public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
       public ScopedRasterTimer::Host {
@@ -142,12 +140,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
 
-  // FlushForImageObserver implementation:
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
-
   bool IsValid() const;
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation = ImageOrientationEnum::kDefault);
 
   // NOTE: Can only be used if this instance is accelerated.
   bool UploadToBackingSharedImage(const SkPixmap& pixmap,
@@ -156,10 +149,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
 
   scoped_refptr<CanvasResource> DoExternalOverdrawAndProduceResource(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
-
-  scoped_refptr<StaticBitmapImage> DoExternalOverdrawAndSnapshot(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation);
 
   // For WebGpu RecyclableCanvasResource.
   void OnAcquireRecyclableCanvasResource();
@@ -223,8 +212,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
 
-  bool ShouldReplaceTargetBuffer(
-      PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
+  bool ShouldReplaceTargetBuffer();
   void FlushRecording(cc::PaintRecord last_recording);
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
@@ -236,8 +224,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   const gfx::HDRMetadata hdr_metadata_;
   const raw_ptr<CanvasResourceProviderDelegate> delegate_;
 
-  const cc::PaintImage::Id snapshot_paint_image_id_;
-
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
@@ -248,10 +234,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
   bool current_resource_has_write_access_ = false;
-
-  cc::PaintImage::ContentId cached_content_id_ =
-      cc::PaintImage::kInvalidContentId;
-  scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   bool is_cleared_ = false;
   bool notified_context_lost_ = false;
