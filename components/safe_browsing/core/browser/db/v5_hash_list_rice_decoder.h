@@ -23,6 +23,8 @@ namespace v5_hash_list_rice_decoder {
 // Returns `V5DecodeResult::kSuccess` if decoding succeeded, or an error code
 // otherwise. If `hash_list` does not contain additions, it's considered
 // successful.
+// Callers are expected to validate `hash_list` using `ValidateHashList`
+// before calling this method.
 V5DecodeResult DecodeAdditions(const V5::HashList& hash_list,
                                std::string& raw_additions);
 
@@ -31,8 +33,15 @@ V5DecodeResult DecodeAdditions(const V5::HashList& hash_list,
 // Returns `V5DecodeResult::kSuccess` if decoding succeeded, or an error code
 // otherwise. If `hash_list` does not contain removals, it's considered
 // successful.
+// Callers are expected to validate `hash_list` using `ValidateHashList`
+// before calling this method.
 V5DecodeResult DecodeRemovals(const V5::HashList& hash_list,
                               std::vector<uint32_t>& decoded_removals);
+
+// Validates the Rice-encoded parameters in `hash_list` without decoding.
+// Returns `V5InputValidationResult::kSuccess` if the parameters are valid and
+// a specific error otherwise.
+V5InputValidationResult ValidateHashList(const V5::HashList& hash_list);
 
 }  // namespace v5_hash_list_rice_decoder
 

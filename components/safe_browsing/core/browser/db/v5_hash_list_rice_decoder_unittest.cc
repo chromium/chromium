@@ -26,6 +26,8 @@ TEST(V5HashListRiceDecoderTest, DecodeAdditions32Bit) {
 
   // Set the correct encoded data for success.
   additions->set_encoded_data("\x02");
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            v5_hash_list_rice_decoder::ValidateHashList(hash_list));
   std::string raw_additions;
   EXPECT_EQ(
       V5DecodeResult::kSuccess,
@@ -54,6 +56,8 @@ TEST(V5HashListRiceDecoderTest, DecodeAdditions64Bit) {
 
   // Set the correct encoded data for success.
   additions->set_encoded_data(std::string("\x02\x00\x00\x00\x00", 5));
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            v5_hash_list_rice_decoder::ValidateHashList(hash_list));
   std::string raw_additions;
   EXPECT_EQ(
       V5DecodeResult::kSuccess,
@@ -88,6 +92,8 @@ TEST(V5HashListRiceDecoderTest, DecodeAdditions128Bit) {
   std::string encoded_data(13, 0);
   encoded_data[0] = 0x02;
   additions->set_encoded_data(encoded_data);
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            v5_hash_list_rice_decoder::ValidateHashList(hash_list));
   std::string raw_additions;
   EXPECT_EQ(
       V5DecodeResult::kSuccess,
@@ -126,6 +132,8 @@ TEST(V5HashListRiceDecoderTest, DecodeAdditions256Bit) {
   std::string encoded_data(29, 0);
   encoded_data[0] = 0x02;
   additions->set_encoded_data(encoded_data);
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            v5_hash_list_rice_decoder::ValidateHashList(hash_list));
   std::string raw_additions;
   EXPECT_EQ(
       V5DecodeResult::kSuccess,
@@ -161,6 +169,8 @@ TEST(V5HashListRiceDecoderTest, DecodeRemovals) {
 
   // Set the correct encoded data for success.
   removals->set_encoded_data("\x02");
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            v5_hash_list_rice_decoder::ValidateHashList(hash_list));
   std::vector<uint32_t> decoded_removals;
   EXPECT_EQ(V5DecodeResult::kSuccess, v5_hash_list_rice_decoder::DecodeRemovals(
                                           hash_list, decoded_removals));
@@ -191,6 +201,107 @@ TEST(V5HashListRiceDecoderTest, DecodeRemovalsEmpty) {
   EXPECT_EQ(V5DecodeResult::kSuccess, v5_hash_list_rice_decoder::DecodeRemovals(
                                           hash_list, decoded_removals));
   EXPECT_TRUE(decoded_removals.empty());
+}
+
+TEST(V5HashListRiceDecoderTest, ValidateHashListBothAdditionsAndRemovals) {
+  V5::HashList hash_list;
+
+  // Set valid additions.
+  auto* additions = hash_list.mutable_additions_four_bytes();
+  additions->set_rice_parameter(3);
+  additions->set_entries_count(10);
+
+  // Set valid removals.
+  auto* removals = hash_list.mutable_compressed_removals();
+  removals->set_rice_parameter(3);
+  removals->set_entries_count(10);
+
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+}
+
+TEST(V5HashListRiceDecoderTest, ValidateHashListNoAdditionsOrRemovals) {
+  V5::HashList hash_list;
+  EXPECT_EQ(V5InputValidationResult::kSuccess,
+            v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+}
+
+TEST(V5HashListRiceDecoderTest, ValidateHashListInvalid) {
+  // Invalid 4-byte additions
+  {
+    V5::HashList hash_list;
+    auto* additions = hash_list.mutable_additions_four_bytes();
+    additions->set_rice_parameter(2);
+    additions->set_entries_count(10);
+    EXPECT_EQ(V5InputValidationResult::kRiceParameterTooSmall,
+              v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+  }
+
+  // Invalid 8-byte additions
+  {
+    V5::HashList hash_list;
+    auto* additions = hash_list.mutable_additions_eight_bytes();
+    additions->set_rice_parameter(34);
+    additions->set_entries_count(10);
+    EXPECT_EQ(V5InputValidationResult::kRiceParameterTooSmall,
+              v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+  }
+
+  // Invalid 16-byte additions
+  {
+    V5::HashList hash_list;
+    auto* additions = hash_list.mutable_additions_sixteen_bytes();
+    additions->set_rice_parameter(98);
+    additions->set_entries_count(10);
+    EXPECT_EQ(V5InputValidationResult::kRiceParameterTooSmall,
+              v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+  }
+
+  // Invalid 32-byte additions
+  {
+    V5::HashList hash_list;
+    auto* additions = hash_list.mutable_additions_thirty_two_bytes();
+    additions->set_rice_parameter(226);
+    additions->set_entries_count(10);
+    EXPECT_EQ(V5InputValidationResult::kRiceParameterTooSmall,
+              v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+  }
+
+  // Invalid removals
+  {
+    V5::HashList hash_list;
+    auto* removals = hash_list.mutable_compressed_removals();
+    removals->set_rice_parameter(2);
+    removals->set_entries_count(10);
+    EXPECT_EQ(V5InputValidationResult::kRiceParameterTooSmall,
+              v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+  }
+
+  // Valid additions, but invalid removals
+  {
+    V5::HashList hash_list;
+    auto* additions = hash_list.mutable_additions_four_bytes();
+    additions->set_rice_parameter(3);
+    additions->set_entries_count(10);
+    auto* removals = hash_list.mutable_compressed_removals();
+    removals->set_rice_parameter(2);
+    removals->set_entries_count(10);
+    EXPECT_EQ(V5InputValidationResult::kRiceParameterTooSmall,
+              v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+  }
+
+  // Valid removals, but invalid additions
+  {
+    V5::HashList hash_list;
+    auto* additions = hash_list.mutable_additions_four_bytes();
+    additions->set_rice_parameter(2);
+    additions->set_entries_count(10);
+    auto* removals = hash_list.mutable_compressed_removals();
+    removals->set_rice_parameter(3);
+    removals->set_entries_count(10);
+    EXPECT_EQ(V5InputValidationResult::kRiceParameterTooSmall,
+              v5_hash_list_rice_decoder::ValidateHashList(hash_list));
+  }
 }
 
 }  // namespace safe_browsing
