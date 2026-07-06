@@ -432,6 +432,10 @@ class MockHostResolverBase : public HostResolver {
     default_resolution_details_ = std::move(details);
   }
 
+  void set_is_stale_while_refreshing(bool is_stale_while_refreshing) {
+    is_stale_while_refreshing_ = is_stale_while_refreshing;
+  }
+
  private:
   friend class MockHostResolver;
   friend class MockCachingHostResolver;
@@ -494,6 +498,8 @@ class MockHostResolverBase : public HostResolver {
   scoped_refptr<State> state_;
 
   std::optional<ResolutionDetails> default_resolution_details_;
+
+  bool is_stale_while_refreshing_ = false;
 
   THREAD_CHECKER(thread_checker_);
 

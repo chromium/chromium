@@ -273,6 +273,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   virtual std::optional<HostResolverEndpointResult>
   GetHostResolverEndpointResult() const;
 
+  // Returns true if the ConnectJob successfully connected, but the connection
+  // was established using stale DNS results.
+  virtual bool IsConnectedViaStaleDns() const;
+
   const LoadTimingInfo::ConnectTiming& connect_timing() const {
     return connect_timing_;
   }

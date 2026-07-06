@@ -457,7 +457,9 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
     return nullptr;
   }
 
-  bool IsStaleWhileRefreshing() const override { return false; }
+  bool IsStaleWhileRefreshing() const override {
+    return resolver_ ? resolver_->is_stale_while_refreshing_ : false;
+  }
 
   void ChangeRequestPriority(RequestPriority priority) override {
     priority_ = priority;

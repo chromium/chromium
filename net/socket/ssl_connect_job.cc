@@ -265,7 +265,7 @@ int SSLConnectJob::DoTransportConnect() {
     auto connect_job = std::make_unique<TcpConnectJob>(
         priority(), socket_tag(), common_connect_job_params(),
         params_->GetDirectConnectionParams(), this, &net_log(),
-        std::move(service_endpoint_override));
+        std::move(service_endpoint_override), disable_stale_dns_);
     tcp_connect_job_ = connect_job.get();
     nested_connect_job_ = std::move(connect_job);
   } else {
@@ -304,6 +304,7 @@ int SSLConnectJob::DoTransportConnectComplete(int result) {
     nested_socket_ = nested_connect_job_->PassSocket();
     nested_socket_->GetPeerAddress(&server_address_);
     dns_aliases_ = nested_socket_->GetDnsAliases();
+    is_connected_via_stale_dns_ = nested_connect_job_->IsConnectedViaStaleDns();
   }
 
   return result;
@@ -400,6 +401,14 @@ int SSLConnectJob::DoSSLConnect() {
       *common_connect_job_params()->ignore_certificate_errors;
   ssl_config.network_anonymization_key = params_->network_anonymization_key();
 
+  if (is_connected_via_stale_dns_) {
+    // If we are connecting via stale DNS, we must disable early data.
+    // Early data allows the TLS handshake to complete prematurely, which would
+    // hide any fatal errors (such as certificate errors) from SSLConnectJob.
+    // We need to know if the handshake fails so we can retry with fresh DNS.
+    ssl_config.early_data_enabled = false;
+  }
+
   if (ssl_client_context()->config().ech_enabled) {
     if (ech_retry_configs_) {
       ssl_config.ech_config_list = *ech_retry_configs_;
@@ -486,6 +495,19 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   if (result != OK && !server_address_.address().empty()) {
     connection_attempts_.emplace_back(server_address_, result);
     server_address_ = IPEndPoint();
+  }
+
+  // If we got a fatal error and the underlying connection was established via
+  // stale DNS, it's highly likely the IP address changed and the new server
+  // rejected the connection or does not have the correct certificate. Restart
+  // the connection without stale DNS. We only retry once, since we pass
+  // `disable_stale_dns_ = true` on the next connection attempt, guaranteeing
+  // `is_connected_via_stale_dns_` will be false if that fresh attempt fails.
+  if (result != OK && is_connected_via_stale_dns_) {
+    ResetStateForRestart();
+    disable_stale_dns_ = true;
+    next_state_ = GetInitialState(params_->GetConnectionType());
+    return OK;
   }
 
   // Historically, many servers which negotiated SHA-1 server signatures in
@@ -616,6 +638,7 @@ void SSLConnectJob::ResetStateForRestart() {
   ssl_socket_ = nullptr;
   ssl_cert_request_info_ = nullptr;
   ssl_negotiation_started_ = false;
+  is_connected_via_stale_dns_ = false;
   resolve_error_info_ = ResolveErrorInfo();
   server_address_ = IPEndPoint();
 }

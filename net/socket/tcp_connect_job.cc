@@ -97,7 +97,8 @@ TcpConnectJob::TcpConnectJob(
     const scoped_refptr<TransportSocketParams>& params,
     ConnectJob::Delegate* delegate,
     const NetLogWithSource* net_log,
-    std::optional<ServiceEndpointOverride> endpoint_result_override)
+    std::optional<ServiceEndpointOverride> endpoint_result_override,
+    bool disable_stale_dns)
     : ConnectJob(priority,
                  socket_tag,
                  ConnectionTimeout(),
@@ -107,7 +108,8 @@ TcpConnectJob::TcpConnectJob(
                  NetLogSourceType::TCP_CONNECT_JOB,
                  NetLogEventType::TCP_CONNECT_JOB_CONNECT),
       params_(params),
-      endpoint_override_(std::move(endpoint_result_override)) {
+      endpoint_override_(std::move(endpoint_result_override)),
+      disable_stale_dns_(disable_stale_dns) {
   fresh_state_.primary_connector = std::make_unique<Connector>(this, "first");
   DCHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV2));
   if (endpoint_override_) {
@@ -213,7 +215,8 @@ int TcpConnectJob::ConnectInternal() {
     HostResolver::ResolveHostParameters parameters;
     parameters.initial_priority = priority();
     parameters.secure_dns_policy = params_->secure_dns_policy();
-    if (base::FeatureList::IsEnabled(features::kOptimisticDnsForTcp)) {
+    if (base::FeatureList::IsEnabled(features::kOptimisticDnsForTcp) &&
+        !disable_stale_dns_) {
       parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
           STALE_ALLOWED_WHILE_REFRESHING;
     }
@@ -830,6 +833,40 @@ int TcpConnectJob::SetDone(int result, Connector* connector) {
     final_service_endpoint_ = connector->PassFinalServiceEndpoint();
     DCHECK(final_service_endpoint_);
     DCHECK(IsEndpointResultUsable(*final_service_endpoint_));
+
+    auto calculate_is_connected_via_stale_dns = [&]() -> bool {
+      // If `disable_stale_dns_` is true, we explicitly requested a fresh
+      // connection, so it cannot be stale.
+      if (disable_stale_dns_) {
+        return false;
+      }
+      if (features::kUseStaleConnectorsForOptimisticDns.Get()) {
+        // If the feature is enabled, stale connectors are completely isolated
+        // in `stale_state_`. If the winning connector is from `stale_state_`,
+        // it is guaranteed to be a connection to a stale endpoint.
+        return IsStaleConnector(*connector);
+      }
+      if (dns_request_) {
+        // If the request is actively returning stale results, the connection is
+        // currently considered stale.
+        if (dns_request_->IsStaleWhileRefreshing()) {
+          return true;
+        }
+        if (connector->current_address() &&
+            !IsEndpointInFreshList(*connector->current_address(),
+                                   dns_request_->GetEndpointResults())) {
+          // If fresh results have arrived but the connected endpoint is not in
+          // the fresh list, we must have raced and completed a connection to an
+          // IP that was present in the stale results but removed in the fresh
+          // results. This connection is stale.
+          return true;
+        }
+      }
+      return false;
+    };
+
+    CHECK(!is_connected_via_stale_dns_.has_value());
+    is_connected_via_stale_dns_ = calculate_is_connected_via_stale_dns();
   } else {
     // If there were no attempts, there were no usable addresses. Use `result`
     // in that case.
@@ -895,6 +932,10 @@ void TcpConnectJob::NotifyDelegateIfDone(int result) {
     DCHECK(is_done_);
     NotifyDelegateOfCompletion(result);
   }
+}
+
+bool TcpConnectJob::IsConnectedViaStaleDns() const {
+  return is_connected_via_stale_dns_.value_or(false);
 }
 
 }  // namespace net

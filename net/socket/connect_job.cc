@@ -173,6 +173,10 @@ ConnectJob::GetHostResolverEndpointResult() const {
   return std::nullopt;
 }
 
+bool ConnectJob::IsConnectedViaStaleDns() const {
+  return false;
+}
+
 void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
                            std::optional<std::set<std::string>> dns_aliases) {
   if (socket) {

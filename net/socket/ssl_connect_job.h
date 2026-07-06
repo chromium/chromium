@@ -241,6 +241,15 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // True if the Trust Anchor ID retry attempted to fallback from a
   // signatureless MTC to a classical cert. Used for metrics.
   bool trust_anchor_retry_used_mtc_fallback_ = false;
+
+  // True if the connection was established using a stale DNS result. Passed
+  // up from the nested ConnectJob.
+  bool is_connected_via_stale_dns_ = false;
+
+  // True if the use of stale DNS results should be disabled for this connection
+  // attempt. Set to true when a previous connection attempt via stale DNS
+  // failed and the job needs to retry with fresh results.
+  bool disable_stale_dns_ = false;
 };
 
 }  // namespace net
