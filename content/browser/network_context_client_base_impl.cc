@@ -11,7 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/file_access/scoped_file_access.h"
-#include "content/public/browser/child_process_security_policy.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/common/child_process_id.h"
@@ -37,7 +37,8 @@ void HandleFileUploadRequest(
   std::vector<base::File> files;
   uint32_t file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
                         (async ? base::File::FLAG_ASYNC : 0);
-  ChildProcessSecurityPolicy* cpsp = ChildProcessSecurityPolicy::GetInstance();
+  ChildProcessSecurityPolicyImpl* cpsp =
+      ChildProcessSecurityPolicyImpl::GetInstance();
   for (const auto& file_path : file_paths) {
     bool access_denied = false;
     if (base::FeatureList::IsEnabled(
