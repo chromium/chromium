@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "base/test/values_test_util.h"
 #include "components/metrics/private_metrics/private_insights/events/contextual_cue_log_event.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace private_insights {
@@ -21,8 +23,9 @@ TEST(ContextualCueLogEventHelpersTest, SerializeOneItemList) {
   page_info.set_url("http://url1.com");
   page_info.set_title("Title 1");
   std::vector<events::ContextualCueLogEvent::PageInfo> list = {page_info};
-  EXPECT_EQ("[{\"page\":\"http://url1.com\",\"title\":\"Title 1\"}]",
-            SerializePageInfoListToJson(list));
+  EXPECT_THAT(SerializePageInfoListToJson(list),
+              base::test::IsJson(
+                  "[{\"url\":\"http://url1.com\",\"title\":\"Title 1\"}]"));
 }
 
 TEST(ContextualCueLogEventHelpersTest, SerializeMultipleItemsList) {
@@ -38,11 +41,11 @@ TEST(ContextualCueLogEventHelpersTest, SerializeMultipleItemsList) {
 
   std::vector<events::ContextualCueLogEvent::PageInfo> list = {
       page_info1, page_info2, page_info3};
-  EXPECT_EQ(
-      "[{\"page\":\"http://url1.com\",\"title\":\"Title 1\"},"
-      "{\"page\":\"http://url2.com\",\"title\":\"Title 2\"},"
-      "{\"page\":\"http://url3.com\",\"title\":\"Title 3\"}]",
-      SerializePageInfoListToJson(list));
+  EXPECT_THAT(SerializePageInfoListToJson(list),
+              base::test::IsJson(
+                  "[{\"url\":\"http://url1.com\",\"title\":\"Title 1\"},"
+                  "{\"url\":\"http://url2.com\",\"title\":\"Title 2\"},"
+                  "{\"url\":\"http://url3.com\",\"title\":\"Title 3\"}]"));
 }
 
 TEST(ContextualCueLogEventHelpersTest, SerializeSpecialCharactersList) {
@@ -59,13 +62,14 @@ TEST(ContextualCueLogEventHelpersTest, SerializeSpecialCharactersList) {
   std::vector<events::ContextualCueLogEvent::PageInfo> list = {
       page_info1, page_info2, page_info3};
   std::string json = SerializePageInfoListToJson(list);
-  EXPECT_EQ(
-      "[{\"page\":\"http://url1.com/a,b\",\"title\":\"Title 1, with comma\"},"
-      "{\"page\":\"http://url2.com/\\\"quotes\\\"\",\"title\":\"Title 2 "
-      "\\\"with quotes\\\"\"},"
-      "{\"page\":\"http://url3.com/newline\",\"title\":\"Title 3\\nwith "
-      "newline\"}]",
-      json);
+  EXPECT_THAT(json,
+              base::test::IsJson(
+                  "[{\"url\":\"http://url1.com/a,b\",\"title\":\"Title 1, with "
+                  "comma\"},"
+                  "{\"url\":\"http://url2.com/"
+                  "\\\"quotes\\\"\",\"title\":\"Title 2 \\\"with quotes\\\"\"},"
+                  "{\"url\":\"http://url3.com/newline\",\"title\":\"Title "
+                  "3\\nwith newline\"}]"));
 }
 
 }  // namespace private_insights

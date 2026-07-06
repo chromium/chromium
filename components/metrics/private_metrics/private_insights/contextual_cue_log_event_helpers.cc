@@ -14,7 +14,7 @@ std::string SerializePageInfoListToJson(
   base::ListValue value_list;
   for (const auto& item : list) {
     base::DictValue dict;
-    dict.Set("page", item.url());
+    dict.Set("url", item.url());
     dict.Set("title", item.title());
     value_list.Append(std::move(dict));
   }
