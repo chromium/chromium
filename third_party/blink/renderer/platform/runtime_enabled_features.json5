@@ -6469,7 +6469,7 @@
     {
       // crbug.com/451651633
       name: "TreeRubyPlacement",
-      status: "experimental",
+      status: "stable",
     },
     {
       // When enabled, trusted types can be used to enforce sanitization &
