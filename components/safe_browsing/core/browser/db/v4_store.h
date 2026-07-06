@@ -249,6 +249,8 @@ class V4Store : public SBStore {
                            TestMergeUpdatesFailsForRepeatedHashPrefix);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestMergeUpdatesFailsWhenRemovalsIndexTooLarge);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestMergeUpdatesFailsWhenRemovalsIndexNegative);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdateFastPathWithRemovals);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdateFastPathEmptyLists);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,

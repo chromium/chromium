@@ -1340,6 +1340,26 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsWhenRemovalsIndexTooLarge) {
                               &raw_removals, expected_checksum));
 }
 
+TEST_F(V4StoreTest, TestMergeUpdatesFailsWhenRemovalsIndexNegative) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            V4Store::AddUnlumpedHashes(4, "2222", &prefix_map_old));
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_additions;
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            V4Store::AddUnlumpedHashes(4, "11113333", &prefix_map_additions));
+
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/4,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  RepeatedField<int32_t> raw_removals;
+  raw_removals.Add(-1);
+  std::string expected_checksum;
+  EXPECT_EQ(REMOVALS_INDEX_NEGATIVE_FAILURE,
+            store.MergeUpdate(PrefixMapToView(prefix_map_old),
+                              PrefixMapToView(prefix_map_additions),
+                              &raw_removals, expected_checksum));
+}
+
 TEST_F(V4StoreTest, TestMergeUpdateFastPathWithRemovals) {
   std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,

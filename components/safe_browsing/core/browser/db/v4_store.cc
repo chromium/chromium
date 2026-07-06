@@ -28,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "base/types/to_address.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
@@ -157,12 +158,6 @@ void RecordStoreWriteResult(StoreWriteResult result) {
                             STORE_WRITE_RESULT_MAX);
 }
 
-// Returns the name of the temporary file used to buffer data for
-// |filename|.
-const base::FilePath TemporaryFileForFilename(const base::FilePath& filename) {
-  return base::FilePath(filename.value() + FILE_PATH_LITERAL("_new"));
-}
-
 // Cleans up files that are no longer needed after a successful write. These are
 // hash files that may be left behind in the event of a crash or other failure
 // which fails to clean up.
@@ -180,67 +175,11 @@ void CleanupExtraFiles(const base::FilePath& store_path,
       store_path.DirName(), false, base::FileEnumerator::FILES,
       store_path.BaseName().value() + FILE_PATH_LITERAL(".*"));
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
-    if (paths_in_use.find(name) == paths_in_use.end())
+    if (paths_in_use.find(name) == paths_in_use.end()) {
       base::DeleteFile(name);
+    }
   }
 }
-
-// A ZeroCopyOutputStream that writes to a file using base::File. Any errors
-// during serialization close the file.
-class BaseFileOutputStream
-    : public google::protobuf::io::CopyingOutputStreamAdaptor {
- public:
-  // Creates and opens `output_file`, overwriting any previous contents.
-  explicit BaseFileOutputStream(const base::FilePath& output_file)
-      : CopyingOutputStreamAdaptor(&stream_), stream_(output_file) {}
-  BaseFileOutputStream(const BaseFileOutputStream&) = delete;
-  BaseFileOutputStream& operator=(const BaseFileOutputStream&) = delete;
-
-  // Closes the file, if it was still open.
-  ~BaseFileOutputStream() override = default;
-
-  // Returns `base::File::FILE_OK` if no error and the file is still open; else
-  // the error that led to closure of the file.
-  base::File::Error GetError() const { return stream_.GetError(); }
-
- private:
-  class CopyingBaseFileOutputStream
-      : public google::protobuf::io::CopyingOutputStream {
-   public:
-    explicit CopyingBaseFileOutputStream(const base::FilePath& output_file)
-        : file_(output_file,
-                base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-                    base::File::FLAG_WIN_EXCLUSIVE_READ |
-                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
-                    base::File::FLAG_WIN_SHARE_DELETE) {}
-    CopyingBaseFileOutputStream(const CopyingBaseFileOutputStream&) = delete;
-    CopyingBaseFileOutputStream& operator=(const CopyingBaseFileOutputStream&) =
-        delete;
-    ~CopyingBaseFileOutputStream() override = default;
-
-    base::File::Error GetError() const { return file_.error_details(); }
-
-    // CopyingOutputStream:
-    bool Write(const void* buffer, int size) override {
-      if (!file_.IsValid()) {
-        return false;
-      }
-      std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(
-          UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer),
-                                 base::checked_cast<size_t>(size))));
-      if (bytes_written == base::checked_cast<size_t>(size)) {
-        return true;
-      }
-      file_ = base::File(base::File::GetLastFileError());
-      return false;
-    }
-
-   private:
-    base::File file_;
-  };
-
-  CopyingBaseFileOutputStream stream_;
-};
 
 void RecordMigrationTime(base::TimeDelta elapsed,
                          const base::FilePath& store_path) {
@@ -655,138 +594,22 @@ ApplyUpdateResult V4Store::MergeUpdateFast(
     const RepeatedField<int32_t>* raw_removals,
     const std::string& expected_checksum) {
   const PrefixSize prefix_size = old_prefixes_map.begin()->first;
-  base::span<const uint8_t> old_prefixes =
-      base::as_byte_span(old_prefixes_map.begin()->second);
-  base::span<const uint8_t> new_prefixes =
-      base::as_byte_span(additions_map.begin()->second);
 
-  auto removals_iter =
-      raw_removals ? std::make_optional(raw_removals->begin()) : std::nullopt;
+  SBStoreUpdateResult result = MergeUpdateLoop(
+      prefix_size, base::as_byte_span(old_prefixes_map.begin()->second),
+      base::as_byte_span(additions_map.begin()->second), raw_removals,
+      expected_checksum, hash_prefix_map_.get());
 
-  // Keep track of the number of elements picked from the old map. This is used
-  // to determine which elements to drop based on the raw_removals. Note that
-  // picked is not the same as merged. A picked element isn't merged if its
-  // index is on the raw_removals list.
-  int total_picked_from_old = 0;
-
-  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
-  const bool calculate_checksum = !expected_checksum.empty();
-
-  // Look ahead in `prefixes` to see how many sequential prefixes are lower than
-  // `limit_prefix`, the next prefix from the other list. This uses a binary
-  // search.
-  auto get_skip_count = [&](base::span<const uint8_t> prefixes,
-                            base::span<const uint8_t> limit_prefix) {
-    size_t num_prefixes = prefixes.size() / prefix_size;
-    if (num_prefixes < 2 ||
-        prefixes.subspan(prefix_size, prefix_size) >= limit_prefix) {
-      return size_t{1};
-    }
-
-    size_t left = 2;
-    size_t right = num_prefixes;
-    size_t run_length = 1;
-    while (left <= right) {
-      size_t mid = left + (right - left) / 2;
-      if (prefixes.subspan((mid - 1) * prefix_size, prefix_size) <
-          limit_prefix) {
-        run_length = mid;
-        left = mid + 1;
-      } else {
-        right = mid - 1;
-      }
-    }
-    return run_length;
-  };
-
-  while (!old_prefixes.empty() || !new_prefixes.empty()) {
-    bool pick_from_old = !old_prefixes.empty();
-    if (pick_from_old && !new_prefixes.empty()) {
-      base::span<const uint8_t> old_prefix = old_prefixes.first(prefix_size);
-      base::span<const uint8_t> add_prefix = new_prefixes.first(prefix_size);
-      if (old_prefix == add_prefix) {
-        return ADDITIONS_HAS_EXISTING_PREFIX_FAILURE;
-      }
-      pick_from_old = old_prefix < add_prefix;
-    }
-
-    if (pick_from_old) {
-      // Should this index be removed?
-      if (removals_iter && *removals_iter != raw_removals->end() &&
-          **removals_iter == total_picked_from_old) {
-        old_prefixes.take_first(prefix_size);
-        total_picked_from_old++;
-        (*removals_iter)++;
-        continue;
-      }
-
-      // We can only scan ahead up to the next removal index.
-      size_t count = old_prefixes.size() / prefix_size;
-      if (removals_iter && *removals_iter != raw_removals->end()) {
-        count = std::min(count, static_cast<size_t>(**removals_iter -
-                                                    total_picked_from_old));
-      }
-
-      // Determine how many prefixes we can take in a row from this list by
-      // scanning ahead.
-      if (!new_prefixes.empty()) {
-        base::span<const uint8_t> add_prefix = new_prefixes.first(prefix_size);
-        count = std::min(count,
-                         get_skip_count(old_prefixes.first(count * prefix_size),
-                                        add_prefix));
-      }
-      CHECK_GE(count, 1u);
-
-      // Append the selected prefixes.
-      base::span<const uint8_t> to_append =
-          old_prefixes.take_first(count * prefix_size);
-      hash_prefix_map_->Append(prefix_size, base::as_string_view(to_append));
-      if (calculate_checksum) {
-        checksum_ctx.Update(to_append);
-      }
-      total_picked_from_old += count;
-      continue;
-    }
-
-    // Picking from `new_prefixes`.
-    size_t count = new_prefixes.size() / prefix_size;
-
-    // Scan ahead.
-    if (!old_prefixes.empty()) {
-      base::span<const uint8_t> old_prefix = old_prefixes.first(prefix_size);
-      count = std::min(count, get_skip_count(new_prefixes, old_prefix));
-    }
-    CHECK_GE(count, 1u);
-
-    // Append the selected prefixes.
-    base::span<const uint8_t> to_append =
-        new_prefixes.take_first(count * prefix_size);
-    hash_prefix_map_->Append(prefix_size, base::as_string_view(to_append));
-    if (calculate_checksum) {
-      checksum_ctx.Update(to_append);
-    }
-  }
-
-  if (removals_iter && *removals_iter != raw_removals->end()) {
-    return REMOVALS_INDEX_TOO_LARGE_FAILURE;
-  }
-
-  if (calculate_checksum) {
-    std::array<uint8_t, crypto::hash::kSha256Size> checksum;
-    checksum_ctx.Finish(checksum);
-    auto expected = base::as_byte_span(expected_checksum);
-    if (expected != checksum) {
-#if DCHECK_IS_ON()
-      std::string checksum_b64 = base::Base64Encode(checksum);
-      std::string expected_b64 = base::Base64Encode(expected);
-      DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
-               << "; expected: " << expected_b64 << "; store: " << *this;
-#endif
+  switch (result) {
+    case SBStoreUpdateResult::kSuccess:
+      return APPLY_UPDATE_SUCCESS;
+    case SBStoreUpdateResult::kAdditionsHasExistingPrefixFailure:
+      return ADDITIONS_HAS_EXISTING_PREFIX_FAILURE;
+    case SBStoreUpdateResult::kRemovalsIndexTooLargeFailure:
+      return REMOVALS_INDEX_TOO_LARGE_FAILURE;
+    case SBStoreUpdateResult::kChecksumMismatchFailure:
       return CHECKSUM_MISMATCH_FAILURE;
-    }
   }
-
-  return APPLY_UPDATE_SUCCESS;
 }
 
 ApplyUpdateResult V4Store::MergeUpdate(
@@ -796,6 +619,14 @@ ApplyUpdateResult V4Store::MergeUpdate(
     const std::string& expected_checksum) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(hash_prefix_map_->view().empty());
+
+  if (raw_removals) {
+    for (int32_t index : *raw_removals) {
+      if (index < 0) {
+        return REMOVALS_INDEX_NEGATIVE_FAILURE;
+      }
+    }
+  }
 
   bool calculate_checksum = !expected_checksum.empty();
   if (calculate_checksum &&
@@ -1222,51 +1053,49 @@ StoreWriteResult V4Store::WriteToDisk(const Checksum& checksum) {
 }
 
 StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
-  // Attempt writing to a temporary file first and at the end, swap the files.
-  const base::FilePath new_filename = TemporaryFileForFilename(store_path_);
+  base::expected<int64_t, SBStoreWriteResult> file_size_or_error =
+      WriteToDiskLoop(
+          store_path_, file_format, hash_prefix_map_.get(),
+          /*set_file_metadata=*/
+          [file_format] {
+            file_format->set_magic_number(kFileMagic);
+            file_format->set_version_number(kV4FileVersion);
+          },
+          /*delete_hash_files_on_error=*/
+          [this, file_format] {
+            for (const auto& hash_file : file_format->hash_files()) {
+              base::DeleteFile(
+                  HashPrefixMap::GetPath(store_path_, hash_file.extension()));
+            }
+          },
+          /*get_hash_files_size=*/
+          [file_format] {
+            int64_t size = 0;
+            for (const auto& hash_file : file_format->hash_files()) {
+              size += hash_file.file_size();
+            }
+            return size;
+          },
+          /*cleanup_extra_files=*/
+          [this, file_format] {
+            CleanupExtraFiles(store_path_, *file_format);
+          });
 
-  absl::Cleanup cleanup_on_error = [&new_filename, this, file_format] {
-    base::DeleteFile(new_filename);
-    for (const auto& hash_file : file_format->hash_files()) {
-      base::DeleteFile(
-          HashPrefixMap::GetPath(store_path_, hash_file.extension()));
-    }
-  };
-
-  int64_t written = 0;
-  // `write_session` must remain alive until `file_format` is committed to disk.
-  // Additionally, note that `hash_prefix_map_` is unusable throughout the
-  // lifetime of `write_session`.
-  SBStoreFileFormat sb_file_format(file_format);
-  if (auto write_session = hash_prefix_map_->WriteToDisk(sb_file_format);
-      write_session) {
-    file_format->set_magic_number(kFileMagic);
-    file_format->set_version_number(kV4FileVersion);
-    {
-      BaseFileOutputStream output_stream(new_filename);
-      if (!file_format->SerializeToZeroCopyStream(&output_stream) ||
-          !output_stream.Flush()) {
-        return UNEXPECTED_BYTES_WRITTEN_FAILURE;
-      }
-      written = output_stream.ByteCount();
-    }
-  } else {
-    return UNEXPECTED_WRITE_FAILURE;
+  if (file_size_or_error.has_value()) {
+    // Update |file_size_| now because we wrote the file correctly.
+    file_size_ = file_size_or_error.value();
+    return WRITE_SUCCESS;
   }
 
-  if (!base::Move(new_filename, store_path_))
-    return UNABLE_TO_RENAME_FAILURE;
-
-  // Update |file_size_| now because we wrote the file correctly.
-  file_size_ = written;
-  for (const auto& hash_file : file_format->hash_files())
-    file_size_ += hash_file.file_size();
-
-  // No cleanup needed, cancel the cleanup.
-  std::move(cleanup_on_error).Cancel();
-  CleanupExtraFiles(store_path_, *file_format);
-
-  return WRITE_SUCCESS;
+  // Map SBStoreWriteResult to StoreWriteResult.
+  switch (file_size_or_error.error()) {
+    case SBStoreWriteResult::kUnexpectedBytesWrittenFailure:
+      return UNEXPECTED_BYTES_WRITTEN_FAILURE;
+    case SBStoreWriteResult::kUnexpectedWriteFailure:
+      return UNEXPECTED_WRITE_FAILURE;
+    case SBStoreWriteResult::kUnableToRenameFailure:
+      return UNABLE_TO_RENAME_FAILURE;
+  }
 }
 
 HashPrefixStr V4Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {

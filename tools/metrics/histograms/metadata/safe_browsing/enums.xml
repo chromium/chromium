@@ -580,6 +580,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="CHECKSUM_MISMATCH_FAILURE"/>
   <int value="12" label="MMAP_FAILURE"/>
   <int value="13" label="READ_FAILURE_NOT_SORTED"/>
+  <int value="14" label="REMOVALS_INDEX_NEGATIVE_FAILURE"/>
 </enum>
 
 <enum name="SafeBrowsingV4DecodeResult">

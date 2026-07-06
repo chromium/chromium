@@ -64,6 +64,9 @@ enum ApplyUpdateResult {
   // The hash prefixes were not sorted when reading from dis.
   READ_FAILURE_NOT_SORTED = 13,
 
+  // One or more indices in removals field of the response is negative.
+  REMOVALS_INDEX_NEGATIVE_FAILURE = 14,
+
   // Memory space for histograms is determined by the max.  ALWAYS
   // ADD NEW VALUES BEFORE THIS ONE.
   APPLY_UPDATE_RESULT_MAX
