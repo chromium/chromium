@@ -347,4 +347,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // workaround for crbug.com/502587667 will break CTS tests for Geolocation.
   aw_feature_overrides.DisableFeature(
       content_settings::features::kApproximateGeolocationPermission);
+
+  // Disable HappyEyeballsV2 for WebView for now.
+  // DISABLED_TEMPORARY: crbug.com/529948671
+  aw_feature_overrides.DisableFeature(net::features::kHappyEyeballsV2);
 }
