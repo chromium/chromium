@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
@@ -21,6 +22,10 @@ class CoBrowseViewsBridge;
 
 namespace content {
 class WebContents;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace contextual_tasks {
@@ -84,6 +89,7 @@ class ContextualTasksPanelHostAndroid
   std::unique_ptr<context_sharing::CoBrowseViewsBridge> views_bridge_;
   std::unique_ptr<context_sharing::TabBottomSheetBridge>
       tab_bottom_sheet_bridge_;
+  base::WeakPtr<tabs::TabInterface> tab_ref_;
 
   // The WebContents currently being displayed in the panel.
   raw_ptr<content::WebContents> web_contents_ = nullptr;

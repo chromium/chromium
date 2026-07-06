@@ -148,10 +148,14 @@ bool ContextualTasksPanelHostAndroid::HandleKeyboardEvent(
 
 context_sharing::TabBottomSheetBridge*
 ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
-  if (!tab_bottom_sheet_bridge_) {
+  if (!tab_bottom_sheet_bridge_ || !tab_ref_) {
     TabAndroid* tab_android = GetTabAndroid();
     if (!tab_android) {
       return nullptr;
+    }
+    TabListInterface* tab_list = TabListInterface::From(browser_window_);
+    if (tab_list && tab_list->GetActiveTab()) {
+      tab_ref_ = tab_list->GetActiveTab()->GetWeakPtr();
     }
     views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
         *tab_android,
