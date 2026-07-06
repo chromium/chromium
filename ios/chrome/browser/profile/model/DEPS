@@ -73,6 +73,7 @@ specific_include_rules = {
     "+ios/chrome/browser/page_image/model",
     "+ios/chrome/browser/page_info/model",
     "+ios/chrome/browser/passwords/model",
+    "+ios/chrome/browser/personal_context/model",
     "+ios/chrome/browser/photos/model",
     "+ios/chrome/browser/policy_url_blocking/model",
     "+ios/chrome/browser/power_bookmarks/model",

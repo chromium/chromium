@@ -1,0 +1,11 @@
+include_rules = [
+  # keep-sorted start
+  "+components/application_locale_storage",
+  "+components/personal_context/core",
+  "+components/variations/service",
+  "+ios/chrome/browser/account_settings/model",
+  "+ios/chrome/browser/shared/model/application_context",
+  "+ios/chrome/browser/shared/model/profile",
+  "+ios/chrome/browser/signin/model",
+  # keep-sorted end
+]

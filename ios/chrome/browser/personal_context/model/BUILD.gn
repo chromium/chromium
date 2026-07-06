@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_personal_context_enablement_service_factory.h",
+    "ios_personal_context_enablement_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/account_settings",
+    "//components/application_locale_storage",
+    "//components/personal_context/core",
+    "//components/personal_context/core:features",
+    "//components/signin/public/identity_manager",
+    "//components/variations/service",
+    "//ios/chrome/browser/account_settings/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_personal_context_enablement_service_factory_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/personal_context/core",
+    "//components/personal_context/core:features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
