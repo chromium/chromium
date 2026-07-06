@@ -67,8 +67,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      gpu::SharedImageUsageSet shared_image_usage_flags = {});
+      const gfx::HDRMetadata& hdr_metadata);
   ~WebGpuRecyclableResourceProvider() override;
 
   gfx::Size Size() const { return size_; }

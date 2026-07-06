@@ -47,14 +47,11 @@ WebGpuRecyclableResourceProvider::CreateWeakPtr() {
 }
 
 std::unique_ptr<WebGpuRecyclableResourceProvider>
-WebGpuRecyclableResourceProvider::Create(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
-    gpu::SharedImageUsageSet shared_image_usage_flags) {
-  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+WebGpuRecyclableResourceProvider::Create(gfx::Size size,
+                                         viz::SharedImageFormat format,
+                                         SkAlphaType alpha_type,
+                                         const gfx::ColorSpace& color_space,
+                                         const gfx::HDRMetadata& hdr_metadata) {
   // The SharedImages created by this provider serve as a means of import/export
   // between VideoFrames/canvas and WebGPU, e.g.:
   // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
@@ -63,8 +60,11 @@ WebGpuRecyclableResourceProvider::Create(
   //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
   //   export happens via the WebGPU interface)
   // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
-  shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                              gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
 
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
