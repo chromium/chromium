@@ -53,8 +53,8 @@ jobs:
       - name: Build chromium-bidi
         run: npm run build
       - name: Install Puppeteer
-        # Use specific Puppeteer version for result consistency.
-        run: npm install puppeteer@25.1.0
+        # Use latest Puppeteer version to support new chromium-bidi export structure.
+        run: npm install puppeteer
       - name: Link chromium-bidi
         run: |
           npm link
@@ -111,6 +111,8 @@ jobs:
         uses: ./.github/actions/setup-chrome-binaries
       - name: Build chromium-bidi
         run: npm run build
+      - name: Install Selenium
+        run: npm install selenium-webdriver
       - name: Run JS performance benchmark
         env:
           METRICS_JSON_FILE: selenium_perf_metrics.json

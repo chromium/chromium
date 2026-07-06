@@ -84,7 +84,7 @@ template("bidi_bundle") {
       "--config", rebase_path("../rollup.config.mjs", root_build_dir),
       "--entrypoint", rebase_path(entrypoint, root_build_dir),
       "--output", rebase_path(output_file, root_build_dir),
-      "--gen-dir", rebase_path(root_out_dir, "//"),
+      "--gen-dir", rebase_path(root_gen_dir, "//"),
     ]
   }
 }

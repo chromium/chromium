@@ -8,7 +8,7 @@
   "scripts": {
     "build": "third_party/ninja/ninja -C out/Default",
     "clean": "third_party/ninja/ninja -C out/Default -t clean",
-    "gn:gen": "gn gen out/Default",
+    "gn:gen": "gn gen out/Default && rm -f out/Default/.gitignore",
     "e2e:headful": "HEADLESS=false npm run e2e --",
     "e2e:headless": "npm run e2e:new-headless --",
     "e2e:new-headless": "HEADLESS=new npm run e2e --",
@@ -33,9 +33,8 @@
   "type": "module",
   "main": "./out/Default/gen/src/index.js",
   "files": [
-    "out/Default/gen/src",
-    "!out/Default/gen/src/**/*.test.*",
-    "out/Default/lib",
+    "out/Default/gen",
+    "!out/Default/gen/**/*.test.*",
     "!*.tsbuildinfo",
     ".browser"
   ],
