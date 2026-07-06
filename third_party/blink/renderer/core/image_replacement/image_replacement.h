@@ -50,6 +50,11 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
   const AtomicString& OriginalImageSourceURL() const {
     return original_image_source_url_;
   }
+  // Updates the cached original image source URL. This is called when a source
+  // change should not cause the image replacement to reset (e.g. if the image
+  // is resized and switches to a different resolution).
+  void UpdateOriginalImageSource(base::PassKey<HTMLImageElement>,
+                                 HTMLImageElement& image_element);
   // Resumes and completes a pending replacement if it was waiting for an image
   // load. Returns true if replacement was completed, false otherwise.
   bool ResumeReplacementAfterImageLoad();
