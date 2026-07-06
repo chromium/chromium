@@ -583,6 +583,17 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void onTouchEvent_rightClickFocusesAndSelectsAll() {
+        MotionEvent evt = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        evt.setButtonState(MotionEvent.BUTTON_SECONDARY);
+
+        mUrlBar.onTouchEvent(evt);
+
+        verify(mUrlBarDelegate).onFocusByTouch();
+        verify(mUrlBar).requestFocus();
+    }
+
+    @Test
     public void performClick_emittedOnlyOnce() {
         mUrlBar.performClick();
         verify(mUrlBarDelegate).onFocusByTouch();

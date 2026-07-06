@@ -648,6 +648,10 @@ public class UrlBar extends AutocompleteEditText {
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getActionMasked();
         if (action == MotionEvent.ACTION_DOWN) {
+            if ((event.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0 && !isFocused()) {
+                performClick();
+            }
+
             mLongPressPerformed = false;
             // Reveal the full URL when an unfocused bar is pressed with desktop experience.
             mPointerDragActive =
