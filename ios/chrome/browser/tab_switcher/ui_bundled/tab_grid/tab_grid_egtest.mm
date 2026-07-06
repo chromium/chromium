@@ -334,6 +334,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // See https://crbug.com/1419875.
   [ChromeEarlGrey killWebKitNetworkProcess];
 
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"InactiveTabsTestMode"];
+
   [super tearDownHelper];
 }
 
