@@ -194,9 +194,11 @@ source_set("unit_tests") {
     "password_sharing_first_run_coordinator_unittest.mm",
     "sharing_status_coordinator_unittest.mm",
     "sharing_status_mediator_unittest.mm",
+    "sharing_status_view_controller_unittest.mm",
   ]
   deps = [
     ":password_sharing",
+    ":password_sharing_constants",
     ":password_sharing_metrics",
     ":password_sharing_ui",
     "//base/test:test_support",

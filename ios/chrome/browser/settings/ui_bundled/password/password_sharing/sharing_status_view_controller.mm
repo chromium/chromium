@@ -468,6 +468,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   title.adjustsFontForContentSizeCategory = YES;
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
   title.textAlignment = NSTextAlignmentCenter;
+  title.accessibilityIdentifier = kSharingStatusTitleLabelID;
   self.titleLabel = title;
   return title;
 }
@@ -481,6 +482,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   [cancelButton addTarget:self
                    action:@selector(cancelButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
+  cancelButton.accessibilityIdentifier = kSharingStatusCancelButtonID;
   self.cancelButton = cancelButton;
   return cancelButton;
 }
@@ -729,7 +731,6 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 }
 
 // Replaces text of the title label and adds a done button.
-// TODO(crbug.com/40275395): Add test.
 - (void)displayCancelledStatus {
   self.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_CANCELLED_TITLE);

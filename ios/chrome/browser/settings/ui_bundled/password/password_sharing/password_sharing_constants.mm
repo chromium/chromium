@@ -18,6 +18,8 @@ NSString* const kPasswordPickerNextButtonID = @"PasswordPickerNextButtonID";
 
 NSString* const kSharingStatusViewID = @"SharingStatusViewID";
 NSString* const kSharingStatusDoneButtonID = @"SharingStatusDoneButtonID";
+NSString* const kSharingStatusCancelButtonID = @"SharingStatusCancelButtonID";
+NSString* const kSharingStatusTitleLabelID = @"SharingStatusTitleLabelID";
 
 const char kCreateFamilyGroupURL[] =
     "https://myaccount.google.com/family/create?utm_source=cpwd";
