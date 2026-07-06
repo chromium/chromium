@@ -2974,6 +2974,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DeclarativePerformanceObserver.BufferLimitExceeded"
+    enum="Boolean" expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether a document's declarative performance observer exceeded its
+    quota and dropped entries. Recorded at the end of the document's lifecycle
+    (session end).
+  </summary>
+</histogram>
+
+<histogram name="DeclarativePerformanceObserver.PeakBufferSize" units="KB"
+    expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the peak buffer size (in KB) accumulated by a document's declarative
+    performance observer. Recorded at the end of the document's lifecycle
+    (session end).
+  </summary>
+</histogram>
+
 <histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
     expires_after="2026-09-27">
   <owner>greengrape@google.com</owner>

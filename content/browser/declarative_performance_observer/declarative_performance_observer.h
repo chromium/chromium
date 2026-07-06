@@ -105,6 +105,8 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
 
   size_t current_buffer_bytes_ = 0;
   size_t max_buffered_entries_for_testing_ = 0;
+  size_t peak_buffer_bytes_ = 0;
+  bool buffer_limit_exceeded_ = false;
   base::ListValue buffered_entries_;
   bool started_in_foreground_ = false;
   bool is_session_ended_ = false;

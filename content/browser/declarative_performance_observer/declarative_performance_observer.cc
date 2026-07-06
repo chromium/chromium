@@ -5,6 +5,7 @@
 #include "content/browser/declarative_performance_observer/declarative_performance_observer.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/navigation_handle.h"
@@ -131,6 +132,11 @@ DeclarativePerformanceObserver::~DeclarativePerformanceObserver() {
     AppendSessionEndEntry();
     FlushMetrics();
   }
+  base::UmaHistogramMemoryKB("DeclarativePerformanceObserver.PeakBufferSize",
+                             peak_buffer_bytes_ / 1024);
+  base::UmaHistogramBoolean(
+      "DeclarativePerformanceObserver.BufferLimitExceeded",
+      buffer_limit_exceeded_);
 }
 
 void DeclarativePerformanceObserver::OnDidFinishNavigation(
@@ -282,9 +288,11 @@ void DeclarativePerformanceObserver::AddEntryToBuffer(base::DictValue entry) {
   }
   size_t entry_size = entry.EstimateMemoryUsage();
   if (current_buffer_bytes_ + entry_size > kMaxDocumentBufferBytes) {
+    buffer_limit_exceeded_ = true;
     return;
   }
   current_buffer_bytes_ += entry_size;
+  peak_buffer_bytes_ = std::max(peak_buffer_bytes_, current_buffer_bytes_);
   buffered_entries_.Append(std::move(entry));
 }
 
@@ -430,7 +438,9 @@ void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
 void DeclarativePerformanceObserver::OnEarlyFailureReportsTaken(
     base::ListValue reports) {
   for (auto& val : reports) {
-    buffered_entries_.Append(std::move(val));
+    if (val.is_dict()) {
+      AddEntryToBuffer(std::move(val).TakeDict());
+    }
   }
 }
 

@@ -618,4 +618,113 @@ TEST_F(DeclarativePerformanceObserverStoreTest, Enforces7DayTTL) {
   ASSERT_TRUE(dict);
   EXPECT_EQ(*(dict->FindString("test_key")), "active");
 }
+
+TEST_F(DeclarativePerformanceObserverStoreTest, RecordsStorageStatsHistograms) {
+  base::FilePath profile_path =
+      temp_dir_.GetPath().AppendASCII("TestProfileStats");
+
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("https://example1.com/"));
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("https://example2.com/"));
+
+  // 1. Populate the database first with some data.
+  {
+    base::RunLoop run_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, profile_path, nullptr, run_loop.QuitClosure());
+    run_loop.Run();
+
+    // Set policies
+    base::RunLoop run_loop_p1;
+    store->SetEarlyFailurePolicy(kOrigin1, true, run_loop_p1.QuitClosure());
+    run_loop_p1.Run();
+
+    base::RunLoop run_loop_p2;
+    store->SetEarlyFailurePolicy(kOrigin2, true, run_loop_p2.QuitClosure());
+    run_loop_p2.Run();
+
+    // Add reports
+    base::DictValue report;
+    report.Set("test", "data");
+
+    base::RunLoop run_loop_r1;
+    store->StoreEarlyFailureReport(kOrigin1, report.Clone(),
+                                   run_loop_r1.QuitClosure());
+    run_loop_r1.Run();
+
+    base::RunLoop run_loop_r2;
+    store->StoreEarlyFailureReport(kOrigin2, report.Clone(),
+                                   run_loop_r2.QuitClosure());
+    run_loop_r2.Run();
+
+    base::RunLoop run_loop_close;
+    store->Close(run_loop_close.QuitClosure());
+    run_loop_close.Run();
+  }
+
+  // 2. Re-create the store. During initialization it should log database stats
+  // histograms.
+  base::HistogramTester histogram_tester;
+  {
+    base::RunLoop run_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, profile_path, nullptr, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Storage.DeclarativePerformanceObserver.StoredOriginCount",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Storage.DeclarativePerformanceObserver.StoredReportCount",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Storage.DeclarativePerformanceObserver.DatabaseSize", 1);
+}
+
+TEST_F(DeclarativePerformanceObserverStoreTest, RecordsEvictionHistograms) {
+  base::HistogramTester histogram_tester;
+  auto store = CreateStoreInMemory();
+
+  // Set quota to 100 bytes for testing.
+  base::RunLoop run_loop_quota;
+  store->SetQuotaLimitForTesting(100, run_loop_quota.QuitClosure());
+  run_loop_quota.Run();
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com/"));
+
+  // Store two small reports (~40 bytes each).
+  base::DictValue report1;
+  report1.Set("k", std::string(30, 'a'));  // total payload size is ~40 bytes
+  base::RunLoop run_loop_r1;
+  store->StoreEarlyFailureReport(kOrigin, report1.Clone(),
+                                 run_loop_r1.QuitClosure());
+  run_loop_r1.Run();
+
+  base::DictValue report2;
+  report2.Set("k", std::string(30, 'b'));
+  base::RunLoop run_loop_r2;
+  store->StoreEarlyFailureReport(kOrigin, report2.Clone(),
+                                 run_loop_r2.QuitClosure());
+  run_loop_r2.Run();
+
+  // No eviction should have occurred yet.
+  histogram_tester.ExpectTotalCount(
+      "Storage.DeclarativePerformanceObserver.EvictionCount", 0);
+
+  // Store a third report that pushes total size above 100 bytes.
+  base::DictValue report3;
+  report3.Set("k", std::string(30, 'c'));
+  base::RunLoop run_loop_r3;
+  store->StoreEarlyFailureReport(kOrigin, report3.Clone(),
+                                 run_loop_r3.QuitClosure());
+  run_loop_r3.Run();
+
+  // Eviction must have triggered, deleting 1 report.
+  histogram_tester.ExpectUniqueSample(
+      "Storage.DeclarativePerformanceObserver.EvictionCount",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
 }  // namespace content

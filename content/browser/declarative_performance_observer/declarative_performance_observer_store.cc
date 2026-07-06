@@ -415,6 +415,35 @@ class DeclarativePerformanceObserverStore::Backend
     clean_statement.BindInt64(0, threshold_us);
     clean_statement.Run();
 
+    // Log storage stats:
+    if (!db_path_.empty()) {
+      std::optional<int64_t> file_size = base::GetFileSize(db_path_);
+      if (file_size.has_value()) {
+        base::UmaHistogramMemoryKB(
+            base::StrCat({kHistogramPrefix, "DatabaseSize"}),
+            *file_size / 1024);
+      }
+    }
+
+    static constexpr char kCountPoliciesSql[] =
+        "SELECT COUNT(*) FROM declarative_performance_observer_policies";
+    sql::Statement origin_count_stmt(
+        db_->GetUniqueStatement(kCountPoliciesSql));
+    if (origin_count_stmt.Step()) {
+      base::UmaHistogramCounts1000(
+          base::StrCat({kHistogramPrefix, "StoredOriginCount"}),
+          origin_count_stmt.ColumnInt(0));
+    }
+
+    static constexpr char kCountReportsSql[] =
+        "SELECT COUNT(*) FROM declarative_performance_observer_reports";
+    sql::Statement report_count_stmt(db_->GetUniqueStatement(kCountReportsSql));
+    if (report_count_stmt.Step()) {
+      base::UmaHistogramCounts10000(
+          base::StrCat({kHistogramPrefix, "StoredReportCount"}),
+          report_count_stmt.ColumnInt(0));
+    }
+
     return true;
   }
 
@@ -447,10 +476,12 @@ class DeclarativePerformanceObserverStore::Backend
 
     int64_t max_evicted_id = -1;
     size_t running_total = 0;
+    int evicted_count = 0;
     while (select_reports.Step()) {
       int64_t id = select_reports.ColumnInt64(0);
       size_t size = static_cast<size_t>(select_reports.ColumnInt(1));
       running_total += size;
+      evicted_count++;
       if (running_total >= target_evict_bytes) {
         max_evicted_id = id;
         break;
@@ -462,7 +493,10 @@ class DeclarativePerformanceObserverStore::Backend
           "DELETE FROM declarative_performance_observer_reports WHERE id <= "
           "?"));
       delete_batch.BindInt64(0, max_evicted_id);
-      delete_batch.Run();
+      if (delete_batch.Run()) {
+        base::UmaHistogramCounts100(
+            base::StrCat({kHistogramPrefix, "EvictionCount"}), evicted_count);
+      }
     }
   }
 
