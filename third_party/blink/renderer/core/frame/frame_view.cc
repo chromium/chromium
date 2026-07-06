@@ -182,7 +182,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     // ... then apply content_box_offset to translate to the coordinate of the
     // child frame.
     parent_frame_to_iframe_content_transform.Move(
-        owner_layout_object->PhysicalContentBoxOffset());
+        owner_layout_object->PhysicalContentBoxRect().offset);
     gfx::Transform matrix =
         parent_frame_to_iframe_content_transform.AccumulatedTransform()
             .InverseOrIdentity();
@@ -254,7 +254,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
           nullptr, child_frame_to_root_frame,
           kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
       child_frame_to_root_frame.Move(
-          owner_layout_object->PhysicalContentBoxOffset());
+          owner_layout_object->PhysicalContentBoxRect().offset);
     }
     main_frame_transform_matrix =
         child_frame_to_root_frame.AccumulatedTransform();

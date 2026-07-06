@@ -113,7 +113,7 @@ AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
   NOT_DESTROYED();
   auto frozen_size = FrozenFrameSize();
   if (!frozen_size || frozen_size->IsEmpty()) {
-    const PhysicalOffset content_box_offset = PhysicalContentBoxOffset();
+    const PhysicalOffset content_box_offset = PhysicalContentBoxRect().offset;
     return AffineTransform().Translate(content_box_offset.left,
                                        content_box_offset.top);
   }
@@ -256,7 +256,7 @@ bool LayoutEmbeddedContent::NodeAtPoint(
 
     if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
         child_layout_view) {
-      const PhysicalOffset content_offset = PhysicalContentBoxOffset();
+      const PhysicalOffset content_offset = PhysicalContentBoxRect().offset;
       HitTestLocation new_hit_test_location(
           hit_test_location, -accumulated_offset - content_offset);
       HitTestRequest new_hit_test_request(

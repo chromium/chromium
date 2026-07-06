@@ -284,11 +284,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalRect PhysicalContractedBoxRect(ContractionEdge) const;
 
   // Get the padding box rectangle (same as "client rect").
-  PhysicalRect PhysicalPaddingBoxRect() const;
+  PhysicalRect PhysicalPaddingBoxRect() const {
+    NOT_DESTROYED();
+    return PhysicalContractedBoxRect(kContractToPaddingEdge);
+  }
   // Get the content box rectangle.
-  PhysicalRect PhysicalContentBoxRect() const;
-  // Get the content box left/top edge.
-  PhysicalOffset PhysicalContentBoxOffset() const;
+  PhysicalRect PhysicalContentBoxRect() const {
+    NOT_DESTROYED();
+    return PhysicalContractedBoxRect(kContractToContentEdge);
+  }
 
   // The content box converted to absolute coords (taking transforms into
   // account).

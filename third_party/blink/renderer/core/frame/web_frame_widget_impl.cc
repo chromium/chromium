@@ -949,7 +949,7 @@ viz::FrameSinkId WebFrameWidgetImpl::GetFrameSinkIdAtPoint(
     gfx::PointF local_point(result.LocalPoint());
     LayoutObject* object = result_node->GetLayoutObject();
     if (auto* box = DynamicTo<LayoutBox>(object))
-      local_point -= gfx::Vector2dF(box->PhysicalContentBoxOffset());
+      local_point -= gfx::Vector2dF(box->PhysicalContentBoxRect().offset);
 
     *local_point_in_dips = widget_base_->BlinkSpaceToDIPs(local_point);
     return remote_frame_sink_id;

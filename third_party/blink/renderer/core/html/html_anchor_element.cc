@@ -171,8 +171,8 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
   // The origin (0,0) is at the upper left of the content area, inside the
   // padding and border.
-  map_point -=
-      gfx::Vector2dF(To<LayoutBox>(layout_object)->PhysicalContentBoxOffset());
+  map_point -= gfx::Vector2dF(
+      To<LayoutBox>(layout_object)->PhysicalContentBoxRect().offset);
 
   // CSS zoom is not reflected in the map coordinates.
   float scale_factor = 1 / layout_object->StyleRef().EffectiveZoom();

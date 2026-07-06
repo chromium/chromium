@@ -3876,22 +3876,6 @@ PhysicalRect LayoutBox::PhysicalContractedBoxRect(ContractionEdge edge) const {
   return rect;
 }
 
-PhysicalRect LayoutBox::PhysicalPaddingBoxRect() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToPaddingEdge);
-}
-
-DISABLE_CFI_PERF
-PhysicalRect LayoutBox::PhysicalContentBoxRect() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToContentEdge);
-}
-
-PhysicalOffset LayoutBox::PhysicalContentBoxOffset() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToContentEdge).offset;
-}
-
 ShapeOutsideInfo* LayoutBox::GetShapeOutsideInfo() const {
   NOT_DESTROYED();
   return ShapeOutsideInfo::Info(*this);

@@ -192,7 +192,7 @@ gfx::Rect RemoteFrameView::ComputeCompositingRect() const {
   TransformState local_root_transform_state(
       TransformState::kApplyTransformDirection);
   local_root_transform_state.Move(
-      owner_layout_object->PhysicalContentBoxOffset());
+      owner_layout_object->PhysicalContentBoxRect().offset);
   owner_layout_object->MapLocalToAncestor(nullptr, local_root_transform_state,
                                           kTraverseDocumentBoundaries);
   gfx::Transform matrix =
@@ -266,7 +266,7 @@ void RemoteFrameView::UpdateCompositingScaleFactor() {
   TransformState local_root_transform_state(
       TransformState::kApplyTransformDirection);
   local_root_transform_state.Move(
-      owner_layout_object->PhysicalContentBoxOffset());
+      owner_layout_object->PhysicalContentBoxRect().offset);
   owner_layout_object->MapLocalToAncestor(nullptr, local_root_transform_state,
                                           kTraverseDocumentBoundaries);
 
