@@ -26,10 +26,12 @@ namespace media {
 // static
 ScopedJavaLocalRef<jobject>
 VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
-    int id,
+    const std::string& id,
     int64_t nativeVideoCaptureDeviceAndroid) {
-  return (Java_VideoCaptureFactory_createVideoCapture(
-      AttachCurrentThread(), id, nativeVideoCaptureDeviceAndroid));
+  JNIEnv* env = AttachCurrentThread();
+  return Java_VideoCaptureFactory_createVideoCapture(
+      env, base::android::ConvertUTF8ToJavaString(env, id),
+      nativeVideoCaptureDeviceAndroid);
 }
 
 VideoCaptureDeviceFactoryAndroid::VideoCaptureDeviceFactoryAndroid(
@@ -41,24 +43,21 @@ VideoCaptureDeviceFactoryAndroid::~VideoCaptureDeviceFactoryAndroid() = default;
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryAndroid::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  int id;
-  if (!base::StringToInt(device_descriptor.device_id, &id))
+
+  JNIEnv* env = AttachCurrentThread();
+  if (!Java_VideoCaptureFactory_isDeviceAvailable(
+          env, base::android::ConvertUTF8ToJavaString(
+                   env, device_descriptor.device_id))) {
     return VideoCaptureErrorOrDevice(
         VideoCaptureError::
             kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+  }
 
   auto video_capture_device = std::make_unique<VideoCaptureDeviceAndroid>(
       device_descriptor, gpu_workarounds_);
+  video_capture_device->Init();
 
-  if (video_capture_device->Init()) {
-    if (test_mode_)
-      video_capture_device->ConfigureForTesting();
-    return VideoCaptureErrorOrDevice(std::move(video_capture_device));
-  }
-
-  DLOG(ERROR) << "Error creating Video Capture Device.";
-  return VideoCaptureErrorOrDevice(
-      VideoCaptureError::kAndroidApi2ErrorConfiguringCamera);
+  return VideoCaptureErrorOrDevice(std::move(video_capture_device));
 }
 
 void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(

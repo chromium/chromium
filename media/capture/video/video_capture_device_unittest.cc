@@ -273,11 +273,7 @@ class VideoCaptureDeviceTest
   }
 
   void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    static_cast<VideoCaptureDeviceFactoryAndroid*>(
-        video_capture_device_factory_.get())
-        ->ConfigureForTesting();
-#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
     static_cast<VideoCaptureDeviceFactoryWin*>(
         video_capture_device_factory_.get())
         ->set_use_media_foundation_for_testing(UseWinMediaFoundation());

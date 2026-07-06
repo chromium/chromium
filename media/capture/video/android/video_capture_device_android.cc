@@ -187,14 +187,9 @@ VideoCaptureDeviceAndroid::~VideoCaptureDeviceAndroid() {
   StopAndDeAllocate();
 }
 
-bool VideoCaptureDeviceAndroid::Init() {
-  int id;
-  if (!base::StringToInt(device_descriptor_.device_id, &id))
-    return false;
-
+void VideoCaptureDeviceAndroid::Init() {
   j_capture_.Reset(VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
-      id, reinterpret_cast<intptr_t>(this)));
-  return true;
+      device_descriptor_.device_id, reinterpret_cast<intptr_t>(this)));
 }
 
 void VideoCaptureDeviceAndroid::AllocateAndStart(
@@ -780,10 +775,6 @@ void VideoCaptureDeviceAndroid::OnStarted(JNIEnv* env) {
 void VideoCaptureDeviceAndroid::DCheckCurrentlyOnIncomingTaskRunner(
     JNIEnv* env) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-}
-
-void VideoCaptureDeviceAndroid::ConfigureForTesting() {
-  Java_VideoCapture_setTestMode(AttachCurrentThread(), j_capture_);
 }
 
 void VideoCaptureDeviceAndroid::ProcessFirstFrameAvailable(

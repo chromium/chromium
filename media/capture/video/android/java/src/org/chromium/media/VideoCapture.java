@@ -57,16 +57,14 @@ public abstract class VideoCapture {
 
     protected @Nullable VideoCaptureFormat mCaptureFormat;
 
-    protected final int mId;
+    protected final String mId;
     // Native callback context variable.
     private long mNativeVideoCaptureDeviceAndroid;
-
-    protected boolean mUseBackgroundThreadForTesting;
 
     // Lock for guarding |mNativeVideoCaptureDeviceAndroid|.
     private final Object mNativeVideoCaptureLock = new Object();
 
-    VideoCapture(int id, long nativeVideoCaptureDeviceAndroid) {
+    VideoCapture(String id, long nativeVideoCaptureDeviceAndroid) {
         mId = id;
         mNativeVideoCaptureDeviceAndroid = nativeVideoCaptureDeviceAndroid;
     }
@@ -185,11 +183,6 @@ public abstract class VideoCapture {
             default:
                 return AndroidImageFormat.UNKNOWN;
         }
-    }
-
-    @CalledByNative
-    public final void setTestMode() {
-        mUseBackgroundThreadForTesting = true;
     }
 
     protected final int getCameraRotation() {

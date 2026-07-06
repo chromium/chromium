@@ -91,7 +91,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   // Registers the Java VideoCaptureDevice pointer, used by the rest of the
   // methods of the class to operate the Java capture code. This method must be
   // called after the class constructor and before AllocateAndStart().
-  bool Init();
+  void Init();
 
   // VideoCaptureDevice implementation.
   void AllocateAndStart(const VideoCaptureParams& params,
@@ -160,8 +160,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   // Implement
   // org.chromium.media.VideoCapture.Natives.dCheckCurrentlyOnIncomingTaskRunner.
   void DCheckCurrentlyOnIncomingTaskRunner(JNIEnv* env);
-
-  void ConfigureForTesting();
 
  protected:
   // Helper code executed when the frame is available; if it is the first frame,

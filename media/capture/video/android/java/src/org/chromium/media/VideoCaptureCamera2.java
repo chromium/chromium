@@ -1160,14 +1160,14 @@ public class VideoCaptureCamera2 extends VideoCapture {
     private boolean mUseHardwareBuffers;
 
     // Service function to grab CameraCharacteristics and handle exceptions.
-    private static @Nullable CameraCharacteristics getCameraCharacteristics(int id) {
+    private static @Nullable CameraCharacteristics getCameraCharacteristics(String id) {
+        if (id == null) return null;
         final CameraManager manager =
                 (CameraManager)
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.CAMERA_SERVICE);
         try {
-            final String strId = String.valueOf(id);
-            return manager.getCameraCharacteristics(strId);
+            return manager.getCameraCharacteristics(id);
         } catch (CameraAccessException
                 | IllegalArgumentException
                 | AssertionError
@@ -1490,7 +1490,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return matchedTemperature;
     }
 
-    public static boolean isLegacyDevice(int id) {
+    public static boolean isLegacyDevice(String id) {
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
         return cameraCharacteristics != null
                 && cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL)
@@ -1520,7 +1520,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     public static int getCaptureApiType(int index) {
         final CameraCharacteristics cameraCharacteristics =
-                getCameraCharacteristics(getDeviceIdInt(index));
+                getCameraCharacteristics(getDeviceId(index));
         if (cameraCharacteristics == null) {
             return VideoCaptureApi.UNKNOWN;
         }
@@ -1561,7 +1561,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     public static boolean isZoomSupported(int index) {
         final CameraCharacteristics cameraCharacteristics =
-                getCameraCharacteristics(getDeviceIdInt(index));
+                getCameraCharacteristics(getDeviceId(index));
         if (cameraCharacteristics == null) {
             return false;
         }
@@ -1573,7 +1573,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     public static int getFacingMode(int index) {
         final CameraCharacteristics cameraCharacteristics =
-                getCameraCharacteristics(getDeviceIdInt(index));
+                getCameraCharacteristics(getDeviceId(index));
         if (cameraCharacteristics == null) {
             return VideoFacingMode.MEDIA_VIDEO_FACING_NONE;
         }
@@ -1591,7 +1591,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     public static @Nullable String getName(int index) {
         final CameraCharacteristics cameraCharacteristics =
-                getCameraCharacteristics(getDeviceIdInt(index));
+                getCameraCharacteristics(getDeviceId(index));
         if (cameraCharacteristics == null) return null;
         final int facing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
         String displayFacing = "unknown";
@@ -1624,7 +1624,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     // Retrieves the index within the camera ID list for the specified camera ID; returns
     // -1 if the specified camera ID is not found
-    public static int getDeviceIndex(int id) {
+    public static int getDeviceIndex(String id) {
         final CameraManager manager =
                 (CameraManager)
                         ContextUtils.getApplicationContext()
@@ -1632,29 +1632,14 @@ public class VideoCaptureCamera2 extends VideoCapture {
         try {
             final String[] cameraIdList = manager.getCameraIdList();
             for (int index = 0; index < cameraIdList.length; ++index) {
-                try {
-                    if (Integer.parseInt(cameraIdList[index]) == id) {
-                        return index;
-                    }
-                } catch (NumberFormatException e) {
+                if (cameraIdList[index].equals(id)) {
+                    return index;
                 }
             }
         } catch (CameraAccessException ex) {
             Log.e(TAG, "manager.getCameraIdList: ", ex);
         }
         return -1;
-    }
-
-    // Helper to retrieve the camera device ID, as an integer, at the specified
-    // index within the camera ID list; returns -1 if camera does not exist at the
-    // specified index
-    private static int getDeviceIdInt(int index) {
-        try {
-            return Integer.parseInt(getDeviceId(index));
-        } catch (NumberFormatException ex) {
-            Log.e(TAG, "Invalid camera index: ", index);
-            return -1;
-        }
     }
 
     static @Nullable String getDeviceId(int index) {
@@ -1677,7 +1662,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     public static VideoCaptureFormat @Nullable [] getDeviceSupportedFormats(int index) {
         final CameraCharacteristics cameraCharacteristics =
-                getCameraCharacteristics(getDeviceIdInt(index));
+                getCameraCharacteristics(getDeviceId(index));
         if (cameraCharacteristics == null) return null;
 
         try {
@@ -1729,7 +1714,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     private @Nullable BroadcastReceiver mInteractiveStateReceiver;
 
-    VideoCaptureCamera2(int id, long nativeVideoCaptureDeviceAndroid) {
+    VideoCaptureCamera2(String id, long nativeVideoCaptureDeviceAndroid) {
         super(id, nativeVideoCaptureDeviceAndroid);
 
         dCheckCurrentlyOnIncomingTaskRunner();

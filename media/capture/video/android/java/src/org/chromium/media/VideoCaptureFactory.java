@@ -21,13 +21,18 @@ import org.chromium.build.annotations.Nullable;
 class VideoCaptureFactory {
     // Factory methods.
     @CalledByNative
-    static VideoCapture createVideoCapture(int id, long nativeVideoCaptureDeviceAndroid) {
+    static VideoCapture createVideoCapture(String id, long nativeVideoCaptureDeviceAndroid) {
         return new VideoCaptureCamera2(id, nativeVideoCaptureDeviceAndroid);
     }
 
     @CalledByNative
     static int getNumberOfCameras() {
         return VideoCaptureCamera2.getNumberOfCameras();
+    }
+
+    @CalledByNative
+    static boolean isDeviceAvailable(String id) {
+        return VideoCaptureCamera2.getDeviceIndex(id) != -1;
     }
 
     @CalledByNative

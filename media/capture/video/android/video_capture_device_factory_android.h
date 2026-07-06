@@ -22,7 +22,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
     : public VideoCaptureDeviceFactory {
  public:
   static base::android::ScopedJavaLocalRef<jobject> createVideoCaptureAndroid(
-      int id,
+      const std::string& id,
       int64_t nativeVideoCaptureDeviceAndroid);
 
   explicit VideoCaptureDeviceFactoryAndroid(
@@ -39,15 +39,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
-  // Configures all subsequent CreateDevice()s in test mode.
-  void ConfigureForTesting() { test_mode_ = true; }
-
  private:
   VideoCaptureFormats GetSupportedFormats(int device_index,
                                           const std::string& display_name);
-
-  // Switch to indicate that all created Java capturers will be in test mode.
-  bool test_mode_ = false;
 
   // VideoCaptureFormats and zooms are cached, so GetSupportedFormats() and
   // Java_VideoCaptureFactory_isZoomSupported() respectively don't need to be
