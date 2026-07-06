@@ -4,11 +4,13 @@
 
 #include "components/contextual_search/consent_kit/consent_kit_url_builder.h"
 
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
+#include "base/json/json_reader.h"
 #include "base/uuid.h"
-#include "components/contextual_search/consent_kit/proto/privacy_primitive_config.pb.h"
+#include "base/values.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -25,7 +27,7 @@ TEST(ConsentKitUrlBuilderTest, BuildMinimalUrl) {
   ASSERT_TRUE(url.is_valid());
   EXPECT_EQ(url.scheme(), "https");
   EXPECT_EQ(url.host(), "consent.google.com");
-  EXPECT_EQ(url.path(), "/signedin/embedded/datasets");
+  EXPECT_EQ(url.path(), "/signedin/landing");
 
   std::string value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "hl", &value));
@@ -40,15 +42,57 @@ TEST(ConsentKitUrlBuilderTest, BuildMinimalUrl) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ppc", &value));
   EXPECT_FALSE(value.empty());
 
-  std::string decoded_ppc;
-  ASSERT_TRUE(base::Base64Decode(value, &decoded_ppc));
-  identity_consent::PrivacyPrimitiveConfig config;
-  ASSERT_TRUE(config.ParseFromString(decoded_ppc));
-  EXPECT_EQ(config.presentation_params().locale(), "fr");
+  std::optional<base::Value> parsed_ppc =
+      base::JSONReader::Read(value, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_ppc.has_value());
+  ASSERT_TRUE(parsed_ppc->is_list());
+  const base::ListValue& ppc_list = parsed_ppc->GetList();
+  ASSERT_EQ(ppc_list.size(), 5u);
 
-  EXPECT_TRUE(config.has_session_info());
-  EXPECT_TRUE(base::Uuid::ParseLowercase(config.session_info().session_id())
-                  .is_valid());
+  // Field 0: FlowParams [flow_id]
+  ASSERT_TRUE(ppc_list[0].is_list());
+  const base::ListValue& flow_params = ppc_list[0].GetList();
+  ASSERT_EQ(flow_params.size(), 1u);
+  EXPECT_EQ(flow_params[0].GetInt(), 0);  // default flow_id
+
+  // Field 1: ProductEntryPoint [product_id, product_surface,
+  // entrypoint_opaque_id]
+  ASSERT_TRUE(ppc_list[1].is_list());
+  const base::ListValue& product_entry_point = ppc_list[1].GetList();
+  ASSERT_EQ(product_entry_point.size(), 3u);
+  EXPECT_EQ(product_entry_point[0].GetInt(), 0);  // default product_id
+  EXPECT_EQ(product_entry_point[1].GetInt(),
+            1);  // product_surface (DEMO_UI_SURFACE)
+  EXPECT_EQ(product_entry_point[2].GetString(), "");  // default entrypoint_id
+
+  // Field 2: SessionInfo [[null, null, uuid_string]]
+  ASSERT_TRUE(ppc_list[2].is_list());
+  const base::ListValue& session_info = ppc_list[2].GetList();
+  ASSERT_EQ(session_info.size(), 1u);
+  ASSERT_TRUE(session_info[0].is_list());
+  const base::ListValue& shared_consent_session_id = session_info[0].GetList();
+  ASSERT_EQ(shared_consent_session_id.size(), 3u);
+  EXPECT_TRUE(shared_consent_session_id[0].is_none());
+  EXPECT_TRUE(shared_consent_session_id[1].is_none());
+  std::string uuid_string = shared_consent_session_id[2].GetString();
+  EXPECT_TRUE(base::Uuid::ParseLowercase(uuid_string).is_valid());
+
+  // Field 3: PresentationParams [locale]
+  ASSERT_TRUE(ppc_list[3].is_list());
+  const base::ListValue& presentation_params = ppc_list[3].GetList();
+  ASSERT_EQ(presentation_params.size(), 1u);
+  EXPECT_EQ(presentation_params[0].GetString(), "fr");
+
+  // Field 4: WebPlatformParams [[session_index], integration_type]
+  ASSERT_TRUE(ppc_list[4].is_list());
+  const base::ListValue& web_platform_params = ppc_list[4].GetList();
+  ASSERT_EQ(web_platform_params.size(), 2u);
+  ASSERT_TRUE(web_platform_params[0].is_list());
+  const base::ListValue& user_info = web_platform_params[0].GetList();
+  ASSERT_EQ(user_info.size(), 1u);
+  EXPECT_EQ(user_info[0].GetInt(), 1);  // set via SetSessionIndex(1)
+  EXPECT_EQ(web_platform_params[1].GetInt(),
+            1);  // integration_type = WEB_SEARCH_EMBEDDED
 }
 
 TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
@@ -58,14 +102,15 @@ TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
   builder.SetFlowId(987);
   builder.SetProductId(654);
   builder.SetEntrypointId("picker_entrypoint");
-  builder.SetHostOrigin("chrome-untrusted://another-host");
+  builder.SetHostOrigins(
+      {"chrome-untrusted://another-host", "chrome://yet-another-host"});
 
   GURL url = builder.Build();
 
   ASSERT_TRUE(url.is_valid());
   EXPECT_EQ(url.scheme(), "https");
   EXPECT_EQ(url.host(), "consent.google.com");
-  EXPECT_EQ(url.path(), "/signedin/embedded/datasets");
+  EXPECT_EQ(url.path(), "/signedin/landing");
 
   std::string value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "hl", &value));
@@ -74,25 +119,65 @@ TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "authuser", &value));
   EXPECT_EQ(value, "2");
 
-  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "origin", &value));
-  EXPECT_EQ(value, "chrome-untrusted://another-host");
+  EXPECT_NE(url.query().find("origin=chrome-untrusted%3A%2F%2Fanother-host"),
+            std::string::npos);
+  EXPECT_NE(url.query().find("origin=chrome%3A%2F%2Fyet-another-host"),
+            std::string::npos);
 
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ppc", &value));
   EXPECT_FALSE(value.empty());
 
-  std::string decoded_ppc;
-  ASSERT_TRUE(base::Base64Decode(value, &decoded_ppc));
-  identity_consent::PrivacyPrimitiveConfig config;
-  ASSERT_TRUE(config.ParseFromString(decoded_ppc));
+  std::optional<base::Value> parsed_ppc =
+      base::JSONReader::Read(value, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_ppc.has_value());
+  ASSERT_TRUE(parsed_ppc->is_list());
+  const base::ListValue& ppc_list = parsed_ppc->GetList();
+  ASSERT_EQ(ppc_list.size(), 5u);
 
-  EXPECT_EQ(config.presentation_params().locale(), "ja");
-  EXPECT_EQ(config.flow_params().flow_id(), 987);
-  EXPECT_EQ(config.product_entry_point().product_id(), 654);
-  EXPECT_EQ(config.product_entry_point().entrypoint_id(), "picker_entrypoint");
+  // Field 0: FlowParams [flow_id]
+  ASSERT_TRUE(ppc_list[0].is_list());
+  const base::ListValue& flow_params = ppc_list[0].GetList();
+  ASSERT_EQ(flow_params.size(), 1u);
+  EXPECT_EQ(flow_params[0].GetInt(), 987);
 
-  EXPECT_TRUE(config.has_session_info());
-  EXPECT_TRUE(base::Uuid::ParseLowercase(config.session_info().session_id())
-                  .is_valid());
+  // Field 1: ProductEntryPoint [product_id, product_surface,
+  // entrypoint_opaque_id]
+  ASSERT_TRUE(ppc_list[1].is_list());
+  const base::ListValue& product_entry_point = ppc_list[1].GetList();
+  ASSERT_EQ(product_entry_point.size(), 3u);
+  EXPECT_EQ(product_entry_point[0].GetInt(), 654);
+  EXPECT_EQ(product_entry_point[1].GetInt(), 1);
+  EXPECT_EQ(product_entry_point[2].GetString(), "picker_entrypoint");
+
+  // Field 2: SessionInfo [[null, null, uuid_string]]
+  ASSERT_TRUE(ppc_list[2].is_list());
+  const base::ListValue& session_info = ppc_list[2].GetList();
+  ASSERT_EQ(session_info.size(), 1u);
+  ASSERT_TRUE(session_info[0].is_list());
+  const base::ListValue& shared_consent_session_id = session_info[0].GetList();
+  ASSERT_EQ(shared_consent_session_id.size(), 3u);
+  EXPECT_TRUE(shared_consent_session_id[0].is_none());
+  EXPECT_TRUE(shared_consent_session_id[1].is_none());
+  std::string uuid_string = shared_consent_session_id[2].GetString();
+  EXPECT_TRUE(base::Uuid::ParseLowercase(uuid_string).is_valid());
+
+  // Field 3: PresentationParams [locale]
+  ASSERT_TRUE(ppc_list[3].is_list());
+  const base::ListValue& presentation_params = ppc_list[3].GetList();
+  ASSERT_EQ(presentation_params.size(), 1u);
+  EXPECT_EQ(presentation_params[0].GetString(), "ja");
+
+  // Field 4: WebPlatformParams [[session_index], integration_type]
+  ASSERT_TRUE(ppc_list[4].is_list());
+  const base::ListValue& web_platform_params = ppc_list[4].GetList();
+  ASSERT_EQ(web_platform_params.size(), 2u);
+  ASSERT_TRUE(web_platform_params[0].is_list());
+  const base::ListValue& user_info = web_platform_params[0].GetList();
+  ASSERT_EQ(user_info.size(), 1u);
+  EXPECT_EQ(user_info[0].GetInt(),
+            2);  // session_index set via SetSessionIndex(2)
+  EXPECT_EQ(web_platform_params[1].GetInt(),
+            1);  // integration_type = WEB_SEARCH_EMBEDDED
 }
 
 }  // namespace drive
