@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/importer/safari_importer.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -86,18 +82,19 @@ TEST_F(SafariImporterTest, BookmarkImport) {
 
   for (size_t i = 0; i < num_bookmarks; ++i) {
     user_data_importer::ImportedBookmarkEntry& entry = bookmarks[i];
-    EXPECT_EQ(kImportedBookmarksData[i].in_toolbar, entry.in_toolbar);
-    EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
+    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).in_toolbar,
+              entry.in_toolbar);
+    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).url, entry.url);
 
     std::vector<std::u16string> path =
-        base::SplitString(kImportedBookmarksData[i].path, u"/",
+        base::SplitString(UNSAFE_TODO(kImportedBookmarksData[i]).path, u"/",
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {
       EXPECT_EQ(path[j], entry.path[j]);
     }
 
-    EXPECT_EQ(kImportedBookmarksData[i].title, entry.title);
+    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).title, entry.title);
   }
 }
 
@@ -128,18 +125,19 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
 
   for (size_t i = 0; i < num_bookmarks; ++i) {
     user_data_importer::ImportedBookmarkEntry& entry = bookmarks[i];
-    EXPECT_EQ(kImportedBookmarksData[i].in_toolbar, entry.in_toolbar);
-    EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
+    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).in_toolbar,
+              entry.in_toolbar);
+    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).url, entry.url);
 
     std::vector<std::u16string> path =
-        base::SplitString(kImportedBookmarksData[i].path, u"/",
+        base::SplitString(UNSAFE_TODO(kImportedBookmarksData[i]).path, u"/",
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {
       EXPECT_EQ(path[j], entry.path[j]);
     }
 
-    EXPECT_EQ(kImportedBookmarksData[i].title, entry.title);
+    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).title, entry.title);
   }
 }
 

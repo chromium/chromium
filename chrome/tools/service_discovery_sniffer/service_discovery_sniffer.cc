@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/tools/service_discovery_sniffer/service_discovery_sniffer.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/at_exit.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -120,7 +116,7 @@ int main(int argc, char** argv) {
     // To guarantee/make explicit the ordering constraint.
     local_discovery::ServiceTypePrinter print_changes(
         service_discovery_client.get(),
-        std::string(argv[1]) + "._tcp.local");
+        std::string(UNSAFE_TODO(argv[1])) + "._tcp.local");
 
     print_changes.Start();
     base::RunLoop().Run();

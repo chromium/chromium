@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <atspi/atspi-types.h>
 
 #include <algorithm>
@@ -21,6 +16,7 @@
 #include <unordered_set>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -406,12 +402,13 @@ int AtspiInProcessFuzzer::HandleAction(
     // declare a new hash here, centipede will know that this is an
     // especially interesting input.
     if (control_path_id < kNumControlsToDeclareToCentipede) {
-      base::span<uint8_t> path_data(
+      base::span<uint8_t> path_data = UNSAFE_TODO(base::span<uint8_t>(
           reinterpret_cast<uint8_t*>(current_control_path.data()),
-          current_control_path.size() * sizeof(size_t));
+          current_control_path.size() * sizeof(size_t)));
       size_t hash =
           base::FastHash(path_data) & std::numeric_limits<uint32_t>::max();
-      extra_features[control_path_id++] = (kControlsReachedDomain << 32) | hash;
+      UNSAFE_TODO(extra_features[control_path_id++]) =
+          (kControlsReachedDomain << 32) | hash;
     }
   }
 
@@ -876,7 +873,7 @@ size_t SaveMessageAsText(const AtspiInProcessFuzzer::FuzzCase& message,
     return 0;
   }
   if (tmp.size() <= max_size) {
-    memcpy(data, tmp.data(), tmp.size());
+    UNSAFE_TODO(memcpy(data, tmp.data(), tmp.size()));
     return tmp.size();
   }
   return 0;
@@ -900,7 +897,8 @@ std::optional<size_t> AtspiInProcessFuzzer::MutateControlPath(
     size_t max_size,
     std::minstd_rand& random) {
   AtspiInProcessFuzzer::FuzzCase input;
-  base::span<uint8_t> message_data(data, size);
+  base::span<uint8_t> message_data =
+      UNSAFE_TODO(base::span<uint8_t>(data, size));
   ParseTextMessage(message_data, &input);
   // If we can't parse it, we'll treat it as a blank fuzz case
   if (AttemptMutateMessage(input, random)) {

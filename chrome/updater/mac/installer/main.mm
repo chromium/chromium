@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <mach-o/getsect.h>
 #include <mach-o/ldsyms.h>
 #include <mach-o/loader.h>
@@ -16,6 +11,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -82,7 +78,7 @@ int Main() {
     return kErrorCreatingTempDir;
   }
 
-  int result = Unzip({data, data + size}, extract_path.GetPath());
+  int result = Unzip({data, UNSAFE_TODO(data + size)}, extract_path.GetPath());
   if (result != kErrorOk) {
     return result;
   }

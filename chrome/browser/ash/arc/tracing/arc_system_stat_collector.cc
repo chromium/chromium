@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/tracing/arc_system_stat_collector.h"
 
 #include <fcntl.h>
@@ -16,6 +11,7 @@
 #include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -278,16 +274,16 @@ struct ArcSystemStatCollector::SystemReadersContext {
         continue;
       }
 
-      if (context->system_readers[reader].is_valid()) {
+      if (UNSAFE_TODO(context->system_readers[reader]).is_valid()) {
         LOG(ERROR) << "Found duplicate power counter " << domain_name << " in "
                    << domain_file_path.value();
         continue;
       }
 
       const base::FilePath counter_file_path = dir.Append(component);
-      context->system_readers[reader].reset(
-          open(counter_file_path.value().c_str(), O_RDONLY));
-      if (!context->system_readers[reader].is_valid()) {
+      UNSAFE_TODO(context->system_readers[reader])
+          .reset(open(counter_file_path.value().c_str(), O_RDONLY));
+      if (!UNSAFE_TODO(context->system_readers[reader]).is_valid()) {
         // TODO(b/182801299): Some intel-rapl files may not be opened from user
         // process by design. Add support to access through debugd as root.
         LOG(ERROR) << "Failed to open power counter: " << domain_name << " as "
@@ -663,8 +659,8 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
   if (!context->system_readers[SystemReader::kZram].is_valid() ||
       !ParseStatFile(context->system_readers[SystemReader::kZram].get(),
                      kZramStatColumns, context->current_frame.zram_stat)) {
-    memset(context->current_frame.zram_stat, 0,
-           sizeof(context->current_frame.zram_stat));
+    UNSAFE_TODO(memset(context->current_frame.zram_stat, 0,
+                       sizeof(context->current_frame.zram_stat)));
     static bool error_reported = false;
     if (!error_reported) {
       LOG(ERROR) << "Failed to read zram stat file: " << kZramPath;
@@ -675,8 +671,8 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
   if (!context->system_readers[SystemReader::kMemoryInfo].is_valid() ||
       !ParseStatFile(context->system_readers[SystemReader::kMemoryInfo].get(),
                      kMemInfoColumns, context->current_frame.mem_info)) {
-    memset(context->current_frame.mem_info, 0,
-           sizeof(context->current_frame.mem_info));
+    UNSAFE_TODO(memset(context->current_frame.mem_info, 0,
+                       sizeof(context->current_frame.mem_info)));
     static bool error_reported = false;
     if (!error_reported) {
       LOG(ERROR) << "Failed to read mem info file: " << kMemoryInfoPath;
@@ -687,8 +683,8 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
   if (!context->system_readers[SystemReader::kGemInfo].is_valid() ||
       !ParseStatFile(context->system_readers[SystemReader::kGemInfo].get(),
                      kGemInfoColumns, context->current_frame.gem_info)) {
-    memset(context->current_frame.gem_info, 0,
-           sizeof(context->current_frame.gem_info));
+    UNSAFE_TODO(memset(context->current_frame.gem_info, 0,
+                       sizeof(context->current_frame.gem_info)));
     static bool error_reported = false;
     if (!error_reported) {
       LOG(ERROR) << "Failed to read gem info file: " << kGemInfoPath;
@@ -711,17 +707,20 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
       false};
 
   for (size_t i = 0; i < std::size(one_value_readers); ++i) {
-    if (!context->system_readers[one_value_readers[i].reader].is_valid() ||
+    if (!UNSAFE_TODO(context->system_readers[one_value_readers[i].reader])
+             .is_valid() ||
         !ParseStatFile(
-            context->system_readers[one_value_readers[i].reader].get(),
-            kOneValueColumns, one_value_readers[i].value)) {
-      *one_value_readers[i].value = one_value_readers[i].default_value;
-      if (one_value_readers_error_reported[i]) {
+            UNSAFE_TODO(
+                context->system_readers[one_value_readers[i].reader].get()),
+            kOneValueColumns, UNSAFE_TODO(one_value_readers[i].value))) {
+      UNSAFE_TODO(*one_value_readers[i].value =
+                      one_value_readers[i].default_value);
+      if (UNSAFE_TODO(one_value_readers_error_reported[i])) {
         continue;
       }
       LOG(ERROR) << "Failed to read one value system stat: "
-                 << one_value_readers[i].reader;
-      one_value_readers_error_reported[i] = true;
+                 << UNSAFE_TODO(one_value_readers[i].reader);
+      UNSAFE_TODO(one_value_readers_error_reported[i] = true);
     }
   }
 
@@ -796,27 +795,27 @@ bool ParseStatFile(int fd, const int* columns, int64_t* output) {
   if (read_bytes < 0) {
     return false;
   }
-  buffer[read_bytes] = 0;
+  UNSAFE_TODO(buffer[read_bytes]) = 0;
   int column_index = 0;
   const char* scan = buffer;
   while (true) {
     // Skip whitespace.
     while (IsWhitespace(*scan)) {
-      ++scan;
+      UNSAFE_TODO(++scan);
     }
     if (*columns != column_index) {
       // Just skip this entry. It may be digits or text.
       while (!IsWhitespace(*scan)) {
-        ++scan;
+        UNSAFE_TODO(++scan);
       }
     } else {
       int64_t value = 0;
       while (IsDigit(*scan)) {
         value = 10 * value + *scan - '0';
-        ++scan;
+        UNSAFE_TODO(++scan);
       }
-      *output++ = value;
-      ++columns;
+      UNSAFE_TODO(*output++) = value;
+      UNSAFE_TODO(++columns);
       if (*columns < 0) {
         return IsEnd(*scan);  // All columns are read.
       }
