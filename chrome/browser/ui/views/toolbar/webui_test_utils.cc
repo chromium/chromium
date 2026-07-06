@@ -639,9 +639,13 @@ std::u16string AvatarToolbarButtonTestAccessor::GetRenderedTooltipText(
                     "app.shadowRoot?.querySelector('avatar-button');"
                     "  if (!btn) return '';"
                     "  await btn.updateComplete;"
-                    "  const buttonEl = "
+                    "  const chip = "
                     "btn.shadowRoot?.querySelector('#button');"
-                    "  return buttonEl?.title || btn.state?.tooltip || '';"
+                    "  if (!chip) return '';"
+                    "  await chip.updateComplete;"
+                    "  const innerButton = "
+                    "chip.shadowRoot?.querySelector('#button');"
+                    "  return innerButton?.title || btn.state?.tooltip || '';"
                     "})()")
                     .ExtractString());
           },
@@ -682,9 +686,13 @@ std::u16string AvatarToolbarButtonTestAccessor::GetAccessibilityLabel() {
                     "app.shadowRoot?.querySelector('avatar-button');"
                     "  if (!btn) return '';"
                     "  await btn.updateComplete;"
-                    "  const buttonEl = "
+                    "  const chip = "
                     "btn.shadowRoot?.querySelector('#button');"
-                    "  return buttonEl?.getAttribute('aria-label') || '';"
+                    "  if (!chip) return '';"
+                    "  await chip.updateComplete;"
+                    "  const innerButton = "
+                    "chip.shadowRoot?.querySelector('#button');"
+                    "  return innerButton?.getAttribute('aria-label') || '';"
                     "})()")
                     .ExtractString());
           },
@@ -726,9 +734,14 @@ std::u16string AvatarToolbarButtonTestAccessor::GetAccessibilityDescription() {
                     "app.shadowRoot?.querySelector('avatar-button');"
                     "  if (!btn) return '';"
                     "  await btn.updateComplete;"
-                    "  const buttonEl = "
+                    "  const chip = "
                     "btn.shadowRoot?.querySelector('#button');"
-                    "  return buttonEl?.getAttribute('aria-description') || '';"
+                    "  if (!chip) return '';"
+                    "  await chip.updateComplete;"
+                    "  const innerButton = "
+                    "chip.shadowRoot?.querySelector('#button');"
+                    "  return innerButton?.getAttribute('aria-description') || "
+                    "'';"
                     "})()")
                     .ExtractString());
           },

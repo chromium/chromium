@@ -2554,8 +2554,14 @@ IN_PROC_BROWSER_TEST_P(WebUIAppMenuButtonStateTest, VerifyState) {
     const std::string icon_button_js = GetButtonIconJS(kAppMenuButtonSelector);
     std::string expected_tooltip =
         l10n_util::GetStringUTF8(param.expected_tooltip_id);
-    if (content::EvalJs(web_contents, base::StrCat({icon_button_js, ".title"}))
-            .ExtractString() != expected_tooltip) {
+    std::string actual_tooltip =
+        content::EvalJs(web_contents,
+                        base::StrCat({icon_button_js,
+                                      "?.shadowRoot?.querySelector('button')?."
+                                      "getAttribute('title') || ",
+                                      icon_button_js, "?.title || ''"}))
+            .ExtractString();
+    if (actual_tooltip != expected_tooltip) {
       return false;
     }
 

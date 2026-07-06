@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_button/cr_button.js';
+import './toolbar_chip_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import '/shared/icon_from_table.js';
@@ -97,12 +97,12 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
         false);
   }
 
-  protected onFocus_() {
+  protected onFocusin_() {
     BrowserProxyImpl.getInstance().toolbarUIHandler.setAvatarButtonFocused(
         true);
   }
 
-  protected onBlur_() {
+  protected onFocusout_() {
     BrowserProxyImpl.getInstance().toolbarUIHandler.setAvatarButtonFocused(
         false);
   }

@@ -13,8 +13,11 @@ suite('IPH', function() {
     document.body.appendChild(el);
     await microtasksFinished();
 
-    const button = el.shadowRoot!.querySelector(
+    let button = el.shadowRoot!.querySelector(
         'cr-icon-button, cr-button, toolbar-chip-button')!;
+    if (button.tagName === 'TOOLBAR-CHIP-BUTTON') {
+      button = button.shadowRoot!.querySelector('#button')!;
+    }
     const normalTooltip = button.getAttribute('title') || '';
     assertTrue(
         normalTooltip.length > 0,

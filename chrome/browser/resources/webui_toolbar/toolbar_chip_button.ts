@@ -26,6 +26,10 @@ export class ToolbarChipButtonElement extends CrLitElement {
         type: String,
         attribute: 'aria-label',
       },
+      ariaDescription: {
+        type: String,
+        attribute: 'aria-description',
+      },
       tooltip: {
         type: String,
         attribute: 'title',
@@ -34,12 +38,18 @@ export class ToolbarChipButtonElement extends CrLitElement {
         type: String,
         attribute: 'aria-haspopup',
       },
+      disabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   override accessor ariaLabel: string = '';
+  override accessor ariaDescription: string = '';
   accessor tooltip: string = '';
   override accessor ariaHasPopup: string|null = null;
+  accessor disabled: boolean = false;
 
   override focus() {
     this.shadowRoot?.querySelector<HTMLElement>('#button')?.focus();
