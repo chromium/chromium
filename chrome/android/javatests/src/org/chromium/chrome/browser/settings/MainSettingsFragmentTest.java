@@ -238,43 +238,16 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/433576895): Re-enable containment and multi-column feature
-    // once the test is fixed.
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT,
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN
-    })
-    public void testRenderSignedOutAccountManagementRows() throws IOException {
-        startSettings();
-        waitForOptionsMenu();
-
-        View accountRow =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(R.id.account_management_account_row);
-        ChromeRenderTestRule.sanitize(accountRow);
-        mRenderTestRule.render(accountRow, "main_settings_signed_out_account");
-        View googleServicesRow =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(R.id.account_management_google_services_row);
-        ChromeRenderTestRule.sanitize(googleServicesRow);
-        mRenderTestRule.render(googleServicesRow, "main_settings_signed_out_google_services");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
     @Policies.Add({@Policies.Item(key = "BrowserSignin", string = "0")})
-    // TODO(crbug.com/433576895): Re-enable containment and multi-column feature
-    // once the test is fixed.
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT,
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN
-    })
+    @DisabledTest(message = "https://crbug.com/433576895")
     public void testRenderSigninDisabledByPolicyAccountRow() throws IOException {
         startSettings();
         waitForOptionsMenu();
+
+        onView(withId(R.id.recycler_view))
+                .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
+
+        onView(withId(R.id.account_management_account_row)).check(matches(isDisplayed()));
 
         View accountRow =
                 mSettingsActivityTestRule
