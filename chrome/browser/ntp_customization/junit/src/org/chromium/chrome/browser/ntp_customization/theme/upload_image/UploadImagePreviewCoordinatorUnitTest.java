@@ -335,7 +335,8 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 mConfigManager.getBackgroundType());
         assertTrue(
                 "The background image file should have been saved.",
-                NtpCustomizationUtils.createUploadImageFileInDir(TEST_FILE_ID_HASH).exists());
+                NtpCustomizationUtils.createUploadImageFileInDirForTesting(TEST_FILE_ID_HASH)
+                        .exists());
 
         // Verifies the on clicked callback was invoked.
         verify(mOnClickedCallback).onResult(eq(true));
@@ -359,7 +360,8 @@ public class UploadImagePreviewCoordinatorUnitTest {
         verify(mOnClickedCallback).onResult(eq(false));
         assertFalse(
                 "The background image file should not have been saved.",
-                NtpCustomizationUtils.createUploadImageFileInDir(TEST_FILE_ID_HASH).exists());
+                NtpCustomizationUtils.createUploadImageFileInDirForTesting(TEST_FILE_ID_HASH)
+                        .exists());
         assertNull(
                 "The matrices should not have been saved.",
                 NtpCustomizationUtils.readNtpBackgroundImageInfo());

@@ -332,7 +332,8 @@ public class NtpThemeDailyRefreshManagerUnitTest {
 
     @Test
     public void testReadNtpBackgroundImageForThemeCollection_dailyUpdateNotApplied() {
-        File customFile = NtpCustomizationUtils.createThemeCollectionImageFileInDir("test_read");
+        File customFile =
+                NtpCustomizationUtils.createThemeCollectionImageFileInDirForTesting("test_read");
         testReadNtpBackgroundImageForThemeCollectionImpl(
                 /* isDailyUpdateApplied= */ false, customFile.getAbsolutePath());
     }

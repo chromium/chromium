@@ -143,10 +143,10 @@ public class NtpBackgroundDataManager {
 
     /** Removes the image file for the backgroundData. */
     private void cleanUpForBackgroundData(NtpBackgroundDataBase backgroundData) {
-        if (backgroundData instanceof NtpBackgroundDataUploadImage uploadImage) {
+        if (backgroundData instanceof NtpBackgroundDataImageBase imageBaseData) {
             NtpCustomizationUtils.maybeDeleteFile(
                     NtpCustomizationUtils.getBackgroundImageFileFromPath(
-                            uploadImage.getLastUploadImageFilePath()));
+                            imageBaseData.getLastUploadImageFilePath()));
         }
     }
 

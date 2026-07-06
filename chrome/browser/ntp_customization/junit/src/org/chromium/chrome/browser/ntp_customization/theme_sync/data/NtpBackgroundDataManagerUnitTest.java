@@ -306,7 +306,7 @@ public class NtpBackgroundDataManagerUnitTest {
         assertFalse(savedFile.exists());
 
         // Clean up
-        NtpCustomizationUtils.deleteUploadImageFileDir();
+        NtpCustomizationUtils.deleteThemeImageFileDir(NtpCustomizationUtils.NTP_UPLOAD_IMAGES_DIR);
     }
 
     @Test

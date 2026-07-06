@@ -217,7 +217,8 @@ public class NtpBackgroundDataUtilsUnitTest {
 
     @Test
     public void testLoadImage_customPath() {
-        File customFile = NtpCustomizationUtils.createUploadImageFileInDir("customImage.png");
+        File customFile =
+                NtpCustomizationUtils.createUploadImageFileInDirForTesting("customImage.png");
         testLoadImageImpl(customFile.getAbsolutePath());
     }
 
@@ -246,7 +247,8 @@ public class NtpBackgroundDataUtilsUnitTest {
         if (filePath == null || filePath.isEmpty()) {
             NtpCustomizationUtils.maybeDeleteFile(targetFile);
         } else {
-            NtpCustomizationUtils.deleteUploadImageFileDir();
+            NtpCustomizationUtils.deleteThemeImageFileDir(
+                    NtpCustomizationUtils.NTP_UPLOAD_IMAGES_DIR);
         }
     }
 }

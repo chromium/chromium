@@ -104,7 +104,7 @@ public class NtpBackgroundDataUploadImageUnitTest {
         BackgroundImageInfo backgroundImageInfo =
                 new BackgroundImageInfo(portraitMatrix, landscapeMatrix, null, null);
         String filePath =
-                NtpCustomizationUtils.createUploadImageFileInDir(TEST_FILE_ID_HASH)
+                NtpCustomizationUtils.createUploadImageFileInDirForTesting(TEST_FILE_ID_HASH)
                         .getAbsolutePath();
         @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
         @ColorInt Integer primaryColor = Color.BLUE;

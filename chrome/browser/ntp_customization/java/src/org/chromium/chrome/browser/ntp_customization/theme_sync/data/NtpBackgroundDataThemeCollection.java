@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NTP_THEME_COLLECTION_IMAGES_DIR;
+
 import android.graphics.Bitmap;
 
 import androidx.annotation.ColorInt;
@@ -12,11 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
@@ -26,7 +25,7 @@ import java.util.Objects;
 
 /** Data class for NTP theme collection background image. */
 @NullMarked
-public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
+public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase {
     @VisibleForTesting static final String CUSTOM_BACKGROUND_INFO_KEY = "customBackgroundInfo";
     @VisibleForTesting static final String BACKGROUND_URL_KEY = "backgroundUrl";
     @VisibleForTesting static final String COLLECTION_ID_KEY = "collectionId";
@@ -34,14 +33,6 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
     @VisibleForTesting static final String IS_DAILY_REFRESH_ENABLED_KEY = "isDailyRefreshEnabled";
 
     private final CustomBackgroundInfo mCustomBackgroundInfo;
-    private final @Nullable BackgroundImageInfo mBackgroundImageInfo;
-    // The mFileIdHash isn't null when NTP theme sync is enabled.
-    private final @Nullable String mFileIdHash;
-    // The mLastUploadImageFilePath isn't null when mFileIdHash isn't null.
-    private final @Nullable String mLastUploadImageFilePath;
-
-    private @Nullable Bitmap mBitmap;
-    private @Nullable @ColorInt Integer mPrimaryColor;
 
     /**
      * Constructor.
@@ -60,20 +51,8 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
             @Nullable Bitmap bitmap,
             @Nullable @ColorInt Integer primaryColor,
             @Nullable String fileIdHash) {
-        super(platformType);
+        super(platformType, backgroundImageInfo, bitmap, primaryColor, fileIdHash);
         mCustomBackgroundInfo = customBackgroundInfo;
-        mBackgroundImageInfo = backgroundImageInfo;
-        mBitmap = bitmap;
-        mPrimaryColor = primaryColor;
-
-        mFileIdHash = fileIdHash;
-        if (mFileIdHash != null) {
-            mLastUploadImageFilePath =
-                    NtpCustomizationUtils.createThemeCollectionImageFileInDir(mFileIdHash)
-                            .getAbsolutePath();
-        } else {
-            mLastUploadImageFilePath = null;
-        }
     }
 
     /** Returns the {@link CustomBackgroundInfo}. */
@@ -81,33 +60,10 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
         return mCustomBackgroundInfo;
     }
 
-    /** Returns the primary color of the background image. */
-    public @Nullable @ColorInt Integer getPrimaryColor() {
-        return mPrimaryColor;
-    }
-
-    /** Returns the background image info containing matrices and window sizes. */
-    public @Nullable BackgroundImageInfo getBackgroundImageInfo() {
-        return mBackgroundImageInfo;
-    }
-
-    /** Returns the local bitmap, which is not synced. */
-    public @Nullable Bitmap getBitmap() {
-        return mBitmap;
-    }
-
-    /** Returns the file path of the last uploaded image. */
-    public @Nullable String getLastUploadImageFilePath() {
-        return mLastUploadImageFilePath;
-    }
-
-    /**
-     * Sets the primary color of the background image.
-     *
-     * @param primaryColor The primary color to set.
-     */
-    public void setPrimaryColor(@Nullable @ColorInt Integer primaryColor) {
-        mPrimaryColor = primaryColor;
+    // NtpBackgroundDataImageBase implementations.
+    @Override
+    public String getImageDirName() {
+        return NTP_THEME_COLLECTION_IMAGES_DIR;
     }
 
     // NtpBackgroundDataBase implementations.
@@ -117,41 +73,9 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
     }
 
     @Override
-    public void getBitmapOrLoadImage(Callback<@Nullable Bitmap> onImageLoadedCallback) {
-        if (mBitmap != null) {
-            onImageLoadedCallback.onResult(mBitmap);
-            return;
-        }
-
-        NtpBackgroundDataBase currentBackgroundData =
-                NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
-        if (currentBackgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData
-                && Objects.equals(currentBackgroundData, this)) {
-            mBitmap = themeCollectionData.getBitmap();
-            onImageLoadedCallback.onResult(mBitmap);
-        } else {
-            NtpBackgroundDataUtils.loadImage(
-                    (result) -> {
-                        mBitmap = result;
-                        onImageLoadedCallback.onResult(mBitmap);
-                    },
-                    mLastUploadImageFilePath);
-        }
-    }
-
-    @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
         json.put(CUSTOM_BACKGROUND_INFO_KEY, customBackgroundInfoToJson());
-        if (mPrimaryColor != null) {
-            json.put(PRIMARY_COLOR_KEY, mPrimaryColor);
-        }
-        if (mBackgroundImageInfo != null) {
-            json.put(BACKGROUND_IMAGE_INFO_KEY, mBackgroundImageInfo.toJson());
-        }
-        if (mFileIdHash != null) {
-            json.put(FILE_ID_HASH_KEY, mFileIdHash);
-        }
         return json;
     }
 
@@ -159,15 +83,14 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
     public boolean equals(Object obj) {
         if (obj instanceof NtpBackgroundDataThemeCollection other) {
             return super.equals(obj)
-                    && Objects.equals(mCustomBackgroundInfo, other.mCustomBackgroundInfo)
-                    && Objects.equals(mPrimaryColor, other.mPrimaryColor);
+                    && Objects.equals(mCustomBackgroundInfo, other.mCustomBackgroundInfo);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mCustomBackgroundInfo, mPrimaryColor);
+        return Objects.hash(super.hashCode(), mCustomBackgroundInfo);
     }
 
     /** Returns the NtpBackgroundDataThemeCollection object from the given JSON. */
@@ -177,13 +100,13 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
             backgroundImageInfo =
                     BackgroundImageInfo.fromJson(json.getJSONObject(BACKGROUND_IMAGE_INFO_KEY));
         }
-        Integer primaryColor = json.has(PRIMARY_COLOR_KEY) ? json.getInt(PRIMARY_COLOR_KEY) : null;
+
         return new NtpBackgroundDataThemeCollection(
                 json.getInt(PLATFORM_TYPE_KEY),
                 jsonObjectToCustomBackgroundInfo(json.getJSONObject(CUSTOM_BACKGROUND_INFO_KEY)),
                 backgroundImageInfo,
                 /* bitmap= */ null,
-                primaryColor,
+                json.has(PRIMARY_COLOR_KEY) ? json.getInt(PRIMARY_COLOR_KEY) : null,
                 json.has(FILE_ID_HASH_KEY) ? json.getString(FILE_ID_HASH_KEY) : null);
     }
 

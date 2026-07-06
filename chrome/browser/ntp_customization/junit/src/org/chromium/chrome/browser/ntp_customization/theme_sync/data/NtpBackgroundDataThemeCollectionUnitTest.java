@@ -211,7 +211,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 restored.getBackgroundImageInfo().getLandscapeMatrix().toShortString());
         if (fileIdHash != null) {
             assertEquals(
-                    NtpCustomizationUtils.createThemeCollectionImageFileInDir(fileIdHash)
+                    NtpCustomizationUtils.createThemeCollectionImageFileInDirForTesting(fileIdHash)
                             .getAbsolutePath(),
                     restored.getLastUploadImageFilePath());
         } else {
