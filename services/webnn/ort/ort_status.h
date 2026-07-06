@@ -20,9 +20,9 @@ std::string OrtStatusErrorMessage(OrtStatus* status);
 
 }  // namespace internal
 
-#define CHECK_STATUS(expr)                                      \
-  if (OrtStatus* status = (expr)) {                             \
-    LOG(FATAL) << ort::internal::OrtStatusErrorMessage(status); \
+#define CHECK_STATUS(expr)                                          \
+  if (OrtStatus* ort_status = (expr)) {                             \
+    LOG(FATAL) << ort::internal::OrtStatusErrorMessage(ort_status); \
   }
 
 #define CALL_ORT_FUNC(expr)                                             \
