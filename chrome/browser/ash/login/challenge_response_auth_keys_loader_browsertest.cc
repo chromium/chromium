@@ -15,10 +15,10 @@
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "components/account_id/account_id.h"
@@ -36,7 +36,9 @@ namespace {
 constexpr char kUserEmail[] = "testuser@example.com";
 
 Profile* GetOriginalProfile() {
-  return ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return Profile::FromBrowserContext(
+             BrowserContextHelper::Get()->GetSigninBrowserContext())
+      ->GetOriginalProfile();
 }
 
 extensions::ProcessManager* GetProcessManager() {
