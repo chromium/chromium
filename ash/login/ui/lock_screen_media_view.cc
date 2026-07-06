@@ -100,7 +100,8 @@ LockScreenMediaView::LockScreenMediaView(
   const auto media_color_theme = GetCrosMediaColorTheme();
 
   auto dismiss_button = std::make_unique<DismissButton>(
-      base::BindRepeating(&LockScreenMediaView::Hide, base::Unretained(this)),
+      base::BindRepeating(&LockScreenMediaView::DismissByUser,
+                          base::Unretained(this)),
       media_color_theme.primary_foreground_color_id,
       media_color_theme.secondary_foreground_color_id,
       media_color_theme.focus_ring_color_id);
@@ -305,6 +306,7 @@ void LockScreenMediaView::SeekTo(base::TimeDelta time) {
 // base::PowerSuspendObserver implementations:
 
 void LockScreenMediaView::OnSuspend() {
+  Shell::Get()->media_controller()->SuspendMediaSessions();
   Hide();
 }
 
@@ -349,11 +351,15 @@ void LockScreenMediaView::Show() {
   show_media_view_callback_.Run();
 }
 
-void LockScreenMediaView::Hide() {
+void LockScreenMediaView::DismissByUser() {
   // |media_controller_remote_| can be null in tests.
   if (media_controller_remote_.is_bound()) {
     media_controller_remote_->Stop();
   }
+  Hide();
+}
+
+void LockScreenMediaView::Hide() {
   hide_media_view_callback_.Run();
 }
 

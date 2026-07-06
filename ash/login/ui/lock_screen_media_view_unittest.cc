@@ -8,7 +8,10 @@
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/login_test_base.h"
+#include "ash/media/media_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/test_media_client.h"
 #include "base/test/power_monitor_test.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,12 +43,17 @@ class LockScreenMediaViewTest : public LoginTestBase {
     SetUserCount(1);
     media_view_ = lock_contents.media_view();
 
+    client_ = std::make_unique<TestMediaClient>();
+    Shell::Get()->media_controller()->SetClient(client_.get());
+
     media_controller_ = std::make_unique<TestMediaController>();
     media_view_->SetMediaControllerForTesting(
         media_controller_->CreateMediaControllerRemote());
   }
 
   void TearDown() override {
+    Shell::Get()->media_controller()->SetClient(nullptr);
+    client_.reset();
     media_view_ = nullptr;
     LoginTestBase::TearDown();
   }
@@ -80,9 +88,12 @@ class LockScreenMediaViewTest : public LoginTestBase {
     return media_controller_.get();
   }
 
+  TestMediaClient* client() const { return client_.get(); }
+
  private:
   raw_ptr<LockScreenMediaView> media_view_ = nullptr;
   base::test::ScopedPowerMonitorTestSource power_monitor_source_;
+  std::unique_ptr<TestMediaClient> client_;
   std::unique_ptr<TestMediaController> media_controller_;
 };
 
@@ -178,6 +189,9 @@ TEST_F(LockScreenMediaViewTest, PowerSuspendState) {
   SimulateMediaSessionChanged();
   EXPECT_TRUE(media_view()->GetVisible());
   Suspend();
+  media_view()->FlushForTesting();
+  EXPECT_EQ(0, media_controller()->stop_count());
+  EXPECT_TRUE(client()->media_sessions_suspended());
   EXPECT_FALSE(media_view()->GetVisible());
 }
 

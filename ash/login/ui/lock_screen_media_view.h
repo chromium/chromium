@@ -107,6 +107,9 @@ class ASH_EXPORT LockScreenMediaView
  private:
   friend class LockScreenMediaViewTest;
 
+  // Called when the user clicks the dismiss button.
+  void DismissByUser();
+
   // Called to show the media view.
   void Show();
 
