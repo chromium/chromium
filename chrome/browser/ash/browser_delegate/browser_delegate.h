@@ -59,6 +59,15 @@ class BrowserDelegate {
   // session.
   virtual bool IsOffTheRecord() const = 0;
 
+  // Returns whether the browser was created by StartupBrowserCreator. Mutually
+  // exclusive with `IsCreatedBySessionRestoreForStartupUrls`.
+  virtual bool IsCreatedByStartupCreator() const = 0;
+
+  // Returns whether the browser was created by SessionRestore to open
+  // startup URLs for the LAST_AND_URLS preference. Mutually exclusive with
+  // `IsCreatedByStartupCreator`.
+  virtual bool IsCreatedBySessionRestoreForStartupUrls() const = 0;
+
   // Returns the browser window's current bounds.
   virtual gfx::Rect GetBounds() const = 0;
 

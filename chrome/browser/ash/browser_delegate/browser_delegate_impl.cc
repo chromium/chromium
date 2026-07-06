@@ -63,6 +63,16 @@ bool BrowserDelegateImpl::IsOffTheRecord() const {
   return browser_->profile()->IsOffTheRecord();
 }
 
+bool BrowserDelegateImpl::IsCreatedByStartupCreator() const {
+  return browser_->creation_source() ==
+         Browser::CreationSource::kStartupCreator;
+}
+
+bool BrowserDelegateImpl::IsCreatedBySessionRestoreForStartupUrls() const {
+  return browser_->creation_source() ==
+         Browser::CreationSource::kLastAndUrlsStartupPref;
+}
+
 gfx::Rect BrowserDelegateImpl::GetBounds() const {
   return browser_->GetWindow()->GetBounds();
 }

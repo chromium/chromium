@@ -70,8 +70,7 @@ bool ShouldRestoreUrls(BrowserDelegate* browser) {
   // If the browser is created by StartupBrowserCreator,
   // StartupBrowserCreatorImpl::OpenTabsInBrowser can open tabs, so don't
   // restore urls here.
-  if (browser->GetBrowser().creation_source() ==
-      Browser::CreationSource::kStartupCreator) {
+  if (browser->IsCreatedByStartupCreator()) {
     return false;
   }
 
@@ -128,8 +127,7 @@ void BrowserRestoreObserver::OnBrowserCreated(BrowserDelegate* browser) {
 
   // If the startup urls from LAST_AND_URLS pref are already opened in a new
   // browser, skip opening the same browser.
-  if (browser->GetBrowser().creation_source() ==
-      Browser::CreationSource::kLastAndUrlsStartupPref) {
+  if (browser->IsCreatedBySessionRestoreForStartupUrls()) {
     on_session_restored_callback_subscription_ = {};
   }
 }

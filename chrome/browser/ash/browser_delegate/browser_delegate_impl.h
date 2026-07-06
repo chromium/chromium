@@ -23,6 +23,8 @@ class BrowserDelegateImpl : public BrowserDelegate {
   SessionID GetSessionID() const override;
   const AccountId& GetAccountId() const override;
   bool IsOffTheRecord() const override;
+  bool IsCreatedByStartupCreator() const override;
+  bool IsCreatedBySessionRestoreForStartupUrls() const override;
   gfx::Rect GetBounds() const override;
   content::WebContents* GetActiveWebContents() const override;
   size_t GetWebContentsCount() const override;
