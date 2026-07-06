@@ -17,6 +17,8 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
 
@@ -61,6 +63,8 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -87,6 +91,7 @@ public class ShareDelegateImplUnitTest {
             new OverrideContextWrapperTestRule();
 
     @Mock private Context mContext;
+    @Mock private PackageManager mPackageManager;
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ShareSheetDelegate mShareSheetController;
@@ -105,6 +110,7 @@ public class ShareDelegateImplUnitTest {
     @Mock SnackbarManager mSnackbarManager;
 
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
+    @Mock private DomDistillerUrlUtils.Natives mDomDistillerUrlUtilsJniMock;
 
     private final ArgumentCaptor<ShareParams> mShareParamsCaptor =
             ArgumentCaptor.forClass(ShareParams.class);
@@ -166,6 +172,12 @@ public class ShareDelegateImplUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeMock);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJniMock);
+        doAnswer(invocation -> new GURL((String) invocation.getArgument(0)))
+                .when(mDomDistillerUrlUtilsJniMock)
+                .getOriginalUrlFromDistillerUrl(anyString());
+        doReturn(mPackageManager).when(mContext).getPackageManager();
+        doReturn("org.chromium.chrome").when(mContext).getPackageName();
 
         // TODO(crbug.com/406591712): Update to stubbing share methods when those are added.
         doAnswer(sShareIsAllowedByPolicy)
@@ -734,5 +746,51 @@ public class ShareDelegateImplUnitTest {
         Assert.assertEquals(
                 "Page title should be set on ShareParams.", pdfTitle, params.getTitle());
         Assert.assertEquals("URL should be empty on ShareParams.", "", params.getUrl());
+    }
+
+    @Test
+    public void testShareUnsafePDf() {
+        final String pdfTitle = "unsafe.pdf";
+        final String contentUri =
+                "content://org.chromium.chrome.FileProvider/passwords/ChromePass.csv";
+        final String pdfUrl = PdfUtils.encodePdfPageUrl(contentUri);
+        doReturn(true).when(mTab).isNativePage();
+        doReturn(new GURL(pdfUrl)).when(mTab).getUrl();
+        doReturn(pdfTitle).when(mTab).getTitle();
+        doReturn(mock(WindowAndroid.class)).when(mTab).getWindowAndroid();
+
+        // Setup mock package manager to identify this URI as coming from this app.
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+        doReturn(providerInfo)
+                .when(mPackageManager)
+                .resolveContentProvider("org.chromium.chrome.FileProvider", 0);
+
+        createShareDelegate(false, mShareSheetController);
+        mShareDelegate.share(mTab, false, ShareOrigin.OVERFLOW_MENU);
+        verify(mShareSheetController)
+                .share(
+                        mShareParamsCaptor.capture(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        anyLong(),
+                        anyBoolean(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
+
+        ShareParams params = mShareParamsCaptor.getValue();
+        // Should NOT be shared as file because it is unsafe.
+        Assert.assertNull("File URIs should be null for unsafe PDF.", params.getFileUris());
+        // Should be shared as URL instead.
+        Assert.assertEquals("URL should be the visible PDF URL.", pdfUrl, params.getUrl());
     }
 }

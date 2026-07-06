@@ -259,13 +259,17 @@ public class ShareDelegateImpl implements ShareDelegate {
             @ShareOrigin final int shareOrigin,
             final boolean shareDirectly) {
         ShareParams.Builder shareParamsBuilder =
-                new ShareParams.Builder(window, title, getUrlToShare(visibleUrl));
+                new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, mContext));
 
         shareParamsBuilder.setOrigin(shareOrigin);
-        boolean isDownloadedPdf = PdfUtils.isDownloadedPdf(visibleUrl.getSpec());
-        if (isDownloadedPdf) {
+        String decodedUrl = PdfUtils.decodePdfPageUrl(visibleUrl.getSpec());
+        Uri pdfUri = decodedUrl != null ? Uri.parse(decodedUrl) : null;
+        boolean isDownloadedPdf =
+                PdfUtils.isDownloadedPdf(visibleUrl.getSpec())
+                        && PdfUtils.isUriSafeForSharing(pdfUri, mContext);
+        if (isDownloadedPdf && pdfUri != null) {
             ArrayList<Uri> fileToShare = new ArrayList<>();
-            fileToShare.add(Uri.parse(PdfUtils.decodePdfPageUrl(visibleUrl.getSpec())));
+            fileToShare.add(pdfUri);
             shareParamsBuilder
                     .setFileUris(fileToShare)
                     .setFileContentType(MimeTypeUtils.PDF_MIME_TYPE);
@@ -285,8 +289,14 @@ public class ShareDelegateImpl implements ShareDelegate {
     }
 
     @VisibleForTesting
-    static String getUrlToShare(GURL visibleUrl) {
-        if (PdfUtils.isDownloadedPdf(visibleUrl.getSpec())) return "";
+    static String getUrlToShare(GURL visibleUrl, @Nullable Context context) {
+        if (PdfUtils.isDownloadedPdf(visibleUrl.getSpec())) {
+            String decodedUrl = PdfUtils.decodePdfPageUrl(visibleUrl.getSpec());
+            Uri pdfUri = decodedUrl != null ? Uri.parse(decodedUrl) : null;
+            if (context == null || PdfUtils.isUriSafeForSharing(pdfUri, context)) {
+                return "";
+            }
+        }
         return visibleUrl.getSpec();
     }
 

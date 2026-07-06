@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.share;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -22,9 +25,10 @@ public class ShareDelegateImplTest {
     @Test
     @SmallTest
     public void testGetUrlToShare() {
-        Assert.assertEquals("", ShareDelegateImpl.getUrlToShare(GURL.emptyGURL()));
+        Context context = ApplicationProvider.getApplicationContext();
+        Assert.assertEquals("", ShareDelegateImpl.getUrlToShare(GURL.emptyGURL(), context));
 
         final GURL httpsUrl = new GURL("https://blah.com");
-        Assert.assertEquals(httpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl));
+        Assert.assertEquals(httpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, context));
     }
 }
