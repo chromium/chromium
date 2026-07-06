@@ -82,6 +82,37 @@ suite('ContentProcessing.sanitizeLinks', function() {
     assert.equal(links.length, 0);
     assert.equal(testContainer.innerHTML, 'Mailto Link');
   });
+
+  test(
+      'sanitizeLinks should remove javascript SVG links with xlink:href',
+      async function() {
+        const {assert} = await import('./index.js');
+        testContainer.innerHTML = '<svg><a xlink:href="javascript:void(0)">' +
+            '<text>SVG JS Link</text></a></svg>';
+        sanitizeLinks(testContainer);
+        const links = testContainer.querySelectorAll('a');
+        assert.equal(links.length, 0);
+        assert.equal(
+            testContainer.querySelector('svg').innerHTML,
+            '<text>SVG JS Link</text>');
+      });
+
+  test(
+      'sanitizeLinks should keep valid http/https SVG links with xlink:href ' +
+          'and open in new tab',
+      async function() {
+        const {assert} = await import('./index.js');
+        testContainer.innerHTML =
+            '<svg><a xlink:href="https://example.com">' +
+            '<text>SVG HTTPS Link</text></a></svg>';
+        sanitizeLinks(testContainer);
+        const links = testContainer.querySelectorAll('a');
+        assert.equal(links.length, 1);
+        assert.equal(
+            links[0].getAttributeNS('http://www.w3.org/1999/xlink', 'href'),
+            'https://example.com');
+        assert.equal(links[0].target, '_blank');
+      });
 });
 
 suite('ContentProcessing.removeExtraneousElementsFrom', function() {

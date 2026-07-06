@@ -11,7 +11,8 @@ function sanitizeLinks(element) {
   const allLinks = element.querySelectorAll('a');
 
   allLinks.forEach(linkElement => {
-    const href = linkElement.getAttribute('href');
+    const href = linkElement.getAttribute('href') ||
+        linkElement.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
 
     if (href) {
       let keepLink = false;
