@@ -19,6 +19,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -26,6 +27,10 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_client_view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
@@ -89,10 +94,12 @@ void HoverListView::AppendListItemView(const ui::ImageModel& icon,
                                        std::u16string description_text,
                                        bool enabled,
                                        int item_tag) {
+  // Safe because the hover button is added as a child view owned by `this`,
+  // guaranteeing `this` strictly outlives `hover_button` and its callback.
   auto hover_button = CreateHoverButtonForListItem(
       icon, item_text, description_text, enabled,
-      base::BindRepeating(&HoverListModel::OnListItemSelected,
-                          base::Unretained(model_.get()), item_tag));
+      base::BindRepeating(&HoverListView::OnListItemSelected,
+                          base::Unretained(this), item_tag));
 
   auto* list_item_view_ptr = hover_button.release();
   item_container_->AddChildViewRaw(list_item_view_ptr);
@@ -100,6 +107,22 @@ void HoverListView::AppendListItemView(const ui::ImageModel& icon,
       item_container_->AddChildView(std::make_unique<views::Separator>());
   tags_to_list_item_views_.emplace(
       item_tag, ListItemViews{list_item_view_ptr, separator});
+}
+
+void HoverListView::OnListItemSelected(int item_tag, const ui::Event& event) {
+  if (GetWidget() && GetWidget()->widget_delegate()) {
+    if (views::DialogDelegate* dialog_delegate =
+            GetWidget()->widget_delegate()->AsDialogDelegate()) {
+      if (views::DialogClientView* dialog_client_view =
+              dialog_delegate->GetDialogClientView()) {
+        if (dialog_client_view->IsPossiblyUnintendedInteraction(
+                event, /*allow_key_events=*/false)) {
+          return;
+        }
+      }
+    }
+  }
+  model_->OnListItemSelected(item_tag);
 }
 
 views::Button& HoverListView::GetTopListItemView() const {

@@ -8,7 +8,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -17,11 +19,14 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_controller_views.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_test_api.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/hover_list_view.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace {
 
@@ -91,6 +96,36 @@ class TestSheetView : public AuthenticatorRequestSheetView {
                           AutoFocus::kNo);
   }
 };
+
+HoverListView* FindHoverListView(views::View* root) {
+  if (!root) {
+    return nullptr;
+  }
+  if (auto* hover_list = views::AsViewClass<HoverListView>(root)) {
+    return hover_list;
+  }
+  for (views::View* child : root->children()) {
+    if (HoverListView* found = FindHoverListView(child)) {
+      return found;
+    }
+  }
+  return nullptr;
+}
+
+views::Button* FindTopListItemButton(views::View* root) {
+  if (!root) {
+    return nullptr;
+  }
+  if (auto* button = views::AsViewClass<views::Button>(root)) {
+    return button;
+  }
+  for (views::View* child : root->children()) {
+    if (views::Button* found = FindTopListItemButton(child)) {
+      return found;
+    }
+  }
+  return nullptr;
+}
 
 }  // namespace
 
@@ -162,4 +197,62 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_default) {
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_ReplaceSheet) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest,
+                       HoverListViewInputEventProtection) {
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
+
+  int mechanism_callback_count_ = 0;
+  auto dialog_model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(nullptr);
+  dialog_model->relying_party_id = "example.com";
+  dialog_model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Transport(
+          AuthenticatorTransport::kUsbHumanInterfaceDevice),
+      u"Security key", kPasskeyUsbDarkCustomIcon,
+      base::BindRepeating(
+          base::BindLambdaForTesting([&]() { mechanism_callback_count_++; })));
+  dialog_model->SetStep(
+      AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+
+  auto view_controller =
+      std::make_unique<AuthenticatorRequestDialogViewControllerViews>(
+          web_contents, dialog_model.get());
+
+  // Trigger OnStepTransition() so that view_controller creates the sheet for
+  // the current step and calls Show().
+  view_controller->OnStepTransition();
+
+  AuthenticatorRequestSheetView* sheet =
+      test::AuthenticatorRequestDialogViewTestApi::GetSheet(
+          view_controller.get());
+  ASSERT_TRUE(sheet);
+
+  HoverListView* hover_list_view = FindHoverListView(sheet);
+  ASSERT_TRUE(hover_list_view);
+
+  views::Button* top_row_button = FindTopListItemButton(hover_list_view);
+  ASSERT_TRUE(top_row_button);
+
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+
+  views::test::ButtonTestApi(top_row_button).NotifyClick(click_event);
+  EXPECT_EQ(mechanism_callback_count_, 0);
+
+  ASSERT_TRUE(sheet->GetWidget());
+  auto* dialog_delegate =
+      sheet->GetWidget()->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(dialog_delegate);
+  auto* dialog_client_view = dialog_delegate->GetDialogClientView();
+  ASSERT_TRUE(dialog_client_view);
+
+  dialog_client_view->ResetViewShownTimeStampForTesting();
+  views::test::ButtonTestApi(top_row_button).NotifyClick(click_event);
+  EXPECT_EQ(mechanism_callback_count_, 1);
 }

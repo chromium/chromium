@@ -201,5 +201,6 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/views",
+    "//ui/views:test_support",
   ]
 }

@@ -17,6 +17,10 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
 class Separator;
 }  // namespace views
@@ -57,6 +61,7 @@ class HoverListView : public views::View {
                           std::u16string item_description,
                           bool enabled,
                           int item_tag);
+  void OnListItemSelected(int item_tag, const ui::Event& event);
   views::Button& GetTopListItemView() const;
   int GetPreferredViewHeight() const;
 
