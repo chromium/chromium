@@ -138,9 +138,9 @@ class PageActionObserverTest : public ::testing::Test {
 
   void SetUp() override {
     controller_ = std::make_unique<PageActionControllerImpl>(
-        nullptr, &model_factory_, &metrics_factory_);
-    controller_->Initialize(tab_, {kTestPageActionId},
-                            TestPageActionPropertiesProvider(kTestProperties));
+        tab_, std::vector<actions::ActionId>{kTestPageActionId},
+        TestPageActionPropertiesProvider(kTestProperties), nullptr,
+        &model_factory_, &metrics_factory_);
     ON_CALL(model_factory_.Get(kTestPageActionId), GetActionId())
         .WillByDefault(Return(kTestPageActionId));
     ON_CALL(model_factory_.Get(kTestPageActionId), GetTooltipText())

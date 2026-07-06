@@ -49,4 +49,13 @@ bool FakeTabInterface::IsActivated() const {
   return is_activated_;
 }
 
+ui::UnownedUserDataHost& FakeTabInterface::GetUnownedUserDataHost() {
+  return user_data_host_;
+}
+
+const ui::UnownedUserDataHost& FakeTabInterface::GetUnownedUserDataHost()
+    const {
+  return user_data_host_;
+}
+
 }  // namespace page_actions

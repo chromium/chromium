@@ -87,7 +87,7 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
 
 class AlwaysActiveTabInterface : public FakeTabInterface {
  public:
-  explicit AlwaysActiveTabInterface(TestingProfile* profile)
+  explicit AlwaysActiveTabInterface(TestingProfile* profile = nullptr)
       : FakeTabInterface(profile) {}
 
   ~AlwaysActiveTabInterface() override = default;
@@ -133,11 +133,11 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
 
   std::unique_ptr<PageActionController> NewPageActionController(
       tabs::TabInterface& tab) const {
-    auto controller =
-        std::make_unique<PageActionControllerImpl>(pinned_actions_model_.get());
-    controller->Initialize(tab, {action_item_->GetActionId().value()},
-                           TestPageActionPropertiesProvider(kTestProperties));
-    return controller;
+    return std::make_unique<PageActionControllerImpl>(
+        tab,
+        std::vector<actions::ActionId>{action_item_->GetActionId().value()},
+        TestPageActionPropertiesProvider(kTestProperties),
+        pinned_actions_model_.get());
   }
 
   PageActionView* page_action_view() { return test_page_action_view_.get(); }
@@ -256,10 +256,11 @@ TEST_F(PageActionViewTest, ViewHasCorrectElementIdentifier) {
 // Tests that calling Show/Hide on an inactive controller will not affect the
 // view.
 TEST_F(PageActionViewWithControllerTest, ViewIgnoresInactiveController) {
-  // Use an always-active tab to ensure consistent visibility updates.
-  AlwaysActiveTabInterface tab(&profile_);
-  auto controller_a = NewPageActionController(tab);
-  auto controller_b = NewPageActionController(tab);
+  // Use always-active tabs to ensure consistent visibility updates.
+  AlwaysActiveTabInterface tab_a;
+  AlwaysActiveTabInterface tab_b;
+  auto controller_a = NewPageActionController(tab_a);
+  auto controller_b = NewPageActionController(tab_b);
   actions::ActionItem* item = action_item();
   item->SetEnabled(true);
   item->SetVisible(true);

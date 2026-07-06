@@ -205,14 +205,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
     auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
     CHECK(pinned_actions_model);
-    auto page_action_controller =
-        std::make_unique<page_actions::PageActionControllerImpl>(
-            pinned_actions_model);
-    page_action_controller->Initialize(
-        tab,
-        page_actions::GetActivePageActionIds(*tab.GetBrowserWindowInterface()),
-        page_actions::PageActionPropertiesProvider());
-    page_action_controller_ = std::move(page_action_controller);
+    page_action_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<page_actions::PageActionControllerImpl>(
+                tab, tab,
+                page_actions::GetActivePageActionIds(
+                    *tab.GetBrowserWindowInterface()),
+                page_actions::PageActionPropertiesProvider(),
+                pinned_actions_model);
 
     if (page_action_controller_->ActionExists(kActionShowTranslate)) {
       translate_page_action_controller_ =

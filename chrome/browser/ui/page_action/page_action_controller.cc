@@ -27,6 +27,11 @@
 
 namespace page_actions {
 
+// static
+PageActionController* PageActionController::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
 ScopedPageActionActivity::ScopedPageActionActivity(
     PageActionController& controller,
     actions::ActionId action_id)
@@ -73,25 +78,19 @@ void ScopedPageActionActivity::RegisterWillDestroyControllerCallback() {
 }
 
 PageActionControllerImpl::PageActionControllerImpl(
+    tabs::TabInterface& tab_interface,
+    const std::vector<actions::ActionId>& action_ids,
+    const PageActionPropertiesProviderInterface& properties_provider,
     PinnedToolbarActionsModel* pinned_actions_model,
     PageActionModelFactory* page_action_model_factory,
     PageActionMetricsRecorderFactory* page_action_metrics_recorder_factory)
     : page_action_model_factory_(page_action_model_factory),
       page_action_metrics_recorder_factory_(
-          page_action_metrics_recorder_factory) {
+          page_action_metrics_recorder_factory),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   if (pinned_actions_model) {
     pinned_actions_observation_.Observe(pinned_actions_model);
   }
-}
-
-PageActionControllerImpl::~PageActionControllerImpl() {
-  on_will_destroy_callback_list_.Notify(*this);
-}
-
-void PageActionControllerImpl::Initialize(
-    tabs::TabInterface& tab_interface,
-    const std::vector<actions::ActionId>& action_ids,
-    const PageActionPropertiesProviderInterface& properties_provider) {
   tab_activated_callback_subscription_ =
       tab_interface.RegisterDidActivate(base::BindRepeating(
           &PageActionControllerImpl::OnTabActivated, base::Unretained(this)));
@@ -126,6 +125,10 @@ void PageActionControllerImpl::Initialize(
   if (pinned_actions_observation_.GetSource()) {
     PinnedActionsModelChanged();
   }
+}
+
+PageActionControllerImpl::~PageActionControllerImpl() {
+  on_will_destroy_callback_list_.Notify(*this);
 }
 
 void PageActionControllerImpl::Register(
@@ -642,5 +645,7 @@ std::vector<actions::ActionItem*> GetActivePageActionItems(
   }
   return items;
 }
+
+DEFINE_USER_DATA(PageActionController);
 
 }  // namespace page_actions

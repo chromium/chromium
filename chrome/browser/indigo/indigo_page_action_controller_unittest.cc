@@ -217,6 +217,7 @@ class IndigoPageActionControllerTest : public testing::Test {
   void TearDown() override {
     controller_.reset();
     page_action_controller_.reset();
+    fake_glic_side_panel_coordinator_.reset();
     tab_interface_.reset();
     mock_optimization_guide_ = nullptr;
     mock_glic_keyed_service_ = nullptr;
@@ -296,8 +297,6 @@ class IndigoPageActionControllerTest : public testing::Test {
         std::make_unique<page_actions::FakeTabInterface>(profile_.get());
     tabs::TabLookupFromWebContents::CreateForWebContents(
         tab_interface_->GetContents(), tab_interface_.get());
-    ON_CALL(*tab_interface_, GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
     ON_CALL(*tab_interface_, GetBrowserWindowInterface())
         .WillByDefault(testing::Return(&mock_browser_window_interface_));
     ON_CALL(testing::Const(*tab_interface_), GetBrowserWindowInterface())
@@ -431,7 +430,6 @@ class IndigoPageActionControllerTest : public testing::Test {
       identity_test_env_adaptor_;
   raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
       mock_optimization_guide_;
-  ui::UnownedUserDataHost unowned_user_data_host_;
   ui::UnownedUserDataHost browser_window_user_data_host_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
   std::unique_ptr<page_actions::FakeTabInterface> tab_interface_;
