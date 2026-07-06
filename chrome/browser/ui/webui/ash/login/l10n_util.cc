@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"

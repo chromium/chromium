@@ -412,6 +412,7 @@ source_set("browser_tests") {
     ":test_support",
     "//ash",
     "//ash:test_support",
+    "//ash/login/resources:login_strings",
     "//ash/public/cpp",
     "//chrome/browser",
     "//chrome/browser:browser_process",

@@ -39,10 +39,10 @@ static_library("demo_mode") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/login/resources:login_strings",
     "//ash/public/cpp",
     "//ash/strings",
     "//base:i18n",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/drive",

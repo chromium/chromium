@@ -57,7 +57,7 @@ specific_include_rules = {
     "+chrome/browser/global_features.h",
   ],
   "demo_session\\.cc": [
-    "+chrome/grit",
+    "+ash/login/resources/grit"
   ],
   "demo_setup_browsertest\\.cc": [
     "+chrome/grit",

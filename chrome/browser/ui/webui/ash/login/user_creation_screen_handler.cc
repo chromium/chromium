@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 

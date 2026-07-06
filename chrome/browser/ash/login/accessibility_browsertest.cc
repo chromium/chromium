@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/version_info/channel.h"
 #include "ui/base/l10n/l10n_util.h"
