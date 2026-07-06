@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -109,8 +110,9 @@ bool CrostiniInstallerDialog::OnDialogCloseRequested() {
 }
 
 void CrostiniInstallerDialog::OnDialogShown(content::WebUI* webui) {
-  installer_ui_ =
-      static_cast<CrostiniInstallerUI*>(webui->GetController())->GetWeakPtr();
+  auto* controller =
+      &CHECK_DEREF(webui->GetController()->GetAs<CrostiniInstallerUI>());
+  installer_ui_ = controller->GetWeakPtr();
   return SystemWebDialogDelegate::OnDialogShown(webui);
 }
 

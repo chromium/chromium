@@ -134,4 +134,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
 
 LockScreenStartReauthUI::~LockScreenStartReauthUI() = default;
 
+WEB_UI_CONTROLLER_TYPE_IMPL(LockScreenStartReauthUI)
+
 }  // namespace ash

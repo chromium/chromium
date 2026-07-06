@@ -11,6 +11,7 @@
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/check_deref.h"
 #include "base/containers/enum_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -1545,9 +1546,10 @@ void CloudOpenTask::SetTasksForTest(
 
 void CloudUploadDialog::OnDialogShown(content::WebUI* webui) {
   CHECK(dialog_args_);
+  auto* dialog_ui_ =
+      &CHECK_DEREF(webui->GetController()->GetAs<CloudUploadUI>());
   SystemWebDialogDelegate::OnDialogShown(webui);
-  static_cast<CloudUploadUI*>(webui->GetController())
-      ->SetDialogArgs(dialog_args_.Clone());
+  dialog_ui_->SetDialogArgs(dialog_args_.Clone());
 }
 
 void CloudUploadDialog::OnDialogClosed(const std::string& json_retval) {

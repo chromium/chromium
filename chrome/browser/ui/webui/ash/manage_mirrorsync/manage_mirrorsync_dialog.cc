@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
 
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
@@ -44,7 +45,8 @@ void ManageMirrorSyncDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 void ManageMirrorSyncDialog::OnDialogShown(content::WebUI* webui) {
-  mirrorsync_ui_ = static_cast<ManageMirrorSyncUI*>(webui->GetController());
+  mirrorsync_ui_ =
+      &CHECK_DEREF(webui->GetController()->GetAs<ManageMirrorSyncUI>());
   return SystemWebDialogDelegate::OnDialogShown(webui);
 }
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -304,7 +305,8 @@ LockScreenReauthHandler* LockScreenStartReauthDialog::GetHandler() {
   if (!controller) {
     return nullptr;
   }
-  return static_cast<LockScreenStartReauthUI*>(controller)->GetMainHandler();
+  auto* reauth_ui = &CHECK_DEREF(controller->GetAs<LockScreenStartReauthUI>());
+  return reauth_ui->GetMainHandler();
 }
 
 void LockScreenStartReauthDialog::TerminateAutoReload() {

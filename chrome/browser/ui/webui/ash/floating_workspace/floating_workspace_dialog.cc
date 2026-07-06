@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
@@ -53,7 +54,8 @@ FloatingWorkspaceDialogHandler* FloatingWorkspaceDialog::GetHandler() {
   if (!controller) {
     return nullptr;
   }
-  return static_cast<FloatingWorkspaceUI*>(controller)->GetMainHandler();
+  auto* floating_ui = &CHECK_DEREF(controller->GetAs<FloatingWorkspaceUI>());
+  return floating_ui->GetMainHandler();
 }
 
 void FloatingWorkspaceDialog::GetDialogSize(gfx::Size* size) const {
