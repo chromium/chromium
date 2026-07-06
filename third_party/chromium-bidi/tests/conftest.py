@@ -207,23 +207,31 @@ async def websocket(test_headless_mode, capabilities, current_test_name):
         current_attempt = 0
         max_attempt = 5
         while True:
-            connection = await connect_websocket()
             try:
+                connection = await connect_websocket()
                 await create_session(connection)
                 return connection
             except (asyncio.exceptions.CancelledError, asyncio.TimeoutError) as e:
                 # Timeout during creating session is expected due to infra issues.
                 current_attempt = current_attempt + 1
-                await connection.close()
+                if "connection" in locals() and not connection.closed:
+                    await connection.close()
                 if current_attempt >= max_attempt:
                     raise
                 else:
                     logger.info(
                         f"Error during creating session. Attempts: {current_attempt}/{max_attempt}. {e}"
                     )
-            except Exception:
-                await connection.close()
-                raise
+            except Exception as e:
+                current_attempt = current_attempt + 1
+                if "connection" in locals() and not connection.closed:
+                    await connection.close()
+                if current_attempt >= max_attempt:
+                    raise
+                else:
+                    logger.info(
+                        f"Error during connecting. Attempts: {current_attempt}/{max_attempt}. {e}"
+                    )
 
     async def connect_websocket():
         """Return a websocket connection to the browser on localhost without an
