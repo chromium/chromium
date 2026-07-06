@@ -9,18 +9,36 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/system/sys_info.h"
+#import "ui/base/device_form_factor.h"
 
 @implementation TestExpectationEntry
 @end
 
-namespace {
-TestExpectations* g_shared_instance = nil;
-}  // namespace
-
 @interface TestExpectations ()
 - (instancetype)initWithFilePath:(NSString*)path;
-- (instancetype)initWithContent:(NSString*)content;
+// Evaluates whether the expectation's tag string matches active tags.
+- (BOOL)doTagsMatch:(NSString*)tagsStr activeTags:(NSSet<NSString*>*)activeTags;
 @end
+
+namespace {
+TestExpectations* g_shared_instance = nil;
+
+enum class TagCategory {
+  kOS,
+  kDevice,
+  kOther,
+};
+
+TagCategory GetTagCategory(NSString* tag) {
+  if ([tag hasPrefix:@"ipad"] || [tag hasPrefix:@"iphone"]) {
+    return TagCategory::kDevice;
+  }
+  if ([tag hasPrefix:@"ios"] || [tag hasPrefix:@"build-"]) {
+    return TagCategory::kOS;
+  }
+  return TagCategory::kOther;
+}
+}  // namespace
 
 @implementation TestExpectations {
   NSMutableDictionary<NSString*, TestExpectationEntry*>* _expectations;
@@ -92,7 +110,9 @@ TestExpectations* g_shared_instance = nil;
   std::string buildNumber = base::SysInfo::GetIOSBuildNumber();
   if (!buildNumber.empty()) {
     NSString* buildNSString = base::SysUTF8ToNSString(buildNumber);
-    [tags addObject:[buildNSString lowercaseString]];
+    NSString* prefixedBuild =
+        [NSString stringWithFormat:@"build-%@", buildNSString];
+    [tags addObject:[prefixedBuild lowercaseString]];
   }
 
 #if TARGET_OS_SIMULATOR
@@ -101,12 +121,12 @@ TestExpectations* g_shared_instance = nil;
   [tags addObject:@"device"];
 #endif
 
-  if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-    [tags addObject:@"ipad"];
-  } else if ([UIDevice currentDevice].userInterfaceIdiom ==
-             UIUserInterfaceIdiomPhone) {
-    [tags addObject:@"iphone"];
-  }
+  std::string hardwareModel = base::SysInfo::HardwareModelName();
+  NSString* modelNSString = base::SysUTF8ToNSString(hardwareModel);
+  NSSet<NSString*>* deviceTags =
+      [TestExpectations deviceTagsForHardwareModel:modelNSString
+                                        formFactor:ui::GetDeviceFormFactor()];
+  [tags unionSet:deviceTags];
 
   return [tags copy];
 }
@@ -161,24 +181,7 @@ TestExpectations* g_shared_instance = nil;
     }
 
     // Validate tags
-    BOOL tagsMatch = YES;
-    if (tagsStr) {
-      NSArray<NSString*>* tags = [tagsStr componentsSeparatedByString:@" "];
-      for (NSString* tag in tags) {
-        NSString* trimmedTag =
-            [tag stringByTrimmingCharactersInSet:[NSCharacterSet
-                                                     whitespaceCharacterSet]];
-        if (trimmedTag.length > 0) {
-          NSString* lowercaseTag = [trimmedTag lowercaseString];
-          if (![activeTags containsObject:lowercaseTag]) {
-            tagsMatch = NO;
-            break;
-          }
-        }
-      }
-    }
-
-    if (!tagsMatch) {
+    if (![self doTagsMatch:tagsStr activeTags:activeTags]) {
       continue;
     }
 
@@ -237,6 +240,53 @@ TestExpectations* g_shared_instance = nil;
   return [identifier stringByReplacingOccurrencesOfString:@"." withString:@"/"];
 }
 
+// Evaluates whether the expectation's tag string matches active tags.
+- (BOOL)doTagsMatch:(NSString*)tagsStr
+         activeTags:(NSSet<NSString*>*)activeTags {
+  if (!tagsStr) {
+    return YES;
+  }
+
+  NSArray<NSString*>* tags = [tagsStr componentsSeparatedByString:@" "];
+  bool expectation_has_os_tag = false;
+  bool os_matched = false;
+  bool expectation_has_device_tag = false;
+  bool device_matched = false;
+
+  for (NSString* tag in tags) {
+    NSString* trimmedTag =
+        [tag stringByTrimmingCharactersInSet:[NSCharacterSet
+                                                 whitespaceCharacterSet]];
+    if (trimmedTag.length > 0) {
+      NSString* lowercaseTag = [trimmedTag lowercaseString];
+      bool is_match = [activeTags containsObject:lowercaseTag];
+      TagCategory category = GetTagCategory(lowercaseTag);
+      switch (category) {
+        case TagCategory::kOS:
+          expectation_has_os_tag = true;
+          if (is_match) {
+            os_matched = true;
+          }
+          break;
+        case TagCategory::kDevice:
+          expectation_has_device_tag = true;
+          if (is_match) {
+            device_matched = true;
+          }
+          break;
+        case TagCategory::kOther:
+          if (!is_match) {
+            return NO;
+          }
+          break;
+      }
+    }
+  }
+
+  return (os_matched || !expectation_has_os_tag) &&
+         (device_matched || !expectation_has_device_tag);
+}
+
 @end
 
 @implementation TestExpectations (Testing)
@@ -264,6 +314,63 @@ TestExpectations* g_shared_instance = nil;
 
 + (void)resetForTesting {
   g_shared_instance = nil;
+}
+
+// Generates device tags given a hardware model string and UI device form
+// factor.
++ (NSSet<NSString*>*)deviceTagsForHardwareModel:(NSString*)hardwareModel
+                                     formFactor:
+                                         (ui::DeviceFormFactor)formFactor {
+  NSMutableSet<NSString*>* tags = [NSMutableSet set];
+  NSString* lowercaseModel = nil;
+
+  if (hardwareModel.length > 0) {
+    NSString* modelNSString = hardwareModel;
+    // On iOS simulators, base::SysInfo::HardwareModelName() returns a
+    // formatted string like "iOS Simulator (iPhone16,1)". Extract the actual
+    // model identifier inside the parentheses so that tag matching and
+    // classification work consistently across both simulator builds and
+    // physical hardware.
+    NSRange openParen = [modelNSString rangeOfString:@"("];
+    NSRange closeParen = [modelNSString rangeOfString:@")"
+                                              options:NSBackwardsSearch];
+    if (openParen.location != NSNotFound && closeParen.location != NSNotFound &&
+        closeParen.location > openParen.location + 1) {
+      NSRange modelRange = NSMakeRange(
+          openParen.location + 1, closeParen.location - openParen.location - 1);
+      modelNSString = [modelNSString substringWithRange:modelRange];
+    }
+
+    lowercaseModel = [modelNSString lowercaseString];
+    if (lowercaseModel.length > 0) {
+      // Add both the exact hardware model identifier and its general model
+      // prefix (stripped of the revision/generation suffix after the comma).
+      // For example, if the extracted model name is "iPhone16,1", this
+      // generates and adds both "iphone16,1" and "iphone16" as active device
+      // tags.
+      [tags addObject:lowercaseModel];
+      NSRange commaRange = [lowercaseModel rangeOfString:@","];
+      if (commaRange.location != NSNotFound) {
+        [tags addObject:[lowercaseModel substringToIndex:commaRange.location]];
+      }
+    }
+  }
+
+  // Derive the general device family tag directly from the model identifier.
+  if ([lowercaseModel hasPrefix:@"ipad"]) {
+    [tags addObject:@"ipad"];
+  } else if ([lowercaseModel hasPrefix:@"iphone"]) {
+    [tags addObject:@"iphone"];
+  } else {
+    // Fallback if model string was unavailable or unrecognized.
+    if (formFactor == ui::DEVICE_FORM_FACTOR_TABLET) {
+      [tags addObject:@"ipad"];
+    } else if (formFactor == ui::DEVICE_FORM_FACTOR_PHONE) {
+      [tags addObject:@"iphone"];
+    }
+  }
+
+  return [tags copy];
 }
 
 @end

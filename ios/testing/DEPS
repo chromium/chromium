@@ -6,5 +6,6 @@ include_rules = [
   "+ios/web/common/uikit_ui_util.h",
   "+net",
   "+third_party/ocmock",
+  "+ui/base",
   # keep-sorted end
 ]

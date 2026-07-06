@@ -123,6 +123,7 @@ source_set("test_expectations") {
   deps = [
     ":test_expectations_metadata",
     "//base",
+    "//ui/base",
   ]
 }
 
@@ -136,6 +137,7 @@ test("ios_testing_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 
   sources = [

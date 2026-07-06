@@ -6,6 +6,9 @@
 #define IOS_TESTING_TEST_EXPECTATIONS_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+#import "ui/base/device_form_factor.h"
 
 typedef NS_OPTIONS(NSUInteger, TestExpectationType) {
   TestExpectationTypeNone = 0,
@@ -29,6 +32,12 @@ typedef NS_OPTIONS(NSUInteger, TestExpectationType) {
 // resource if not yet initialized.
 + (instancetype)sharedInstance;
 
+// Initializes an instance from string content.
+- (instancetype)initWithContent:(NSString*)content;
+
+// Returns the active tags set.
+- (NSSet<NSString*>*)activeTags;
+
 // Returns the expectation entry for the given test case and method, or nil if
 // no expectation exists.
 - (TestExpectationEntry*)expectationEntryForTestCase:(NSString*)testClassName
@@ -50,6 +59,12 @@ typedef NS_OPTIONS(NSUInteger, TestExpectationType) {
 // Resets the shared global instance to nil for testing this test expectations
 // infrastructure.
 + (void)resetForTesting;
+
+// Generates device tags given a hardware model string and UI device form
+// factor.
++ (NSSet<NSString*>*)deviceTagsForHardwareModel:(NSString*)hardwareModel
+                                     formFactor:
+                                         (ui::DeviceFormFactor)formFactor;
 
 @end
 
