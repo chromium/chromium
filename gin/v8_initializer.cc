@@ -497,10 +497,6 @@ void SetFeatureFlags() {
                          "--ignition-elide-redundant-tdz-checks",
                          "--no-ignition-elide-redundant-tdz-checks");
 
-  SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
-                         "--use-libm-trig-functions",
-                         "--no-use-libm-trig-functions");
-
   SetV8FlagsIfOverridden(features::kV8UseOriginalMessageForStackTrace,
                          "--use-original-message-for-stack-trace",
                          "--no-use-original-message-for-stack-trace");

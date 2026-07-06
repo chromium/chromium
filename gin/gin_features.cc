@@ -162,8 +162,6 @@ BASE_FEATURE(kV8SlowHistogramsSparkplugAndroid,
 BASE_FEATURE(kV8ConcurrentMarkingHighPriorityThreads,
              kFeatureDefaultStateControlledByV8);
 
-BASE_FEATURE(kV8UseLibmTrigFunctions, kFeatureDefaultStateControlledByV8);
-
 BASE_FEATURE(kV8UseOriginalMessageForStackTrace,
              kFeatureDefaultStateControlledByV8);
 
