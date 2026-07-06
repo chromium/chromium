@@ -5980,7 +5980,7 @@
       // Performs sanitization while parsing instead of post-processing a parsed
       // fragment. https://crbug.com/498272014
       name: "StreamingSanitizer",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "StrictMimeTypesForWorkers",
