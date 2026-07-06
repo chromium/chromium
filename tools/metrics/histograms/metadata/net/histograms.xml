@@ -9505,6 +9505,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.StructuredHeaders.Base64DecodingIsStrictCompliant"
+    enum="Boolean" expires_after="2026-10-01">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    True when strict base64 decoding of a Structured Header succeeds, false when
+    it fails but non-compliant lenient decoding succeeds. Emitted whenever a
+    byte-sequence-typed bare item
+    (https://www.rfc-editor.org/rfc/rfc8941.html#name-byte-sequences) is
+    successfully parsed, regardless of whether subsequent parsing of the
+    remainder of the top-level Structured Header is successful. See
+    crbug.com/393153699 and crbug.com/393408763 for details.
+  </summary>
+</histogram>
+
 <histogram name="Net.StructuredHeaders.DecimalWithZeroFractionalDigits"
     enum="Boolean" expires_after="2026-10-01">
   <owner>apaseltiner@chromium.org</owner>
