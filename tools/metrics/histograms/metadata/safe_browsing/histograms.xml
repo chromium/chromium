@@ -4421,6 +4421,16 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V5Update.RiceInputValidationResult"
+    enum="SafeBrowsingV5InputValidationResult" expires_after="2027-05-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the Rice input validation result of a V5 HashList update. Logged
+    during parsing of the update response list before decoding.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V5Update.UnexpectedMinimumWaitDuration"
     enum="Boolean" expires_after="2026-10-06">
   <owner>thefrog@chromium.org</owner>

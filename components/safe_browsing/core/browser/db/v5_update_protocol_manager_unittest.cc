@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v5_rice.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -456,6 +457,9 @@ TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesNoError) {
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V5Update.Parse.Result",
       V5UpdateProtocolManager::V5ParseResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.RiceInputValidationResult",
+      V5InputValidationResult::kSuccess, 1);
 
   // Teardown will confirm the callback was called.
 }
@@ -935,6 +939,53 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingNullBody) {
                                      V4OperationResult::PARSE_ERROR, 1);
 
   // Teardown will confirm the callback was not called.
+}
+
+TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingInvalidRiceField) {
+  base::HistogramTester histogram_tester;
+  expect_callback_to_be_called_ = false;
+  auto pm = CreateProtocolManager({}, /*expect_success=*/false);
+
+  ListIdentifier malware(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  store_state_map_ =
+      std::make_unique<std::unordered_map<ListIdentifier, std::string>>();
+  (*store_state_map_)[malware] = "state";
+
+  V5::BatchGetHashListsResponse response;
+  V5::HashList* hash_list = response.add_hash_lists();
+  hash_list->set_name(GetV5ListName(malware));
+
+  // additions_four_bytes is expected (malware is 4-byte).
+  // Set invalid rice parameter (e.g. 2, which is < min 3).
+  auto* additions = hash_list->mutable_additions_four_bytes();
+  additions->set_rice_parameter(2);
+  additions->set_entries_count(10);
+
+  std::string response_data;
+  response.SerializeToString(&response_data);
+
+  pm->ScheduleNextUpdate(std::make_unique<StoreStateMap>(*store_state_map_));
+  task_environment_.FastForwardBy(base::Minutes(10));
+
+  EXPECT_FALSE(IsUpdateScheduled(pm.get()));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      response_data, net::HTTP_OK);
+  EXPECT_TRUE(IsUpdateScheduled(pm.get()));
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kInvalidRiceFieldError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.RiceInputValidationResult",
+      V5InputValidationResult::kRiceParameterTooSmall, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
 }
 
 }  // namespace safe_browsing

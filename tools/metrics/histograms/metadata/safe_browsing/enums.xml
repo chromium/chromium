@@ -663,6 +663,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_list.h:V5ApplyUpdateResult) -->
 
+<!-- LINT.IfChange(SafeBrowsingV5InputValidationResult) -->
+
+<enum name="SafeBrowsingV5InputValidationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="NegativeNumEntries"/>
+  <int value="2" label="RiceParameterTooSmall"/>
+  <int value="3" label="RiceParameterTooLarge"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_rice.h:V5InputValidationResult) -->
+
 <!-- LINT.IfChange(SafeBrowsingV5StoreReadResult) -->
 
 <enum name="SafeBrowsingV5StoreReadResult">
@@ -943,6 +954,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="MismatchedNameError"/>
   <int value="4" label="MismatchedPrefixLengthError"/>
   <int value="5" label="NegativeDurationError"/>
+  <int value="6" label="InvalidRiceFieldError"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_update_protocol_manager.h:V5ParseResult) -->

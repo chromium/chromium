@@ -15,6 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "components/safe_browsing/core/browser/db/v5_hash_list_rice_decoder.h"
+#include "components/safe_browsing/core/browser/db/v5_rice.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
@@ -354,6 +356,14 @@ V5UpdateProtocolManager::ParseUpdateResponse(
         (hash_list.has_additions_thirty_two_bytes() &&
          expected_hash_prefix_lengths != 32)) {
       return base::unexpected(V5ParseResult::kMismatchedPrefixLengthError);
+    }
+
+    V5InputValidationResult validation_result =
+        v5_hash_list_rice_decoder::ValidateHashList(hash_list);
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.V5Update.RiceInputValidationResult", validation_result);
+    if (validation_result != V5InputValidationResult::kSuccess) {
+      return base::unexpected(V5ParseResult::kInvalidRiceFieldError);
     }
 
     // Save off the smallest minimum_wait_duration across lists and use that to

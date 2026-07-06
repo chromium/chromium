@@ -338,6 +338,7 @@ static_library("sb_update_protocol_manager") {
     ":safebrowsing_proto",
     ":util",
     ":v4_protocol_manager_util",
+    ":v5_rice",
     "//base",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common",

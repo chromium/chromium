@@ -172,6 +172,9 @@ std::string SerializeToBigEndianBytes(std::vector<T> decoded);
 }  // namespace v5_rice_utils
 
 // Enumerate different results while validating the Rice-encoded inputs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(V5InputValidationResult)
 enum class V5InputValidationResult {
   // The input is valid.
   kSuccess = 0,
@@ -181,7 +184,10 @@ enum class V5InputValidationResult {
   kRiceParameterTooSmall = 2,
   // The Rice parameter is too large for the type.
   kRiceParameterTooLarge = 3,
+
+  kMaxValue = kRiceParameterTooLarge
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV5InputValidationResult)
 
 // Validator for Safe Browsing V5 Rice-encoded inputs.
 class V5RiceInputValidator {
