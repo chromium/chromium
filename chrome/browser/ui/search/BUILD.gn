@@ -98,7 +98,7 @@ if (!is_chromeos_device && !is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "instant_extended_interactive_uitest.cc",
-      "third_party_ntp_uitest.cc",
+      "third_party_ntp_interactive_uitest.cc",
     ]
 
     public_deps = [ "//net:test_support" ]
