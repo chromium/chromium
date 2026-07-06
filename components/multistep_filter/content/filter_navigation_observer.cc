@@ -125,19 +125,6 @@ void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
                        LogEventType::kSuggestionGenerationStarted, host);
 }
 
-void LogSuggestionApplicationFailure(MultistepFilterLogRouter* log_router,
-                                     int64_t navigation_id,
-                                     std::string_view host,
-                                     int net_error_code,
-                                     int http_response_code) {
-  MULTISTEP_FILTER_LOG(log_router, navigation_id,
-                       LogEventType::kSuggestionApplied, host)
-      << LogDetail{"application_outcome", "failure"}
-      << LogDetail{"is_error_page", true}
-      << LogDetail{"net_error_code", net_error_code}
-      << LogDetail{"http_response_code", http_response_code};
-}
-
 }  // namespace
 
 FilterNavigationObserver::FilterNavigationObserver(
@@ -186,19 +173,26 @@ void FilterNavigationObserver::DidFinishNavigation(
   // Only process valid web content (HTTP/S, non-error).
   // Allow same-document navigations as they often represent Single Page
   // Application (SPA) state changes, but ignore other re-commits.
+  bool is_unsupported_scheme = !metadata.is_cryptographic_scheme &&
+                               !metadata.is_http_allowed_for_testing;
+
+  // Note that the `service_` is supposed to log the successful or failed
+  // application of a filter. Therefore, it is important that all early exits
+  // that happen despite a real navigation are reported to `service_`.
+  if (metadata.is_error_page_navigation || is_unsupported_scheme) {
+    service_->NetworkStatusPreventedExtraction(
+        navigation_id, metadata.url, metadata.applied_suggestion,
+        is_unsupported_scheme, metadata.net_error_code,
+        metadata.http_response_code);
+  }
+
   if (metadata.is_error_page_navigation) {
-    if (metadata.applied_suggestion) {
-      LogSuggestionApplicationFailure(
-          log_router_, navigation_id, metadata.url.GetHost(),
-          metadata.net_error_code, metadata.http_response_code);
-    }
     LogUrlEligibilityCheck(log_router_, navigation_id, metadata.url.GetHost(),
                            /*eligible=*/false, "error_page");
     return;
   }
 
-  if (!metadata.is_cryptographic_scheme &&
-      !metadata.is_http_allowed_for_testing) {
+  if (is_unsupported_scheme) {
     LogUrlEligibilityCheck(log_router_, navigation_id, metadata.url.GetHost(),
                            /*eligible=*/false, "non_cryptographic");
     return;

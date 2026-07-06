@@ -59,6 +59,15 @@ class MockMultistepFilterService : public MultistepFilterService {
                const GURL& url,
                std::optional<UrlFilterSuggestion> applied_suggestion),
               (override));
+  MOCK_METHOD(void,
+              NetworkStatusPreventedExtraction,
+              (int64_t navigation_id,
+               const GURL& url,
+               std::optional<UrlFilterSuggestion> applied_suggestion,
+               bool is_unsupported_scheme,
+               int net_error_code,
+               int http_response_code),
+              (override));
   MOCK_METHOD(
       void,
       GenerateFilterSuggestions,
@@ -133,6 +142,7 @@ TEST_F(FilterNavigationObserverTest, HttpsNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 }
@@ -144,6 +154,10 @@ TEST_F(FilterNavigationObserverTest, HttpNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(),
+              NetworkStatusPreventedExtraction(
+                  _, url, _, /*is_unsupported_scheme*/ true, _, _))
+      .Times(1);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 }
@@ -157,6 +171,7 @@ TEST_F(FilterNavigationObserverTest, HttpNavigationWithTestingSwitch) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 }
@@ -167,6 +182,9 @@ TEST_F(FilterNavigationObserverTest, NonHttpNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(),
+              NetworkStatusPreventedExtraction(
+                  _, url, _, /*is_unsupported_scheme*/ true, _, _));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 }
@@ -178,6 +196,7 @@ TEST_F(FilterNavigationObserverTest, SameDocumentNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
   // Reset expectations to test the next navigation.
@@ -190,6 +209,7 @@ TEST_F(FilterNavigationObserverTest, SameDocumentNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion()).Times(0);
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, same_doc_url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, same_doc_url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       same_doc_url, main_rfh());
   navigation->CommitSameDocument();
@@ -211,6 +231,7 @@ TEST_F(FilterNavigationObserverTest, SameUrlReCommitNavigation) {
   // Multiple navigations to the same URL should NOT clear suggestions.
   EXPECT_CALL(delegate(), ClearSuggestion()).Times(0);
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
@@ -223,6 +244,7 @@ TEST_F(FilterNavigationObserverTest, AbortedNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion()).Times(0);
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   auto navigation =
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
   navigation->Start();
@@ -235,6 +257,7 @@ TEST_F(FilterNavigationObserverTest, SubframeNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 
@@ -242,6 +265,7 @@ TEST_F(FilterNavigationObserverTest, SubframeNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion()).Times(0);
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::RenderFrameHost* subframe =
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   content::NavigationSimulator::NavigateAndCommitFromDocument(subframe_url,
@@ -254,6 +278,9 @@ TEST_F(FilterNavigationObserverTest, ErrorPageNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction(
+                                  _, url, _, /*is_unsupported_scheme*/ false,
+                                  net::ERR_TIMED_OUT, _));
   content::NavigationSimulator::NavigateAndFailFromBrowser(web_contents(), url,
                                                            net::ERR_TIMED_OUT);
 }
@@ -264,6 +291,7 @@ TEST_F(FilterNavigationObserverTest, ReloadNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromDocument(url, main_rfh());
 
   testing::Mock::VerifyAndClearExpectations(&delegate());
@@ -281,6 +309,7 @@ TEST_F(FilterNavigationObserverTest, ReloadNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion()).Times(0);
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   observer()->DidFinishNavigation(&handle);
 }
 
@@ -293,6 +322,7 @@ TEST_F(FilterNavigationObserverTest, NullService) {
   EXPECT_CALL(delegate(), ClearSuggestion()).Times(0);
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 }
@@ -304,6 +334,10 @@ TEST_F(FilterNavigationObserverTest, AboutBlankNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(),
+              NetworkStatusPreventedExtraction(
+                  _, url, _, /*is_unsupported_scheme=*/true, _, _))
+      .Times(1);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 }
@@ -315,6 +349,7 @@ TEST_F(FilterNavigationObserverTest, RendererInitiatedNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromDocument(url, main_rfh());
 }
 
@@ -328,6 +363,7 @@ TEST_F(FilterNavigationObserverTest,
   // extraction or suggestions.
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
 
   auto navigation =
       content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
@@ -345,6 +381,7 @@ TEST_F(FilterNavigationObserverTest,
   // extraction or suggestions.
   EXPECT_CALL(mock_service(), ExtractAnnotation).Times(0);
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
 
   auto navigation =
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
@@ -360,6 +397,7 @@ TEST_F(FilterNavigationObserverTest, ReferenceFragmentNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 }
@@ -383,6 +421,7 @@ TEST_F(FilterNavigationObserverTest, PageActivationNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion()).Times(1);
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
 
   observer()->DidFinishNavigation(&handle);
 }
@@ -403,6 +442,7 @@ TEST_F(FilterNavigationObserverTest, SubdomainNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url1, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url1, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url1);
   testing::Mock::VerifyAndClearExpectations(&delegate());
@@ -413,6 +453,7 @@ TEST_F(FilterNavigationObserverTest, SubdomainNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url2, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url2, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
 }
@@ -426,6 +467,7 @@ TEST_F(FilterNavigationObserverTest, LocalhostNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url1, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url1, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url1);
   testing::Mock::VerifyAndClearExpectations(&delegate());
@@ -435,6 +477,7 @@ TEST_F(FilterNavigationObserverTest, LocalhostNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url2, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url2, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
 }
@@ -448,6 +491,7 @@ TEST_F(FilterNavigationObserverTest, CrossDomainNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url1, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url1, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url1);
   testing::Mock::VerifyAndClearExpectations(&delegate());
@@ -456,6 +500,7 @@ TEST_F(FilterNavigationObserverTest, CrossDomainNavigation) {
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url2, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(_, url2, _));
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
 }
@@ -467,6 +512,7 @@ TEST_F(FilterNavigationObserverTest,
   EXPECT_CALL(delegate(), ClearSuggestion());
   EXPECT_CALL(mock_service(), ExtractAnnotation(_, url, _));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+  EXPECT_CALL(mock_service(), NetworkStatusPreventedExtraction).Times(0);
 
   auto navigation =
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());

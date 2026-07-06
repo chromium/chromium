@@ -105,6 +105,20 @@ void LogSuggestionSuppressed(MultistepFilterLogRouter* log_router,
       << LogDetail{"reason", std::string(reason)};
 }
 
+void LogSuggestionApplicationOutcomeNetworkError(
+    MultistepFilterLogRouter* log_router,
+    int64_t navigation_id,
+    std::string_view host,
+    int net_error_code,
+    int http_response_code) {
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kSuggestionApplied, host)
+      << LogDetail{"application_outcome", "failure"}
+      << LogDetail{"is_error_page", true}
+      << LogDetail{"net_error_code", net_error_code}
+      << LogDetail{"http_response_code", http_response_code};
+}
+
 void LogSuggestionApplicationOutcome(
     MultistepFilterLogRouter* log_router,
     int64_t navigation_id,
@@ -244,6 +258,22 @@ void MultistepFilterService::OnExtractionFinished(
   if (observer_for_test_) {
     observer_for_test_->OnExtractionFinished(
         annotation ? std::optional(annotation->id) : std::nullopt);
+  }
+}
+
+void MultistepFilterService::NetworkStatusPreventedExtraction(
+    int64_t navigation_id,
+    const GURL& url,
+    std::optional<UrlFilterSuggestion> applied_suggestion,
+    bool is_unsupported_scheme,
+    int net_error_code,
+    int http_response_code) {
+  // In case of an applied suggestion, we should log the network status outcome,
+  // as this is a case of failure.
+  if (applied_suggestion) {
+    LogSuggestionApplicationOutcomeNetworkError(log_router_, navigation_id,
+                                                url.GetHost(), net_error_code,
+                                                http_response_code);
   }
 }
 

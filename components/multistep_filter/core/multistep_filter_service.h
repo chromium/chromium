@@ -96,6 +96,16 @@ class MultistepFilterService : public KeyedService,
       const GURL& url,
       std::optional<UrlFilterSuggestion> applied_suggestion);
 
+  // Called when a navigation happened but the landing page has an insecure
+  // scheme or is an error page (i.e. no annotation can be extracted).
+  virtual void NetworkStatusPreventedExtraction(
+      int64_t navigation_id,
+      const GURL& url,
+      std::optional<UrlFilterSuggestion> applied_suggestion,
+      bool is_unsupported_scheme,
+      int net_error_code,
+      int http_response_code);
+
   // Generates a filter suggestion for `url`. Based on URL analysis, the
   // suggestion may be stored for later use. Results are returned via the
   // `callback`. `GenerateFilterSuggestions` is guaranteed to call
