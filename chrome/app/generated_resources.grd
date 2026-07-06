@@ -15531,320 +15531,320 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <if expr="is_macosx">
         <!-- Menubar Menu Titles -->
         <!-- NOTE: Some of these exist in context menus with Title Case support, but we use different IDs and explicit meaning strings so that we can get different strings in some languages due to the different context. -->
-        <message name="IDS_FILE_MENU_MAC" desc="The menu title of the Mac file menu." meaning="Top-level menu">
+        <message name="IDS_FILE_MENU_MAC" desc="In Title Case: The menu title of the Mac file menu." meaning="Top-level menu">
           File
         </message>
-        <message name="IDS_EDIT_MENU_MAC" desc="The menu title of the Mac edit menu." meaning="Top-level menu">
+        <message name="IDS_EDIT_MENU_MAC" desc="In Title Case: The menu title of the Mac edit menu." meaning="Top-level menu">
           Edit
         </message>
-        <message name="IDS_VIEW_MENU_MAC" desc="The menu title of the Mac view menu." meaning="Top-level menu">
+        <message name="IDS_VIEW_MENU_MAC" desc="In Title Case: The menu title of the Mac view menu." meaning="Top-level menu">
           View
         </message>
-        <message name="IDS_HISTORY_MENU_MAC" desc="The menu title of the Mac history menu." meaning="Top-level menu">
+        <message name="IDS_HISTORY_MENU_MAC" desc="In Title Case: The menu title of the Mac history menu." meaning="Top-level menu">
           History
         </message>
-        <message name="IDS_WINDOW_MENU_MAC" desc="The menu title of the Mac window menu." meaning="Top-level menu">
+        <message name="IDS_WINDOW_MENU_MAC" desc="In Title Case: The menu title of the Mac window menu." meaning="Top-level menu">
           Window
         </message>
-        <message name="IDS_TAB_MENU_MAC" desc="The menu title of the Mac tab menu." meaning="Top-level menu, tab as in the UI element in the tabstrip containing a website">
+        <message name="IDS_TAB_MENU_MAC" desc="In Title Case: The menu title of the Mac tab menu." meaning="Top-level menu, tab as in the UI element in the tabstrip containing a website">
           Tab
         </message>
-        <message name="IDS_HELP_MENU_MAC" desc="The menu title of the Mac help menu." meaning="Top-level menu">
+        <message name="IDS_HELP_MENU_MAC" desc="In Title Case: The menu title of the Mac help menu." meaning="Top-level menu">
           Help
         </message>
         <!-- App menu -->
-        <message name="IDS_ABOUT_MAC" desc="The Mac menu item to open the about box.">
+        <message name="IDS_ABOUT_MAC" desc="In Title Case: The Mac menu item to open the about box.">
           About <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
         </message>
-        <message name="IDS_SERVICES_MAC" desc="The Mac menu item for the OS X services submenu (OS fills it in) in the app menu.">
+        <message name="IDS_SERVICES_MAC" desc="In Title Case: The Mac menu item for the OS X services submenu (OS fills it in) in the app menu.">
           Services
         </message>
-        <message name="IDS_HIDE_APP_MAC" desc="The Mac menu item to hide all browser windows in the app menu.">
+        <message name="IDS_HIDE_APP_MAC" desc="In Title Case: The Mac menu item to hide all browser windows in the app menu.">
           Hide <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
         </message>
-        <message name="IDS_HIDE_OTHERS_MAC" desc="The Mac menu item to hide other applications' windows in the app menu.">
+        <message name="IDS_HIDE_OTHERS_MAC" desc="In Title Case: The Mac menu item to hide other applications' windows in the app menu.">
           Hide Others
         </message>
-        <message name="IDS_SHOW_ALL_MAC" desc="The Mac menu item to show all browser windows in the app menu.">
+        <message name="IDS_SHOW_ALL_MAC" desc="In Title Case: The Mac menu item to show all browser windows in the app menu.">
           Show All
         </message>
-        <message name="IDS_EXIT_MAC" desc="The Mac menu item to quit the browser in the app menu.">
+        <message name="IDS_EXIT_MAC" desc="In Title Case: The Mac menu item to quit the browser in the app menu.">
           Quit <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
         </message>
         <!-- File menu -->
-        <message name="IDS_NEW_MAC" desc="The Mac menu item for creating a new file in the file menu.">
+        <message name="IDS_NEW_MAC" desc="In Title Case: The Mac menu item for creating a new file in the file menu.">
           New
         </message>
-        <message name="IDS_NEW_TAB_MAC" desc="The Mac menu item for opening a new tab in the file menu.">
+        <message name="IDS_NEW_TAB_MAC" desc="In Title Case: The Mac menu item for opening a new tab in the file menu.">
           New Tab
         </message>
-        <message name="IDS_NEW_WINDOW_MAC" desc="The Mac menu item for opening a new window in the file menu.">
+        <message name="IDS_NEW_WINDOW_MAC" desc="In Title Case: The Mac menu item for opening a new window in the file menu.">
           New Window
         </message>
-        <message name="IDS_NEW_INCOGNITO_WINDOW_MAC" desc="The Mac menu item for opening a new Incognito window in the file menu.">
+        <message name="IDS_NEW_INCOGNITO_WINDOW_MAC" desc="In Title Case: The Mac menu item for opening a new Incognito window in the file menu.">
           New Incognito Window
         </message>
-        <message name="IDS_REOPEN_CLOSED_TABS_MAC" desc="The Mac menu item reopen recently closed tabs in the file menu.">
+        <message name="IDS_REOPEN_CLOSED_TABS_MAC" desc="In Title Case: The Mac menu item reopen recently closed tabs in the file menu.">
           Reopen Closed Tab
         </message>
-        <message name="IDS_OPEN_FILE_MAC" desc="The Mac menu item to open a file in the file menu.">
+        <message name="IDS_OPEN_FILE_MAC" desc="In Title Case: The Mac menu item to open a file in the file menu.">
           Open File...
         </message>
-        <message name="IDS_OPEN_LOCATION_MAC" desc="The Mac menu item to open a location in the file menu (puts cursor in the url bar).">
+        <message name="IDS_OPEN_LOCATION_MAC" desc="In Title Case: The Mac menu item to open a location in the file menu (puts cursor in the url bar).">
           Open Location...
         </message>
-        <message name="IDS_CLOSE_WINDOW_MAC" desc="The Mac menu item to close a window in the file menu.">
+        <message name="IDS_CLOSE_WINDOW_MAC" desc="In Title Case: The Mac menu item to close a window in the file menu.">
           Close Window
         </message>
-        <message name="IDS_CLOSE_ALL_WINDOWS_MAC" desc="The Mac menu item to close all windows in the file menu.">
+        <message name="IDS_CLOSE_ALL_WINDOWS_MAC" desc="In Title Case: The Mac menu item to close all windows in the file menu.">
           Close All
         </message>
-        <message name="IDS_CLOSE_TAB_MAC" desc="The Mac menu item to close a browser tab in the file menu.">
+        <message name="IDS_CLOSE_TAB_MAC" desc="In Title Case: The Mac menu item to close a browser tab in the file menu.">
           Close Tab
         </message>
-        <message name="IDS_SAVE_PAGE_MAC" desc="The Mac menu item to save a page in the file menu.">
+        <message name="IDS_SAVE_PAGE_MAC" desc="In Title Case: The Mac menu item to save a page in the file menu.">
           Save Page As...
         </message>
-        <message name="IDS_EMAIL_LINK_MAC" desc="The Mac menu item to email a link to the current page in the share submenu">
+        <message name="IDS_EMAIL_LINK_MAC" desc="In Title Case: The Mac menu item to email a link to the current page in the share submenu">
           Email Link
         </message>
-        <message name="IDS_SHARING_MORE_MAC" desc="The Mac menu item to see more macOS share extensions in the share menu.">
+        <message name="IDS_SHARING_MORE_MAC" desc="In Title Case: The Mac menu item to see more macOS share extensions in the share menu.">
           More...
         </message>
-        <message name="IDS_SHARE_MAC" desc="The Mac menu item for sharing to external services.">
+        <message name="IDS_SHARE_MAC" desc="In Title Case: The Mac menu item for sharing to external services.">
           Share
         </message>
-        <message name="IDS_PRINT_USING_SYSTEM_DIALOG_MAC" desc="The Mac menu item to print using system dialog in the file menu">
+        <message name="IDS_PRINT_USING_SYSTEM_DIALOG_MAC" desc="In Title Case: The Mac menu item to print using system dialog in the file menu">
           Print Using System Dialog...
         </message>
         <!-- Edit menu -->
-        <message name="IDS_EDIT_UNDO_MAC" desc="The Mac menu item undo in the edit menu.">
+        <message name="IDS_EDIT_UNDO_MAC" desc="In Title Case: The Mac menu item undo in the edit menu.">
           Undo
         </message>
-        <message name="IDS_EDIT_REDO_MAC" desc="The Mac menu item redo in the edit menu.">
+        <message name="IDS_EDIT_REDO_MAC" desc="In Title Case: The Mac menu item redo in the edit menu.">
           Redo
         </message>
-        <message name="IDS_CUT_MAC" desc="The Mac menu item for cut in the edit menu.">
+        <message name="IDS_CUT_MAC" desc="In Title Case: The Mac menu item for cut in the edit menu.">
           Cut
         </message>
-        <message name="IDS_COPY_MAC" desc="The Mac menu item for copy in the edit menu.">
+        <message name="IDS_COPY_MAC" desc="In Title Case: The Mac menu item for copy in the edit menu.">
           Copy
         </message>
-        <message name="IDS_PASTE_MAC" desc="The Mac menu item for paste in the edit menu.">
+        <message name="IDS_PASTE_MAC" desc="In Title Case: The Mac menu item for paste in the edit menu.">
           Paste
         </message>
-        <message name="IDS_PASTE_MATCH_STYLE_MAC" desc="The Mac menu item for paste and match style in the edit menu.">
+        <message name="IDS_PASTE_MATCH_STYLE_MAC" desc="In Title Case: The Mac menu item for paste and match style in the edit menu.">
           Paste and Match Style
         </message>
-        <message name="IDS_EDIT_DELETE_MAC" desc="The Mac menu item delete in the edit menu.">
+        <message name="IDS_EDIT_DELETE_MAC" desc="In Title Case: The Mac menu item delete in the edit menu.">
           Delete
         </message>
-        <message name="IDS_EDIT_SELECT_ALL_MAC" desc="The Mac menu item select all in the edit menu.">
+        <message name="IDS_EDIT_SELECT_ALL_MAC" desc="In Title Case: The Mac menu item select all in the edit menu.">
           Select All
         </message>
         <!-- Edit::Find submenu -->
-        <message name="IDS_EDIT_FIND_SUBMENU_MAC" desc="The Mac menu item for the find submenu in the edit menu.">
+        <message name="IDS_EDIT_FIND_SUBMENU_MAC" desc="In Title Case: The Mac menu item for the find submenu in the edit menu.">
           Find
         </message>
-        <message name="IDS_EDIT_SEARCH_WEB_MAC" desc="The Mac menu item for search the web (using, e.g., Google or Yahoo! search) in the edit menu.">
+        <message name="IDS_EDIT_SEARCH_WEB_MAC" desc="In Title Case: The Mac menu item for search the web (using, e.g., Google or Yahoo! search) in the edit menu.">
           Search the Web...
         </message>
-        <message name="IDS_EDIT_FIND_MAC" desc="The Mac menu item for find in the edit menu.">
+        <message name="IDS_EDIT_FIND_MAC" desc="In Title Case: The Mac menu item for find in the edit menu.">
           Find...
         </message>
-        <message name="IDS_EDIT_FIND_NEXT_MAC" desc="The Mac menu item for find next in the edit menu.">
+        <message name="IDS_EDIT_FIND_NEXT_MAC" desc="In Title Case: The Mac menu item for find next in the edit menu.">
           Find Next
         </message>
-        <message name="IDS_EDIT_FIND_PREVIOUS_MAC" desc="The Mac menu item for find previous in the edit menu.">
+        <message name="IDS_EDIT_FIND_PREVIOUS_MAC" desc="In Title Case: The Mac menu item for find previous in the edit menu.">
           Find Previous
         </message>
-        <message name="IDS_EDIT_USE_SELECTION_MAC" desc="The Mac menu item for use selection for find in the edit menu.">
+        <message name="IDS_EDIT_USE_SELECTION_MAC" desc="In Title Case: The Mac menu item for use selection for find in the edit menu.">
           Use Selection for Find
         </message>
-        <message name="IDS_EDIT_JUMP_TO_SELECTION_MAC" desc="The Mac menu item for jump to selection in the edit menu.">
+        <message name="IDS_EDIT_JUMP_TO_SELECTION_MAC" desc="In Title Case: The Mac menu item for jump to selection in the edit menu.">
           Jump to Selection
         </message>
         <!-- Edit::Spelling and Grammar submenu -->
-        <message name="IDS_EDIT_SPELLING_GRAMMAR_MAC" desc="The Mac menu item for spelling and grammar submenu in the edit menu.">
+        <message name="IDS_EDIT_SPELLING_GRAMMAR_MAC" desc="In Title Case: The Mac menu item for spelling and grammar submenu in the edit menu.">
           Spelling and Grammar
         </message>
-        <message name="IDS_EDIT_SHOW_SPELLING_GRAMMAR_MAC" desc="The Mac menu item for show spelling and grammar in the edit menu.">
+        <message name="IDS_EDIT_SHOW_SPELLING_GRAMMAR_MAC" desc="In Title Case: The Mac menu item for show spelling and grammar in the edit menu.">
           Show Spelling and Grammar
         </message>
-        <message name="IDS_EDIT_CHECK_DOCUMENT_MAC" desc="The Mac menu item for check document in the edit menu.">
+        <message name="IDS_EDIT_CHECK_DOCUMENT_MAC" desc="In Title Case: The Mac menu item for check document in the edit menu.">
           Check Document Now
         </message>
-        <message name="IDS_EDIT_CHECK_SPELLING_TYPING_MAC" desc="The Mac menu item for check spelling while typing in the edit menu.">
+        <message name="IDS_EDIT_CHECK_SPELLING_TYPING_MAC" desc="In Title Case: The Mac menu item for check spelling while typing in the edit menu.">
           Check Spelling While Typing
         </message>
-        <message name="IDS_EDIT_CHECK_GRAMMAR_MAC" desc="The Mac menu item for check grammar with spelling in the edit menu.">
+        <message name="IDS_EDIT_CHECK_GRAMMAR_MAC" desc="In Title Case: The Mac menu item for check grammar with spelling in the edit menu.">
           Check Grammar With Spelling
         </message>
         <!-- Edit::Substitutions submenu -->
-        <message name="IDS_EDIT_SUBSTITUTIONS_MAC" desc="The Mac menu item for the substitutions submenu in the edit menu.">
+        <message name="IDS_EDIT_SUBSTITUTIONS_MAC" desc="In Title Case: The Mac menu item for the substitutions submenu in the edit menu.">
           Substitutions
         </message>
-        <message name="IDS_EDIT_SHOW_SUBSTITUTIONS_MAC" desc="The Mac menu item for showing the substitutions panel in the edit menu.">
+        <message name="IDS_EDIT_SHOW_SUBSTITUTIONS_MAC" desc="In Title Case: The Mac menu item for showing the substitutions panel in the edit menu.">
           Show Substitutions
         </message>
-        <message name="IDS_EDIT_SMART_QUOTES_MAC" desc="The Mac menu item for toggling smart quotes in the edit menu.">
+        <message name="IDS_EDIT_SMART_QUOTES_MAC" desc="In Title Case: The Mac menu item for toggling smart quotes in the edit menu.">
           Smart Quotes
         </message>
-        <message name="IDS_EDIT_SMART_DASHES_MAC" desc="The Mac menu item for toggling smart dashes in the edit menu.">
+        <message name="IDS_EDIT_SMART_DASHES_MAC" desc="In Title Case: The Mac menu item for toggling smart dashes in the edit menu.">
           Smart Dashes
         </message>
-        <message name="IDS_EDIT_TEXT_REPLACEMENT_MAC" desc="The Mac menu item for toggling text replacement in the edit menu.">
+        <message name="IDS_EDIT_TEXT_REPLACEMENT_MAC" desc="In Title Case: The Mac menu item for toggling text replacement in the edit menu.">
           Text Replacement
         </message>
         <!-- Edit::Transformations submenu -->
-        <message name="IDS_EDIT_TRANSFORMATIONS_MAC" desc="The Mac menu item for the transformations submenu in the edit menu.">
+        <message name="IDS_EDIT_TRANSFORMATIONS_MAC" desc="In Title Case: The Mac menu item for the transformations submenu in the edit menu.">
           Transformations
         </message>
-        <message name="IDS_EDIT_MAKE_UPPERCASE_MAC" desc="The Mac menu item for making the selected text uppercase in the edit menu.">
+        <message name="IDS_EDIT_MAKE_UPPERCASE_MAC" desc="In Title Case: The Mac menu item for making the selected text uppercase in the edit menu.">
           Make Uppercase
         </message>
-        <message name="IDS_EDIT_MAKE_LOWERCASE_MAC" desc="The Mac menu item for making the selected text lowercase in the edit menu.">
+        <message name="IDS_EDIT_MAKE_LOWERCASE_MAC" desc="In Title Case: The Mac menu item for making the selected text lowercase in the edit menu.">
           Make Lowercase
         </message>
-        <message name="IDS_EDIT_CAPITALIZE_MAC" desc="The Mac menu item for capitalizing the selected text in the edit menu.">
+        <message name="IDS_EDIT_CAPITALIZE_MAC" desc="In Title Case: The Mac menu item for capitalizing the selected text in the edit menu.">
           Capitalize
         </message>
         <!-- View menu -->
-        <message name="IDS_BOOKMARK_BAR_ALWAYS_SHOW_MAC" desc="The Mac menu item for having bookmark bar always visible in the view menu.">
+        <message name="IDS_BOOKMARK_BAR_ALWAYS_SHOW_MAC" desc="In Title Case: The Mac menu item for having bookmark bar always visible in the view menu.">
           Always Show Bookmarks Bar
         </message>
-        <message name="IDS_STOP_MENU_MAC" desc="The Mac menu item stop in the view menu.">
+        <message name="IDS_STOP_MENU_MAC" desc="In Title Case: The Mac menu item stop in the view menu.">
           Stop
         </message>
-        <message name="IDS_RELOAD_MENU_MAC" desc="The Mac menu item to reload the current page in the view menu.">
+        <message name="IDS_RELOAD_MENU_MAC" desc="In Title Case: The Mac menu item to reload the current page in the view menu.">
           Reload This Page
         </message>
-        <message name="IDS_RELOAD_BYPASSING_CACHE_MENU_MAC" desc="The Mac menu item to force reload the current page (ignoring cache) in the view menu.">
+        <message name="IDS_RELOAD_BYPASSING_CACHE_MENU_MAC" desc="In Title Case: The Mac menu item to force reload the current page (ignoring cache) in the view menu.">
           Force Reload This Page
         </message>
-        <message name="IDS_ENTER_FULLSCREEN_MAC" desc="The Mac menu item to go into fullscreen mode in the view menu and also in the app menu.">
+        <message name="IDS_ENTER_FULLSCREEN_MAC" desc="In Title Case: The Mac menu item to go into fullscreen mode in the view menu and also in the app menu.">
           Enter Full Screen
         </message>
-        <message name="IDS_EXIT_FULLSCREEN_MAC" desc="The Mac menu item to leave fullscreen mode in the view menu and also in the app menu.">
+        <message name="IDS_EXIT_FULLSCREEN_MAC" desc="In Title Case: The Mac menu item to leave fullscreen mode in the view menu and also in the app menu.">
           Exit Full Screen
         </message>
-        <message name="IDS_TOGGLE_FULLSCREEN_TOOLBAR_MAC" desc="The Mac menu checkbox item to show/hide the toolbar in full screen.">
+        <message name="IDS_TOGGLE_FULLSCREEN_TOOLBAR_MAC" desc="In Title Case: The Mac menu checkbox item to show/hide the toolbar in full screen.">
           Always Show Toolbar in Full Screen
         </message>
-        <message name="IDS_TEXT_BIGGER_MAC" desc="The Mac menu item to zoom in on the page in the view menu.">
+        <message name="IDS_TEXT_BIGGER_MAC" desc="In Title Case: The Mac menu item to zoom in on the page in the view menu.">
           Zoom In
         </message>
-        <message name="IDS_TEXT_DEFAULT_MAC" desc="The Mac menu item to make the page actual size in the view menu.">
+        <message name="IDS_TEXT_DEFAULT_MAC" desc="In Title Case: The Mac menu item to make the page actual size in the view menu.">
           Actual Size
         </message>
-        <message name="IDS_TEXT_SMALLER_MAC" desc="The Mac menu item to zoom out on the in the view menu.">
+        <message name="IDS_TEXT_SMALLER_MAC" desc="In Title Case: The Mac menu item to zoom out on the in the view menu.">
           Zoom Out
         </message>
-        <message name="IDS_DEVELOPER_MENU_MAC" desc="The Mac menu item for the developer submenu in the view menu.">
+        <message name="IDS_DEVELOPER_MENU_MAC" desc="In Title Case: The Mac menu item for the developer submenu in the view menu.">
           Developer
         </message>
         <!-- View->Developer menu -->
-        <message name="IDS_VIEW_SOURCE_MAC" desc="The Mac menu item for view page source in the developer submenu of the view menu.">
+        <message name="IDS_VIEW_SOURCE_MAC" desc="In Title Case: The Mac menu item for view page source in the developer submenu of the view menu.">
           View Source
         </message>
-        <message name="IDS_DEV_TOOLS_MAC" desc="The Mac menu item for the developer tools in the developer submenu of the view menu.">
+        <message name="IDS_DEV_TOOLS_MAC" desc="In Title Case: The Mac menu item for the developer tools in the developer submenu of the view menu.">
           Developer Tools
         </message>
-        <message name="IDS_DEV_TOOLS_CONSOLE_MAC" desc="The Mac menu item for the JavaScript console in the developer submenu of the view menu.">
+        <message name="IDS_DEV_TOOLS_CONSOLE_MAC" desc="In Title Case: The Mac menu item for the JavaScript console in the developer submenu of the view menu.">
           JavaScript Console
         </message>
-        <message name="IDS_DEV_TOOLS_ELEMENTS_MAC" desc="The Mac menu item to inspect elements in the developer submenu of the view menu.">
+        <message name="IDS_DEV_TOOLS_ELEMENTS_MAC" desc="In Title Case: The Mac menu item to inspect elements in the developer submenu of the view menu.">
           Inspect Elements
         </message>
-        <message name="IDS_ALLOW_JAVASCRIPT_APPLE_EVENTS_MAC" desc="The Mac menu item to allow JavaScript from Apple Events in the developer submenu of the view menu.">
+        <message name="IDS_ALLOW_JAVASCRIPT_APPLE_EVENTS_MAC" desc="In Title Case: The Mac menu item to allow JavaScript from Apple Events in the developer submenu of the view menu.">
           Allow JavaScript from Apple Events
         </message>
-        <message name="IDS_TASK_MANAGER_MAC" desc="The Mac menu item for task manager in the developer submenu of the view menu.">
+        <message name="IDS_TASK_MANAGER_MAC" desc="In Title Case: The Mac menu item for task manager in the developer submenu of the view menu.">
           Task Manager
         </message>
         <!-- History menu -->
-        <message name="IDS_HISTORY_HOME_MAC" desc="The Mac menu item for home in the history menu." meaning="'home' as in an internet location, a 'home page'">
+        <message name="IDS_HISTORY_HOME_MAC" desc="In Title Case: The Mac menu item for home in the history menu." meaning="'home' as in an internet location, a 'home page'">
           Home
         </message>
-        <message name="IDS_HISTORY_BACK_MAC" desc="The Mac menu item for back in the history menu.">
+        <message name="IDS_HISTORY_BACK_MAC" desc="In Title Case: The Mac menu item for back in the history menu.">
           Back
         </message>
-        <message name="IDS_HISTORY_FORWARD_MAC" desc="The Mac menu item for forward in the history menu.">
+        <message name="IDS_HISTORY_FORWARD_MAC" desc="In Title Case: The Mac menu item for forward in the history menu.">
           Forward
         </message>
-        <message name="IDS_HISTORY_VISITED_MAC" desc="The Mac menu item for the header of visited items in the history menu.">
+        <message name="IDS_HISTORY_VISITED_MAC" desc="In Title Case: The Mac menu item for the header of visited items in the history menu.">
           Recently Visited
         </message>
-        <message name="IDS_HISTORY_CLOSED_MAC" desc="The Mac menu item for the header of recently closed items in the history menu.">
+        <message name="IDS_HISTORY_CLOSED_MAC" desc="In Title Case: The Mac menu item for the header of recently closed items in the history menu.">
           Recently Closed
         </message>
-        <message name="IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC" desc="The Mac menu item for restoring all the tabs of a recently closed window.">
+        <message name="IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC" desc="In Title Case: The Mac menu item for restoring all the tabs of a recently closed window.">
           Restore Window
         </message>
-        <message name="IDS_HISTORY_CLOSED_RESTORE_GROUP_MAC" desc="The Mac menu item for restoring all the tabs of a recently closed group.">
+        <message name="IDS_HISTORY_CLOSED_RESTORE_GROUP_MAC" desc="In Title Case: The Mac menu item for restoring all the tabs of a recently closed group.">
           Restore Group
         </message>
-        <message name="IDS_HISTORY_CLOSED_RESTORE_SPLIT_MAC" desc="The Mac menu item for restoring a recently closed split.">
+        <message name="IDS_HISTORY_CLOSED_RESTORE_SPLIT_MAC" desc="In Title Case: The Mac menu item for restoring a recently closed split.">
           Restore Split View
         </message>
         <!-- Window menu -->
         <message name="IDS_MINIMIZE_WINDOW_MAC"
-                 desc="The Mac menu item for minimize the window menu."
+                 desc="In Title Case: The Mac menu item for minimize the window menu."
                  meaning="Mac Menubar: The Mac menu item for minimize the window menu.">
           Minimize
         </message>
         <message name="IDS_ZOOM_WINDOW_MAC"
-                 desc="The Mac menu item for zoom (maximize) in the window menu."
+                 desc="In Title Case: The Mac menu item for zoom (maximize) in the window menu."
                  meaning="Mac Menubar: The Mac menu item for zoom (maximize) in the window menu.">
           Zoom
         </message>
-        <message name="IDS_NEXT_TAB_MAC" desc="The Mac menu item for next tab in the window menu.">
+        <message name="IDS_NEXT_TAB_MAC" desc="In Title Case: The Mac menu item for next tab in the window menu.">
           Select Next Tab
         </message>
-        <message name="IDS_PREV_TAB_MAC" desc="The Mac menu item for previous tab in the window menu.">
+        <message name="IDS_PREV_TAB_MAC" desc="In Title Case: The Mac menu item for previous tab in the window menu.">
           Select Previous Tab
         </message>
-        <message name="IDS_SHOW_DOWNLOADS_MAC" desc="The Mac menu item to show downloads in the window menu.">
+        <message name="IDS_SHOW_DOWNLOADS_MAC" desc="In Title Case: The Mac menu item to show downloads in the window menu.">
           Downloads
         </message>
-        <message name="IDS_WINDOW_AUDIO_PLAYING_MAC" desc="The emoji to append to the title of a window showing audio is playing.">
+        <message name="IDS_WINDOW_AUDIO_PLAYING_MAC" desc="In Title Case: The emoji to append to the title of a window showing audio is playing.">
           <ph name="TAB_TITLE">$1<ex>The Title of the Tab</ex></ph> <ph name="EMOJI_PLAYING">$2<ex>(playing)</ex></ph>
         </message>
-        <message name="IDS_WINDOW_AUDIO_MUTING_MAC" desc="The emoji to append to the title of a window showing audio is muting.">
+        <message name="IDS_WINDOW_AUDIO_MUTING_MAC" desc="In Title Case: The emoji to append to the title of a window showing audio is muting.">
           <ph name="TAB_TITLE">$1<ex>The Title of the Tab</ex></ph> <ph name="EMOJI_MUTING">$2<ex>(muting)</ex></ph>
         </message>
-        <message name="IDS_SHOW_EXTENSIONS_MAC" desc="The Mac menu item to show extensions in the window menu.">
+        <message name="IDS_SHOW_EXTENSIONS_MAC" desc="In Title Case: The Mac menu item to show extensions in the window menu.">
           Extensions
         </message>
-        <message name="IDS_ALL_WINDOWS_FRONT_MAC" desc="The Mac menu item for bring all to front the window menu.">
+        <message name="IDS_ALL_WINDOWS_FRONT_MAC" desc="In Title Case: The Mac menu item for bring all to front the window menu.">
           Bring All to Front
         </message>
-        <message name="IDS_DUPLICATE_TAB_MAC" desc="The Mac menu item for duplicating the selected tab(s).">
+        <message name="IDS_DUPLICATE_TAB_MAC" desc="In Title Case: The Mac menu item for duplicating the selected tab(s).">
           Duplicate Tab
         </message>
-        <message name="IDS_DUPLICATE_TARGET_TAB_MAC" desc="The Mac menu item for duplicating the selected tab(s).">
+        <message name="IDS_DUPLICATE_TARGET_TAB_MAC" desc="In Title Case: The Mac menu item for duplicating the selected tab(s).">
           Duplicate Selected Tab
         </message>
-        <message name="IDS_MUTE_SITE_MAC" desc="The Mac menu item for muting the selected tab(s).">
+        <message name="IDS_MUTE_SITE_MAC" desc="In Title Case: The Mac menu item for muting the selected tab(s).">
           Mute Site
         </message>
-        <message name="IDS_MUTE_TARGET_SITE_MAC" desc="The Mac menu item for muting the selected tab(s).">
+        <message name="IDS_MUTE_TARGET_SITE_MAC" desc="In Title Case: The Mac menu item for muting the selected tab(s).">
           Mute Selected Site
         </message>
-        <message name="IDS_PIN_TAB_MAC" desc="The Mac menu item for pinning the selected tab(s).">
+        <message name="IDS_PIN_TAB_MAC" desc="In Title Case: The Mac menu item for pinning the selected tab(s).">
           Pin Tab
         </message>
-        <message name="IDS_PIN_TARGET_TAB_MAC" desc="The Mac menu item for pinning the selected tab(s).">
+        <message name="IDS_PIN_TARGET_TAB_MAC" desc="In Title Case: The Mac menu item for pinning the selected tab(s).">
           Pin Selected Tab
         </message>
-        <message name="IDS_GROUP_TAB_MAC" desc="The Mac menu item for adding the selected tab(s) to a new tab group.">
+        <message name="IDS_GROUP_TAB_MAC" desc="In Title Case: The Mac menu item for adding the selected tab(s) to a new tab group.">
           Group Tab
         </message>
-        <message name="IDS_GROUP_TARGET_TAB_MAC" desc="The Mac menu item for adding the selected tab(s) to a new tab group.">
+        <message name="IDS_GROUP_TARGET_TAB_MAC" desc="In Title Case: The Mac menu item for adding the selected tab(s) to a new tab group.">
           Group Selected Tab
         </message>
         <!-- Help menu -->
-        <message name="IDS_FEEDBACK_MAC" desc="The Mac menu item to report a bug in the Help menu.">
+        <message name="IDS_FEEDBACK_MAC" desc="In Title Case: The Mac menu item to report a bug in the Help menu.">
           Report an Issue...
         </message>
         <message name="IDS_HELP_MAC" desc="The Mac menu item to show help in the Help menu.">

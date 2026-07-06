@@ -357,10 +357,10 @@
   <message name="IDS_BOOKMARK_MANAGER_SEARCH_BUTTON" desc="Title of the button in the bookmark manager that triggers a search">
     Search bookmarks
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_V2" desc="The label of the menu item that shows the bookmark manager">
-    &amp;Open Bookmark Manager
-  </message>
   <if expr="not use_titlecase">
+    <message name="IDS_BOOKMARK_MANAGER_V2" desc="The label of the menu item that shows the bookmark manager">
+      &amp;Open bookmark manager
+    </message>
     <message name="IDS_BOOKMARK_MANAGER" desc="The label of the menu item that shows the bookmark manager">
       &amp;Open Bookmarks Manager
     </message>
@@ -372,6 +372,9 @@
     </message>
   </if>
   <if expr="use_titlecase">
+    <message name="IDS_BOOKMARK_MANAGER_V2" desc="In Title Case: The label of the menu item that shows the bookmark manager">
+      &amp;Open Bookmark Manager
+    </message>
     <message name="IDS_BOOKMARK_MANAGER" desc="In Title Case: The label of the menu item that shows the bookmark manager">
       &amp;Open Bookmarks Manager
     </message>
