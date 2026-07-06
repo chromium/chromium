@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,6 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/pickle.h"
@@ -196,6 +198,35 @@ struct VisibleOnAllWorkspacesPayload {
   SessionID::id_type window_id;
   bool visible_on_all_workspaces;
 };
+
+}  // namespace
+}  // namespace sessions
+
+// These are required for span conversions but must be declared outside of any
+// namespace and after the relevant structs. When being initialized, the members
+// and padding must be zeroed out to prevent UMR issues.
+template <>
+inline constexpr bool
+    base::kCanSafelyConvertToByteSpan<sessions::ClosedPayload> = true;
+template <>
+inline constexpr bool
+    base::kCanSafelyConvertToByteSpan<sessions::TabGroupPayload> = true;
+template <>
+inline constexpr bool
+    base::kCanSafelyConvertToByteSpan<sessions::SplitTabPayload> = true;
+template <>
+inline constexpr bool
+    base::kCanSafelyConvertToByteSpan<sessions::PinnedStatePayload> = true;
+template <>
+inline constexpr bool
+    base::kCanSafelyConvertToByteSpan<sessions::LastActiveTimePayload> = true;
+template <>
+inline constexpr bool
+    base::kCanSafelyConvertToByteSpan<sessions::VisibleOnAllWorkspacesPayload> =
+        true;
+
+namespace sessions {
+namespace {
 
 // Persisted versions of ui::mojom::WindowShowState that are written to disk and
 // can never change.
@@ -539,7 +570,7 @@ void CreateTabsAndWindows(
     switch (command->id()) {
       case kCommandSetTabWindow: {
         SessionID::id_type payload[2];
-        if (!command->GetContents(payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -553,7 +584,7 @@ void CreateTabsAndWindows(
       // |kCommandSetWindowBounds3|.
       case kCommandSetWindowBounds2: {
         WindowBoundsPayload2 payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -568,7 +599,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetWindowBounds3: {
         WindowBoundsPayload3 payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -582,7 +613,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetTabIndexInWindow: {
         TabIndexInWindowPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -594,7 +625,7 @@ void CreateTabsAndWindows(
       case kCommandTabClosed:
       case kCommandWindowClosed: {
         ClosedPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -610,7 +641,7 @@ void CreateTabsAndWindows(
 
       case kCommandTabNavigationPathPrunedFromBack: {
         TabNavigationPathPrunedFromBackPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -625,8 +656,7 @@ void CreateTabsAndWindows(
 
       case kCommandTabNavigationPathPrunedFromFront: {
         TabNavigationPathPrunedFromFrontPayload prune_front_payload;
-        if (!command->GetContents(&prune_front_payload,
-                                  sizeof(prune_front_payload)) ||
+        if (!command->GetContents(prune_front_payload) ||
             prune_front_payload.index <= 0) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
@@ -643,8 +673,8 @@ void CreateTabsAndWindows(
 
       case kCommandTabNavigationPathPruned: {
         TabNavigationPathPrunedPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload)) ||
-            payload.index < 0 || payload.count <= 0) {
+        if (!command->GetContents(payload) || payload.index < 0 ||
+            payload.count <= 0) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -676,7 +706,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetSelectedNavigationIndex: {
         SelectedNavigationIndexPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -687,7 +717,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetSelectedTabInIndex: {
         SelectedTabInIndexPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -698,7 +728,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetWindowType: {
         WindowTypePayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -711,7 +741,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetTabGroup: {
         TabGroupPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -728,7 +758,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetSplitTab: {
         SplitTabPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -820,7 +850,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetPinnedState: {
         PinnedStatePayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -901,7 +931,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetActiveWindow: {
         ActiveWindowPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -911,7 +941,7 @@ void CreateTabsAndWindows(
 
       case kCommandLastActiveTime: {
         LastActiveTimePayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -937,7 +967,7 @@ void CreateTabsAndWindows(
 
       case kCommandSetWindowVisibleOnAllWorkspaces: {
         VisibleOnAllWorkspacesPayload payload;
-        if (!command->GetContents(&payload, sizeof(payload))) {
+        if (!command->GetContents(payload)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -1042,12 +1072,9 @@ std::unique_ptr<SessionCommand> CreateSessionCommandForPayload(
     SessionCommand::id_type id,
     const Payload& payload) {
   auto command = std::make_unique<SessionCommand>(id, sizeof(payload));
-  // TODO(crbug.com/435317390): Rewrite to use spans. The main obstruction is
-  // that some payloads have non-unique object representations due to having
-  // padding. Options include allowlisting the affected payloads via
-  // `base::kCanSafelyConvertToByteSpan` or adding (unused, but initialized)
-  // members that take up the padding.
-  UNSAFE_TODO(memcpy(command->contents().data(), &payload, sizeof(payload)));
+  // If you encounter new base::span template errors, you might need to add new
+  // kCanSafelyConvertToByteSpan entries to the top of this file.
+  command->contents().copy_from(base::byte_span_from_ref(payload));
   return command;
 }
 
@@ -1056,7 +1083,7 @@ std::unique_ptr<SessionCommand> CreateSessionCommandForPayload(
 std::unique_ptr<SessionCommand> CreateSetSelectedTabInWindowCommand(
     SessionID window_id,
     int index) {
-  SelectedTabInIndexPayload payload = { 0 };
+  SelectedTabInIndexPayload payload{};
   payload.id = window_id.id();
   payload.index = index;
   return CreateSessionCommandForPayload(kCommandSetSelectedTabInIndex, payload);
@@ -1072,7 +1099,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowBoundsCommand(
     SessionID window_id,
     const gfx::Rect& bounds,
     ui::mojom::WindowShowState show_state) {
-  WindowBoundsPayload3 payload = { 0 };
+  WindowBoundsPayload3 payload{};
   payload.window_id = window_id.id();
   payload.x = bounds.x();
   payload.y = bounds.y();
@@ -1085,18 +1112,14 @@ std::unique_ptr<SessionCommand> CreateSetWindowBoundsCommand(
 std::unique_ptr<SessionCommand> CreateSetTabIndexInWindowCommand(
     SessionID tab_id,
     int new_index) {
-  TabIndexInWindowPayload payload = { 0 };
+  TabIndexInWindowPayload payload{};
   payload.id = tab_id.id();
   payload.index = new_index;
   return CreateSessionCommandForPayload(kCommandSetTabIndexInWindow, payload);
 }
 
 std::unique_ptr<SessionCommand> CreateTabClosedCommand(const SessionID tab_id) {
-  ClosedPayload payload;
-  // Because of what appears to be a compiler bug setting payload to {0} doesn't
-  // set the padding to 0, resulting in Purify reporting an UMR when we write
-  // the structure to disk. To avoid this we explicitly memset the struct.
-  UNSAFE_TODO(memset(&payload, 0, sizeof(payload)));
+  ClosedPayload payload{};
   payload.id = tab_id.id();
   payload.close_time = base::Time::Now().ToInternalValue();
   return CreateSessionCommandForPayload(kCommandTabClosed, payload);
@@ -1104,9 +1127,7 @@ std::unique_ptr<SessionCommand> CreateTabClosedCommand(const SessionID tab_id) {
 
 std::unique_ptr<SessionCommand> CreateWindowClosedCommand(
     const SessionID window_id) {
-  ClosedPayload payload;
-  // See comment in CreateTabClosedCommand as to why we do this.
-  UNSAFE_TODO(memset(&payload, 0, sizeof(payload)));
+  ClosedPayload payload{};
   payload.id = window_id.id();
   payload.close_time = base::Time::Now().ToInternalValue();
   return CreateSessionCommandForPayload(kCommandWindowClosed, payload);
@@ -1115,7 +1136,7 @@ std::unique_ptr<SessionCommand> CreateWindowClosedCommand(
 std::unique_ptr<SessionCommand> CreateSetSelectedNavigationIndexCommand(
     SessionID tab_id,
     int index) {
-  SelectedNavigationIndexPayload payload = { 0 };
+  SelectedNavigationIndexPayload payload{};
   payload.id = tab_id.id();
   payload.index = index;
   return CreateSessionCommandForPayload(kCommandSetSelectedNavigationIndex,
@@ -1125,7 +1146,7 @@ std::unique_ptr<SessionCommand> CreateSetSelectedNavigationIndexCommand(
 std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
     SessionID window_id,
     SessionWindow::WindowType type) {
-  WindowTypePayload payload = { 0 };
+  WindowTypePayload payload{};
   payload.id = window_id.id();
   payload.index = static_cast<int32_t>(type);
   return CreateSessionCommandForPayload(kCommandSetWindowType, payload);
@@ -1134,7 +1155,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
 std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     SessionID tab_id,
     std::optional<tab_groups::TabGroupId> group) {
-  TabGroupPayload payload = {0};
+  TabGroupPayload payload{};
   payload.tab_id = tab_id.id();
   if (group.has_value()) {
     DCHECK(!group.value().token().is_zero());
@@ -1170,7 +1191,7 @@ std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
 std::unique_ptr<SessionCommand> CreateSplitTabCommand(
     SessionID tab_id,
     std::optional<split_tabs::SplitTabId> split_id) {
-  SplitTabPayload payload = {0};
+  SplitTabPayload payload{};
   payload.tab_id = tab_id.id();
   if (split_id.has_value()) {
     DCHECK(!split_id.value().token().is_zero());
@@ -1196,7 +1217,7 @@ std::unique_ptr<SessionCommand> CreateSplitTabDataUpdateCommand(
 
 std::unique_ptr<SessionCommand> CreatePinnedStateCommand(SessionID tab_id,
                                                          bool is_pinned) {
-  PinnedStatePayload payload = { 0 };
+  PinnedStatePayload payload{};
   payload.tab_id = tab_id.id();
   payload.pinned_state = is_pinned;
   return CreateSessionCommandForPayload(kCommandSetPinnedState, payload);
@@ -1214,7 +1235,7 @@ std::unique_ptr<SessionCommand> CreateSessionStorageAssociatedCommand(
 
 std::unique_ptr<SessionCommand> CreateSetActiveWindowCommand(
     SessionID window_id) {
-  ActiveWindowPayload payload = 0;
+  ActiveWindowPayload payload{};
   payload = window_id.id();
   return CreateSessionCommandForPayload(kCommandSetActiveWindow, payload);
 }
@@ -1222,7 +1243,7 @@ std::unique_ptr<SessionCommand> CreateSetActiveWindowCommand(
 std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
     SessionID tab_id,
     base::Time last_active_time) {
-  LastActiveTimePayload payload = {0};
+  LastActiveTimePayload payload{};
   payload.tab_id = tab_id.id();
   payload.last_active_time =
       last_active_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
@@ -1242,7 +1263,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
 std::unique_ptr<SessionCommand> CreateSetWindowVisibleOnAllWorkspacesCommand(
     SessionID window_id,
     bool visible_on_all_workspaces) {
-  VisibleOnAllWorkspacesPayload payload = {0};
+  VisibleOnAllWorkspacesPayload payload{};
   payload.window_id = window_id.id();
   payload.visible_on_all_workspaces = visible_on_all_workspaces;
   return CreateSessionCommandForPayload(kCommandSetWindowVisibleOnAllWorkspaces,
@@ -1251,7 +1272,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowVisibleOnAllWorkspacesCommand(
 
 std::unique_ptr<SessionCommand>
 CreateTabNavigationPathPrunedCommand(SessionID tab_id, int index, int count) {
-  TabNavigationPathPrunedPayload payload = {0};
+  TabNavigationPathPrunedPayload payload{};
   payload.id = tab_id.id();
   payload.index = index;
   payload.count = count;

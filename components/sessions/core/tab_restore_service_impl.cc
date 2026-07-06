@@ -397,7 +397,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
 
     // Try to parse the command as a WindowPayloadObsolete2.
     WindowPayloadObsolete2 payload2;
-    if (command->GetContents(&payload2, sizeof(payload2))) {
+    if (command->GetContents(payload2)) {
       fields.window_id = payload2.window_id;
       fields.selected_tab_index = payload2.selected_tab_index;
       fields.num_tabs = payload2.num_tabs;
@@ -408,7 +408,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
     // Finally, try the oldest WindowPayloadObsolete type.
     if (!parsed) {
       WindowPayloadObsolete payload;
-      if (command->GetContents(&payload, sizeof(payload))) {
+      if (command->GetContents(payload)) {
         fields.window_id = payload.window_id;
         fields.selected_tab_index = payload.selected_tab_index;
         fields.num_tabs = payload.num_tabs;
@@ -1275,7 +1275,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         current_split = std::nullopt;
 
         RestoredEntryPayload payload;
-        if (!command.GetContents(&payload, sizeof(payload))) {
+        if (!command.GetContents(payload)) {
           return;
         }
         RemoveEntryByID(SessionID::FromSerializedValue(payload), &entries);
@@ -1360,9 +1360,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
       }
       case kCommandSelectedNavigationInTab: {
         SelectedNavigationInTabPayload2 payload;
-        if (!command.GetContents(&payload, sizeof(payload))) {
+        if (!command.GetContents(payload)) {
           SelectedNavigationInTabPayload old_payload;
-          if (!command.GetContents(&old_payload, sizeof(old_payload))) {
+          if (!command.GetContents(old_payload)) {
             return;
           }
           payload.id = old_payload.id;

@@ -58,7 +58,7 @@ TEST(SessionCommandTest, GetContents) {
   command.contents().copy_from(base::span<const uint8_t>({1, 2, 3, 4, 5}));
 
   std::vector<uint8_t> dest2(size);
-  EXPECT_TRUE(command.GetContents(dest2.data(), dest2.size()));
+  EXPECT_TRUE(command.GetContents(base::as_writable_byte_span(dest2)));
 
   EXPECT_EQ(1u, dest2[0]);
   EXPECT_EQ(2u, dest2[1]);
@@ -123,7 +123,7 @@ TEST(SessionCommandTest, GetContentsWithWrongSizeFeturnsFalse) {
 
   // Wrong size should return false.
   std::vector<uint8_t> dest(size + 1);
-  EXPECT_FALSE(command.GetContents(dest.data(), dest.size()));
+  EXPECT_FALSE(command.GetContents(base::as_writable_byte_span(dest)));
 }
 
 TEST(SessionCommandTest, ContentsAsPickle) {

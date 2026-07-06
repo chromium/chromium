@@ -45,11 +45,11 @@ bool SessionCommand::operator==(const SessionCommand& command) const {
   return id_ == command.id_ && contents_ == command.contents_;
 }
 
-bool SessionCommand::GetContents(void* dest, size_t count) const {
-  if (contents_.size() != count) {
+bool SessionCommand::GetContents(base::span<uint8_t> dest) const {
+  if (contents_.size() != dest.size()) {
     return false;
   }
-  UNSAFE_TODO(memcpy(dest, &(contents_[0]), count));
+  dest.copy_from(contents());
   return true;
 }
 
