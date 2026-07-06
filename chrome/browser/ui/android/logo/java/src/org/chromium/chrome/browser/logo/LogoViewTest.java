@@ -109,7 +109,8 @@ public class LogoViewTest {
                         /* onClickUrl= */ LOGO_URL,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -129,7 +130,8 @@ public class LogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ ANIMATED_LOGO_URL,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -150,7 +152,8 @@ public class LogoViewTest {
                         /* onClickUrl= */ LOGO_URL,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
         mView.performClick();
@@ -166,7 +169,8 @@ public class LogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -209,7 +213,8 @@ public class LogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
 
         // With TransitionManager, layout params are updated immediately.
@@ -268,7 +273,8 @@ public class LogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
         Assert.assertEquals(ImageView.ScaleType.FIT_CENTER, mView.getScaleType());
@@ -279,7 +285,13 @@ public class LogoViewTest {
         Bitmap darkBitmap = Bitmap.createBitmap(2, 2, Config.ARGB_8888);
         Logo logo =
                 new Logo(
-                        mBitmap, darkBitmap, null, null, ANIMATED_LOGO_URL, DARK_ANIMATED_LOGO_URL);
+                        mBitmap,
+                        darkBitmap,
+                        null,
+                        null,
+                        ANIMATED_LOGO_URL,
+                        DARK_ANIMATED_LOGO_URL,
+                        /* logUrl= */ null);
 
         // Test Light Mode
         mView.setNightMode(false);
@@ -312,7 +324,8 @@ public class LogoViewTest {
 
     @Test
     public void testLogoView_DarkMode_WithoutDarkAsset() {
-        Logo logo = new Logo(mBitmap, null, null, null, ANIMATED_LOGO_URL, null);
+        Logo logo =
+                new Logo(mBitmap, null, null, null, ANIMATED_LOGO_URL, null, /* logUrl= */ null);
 
         // Test Dark Mode Fallback
         mView.setNightMode(true);

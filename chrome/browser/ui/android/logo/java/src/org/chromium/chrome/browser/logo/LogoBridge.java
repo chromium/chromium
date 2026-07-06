@@ -27,16 +27,19 @@ public class LogoBridge {
         /** The dark mode logo image. May be null. */
         public final @Nullable Bitmap darkImage;
 
-        /** The URL to navigate to when the user clicks on the logo. May be null. */
-        public final String onClickUrl;
+        /** The URL to navigate to when the user clicks on the logo. */
+        public final @Nullable String onClickUrl;
 
-        /** The accessibility text describing the logo. May be null. */
-        public final String altText;
+        /** The accessibility text describing the logo. */
+        public final @Nullable String altText;
 
         /**
          * The URL to download animated GIF logo. If null, there is no animated logo to download.
          */
-        public final String animatedLogoUrl;
+        public final @Nullable String animatedLogoUrl;
+
+        /** The URL to ping when the logo is shown. */
+        public final @Nullable String logUrl;
 
         /**
          * The URL to download dark mode animated GIF logo. If null, there is no dark animated logo
@@ -48,16 +51,18 @@ public class LogoBridge {
         public Logo(
                 Bitmap image,
                 @Nullable Bitmap darkImage,
-                String onClickUrl,
-                String altText,
-                String animatedLogoUrl,
-                @Nullable String darkAnimatedLogoUrl) {
+                @Nullable String onClickUrl,
+                @Nullable String altText,
+                @Nullable String animatedLogoUrl,
+                @Nullable String darkAnimatedLogoUrl,
+                @Nullable String logUrl) {
             this.image = image;
             this.darkImage = darkImage;
             this.onClickUrl = onClickUrl;
             this.altText = altText;
             this.animatedLogoUrl = animatedLogoUrl;
             this.darkAnimatedLogoUrl = darkAnimatedLogoUrl;
+            this.logUrl = logUrl;
         }
     }
 
@@ -106,15 +111,27 @@ public class LogoBridge {
         LogoBridgeJni.get().getCurrentLogo(mNativeLogoBridge, logoObserver);
     }
 
+    /**
+     * Records an impression for a doodle.
+     *
+     * @param logUrl The URL to ping to record the impression.
+     */
+    public void recordImpression(@Nullable String logUrl) {
+        if (mNativeLogoBridge != 0 && logUrl != null) {
+            LogoBridgeJni.get().recordImpression(mNativeLogoBridge, logUrl);
+        }
+    }
+
     @CalledByNative
     private static Logo createLogo(
             Bitmap image,
             @Nullable Bitmap darkImage,
-            String onClickUrl,
-            String altText,
-            String gifUrl,
-            @Nullable String darkGifUrl) {
-        return new Logo(image, darkImage, onClickUrl, altText, gifUrl, darkGifUrl);
+            @Nullable String onClickUrl,
+            @Nullable String altText,
+            @Nullable String gifUrl,
+            @Nullable String darkGifUrl,
+            @Nullable String logUrl) {
+        return new Logo(image, darkImage, onClickUrl, altText, gifUrl, darkGifUrl, logUrl);
     }
 
     @NativeMethods
@@ -122,6 +139,8 @@ public class LogoBridge {
         long init(@JniType("Profile*") Profile profile);
 
         void getCurrentLogo(long nativeLogoBridge, LogoObserver logoObserver);
+
+        void recordImpression(long nativeLogoBridge, @JniType("std::string") String logUrl);
 
         void destroy(long nativeLogoBridge);
     }

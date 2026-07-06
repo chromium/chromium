@@ -41,7 +41,8 @@ public class DoodleCacheUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
     }
 
     @After
@@ -95,7 +96,8 @@ public class DoodleCacheUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
 
         mDoodleCache.updateCachedDoodle(logo2, keyword);
         assertEquals(logo2, mDoodleCache.getCachedDoodle(keyword));

@@ -110,7 +110,8 @@ public class LegacyLogoViewTest {
                         /* onClickUrl= */ LOGO_URL,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -130,7 +131,8 @@ public class LegacyLogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ ANIMATED_LOGO_URL,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -151,7 +153,8 @@ public class LegacyLogoViewTest {
                         /* onClickUrl= */ LOGO_URL,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
         mView.performClick();
@@ -167,7 +170,8 @@ public class LegacyLogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -187,7 +191,8 @@ public class LegacyLogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mModel.set(LogoProperties.LOGO, logo);
         mView.endAnimationsForTesting();
         Assert.assertNotNull(mView.getLogoDrawableForTesting());
@@ -229,7 +234,8 @@ public class LegacyLogoViewTest {
                         /* onClickUrl= */ null,
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mModel.set(LogoProperties.LOGO, logo);
         ObjectAnimator fadeAnimation = mView.getFadeAnimationForTesting();
         Assert.assertNotNull(fadeAnimation);
@@ -292,7 +298,13 @@ public class LegacyLogoViewTest {
         Bitmap darkBitmap = Bitmap.createBitmap(2, 2, Config.ARGB_8888);
         Logo logo =
                 new Logo(
-                        mBitmap, darkBitmap, null, null, ANIMATED_LOGO_URL, DARK_ANIMATED_LOGO_URL);
+                        mBitmap,
+                        darkBitmap,
+                        null,
+                        null,
+                        ANIMATED_LOGO_URL,
+                        DARK_ANIMATED_LOGO_URL,
+                        /* logUrl= */ null);
 
         // Test Light Mode
         mView.setNightMode(false);
@@ -325,7 +337,8 @@ public class LegacyLogoViewTest {
 
     @Test
     public void testLogoView_DarkMode_WithoutDarkAsset() {
-        Logo logo = new Logo(mBitmap, null, null, null, ANIMATED_LOGO_URL, null);
+        Logo logo =
+                new Logo(mBitmap, null, null, null, ANIMATED_LOGO_URL, null, /* logUrl= */ null);
 
         // Test Dark Mode Fallback
         mView.setNightMode(true);

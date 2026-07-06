@@ -357,7 +357,8 @@ public class ShowNtpAtStartupTest {
                                     /* onClickUrl= */ null,
                                     /* altText= */ null,
                                     /* animatedLogoUrl= */ null,
-                                    /* darkAnimatedLogoUrl= */ null);
+                                    /* darkAnimatedLogoUrl= */ null,
+                                    /* logUrl= */ null);
                     logoView.updateLogo(logo);
                     logoView.endAnimationsForTesting();
 
@@ -397,7 +398,8 @@ public class ShowNtpAtStartupTest {
                                     /* onClickUrl= */ null,
                                     /* altText= */ null,
                                     /* animatedLogoUrl= */ null,
-                                    /* darkAnimatedLogoUrl= */ null);
+                                    /* darkAnimatedLogoUrl= */ null,
+                                    /* logUrl= */ null);
                     logoView.updateLogo(logo);
                     logoView.endAnimationsForTesting();
 

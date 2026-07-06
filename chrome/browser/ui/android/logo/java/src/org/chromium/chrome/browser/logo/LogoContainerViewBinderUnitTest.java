@@ -159,7 +159,8 @@ public class LogoContainerViewBinderUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json",
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         assertNull(mLogoContainerView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
         assertNotNull(mLogoContainerView.getFadeAnimationForTesting());
@@ -172,7 +173,8 @@ public class LogoContainerViewBinderUnitTest {
                         /* onClickUrl= */ "https://www.google.com",
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mLogoModel.set(LogoProperties.LOGO, newLogo);
         assertNotNull(mLogoContainerView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
@@ -189,7 +191,8 @@ public class LogoContainerViewBinderUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json",
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         assertNull(mLogoContainerView.getFadeAnimationForTesting());
         assertNotEquals(logo.image, mLogoContainerView.getNewLogoDrawableBitmapForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
@@ -221,7 +224,8 @@ public class LogoContainerViewBinderUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mLogoModel.set(LogoProperties.LOGO, logo);
         mLogoModel.set(LogoProperties.LOGO, null);
         LogoView childLogoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
@@ -362,7 +366,8 @@ public class LogoContainerViewBinderUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mLogoModel.set(LogoProperties.LOGO, logo);
         mLogoContainerView.endAnimationsForTesting();
         assertTrue(callbackCalled[0]);

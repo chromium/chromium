@@ -17,6 +17,8 @@
 #include "components/search_provider_logos/logo_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -41,7 +43,8 @@ static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
     const GURL& on_click_url,
     const std::string& alt_text,
     const GURL& animated_url,
-    const GURL& dark_animated_url) {
+    const GURL& dark_animated_url,
+    const GURL& log_url) {
   ScopedJavaLocalRef<jobject> j_bitmap = gfx::ConvertToJavaBitmap(bitmap);
 
   ScopedJavaLocalRef<jobject> j_dark_bitmap;
@@ -64,6 +67,11 @@ static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
     j_animated_url = ConvertUTF8ToJavaString(env, animated_url.spec());
   }
 
+  ScopedJavaLocalRef<jstring> j_log_url;
+  if (log_url.is_valid()) {
+    j_log_url = ConvertUTF8ToJavaString(env, log_url.spec());
+  }
+
   ScopedJavaLocalRef<jstring> j_dark_animated_url;
   if (dark_animated_url.is_valid()) {
     j_dark_animated_url =
@@ -72,7 +80,7 @@ static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
 
   return Java_LogoBridge_createLogo(env, j_bitmap, j_dark_bitmap,
                                     j_on_click_url, j_alt_text, j_animated_url,
-                                    j_dark_animated_url);
+                                    j_dark_animated_url, j_log_url);
 }
 
 // Converts a C++ Logo to a Java Logo.
@@ -86,7 +94,7 @@ static ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
   return JNI_LogoBridge_MakeJavaLogo(
       env, logo->image, logo->dark_image, GURL(logo->metadata.on_click_url),
       logo->metadata.alt_text, GURL(logo->metadata.animated_url),
-      GURL(logo->metadata.dark_animated_url));
+      GURL(logo->metadata.dark_animated_url), GURL(logo->metadata.log_url));
 }
 
 class LogoObserverAndroid : public search_provider_logos::LogoObserver {
@@ -134,7 +142,9 @@ static int64_t JNI_LogoBridge_Init(JNIEnv* env, Profile* profile) {
   return reinterpret_cast<intptr_t>(logo_bridge);
 }
 
-LogoBridge::LogoBridge(Profile* profile) : logo_service_(nullptr) {
+LogoBridge::LogoBridge(Profile* profile)
+    : url_loader_factory_(profile->GetURLLoaderFactory()),
+      logo_service_(nullptr) {
   DCHECK(profile);
 
   logo_service_ = LogoServiceFactory::GetForProfile(profile);
@@ -152,6 +162,57 @@ void LogoBridge::GetCurrentLogo(JNIEnv* env,
   LogoObserverAndroid* observer = new LogoObserverAndroid(
       weak_ptr_factory_.GetWeakPtr(), env, j_logo_observer);
   logo_service_->GetLogo(observer);
+}
+
+void LogoBridge::RecordImpression(JNIEnv* env, std::string_view log_url) {
+  GURL url(log_url);
+  if (!url.is_valid()) {
+    return;
+  }
+
+  auto traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("doodle_impression_android", R"(
+        semantics {
+          sender: "Logo impression logger"
+          description: "Ping to record that a doodle was shown."
+          trigger: "A doodle is shown on the new tab page."
+          data: "URL for logging impressions, provided by the server."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "clank-start@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2026-07-06"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature via selecting a non-Google default "
+            "search engine in Chrome settings under 'Search Engine'."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+          }
+        })");
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = url;
+  auto loader =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  loader->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
+
+  auto* loader_ptr = loader.get();
+  loader_ptr->DownloadHeadersOnly(
+      url_loader_factory_.get(),
+      base::BindOnce([](std::unique_ptr<network::SimpleURLLoader> loader,
+                        scoped_refptr<net::HttpResponseHeaders> headers) {},
+                     std::move(loader)));
 }
 
 DEFINE_JNI(LogoBridge)

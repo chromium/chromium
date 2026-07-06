@@ -146,7 +146,8 @@ public class LegacyLogoViewBinderUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json",
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         assertNull(mLogoView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
         assertNotNull(mLogoView.getFadeAnimationForTesting());
@@ -159,7 +160,8 @@ public class LegacyLogoViewBinderUnitTest {
                         /* onClickUrl= */ "https://www.google.com",
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         mLogoModel.set(LogoProperties.LOGO, newLogo);
         assertNotNull(mLogoView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
@@ -176,7 +178,8 @@ public class LegacyLogoViewBinderUnitTest {
                         /* onClickUrl= */ null,
                         /* altText= */ null,
                         /* animatedLogoUrl= */ "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json",
-                        /* darkAnimatedLogoUrl= */ null);
+                        /* darkAnimatedLogoUrl= */ null,
+                        /* logUrl= */ null);
         assertNull(mLogoView.getFadeAnimationForTesting());
         assertNotEquals(logo.image, mLogoView.getNewLogoDrawableBitmapForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
