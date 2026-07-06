@@ -93,6 +93,11 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   void UpdateBrowsingDataStringWithCounts(std::u16string domain,
                                           profiles::ProfileCategoryStats stats);
 
+  void InitializeForDeviceSignalsDisclaimer(
+      Browser* browser,
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          create_param);
+
   // Stored for tests.
   raw_ptr<ManagedUserProfileNoticeHandler> handler_ = nullptr;
   base::WeakPtrFactory<ManagedUserProfileNoticeUI> weak_ptr_factory_{this};

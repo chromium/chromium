@@ -164,6 +164,7 @@ class ManagedUserProfileNoticeHandler
   const CoreAccountId account_id_;
   signin::SigninChoiceWithConfirmAndRetryCallback
       process_user_choice_with_confirmation_callback_;
+  signin::DeviceSignalsDisclaimerCallback device_signals_disclaimer_callback_;
   base::OnceClosure done_callback_;
   base::RepeatingClosure retry_callback_;
   bool canceling_ = false;

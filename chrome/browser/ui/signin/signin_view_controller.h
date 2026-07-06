@@ -257,7 +257,7 @@ class SigninViewController {
   friend class SyncConfirmationUIDialogPixelTest;
   friend class SigninViewControllerBrowserTestBase;
   friend class ProfileMenuViewSignoutTest;
-  friend class ManagedUserProfileNoticeDeviceSignalsDisclaimerInteractiveTest;
+  friend class DeviceSignalsDisclaimerInteractiveTest;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the DICE-specific sign-in flow: opens a Gaia sign-in webpage in a new

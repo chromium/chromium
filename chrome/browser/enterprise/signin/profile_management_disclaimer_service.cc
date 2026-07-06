@@ -8,9 +8,12 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signin/managed_profile_creation_controller.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -30,13 +33,18 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/device_signals/core/browser/pref_names.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -83,6 +91,13 @@ ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
     : profile_(*profile),
       state_(std::make_unique<ResetableState>()),
       signin_prefs_(*profile->GetPrefs()) {
+  if (base::FeatureList::IsEnabled(
+          policy::features::kDeviceSignalsBackfillDisclaimer) &&
+      policy::features::kClearDeviceSignalsPermissionOnStartup.Get()) {
+    profile->GetPrefs()->SetBoolean(
+        device_signals::prefs::kDeviceSignalsPermanentConsentReceived, false);
+  }
+
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
   auto* browser_collection = ProfileBrowserCollection::GetForProfile(profile);
   if (browser_collection) {
@@ -306,6 +321,93 @@ void ProfileManagementDisclaimerService::
       !IsSigninRegistration(*state_->access_point));
 }
 
+void ProfileManagementDisclaimerService::MaybeShowDeviceSignalsDisclaimerDialog(
+    BrowserWindowInterface* browser) {
+  if (!base::FeatureList::IsEnabled(
+          policy::features::kDeviceSignalsBackfillDisclaimer)) {
+    return;
+  }
+
+  // Suppress the dialog if we force --no-first-run for testing
+  // and benchmarking.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kNoFirstRun) &&
+      !bypass_no_first_run_) {
+    return;
+  }
+
+  // The management notice dialog or this dialog are already open.
+  if ((state_ && state_->profile_creation_controller) ||
+      browser->GetFeatures().signin_view_controller()->ShowsModalDialog()) {
+    return;
+  }
+
+  // If the user has not accepted the account management yet,
+  // they will see this disclaimer as part of that process in the future.
+  if (!enterprise_util::UserAcceptedAccountManagement(&*profile_)) {
+    return;
+  }
+
+  // If the permission was already obtained the dialog is not necessary.
+  if (profile_->GetPrefs()->GetBoolean(
+          device_signals::prefs::kDeviceSignalsPermanentConsentReceived)) {
+    return;
+  }
+
+  browser->GetFeatures()
+      .signin_view_controller()
+      ->ShowModalManagedUserNoticeDialog(
+          signin::EnterpriseProfileCreationDialogParams::
+              CreateForDeviceSignalsDisclaimer(
+                  GetPrimaryAccountInfo(),
+                  base::BindOnce(&ProfileManagementDisclaimerService::
+                                     HandleDeviceSignalsDisclaimerChoice,
+                                 weak_ptr_factory_.GetWeakPtr())));
+  opened_device_signals_disclaimers_.push_back(browser->GetWeakPtr());
+}
+
+void ProfileManagementDisclaimerService::HandleDeviceSignalsDisclaimerChoice(
+    signin::DeviceSignalsDisclaimerResult result) {
+  // TODO(b/512836948): Prevent the dialog being dismissable by clicking Escape.
+  switch (result) {
+    case signin::DeviceSignalsDisclaimerResult::kAccepted:
+      // Close the dialog on all windows it was open and mark the permission as
+      // granted.
+      profile_->GetPrefs()->SetBoolean(
+          device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
+      for (const auto& browser :
+           std::move(opened_device_signals_disclaimers_)) {
+        if (browser) {
+          // This will trigger `HandleDeviceSignalsDisclaimerChoice` with
+          // `kDismissed` for any other dialogs.
+          browser->GetFeatures().signin_view_controller()->CloseModalSignin();
+        }
+      }
+      break;
+    case signin::DeviceSignalsDisclaimerResult::kCanceled:
+      // If the user does not grant permission all windows for this profile
+      // should be closed and the profile picker should be presented.
+      //
+      // If the dialog was also opened in another window this function will be
+      // called with kDismissed for each such dialog.
+      opened_device_signals_disclaimers_.clear();
+      chrome::CloseAllBrowsersWithProfile(&profile_.get());
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+      break;
+    case signin::DeviceSignalsDisclaimerResult::kDismissed:
+      // This case means the dialog was not closed by choosing either of the
+      // dialog buttons.
+      // If device_signals::prefs::kDeviceSignalsPermanentConsentReceived is
+      // still false here it means the dialog was interrupted by a different one
+      // or by a window being closed for another reason.
+      // TODO(b/512836948): Figure out how to determine if the dismissal was
+      // caused by another window or not. Emit a metric to track unexpected
+      // dismissals.
+      break;
+  }
+}
+
 void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
     bool is_from_cached_registration_result,
     bool is_managed_account) {
@@ -457,6 +559,8 @@ void ProfileManagementDisclaimerService::OnRefreshTokenUpdatedForAccount(
 
 void ProfileManagementDisclaimerService::OnBrowserActivated(
     BrowserWindowInterface* browser) {
+  MaybeShowDeviceSignalsDisclaimerDialog(browser);
+
   CoreAccountId account_id = state_->account_id.empty()
                                  ? GetPrimaryAccountInfo().account_id
                                  : state_->account_id;

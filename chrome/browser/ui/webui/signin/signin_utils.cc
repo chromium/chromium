@@ -43,7 +43,7 @@ EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     bool user_already_signed_in,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    SigninChoiceCallbackVariant process_user_choice_callback,
+    EnterpriseDisclaimerResultCallbackVariant process_user_choice_callback,
     base::OnceClosure done_callback,
     base::RepeatingClosure retry_callback)
     : account_info(account_info),
@@ -57,22 +57,18 @@ EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
 
 EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     AccountInfo account_info,
-    SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback)
+    DeviceSignalsDisclaimerCallback process_user_choice_callback)
     : account_info(account_info),
       is_device_signals_disclaimer(true),
-      process_user_choice_callback(std::move(process_user_choice_callback)),
-      done_callback(std::move(done_callback)) {}
+      process_user_choice_callback(std::move(process_user_choice_callback)) {}
 
 // static
 std::unique_ptr<EnterpriseProfileCreationDialogParams>
 EnterpriseProfileCreationDialogParams::CreateForDeviceSignalsDisclaimer(
     AccountInfo account_info,
-    SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
+    DeviceSignalsDisclaimerCallback process_user_choice_callback) {
   return base::WrapUnique(new EnterpriseProfileCreationDialogParams(
-      account_info, std::move(process_user_choice_callback),
-      std::move(done_callback)));
+      account_info, std::move(process_user_choice_callback)));
 }
 
 EnterpriseProfileCreationDialogParams::
