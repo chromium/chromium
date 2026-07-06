@@ -62,6 +62,9 @@ public class HierarchicalMenuController<T> {
          * @param items The list of items that were loaded.
          */
         void onSubmenuLoaded(List<ListItem> items);
+
+        /** Called when a submenu has been entered and shown. */
+        default void onSubmenuEntered() {}
     }
 
     private static @Nullable Boolean sDrillDownOverrideValueForTesting;
@@ -450,6 +453,10 @@ public class HierarchicalMenuController<T> {
                         levelOfItem,
                         highlightPath));
         contentModelList.set(newContentList);
+
+        for (SubmenuObserver observer : mObservers) {
+            observer.onSubmenuEntered();
+        }
     }
 
     private void setModelListContent(ModelList modelList, ModelList target) {

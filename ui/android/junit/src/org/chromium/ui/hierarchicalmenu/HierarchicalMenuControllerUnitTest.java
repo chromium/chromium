@@ -321,6 +321,28 @@ public class HierarchicalMenuControllerUnitTest {
     }
 
     @Test
+    public void testSubmenuObserver_onSubmenuEntered() {
+        mController.setupCallbacks(mHeaderModelList, mModelList, mDismissDialog);
+
+        AtomicReference<Integer> callCount = new AtomicReference<>(0);
+        mController.addObserver(
+                new HierarchicalMenuController.SubmenuObserver() {
+                    @Override
+                    public void onSubmenuLoaded(List<ListItem> items) {}
+
+                    @Override
+                    public void onSubmenuEntered() {
+                        callCount.set(callCount.get() + 1);
+                    }
+                });
+
+        // Click into submenu 0. This should trigger the enter and notify the observer.
+        activateClickListener(mSubmenuLevel0);
+
+        assertEquals("Observer should be notified once of submenu enter", 1, (int) callCount.get());
+    }
+
+    @Test
     public void getItemList_withoutModelClickCallback_noClickCallbackAdded() {
         mController.setupCallbacks(/* headerModelList= */ null, mModelList, mDismissDialog);
         boolean hasClickListener =

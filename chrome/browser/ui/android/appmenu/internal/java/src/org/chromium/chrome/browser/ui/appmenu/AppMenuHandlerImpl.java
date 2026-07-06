@@ -830,6 +830,13 @@ class AppMenuHandlerImpl
     }
 
     @Override
+    public void onSubmenuEntered() {
+        if (mAppMenu != null && mAppMenu.getListView() != null) {
+            mAppMenu.getListView().setSelection(0);
+        }
+    }
+
+    @Override
     public AppMenuPopup createAndShowFlyoutPopup(
             List<ListItem> items, View view, Runnable dismissRunnable) {
         ModelList modelList = new ModelList();
