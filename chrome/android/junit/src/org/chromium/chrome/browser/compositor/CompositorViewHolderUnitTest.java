@@ -690,7 +690,7 @@ public class CompositorViewHolderUnitTest {
 
     // Keyboard resize tests for geometrychange event fired to JS.
     @Test
-    public void testWebContentResizeTriggeredDueToKeyboardShow() {
+    public void testResizeNotificationsDueToKeyboardShow_OSKeyboardResize() {
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
         reset(mWebContents);
 
@@ -708,17 +708,16 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
+        // This triggers handleWindowInsetChanged automatically.
         mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
-        mCompositorViewHolder.updateWebContentsSize(mTab);
 
-        // Expect fullViewportHeight since in OVERLAYS_CONTENT the keyboard doesn't cause a resize
-        // to the WebContents.
-        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
+        // The webcontents weren't resized, so no `setSize` should come through.
+        verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(
                         mWebContents,
                         0,
-                        fullViewportHeight - KEYBOARD_HEIGHT,
+                        0, // Expected y is 0 when View is resized to 200 and keyboard is 741
                         fullViewportWidth,
                         KEYBOARD_HEIGHT);
 
@@ -729,10 +728,10 @@ public class CompositorViewHolderUnitTest {
         when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        // This triggers handleWindowInsetChanged automatically.
         mKeyboardInsetSupplier.set(0);
-        mCompositorViewHolder.updateWebContentsSize(mTab);
 
-        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
+        verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
@@ -929,7 +928,7 @@ public class CompositorViewHolderUnitTest {
 
     // Keyboard resize tests for geometrychange event fired to JS.
     @Test
-    public void testWebContentResizeTriggeredDueToKeyboardShow_keyboardInOverlayMode() {
+    public void testResizeNotificationsDueToKeyboardShow_OSKeyboardOverlay() {
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
         reset(mWebContents);
 
@@ -950,12 +949,11 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
         when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(true);
 
+        // This triggers handleWindowInsetChanged automatically.
         mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
-        mCompositorViewHolder.updateWebContentsSize(mTab);
 
-        // Expect fullViewportHeight since in OVERLAYS_CONTENT the keyboard doesn't cause a resize
-        // to the WebContents.
-        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
+        // The webcontents weren't resized, so no `setSize` should come through.
+        verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(
                         mWebContents,
@@ -972,10 +970,10 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
         when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(true);
+        // This triggers handleWindowInsetChanged automatically.
         mKeyboardInsetSupplier.set(0);
-        mCompositorViewHolder.updateWebContentsSize(mTab);
 
-        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
+        verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
