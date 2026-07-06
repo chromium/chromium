@@ -53,6 +53,16 @@ const char kHistogramTapOrClick[] = ".TapOrClick";
 
 constexpr char kUserInteractionTraceEventCategory[] = "latency";
 
+std::unique_ptr<TracedValue> UserInteractionTraceData(base::TimeDelta duration,
+                                                      bool is_pointer) {
+  auto traced_value = std::make_unique<TracedValue>();
+  traced_value->SetInteger("maxDuration",
+                           static_cast<int>(duration.InMilliseconds()));
+  traced_value->SetString("interactionType",
+                          is_pointer ? "tapOrClick" : "keyboard");
+  return traced_value;
+}
+
 void LogResponsivenessHistogram(base::TimeDelta duration, const char* suffix) {
   base::UmaHistogramCustomTimes(
       base::StrCat({kHistogramMaxEventDuration, suffix}), duration,
@@ -539,14 +549,15 @@ void ResponsivenessMetrics::ReportToMetrics(PerformanceEventTiming* entry) {
   }
 
   UserInteractionType interaction_type = entry->InteractionType();
+  uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
   RecordUserInteractionUKM(window, interaction_type, *entry);
+  RecordUserInteractionTracing(window, interaction_type, *entry, event_id);
 
-  // For Histogram and Tracing convenience, we only report "unique" interaction
-  // durations. I.e. when keydown and keypress, or pointerup and click, report
-  // in the same animation frame, we don't duplicate reports. The first event
-  // for each interaction id should always be the longest. If they have the
-  // same end time, they perfectly overlap in time and don't need to be
-  // repeated.
+  // For Histogram convenience, we only report "unique" interaction durations.
+  // I.e. when keydown and keypress, or pointerup and click, report in the
+  // same animation frame, we don't duplicate reports.  The first event for each
+  // interaction id should always be the longest.  If they have the same end
+  // time, they perfectly overlap in time and don't need to be repeated.
   uint64_t frame_index = entry->GetEventTimingReportingInfo()->frame_index;
   if (!last_recorded_frame_index_.has_value() ||
       frame_index != *last_recorded_frame_index_) {
@@ -559,8 +570,6 @@ void ResponsivenessMetrics::ReportToMetrics(PerformanceEventTiming* entry) {
 
   if (!reported_interactions_in_frame_.Contains(key)) {
     reported_interactions_in_frame_.emplace_back(key);
-    uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
-    RecordUserInteractionTracing(window, interaction_type, *entry, event_id);
     RecordUserInteractionHistograms(interaction_type, *entry, event_id);
   }
 }
@@ -621,7 +630,14 @@ void ResponsivenessMetrics::RecordUserInteractionTracing(
     UserInteractionType interaction_type,
     const PerformanceEventTiming& entry,
     uint64_t event_id) {
+  base::TimeDelta duration = entry.GetExactDuration();
+
   bool is_pointer_event = interaction_type == UserInteractionType::kTapOrClick;
+
+  TRACE_EVENT("devtools.timeline", "Responsiveness.Renderer.UserInteraction",
+              "data", UserInteractionTraceData(duration, is_pointer_event),
+              "frame", GetFrameIdForTracing(window->GetFrame()));
+
   const auto track = perfetto::NamedTrack::Global("Metrics: INP", event_id);
   TRACE_EVENT_BEGIN(
       kUserInteractionTraceEventCategory, kHistogramMaxEventDuration, track,
