@@ -25,6 +25,21 @@ const base::FeatureParam<size_t> kDsePreload2MaxPrefetch{
     &kDsePreload2, "kDsePreload2MaxPrefetch", 7};
 const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl{
     &kDsePreload2, "kDsePreload2PrefetchTtl", base::Milliseconds(60000)};
+// An empty string means that do not use initial No-Vary-Search hint.
+const base::FeatureParam<std::string> kDsePreload2InitialNoVarySearchHint{
+    &kDsePreload2, "dse_preload2_initial_no_vary_search_hint", ""};
+
+const base::FeatureParam<DsePreload2PrefetchPriorityPolicy>::Option
+    kDsePreload2PrefetchPriorityPolicyOptions[] = {
+        {DsePreload2PrefetchPriorityPolicy::kSearchPrefetchCompat,
+         "SearchPrefetchCompat"},
+        {DsePreload2PrefetchPriorityPolicy::kAlwaysHighest, "AlwaysHighest"},
+        {DsePreload2PrefetchPriorityPolicy::kNull, "Null"}};
+const base::FeatureParam<DsePreload2PrefetchPriorityPolicy>
+    kDsePreload2PrefetchPriorityPolicy{
+        &kDsePreload2, "dse_preload2_prefetch_priority_policy",
+        DsePreload2PrefetchPriorityPolicy::kSearchPrefetchCompat,
+        &kDsePreload2PrefetchPriorityPolicyOptions};
 
 BASE_FEATURE(kDsePreload2OnPress, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -40,10 +55,6 @@ BASE_FEATURE(kDsePreload2OnPressIncognito, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDsePreload2OnSuggestNonDefaultMatch,
              "kDsePreload2OnSuggestNonDefaultMatch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// An empty string means that do not use initial No-Vary-Search hint.
-const base::FeatureParam<std::string> kDsePreload2InitialNoVarySearchHint{
-    &kDsePreload2, "dse_preload2_initial_no_vary_search_hint", ""};
 
 bool IsDsePreload2Enabled() {
   return base::FeatureList::IsEnabled(kDsePreload2) &&

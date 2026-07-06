@@ -31,6 +31,23 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<size_t> kDsePreload2MaxPrefetch;
 // Time to live (TTL) of prefetch.
 extern const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl;
+// Initial No-Vary-Search hint if there is no No-Vary-Search hint from Prefs.
+//
+// This feature flag is for debug purpose and we'll remove it finally.
+extern const base::FeatureParam<std::string>
+    kDsePreload2InitialNoVarySearchHint;
+
+enum class DsePreload2PrefetchPriorityPolicy {
+  // SearchPrefetch compatible. Use medium/highest if on-suggest/on-press.
+  kSearchPrefetchCompat,
+  // Use highest always.
+  kAlwaysHighest,
+  // Let `PrefetchService` fill the default priority.
+  kNull,
+};
+// Priority policy for DSE preload 2 prefetch.
+extern const base::FeatureParam<DsePreload2PrefetchPriorityPolicy>
+    kDsePreload2PrefetchPriorityPolicy;
 
 // Enables on-press prefetch.
 BASE_DECLARE_FEATURE(kDsePreload2OnPress);
@@ -52,12 +69,6 @@ BASE_DECLARE_FEATURE(kDsePreload2OnPressIncognito);
 // For more details, see
 // https://docs.google.com/document/d/1f4dcNYP3O_Ft4yMmC42ETxGC5lM7YF5FDbEgnxUua7M/edit?tab=t.38v8gca76tmi
 BASE_DECLARE_FEATURE(kDsePreload2OnSuggestNonDefaultMatch);
-
-// Initial No-Vary-Search hint if there is no No-Vary-Search hint from Prefs.
-//
-// This feature flag is for debug purpose and we'll remove it finally.
-extern const base::FeatureParam<std::string>
-    kDsePreload2InitialNoVarySearchHint;
 
 // Returns true iff we should enter DsePreload2 code path.
 bool IsDsePreload2Enabled();
