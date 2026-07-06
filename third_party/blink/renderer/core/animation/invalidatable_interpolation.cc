@@ -272,6 +272,18 @@ void InvalidatableInterpolation::ApplyIterationAccumulation() const {
   const InterpolableValue* end_value =
       cached_end_value_->Value().interpolable_value.Get();
 
+  // Iteration accumulation skips incompatible values.
+  const InterpolationType* type = cached_value_->GetType();
+  InterpolationValue start(result_value->Clone(),
+                           cached_value_->GetNonInterpolableValue());
+  InterpolationValue end(end_value->Clone(),
+                         cached_end_value_->GetNonInterpolableValue());
+  PairwiseInterpolationValue merged =
+      type->MaybeMergeSingles(std::move(start), std::move(end));
+  if (!merged) {
+    return;
+  }
+
   // Transform accumulation is not linear so transform lists cannot simply use
   // Scale() and ScaleAndAdd(). Instead, we accumulate the final keyframe
   // value (from cached_end_value_) onto both interval endpoints using
@@ -288,45 +300,23 @@ void InvalidatableInterpolation::ApplyIterationAccumulation() const {
       auto* accumulated_end =
           To<InterpolableTransformList>(interval_end->Clone());
       const auto& accumulation_delta =
-          To<InterpolableTransformList>(*end_value);
+          To<InterpolableTransformList>(*merged.end_interpolable_value);
 
       accumulated_start->AccumulateN(accumulation_delta, current_iteration_);
       accumulated_end->AccumulateN(accumulation_delta, current_iteration_);
       accumulated_start->Interpolate(*accumulated_end, current_fraction_,
-                                     *result_value);
+                                     *merged.start_interpolable_value);
+      cached_value_->MutableValue().interpolable_value =
+          merged.start_interpolable_value;
     }
     return;
   }
 
-  // For filter lists, skip accumulation if their types don't match. Same logic
-  // as CSSFilterListInterpolationType::PerformAccumulativeComposition.
-  if (result_value->IsList() && end_value->IsList()) {
-    const auto& result_list = To<InterpolableList>(*result_value);
-    const auto& end_list = To<InterpolableList>(*end_value);
-    for (wtf_size_t i = 0; i < result_list.length() && i < end_list.length();
-         i++) {
-      const auto* result_filter =
-          DynamicTo<InterpolableFilter>(result_list.Get(i));
-      const auto* end_filter = DynamicTo<InterpolableFilter>(end_list.Get(i));
-      if (result_filter && end_filter &&
-          result_filter->GetType() != end_filter->GetType()) {
-        return;
-      }
-    }
-  }
-
-  // Iteration accumulation skips incompatible (IACVT) length values.
-  if (result_value->IsLength() && end_value->IsLength()) {
-    if (!InterpolableLength::CanMergeValues(result_value, end_value)) {
-      return;
-    }
-  }
-
   // Iteration accumulation (Web Animations Level 2). Accumulate the final
   // keyframe value with the current value, |current_iteration| times.
-  Member<InterpolableValue> scaled_end = end_value->Clone();
-  scaled_end->Scale(current_iteration_);
-  result_value->ScaleAndAdd(1.0, *scaled_end);
+  Member<InterpolableValue> scaled_end = merged.end_interpolable_value->Clone();
+  scaled_end->ScaleAndAdd(current_iteration_, *merged.start_interpolable_value);
+  cached_value_->MutableValue().interpolable_value = scaled_end;
 }
 
 void InvalidatableInterpolation::ApplyStack(
