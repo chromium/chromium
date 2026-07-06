@@ -14,10 +14,15 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/sessions/session_service_base.h"
+#include "chrome/browser/sessions/session_service_lookup.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
@@ -31,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -94,6 +100,90 @@ UnloadController* UnloadController::From(BrowserWindowInterface* browser) {
 const UnloadController* UnloadController::From(
     const BrowserWindowInterface* browser) {
   return Get(browser->GetUnownedUserDataHost());
+}
+
+bool UnloadController::HandleBeforeClose() {
+  const auto get_closing_status =
+      [this]() -> BrowserWindowInterface::ClosingStatus {
+    // If `force_skip_warning_user_` is true, then we should immediately
+    // return true.
+    if (force_skip_warning_user_on_close()) {
+      return BrowserWindowInterface::ClosingStatus::kPermitted;
+    }
+
+    // If the user needs to see one or more warnings, hold off closing the
+    // browser.
+    const UnloadController::WarnBeforeClosingResult result =
+        MaybeWarnBeforeClosing(base::BindOnce(
+            &UnloadController::FinishWarnBeforeClosing, GetWeakPtr()));
+    if (result == UnloadController::WarnBeforeClosingResult::kDoNotClose) {
+      return BrowserWindowInterface::ClosingStatus::kDeniedByUser;
+    }
+
+    return GetBrowserClosingStatus();
+  };
+
+  // Notify clients if close was cancelled.
+  const BrowserWindowInterface::ClosingStatus close_status =
+      get_closing_status();
+  const bool close_permitted =
+      close_status == BrowserWindowInterface::ClosingStatus::kPermitted;
+  if (!close_permitted) {
+    browser_->NotifyWindowCloseCancelled(close_status);
+  }
+  return close_permitted;
+}
+
+void UnloadController::OnWindowClosing() {
+  // There may be situations where async tasks, such as
+  // UnloadController::ProcessPendingTabs, may call into OnWindowClosing() after
+  // deletion has already been scheduled and closed notifications have been
+  // propagated. No-op in such cases to avoid duplicating browser-closed
+  // handling.
+  if (browser_->IsDeleteScheduled()) {
+    return;
+  }
+
+  if (!HandleBeforeClose()) {
+    return;
+  }
+
+  // Don't use GetForProfileIfExisting here, we want to force creation of the
+  // session service so that user can restore what was open.
+  SessionServiceBase* service =
+      GetAppropriateSessionServiceForProfile(browser_);
+
+  if (service) {
+    service->WindowClosing(browser_->GetSessionID());
+  }
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
+
+  const auto browser_type = browser_->GetType();
+  bool notify_restore_service =
+      (browser_type == BrowserWindowInterface::Type::TYPE_NORMAL) &&
+      browser_->GetTabStripModel()->count();
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
+  notify_restore_service |=
+      (browser_type == BrowserWindowInterface::Type::TYPE_APP) ||
+      (browser_type == BrowserWindowInterface::Type::TYPE_APP_POPUP);
+#endif
+
+  if (tab_restore_service && notify_restore_service) {
+    tab_restore_service->BrowserClosing(
+        browser_->GetFeatures().live_tab_context());
+  }
+
+  if (!browser_->GetTabStripModel()->empty()) {
+    // Closing all the tabs results in eventually calling back to
+    // OnWindowClosing() again.
+    browser_->GetTabStripModel()->CloseAllTabs();
+  } else {
+    // If there are no tabs, then a task will be scheduled (by views) to delete
+    // this Browser.
+    browser_->OnWindowCloseComplete();
+  }
 }
 
 UnloadController::UnloadController(BrowserWindowInterface* browser)
@@ -523,7 +613,7 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
     if (tabs_needing_before_unload_fired_.empty()) {
       // We've finished all the unload events and can proceed to close the
       // browser.
-      browser_->OnWindowClosing();
+      UnloadController::From(browser_)->OnWindowClosing();
       return;
     }
   }

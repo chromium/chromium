@@ -168,7 +168,8 @@ void PostTryToCloseBrowsersForProfile(
                                    original_profile
                              : browser->GetProfile() == original_profile;
           if (matches) {
-            browser->GetBrowserForMigrationOnly()->ResetTryToCloseWindow();
+            UnloadController::From(browser->GetBrowserForMigrationOnly())
+                ->ResetTryToCloseWindow();
           }
           return true;
         });
@@ -199,12 +200,13 @@ void TryToCloseBrowsersForProfile(
         if (!matches_profile(browser)) {
           return true;
         }
-        if (browser->GetBrowserForMigrationOnly()->TryToCloseWindow(
-                skip_beforeunload,
-                base::BindRepeating(&PostTryToCloseBrowsersForProfile,
-                                    original_profile, match_original_profile,
-                                    on_close_success, on_close_aborted,
-                                    profile_path, skip_beforeunload))) {
+        if (UnloadController::From(browser->GetBrowserForMigrationOnly())
+                ->TryToCloseWindow(
+                    skip_beforeunload,
+                    base::BindRepeating(
+                        &PostTryToCloseBrowsersForProfile, original_profile,
+                        match_original_profile, on_close_success,
+                        on_close_aborted, profile_path, skip_beforeunload))) {
           waiting_for_close = true;
           return false;
         }

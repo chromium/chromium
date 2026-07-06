@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/tabs/public/tab_interface.h"
@@ -127,7 +128,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
   browser2->tab_strip_model()->CloseAllTabs();
   // This is normally invoked when the tab strip is empty (specifically from
   // BrowserView::OnWindowCloseRequested).
-  browser2->OnWindowClosing();
+  UnloadController::From(browser2.get())->OnWindowClosing();
   EXPECT_TRUE(browser2->IsDeleteScheduled());
   browser3->tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
 

@@ -605,7 +605,7 @@ Browser::~Browser() {
     // Browser shutdown specifically in cases where clients directly reset
     // the Browser unique_ptr.
     UnloadController::From(this)->set_force_skip_warning_user_on_close(true);
-    OnWindowClosing();
+    UnloadController::From(this)->OnWindowClosing();
   }
 
   // Stop observing notifications and destroy the tab monitor before continuing
@@ -675,54 +675,9 @@ GURL Browser::GetNewTabURL() const {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, OnBeforeUnload handling:
 
-
-
-bool Browser::HandleBeforeClose() {
-  const auto get_closing_status =
-      [this]() -> BrowserWindowInterface::ClosingStatus {
-    // If `force_skip_warning_user_` is true, then we should immediately
-    // return true.
-    if (UnloadController::From(this)->force_skip_warning_user_on_close()) {
-      return BrowserWindowInterface::ClosingStatus::kPermitted;
-    }
-
-    // If the user needs to see one or more warnings, hold off closing the
-    // browser.
-    const UnloadController::WarnBeforeClosingResult result =
-        UnloadController::From(this)->MaybeWarnBeforeClosing(
-            base::BindOnce(&UnloadController::FinishWarnBeforeClosing,
-                           UnloadController::From(this)->GetWeakPtr()));
-    if (result == UnloadController::WarnBeforeClosingResult::kDoNotClose) {
-      return BrowserWindowInterface::ClosingStatus::kDeniedByUser;
-    }
-
-    return UnloadController::From(this)->GetBrowserClosingStatus();
-  };
-
-  // Notify clients if close was cancelled.
-  const BrowserWindowInterface::ClosingStatus close_status =
-      get_closing_status();
-  const bool close_permitted =
-      close_status == BrowserWindowInterface::ClosingStatus::kPermitted;
-  if (!close_permitted) {
-    browser_close_cancelled_callback_list_.Notify(this, close_status);
-  }
-  return close_permitted;
-}
-
-bool Browser::TryToCloseWindow(
-    bool skip_beforeunload,
-    const base::RepeatingCallback<void(bool)>& on_close_confirmed) {
-  return UnloadController::From(this)->TryToCloseWindow(skip_beforeunload,
-                                                        on_close_confirmed);
-}
-
-void Browser::ResetTryToCloseWindow() {
-  UnloadController::From(this)->ResetTryToCloseWindow();
-}
-
-bool Browser::IsAttemptingToCloseBrowser() const {
-  return UnloadController::From(this)->is_attempting_to_close_browser();
+void Browser::NotifyWindowCloseCancelled(
+    BrowserWindowInterface::ClosingStatus status) {
+  browser_close_cancelled_callback_list_.Notify(this, status);
 }
 
 BrowserWindowInterface* Browser::GetBrowserForOpeningWebUi() {
@@ -931,80 +886,41 @@ void Browser::DidBecomeInactive() {
   }
 }
 
-void Browser::OnWindowClosing() {
-  // There may be situations where async tasks, such as
-  // UnloadController::ProcessPendingTabs, may call into OnWindowClosing() after
-  // deletion has already been scheduled and closed notifications have been
-  // propagated. No-op in such cases to avoid duplicating browser-closed
-  // handling.
-  if (is_delete_scheduled_) {
-    return;
+void Browser::OnWindowCloseComplete() {
+  // If there are no tabs, then a task will be scheduled (by views) to delete
+  // this Browser.
+  is_delete_scheduled_ = true;
+
+  // At this point the browser has successfully closed and is scheduled for
+  // deletion.
+  browser_did_close_callback_list_.Notify(this);
+
+  // Application should shutdown on last window close if the user is
+  // explicitly trying to quit, or if there is nothing keeping the browser
+  // alive (such as AppController on the Mac, or BackgroundContentsService for
+  // background pages).
+  const bool should_quit_if_last_browser =
+      browser_shutdown::IsTryingToQuit() ||
+      KeepAliveRegistry::GetInstance()->IsKeepingAliveOnlyByBrowserOrigin();
+
+  // Below will not consider browsers for which delete has already been
+  // scheduled.
+  const bool is_last_browser =
+      !GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+
+  if (should_quit_if_last_browser && is_last_browser) {
+    browser_shutdown::OnShutdownStarting(
+        browser_shutdown::ShutdownType::kWindowClose);
   }
 
-  if (!HandleBeforeClose()) {
-    return;
-  }
-
-  // Don't use GetForProfileIfExisting here, we want to force creation of the
-  // session service so that user can restore what was open.
-  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
-
-  if (service) {
-    service->WindowClosing(session_id());
-  }
-
-  sessions::TabRestoreService* tab_restore_service =
-      TabRestoreServiceFactory::GetForProfile(profile());
-
-  bool notify_restore_service = is_type_normal() && tab_strip_model_->count();
-#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
-  notify_restore_service |= is_type_app() || is_type_app_popup();
-#endif
-
-  if (tab_restore_service && notify_restore_service) {
-    tab_restore_service->BrowserClosing(GetFeatures().live_tab_context());
-  }
-
-  if (!tab_strip_model_->empty()) {
-    // Closing all the tabs results in eventually calling back to
-    // OnWindowClosing() again.
-    tab_strip_model_->CloseAllTabs();
-  } else {
-    // If there are no tabs, then a task will be scheduled (by views) to delete
-    // this Browser.
-    is_delete_scheduled_ = true;
-
-    // At this point the browser has successfully closed and is scheduled for
-    // deletion.
-    browser_did_close_callback_list_.Notify(this);
-
-    // Application should shutdown on last window close if the user is
-    // explicitly trying to quit, or if there is nothing keeping the browser
-    // alive (such as AppController on the Mac, or BackgroundContentsService for
-    // background pages).
-    const bool should_quit_if_last_browser =
-        browser_shutdown::IsTryingToQuit() ||
-        KeepAliveRegistry::GetInstance()->IsKeepingAliveOnlyByBrowserOrigin();
-
-    // Below will not consider browsers for which delete has already been
-    // scheduled.
-    const bool is_last_browser =
-        !GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-
-    if (should_quit_if_last_browser && is_last_browser) {
-      browser_shutdown::OnShutdownStarting(
-          browser_shutdown::ShutdownType::kWindowClose);
-    }
-
-    // Once a Browser has successfully closed, client code expects control to
-    // return to the run loop before the instance is finally deleted. To
-    // maintain existing expectations schedule the delete asynchronously here.
-    // TODO(crbug.com/413168662): Explore synchronously destroying the browser
-    // instead.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&Browser::SynchronouslyDestroyBrowser,
-                                  weak_factory_.GetWeakPtr()));
-  }
+  // Once a Browser has successfully closed, client code expects control to
+  // return to the run loop before the instance is finally deleted. To
+  // maintain existing expectations schedule the delete asynchronously here.
+  // TODO(crbug.com/413168662): Explore synchronously destroying the browser
+  // instead.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Browser::SynchronouslyDestroyBrowser,
+                                weak_factory_.GetWeakPtr()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

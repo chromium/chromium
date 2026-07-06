@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -128,7 +129,7 @@ const SystemWebAppDelegate* BrowserDelegateImpl::GetSWADelegate() const {
 }
 
 bool BrowserDelegateImpl::IsAttemptingToClose() const {
-  return browser_->IsAttemptingToCloseBrowser();
+  return UnloadController::From(&*browser_)->is_attempting_to_close_browser();
 }
 
 bool BrowserDelegateImpl::IsClosing() const {

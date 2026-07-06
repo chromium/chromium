@@ -127,6 +127,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
@@ -4470,7 +4471,7 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
 
   // Give beforeunload handlers, the user, or policy the chance to cancel the
   // close before we hide the window below.
-  if (!browser_->HandleBeforeClose()) {
+  if (!UnloadController::From(browser_)->HandleBeforeClose()) {
     return views::CloseRequestResult::kCannotClose;
   }
 
@@ -4487,7 +4488,7 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
   // when the layout manager is destroyed in the destructor, but it also needs
   // to happen when the tabstrip model is being torn down.
   base::AutoReset<bool> suppress_layout(&suppress_layout_for_teardown_, true);
-  browser_->OnWindowClosing();
+  UnloadController::From(browser_)->OnWindowClosing();
   return result;
 }
 

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1219,7 +1220,7 @@ void WebUIBrowserWindow::OnWindowCloseRequested(
 
   // Give beforeunload handlers, the user, or policy the chance to cancel the
   // close before we hide the window below.
-  if (!browser_->HandleBeforeClose()) {
+  if (!UnloadController::From(browser_)->HandleBeforeClose()) {
     // Need to reset the synchronous close callback after each Close() call as
     // it's reset once used.  Close() is generally called twice during shutdown.
     widget_->MakeCloseSynchronous(base::BindOnce(
@@ -1227,7 +1228,7 @@ void WebUIBrowserWindow::OnWindowCloseRequested(
     return;
   }
 
-  browser_->OnWindowClosing();
+  UnloadController::From(browser_)->OnWindowClosing();
   if (!browser_->tab_strip_model()->empty()) {
     // Tab strip isn't empty.  Hide the frame (so it appears to have closed
     // immediately) and close all the tabs, allowing the renderers to shut

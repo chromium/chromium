@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
@@ -105,7 +106,8 @@ OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
   // back to the dawn of time, AKA the initial implementation in 2014:
   // https://codereview.chromium.org/245933002.
   if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL &&
-      browser->GetBrowserForMigrationOnly()->IsAttemptingToCloseBrowser()) {
+      UnloadController::From(browser->GetBrowserForMigrationOnly())
+          ->is_attempting_to_close_browser()) {
     browser = nullptr;
     fallback_to_tabbed_browser = true;
   }

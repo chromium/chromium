@@ -3320,7 +3320,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
                       status);
             times_called++;
           }));
-  browser->OnWindowClosing();
+  UnloadController::From(browser)->OnWindowClosing();
   EXPECT_EQ(1, times_called);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

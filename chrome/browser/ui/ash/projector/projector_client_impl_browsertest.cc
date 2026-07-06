@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -294,10 +295,12 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 
-  EXPECT_FALSE(app_browser->IsAttemptingToCloseBrowser());
+  EXPECT_FALSE(
+      UnloadController::From(app_browser)->is_attempting_to_close_browser());
   client()->CloseProjectorApp();
   // Verify that Projector App is closing.
-  EXPECT_TRUE(app_browser->IsAttemptingToCloseBrowser());
+  EXPECT_TRUE(
+      UnloadController::From(app_browser)->is_attempting_to_close_browser());
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
@@ -475,7 +478,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   // the Projector app open.
   profile->GetPrefs()->SetBoolean(GetPolicy(), false);
   // The Projector app immediately closes to prevent further access.
-  EXPECT_TRUE(app_browser->IsAttemptingToCloseBrowser());
+  EXPECT_TRUE(
+      UnloadController::From(app_browser)->is_attempting_to_close_browser());
 
   auto* web_app_provider = web_app::WebAppProvider::GetForTest(profile);
   base::RunLoop loop;

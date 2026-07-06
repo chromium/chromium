@@ -358,7 +358,7 @@ void BrowserWidget::OnNativeWidgetDestroyed() {
   // TODO(crbug.com/413168662): Once clients have been migrated away from
   // closing Browsers via their NativeWidgets explore removing this completely.
   UnloadController::From(browser)->set_force_skip_warning_user_on_close(true);
-  browser->OnWindowClosing();
+  UnloadController::From(browser)->OnWindowClosing();
   Widget::OnNativeWidgetDestroyed();
   browser->SynchronouslyDestroyBrowser();
 }

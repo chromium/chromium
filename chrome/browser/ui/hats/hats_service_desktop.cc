@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -655,7 +656,8 @@ HatsService::LaunchError HatsServiceDesktop::RunLaunchChecks(
     return error;
   }
 
-  if (!browser || browser->IsAttemptingToCloseBrowser()) {
+  if (!browser ||
+      UnloadController::From(browser)->is_attempting_to_close_browser()) {
     return LaunchError::kError;
   }
 

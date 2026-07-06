@@ -122,6 +122,22 @@ class UnloadController : public WebContentsCollection::Observer,
   // its BeforeUnloadHandler.
   bool BeforeUnloadFired(content::WebContents* contents, bool proceed);
 
+  // Browser closing consists of the following phases:
+  //
+  // 1. If the browser has WebContents with before unload handlers, then the
+  //    before unload handlers are processed (this is asynchronous). During this
+  //    phase IsAttemptingToCloseBrowser() returns true. When processing
+  //    completes, the WebContents is removed. Once all WebContents are removed,
+  //    the next phase happens. Note that this phase may be aborted.
+  // 2. The Browser window is hidden, and a task is posted that results in
+  //    deleting the Browser (Views is responsible for posting the task). This
+  //    phase can not be stopped. During this phase IsDeleteScheduled()
+  //    returns true.
+  //
+  // Note that there are other cases that may delay closing, such as downloads,
+  // but that is done before any of these steps.
+  // TODO(crbug.com/40064092): See about unifying IsAttemptingToCloseBrowser()
+  // and IsDeleteScheduled().
   bool is_attempting_to_close_browser() const {
     return is_attempting_to_close_browser_;
   }
@@ -131,6 +147,30 @@ class UnloadController : public WebContentsCollection::Observer,
   // closed (or other enum values if closure is not permitted for a given
   // reason).
   BrowserWindowInterface::ClosingStatus GetBrowserClosingStatus();
+
+  // Gives beforeunload handlers the chance to cancel the close. Returns true if
+  // the close operation was permitted. Closing can be denied due to different
+  // reasons. This function checks if unload handlers are still executing. It
+  // further may ask the user for permission to close the browser (e.g. if
+  // downloads are ongoing).
+  // If this function is called
+  // * but the user denied closure after being prompted, it returns false and
+  //   emits `BrowserWindowInterface::ClosingStatus::kDeniedByUser`.
+  // * but the closure is not permitted by policy, it returns false and emits
+  //   `BrowserWindowInterface::ClosingStatus::kDeniedByPolicy`.
+  // * while the process begun by `TryToCloseWindow()` is in progress, it
+  //   returns false and emits
+  //   `BrowserWindowInterface::ClosingStatus::kDeniedUnloadHandlersNeedTime`.
+  //
+  // If you don't care about beforeunload handlers and just want to prompt the
+  // user that they might lose an in-progress operation, call
+  // `MaybeWarnBeforeClosing()` instead (`HandleBeforeClose()` also calls this
+  // method).
+  bool HandleBeforeClose();
+
+  // Invoked when the window containing us is closing. Performs the necessary
+  // cleanup.
+  void OnWindowClosing();
 
   // Displays any necessary warnings to the user on taking an action that might
   // close the browser (for example, warning if there are downloads in progress
@@ -153,8 +193,16 @@ class UnloadController : public WebContentsCollection::Observer,
   void FinishWarnBeforeClosing(WarnBeforeClosingResult result);
 
   // Begins the process of confirming whether the associated browser can be
-  // closed. Beforeunload events won't be fired if |skip_beforeunload|
-  // is true.
+  // closed. Beforeunload events won't be fired if |skip_beforeunload| is true.
+  // Otherwise, it starts prompting the user, returns true and will call
+  // |on_close_confirmed| with the result of the user's decision. After calling
+  // this function, if the window will not be closed, call
+  // ResetBeforeUnloadHandlers() to reset all beforeunload handlers; calling
+  // this function multiple times without an intervening call to
+  // Browser::ResetTryToCloseWindow() will run only the beforeunload handlers
+  // registered since the previous call. Note that if the browser window has
+  // been used before, users should always have a chance to save their work
+  // before the window is closed without triggering beforeunload event.
   bool TryToCloseWindow(
       bool skip_beforeunload,
       const base::RepeatingCallback<void(bool)>& on_close_confirmed);

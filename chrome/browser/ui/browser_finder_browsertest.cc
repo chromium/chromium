@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -28,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderBrowserTest, ScheduledForDeletion) {
   // during OnWindowClosing().
   new_browser->tab_strip_model()->CloseAllTabs();
 
-  new_browser->OnWindowClosing();
+  UnloadController::From(new_browser)->OnWindowClosing();
 
   EXPECT_TRUE(new_browser->IsDeleteScheduled());
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
