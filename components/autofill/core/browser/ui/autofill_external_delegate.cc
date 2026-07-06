@@ -1007,7 +1007,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kAtMemorySearchResult:
       manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
           mojom::ActionPersistence::kFill, last_query_.form_id,
-          last_query_.field_id, suggestion);
+          last_query_.field_id, suggestion, metadata);
       break;
     case SuggestionType::kOpenGemini:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

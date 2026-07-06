@@ -14,7 +14,9 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/signatures.h"
 #include "url/gurl.h"
@@ -81,7 +83,9 @@ class AtMemoryMetricsRecorder {
       const accessibility_annotator::MemorySearchResults& result);
 
   // Records that a suggestion was accepted during this session.
-  void OnSuggestionAccepted();
+  void OnSuggestionAccepted(
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          metadata = std::nullopt);
 
   // Records that the suggestion was successfully filled.
   void MarkFilled();

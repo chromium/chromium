@@ -151,8 +151,19 @@ void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
   query_submitted_ = true;
 }
 
-void AtMemoryMetricsRecorder::OnSuggestionAccepted() {
+void AtMemoryMetricsRecorder::OnSuggestionAccepted(
+    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+        metadata) {
   suggestion_accepted_ = true;
+  if (metadata.has_value() && !metadata->multi_index.empty()) {
+    base::UmaHistogramSparse("Autofill.AtMemory.AcceptedSuggestionIndex",
+                             static_cast<int>(metadata->multi_index[0]));
+    const int secondary_index = metadata->multi_index.size() > 1
+                                    ? static_cast<int>(metadata->multi_index[1])
+                                    : -1;
+    base::UmaHistogramSparse(
+        "Autofill.AtMemory.AcceptedSuggestionSecondaryIndex", secondary_index);
+  }
 }
 
 void AtMemoryMetricsRecorder::OnQueryResponseReceived(

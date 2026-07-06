@@ -2167,6 +2167,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.AcceptedSuggestionIndex" units="position"
+    expires_after="2027-03-09">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the 0-based index (position) of the selected suggestion from the
+    first-level list. In case of selected sub-suggestion from a fly-out menu,
+    this still records the position of the top-level suggestion. Emitted when a
+    suggestion is accepted.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.AtMemory.AcceptedSuggestionSecondaryIndex"
+    units="position" expires_after="2027-03-09">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the 0-based index (position) of the selected secondary attribute
+    from the fly-out menu when a suggestion is accepted. Logs -1 if the user
+    accepted the top-level primary attribute directly without selecting from the
+    fly-out menu. Emitted when a suggestion is accepted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.Funnel.SuggestionFilled" enum="Boolean"
     expires_after="2027-03-09">
   <owner>sygiet@google.com</owner>

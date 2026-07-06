@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -70,15 +72,21 @@ class AtMemoryManager {
   void OnPopupHidden();
 
   // Fills or previews the selected search result.
-  void FillOrPreviewSearchResult(mojom::ActionPersistence action_persistence,
-                                 const FormGlobalId& form_id,
-                                 const FieldGlobalId& field_id,
-                                 const Suggestion& suggestion);
+  void FillOrPreviewSearchResult(
+      mojom::ActionPersistence action_persistence,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      const Suggestion& suggestion,
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          metadata = std::nullopt);
 
   // Fills the selected search result.
-  void FillSearchResult(const FormGlobalId& form_id,
-                        const FieldGlobalId& field_id,
-                        const Suggestion& suggestion);
+  void FillSearchResult(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      const Suggestion& suggestion,
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          metadata);
 
   // Returns true if a search is currently in progress.
   bool IsSearching() const;

@@ -533,7 +533,9 @@ void AtMemoryManager::FillOrPreviewSearchResult(
     mojom::ActionPersistence action_persistence,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+        metadata) {
   const Suggestion::AtMemoryPayload& payload =
       suggestion.GetPayload<Suggestion::AtMemoryPayload>();
 
@@ -545,20 +547,23 @@ void AtMemoryManager::FillOrPreviewSearchResult(
           /*field_type_used=*/std::nullopt);
       break;
     case mojom::ActionPersistence::kFill: {
-      FillSearchResult(form_id, field_id, suggestion);
+      FillSearchResult(form_id, field_id, suggestion, metadata);
       break;
     }
   }
 }
 
-void AtMemoryManager::FillSearchResult(const FormGlobalId& form_id,
-                                       const FieldGlobalId& field_id,
-                                       const Suggestion& suggestion) {
+void AtMemoryManager::FillSearchResult(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    const Suggestion& suggestion,
+    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+        metadata) {
   const Suggestion::AtMemoryPayload& payload =
       suggestion.GetPayload<Suggestion::AtMemoryPayload>();
 
   if (at_memory_metrics_recorder_) {
-    at_memory_metrics_recorder_->OnSuggestionAccepted();
+    at_memory_metrics_recorder_->OnSuggestionAccepted(metadata);
   }
   // Transfer ownership of the metrics session to the filling path.
   // Ensures that the metrics will be properly recorded once the suggestion

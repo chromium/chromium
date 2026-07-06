@@ -364,6 +364,38 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
   EXPECT_EQ(quality2.session_id(), quality1_session_id);
 }
 
+// Tests that `OnSuggestionAccepted` correctly logs the accepted suggestion
+// indices to UMA.
+TEST_F(AtMemoryMetricsRecorderTest, OnSuggestionAccepted_LogsIndices) {
+  // Test case 1: Accept root suggestion (index 2).
+  {
+    base::HistogramTester histogram_tester;
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnSuggestionAccepted(
+        AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2}});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.AtMemory.AcceptedSuggestionIndex", 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.AtMemory.AcceptedSuggestionSecondaryIndex", -1, 1);
+  }
+
+  // Test case 2: Accept sub-suggestion (parent index 2, child index 1).
+  {
+    base::HistogramTester histogram_tester;
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnSuggestionAccepted(
+        AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2, 1}});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.AtMemory.AcceptedSuggestionIndex", 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.AtMemory.AcceptedSuggestionSecondaryIndex", 1, 1);
+  }
+}
+
 struct QueryCompletedTestCase {
   accessibility_annotator::MemorySearchResults search_result;
   std::optional<AtMemoryQueryCompletedStatus> expected_status;
