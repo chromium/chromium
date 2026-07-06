@@ -7096,7 +7096,6 @@ test("unit_tests") {
 
     if (is_linux || is_mac || is_win) {
       sources += [
-        "../browser/support_tool/updater_data_collector_unittest.cc",
         "../browser/ui/webui/settings/accessibility_main_handler_unittest.cc",
       ]
 

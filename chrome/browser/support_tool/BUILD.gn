@@ -119,6 +119,11 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [ "//chromeos/ash/components/system" ]
     }
+
+    if (is_linux || is_win || is_mac) {
+      sources += [ "updater_data_collector_unittest.cc" ]
+      deps += [ "//chrome/updater:public_sources" ]
+    }
   }
 
   source_set("browser_tests") {
