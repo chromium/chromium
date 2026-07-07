@@ -112,6 +112,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   views::ImageView* attention_indicator_for_testing() {
     return attention_indicator_;
   }
+  views::Label* title_label_for_testing() { return group_header_label_; }
 
  private:
   void UpdateEditorBubbleButtonVisibility();
