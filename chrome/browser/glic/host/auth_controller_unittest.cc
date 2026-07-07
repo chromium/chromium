@@ -191,6 +191,7 @@ TEST_F(AuthControllerTest, CookieSyncOnTokenChange_SkipsSyncIfAlreadyDone) {
       identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
   identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  task_environment_.FastForwardBy(base::Seconds(10));
   synchronizer_->WaitForSyncToComplete();
   ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 1);
 
@@ -221,6 +222,7 @@ TEST_F(AuthControllerTest,
 
   // Resolve the error by updating the token.
   identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  task_environment_.FastForwardBy(base::Seconds(10));
   synchronizer_->WaitForSyncToComplete();
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
 
@@ -241,11 +243,95 @@ TEST_F(AuthControllerTest,
           signin::ConsentLevel::kSignin);
 
   identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  task_environment_.FastForwardBy(base::Seconds(10));
   synchronizer_->WaitForSyncToComplete();
   ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.CookieSynchronization.SuccessByTrigger",
       GlicCookieSyncTrigger::kOnRefreshTokenUpdated, 1);
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncOnTokenChange_SetRefreshTokenForAccountTriggerSync_WithDelay) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+  base::HistogramTester histogram_tester;
+
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+
+  // Sync shouldn't run immediately because of the delay.
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // Advance time past the delay.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  synchronizer_->WaitForSyncToComplete();
+
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kOnRefreshTokenUpdated, 1);
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncOnTokenChange_SetRefreshTokenForAccountDebounce) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  // First token update.
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // Advance time by 1 second (less than delay of 2s).
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Second token update. This should reset/restart the timer.
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // Advance time by another 1 second (total 2s from first update, but only 1s
+  // from second). Timer shouldn't have fired yet.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // Advance time by 1 more second (total 2s from second update).
+  task_environment_.FastForwardBy(base::Seconds(1));
+  synchronizer_->WaitForSyncToComplete();
+
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncOnTokenChange_CheckAuthBeforeLoadCancelsTimer) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // Call CheckAuthBeforeLoad, which should run sync immediately.
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+  synchronizer_->WaitForSyncToComplete();
+
+  EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  // Advance time past the 2s delay. The timer shouldn't fire because it was
+  // cancelled.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
 }
 
 TEST_F(AuthControllerTest,
