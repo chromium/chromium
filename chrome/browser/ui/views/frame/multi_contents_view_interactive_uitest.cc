@@ -307,7 +307,12 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
 // both content panes.
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
-                                      kLayoutObserver);
+                                      kFirstLayoutObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
+                                      kSecondLayoutObserver);
+
+  const bool is_side_by_side =
+      GetParam() == split_tabs::SplitTabLayout::kSideBySide;
 
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 0),
@@ -316,6 +321,18 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
                      /*other_tab=*/1,
                      /*ratio=*/0.75),
       ResizeContents(500),
+      // In side-by-side mode, wait for the initial 500px resize layout to
+      // complete before triggering the second resize. Otherwise, subsequent
+      // SetContentsSize() calls read stale bounds and calculate incorrect
+      // target window sizes. In stacked mode, 500px total container height is
+      // clamped by minimum window height (~752px), so the initial active height
+      // does not equal 500px and this check is skipped.
+      If([is_side_by_side]() { return is_side_by_side; },
+         Then(CheckResizeValues(
+             base::BindRepeating([](double start_size, double end_size) {
+               return base::IsApproximatelyEqual(start_size, 500.0, 1.0);
+             }),
+             kFirstLayoutObserver))),
 
       // Set the contents size to 450. This value is chosen to be small enough
       // that the window bounds will not get clamped due to screen size
@@ -327,12 +344,12 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
       CheckResizeValues(
           base::BindRepeating([](double start_size, double end_size) {
             // ResizeContents takes in the size of the active contents view, but
-            // but must resize the entire browser window while preserving the
+            // must resize the entire browser window while preserving the
             // split ratio, so there may be a small rounding error.
             return base::IsApproximatelyEqual(start_size, 450.0, 1.0) &&
                    base::IsApproximatelyEqual(end_size, 150.0, 1.0);
           }),
-          kLayoutObserver));
+          kSecondLayoutObserver));
 }
 
 // Create a new split and exit the split view and ensure only 1 contents view is
