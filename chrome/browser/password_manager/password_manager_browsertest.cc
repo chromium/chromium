@@ -138,11 +138,6 @@ class PasswordManagerBrowserTest : public PasswordManagerBrowserTestBase {
     // in PasswordFormManager unit tests.
     password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
-
-    // TODO(504600482): Remove this and update tests when the bug is closed.
-    // Disable kFillOnAccountSelect by default to match test assumptions.
-    feature_list_.InitAndDisableFeature(
-        password_manager::features::kFillOnAccountSelect);
   }
 
   void SetUpOnMainThread() override {
@@ -166,9 +161,6 @@ class PasswordManagerBrowserTest : public PasswordManagerBrowserTestBase {
   }
 
   ~PasswordManagerBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // A test fixture that injects an `ObservingAutofillClient` into newly created

@@ -114,13 +114,7 @@ BASE_FEATURE(kFetchChangePasswordUrlForPasswordChange,
 
 BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
-// TODO(504600482): Disable the feature again upon fixing the bug.
-#if BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_LINUX)
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kInFlowTrustedVaultKeyRetrievalAndroid,
