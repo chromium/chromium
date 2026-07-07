@@ -597,8 +597,9 @@ export class RecordingWaveElement extends CrLitElement {
           pill.style.transform = '';
           pill.style.height = '';
           pill.classList.add('is-unspawned');
+          pill.style.removeProperty('--javascript-bar-color');
         } else {
-          pill.style.background = color;
+          pill.style.setProperty('--javascript-bar-color', color);
           pill.style.boxShadow = boxShadow;
           pill.style.height = `${bar.targetHeightPx}px`;
           // Animate the volume bar's dimensions based on spawn progress (0

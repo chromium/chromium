@@ -64,7 +64,8 @@
 }
 
 .bar-pill {
-  background-color: var(--color-recording-wave);
+  background-color: var(--javascript-bar-color,
+      var(--color-recording-wave));
   border-radius: calc(var(--bar-width) / 2);
   flex-shrink: 0;
   inline-size: var(--bar-width, 12px);
