@@ -1575,39 +1575,18 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidRoleDescription() const {
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
   if (manager->ShouldAllowImageDescriptions()) {
-    auto status = GetData().GetImageAnnotationStatus();
-    switch (status) {
-      case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-        return GetLocalizedRoleDescriptionForUnlabeledImage();
-
-      case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      case ax::mojom::ImageAnnotationStatus::kNone:
-      case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-      case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-      case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-        break;
+    if (ShouldInformUserAboutUnlabeledImage(
+            GetData().GetImageAnnotationStatus())) {
+      return GetLocalizedRoleDescriptionForUnlabeledImage();
     }
   }
 
   // For buttons with a kHasPopup attribute, return a more specific role.
   if (ui::IsButton(GetRole())) {
-    switch (static_cast<ax::mojom::HasPopup>(
-        GetIntAttribute(ax::mojom::IntAttribute::kHasPopup))) {
-      case ax::mojom::HasPopup::kTrue:
-      case ax::mojom::HasPopup::kMenu:
-        return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON_MENU);
-      case ax::mojom::HasPopup::kDialog:
-        return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON_DIALOG);
-      case ax::mojom::HasPopup::kListbox:
-      case ax::mojom::HasPopup::kTree:
-      case ax::mojom::HasPopup::kGrid:
-        return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
-      case ax::mojom::HasPopup::kFalse:
-        break;
+    if (auto popup_description =
+            GetPopupRoleDescription(static_cast<ax::mojom::HasPopup>(
+                GetIntAttribute(ax::mojom::IntAttribute::kHasPopup)))) {
+      return *popup_description;
     }
   }
 
@@ -2841,6 +2820,44 @@ std::u16string BrowserAccessibilityAndroid::GetCanvasAnnotationText() const {
     return GetString16Attribute(ax::mojom::StringAttribute::kCanvasAnnotation);
   }
   return std::u16string();
+}
+
+bool BrowserAccessibilityAndroid::ShouldInformUserAboutUnlabeledImage(
+    ax::mojom::ImageAnnotationStatus status) const {
+  switch (status) {
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+      return true;
+    // TODO(crbug.com/523282396): audit the root causes for the statuses
+    // below.
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      return false;
+  }
+}
+
+std::optional<std::u16string>
+BrowserAccessibilityAndroid::GetPopupRoleDescription(
+    ax::mojom::HasPopup has_popup) const {
+  switch (has_popup) {
+    case ax::mojom::HasPopup::kTrue:
+    case ax::mojom::HasPopup::kMenu:
+      return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON_MENU);
+    case ax::mojom::HasPopup::kDialog:
+      return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON_DIALOG);
+    case ax::mojom::HasPopup::kListbox:
+    case ax::mojom::HasPopup::kTree:
+    case ax::mojom::HasPopup::kGrid:
+      return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
+    case ax::mojom::HasPopup::kFalse:
+      return std::nullopt;
+  }
 }
 
 std::u16string

@@ -394,6 +394,14 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // Get canvas description string.
   std::u16string GetCanvasAnnotationText() const;
 
+  // Returns true if we should inform the user that this image is unlabeled
+  // (e.g., to invite them to enable image descriptions).
+  bool ShouldInformUserAboutUnlabeledImage(
+      ax::mojom::ImageAnnotationStatus status) const;
+
+  std::optional<std::u16string> GetPopupRoleDescription(
+      ax::mojom::HasPopup has_popup) const;
+
   std::u16string old_value_;
   std::u16string new_value_;
 
