@@ -390,6 +390,7 @@ struct FormFieldDataPredictions {
   uint32 rank_in_signature_group;
   uint32 rank_in_host_form;
   uint32 rank_in_host_form_signature_group;
+  bool did_trigger_javascript_autofill;
 };
 
 // autofill::FormDataPredictions

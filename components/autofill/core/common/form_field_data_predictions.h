@@ -40,6 +40,7 @@ struct FormFieldDataPredictions {
   size_t rank_in_signature_group = 0;
   size_t rank_in_host_form = 0;
   size_t rank_in_host_form_signature_group = 0;
+  bool did_trigger_javascript_autofill = false;
 };
 
 }  // namespace autofill

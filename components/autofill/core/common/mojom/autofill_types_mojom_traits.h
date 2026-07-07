@@ -502,6 +502,11 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.rank_in_host_form_signature_group;
   }
 
+  static bool did_trigger_javascript_autofill(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.did_trigger_javascript_autofill;
+  }
+
   static bool Read(autofill::mojom::FormFieldDataPredictionsDataView data,
                    autofill::FormFieldDataPredictions* out);
 };

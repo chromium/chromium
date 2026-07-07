@@ -333,6 +333,8 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
     annotated_field.rank_in_host_form = field->rank_in_host_form();
     annotated_field.rank_in_host_form_signature_group =
         field->rank_in_host_form_signature_group();
+    annotated_field.did_trigger_javascript_autofill =
+        field->did_trigger_javascript_autofill();
     form.fields.push_back(annotated_field);
   }
   return form;

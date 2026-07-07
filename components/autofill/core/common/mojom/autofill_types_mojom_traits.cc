@@ -496,6 +496,7 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
   out->rank_in_host_form = data.rank_in_host_form();
   out->rank_in_host_form_signature_group =
       data.rank_in_host_form_signature_group();
+  out->did_trigger_javascript_autofill = data.did_trigger_javascript_autofill();
 
   return true;
 }

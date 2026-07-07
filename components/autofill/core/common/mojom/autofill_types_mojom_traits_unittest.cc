@@ -52,6 +52,7 @@ void CreateTestFieldDataPredictions(const std::string& signature,
   field_predict->rank_in_signature_group = 1;
   field_predict->rank_in_host_form = 2;
   field_predict->rank_in_host_form_signature_group = 3;
+  field_predict->did_trigger_javascript_autofill = true;
 }
 
 void CreateTestPasswordFormFillData(PasswordFormFillData* fill_data) {

@@ -141,6 +141,7 @@
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -2490,6 +2491,10 @@ void BrowserAutofillManager::OnDidDetectJavaScriptAutofillImpl(
   constexpr size_t kMinFieldsChanged = 3;
   if (address_fields_count >= kMinFieldsChanged) {
     trigger_field->set_did_trigger_javascript_autofill(true);
+    if (base::FeatureList::IsEnabled(
+            features::debug::kAutofillShowTypePredictions)) {
+      driver().SendTypePredictionsToRenderer(*form_structure);
+    }
   }
 }
 

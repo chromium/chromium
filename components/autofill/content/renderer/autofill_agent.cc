@@ -223,6 +223,9 @@ bool ShowPredictions(const WebDocument& document,
         base::NumberToString(field.rank_in_host_form),
         "\nfield rank in host form signature group: ",
         base::NumberToString(field.rank_in_host_form_signature_group),
+        field.did_trigger_javascript_autofill
+            ? "\ndid_trigger_js_autofill: true"
+            : "\ndid_trigger_js_autofill: false",
     });
 
     if (features::debug::kAutofillShowTypePredictionsVerboseParam.Get()) {
