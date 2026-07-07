@@ -11,11 +11,14 @@
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
 namespace {
+
+using ::optimization_guide::proto::RequestContextMetadata;
 
 constexpr char kTestCandidateId[] = "12345678-1234-4678-a234-567812345678";
 
@@ -78,6 +81,41 @@ TEST(AnnotationIndexConversionUtilTest, ToGetTaskExecutionStrategiesRequest) {
   EXPECT_EQ(request.candidates(1).candidate_id(),
             "22222222-2222-2222-2222-222222222222");
   EXPECT_EQ(request.candidates(1).task_type(), "TASK2");
+}
+
+TEST(AnnotationIndexConversionUtilTest, ToRequestContextMetadata) {
+  FilterAnnotation annotation1(
+      base::Uuid::ParseLowercase("11111111-1111-1111-1111-111111111111"),
+      "TASK1", "sub.example.com", base::Time::Now(),
+      {FilterAttribute("KEY1", "VAL1")});
+  FilterAnnotation annotation2(
+      base::Uuid::ParseLowercase("22222222-2222-2222-2222-222222222222"),
+      "TASK2", "sub.example.com", base::Time::Now(),
+      {FilterAttribute("KEY2", "VAL2")});
+  std::vector<FilterAnnotation> annotations = {annotation1, annotation2};
+
+  RequestContextMetadata context_metadata =
+      ToRequestContextMetadata(annotations);
+
+  ASSERT_EQ(
+      context_metadata.filter_execution_metadata().execution_candidate_size(),
+      2);
+  EXPECT_EQ(context_metadata.filter_execution_metadata()
+                .execution_candidate(0)
+                .candidate_id(),
+            "11111111-1111-1111-1111-111111111111");
+  EXPECT_EQ(context_metadata.filter_execution_metadata()
+                .execution_candidate(0)
+                .task_type(),
+            "TASK1");
+  EXPECT_EQ(context_metadata.filter_execution_metadata()
+                .execution_candidate(1)
+                .candidate_id(),
+            "22222222-2222-2222-2222-222222222222");
+  EXPECT_EQ(context_metadata.filter_execution_metadata()
+                .execution_candidate(1)
+                .task_type(),
+            "TASK2");
 }
 
 TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {

@@ -14,6 +14,10 @@
 
 class GURL;
 
+namespace optimization_guide::proto {
+class RequestContextMetadata;
+}  // namespace optimization_guide::proto
+
 namespace multistep_filter {
 
 class ExtractTaskAttributesRequest;
@@ -41,6 +45,11 @@ ExecutionCandidate ToExecutionCandidate(const FilterAnnotation& annotation);
 // `GetTaskExecutionStrategiesRequest` proto.
 GetTaskExecutionStrategiesRequest ToGetTaskExecutionStrategiesRequest(
     const GURL& url,
+    base::span<const FilterAnnotation> filter_annotations);
+
+// Converts a list of `FilterAnnotation`s into a
+// `RequestContextMetadata` proto.
+optimization_guide::proto::RequestContextMetadata ToRequestContextMetadata(
     base::span<const FilterAnnotation> filter_annotations);
 
 // Converts a `GetTaskExecutionStrategiesResponse` proto into a list of

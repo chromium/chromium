@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -35,9 +36,12 @@ namespace {
 
 using ::optimization_guide::OptimizationGuideDecider;
 using ::optimization_guide::OptimizationGuideDecision;
+using ::optimization_guide::OptimizationGuideDecisionWithMetadata;
 using ::optimization_guide::OptimizationMetadata;
 using ::optimization_guide::proto::OptimizationType;
 using ::optimization_guide::proto::OptimizationType_Name;
+using ::optimization_guide::proto::RequestContext;
+using ::optimization_guide::proto::RequestContextMetadata;
 
 void LogServerRequestFailed(MultistepFilterLogRouter* log_router,
                             int64_t navigation_id,
@@ -46,6 +50,29 @@ void LogServerRequestFailed(MultistepFilterLogRouter* log_router,
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kServerRequestFailed, host)
       << LogDetail("failure_reason", std::string(failure_reason));
+}
+
+void LogServerRequestSentWithFilterExecutionStrategy(
+    MultistepFilterLogRouter* log_router,
+    int64_t navigation_id,
+    std::string_view host,
+    base::span<const FilterAnnotation> filter_annotations) {
+  std::vector<std::string> annotation_strings;
+  annotation_strings.reserve(filter_annotations.size());
+  for (const FilterAnnotation& annotation : filter_annotations) {
+    annotation_strings.push_back(annotation.ToString());
+  }
+  std::string filter_annotations_str =
+      base::StrCat({"[", base::JoinString(annotation_strings, ", "), "]"});
+
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kServerRequestSent, host)
+      << LogDetail("request_type",
+                   std::string(OptimizationType_Name(
+                       OptimizationType::FILTER_EXECUTION_STRATEGY)))
+      << LogDetail("execution_candidate_count",
+                   static_cast<int>(filter_annotations.size()))
+      << LogDetail("execution_candidates", filter_annotations_str);
 }
 
 void LogServerRequestSentFilterTasksSupported(
@@ -78,6 +105,31 @@ void LogServerResponseReceived(MultistepFilterLogRouter* log_router,
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kServerResponseReceived, host)
       << LogDetail("is_success", is_success);
+}
+
+void LogServerResponseReceivedWithFilterExecutionStrategy(
+    MultistepFilterLogRouter* log_router,
+    int64_t navigation_id,
+    std::string_view host,
+    const std::optional<std::vector<FilterSuggestionCandidate>>& result) {
+  std::string candidates_str;
+  int candidates_count = 0;
+  if (result.has_value()) {
+    std::vector<std::string> candidate_strings;
+    candidate_strings.reserve(result->size());
+    for (const FilterSuggestionCandidate& candidate : *result) {
+      candidate_strings.push_back(candidate.ToString());
+    }
+    candidates_str =
+        base::StrCat({"[", base::JoinString(candidate_strings, ", "), "]"});
+    candidates_count = static_cast<int>(result->size());
+  }
+
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kServerResponseReceived, host)
+      << LogDetail("is_success", true)
+      << LogDetail("filter_suggestion_candidates_count", candidates_count)
+      << LogDetail("filter_suggestion_candidates", candidates_str);
 }
 
 void LogServerResponseReceivedWithSupportedTasks(
@@ -156,8 +208,32 @@ void OptimizationGuideAnnotationIndexClient::GetFilterSuggestionCandidates(
     base::OnceCallback<
         void(std::optional<std::vector<FilterSuggestionCandidate>>)> callback,
     int64_t navigation_id) {
-  // TODO(crbug.com/522751288): Implement this method.
-  std::move(callback).Run(std::nullopt);
+  if (!optimization_guide_decider_) {
+    LogServerRequestFailed(log_router_, navigation_id, url.host(),
+                           "optimization_guide_decider_null");
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  RequestContextMetadata context_metadata =
+      ToRequestContextMetadata(filter_annotations);
+
+  LogServerRequestSentWithFilterExecutionStrategy(
+      log_router_, navigation_id, url.host(), filter_annotations);
+
+  auto shared_callback =
+      base::MakeRefCounted<base::RefCountedData<base::OnceCallback<void(
+          std::optional<std::vector<FilterSuggestionCandidate>>)>>>(
+          std::move(callback));
+
+  optimization_guide_decider_->CanApplyOptimizationOnDemand(
+      {url}, {OptimizationType::FILTER_EXECUTION_STRATEGY},
+      RequestContext::CONTEXT_FILTER_EXECUTION,
+      base::BindRepeating(&OptimizationGuideAnnotationIndexClient::
+                              OnFilterExecutionStrategyDecision,
+                          weak_ptr_factory_.GetWeakPtr(), navigation_id,
+                          shared_callback),
+      context_metadata);
 }
 
 void OptimizationGuideAnnotationIndexClient::GetSupportedTasks(
@@ -203,6 +279,57 @@ void OptimizationGuideAnnotationIndexClient::ExtractFilterAnnotation(
                      std::move(callback)));
 }
 
+void OptimizationGuideAnnotationIndexClient::OnFilterExecutionStrategyDecision(
+    int64_t navigation_id,
+    scoped_refptr<base::RefCountedData<base::OnceCallback<
+        void(std::optional<std::vector<FilterSuggestionCandidate>>)>>>
+        shared_callback,
+    const GURL& url,
+    const base::flat_map<
+        optimization_guide::proto::OptimizationType,
+        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
+  if (shared_callback->data.is_null()) {
+    LogServerResponseReceived(log_router_, navigation_id, url.host(),
+                              /*is_success=*/false);
+    return;
+  }
+
+  const auto* decision_with_metadata =
+      base::FindOrNull(decisions, OptimizationType::FILTER_EXECUTION_STRATEGY);
+  if (!decision_with_metadata) {
+    LogServerResponseReceived(log_router_, navigation_id, url.host(),
+                              /*is_success=*/false);
+    std::move(shared_callback->data).Run(std::nullopt);
+    return;
+  }
+
+  OptimizationMetadata metadata = decision_with_metadata->metadata;
+  const bool is_success =
+      decision_with_metadata->decision == OptimizationGuideDecision::kTrue;
+  if (!is_success || !metadata.any_metadata().has_value()) {
+    LogServerResponseReceived(log_router_, navigation_id, url.host(),
+                              is_success);
+    std::move(shared_callback->data).Run(std::nullopt);
+    return;
+  }
+
+  std::optional<GetTaskExecutionStrategiesResponse> response =
+      metadata.ParsedMetadata<GetTaskExecutionStrategiesResponse>();
+  if (!response) {
+    LogServerResponseMalformed(log_router_, navigation_id, url.host(),
+                               "parsing_failed");
+    std::move(shared_callback->data).Run(std::nullopt);
+    return;
+  }
+
+  std::vector<FilterSuggestionCandidate> candidates =
+      ToFilterSuggestionCandidates(*response);
+  LogServerResponseReceivedWithFilterExecutionStrategy(
+      log_router_, navigation_id, url.host(),
+      std::optional<std::vector<FilterSuggestionCandidate>>(candidates));
+  std::move(shared_callback->data).Run(std::move(candidates));
+}
+
 void OptimizationGuideAnnotationIndexClient::OnFilterTasksSupportedDecision(
     const GURL& url,
     int64_t navigation_id,
@@ -227,9 +354,8 @@ void OptimizationGuideAnnotationIndexClient::OnFilterTasksSupportedDecision(
   }
 
   std::vector<std::string> supported_tasks = ToSupportedTasks(*response);
-  LogServerResponseReceivedWithSupportedTasks(
-      log_router_, navigation_id, url.host(),
-      supported_tasks);
+  LogServerResponseReceivedWithSupportedTasks(log_router_, navigation_id,
+                                              url.host(), supported_tasks);
 
   std::move(callback).Run(std::move(supported_tasks));
 }

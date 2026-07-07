@@ -35,6 +35,7 @@ GetSupportedTasksResponse CreateSupportedTasksResponse(
   return response;
 }
 
+// TODO(crbug.com/530959140): Add a parameter for the candidate id.
 GetTaskExecutionStrategiesResponse CreateTaskExecutionStrategiesResponse(
     const GURL& suggestion_url,
     const std::vector<std::pair<std::string, std::string>>& attributes) {

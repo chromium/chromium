@@ -25,6 +25,10 @@ class ImageServiceImpl;
 
 class GeminiTabHelper;
 
+namespace multistep_filter {
+class OptimizationGuideAnnotationIndexClient;
+}  // namespace multistep_filter
+
 namespace optimization_guide {
 
 class OptimizationGuideDecider {
@@ -62,6 +66,7 @@ class OptimizationGuideDecider {
   friend class commerce::ShoppingService;
   friend class page_image_service::ImageServiceImpl;
   friend class ::GeminiTabHelper;
+  friend class multistep_filter::OptimizationGuideAnnotationIndexClient;
 
   // Invokes |callback| with the decision for all types contained in
   // |optimization_types| for each URL contained in |urls|, when sufficient

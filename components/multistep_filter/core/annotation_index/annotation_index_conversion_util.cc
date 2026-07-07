@@ -16,9 +16,14 @@
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
+#include "components/optimization_guide/proto/filter_execution_metadata.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
+
+using ::optimization_guide::proto::FilterExecutionRequestContextMetadata;
+using ::optimization_guide::proto::RequestContextMetadata;
 
 GetSupportedTasksRequest ToGetSupportedTasksRequest(std::string_view domain) {
   GetSupportedTasksRequest request;
@@ -58,6 +63,18 @@ GetTaskExecutionStrategiesRequest ToGetTaskExecutionStrategiesRequest(
     *request.add_candidates() = ToExecutionCandidate(annotation);
   }
   return request;
+}
+
+RequestContextMetadata ToRequestContextMetadata(
+    base::span<const FilterAnnotation> filter_annotations) {
+  RequestContextMetadata metadata;
+  FilterExecutionRequestContextMetadata filter_execution_metadata;
+  for (const FilterAnnotation& annotation : filter_annotations) {
+    *filter_execution_metadata.add_execution_candidate() =
+        ToExecutionCandidate(annotation);
+  }
+  *metadata.mutable_filter_execution_metadata() = filter_execution_metadata;
+  return metadata;
 }
 
 std::vector<FilterSuggestionCandidate> ToFilterSuggestionCandidates(
@@ -125,8 +142,7 @@ std::optional<FilterAnnotation> ToFilterAnnotation(
   }
 
   return FilterAnnotation(base::Uuid::GenerateRandomV4(), response.task_type(),
-                          host, base::Time::Now(),
-                          std::move(attributes));
+                          host, base::Time::Now(), std::move(attributes));
 }
 
 }  // namespace multistep_filter
