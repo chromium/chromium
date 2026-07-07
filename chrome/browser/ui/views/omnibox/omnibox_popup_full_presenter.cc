@@ -155,9 +155,7 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
       -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
 
   const int default_height = widget_bounds.height();
-  bool has_results =
-      !controller()->autocomplete_controller()->result().empty() &&
-      (content_height_ > default_height);
+  bool has_results = content_height_ > default_height;
   int target_elevation =
       has_results ? RoundedOmniboxResultsFrame::kDefaultElevation : 0;
 

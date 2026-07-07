@@ -283,9 +283,6 @@ void OmniboxPopupViewFullWebUI::OnManualBlur() {
   controller()->edit_model()->OnKillFocus();
   controller()->client()->FocusWebContents();
   if (!controller()->edit_model()->user_input_in_progress()) {
-    if (auto* view = controller()->edit_model()->view()) {
-      view->RevertAll();
-    }
     controller()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kNone);
   }

@@ -345,6 +345,13 @@ export class OmniboxPopupSearchboxElement extends
     this.lastQueriedInput = state.text;
     this.permanentDisplayText_ = state.permanentDisplayText;
 
+    // Clear any stale results and close the dropdown on a hard state reset.
+    // Clear results here since focusout event may not fire.
+    if (this.result && this.isAutocompleteResultStale(this.result)) {
+      this.result = null;
+      this.dropdownIsVisible = false;
+    }
+
     if (state.isFocused) {
       this.$.input.focus();
     } else {
