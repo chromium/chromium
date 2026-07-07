@@ -1045,20 +1045,22 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   delegate.RunUntilEventsMatch(event_expecter);
 
 // Mac and Win don't generate events for Touch.
-// TODO(crbug.com/40263777): Add explicit expectations for Mac and Win.
+// TODO(crbug.com/40263777): Add explicit expectations for Win.
 // Android TouchFile returns false.
-#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
   // Touch "$dir".
   Time access_time;
   ASSERT_TRUE(Time::FromString("Wed, 16 Nov 1994, 00:00:00", &access_time));
   ASSERT_TRUE(TouchFile(dir, access_time, access_time));
+#if !BUILDFLAG(IS_APPLE)
   // TODO(crbug.com/40263766): Investigate why we're getting two events
   // here from inotify.
   event_expecter.AddExpectedEventForPath(dir);
   event_expecter.AddExpectedEventForPath(dir);
+#endif  // !BUILDFLAG(IS_APPLE)
   delegate.RunUntilEventsMatch(event_expecter);
   // TODO(crbug.com/40263777): Add a test touching `subdir`.
-#endif  // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
+#endif  // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
 
   // Create "$dir/subdir/subdir_file1".
   FilePath subdir_file1(subdir.AppendASCII("subdir_file1"));
