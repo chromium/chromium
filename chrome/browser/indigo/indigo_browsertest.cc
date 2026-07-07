@@ -23,6 +23,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -808,14 +809,11 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, HideToolbarOnReload) {
       PressButton(
           page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
       WaitForShow(IndigoToolbar::kToolbarElementId),
-      // The OOPIF can still be navigating. If so, the reload button is in the
-      // "Stop" state. Wait for the entire WebContents to stop loading before
-      // reloading.
+      // Reload the current tab. Using chrome::Reload avoids race conditions
+      // with ReloadButton's internal mode-switch timer.
       Do(base::BindLambdaForTesting([&]() {
-        content::WaitForLoadStop(
-            browser()->tab_strip_model()->GetActiveWebContents());
+        chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
       })),
-      PressButton(kReloadButtonElementId),
       // Verify the toolbar is hidden.
       WaitForHide(IndigoToolbar::kToolbarElementId));
 }
