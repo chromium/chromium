@@ -10,13 +10,12 @@
 #include <vector>
 
 #include "ash/frame_sink/ui_resource.h"
-#include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
-#include "third_party/skia/include/core/SkScalar.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace ash {
@@ -48,76 +47,34 @@ void RoundedDisplayGutter::RoundedCorner::Paint(gfx::Canvas* canvas) const {
     return;
   }
 
-  PaintCornerHelper(canvas);
-}
+  // To draw a rounded corner, we draw a black square of size 2 * radius and
+  // subtract out a circle of radius r to get the corner shape.
 
-void RoundedDisplayGutter::RoundedCorner::PaintCornerHelper(
-    gfx::Canvas* canvas) const {
-  SkScalar startAngle = 0.0, sweepAngle = 0.0;
-  SkScalar dx = 0.0, dy = 0.0;
-  int translate_dx = 0.0, translate_dy = 0.0;
-
-  switch (position_) {
-    case RoundedCornerPosition::kUpperLeft:
-      startAngle = -90;
-      sweepAngle = -90;
-      dx = radius_;
-      dy = -radius_;
-      translate_dx = 0;
-      translate_dy = 0;
-      break;
-    case RoundedCornerPosition::kLowerLeft:
-      startAngle = 90;
-      sweepAngle = 90;
-      dx = radius_;
-      dy = radius_;
-      translate_dx = 0;
-      translate_dy = -radius_;
-      break;
-    case RoundedCornerPosition::kUpperRight:
-      startAngle = 0;
-      sweepAngle = -90;
-      dx = radius_;
-      dy = radius_;
-      translate_dx = -radius_;
-      translate_dy = 0;
-      break;
-    case RoundedCornerPosition::kLowerRight:
-      startAngle = 0;
-      sweepAngle = 90;
-      dx = radius_;
-      dy = -radius_;
-      translate_dx = -radius_;
-      translate_dy = -radius_;
-      break;
-  }
-
-  const SkScalar oval_radius = radius_ * 2;
-  SkRect oval{0, 0, oval_radius, oval_radius};
-
-  SkPathBuilder path;
-  path.addArc(oval, startAngle, sweepAngle);
-
-  if (position_ == RoundedCornerPosition::kUpperLeft ||
-      position_ == RoundedCornerPosition::kLowerLeft) {
-    path.rLineTo(0, dy);
-    path.rLineTo(dx, 0);
-  }
-
-  if (position_ == RoundedCornerPosition::kUpperRight ||
-      position_ == RoundedCornerPosition::kLowerRight) {
-    path.rLineTo(dx, 0);
-    path.rLineTo(0, dy);
-  }
-
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::Style::kFill_Style);
-  flags.setAntiAlias(true);
-  flags.setColor(SK_ColorBLACK);
+  // We translate the canvas such that the top-left of the drawn square
+  // is at the origin of the canvas. This simplifies the drawing logic.
+  const int translate_dx = (position_ == RoundedCornerPosition::kUpperRight ||
+                            position_ == RoundedCornerPosition::kLowerRight)
+                               ? -radius_
+                               : 0;
+  const int translate_dy = (position_ == RoundedCornerPosition::kLowerLeft ||
+                            position_ == RoundedCornerPosition::kLowerRight)
+                               ? -radius_
+                               : 0;
 
   canvas->Save();
   canvas->Translate({translate_dx, translate_dy});
-  canvas->DrawPath(path.detach(), flags);
+
+  // We clip the canvas to the region that should contain the corner. This
+  // ensures we only draw the one corner we want and don't draw the other three
+  // corners of the rounded rect.
+  canvas->ClipRect(gfx::Rect(-translate_dx, -translate_dy, radius_, radius_));
+
+  gfx::Rect square_rect(0, 0, 2 * radius_, 2 * radius_);
+  SkRRect r_rect =
+      SkRRect::MakeRectXY(gfx::RectToSkRect(square_rect), radius_, radius_);
+  canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference, true);
+  canvas->FillRect(square_rect, SK_ColorBLACK);
+
   canvas->Restore();
 }
 

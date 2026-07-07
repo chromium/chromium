@@ -60,8 +60,6 @@ class ASH_EXPORT RoundedDisplayGutter {
     void Paint(gfx::Canvas* canvas) const;
 
    private:
-    void PaintCornerHelper(gfx::Canvas* canvas) const;
-
     Position position_;
 
     // Radius of the corner in pixels.
