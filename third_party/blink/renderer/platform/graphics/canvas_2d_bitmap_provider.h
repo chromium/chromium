@@ -139,7 +139,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
   void RecordingCleared() override;
 
-  ScopedRasterTimer CreateScopedRasterTimer();
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
 
   SkSurfaceProps GetSkSurfaceProps() const;
