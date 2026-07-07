@@ -18,7 +18,7 @@ class Image;
 
 namespace content::webid {
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 
 // Class representing the information about an identity provider. Populated
 // while fetching.

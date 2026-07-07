@@ -9,7 +9,7 @@
 namespace content {
 
 using DigitalIdentityInterstitialAbortCallback =
-    content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
+    DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
 
 StubDigitalIdentityProvider::StubDigitalIdentityProvider() = default;
 StubDigitalIdentityProvider::~StubDigitalIdentityProvider() = default;

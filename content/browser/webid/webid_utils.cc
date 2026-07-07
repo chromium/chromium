@@ -62,7 +62,7 @@ bool IsSameOriginWithAncestors(const url::Origin& origin,
   return true;
 }
 
-void SetIdpSigninStatus(base::WeakPtr<content::BrowserContext> context,
+void SetIdpSigninStatus(base::WeakPtr<BrowserContext> context,
                         network::mojom::RequestDestination destination,
                         FrameTreeNodeId frame_tree_node_id,
                         const std::optional<url::Origin>& initiator,
@@ -453,10 +453,9 @@ RequestPageData* GetPageData(Page& page) {
   return RequestPageData::GetOrCreateForPage(page);
 }
 
-webid::RequesterFrameType ComputeRequesterFrameType(
-    const RenderFrameHost& rfh,
-    const url::Origin& requester,
-    const url::Origin& embedder) {
+RequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
+                                             const url::Origin& requester,
+                                             const url::Origin& embedder) {
   // Since FedCM methods are not supported in FencedFrames, we can know whether
   // this is a main frame by calling GetParent().
   if (!rfh.GetParent()) {
@@ -471,8 +470,8 @@ void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
                                    const char* fetch_description,
                                    int response_code) {
   std::optional<std::string> console_message =
-      webid::ComputeConsoleMessageForHttpResponseCode(fetch_description,
-                                                      response_code);
+      ComputeConsoleMessageForHttpResponseCode(fetch_description,
+                                               response_code);
   if (console_message) {
     render_frame_host.AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, *console_message);

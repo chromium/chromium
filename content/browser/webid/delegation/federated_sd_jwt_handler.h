@@ -41,7 +41,7 @@ class FederatedSdJwtHandler {
 
   // A list of disclosures that were parsed in the token response, when
   // the token's format is "vc+sd-jwt".
-  std::vector<std::pair<std::string, content::sdjwt::JSONString>> disclosures_;
+  std::vector<std::pair<std::string, sdjwt::JSONString>> disclosures_;
   // A private key that is used to bind the token when the token "format" is
   // "vc+sd-jwt".
   std::optional<crypto::keypair::PrivateKey> private_key_;

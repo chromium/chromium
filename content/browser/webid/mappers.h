@@ -90,7 +90,7 @@ LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
 // FederatedApiPermissionStatus::GRANTED.
 std::pair<blink::mojom::FederatedAuthRequestResult, RequestIdTokenStatus>
 PermissionStatusToRequestResultAndTokenStatus(
-    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+    FederatedIdentityApiPermissionContextDelegate::PermissionStatus
         permission_status);
 
 ErrorDialogResult DismissReasonToErrorDialogResult(

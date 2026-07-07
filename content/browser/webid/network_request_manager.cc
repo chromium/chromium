@@ -138,7 +138,7 @@ NetworkRequestManager::NetworkRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     network::mojom::ClientSecurityStatePtr client_security_state,
     network::mojom::RequestDestination destination,
-    content::FrameTreeNodeId frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : relying_party_origin_(relying_party_origin),
       loader_factory_(loader_factory),
       client_security_state_(std::move(client_security_state)),
@@ -331,7 +331,7 @@ NetworkRequestManager::CreateCredentialedResourceRequest(
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   net::IsolationInfo::RequestType request_type =
       net::IsolationInfo::RequestType::kOther;
-  if (webid::IsSameSiteLaxEnabled()) {
+  if (IsSameSiteLaxEnabled()) {
     // We use kMainFrame so that we can send SameSite=Lax cookies.
     request_type = net::IsolationInfo::RequestType::kMainFrame;
   }

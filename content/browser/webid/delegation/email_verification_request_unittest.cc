@@ -66,7 +66,7 @@ class MockEmailVerifierNetworkRequestManager
       : EmailVerifierNetworkRequestManager(url::Origin(),
                                            nullptr,
                                            nullptr,
-                                           content::FrameTreeNodeId()) {}
+                                           FrameTreeNodeId()) {}
   ~MockEmailVerifierNetworkRequestManager() override = default;
 
   MOCK_METHOD(void,
@@ -107,7 +107,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -315,7 +315,7 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       *static_cast<RenderFrameHostImpl*>(main_rfh()));
@@ -481,7 +481,7 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -565,7 +565,7 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -647,7 +647,7 @@ TEST_F(EmailVerificationRequestTest, AccountsListEmpty) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -722,7 +722,7 @@ TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -816,7 +816,7 @@ TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -881,7 +881,7 @@ TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
   auto mock_idp_network_manager_ptr =
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -914,7 +914,7 @@ TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
   auto mock_idp_network_manager_ptr =
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -952,7 +952,7 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -1031,7 +1031,7 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
@@ -1145,7 +1145,7 @@ TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
   auto mock_idp_network_manager_ptr =
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*fenced_frame));
@@ -1174,7 +1174,7 @@ TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
   auto mock_idp_network_manager_ptr =
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*cross_origin_iframe));
@@ -1209,7 +1209,7 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
   NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
       mock_idp_network_manager_ptr.get();
 
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*same_origin_iframe));
@@ -1283,7 +1283,7 @@ TEST_F(EmailVerificationRequestTest,
   auto mock_idp_network_manager_ptr =
       std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
-  webid::EmailVerificationRequest email_verification_request_(
+  EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr),
       std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl&>(*iframe_a));
@@ -1303,36 +1303,35 @@ TEST_F(EmailVerificationRequestTest,
 }
 
 TEST(EmailVerificationRequestStaticTest, ValidEmail) {
-  EXPECT_EQ(webid::GetDomainFromEmail("test@example.com"), "example.com");
+  EXPECT_EQ(GetDomainFromEmail("test@example.com"), "example.com");
 }
 
 TEST(EmailVerificationRequestStaticTest, ValidEmailWithSubdomain) {
-  EXPECT_EQ(webid::GetDomainFromEmail("test@mail.example.com"),
-            "mail.example.com");
+  EXPECT_EQ(GetDomainFromEmail("test@mail.example.com"), "mail.example.com");
 }
 
 TEST(EmailVerificationRequestStaticTest, EmptyEmail) {
-  EXPECT_EQ(webid::GetDomainFromEmail(""), std::nullopt);
+  EXPECT_EQ(GetDomainFromEmail(""), std::nullopt);
 }
 
 TEST(EmailVerificationRequestStaticTest, NoAtSign) {
-  EXPECT_EQ(webid::GetDomainFromEmail("testexample.com"), std::nullopt);
+  EXPECT_EQ(GetDomainFromEmail("testexample.com"), std::nullopt);
 }
 
 TEST(EmailVerificationRequestStaticTest, NoDomain) {
-  EXPECT_EQ(webid::GetDomainFromEmail("test@"), std::nullopt);
+  EXPECT_EQ(GetDomainFromEmail("test@"), std::nullopt);
 }
 
 TEST(EmailVerificationRequestStaticTest, NoUsername) {
-  EXPECT_EQ(webid::GetDomainFromEmail("@example.com"), std::nullopt);
+  EXPECT_EQ(GetDomainFromEmail("@example.com"), std::nullopt);
 }
 
 TEST(EmailVerificationRequestStaticTest, NotADomain) {
-  EXPECT_EQ(webid::GetDomainFromEmail("user@e x a m p l e"), std::nullopt);
+  EXPECT_EQ(GetDomainFromEmail("user@e x a m p l e"), std::nullopt);
 }
 
 TEST(EmailVerificationRequestStaticTest, MultipleAtSigns) {
-  EXPECT_EQ(webid::GetDomainFromEmail("test@test@example.com"), "example.com");
+  EXPECT_EQ(GetDomainFromEmail("test@test@example.com"), "example.com");
 }
 
 }  // namespace content::webid

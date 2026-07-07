@@ -29,10 +29,10 @@ class EmailVerifierNetworkRequestManagerTest : public ::testing::Test {
         rp_origin,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        network::mojom::ClientSecurityState::New(), content::FrameTreeNodeId());
+        network::mojom::ClientSecurityState::New(), FrameTreeNodeId());
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<EmailVerifierNetworkRequestManager> manager_;
 };

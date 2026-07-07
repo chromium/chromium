@@ -190,18 +190,18 @@ std::string ExtractString(const base::DictValue& response, const char* key) {
 }
 
 IdentityRequestAccountPtr ParseAccount(const base::DictValue& account) {
-  auto* id = account.FindString(webid::kAccountIdKey);
-  auto* email = account.FindString(webid::kAccountEmailKey);
-  auto* name = account.FindString(webid::kAccountNameKey);
-  auto* phone = account.FindString(webid::kAccountPhoneNumberKey);
-  auto* username = account.FindString(webid::kAccountUsernameKey);
-  auto* given_name = account.FindString(webid::kAccountGivenNameKey);
-  auto* picture = account.FindString(webid::kAccountPictureKey);
-  auto* approved_clients = account.FindList(webid::kAccountApprovedClientsKey);
+  auto* id = account.FindString(kAccountIdKey);
+  auto* email = account.FindString(kAccountEmailKey);
+  auto* name = account.FindString(kAccountNameKey);
+  auto* phone = account.FindString(kAccountPhoneNumberKey);
+  auto* username = account.FindString(kAccountUsernameKey);
+  auto* given_name = account.FindString(kAccountGivenNameKey);
+  auto* picture = account.FindString(kAccountPictureKey);
+  auto* approved_clients = account.FindList(kAccountApprovedClientsKey);
   auto* potentially_approved_site_hashes =
-      account.FindList(webid::kPotentiallyApprovedSiteHashes);
+      account.FindList(kPotentiallyApprovedSiteHashes);
   std::vector<std::string> account_hints;
-  auto* hints = account.FindList(webid::kHintsKey);
+  auto* hints = account.FindList(kHintsKey);
   if (hints) {
     for (const base::Value& entry : *hints) {
       if (entry.is_string()) {
@@ -210,7 +210,7 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account) {
     }
   }
   std::vector<std::string> domain_hints;
-  auto* domain_hints_list = account.FindList(webid::kDomainHintsKey);
+  auto* domain_hints_list = account.FindList(kDomainHintsKey);
   if (domain_hints_list) {
     for (const base::Value& entry : *domain_hints_list) {
       if (entry.is_string()) {
@@ -221,7 +221,7 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account) {
 
   std::vector<std::string> labels;
   const base::ListValue* labels_list = labels_list =
-      account.FindList(webid::kLabelHintsKey);
+      account.FindList(kLabelHintsKey);
   if (labels_list) {
     for (const base::Value& entry : *labels_list) {
       if (entry.is_string()) {
@@ -264,7 +264,7 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account) {
     display_identifier = identifiers[1];
   }
 
-  webid::RecordApprovedClientsExistence(approved_clients != nullptr);
+  RecordApprovedClientsExistence(approved_clients != nullptr);
 
   std::optional<std::vector<std::string>> approved_clients_list;
   if (approved_clients) {
@@ -274,7 +274,7 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account) {
         approved_clients_list->push_back(entry.GetString());
       }
     }
-    webid::RecordApprovedClientsSize(approved_clients->size());
+    RecordApprovedClientsSize(approved_clients->size());
   }
 
   std::vector<std::string> potentially_approved_site_hashes_vector;
@@ -521,7 +521,7 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url = ExtractEndpoint(provider, *result, kLoginUrlKey);
 
-  if (webid::IsDelegationEnabled()) {
+  if (IsDelegationEnabled()) {
     const base::ListValue* formats = result->FindList(kFormatsKey);
     if (formats) {
       for (const auto& format : *formats) {
@@ -532,7 +532,7 @@ void OnConfigParsed(const GURL& provider,
     }
   }
 
-  if (webid::IsIdPRegistrationEnabled()) {
+  if (IsIdPRegistrationEnabled()) {
     const base::ListValue* types = result->FindList(kTypesKey);
     if (types) {
       for (const auto& type : *types) {
@@ -603,7 +603,7 @@ void OnAccountsRequestParsed(
     std::optional<base::DictValue> result) {
   IdpNetworkRequestManager::AccountsResponse response;
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
-    webid::RecordAccountsResponseInvalidReason(
+    RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
     std::move(callback).Run(fetch_status, std::move(response));
     return;
@@ -612,7 +612,7 @@ void OnAccountsRequestParsed(
   const base::ListValue* accounts = result->FindList(kAccountsKey);
 
   if (!accounts) {
-    webid::RecordAccountsResponseInvalidReason(
+    RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kNoAccountsKey);
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
@@ -621,7 +621,7 @@ void OnAccountsRequestParsed(
   }
 
   if (accounts->empty()) {
-    webid::RecordAccountsResponseInvalidReason(
+    RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kAccountListIsEmpty);
     std::move(callback).Run(
         {ParseStatus::kEmptyListError, fetch_status.response_code},
@@ -638,7 +638,7 @@ void OnAccountsRequestParsed(
   if (!accounts_valid) {
     CHECK_NE(parsing_error,
              AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
-    webid::RecordAccountsResponseInvalidReason(parsing_error);
+    RecordAccountsResponseInvalidReason(parsing_error);
 
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
@@ -762,8 +762,7 @@ void OnTokenRequestParsed(
 
   const base::Value* token_value =
       can_use_response ? response->Find(kTokenKey) : nullptr;
-  if (!webid::IsNonStringTokenEnabled() && token_value &&
-      !token_value->is_string()) {
+  if (!IsNonStringTokenEnabled() && token_value && !token_value->is_string()) {
     token_value = nullptr;
   }
 
@@ -785,7 +784,7 @@ void OnTokenRequestParsed(
 
   if (response_error) {
     std::string error_code;
-    if (webid::IsErrorAttributeEnabled()) {
+    if (IsErrorAttributeEnabled()) {
       error_code = ExtractString(*response_error, kErrorKey);
     }
     if (error_code.empty()) {
@@ -818,7 +817,7 @@ void OnTokenRequestParsed(
   }
   DCHECK(response);
 
-  if (issuance_token && webid::IsDelegationEnabled()) {
+  if (issuance_token && IsDelegationEnabled()) {
     token_result.token = base::Value(*issuance_token);
     std::move(record_error_metrics_callback)
         .Run(token_response_type, /*error_dialog_type=*/std::nullopt,
@@ -994,7 +993,7 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    content::FrameTreeNodeId frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : NetworkRequestManager(relying_party_origin,
                             loader_factory,
                             std::move(client_security_state),
@@ -1068,7 +1067,7 @@ void IdpNetworkRequestManager::FetchWellKnown(const GURL& provider,
   // If FedCmWebIdentitySubdomain is enabled, try the "web-identity.well-known."
   // subdomain first and fall back to the apex URL if the fetch fails, returns
   // a malformed response, or yields more than one provider_urls entry.
-  if (webid::IsWebIdentitySubdomainEnabled()) {
+  if (IsWebIdentitySubdomainEnabled()) {
     std::optional<GURL> subdomain_well_known_url =
         ComputeWebIdentitySubdomainWellKnownUrl(provider, kWellKnownPath);
     if (subdomain_well_known_url) {
@@ -1143,7 +1142,7 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
     const url::Origin& idp_origin,
     const GURL& accounts_url,
     AccountsRequestCallback callback) {
-  if (webid::IsLightweightModeEnabled()) {
+  if (IsLightweightModeEnabled()) {
     base::ListValue accounts = permission_delegate_->GetAccounts(idp_origin);
     FetchStatus success_status = {
         .parse_status = ParseStatus::kSuccess,
@@ -1195,7 +1194,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
 
   if (idp_blindness) {
     // IdP blindness can only be used when the feature is enabled.
-    DCHECK(webid::IsDelegationEnabled());
+    DCHECK(IsDelegationEnabled());
     // We have to set this to a Origin: null because the underlying loader
     // will  not let us send a request without Origin header if the request
     // method is POST.
@@ -1247,7 +1246,7 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
 void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
     bool did_show_ui,
-    webid::MetricsEndpointErrorCode error_code) {
+    MetricsEndpointErrorCode error_code) {
   std::string url_encoded_post_data = base::StringPrintf(
       "outcome=failure&error_code=%d&did_show_ui=%s",
       static_cast<int>(error_code), base::ToString(did_show_ui));
@@ -1317,7 +1316,7 @@ void IdpNetworkRequestManager::FetchAccountPicturesAndBrandIcons(
                      std::move(idp_info), accounts, rp_brand_icon_url));
 
   for (const auto& account : accounts.accounts) {
-    if (webid::IsLightweightModeEnabled() && account->from_accounts_push) {
+    if (IsLightweightModeEnabled() && account->from_accounts_push) {
       FetchCachedAccountImage(url::Origin::Create(config_url), account->picture,
                               barrier_callback);
     } else {

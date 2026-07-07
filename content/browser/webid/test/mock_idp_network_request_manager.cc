@@ -14,7 +14,7 @@ MockIdpNetworkRequestManager::MockIdpNetworkRequestManager()
                                nullptr,
                                nullptr,
                                network::mojom::ClientSecurityState::New(),
-                               content::FrameTreeNodeId()) {}
+                               FrameTreeNodeId()) {}
 
 MockIdpNetworkRequestManager::~MockIdpNetworkRequestManager() = default;
 

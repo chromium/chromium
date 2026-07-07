@@ -61,7 +61,7 @@ class CONTENT_EXPORT EmailVerifierNetworkRequestManager
       const url::Origin& relying_party_origin,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      content::FrameTreeNodeId frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
   ~EmailVerifierNetworkRequestManager() override;
 
   EmailVerifierNetworkRequestManager(

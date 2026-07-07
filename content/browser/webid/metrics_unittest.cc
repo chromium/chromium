@@ -125,7 +125,7 @@ TEST(FedCmMetricsTest, AccountFieldsTypeNameAndEmail) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AccountFieldsType",
-      static_cast<int>(webid::AccountFieldsType::kNameAndEmailAndNoOther), 1);
+      static_cast<int>(AccountFieldsType::kNameAndEmailAndNoOther), 1);
 }
 
 TEST(FedCmMetricsTest, AccountFieldsOnlyName) {
@@ -138,8 +138,7 @@ TEST(FedCmMetricsTest, AccountFieldsOnlyName) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AccountFieldsType",
-      static_cast<int>(webid::AccountFieldsType::kOneOfNameAndEmailAndNoOther),
-      1);
+      static_cast<int>(AccountFieldsType::kOneOfNameAndEmailAndNoOther), 1);
 }
 
 TEST(FedCmMetricsTest, AccountFieldsNameEmailAndPhone) {
@@ -154,9 +153,7 @@ TEST(FedCmMetricsTest, AccountFieldsNameEmailAndPhone) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AccountFieldsType",
-      static_cast<int>(
-          webid::AccountFieldsType::kNameOrEmailAndOtherIdentifier),
-      1);
+      static_cast<int>(AccountFieldsType::kNameOrEmailAndOtherIdentifier), 1);
 }
 
 TEST(FedCmMetricsTest, AccountFieldsOnlyPhone) {
@@ -169,9 +166,7 @@ TEST(FedCmMetricsTest, AccountFieldsOnlyPhone) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AccountFieldsType",
-      static_cast<int>(
-          webid::AccountFieldsType::kOtherIdentifierButNoNameOrEmail),
-      1);
+      static_cast<int>(AccountFieldsType::kOtherIdentifierButNoNameOrEmail), 1);
 }
 
 TEST(FedCmMetricsTest, AccountsSize) {

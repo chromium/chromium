@@ -13,10 +13,10 @@
 namespace content::webid {
 
 IdentityRegistry::IdentityRegistry(
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     base::WeakPtr<IdentityRegistryDelegate> delegate,
     const GURL& idp_config_url)
-    : content::WebContentsUserData<IdentityRegistry>(*web_contents),
+    : WebContentsUserData<IdentityRegistry>(*web_contents),
       delegate_(delegate),
       idp_config_url_(idp_config_url) {}
 

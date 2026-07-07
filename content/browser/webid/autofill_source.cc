@@ -12,12 +12,12 @@
 namespace content::webid {
 
 // static
-AutofillSource* AutofillSource::FromPage(content::Page& page) {
-  auto* request = webid::RequestPageData::GetOrCreateForPage(page)
-                      ->PendingWebIdentityRequest();
+AutofillSource* AutofillSource::FromPage(Page& page) {
+  auto* request =
+      RequestPageData::GetOrCreateForPage(page)->PendingWebIdentityRequest();
 
   if (!request || request->GetMediationRequirement() !=
-                      webid::MediationRequirement::kConditional) {
+                      MediationRequirement::kConditional) {
     return nullptr;
   }
 

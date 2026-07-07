@@ -19,7 +19,7 @@ class TestNetworkRequestManager : public NetworkRequestManager {
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       network::mojom::ClientSecurityStatePtr client_security_state,
       network::mojom::RequestDestination destination,
-      content::FrameTreeNodeId frame_tree_node_id)
+      FrameTreeNodeId frame_tree_node_id)
       : NetworkRequestManager(relying_party_origin,
                               loader_factory,
                               std::move(client_security_state),
@@ -48,7 +48,7 @@ TEST_P(NetworkRequestManagerTest, CreateUncredentialedResourceRequest) {
   url::Origin rp_origin = url::Origin::Create(GURL("https://rp.example"));
   TestNetworkRequestManager manager(rp_origin, nullptr,
                                     network::mojom::ClientSecurityState::New(),
-                                    GetParam(), content::FrameTreeNodeId());
+                                    GetParam(), FrameTreeNodeId());
   auto request = manager.CreateUncredentialedResourceRequest(
       GURL("https://idp.example/"), /*send_origin=*/false);
   EXPECT_EQ(GetParam(), request->destination);
@@ -58,7 +58,7 @@ TEST_P(NetworkRequestManagerTest, CreateCredentialedResourceRequest) {
   url::Origin rp_origin = url::Origin::Create(GURL("https://rp.example"));
   TestNetworkRequestManager manager(rp_origin, nullptr,
                                     network::mojom::ClientSecurityState::New(),
-                                    GetParam(), content::FrameTreeNodeId());
+                                    GetParam(), FrameTreeNodeId());
   auto request = manager.CreateCredentialedResourceRequest(
       GURL("https://idp.example/"),
       NetworkRequestManager::CredentialedResourceRequestType::kNoOrigin);

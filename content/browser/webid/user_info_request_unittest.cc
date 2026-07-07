@@ -291,8 +291,7 @@ class UserInfoRequestTest : public RenderViewHostImplTestHarness {
 
     // Add a subframe that navigates to kPersonalizedButtonFrameUrl.
     TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
-        content::RenderFrameHostTester::For(main_rfh())
-            ->AppendChild("subframe"));
+        RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
     iframe_render_frame_host_ = static_cast<TestRenderFrameHost*>(
         NavigationSimulator::NavigateAndCommitFromDocument(
             GURL(kPersonalizedButtonFrameUrl), subframe));

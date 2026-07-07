@@ -172,70 +172,70 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
   }
 }
 
-std::pair<FederatedAuthRequestResult, webid::RequestIdTokenStatus>
+std::pair<FederatedAuthRequestResult, RequestIdTokenStatus>
 AccountParseStatusToRequestResultAndTokenStatus(ParseStatus parse_status) {
   switch (parse_status) {
     case ParseStatus::kHttpNotFoundError:
       return {FederatedAuthRequestResult::kAccountsHttpNotFound,
-              webid::RequestIdTokenStatus::kAccountsHttpNotFound};
+              RequestIdTokenStatus::kAccountsHttpNotFound};
     case ParseStatus::kNoResponseError:
       return {FederatedAuthRequestResult::kAccountsNoResponse,
-              webid::RequestIdTokenStatus::kAccountsNoResponse};
+              RequestIdTokenStatus::kAccountsNoResponse};
     case ParseStatus::kInvalidResponseError:
       return {FederatedAuthRequestResult::kAccountsInvalidResponse,
-              webid::RequestIdTokenStatus::kAccountsInvalidResponse};
+              RequestIdTokenStatus::kAccountsInvalidResponse};
     case ParseStatus::kEmptyListError:
       return {FederatedAuthRequestResult::kAccountsListEmpty,
-              webid::RequestIdTokenStatus::kAccountsListEmpty};
+              RequestIdTokenStatus::kAccountsListEmpty};
     case ParseStatus::kInvalidContentTypeError:
       return {FederatedAuthRequestResult::kAccountsInvalidContentType,
-              webid::RequestIdTokenStatus::kAccountsInvalidContentType};
+              RequestIdTokenStatus::kAccountsInvalidContentType};
     case ParseStatus::kSuccess:
       NOTREACHED() << "Should not be invoked on success";
   }
 }
 
-webid::LifecycleStateFailureReason
+LifecycleStateFailureReason
 LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
     LifecycleStateImpl lifecycle_state) {
   switch (lifecycle_state) {
     case LifecycleStateImpl::kSpeculative:
-      return webid::LifecycleStateFailureReason::kSpeculative;
+      return LifecycleStateFailureReason::kSpeculative;
     case LifecycleStateImpl::kPendingCommit:
-      return webid::LifecycleStateFailureReason::kPendingCommit;
+      return LifecycleStateFailureReason::kPendingCommit;
     case LifecycleStateImpl::kPrerendering:
-      return webid::LifecycleStateFailureReason::kPrerendering;
+      return LifecycleStateFailureReason::kPrerendering;
     case LifecycleStateImpl::kInBackForwardCache:
-      return webid::LifecycleStateFailureReason::kInBackForwardCache;
+      return LifecycleStateFailureReason::kInBackForwardCache;
     case LifecycleStateImpl::kRunningUnloadHandlers:
-      return webid::LifecycleStateFailureReason::kRunningUnloadHandlers;
+      return LifecycleStateFailureReason::kRunningUnloadHandlers;
     case LifecycleStateImpl::kReadyToBeDeleted:
-      return webid::LifecycleStateFailureReason::kReadyToBeDeleted;
+      return LifecycleStateFailureReason::kReadyToBeDeleted;
     default:
-      return webid::LifecycleStateFailureReason::kOther;
+      return LifecycleStateFailureReason::kOther;
   }
 }
 
-std::pair<FederatedAuthRequestResult, webid::RequestIdTokenStatus>
+std::pair<FederatedAuthRequestResult, RequestIdTokenStatus>
 PermissionStatusToRequestResultAndTokenStatus(
-    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+    FederatedIdentityApiPermissionContextDelegate::PermissionStatus
         permission_status) {
   switch (permission_status) {
     case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
       return {FederatedAuthRequestResult::kDisabledInFlags,
-              webid::RequestIdTokenStatus::kDisabledInFlags};
+              RequestIdTokenStatus::kDisabledInFlags};
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
       return {FederatedAuthRequestResult::kDisabledInSettings,
-              webid::RequestIdTokenStatus::kDisabledInSettings};
+              RequestIdTokenStatus::kDisabledInSettings};
     case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
       return {FederatedAuthRequestResult::kDisabledInSettings,
-              webid::RequestIdTokenStatus::kDisabledEmbargo};
+              RequestIdTokenStatus::kDisabledEmbargo};
     case FederatedApiPermissionStatus::GRANTED:
       NOTREACHED() << "Should not be invoked with GRANTED";
   }
 }
 
-webid::ErrorDialogResult DismissReasonToErrorDialogResult(
+ErrorDialogResult DismissReasonToErrorDialogResult(
     IdentityRequestDialogController::DismissReason dismiss_reason,
     bool has_url) {
   switch (dismiss_reason) {
@@ -256,26 +256,26 @@ webid::ErrorDialogResult DismissReasonToErrorDialogResult(
   }
 }
 
-std::pair<FederatedAuthRequestResult, webid::RequestIdTokenStatus>
+std::pair<FederatedAuthRequestResult, RequestIdTokenStatus>
 IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status) {
   switch (status.parse_status) {
     case ParseStatus::kHttpNotFoundError:
       return {FederatedAuthRequestResult::kIdTokenHttpNotFound,
-              webid::RequestIdTokenStatus::kIdTokenHttpNotFound};
+              RequestIdTokenStatus::kIdTokenHttpNotFound};
     case ParseStatus::kNoResponseError: {
       if (status.cors_error) {
         return {FederatedAuthRequestResult::kCorsError,
-                webid::RequestIdTokenStatus::kIdTokenNoResponse};
+                RequestIdTokenStatus::kIdTokenNoResponse};
       }
       return {FederatedAuthRequestResult::kIdTokenNoResponse,
-              webid::RequestIdTokenStatus::kIdTokenNoResponse};
+              RequestIdTokenStatus::kIdTokenNoResponse};
     }
     case ParseStatus::kInvalidResponseError:
       return {FederatedAuthRequestResult::kIdTokenInvalidResponse,
-              webid::RequestIdTokenStatus::kIdTokenInvalidResponse};
+              RequestIdTokenStatus::kIdTokenInvalidResponse};
     case ParseStatus::kInvalidContentTypeError:
       return {FederatedAuthRequestResult::kIdTokenInvalidContentType,
-              webid::RequestIdTokenStatus::kIdTokenInvalidContentType};
+              RequestIdTokenStatus::kIdTokenInvalidContentType};
     case ParseStatus::kEmptyListError:
       NOTREACHED() << "EmptyListError is not an option for this fetch";
     case ParseStatus::kSuccess:

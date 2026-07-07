@@ -18,11 +18,11 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 using ::blink::mojom::FederatedAuthRequestResult;
-using LoginState = content::IdentityRequestAccount::LoginState;
-using SignInStateMatchStatus = content::webid::SignInStateMatchStatus;
-using TokenStatus = content::webid::RequestIdTokenStatus;
 
 namespace content::webid {
+
+using LoginState = IdentityRequestAccount::LoginState;
+using TokenStatus = RequestIdTokenStatus;
 
 namespace {
 static constexpr char kVcSdJwt[] = "vc+sd-jwt";
@@ -278,7 +278,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
     // originally, because we need the well-known and config files to find
     // the login URL.
     idp_info->has_failing_idp_signin_status =
-        webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
+        ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
             identity_provider_config_url, permission_delegate_);
     if (idp_info->has_failing_idp_signin_status) {
       // If the user is logged out and we are in a active-mode, allow the
@@ -329,7 +329,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
   const std::optional<bool> old_idp_signin_status =
       permission_delegate_->GetIdpSigninStatus(
           url::Origin::Create(idp_config_url));
-  webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
+  UpdateIdpSigninStatusForAccountsEndpointResponse(
       idp_config_url, status, idp_info->has_failing_idp_signin_status,
       permission_delegate_);
 
@@ -413,8 +413,8 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
   }
 
   if (need_client_metadata &&
-      webid::IsEndpointSameOrigin(idp_info->provider->config->config_url,
-                                  idp_info->endpoints.client_metadata)) {
+      IsEndpointSameOrigin(idp_info->provider->config->config_url,
+                           idp_info->endpoints.client_metadata)) {
     // Copy OnClientMetadataResponseReceived() parameters because `idp_info`
     // is moved.
     GURL client_metadata_endpoint = idp_info->endpoints.client_metadata;
@@ -473,7 +473,7 @@ void AccountsFetcher::OnFetchDataForIdpSucceeded(
   std::vector<IdentityRequestDialogDisclosureField> disclosure_fields =
       GetDisclosureFields(idp_info->provider->fields);
 
-  const std::string idp_for_display = webid::FormatUrlToSite(idp_config_url);
+  const std::string idp_for_display = FormatUrlToSite(idp_config_url);
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
@@ -599,7 +599,7 @@ void AccountsFetcher::ComputeLoginStates(
           idp_config_url, SignInStateMatchStatus::kBrowserObservedSignIn);
     }
 
-    if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+    if (HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
             *render_frame_host_, /*provider_url=*/idp_config_url,
             embedding_origin_, render_frame_host_->GetLastCommittedOrigin(),
             account->id, permission_delegate_, api_permission_delegate_)) {
@@ -625,8 +625,8 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     std::vector<IdentityRequestAccountPtr> filtered_accounts,
     base::TimeTicks accounts_fetched_time) {
   if (status.parse_status != ParseStatus::kSuccess) {
-    webid::MaybeAddResponseCodeToConsole(
-        *render_frame_host_, "accounts endpoint", status.response_code);
+    MaybeAddResponseCodeToConsole(*render_frame_host_, "accounts endpoint",
+                                  status.response_code);
   }
   if (!old_idp_signin_status.has_value()) {
     if (params_.rp_mode == blink::mojom::RpMode::kActive) {
@@ -694,7 +694,7 @@ void AccountsFetcher::OnIdpMismatch(
     base::TimeTicks accounts_fetched_time,
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   const std::string idp_for_display =
-      webid::FormatUrlToSite(idp_info->provider->config->config_url);
+      FormatUrlToSite(idp_info->provider->config->config_url);
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
       ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},

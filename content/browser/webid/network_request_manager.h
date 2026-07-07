@@ -75,7 +75,7 @@ class CONTENT_EXPORT NetworkRequestManager {
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       network::mojom::ClientSecurityStatePtr client_security_state,
       network::mojom::RequestDestination destination,
-      content::FrameTreeNodeId frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
   virtual ~NetworkRequestManager();
 
   NetworkRequestManager(const NetworkRequestManager&) = delete;
@@ -126,7 +126,7 @@ class CONTENT_EXPORT NetworkRequestManager {
 
   network::mojom::ClientSecurityStatePtr client_security_state_;
   const network::mojom::RequestDestination destination_;
-  const content::FrameTreeNodeId frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
  private:
   // Maps each SimpleURLLoader instance to a unique, unguessable token

@@ -193,7 +193,7 @@ class TestDialogController
   TestDialogController& operator=(TestDialogController&) = delete;
 
   bool ShowAccountsDialog(
-      content::RelyingPartyData rp_data,
+      RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityRequestAccountPtr>& filtered_accounts,
@@ -400,8 +400,8 @@ class RequestMultipleFramesTest : public RenderViewHostImplTestHarness {
 
 // Test that test harness can execute successful FedCM flow for iframe.
 TEST_F(RequestMultipleFramesTest, TestHarness) {
-  RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
-                                    ->AppendChild(/*frame_name=*/"");
+  RenderFrameHost* iframe_rfh =
+      RenderFrameHostTester::For(main_rfh())->AppendChild(/*frame_name=*/"");
 
   mojo::Remote<FederatedRequestService> iframe_service_remote;
   mojo::Remote<FederatedRequest> iframe_request_remote;
@@ -432,8 +432,8 @@ TEST_F(RequestMultipleFramesTest, IframeTooManyRequests) {
                  StartTokenRequestCallback());
   EXPECT_TRUE(main_frame_dialog_state.did_show_accounts_dialog);
 
-  RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
-                                    ->AppendChild(/*frame_name=*/"");
+  RenderFrameHost* iframe_rfh =
+      RenderFrameHostTester::For(main_rfh())->AppendChild(/*frame_name=*/"");
   mojo::Remote<FederatedRequestService> iframe_service_remote;
   mojo::Remote<FederatedRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
@@ -466,8 +466,8 @@ TEST_F(RequestMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
                  StartTokenRequestCallback());
   EXPECT_TRUE(main_frame_dialog_state.did_show_accounts_dialog);
 
-  RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
-                                    ->AppendChild(/*frame_name=*/"");
+  RenderFrameHost* iframe_rfh =
+      RenderFrameHostTester::For(main_rfh())->AppendChild(/*frame_name=*/"");
   mojo::Remote<FederatedRequestService> iframe_service_remote;
   mojo::Remote<FederatedRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;

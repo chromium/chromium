@@ -40,7 +40,7 @@ class MockNetworkRequestManager : public EmailVerifierNetworkRequestManager {
       : EmailVerifierNetworkRequestManager(url::Origin(),
                                            nullptr,
                                            nullptr,
-                                           content::FrameTreeNodeId()) {}
+                                           FrameTreeNodeId()) {}
   MOCK_METHOD(void,
               DownloadAndParseUncredentialedUrl,
               (const GURL& url, ParseJsonCallback callback),
