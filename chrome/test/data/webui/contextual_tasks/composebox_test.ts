@@ -2232,3 +2232,155 @@ suite('ContextualTasksComposeboxTest', () => {
             });
       });
 });
+
+// =============================================================================
+// Fork RESIZE/HEIGHT SUITE (fork path)
+// The fork sets up the composebox-resize observers (the shared cr-composebox
+// keeps them only for the Contextual Tasks Embedder) and renders the file
+// carousel that fires carousel-resize. These checks target the fork; the legacy
+// path's wrapper-side height flow is covered by the flag-off suite above.
+// =============================================================================
+suite(`ContextualTasksComposeboxResizeTest`, () => {
+  // Minimal ResizeObserver stub whose instances can be triggered on demand;
+  // the components debounce their resize callbacks, so tests advance the mock
+  // timer after triggering.
+  class MockResizeObserver {
+    static instances: MockResizeObserver[] = [];
+
+    constructor(private callback: ResizeObserverCallback) {
+      MockResizeObserver.instances.push(this);
+    }
+
+    observe(_target: Element) {}
+    unobserve(_target: Element) {}
+    disconnect() {}
+
+    trigger() {
+      this.callback([], this);
+    }
+  }
+
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
+  let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  let mockTimer: MockTimer;
+  let parts: CtComposeboxAppParts;
+
+  setup(async () => {
+    if (!window.chrome) {
+      Object.assign(window, {chrome: {}});
+    }
+    if (!window.chrome.histograms) {
+      Object.assign(window.chrome, {
+        histograms: {
+          recordEnumerationValue: () => {},
+          recordUserAction: () => {},
+          recordBoolean: () => {},
+        },
+      });
+    }
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    window.ResizeObserver = MockResizeObserver;
+    MockResizeObserver.instances = [];
+
+    mockTimer = new MockTimer();
+
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
+      enableComposeboxJumpFix: false,
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+      enableBasicModeZOrder: true,
+      composeboxShowContextMenu: true,
+      composeboxHintTextLensOverlay: 'Test Lens Hint',
+      forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
+    });
+
+    const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(testProxy);
+
+    mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    mockSearchboxPageHandler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: new MockInputState()}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxCallbackRouterRemote =
+        searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
+        mockSearchboxPageHandler, searchboxCallbackRouter));
+
+    parts = await createCtComposeboxApp(/* useFork= */ true);
+    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    await microtasksFinished();
+
+    assertTrue(
+        MockResizeObserver.instances.length >= 1,
+        'At least one ResizeObserver should be created');
+  });
+
+  teardown(() => {
+    mockTimer.uninstall();
+  });
+
+  test('inner composebox fires composebox-resize with its height', () => {
+    mockTimer.install();
+    const {innerComposebox} = parts;
+
+    let firedHeight: number|undefined;
+    innerComposebox.addEventListener('composebox-resize', (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail.height !== undefined) {
+        firedHeight = detail.height;
+      }
+    });
+
+    Object.defineProperty(innerComposebox, 'offsetHeight', {
+      writable: true,
+      configurable: true,
+      value: 123,
+    });
+
+    MockResizeObserver.instances.forEach(obs => obs.trigger());
+    mockTimer.tick(100);
+
+    assertEquals(123, firedHeight);
+  });
+
+  test('carousel-resize from the fork carousel sets --carousel-height', () => {
+    mockTimer.install();
+    const {innerComposebox} = parts;
+    const carousel = innerComposebox.shadowRoot.querySelector('#carousel');
+    assertTrue(!!carousel, 'Fork should render the file carousel.');
+
+    Object.defineProperty(carousel, 'clientHeight', {
+      writable: true,
+      configurable: true,
+      value: 50,
+    });
+
+    MockResizeObserver.instances.forEach(obs => obs.trigger());
+    mockTimer.tick(100);
+
+    // The file carousel adds CAROUSEL_HEIGHT_PADDING (18) to clientHeight, and
+    // the wrapper writes the result to --carousel-height on the inner element.
+    assertEquals(
+        '68px', innerComposebox.style.getPropertyValue('--carousel-height'));
+  });
+});
