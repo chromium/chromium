@@ -7079,11 +7079,6 @@ test("unit_tests") {
     }
 
     sources += [
-      # Media remoting is not supported on Android for now.
-      "../browser/media/cast_remoting_connector_unittest.cc",
-    ]
-
-    sources += [
       # The importer code is not used on Android.
       "../common/importer/firefox_importer_utils_unittest.cc",
     ]
@@ -7854,10 +7849,6 @@ test("unit_tests") {
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
-  }
-
-  if (is_android || is_chromeos || is_win) {
-    sources += [ "../browser/media/protected_media_identifier_permission_context_unittest.cc" ]
   }
 
   if (!is_android && !is_chromeos) {

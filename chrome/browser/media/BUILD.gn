@@ -129,6 +129,37 @@ source_set("unittests") {
     sources += [ "cast_mirroring_service_host_unittest.cc" ]
     deps += [ ":impl" ]
   }
+
+  if (enable_media_remoting && !is_android) {
+    sources += [ "cast_remoting_connector_unittest.cc" ]
+    deps += [
+      ":impl",
+      "//components/media_router/common",
+      "//components/sync_preferences:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//media/mojo/mojom:remoting",
+    ]
+  }
+
+  if (is_android || is_chromeos || is_win) {
+    sources += [ "protected_media_identifier_permission_context_unittest.cc" ]
+    deps += [
+      ":impl",
+      "//chrome/browser/profiles:test_support",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//components/policy/core/common",
+      "//components/prefs:test_support",
+      "//media",
+    ]
+    if (is_chromeos) {
+      deps += [
+        "//ash/constants",
+        "//chromeos/dbus/constants",
+      ]
+    }
+  }
 }
 
 source_set("browser_tests") {
