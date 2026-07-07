@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_level.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -26,8 +25,6 @@ std::optional<bool> g_session_feature_state;
 // static
 void MetricsReportingChoiceService::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kMetricsReportingLevel,
-                                static_cast<int>(MetricsReportingLevel::kNone));
   registry->RegisterBooleanPref(prefs::kMetricsReportingMigrationDone, false);
   registry->RegisterBooleanPref(prefs::kMetricsConsentRestructureFeatureState,
                                 false);

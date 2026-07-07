@@ -29,8 +29,7 @@ class MetricsReportingChoiceService {
       PrefService* local_state,
       variations::SyntheticTrialRegistry* synthetic_trial_registry);
 
-  // Returns true if kMetricsReportingLevel is set to either kBasic or
-  // kAdvanced, which means that basic metrics reporting is enabled.
+  // Returns true if basic metrics reporting is enabled.
   static bool IsBasicMetricsReportingEnabled(const PrefService* local_state);
 
   // Returns true if the metrics consent restructure feature is enabled.

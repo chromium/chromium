@@ -586,34 +586,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 06/2025.
-inline constexpr char kStorageGarbageCollect[] =
-    "extensions.storage.garbagecollect";
-inline constexpr char kVariationsLimitedEntropySyntheticTrialSeed[] =
-    "variations_limited_entropy_synthetic_trial_seed";
-inline constexpr char kVariationsLimitedEntropySyntheticTrialSeedV2[] =
-    "variations_limited_entropy_synthetic_trial_seed_v2";
-inline constexpr char kGaiaCookiePeriodicReportTimeDeprecated[] =
-    "gaia_cookie.periodic_report_time";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 06/2025.
-inline constexpr char kNativeClientForceAllowed[] =
-    "native_client_force_allowed";
-inline constexpr char kDeviceNativeClientForceAllowed[] =
-    "device_native_client_force_allowed";
-inline constexpr char kDeviceNativeClientForceAllowedCache[] =
-    "device_native_client_force_allowed_cache";
-inline constexpr char kIsFirstBootForNacl[] = "is_first_boot_for_nacl";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 06/2025.
-inline constexpr char kLastUsedPairingFromSyncPublicKey[] =
-    "webauthn.last_used_pairing_from_sync_public_key";
-inline constexpr char kWebAuthnCablePairingsPrefName[] =
-    "webauthn.cablev2_pairings";
-inline constexpr char kSyncedDefaultSearchProviderGUID[] =
-    "default_search_provider.synced_guid";
 
 #if BUILDFLAG(IS_ANDROID)
 // Deprecated 07/2025.
@@ -1017,22 +989,13 @@ inline constexpr char kPendingMetricsReportingLevel[] =
     "pending.cros.metrics.metricsReportingLevel";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 07/2026.
+inline constexpr char kObsoleteMetricsReportingLevel[] =
+    "user_experience_metrics.reporting_level";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 06/2025.
-  registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeed, 0);
-  registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeedV2,
-                               0);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 06/2025
-  registry->RegisterBooleanPref(kNativeClientForceAllowed, false);
-  registry->RegisterBooleanPref(kDeviceNativeClientForceAllowed, false);
-  registry->RegisterBooleanPref(kDeviceNativeClientForceAllowedCache, false);
-  registry->RegisterBooleanPref(kIsFirstBootForNacl, true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   // Deprecated 08/2025.
   registry->RegisterDictionaryPref(kInvalidationClientIDCache);
   registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
@@ -1126,18 +1089,14 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOobeGuestMetricsReportingLevel, 0);
   registry->RegisterIntegerPref(kPendingMetricsReportingLevel, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 07/2026.
+  registry->RegisterIntegerPref(kObsoleteMetricsReportingLevel, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  // Deprecated 06/2025.
-  registry->RegisterBooleanPref(kStorageGarbageCollect, false);
-  registry->RegisterDoublePref(kGaiaCookiePeriodicReportTimeDeprecated, 0);
-  registry->RegisterListPref(kWebAuthnCablePairingsPrefName);
-  registry->RegisterStringPref(kLastUsedPairingFromSyncPublicKey, "");
-  registry->RegisterStringPref(kSyncedDefaultSearchProviderGUID, std::string());
-
 #if BUILDFLAG(IS_ANDROID)
   // Deprecated 07/2025.
   registry->RegisterTimePref(
@@ -2283,17 +2242,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 06/2025.
-  local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeed);
-  local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeedV2);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 06/2025
-  local_state->ClearPref(kNativeClientForceAllowed);
-  local_state->ClearPref(kDeviceNativeClientForceAllowed);
-  local_state->ClearPref(kDeviceNativeClientForceAllowedCache);
-  local_state->ClearPref(kIsFirstBootForNacl);
-#endif
 
   // Added 08/2025.
   local_state->ClearPref(kInvalidationClientIDCache);
@@ -2407,6 +2355,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kPendingMetricsReportingLevel);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // Added 07/2026.
+  local_state->ClearPref(kObsoleteMetricsReportingLevel);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2447,12 +2398,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
 
-  // Added 06/2025.
-  profile_prefs->ClearPref(kStorageGarbageCollect);
-  profile_prefs->ClearPref(kGaiaCookiePeriodicReportTimeDeprecated);
-  profile_prefs->ClearPref(kWebAuthnCablePairingsPrefName);
-  profile_prefs->ClearPref(kLastUsedPairingFromSyncPublicKey);
-  profile_prefs->ClearPref(kSyncedDefaultSearchProviderGUID);
 
 #if BUILDFLAG(IS_ANDROID)
   // Deprecated 07/2025.

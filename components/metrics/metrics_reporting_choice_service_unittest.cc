@@ -8,7 +8,6 @@
 #include "base/values.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_level.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/synthetic_trial_registry.h"

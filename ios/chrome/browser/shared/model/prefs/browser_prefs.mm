@@ -42,7 +42,6 @@
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
-#import "components/metrics/metrics_reporting_level.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/ntp_tiles/custom_links_manager_impl.h"
 #import "components/ntp_tiles/most_visited_sites.h"
@@ -230,6 +229,10 @@ inline constexpr char kLastPlusAddressFillingTime[] =
 
 // Deprecated 05/2026.
 inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
+
+// Deprecated 07/2026.
+inline constexpr char kObsoleteMetricsReportingLevel[] =
+    "user_experience_metrics.reporting_level";
 
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
@@ -487,6 +490,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Deprecated 01/2026.
   registry->RegisterListPref(kMagicStackSafetyCheckNotificationsShown);
   registry->RegisterListPref(kBottomOmniboxByDefault);
+
+  // Deprecated 07/2026.
+  registry->RegisterIntegerPref(kObsoleteMetricsReportingLevel, 0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -984,6 +990,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 05/2026.
   prefs->ClearPref(kNextSSORecallTime);
+
+  // Added 07/2026.
+  prefs->ClearPref(kObsoleteMetricsReportingLevel);
 }
 
 // This method should be periodically pruned of year+ old migrations.

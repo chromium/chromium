@@ -249,7 +249,6 @@ class UkmServiceTest : public testing::Test {
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
-    prefs_.ClearPref(metrics::prefs::kMetricsReportingLevel);
     prefs_.ClearPref(metrics::prefs::kMetricsReportingMigrationDone);
     prefs_.ClearPref(metrics::prefs::kMetricsConsentRestructureFeatureState);
   }
@@ -300,7 +299,6 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
-    prefs_.ClearPref(metrics::prefs::kMetricsReportingLevel);
     prefs_.ClearPref(metrics::prefs::kMetricsReportingMigrationDone);
     prefs_.ClearPref(metrics::prefs::kMetricsConsentRestructureFeatureState);
   }
