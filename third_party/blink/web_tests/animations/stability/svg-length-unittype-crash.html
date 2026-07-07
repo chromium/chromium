@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<svg><circle id="target"/></svg>
-<script>
-test(() => {
-  target.animate([{'svg-r': '10px'}, {'svg-r': '100px'}], 1000);
-}, "Don't crash when applying SVG R attribute.");
-</script>
