@@ -174,6 +174,20 @@ TEST_F(X509CertificateModelTest, GetGoogleCertFields) {
   // Unknown OID: Netscape Server Gated Crypto (2.16.840.1.113730.4.1) falls
   // back to dotted decimal notation.
   EXPECT_EQ("2.16.840.1.113730.4.1", eku_purposes[2]);
+
+  // Two AccessDescriptions in DER order: OCSP then CA Issuers, both URIs.
+  EXPECT_FALSE(model.IsAuthorityInformationAccessCritical());
+  auto aia = model.GetAuthorityInformationAccess();
+  ASSERT_EQ(2u, aia.size());
+  EXPECT_EQ("OCSP", aia[0].method);
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
+            aia[0].location.type);
+  EXPECT_EQ("http://ocsp.thawte.com", aia[0].location.value);
+  EXPECT_EQ("CA Issuers", aia[1].method);
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
+            aia[1].location.type);
+  EXPECT_EQ("http://www.thawte.com/repository/Thawte_SGC_CA.crt",
+            aia[1].location.value);
 }
 
 TEST_F(X509CertificateModelTest, GetNDNCertFields) {
@@ -397,6 +411,16 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
             model.GetAuthorityKeyIdentifier());
   EXPECT_TRUE(model.GetAuthorityKeyIdentifierIssuer().empty());
   EXPECT_EQ("", model.GetAuthorityKeyIdentifierSerial());
+
+  // A single CA Issuers AccessDescription with a URI location.
+  EXPECT_FALSE(model.IsAuthorityInformationAccessCritical());
+  auto aia = model.GetAuthorityInformationAccess();
+  ASSERT_EQ(1u, aia.size());
+  EXPECT_EQ("CA Issuers", aia[0].method);
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
+            aia[0].location.type);
+  EXPECT_EQ("http://secure.globalsign.net/cacert/SHA256extendval1.crt",
+            aia[0].location.value);
 }
 
 TEST_F(X509CertificateModelTest, DiginotarCert) {
@@ -430,6 +454,15 @@ TEST_F(X509CertificateModelTest, DiginotarCert) {
   EXPECT_FALSE(model.IsAuthorityKeyIdentifierCritical());
   EXPECT_EQ("88 68 BF E0 8E 35 C4 3B 38 6B 62 F7 28 3B 84 81 C8 0C D7 4D",
             model.GetAuthorityKeyIdentifier());
+
+  // A single OCSP AccessDescription with a URI location.
+  EXPECT_FALSE(model.IsAuthorityInformationAccessCritical());
+  auto aia = model.GetAuthorityInformationAccess();
+  ASSERT_EQ(1u, aia.size());
+  EXPECT_EQ("OCSP", aia[0].method);
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
+            aia[0].location.type);
+  EXPECT_EQ("http://validation.diginotar.nl", aia[0].location.value);
 }
 
 TEST_F(X509CertificateModelTest, DiginotarCyberCa) {
@@ -492,6 +525,37 @@ TEST_F(X509CertificateModelTest, AuthorityKeyIdentifierAllFields) {
                                              "GTE CyberTrust Solutions, Inc."));
 
   EXPECT_EQ("01 A5", model.GetAuthorityKeyIdentifierSerial());
+}
+
+TEST_F(X509CertificateModelTest,
+       AuthorityInfoAccessNonstandardOidAndLocationType) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {
+  //  SEQUENCE {
+  //    OBJECT_IDENTIFIER { 1.4.9.20 }
+  //    [1 PRIMITIVE] { "foo@example.com" }  -- rfc822Name
+  //  }
+  // }
+  const uint8_t kAIA[] = {0x30, 0x18, 0x30, 0x16, 0x06, 0x03, 0x2c, 0x09, 0x14,
+                          0x81, 0x0f, 0x66, 0x6f, 0x6f, 0x40, 0x65, 0x78, 0x61,
+                          0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d};
+  builder->SetExtension(bssl::der::Input(bssl::kAuthorityInfoAccessOid),
+                        std::string(base::as_string_view(kAIA)));
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+
+  auto aia = model.GetAuthorityInformationAccess();
+  ASSERT_EQ(1u, aia.size());
+  // Unknown accessMethod OID falls back to dotted decimal notation.
+  EXPECT_EQ("1.4.9.20", aia[0].method);
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kRFC822Name,
+            aia[0].location.type);
+  EXPECT_EQ("foo@example.com", aia[0].location.value);
 }
 
 }  // namespace x509_certificate_model

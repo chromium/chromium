@@ -59,6 +59,10 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     {bssl::der::Input(bssl::kDocumentSigning),
      IDS_IOS_CERT_EKU_DOCUMENT_SIGNING},
     {bssl::der::Input(bssl::kRcsMlsClient), IDS_IOS_CERT_EKU_RCS_MLS_CLIENT},
+    // Authority Information Access method OIDs:
+    {bssl::der::Input(bssl::kAdCaIssuersOid),
+     IDS_IOS_CERT_AIA_ACCESS_METHOD_CA_ISSUERS},
+    {bssl::der::Input(bssl::kAdOcspOid), IDS_IOS_CERT_AIA_ACCESS_METHOD_OCSP},
 });
 
 std::optional<std::string> GetOidText(bssl::der::Input oid) {
@@ -597,6 +601,47 @@ std::string X509CertificateModel::GetAuthorityKeyIdentifierSerial() const {
     return std::string();
   }
   return ProcessRawBytes(*authority_key_id->authority_cert_serial_number);
+}
+
+bool X509CertificateModel::IsAuthorityInformationAccessCritical() const {
+  CHECK(is_valid());
+  return IsExtensionCritical(extensions_,
+                             bssl::der::Input(bssl::kAuthorityInfoAccessOid));
+}
+
+std::vector<X509CertificateModel::AccessDescription>
+X509CertificateModel::GetAuthorityInformationAccess() const {
+  CHECK(is_valid());
+  const bssl::ParsedExtension* extension = FindExtension(
+      extensions_, bssl::der::Input(bssl::kAuthorityInfoAccessOid));
+  if (!extension) {
+    return {};
+  }
+  std::vector<bssl::AuthorityInfoAccessDescription> access_descriptions;
+  if (!bssl::ParseAuthorityInfoAccess(extension->value, &access_descriptions)) {
+    return {};
+  }
+
+  std::vector<AccessDescription> result;
+  for (const bssl::AuthorityInfoAccessDescription& desc : access_descriptions) {
+    bssl::GeneralNames names;
+    bssl::CertErrors errors;
+    if (!bssl::ParseGeneralName(desc.access_location,
+                                bssl::GeneralNames::IP_ADDRESS_ONLY, &names,
+                                &errors)) {
+      continue;
+    }
+    std::vector<GeneralName> location = ToGeneralNameList(names);
+    if (location.empty()) {
+      continue;
+    }
+    // accessLocation is a single GeneralName. ToGeneralNameList() is the shared
+    // converter that returns a vector, but one parsed GeneralName yields
+    // exactly one element, so front() is that element.
+    result.push_back(
+        {GetOidTextOrOid(desc.access_method_oid), std::move(location.front())});
+  }
+  return result;
 }
 
 }  // namespace x509_certificate_model

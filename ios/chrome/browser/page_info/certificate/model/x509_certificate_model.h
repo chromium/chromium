@@ -163,6 +163,19 @@ class X509CertificateModel : public X509CertificateModelBase {
 
   // Returns the authorityCertSerialNumber as hex, or an empty string if absent.
   std::string GetAuthorityKeyIdentifierSerial() const;
+
+  struct AccessDescription {
+    std::string method;    // localized label, e.g. "CA Issuers" or "OCSP"
+    GeneralName location;  // accessLocation GeneralName
+  };
+
+  // Returns true if the AuthorityInformationAccess extension is present and
+  // marked critical.
+  bool IsAuthorityInformationAccessCritical() const;
+
+  // Returns the AuthorityInformationAccess descriptions in DER order, or an
+  // empty vector if the extension is absent or could not be parsed.
+  std::vector<AccessDescription> GetAuthorityInformationAccess() const;
 };
 
 }  // namespace x509_certificate_model
