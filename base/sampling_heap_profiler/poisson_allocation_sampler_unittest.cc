@@ -427,8 +427,8 @@ TEST_P(PoissonAllocationSamplerLoadFactorTest,
     EXPECT_EQ(last_load_factor, 0.0);
   }
 
-  size_t target_load_factor = GetParam();
-  if (target_load_factor == 0) {
+  float target_load_factor = GetParam();
+  if (target_load_factor == 0.0f) {
     // Use the default load factor.
     target_load_factor = 1.0;
   } else {
