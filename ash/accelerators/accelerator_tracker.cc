@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "base/containers/span.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/events/event.h"
 

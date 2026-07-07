@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 
 #include <memory>
@@ -14,6 +13,7 @@
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources_map.h"
+#include "base/containers/span.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"

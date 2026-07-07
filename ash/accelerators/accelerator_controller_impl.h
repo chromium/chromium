@@ -28,6 +28,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
