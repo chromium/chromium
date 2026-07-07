@@ -134,10 +134,9 @@ class MappableSharedImageVideoFramePool::PoolImpl
   // and prone to leakage. Switch this to pass around std::unique_ptr
   // such that callers own resource explicitly.
   struct FrameResource {
-    explicit FrameResource(const gfx::Size& size,
-                           gfx::BufferUsage usage,
-                           const gfx::ColorSpace& color_space)
-        : size(size), usage(usage), color_space(color_space) {}
+    explicit FrameResource(scoped_refptr<gpu::ClientSharedImage> shared_image)
+        : shared_image(std::move(shared_image)) {}
+
     void MarkUsed() {
       is_used_ = true;
       last_use_time_ = base::TimeTicks();
@@ -149,9 +148,13 @@ class MappableSharedImageVideoFramePool::PoolImpl
     bool is_used() const { return is_used_; }
     base::TimeTicks last_use_time() const { return last_use_time_; }
 
-    const gfx::Size size;
-    const gfx::BufferUsage usage;
-    const gfx::ColorSpace color_space;
+    bool IsMetadataCompatible(const gfx::Size& size,
+                              gfx::BufferUsage usage,
+                              const gfx::ColorSpace& color_space) const {
+      return size == shared_image->size() &&
+             usage == shared_image->buffer_usage() &&
+             color_space == shared_image->color_space();
+    }
 
     int32_t buffer_id = -1;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
@@ -224,16 +227,6 @@ class MappableSharedImageVideoFramePool::PoolImpl
       base::TimeDelta timestamp,
       bool video_frame_allow_overlay);
 
-  // Return true if |resource| can be used to represent a frame for
-  // specific |format|, |size| and |color_space|.
-  static bool IsFrameResourceCompatible(const FrameResource* resource,
-                                        const gfx::Size& size,
-                                        gfx::BufferUsage usage,
-                                        const gfx::ColorSpace& color_space) {
-    return size == resource->size && usage == resource->usage &&
-           color_space == resource->color_space;
-  }
-
   // Get the resource needed for a frame out of the pool, or create it if
   // necessary.
   // This also drops the LRU resource that can't be reuse for this frame.
@@ -304,20 +297,34 @@ constexpr size_t kBytesPerCopyTarget = 1024 * 1024;  // 1MB
 // Return the SharedImageFormat format to use for a specific VideoPixelFormat.
 viz::SharedImageFormat OutputFormatToSharedImageFormat(
     GpuVideoAcceleratorFactories::OutputFormat format) {
+  viz::SharedImageFormat si_format;
   switch (format) {
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
-      return viz::MultiPlaneFormat::kYV12;
+      si_format = viz::MultiPlaneFormat::kYV12;
+      break;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
-      return viz::MultiPlaneFormat::kP010;
+      si_format = viz::MultiPlaneFormat::kP010;
+      break;
     case GpuVideoAcceleratorFactories::OutputFormat::NV12:
-      return viz::MultiPlaneFormat::kNV12;
+      si_format = viz::MultiPlaneFormat::kNV12;
+      break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
-      return viz::SinglePlaneFormat::kBGRA_1010102;
+      si_format = viz::SinglePlaneFormat::kBGRA_1010102;
+      break;
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
-      return viz::SinglePlaneFormat::kRGBA_1010102;
+      si_format = viz::SinglePlaneFormat::kRGBA_1010102;
+      break;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       NOTREACHED();
   }
+    // Set prefers external sampler only for multiplanar formats on ozone based
+    // platforms.
+#if BUILDFLAG(IS_OZONE)
+  if (si_format.is_multi_plane()) {
+    si_format.SetPrefersExternalSampler();
+  }
+#endif
+  return si_format;
 }
 
 VideoPixelFormat VideoFormat(
@@ -620,16 +627,6 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
   }
 }
 
-void SetPrefersExternalSampler(viz::SharedImageFormat& format) {
-  if (format.is_multi_plane()) {
-    // Set prefers external sampler only for multiplanar formats on ozone based
-    // platforms.
-#if BUILDFLAG(IS_OZONE)
-    format.SetPrefersExternalSampler();
-#endif
-  }
-}
-
 gfx::ColorSpace GetOutputColorSpace(
     const gfx::ColorSpace& source_cs,
     GpuVideoAcceleratorFactories::OutputFormat output_format) {
@@ -799,9 +796,8 @@ bool MappableSharedImageVideoFramePool::PoolImpl::OnMemoryDump(
       base::trace_event::MemoryAllocatorDump* dump =
           pmd->CreateAllocatorDump(dump_name);
 
-      auto size = frame_resource->size;
       size_t buffer_size_in_bytes =
-          shared_image->format().EstimatedSizeInBytes(size);
+          shared_image->format().EstimatedSizeInBytes(shared_image->size());
 
       dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
@@ -1250,7 +1246,7 @@ MappableSharedImageVideoFramePool::PoolImpl::GetOrCreateFrameResource(
   while (it != resources_pool_.end()) {
     FrameResource* frame_resource = *it;
     if (!frame_resource->is_used()) {
-      if (IsFrameResourceCompatible(frame_resource, size, usage, color_space)) {
+      if (frame_resource->IsMetadataCompatible(size, usage, color_space)) {
         frame_resource->MarkUsed();
         return frame_resource;
       } else {
@@ -1264,65 +1260,68 @@ MappableSharedImageVideoFramePool::PoolImpl::GetOrCreateFrameResource(
     }
   }
 
+  auto* sii = gpu_factories_->SharedImageInterface();
+  if (!sii) {
+    return nullptr;
+  }
+
+  // |si_format| could be modified internally later based on the
+  // type of buffer (shared memory or native gpu buffer) backing the
+  // shared image. https://issues.chromium.org/339546249.
+  viz::SharedImageFormat si_format =
+      OutputFormatToSharedImageFormat(output_format_);
+
+  gpu::SharedImageUsageSet si_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  // SCANOUT usage should be added only if scanout of SharedImages for this
+  // use case is supported.
+  auto si_caps = sii->GetCapabilities();
+#if BUILDFLAG(IS_WIN)
+  // On Windows, overlays are in general not supported. However, in some
+  // cases they are supported for the software video frame use case in
+  // particular. This cap details whether that support is present.
+  bool add_scanout_usage =
+      si_caps.supports_scanout_shared_images_for_software_video_frames;
+#else
+  // On all other platforms, whether scanout for SharedImages is supported
+  // for this particular use case is no different than the general case.
+  bool add_scanout_usage = si_caps.supports_scanout_shared_images;
+#endif
+
+  if (add_scanout_usage) {
+    si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
+
+  // TODO(crbug.com/425634684): Check for webgpu support from
+  // SharedImageCapabilities, once this metadata is compatible.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeWebGPU)) {
+    // This SharedImage may be used for zero-copy import into WebGPU.
+    si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+  }
+#elif BUILDFLAG(IS_MAC)
+  // This SharedImage may be used for zero-copy import into WebGPU.
+  si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+#endif
+
+  // Create a Mappable shared image.
+  auto shared_image =
+      sii->CreateSharedImage({si_format, size, color_space, si_usage,
+                              "MediaGmbVideoFramePoolMappableSI"},
+                             gpu::kNullSurfaceHandle, usage);
+  if (!shared_image) {
+    return nullptr;
+  }
+
   // Create the resource.
-  FrameResource* frame_resource = new FrameResource(size, usage, color_space);
+  FrameResource* frame_resource = new FrameResource(std::move(shared_image));
   resources_pool_.push_back(frame_resource);
   // Update the |buffer_id| to be used by memory dumps.
   frame_resource->buffer_id = ++buffer_id_;
-
-  if (auto* sii = gpu_factories_->SharedImageInterface()) {
-    viz::SharedImageFormat si_format =
-        OutputFormatToSharedImageFormat(output_format_);
-
-    // This needs to be called before creating the MappableSI
-    // here. |si_format| could be modified internally later based on the
-    // type of buffer (shared memory or native gpu buffer) backing the
-    // shared image. https://issues.chromium.org/339546249.
-    SetPrefersExternalSampler(si_format);
-
-    gpu::SharedImageUsageSet si_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-
-    // SCANOUT usage should be added only if scanout of SharedImages for this
-    // use case is supported.
-    auto si_caps = sii->GetCapabilities();
-#if BUILDFLAG(IS_WIN)
-    // On Windows, overlays are in general not supported. However, in some
-    // cases they are supported for the software video frame use case in
-    // particular. This cap details whether that support is present.
-    bool add_scanout_usage =
-        si_caps.supports_scanout_shared_images_for_software_video_frames;
-#else
-    // On all other platforms, whether scanout for SharedImages is supported
-    // for this particular use case is no different than the general case.
-    bool add_scanout_usage = si_caps.supports_scanout_shared_images;
-#endif
-
-    if (add_scanout_usage) {
-      si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    }
-
-    // TOOD(crbug.com/425634684): Check for webgpu support from
-    // SharedImageCapabilities, once this metadata is compatible.
-#if BUILDFLAG(IS_CHROMEOS)
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableUnsafeWebGPU)) {
-      // This SharedImage may be used for zero-copy import into WebGPU.
-      si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-    }
-#elif BUILDFLAG(IS_MAC)
-    // This SharedImage may be used for zero-copy import into WebGPU.
-    si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-#endif
-    // Create a Mappable shared image.
-    frame_resource->shared_image =
-        sii->CreateSharedImage({si_format, size, color_space, si_usage,
-                                "MediaGmbVideoFramePoolMappableSI"},
-                               gpu::kNullSurfaceHandle, usage);
-    return frame_resource;
-  }
-  return nullptr;
+  return frame_resource;
 }
 
 void MappableSharedImageVideoFramePool::PoolImpl::
