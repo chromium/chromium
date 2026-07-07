@@ -148,6 +148,7 @@ source_set("proto_wrappers") {
     "//ios/web/find_in_page",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//net",
     "//url",
   ]
 }

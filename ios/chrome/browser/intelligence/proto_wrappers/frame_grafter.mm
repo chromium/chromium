@@ -27,22 +27,33 @@ void MergeContent(optimization_guide::proto::ContentNode* placeholder,
                   autofill::RemoteFrameToken document_id) {
   if (placeholder->content_attributes().attribute_type() ==
       optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
-    // Rich Extraction:  The placeholder is already assigned as an
-    // iframe, this means that the data in the `placeholder` is already
-    // partially set so do a partial merge in this case. The iframe content tree
-    // needs to be added as a child of the attributed iframe ContentNode.
-    // Content starts from the page root (like for the main frame).
-    optimization_guide::proto::FrameData* frame_data =
-        placeholder->mutable_content_attributes()
-            ->mutable_iframe_data()
-            ->mutable_frame_data();
-    frame_data->Swap(&frame_content.frame_data);
-    // Set the document identifier here because it is not available in the
-    // frame data extracted for the entire page which is the case for
-    // cross-origin frames that require grafting.
-    frame_data->mutable_document_identifier()->set_serialized_token(
-        document_id.ToString());
-    *placeholder->add_children_nodes() = std::move(frame_content.content);
+    if (frame_content.content.content_attributes()
+            .iframe_data()
+            .has_redacted_frame_metadata()) {
+      placeholder->mutable_content_attributes()
+          ->mutable_iframe_data()
+          ->mutable_redacted_frame_metadata()
+          ->CopyFrom(frame_content.content.content_attributes()
+                         .iframe_data()
+                         .redacted_frame_metadata());
+    } else {
+      // Rich Extraction:  The placeholder is already assigned as an
+      // iframe, this means that the data in the `placeholder` is already
+      // partially set so do a partial merge in this case. The iframe content
+      // tree needs to be added as a child of the attributed iframe ContentNode.
+      // Content starts from the page root (like for the main frame).
+      optimization_guide::proto::FrameData* frame_data =
+          placeholder->mutable_content_attributes()
+              ->mutable_iframe_data()
+              ->mutable_frame_data();
+      frame_data->Swap(&frame_content.frame_data);
+      // Set the document identifier here because it is not available in the
+      // frame data extracted for the entire page which is the case for
+      // cross-origin frames that require grafting.
+      frame_data->mutable_document_identifier()->set_serialized_token(
+          document_id.ToString());
+      *placeholder->add_children_nodes() = std::move(frame_content.content);
+    }
 
   } else {
     // Light Extraction: The placeholder doesn't hold any partial data,
@@ -91,7 +102,10 @@ std::vector<autofill::RemoteFrameToken> FrameGrafter::GetRemoteFrames() const {
 void FrameGrafter::ResolveUnregisteredContent(
     base::RepeatingCallback<std::optional<autofill::LocalFrameToken>(
         autofill::RemoteFrameToken)> mapping_lookup,
-    base::RepeatingCallback<void(FrameContent unregistered)> placer) {
+    base::RepeatingCallback<void(FrameContent unregistered)> placer,
+    base::RepeatingCallback<
+        void(optimization_guide::proto::ContentNode* unresolved)>
+        unresolved_placeholder_handler) {
   // Try to fulfill placeholders by resolving remote tokens to local tokens.
   for (auto it = placeholders_.begin(); it != placeholders_.end();) {
     autofill::RemoteFrameToken remote_token = it->first;
@@ -109,6 +123,10 @@ void FrameGrafter::ResolveUnregisteredContent(
       }
     }
     ++it;
+  }
+
+  for (auto& [_, placeholder] : placeholders_) {
+    unresolved_placeholder_handler.Run(placeholder);
   }
 
   // TODO(crbug.com/473796618): Add a metric for when content has to be placed.

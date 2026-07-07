@@ -62,13 +62,17 @@ class FrameGrafter {
   // Resolves all unregistered content by using `mapping_lookup` to map
   // placeholders to their content (RemoteFrameToken => LocalFrameToken
   // mapping). The `placer` is used to complete grafting of content that doesn't
-  // match a placeholder. Call this function when it is determined that (1) all
-  // the frames were processed, (2) their content extracted, and (3) frame
-  // registration was completed.
+  // match a placeholder. The `unresolved_placeholder_handler` is called for
+  // each placeholder that could not be mapped to any frame content. Call this
+  // function when it is determined that (1) all the frames were processed, (2)
+  // their content extracted, and (3) frame registration was completed.
   void ResolveUnregisteredContent(
       base::RepeatingCallback<std::optional<autofill::LocalFrameToken>(
           autofill::RemoteFrameToken)> mapping_lookup,
-      base::RepeatingCallback<void(FrameContent unregistered)> placer);
+      base::RepeatingCallback<void(FrameContent unregistered)> placer,
+      base::RepeatingCallback<
+          void(optimization_guide::proto::ContentNode* unresolved)>
+          unresolved_placeholder_handler);
 
  private:
   // Frame content that wasn't claimed yet (unregistered).

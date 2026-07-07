@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/unguessable_token.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -67,7 +68,7 @@ TEST_F(FrameGrafterTest, GraftContent_RichExtraction_PartialMerge) {
   auto placer = base::BindRepeating(
       [](FrameGrafter::FrameContent unregistered) { FAIL(); });
 
-  grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
 
   // Verify that the placeholder was filled with the content as a child node.
   ASSERT_EQ(placeholder.children_nodes_size(), 1);
@@ -113,7 +114,7 @@ TEST_F(FrameGrafterTest, GraftContent_LightExtraction_FullReplacement) {
   auto placer = base::BindRepeating(
       [](FrameGrafter::FrameContent unregistered) { FAIL(); });
 
-  grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
 
   // Verify that the placeholder was replaced by the content.
   EXPECT_EQ(placeholder.content_attributes().text_data().text_content(),
@@ -152,7 +153,7 @@ TEST_F(FrameGrafterTest, ResolveUnmappedFrames) {
       },
       &call_count);
 
-  grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
 
   EXPECT_EQ(call_count, 1);
 }
@@ -191,7 +192,7 @@ TEST_F(FrameGrafterTest, DoubleRegistration) {
   auto placer = base::BindRepeating(
       [](FrameGrafter::FrameContent unregistered) { FAIL(); });
 
-  grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
 
   ASSERT_EQ(placeholder1.children_nodes_size(), 1);
   EXPECT_EQ(placeholder1.children_nodes(0)
@@ -237,7 +238,7 @@ TEST_F(FrameGrafterTest, DoubleDeclareContent) {
   auto placer = base::BindRepeating(
       [](FrameGrafter::FrameContent unregistered) { FAIL(); });
 
-  grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
 
   // Should get the first content.
   ASSERT_EQ(placeholder.children_nodes_size(), 1);
@@ -246,4 +247,94 @@ TEST_F(FrameGrafterTest, DoubleDeclareContent) {
                 .text_data()
                 .text_content(),
             "Content 1");
+}
+
+// Tests that grafting works when the declared content has
+// redacted_frame_metadata.
+TEST_F(FrameGrafterTest, GraftContent_RedactedIframe) {
+  FrameGrafter grafter;
+  autofill::LocalFrameToken local_token = CreateLocalToken();
+  autofill::RemoteFrameToken remote_token = CreateRemoteToken();
+  optimization_guide::proto::ContentNode placeholder;
+
+  placeholder.mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  placeholder.mutable_content_attributes()
+      ->mutable_iframe_data()
+      ->mutable_frame_data()
+      ->set_title("Original Title");
+
+  grafter.RegisterPlaceholder(remote_token, &placeholder);
+
+  FrameGrafter::FrameContent* content = grafter.DeclareContent(local_token);
+  content->content.mutable_content_attributes()
+      ->mutable_iframe_data()
+      ->mutable_redacted_frame_metadata()
+      ->set_reason(
+          optimization_guide::proto::
+              IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+
+  auto mapping_lookup = base::BindRepeating(
+      [](autofill::RemoteFrameToken remote, autofill::LocalFrameToken local,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        if (requested_remote == remote) {
+          return local;
+        }
+        return std::nullopt;
+      },
+      remote_token, local_token);
+
+  auto placer = base::BindRepeating(
+      [](FrameGrafter::FrameContent unregistered) { FAIL(); });
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer, base::DoNothing());
+
+  // No children nodes should be added.
+  EXPECT_EQ(placeholder.children_nodes_size(), 0);
+
+  // The placeholder's iframe_data should now contain the redacted metadata.
+  EXPECT_TRUE(placeholder.content_attributes()
+                  .iframe_data()
+                  .has_redacted_frame_metadata());
+  EXPECT_EQ(placeholder.content_attributes()
+                .iframe_data()
+                .redacted_frame_metadata()
+                .reason(),
+            optimization_guide::proto::
+                IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+
+  // The original frame_data (e.g. "Original Title") should be cleared because
+  // it's a oneof.
+  EXPECT_FALSE(placeholder.content_attributes().iframe_data().has_frame_data());
+}
+
+// Tests that ResolveUnregisteredContent invokes the unresolved callback for
+// placeholders that couldn't be resolved.
+TEST_F(FrameGrafterTest, UnresolvedPlaceholdersHandled) {
+  FrameGrafter grafter;
+  autofill::RemoteFrameToken remote_token = CreateRemoteToken();
+  optimization_guide::proto::ContentNode placeholder;
+  grafter.RegisterPlaceholder(remote_token, &placeholder);
+
+  auto mapping_lookup = base::BindRepeating(
+      [](autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> { return std::nullopt; });
+
+  auto placer = base::BindRepeating(
+      [](FrameGrafter::FrameContent unregistered) { FAIL(); });
+
+  std::vector<optimization_guide::proto::ContentNode*> unresolved;
+  auto unresolved_handler = base::BindRepeating(
+      [](std::vector<optimization_guide::proto::ContentNode*>* unresolved_list,
+         optimization_guide::proto::ContentNode* unresolved_placeholder) {
+        unresolved_list->push_back(unresolved_placeholder);
+      },
+      &unresolved);
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer,
+                                     unresolved_handler);
+
+  ASSERT_EQ(unresolved.size(), 1u);
+  EXPECT_EQ(unresolved[0], &placeholder);
 }

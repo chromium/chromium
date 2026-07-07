@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/schemeful_site.h"
+#import "url/gurl.h"
 
 // TODO(crbug.com/464473686): Measure interesting error cases.
 
@@ -55,6 +57,8 @@ constexpr char kLocalFrameTokenKey[] = "localFrameToken";
 constexpr char kTokenValueKey[] = "value";
 constexpr char kContentKey[] = "content";
 constexpr char kLocalFrameDataKey[] = "localFrameData";
+constexpr char kRedactedFrameMetadataKey[] = "redactedFrameMetadata";
+constexpr char kReasonKey[] = "reason";
 constexpr char kSourceURLKey[] = "sourceUrl";
 constexpr char kTitleKey[] = "title";
 constexpr char kContainsPaidContentKey[] = "containsPaidContent";
@@ -114,6 +118,11 @@ constexpr char kVisibleBoundingBoxKey[] = "visibleBoundingBox";
 constexpr char kFragmentVisibleBoundingBoxesKey[] =
     "fragmentVisibleBoundingBoxes";
 constexpr char kIsFocusedDocumentKey[] = "isFocusedDocument";
+
+// Values matching the `RedactedFrameMetadata.Reason` enum in
+// page_content_types.ts.
+constexpr int kRedactedFrameReasonCrossSite = 1;
+constexpr int kRedactedFrameReasonCrossOrigin = 2;
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -399,6 +408,28 @@ void PopulateIframeData(
             result.is_focused,
             node_frame_data->document_identifier().serialized_token());
       }
+    } else if (const base::DictValue* redacted_frame_metadata =
+                   content->FindDict(kRedactedFrameMetadataKey)) {
+      optimization_guide::proto::IframeData::RedactedFrameMetadata*
+          proto_metadata = destination_node->mutable_content_attributes()
+                               ->mutable_iframe_data()
+                               ->mutable_redacted_frame_metadata();
+      auto reason = optimization_guide::proto::
+          IframeData_RedactedFrameMetadata_Reason_REASON_UNSPECIFIED;
+      if (std::optional<int> reason_val =
+              ReadJsNumber(*redacted_frame_metadata, kReasonKey)) {
+        switch (*reason_val) {
+          case kRedactedFrameReasonCrossSite:
+            reason = optimization_guide::proto::
+                IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE;
+            break;
+          case kRedactedFrameReasonCrossOrigin:
+            reason = optimization_guide::proto::
+                IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_ORIGIN;
+            break;
+        }
+      }
+      proto_metadata->set_reason(reason);
     }
   }
 }
@@ -847,6 +878,10 @@ void PopulateAPCNodeFromContentTree(
           // be populated later on via the frame grafter.
           if (std::optional<autofill::RemoteFrameToken> remote =
                   DeserializeFrameIdAsRemoteFrameToken(*token_string)) {
+            // Populate iframe data before registering placeholder to ensure
+            // URL is available for unresolved cross-site redaction.
+            PopulateIframeData(*iframe_data, destination_node, origin,
+                               on_frame_extracted);
             grafter.RegisterPlaceholder(*remote, destination_node);
             return;
           }
@@ -1051,6 +1086,7 @@ void ResolveCrossSiteFrameContent(
     autofill::ChildFrameRegistrar* registrar,
     optimization_guide::proto::AnnotatedPageContent* apc) {
   CHECK(registrar);
+  CHECK(apc);
   auto mapping_lookup = base::BindRepeating(
       [](autofill::ChildFrameRegistrar* registrar,
          autofill::RemoteFrameToken remote) {
@@ -1064,7 +1100,42 @@ void ResolveCrossSiteFrameContent(
         *parentNode->add_children_nodes() = std::move(unregistered.content);
       },
       apc->mutable_root_node());
-  grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+
+  GURL main_frame_url(apc->main_frame_data().url());
+  net::SchemefulSite main_frame_site(main_frame_url);
+
+  auto unresolved_handler = base::BindRepeating(
+      [](net::SchemefulSite main_frame_site,
+         optimization_guide::proto::ContentNode* placeholder) {
+        const optimization_guide::proto::ContentAttributes& content_attributes =
+            placeholder->content_attributes();
+        if (content_attributes.attribute_type() !=
+                optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME ||
+            !content_attributes.iframe_data().has_frame_data()) {
+          return;
+        }
+        GURL iframe_url(content_attributes.iframe_data().frame_data().url());
+        // If `iframe_url` is invalid, `net::SchemefulSite` will construct an
+        // opaque site. Comparing `main_frame_site` (which is typically not
+        // opaque) to an opaque site using `!=` will return `true`, causing
+        // invalid/malformed iframe URLs to be redacted. This is the desired
+        // defensive behavior.
+        if (main_frame_site == net::SchemefulSite(iframe_url)) {
+          return;
+        }
+        // Redact the placeholder.
+        optimization_guide::proto::IframeData::RedactedFrameMetadata*
+            proto_metadata = placeholder->mutable_content_attributes()
+                                 ->mutable_iframe_data()
+                                 ->mutable_redacted_frame_metadata();
+        proto_metadata->set_reason(
+            optimization_guide::proto::
+                IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+      },
+      main_frame_site);
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer,
+                                     unresolved_handler);
 }
 
 void ResolveFocusedFrame(
