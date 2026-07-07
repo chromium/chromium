@@ -487,6 +487,9 @@ TEST_F(AmountExtractionManagerTest,
 TEST_F(
     AmountExtractionManagerTest,
     AiBasedAmountExtractionShouldTriggerWhenBnplSuggestionPresentButFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,

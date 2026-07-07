@@ -2554,6 +2554,9 @@ TEST_F(BnplManagerTest,
 
 TEST_F(BnplManagerTest,
        OnUserDecisionToUseBnpl_AiBasedAmountExtractionFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
   EXPECT_CALL(*mock_amount_extraction_manager_,
               TriggerCheckoutAmountExtractionWithAi())
       .Times(0);
@@ -2883,6 +2886,9 @@ TEST_F(BnplManagerTest,
 
 TEST_F(BnplManagerTest,
        OnAmountExtractionReturned_WithTimeout_AfterBnplSelected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                         /*price_higher_bound_in_micros=*/200'000'000,
                         IssuerId::kBnplAffirm,
@@ -2911,6 +2917,9 @@ TEST_F(BnplManagerTest,
 
 TEST_F(BnplManagerTest,
        OnAmountExtractionReturned_WithInvalidAmount_AfterBnplSelected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                         /*price_higher_bound_in_micros=*/200'000'000,
                         IssuerId::kBnplAffirm,
@@ -2939,6 +2948,9 @@ TEST_F(BnplManagerTest,
 
 TEST_F(BnplManagerTest,
        OnAmountExtractionReturned_WithUnsupportedAmount_AfterBnplSelected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
   const int64_t extracted_amount = 0;
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                         /*price_higher_bound_in_micros=*/3'000'000'000,
@@ -2983,6 +2995,9 @@ TEST_F(BnplManagerTest,
 
 TEST_F(BnplManagerTest,
        OnAmountExtractionReturned_WithValidAmount_AfterBnplSelected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
   const int64_t extracted_amount = 1000000000;
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                         /*price_higher_bound_in_micros=*/3'000'000'000,
@@ -3044,6 +3059,9 @@ TEST_F(BnplManagerTest,
 TEST_F(
     BnplManagerTest,
     OnUserDecisionToUseBnpl_WhenAmountIsNotSet_ShowProgressUiNotSelectionUi) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
   EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi).Times(0);
   EXPECT_CALL(GetBnplUiDelegate(),
               ShowProgressUi(
