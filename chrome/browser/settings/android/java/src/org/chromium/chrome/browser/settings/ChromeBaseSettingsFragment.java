@@ -94,7 +94,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     /** Returns whether the divider should be shown. */
     @Override
     public boolean hasDivider() {
-        return !ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
+        return false;
     }
 
     /**

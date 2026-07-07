@@ -43,9 +43,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -107,16 +105,12 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             getActivity().getWindow().setAttributes(attributes);
         }
 
-        LayoutInflater localInflater = inflater;
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            // TODO(crbug.com/439911511): Set the style directly in the layout instead.
-            Context themedContext =
-                    new ContextThemeWrapper(
-                            getActivity(), R.style.ThemeOverlay_Chromium_Settings_InputFields);
-            localInflater = inflater.cloneInContext(themedContext);
-        }
+        Context themedContext =
+                new ContextThemeWrapper(
+                        getActivity(), R.style.ThemeOverlay_Chromium_Settings_InputFields);
+        inflater = inflater.cloneInContext(themedContext);
 
-        View v = super.onCreateView(localInflater, container, savedInstanceState);
+        View v = super.onCreateView(inflater, container, savedInstanceState);
 
         mDoneButton = v.findViewById(R.id.button_primary);
         mNameLabel = v.findViewById(R.id.credit_card_name_label);
@@ -170,24 +164,16 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         TextInputLayout cvcMaterialLabel =
                 v.findViewById(R.id.credit_card_security_code_label_material);
 
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            cvcLegacyContainer.setVisibility(View.GONE);
-            cvcMaterialLabel.setVisibility(View.VISIBLE);
-            mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
-        } else {
-            cvcLegacyContainer.setVisibility(View.VISIBLE);
-            cvcMaterialLabel.setVisibility(View.GONE);
-            mCvc = v.findViewById(R.id.cvc);
-        }
+        cvcLegacyContainer.setVisibility(View.GONE);
+        cvcMaterialLabel.setVisibility(View.VISIBLE);
+        mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
+
         mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
         mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
 
         mScanButton = v.findViewById(R.id.scan_card_button);
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            mScanButton.setBackgroundColor(
-                    SemanticColorUtils.getSettingsContainerBackgroundColor(
-                            mScanButton.getContext()));
-        }
+        mScanButton.setBackgroundColor(
+                SemanticColorUtils.getSettingsContainerBackgroundColor(mScanButton.getContext()));
         mScanButton.setVisibility(View.GONE);
         mScannerManager = new CreditCardScannerManager(this);
         if (mScannerManager.canScan()) {
@@ -336,30 +322,24 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                         // Record when an existing card without CVC is edited and CVC was added.
                         RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasAdded");
                     }
+            } else {
+                if (card.getCvc().isEmpty()) {
+                    // Record when an existing card with CVC is edited and CVC was removed.
+                    RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasRemoved");
+                } else if (!card.getCvc().equals(mCard.getCvc())) {
+                    // Record when an existing card with CVC is edited and CVC was updated.
+                    RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasUpdated");
                 } else {
-                    if (card.getCvc().isEmpty()) {
-                        // Record when an existing card with CVC is edited and CVC was removed.
-                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasRemoved");
-                    } else if (!card.getCvc().equals(mCard.getCvc())) {
-                        // Record when an existing card with CVC is edited and CVC was updated.
-                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasUpdated");
-                    } else {
-                        // Record when an existing card with CVC is edited and CVC was
-                        // unchanged.
-                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasUnchanged");
-                    }
+                    // Record when an existing card with CVC is edited and CVC was
+                    // unchanged.
+                    RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasUnchanged");
                 }
             }
-
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            card.setBillingAddressId(
-                    mSelectedBillingProfile != null ? mSelectedBillingProfile.getGUID() : "");
-        } else {
-            assert mBillingAddressSpinner != null;
-            AutofillProfile selectedProfile =
-                    (AutofillProfile) mBillingAddressSpinner.getSelectedItem();
-            card.setBillingAddressId(selectedProfile != null ? selectedProfile.getGUID() : "");
         }
+
+        card.setBillingAddressId(
+                mSelectedBillingProfile != null ? mSelectedBillingProfile.getGUID() : "");
+
         card.setNickname(mNicknameText.getText().toString().trim());
 
         // Get the current card count before setting the new card.

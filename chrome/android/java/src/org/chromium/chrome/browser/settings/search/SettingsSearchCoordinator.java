@@ -65,7 +65,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
@@ -279,9 +278,6 @@ public class SettingsSearchCoordinator
         View query = mActivity.findViewById(R.id.search_query_container);
         Drawable bg = ContextCompat.getDrawable(mActivity, R.drawable.pill_background);
         int tint = SemanticColorUtils.getSettingsContainerBackgroundColor(mActivity);
-        if (!ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            tint = SemanticColorUtils.getColorSurfaceContainerHighest(mActivity);
-        }
         bg.setTint(tint);
         searchBox.setBackground(bg);
         query.setBackground(bg);
