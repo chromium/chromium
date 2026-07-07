@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_UI_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -169,6 +171,7 @@ class IntroUI : public ui::MojoWebUIController,
   mojo::Receiver<intro::mojom::IntroPageHandlerFactory> intro_factory_receiver_{
       this};
   mojo::Remote<intro::mojom::IntroPage> intro_page_;
+  std::optional<bool> animations_active_;
 
   mojo::Receiver<intro::mojom::FinishOrContinuePageHandlerFactory>
       finish_or_continue_factory_receiver_{this};
