@@ -2507,6 +2507,7 @@ test("content_browsertests") {
       "//ui/base/dragdrop:types",
       "//ui/touch_selection",
       "//ui/touch_selection:test_support",
+      "//ui/wm",
     ]
   }
 

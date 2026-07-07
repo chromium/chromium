@@ -46,6 +46,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
+#include "ui/aura/client/cursor_client.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/wm/core/cursor_manager.h"
 #endif
 
 namespace content {
@@ -909,5 +913,156 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return handler.gesture_tap_down_seen(); }));
 }
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+class RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest
+    : public RenderWidgetHostViewAuraBrowserTest {
+ public:
+  RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kHideCursorWhileTyping);
+  }
+
+ protected:
+  // Loads a page with a focused text field and returns the cursor client (a
+  // wm::CursorManager) for the widget's root window, with the simulated "Hide
+  // pointer while typing" Windows setting set to |mouse_vanish_enabled| and the
+  // cursor made visible.
+  wm::CursorManager* SetUpFocusedTextFieldAndCursorManager(
+      bool mouse_vanish_enabled = true) {
+    const GURL page(
+        "data:text/html;charset=utf-8,"
+        "<!DOCTYPE html><html><body>"
+        "<textarea id=\"textfield\" value=\"editable\"></textarea>"
+        "<script type=\"text/javascript\">"
+        "  function focusTextfield() {"
+        "    document.getElementById('textfield').focus("
+        "        {'preventScroll': true});"
+        "  }"
+        "</script>"
+        "</body></html>");
+    if (!NavigateToURL(shell(), page)) {
+      return nullptr;
+    }
+    GetRenderWidgetHostView()->SetSize(gfx::Size(600, 500));
+
+    // Focus the text field so the active TextInputClient reports an editable
+    // input type. Waiting for non-zero caret size ensures the renderer has
+    // propagated the text input state to the browser.
+    auto* web_contents = shell()->web_contents();
+    NonZeroCaretSizeWaiter caret_waiter(web_contents);
+    if (!ExecJs(web_contents, "focusTextfield();")) {
+      return nullptr;
+    }
+    caret_waiter.Wait();
+
+    aura::Window* root_window =
+        GetRenderWidgetHostView()->GetNativeView()->GetRootWindow();
+    if (!root_window) {
+      return nullptr;
+    }
+    auto* cursor_manager = static_cast<wm::CursorManager*>(
+        aura::client::GetCursorClient(root_window));
+    if (cursor_manager) {
+      cursor_manager->SetMouseVanishEnabledForTesting(mouse_vanish_enabled);
+      cursor_manager->ShowCursor();
+    }
+    return cursor_manager;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
+                       HidesCursorWhileTypingAndRestoresOnMouseMove) {
+  wm::CursorManager* cursor_manager = SetUpFocusedTextFieldAndCursorManager();
+  ASSERT_TRUE(cursor_manager);
+  ASSERT_TRUE(cursor_manager->IsCursorVisible());
+
+  auto* rwhva = GetRenderWidgetHostView();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+
+  // Typing a character hides the cursor.
+  generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  // Moving the mouse restores the cursor.
+  generator.MoveMouseTo(rwhva->GetNativeView()->bounds().CenterPoint());
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
+                       DoesNotHideCursorOnKeyboardShortcut) {
+  wm::CursorManager* cursor_manager = SetUpFocusedTextFieldAndCursorManager();
+  ASSERT_TRUE(cursor_manager);
+  ASSERT_TRUE(cursor_manager->IsCursorVisible());
+
+  auto* rwhva = GetRenderWidgetHostView();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+
+  // Ctrl+A is a shortcut, so the cursor stays visible.
+  generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
+                       DoesNotHideCursorWhenSystemSettingDisabled) {
+  wm::CursorManager* cursor_manager =
+      SetUpFocusedTextFieldAndCursorManager(/*mouse_vanish_enabled=*/false);
+  ASSERT_TRUE(cursor_manager);
+  ASSERT_TRUE(cursor_manager->IsCursorVisible());
+
+  auto* rwhva = GetRenderWidgetHostView();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+
+  // Typing a character does not hide the cursor because the OS setting is off.
+  generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
+                       RestoresCursorOnMouseClick) {
+  wm::CursorManager* cursor_manager = SetUpFocusedTextFieldAndCursorManager();
+  ASSERT_TRUE(cursor_manager);
+  ASSERT_TRUE(cursor_manager->IsCursorVisible());
+
+  auto* rwhva = GetRenderWidgetHostView();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+
+  // Type to hide the cursor.
+  generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  ASSERT_FALSE(cursor_manager->IsCursorVisible());
+
+  // A click restores it.
+  generator.set_current_screen_location(
+      rwhva->GetNativeView()->bounds().CenterPoint());
+  generator.ClickLeftButton();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
+                       RestoresCursorOnMouseWheel) {
+  wm::CursorManager* cursor_manager = SetUpFocusedTextFieldAndCursorManager();
+  ASSERT_TRUE(cursor_manager);
+  ASSERT_TRUE(cursor_manager->IsCursorVisible());
+
+  auto* rwhva = GetRenderWidgetHostView();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+
+  // Type to hide the cursor.
+  generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  ASSERT_FALSE(cursor_manager->IsCursorVisible());
+
+  // A wheel scroll restores it.
+  generator.set_current_screen_location(
+      rwhva->GetNativeView()->bounds().CenterPoint());
+  generator.MoveMouseWheel(0, -5);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

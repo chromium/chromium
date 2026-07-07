@@ -19,6 +19,18 @@
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "ui/aura/env.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/win/singleton_hwnd.h"
+#endif
+
 namespace wm {
 
 namespace internal {
@@ -101,6 +113,32 @@ CursorManager::CursorManager(std::unique_ptr<NativeCursorManager> delegate)
       state_on_unlock_(new internal::CursorState) {
   // Restore the last cursor visibility state.
   current_state_->SetVisible(last_cursor_visibility_state_);
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kHideCursorWhileTyping)) {
+    // Cache the initial value of the "Hide pointer while typing" setting.
+    BOOL vanish = FALSE;
+    if (::SystemParametersInfo(SPI_GETMOUSEVANISH, 0, &vanish, 0)) {
+      mouse_vanish_enabled_ = !!vanish;
+    }
+
+    // Listen for WM_SETTINGCHANGE to update the cached value when the user
+    // toggles the setting at runtime.
+    setting_change_subscription_ =
+        gfx::SingletonHwnd::GetInstance()->RegisterCallback(base::BindRepeating(
+            [](CursorManager* self, HWND hwnd, UINT message, WPARAM wparam,
+               LPARAM lparam) {
+              if (message != WM_SETTINGCHANGE || wparam != SPI_SETMOUSEVANISH) {
+                return;
+              }
+              BOOL vanish = FALSE;
+              if (::SystemParametersInfo(SPI_GETMOUSEVANISH, 0, &vanish, 0)) {
+                self->mouse_vanish_enabled_ = !!vanish;
+              }
+            },
+            base::Unretained(this)));
+  }
+#endif
 }
 
 CursorManager::~CursorManager() {
@@ -268,7 +306,54 @@ void CursorManager::RemoveObserver(
 
 bool CursorManager::ShouldHideCursorOnKeyEvent(
     const ui::KeyEvent& event) const {
+#if BUILDFLAG(IS_WIN)
+  if (!base::FeatureList::IsEnabled(features::kHideCursorWhileTyping) ||
+      !mouse_vanish_enabled_) {
+    return false;
+  }
+
+  // If the cursor is already hidden there is nothing to do.
+  if (!IsCursorVisible()) {
+    return false;
+  }
+
+  // Only key-down, character-producing events count as typing. Key-up events
+  // are not typing, and non-character keys are not text input.
+  if (event.type() != ui::EventType::kKeyPressed ||
+      !event.GetDomKey().IsCharacter()) {
+    return false;
+  }
+
+  // Don't hide when a mouse button is held down.
+  if (aura::Env::GetInstance()->IsMouseButtonDown()) {
+    return false;
+  }
+
+  // Chorded shortcuts (Ctrl/Alt/Meta + key) are commands, not typing.
+  if (event.IsAltDown() || event.IsControlDown() || event.IsCommandDown()) {
+    return false;
+  }
+
+  // Some keys arrive as character events but are not text input, so they
+  // should not hide the cursor.
+  switch (event.key_code()) {
+    case ui::VKEY_ESCAPE:
+      return false;
+    default:
+      break;
+  }
+
+  // Check that focus is on an editable element.
+  auto* target = static_cast<aura::Window*>(event.target());
+  if (!target || !target->GetHost() || !target->GetHost()->GetInputMethod()) {
+    return false;
+  }
+  ui::TextInputClient* client =
+      target->GetHost()->GetInputMethod()->GetTextInputClient();
+  return client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;
+#else
   return false;
+#endif
 }
 
 bool CursorManager::ShouldHideCursorOnTouchEvent(
@@ -319,6 +404,10 @@ gfx::Size CursorManager::GetSystemCursorSize() const {
 #if BUILDFLAG(IS_WIN)
 void CursorManager::UpdateSystemCursorVisibilityForTest(bool visible) {
   UpdateSystemCursorVisibility(visible);
+}
+
+void CursorManager::SetMouseVanishEnabledForTesting(bool enabled) {
+  mouse_vanish_enabled_ = enabled;
 }
 #endif
 

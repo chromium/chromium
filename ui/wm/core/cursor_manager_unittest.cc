@@ -7,12 +7,32 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
+#include "build/build_config.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/test/testing_cursor_client_observer.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
+#include "ui/aura/env.h"
+#include "ui/aura/test/env_test_helper.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_type.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/events/event.h"
+#include "ui/events/event_dispatcher.h"
+#include "ui/events/event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -421,3 +441,185 @@ TEST(CursorManagerCreateDestroyTest, VisibilityTest) {
     EXPECT_FALSE(cursor_manager3.IsCursorVisible());
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+// A TextInputClient whose editability can be controlled.
+class FakeTextInputClient : public ui::DummyTextInputClient {
+ public:
+  explicit FakeTextInputClient(ui::TextInputType text_input_type)
+      : ui::DummyTextInputClient(text_input_type) {}
+};
+
+}  // namespace
+
+class CursorManagerHideOnTypingTest : public CursorManagerTest {
+ public:
+  CursorManagerHideOnTypingTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kHideCursorWhileTyping);
+  }
+
+  void SetUp() override {
+    CursorManagerTest::SetUp();
+
+    // Make Env::IsMouseButtonDown() consult the test-controlled mouse button
+    // flags rather than the live OS state.
+    aura::test::EnvTestHelper(aura::Env::GetInstance())
+        .SetInputStateLookup(nullptr);
+    aura::Env::GetInstance()->set_mouse_button_flags(0);
+
+    cursor_manager_.SetMouseVanishEnabledForTesting(true);
+    cursor_manager_.ShowCursor();
+    ASSERT_TRUE(cursor_manager_.IsCursorVisible());
+
+    host()->GetInputMethod()->SetFocusedTextInputClient(&text_input_client_);
+  }
+
+  void TearDown() override {
+    host()->GetInputMethod()->DetachTextInputClient(&text_input_client_);
+    CursorManagerTest::TearDown();
+  }
+
+ protected:
+  ui::KeyEvent MakeKeyEvent(ui::EventType type,
+                            ui::KeyboardCode key_code,
+                            ui::DomCode code,
+                            int flags,
+                            ui::DomKey key) {
+    ui::KeyEvent event(type, key_code, code, flags, key, ui::EventTimeForNow());
+    ui::Event::DispatcherApi(&event).set_target(root_window());
+    return event;
+  }
+
+  ui::KeyEvent MakeCharKeyPress(ui::KeyboardCode key_code,
+                                ui::DomCode code,
+                                char16_t character,
+                                int flags = ui::EF_NONE) {
+    return MakeKeyEvent(ui::EventType::kKeyPressed, key_code, code, flags,
+                        ui::DomKey::FromCharacter(character));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  FakeTextInputClient text_input_client_{ui::TEXT_INPUT_TYPE_TEXT};
+};
+
+// A character key-press in an editable field hides the cursor.
+TEST_F(CursorManagerHideOnTypingTest, HidesOnCharacterKeyPress) {
+  ui::KeyEvent event = MakeCharKeyPress(ui::VKEY_A, ui::DomCode::US_A, u'a');
+  EXPECT_TRUE(cursor_manager_.ShouldHideCursorOnKeyEvent(event));
+}
+
+// Only key-down events count as typing; key-up events must not hide.
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideOnKeyRelease) {
+  ui::KeyEvent event =
+      MakeKeyEvent(ui::EventType::kKeyReleased, ui::VKEY_A, ui::DomCode::US_A,
+                   ui::EF_NONE, ui::DomKey::FromCharacter(u'a'));
+  EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event));
+}
+
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideOnModifierOnlyKey) {
+  const struct {
+    ui::KeyboardCode key_code;
+    ui::DomCode code;
+    int flags;
+    ui::DomKey key;
+  } kModifierKeys[] = {
+      {ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN,
+       ui::DomKey::SHIFT},
+      {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
+       ui::DomKey::CONTROL},
+      {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN, ui::DomKey::ALT},
+  };
+  for (const auto& modifier : kModifierKeys) {
+    ui::KeyEvent event =
+        MakeKeyEvent(ui::EventType::kKeyPressed, modifier.key_code,
+                     modifier.code, modifier.flags, modifier.key);
+    EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event))
+        << "key_code=" << modifier.key_code;
+  }
+}
+
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideOnFunctionKeys) {
+  const struct {
+    ui::KeyboardCode key_code;
+    ui::DomCode code;
+    ui::DomKey key;
+  } kFunctionKeys[] = {
+      {ui::VKEY_F1, ui::DomCode::F1, ui::DomKey::F1},
+      {ui::VKEY_F5, ui::DomCode::F5, ui::DomKey::F5},
+      {ui::VKEY_F12, ui::DomCode::F12, ui::DomKey::F12},
+  };
+  for (const auto& function_key : kFunctionKeys) {
+    ui::KeyEvent event =
+        MakeKeyEvent(ui::EventType::kKeyPressed, function_key.key_code,
+                     function_key.code, ui::EF_NONE, function_key.key);
+    EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event))
+        << "key_code=" << function_key.key_code;
+  }
+}
+
+// Navigation/whitespace keys (arrows, Esc, Tab) must not hide the cursor.
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideOnNavigationKeys) {
+  const struct {
+    ui::KeyboardCode key_code;
+    ui::DomCode code;
+    ui::DomKey key;
+  } kNavigationKeys[] = {
+      {ui::VKEY_LEFT, ui::DomCode::ARROW_LEFT, ui::DomKey::ARROW_LEFT},
+      {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT, ui::DomKey::ARROW_RIGHT},
+      {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::DomKey::ARROW_UP},
+      {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::DomKey::ARROW_DOWN},
+      {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::DomKey::ESCAPE},
+  };
+  for (const auto& navigation_key : kNavigationKeys) {
+    ui::KeyEvent event =
+        MakeKeyEvent(ui::EventType::kKeyPressed, navigation_key.key_code,
+                     navigation_key.code, ui::EF_NONE, navigation_key.key);
+    EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event))
+        << "key_code=" << navigation_key.key_code;
+  }
+}
+
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideOnKeyboardShortcut) {
+  const int kModifierFlags[] = {ui::EF_CONTROL_DOWN, ui::EF_ALT_DOWN,
+                                ui::EF_COMMAND_DOWN};
+  for (int flags : kModifierFlags) {
+    ui::KeyEvent event =
+        MakeCharKeyPress(ui::VKEY_A, ui::DomCode::US_A, u'a', flags);
+    EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event))
+        << "flags=" << flags;
+  }
+}
+
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideWhileMouseButtonDown) {
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  ui::KeyEvent event = MakeCharKeyPress(ui::VKEY_A, ui::DomCode::US_A, u'a');
+  EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event));
+}
+
+// A non-editable focus (TEXT_INPUT_TYPE_NONE) must not hide the cursor.
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideWhenInputTypeNone) {
+  FakeTextInputClient none_client(ui::TEXT_INPUT_TYPE_NONE);
+  host()->GetInputMethod()->SetFocusedTextInputClient(&none_client);
+
+  ui::KeyEvent event = MakeCharKeyPress(ui::VKEY_A, ui::DomCode::US_A, u'a');
+  EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event));
+
+  host()->GetInputMethod()->DetachTextInputClient(&none_client);
+}
+
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideWhenCursorAlreadyHidden) {
+  cursor_manager_.HideCursor();
+  ASSERT_FALSE(cursor_manager_.IsCursorVisible());
+
+  ui::KeyEvent event = MakeCharKeyPress(ui::VKEY_A, ui::DomCode::US_A, u'a');
+  EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event));
+}
+
+TEST_F(CursorManagerHideOnTypingTest, DoesNotHideWhenSystemSettingDisabled) {
+  cursor_manager_.SetMouseVanishEnabledForTesting(false);
+  ui::KeyEvent event = MakeCharKeyPress(ui::VKEY_A, ui::DomCode::US_A, u'a');
+  EXPECT_FALSE(cursor_manager_.ShouldHideCursorOnKeyEvent(event));
+}
+#endif  // BUILDFLAG(IS_WIN)

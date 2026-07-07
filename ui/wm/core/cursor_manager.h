@@ -17,6 +17,10 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/callback_list.h"
+#endif
+
 namespace ui {
 class KeyEvent;
 class TouchEvent;
@@ -77,6 +81,7 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   gfx::Size GetSystemCursorSize() const override;
 #if BUILDFLAG(IS_WIN)
   void UpdateSystemCursorVisibilityForTest(bool visible) override;
+  void SetMouseVanishEnabledForTesting(bool enabled);
 #endif
 
  private:
@@ -129,6 +134,15 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   // CursorManager instance is created it gets populated with the correct
   // cursor visibility state.
   static bool last_cursor_visibility_state_;
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(oshima): Move Windows-specific cursor handling to subclass.
+  // Cached value of the Windows "Hide pointer while typing" setting.
+  bool mouse_vanish_enabled_ = false;
+
+  // Subscription for WM_SETTINGCHANGE.
+  base::CallbackListSubscription setting_change_subscription_;
+#endif
 };
 
 }  // namespace wm
