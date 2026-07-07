@@ -11592,6 +11592,7 @@ should be able to be added at any place in this file.
   </description>
   <token key="ActionType">
     <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenFeedback" summary="The user opened the feedback page."/>
     <variant name=".OpenHelp" summary="The user opened the help page."/>
     <variant name=".OpenInNewTab"
         summary="The user opened the task in a new tab."/>
