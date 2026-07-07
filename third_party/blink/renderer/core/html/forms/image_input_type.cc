@@ -177,7 +177,7 @@ unsigned ImageInputType::Height() const {
     // If the image is available, use its height.
     HTMLImageLoader* image_loader = GetElement().ImageLoader();
     if (image_loader && image_loader->GetContent()) {
-      return image_loader->AccessNaturalSize().height();
+      return image_loader->DensityCorrectedNaturalSize(1).height();
     }
   }
 
@@ -201,7 +201,7 @@ unsigned ImageInputType::Width() const {
     // If the image is available, use its width.
     HTMLImageLoader* image_loader = GetElement().ImageLoader();
     if (image_loader && image_loader->GetContent()) {
-      return image_loader->AccessNaturalSize().width();
+      return image_loader->DensityCorrectedNaturalSize(1).width();
     }
   }
 

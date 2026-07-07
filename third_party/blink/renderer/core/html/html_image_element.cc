@@ -652,7 +652,7 @@ unsigned HTMLImageElement::width() {
       return width;
 
     // if the image is available, use its width
-    return GetImageLoader().AccessNaturalSize().width();
+    return GetImageLoader().DensityCorrectedNaturalSize(1).width();
   }
 
   return LayoutBoxWidth();
@@ -673,33 +673,31 @@ unsigned HTMLImageElement::height() {
       return height;
 
     // if the image is available, use its height
-    return GetImageLoader().AccessNaturalSize().height();
+    return GetImageLoader().DensityCorrectedNaturalSize(1).height();
   }
 
   return LayoutBoxHeight();
 }
 
-PhysicalSize HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
+gfx::Size HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
   ImageResourceContent* image_content = GetImageLoader().GetContent();
   if (!image_content || !image_content->HasImage())
-    return PhysicalSize();
+    return gfx::Size();
 
-  float pixel_density = image_device_pixel_ratio_;
+  float inverse_pixel_density = image_device_pixel_ratio_;
   if (image_content->HasDevicePixelRatioHeaderValue() &&
-      image_content->DevicePixelRatioHeaderValue() > 0)
-    pixel_density = 1 / image_content->DevicePixelRatioHeaderValue();
-
-  PhysicalSize natural_size(GetImageLoader().AccessNaturalSize());
-  natural_size.Scale(pixel_density);
-  return natural_size;
+      image_content->DevicePixelRatioHeaderValue() > 0) {
+    inverse_pixel_density = 1 / image_content->DevicePixelRatioHeaderValue();
+  }
+  return GetImageLoader().DensityCorrectedNaturalSize(inverse_pixel_density);
 }
 
 unsigned HTMLImageElement::naturalWidth() const {
-  return DensityCorrectedIntrinsicDimensions().width.ToUnsigned();
+  return DensityCorrectedIntrinsicDimensions().width();
 }
 
 unsigned HTMLImageElement::naturalHeight() const {
-  return DensityCorrectedIntrinsicDimensions().height.ToUnsigned();
+  return DensityCorrectedIntrinsicDimensions().height();
 }
 
 unsigned HTMLImageElement::LayoutBoxWidth() const {

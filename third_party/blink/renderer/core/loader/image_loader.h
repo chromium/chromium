@@ -96,9 +96,10 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   // available.
   bool ImageIsPotentiallyAvailable() const;
 
-  // Returns the natural size (with any image orientation applied) of the
-  // loaded image content.
-  gfx::Size AccessNaturalSize() const;
+  // Returns the density corrected natural size (with any image orientation
+  // applied) of the loaded image content.
+  // https://html.spec.whatwg.org/#density-corrected-intrinsic-width-and-height
+  gfx::Size DensityCorrectedNaturalSize(float inverse_density) const;
 
   // Cancels pending load events, and doesn't dispatch new ones.
   // Note: ClearImage/SetImage.*() are not a simple setter.

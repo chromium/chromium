@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SVG, no intrinsic dims + 2x density: defaults not scaled
-  assert_equals: naturalWidth expected 300 but got 150
-[FAIL] SVG, intrinsic width only + 2x density: width scaled, default height not
-  assert_equals: naturalHeight expected 150 but got 75
-Harness: the test ran to completion.
-

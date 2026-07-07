@@ -940,26 +940,28 @@ void ImageLoader::UpdateLayoutObject() {
     image_resource->SetImageResource(image_content_.Get());
 }
 
-gfx::Size ImageLoader::AccessNaturalSize() const {
+gfx::Size ImageLoader::DensityCorrectedNaturalSize(
+    float inverse_density) const {
   if (!image_content_ || !image_content_->HasImage() ||
       image_content_->ErrorOccurred()) {
     return gfx::Size();
   }
   Image& image = *image_content_->GetImage();
-  gfx::Size size = image.Size(kRespectImageOrientation);
-
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    if (std::optional<NaturalSizingInfo> sizing_info =
-            SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr)) {
-      size =
-          ToRoundedSize(PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
-              *sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
-                                       LayoutReplaced::kDefaultHeight))));
-    } else {
-      size = gfx::Size();
+    std::optional<NaturalSizingInfo> sizing_info =
+        SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr);
+    if (!sizing_info) {
+      return gfx::Size();
     }
+    sizing_info->size.Scale(inverse_density);
+
+    static constexpr gfx::SizeF kDefaultObjectSize{300, 150};
+    return ToRoundedSize(PhysicalSize::FromSizeFFloor(
+        blink::ConcreteObjectSize(*sizing_info, kDefaultObjectSize)));
   }
-  return size;
+  PhysicalSize natural_size(image.Size(kRespectImageOrientation));
+  natural_size.Scale(inverse_density);
+  return {natural_size.width.ToInt(), natural_size.height.ToInt()};
 }
 
 ResourcePriority ImageLoader::ComputeResourcePriority() const {
