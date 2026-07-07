@@ -150,10 +150,6 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // The attached native view. There is exactly one native_view_ attached.
   gfx::NativeView native_view_ = gfx::NativeView();
 
-  // A platform-specific wrapper that does the OS-level manipulation of the
-  // attached gfx::NativeView.
-  std::unique_ptr<NativeViewHostWrapper> native_wrapper_;
-
   // The actual size of the NativeView, or an empty size if no scaling of the
   // NativeView should occur.
   gfx::Size native_view_size_;
@@ -170,6 +166,14 @@ class VIEWS_EXPORT NativeViewHost : public View {
 
   // The color to use for repainting the background when the view is clipped.
   std::optional<SkColor> background_color_when_clipped_;
+
+  // A platform-specific wrapper that does the OS-level manipulation of the
+  // attached gfx::NativeView.
+  // This must be declared last because its destructor (which destroys the
+  // wrapper) depends on other members of NativeViewHost (like
+  // `layer_managed_by_views_` and `native_view_`) which must not be destroyed
+  // yet.
+  std::unique_ptr<NativeViewHostWrapper> native_wrapper_;
 };
 
 }  // namespace views
