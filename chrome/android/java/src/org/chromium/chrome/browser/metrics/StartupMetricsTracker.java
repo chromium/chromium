@@ -52,8 +52,6 @@ public class StartupMetricsTracker {
     private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;
     private static final String NTP_COLD_START_HISTOGRAM =
             "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
-    private static final String NTP_WEBUI_COLD_START_HISTOGRAM =
-            "Startup.Android.Cold.NewTabPageWebUi.TimeToFirstDraw";
     private static final String TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM =
             "Startup.Android.Cold.TimeToStartupFcpOrPaintPreview";
     private static final String COLD_START_TIME_TO_FIRST_FRAME2 =
@@ -100,14 +98,26 @@ public class StartupMetricsTracker {
             if (tab.isNativePage()) destroy();
             if (!UrlUtilities.isNtpUrl(tab.getUrl())) {
                 mShouldTrackTimeToFirstDraw = false;
-            } else if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()
-                    && mShouldTrackTimeToFirstDraw) {
-                View tabView = tab.getView();
-                if (tabView != null) {
-                    mShouldTrackTimeToFirstDraw = false;
-                    trackTimeToFirstDraw(tabView, NTP_WEBUI_COLD_START_HISTOGRAM);
-                }
             }
+        }
+
+        @Override
+        public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+            if (!UrlOverrideUtils.isWebUiNtpOverrideEnabled()
+                    || !mShouldTrackTimeToFirstDraw
+                    || !UrlUtilities.isNtpUrl(tab.getUrl())) {
+                return;
+            }
+
+            mShouldTrackTimeToFirstDraw = false;
+
+            if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
+                    || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
+                return;
+            }
+
+            onFirstDrawDetected(
+                    NTP_COLD_START_HISTOGRAM, SystemClock.uptimeMillis() - mActivityStartTimeMs);
         }
 
         @Override
@@ -123,23 +133,31 @@ public class StartupMetricsTracker {
         @Override
         public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
             if (!mShouldTrack || mFirstNavigationCommitted) return;
-            boolean shouldTrack =
-                    navigation.hasCommitted()
-                            && !navigation.isErrorPage()
-                            && UrlUtilities.isHttpOrHttps(navigation.getUrl())
-                            && !navigation.isSameDocument();
-            if (!shouldTrack) {
-                // When navigation leads to an error page, download or chrome:// URLs, avoid
-                // recording both commit and FCP.
-                //
-                // In rare cases a same-document navigation can commit before all other
-                // http(s)+non-error navigations (crbug.com/40074911). Filter out such scenarios
-                // since they are counter-intuitive.
+
+            // In rare cases a same-document navigation can commit before all other
+            // http(s)+non-error navigations (crbug.com/40074911). Filter out such scenarios
+            // since they are counter-intuitive. Also discard if not committed or error page.
+            if (!navigation.hasCommitted()
+                    || navigation.isErrorPage()
+                    || navigation.isSameDocument()) {
                 destroy();
-            } else {
-                mFirstNavigationCommitted = true;
-                recordNavigationCommitMetrics();
+                return;
             }
+
+            if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()
+                    && UrlUtilities.isNtpUrl(navigation.getUrl())) {
+                mFirstNavigationCommitted = true;
+                return;
+            }
+
+            // When navigation leads to chrome:// URLs (except WebUI NTP) or other non-http/s
+            // schemes, avoid recording both commit and FCP.
+            if (!UrlUtilities.isHttpOrHttps(navigation.getUrl())) {
+                destroy();
+                return;
+            }
+            mFirstNavigationCommitted = true;
+            recordNavigationCommitMetrics();
         }
     }
 
@@ -315,28 +333,29 @@ public class StartupMetricsTracker {
 
     private void trackTimeToFirstDraw(View view, String histogram) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
-                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
+                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
+            return;
+        }
         FirstDrawDetector.waitForFirstDrawStrict(
                 view,
                 () -> {
                     long timeToFirstDrawMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
-                    if (NTP_COLD_START_HISTOGRAM.equals(histogram)) {
-                        recordBinderMetricsCold("NewTabPage");
-                    } else if (NTP_WEBUI_COLD_START_HISTOGRAM.equals(histogram)) {
-                        recordBinderMetricsCold("NewTabPageWebUi");
-                    }
-                    // During a cold start, first draw can be triggered while Chrome is in
-                    // the background, leading to ablated draw times. This early in the startup
-                    // process, events that indicate Chrome has been backgrounded do not run until
-                    // after the first draw pass. To work around this, post a task to be run with
-                    // a delay to record the metric once we can possibly verify if Chrome was ever
-                    // sent to the background during startup.
-                    PostTask.postDelayedTask(
-                            TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                            () -> recordTimeToFirstDraw(histogram, timeToFirstDrawMs),
-                            TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS);
-                    mShouldTrackTimeToFirstDraw = false;
+                    onFirstDrawDetected(histogram, timeToFirstDrawMs);
                 });
+    }
+
+    private void onFirstDrawDetected(String histogram, long timeToFirstDrawMs) {
+        if (NTP_COLD_START_HISTOGRAM.equals(histogram)) {
+            recordBinderMetricsCold("NewTabPage");
+        }
+        // During a cold start, first draw can be triggered while Chrome is in
+        // the background, leading to ablated draw times. Post a task to be run with
+        // a delay to record the metric once we can verify if Chrome was backgrounded.
+        PostTask.postDelayedTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> recordTimeToFirstDraw(histogram, timeToFirstDrawMs),
+                TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS);
+        mShouldTrackTimeToFirstDraw = false;
     }
 
     @SuppressWarnings("NullAway")
@@ -456,7 +475,9 @@ public class StartupMetricsTracker {
      */
     private void recordTimeToFirstDraw(String histogramName, long timeToFirstDrawMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
-                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
+                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
+            return;
+        }
         RecordHistogram.recordMediumTimesHistogram(histogramName, timeToFirstDrawMs);
     }
 
