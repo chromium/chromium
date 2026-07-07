@@ -54,7 +54,7 @@ scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
 }
 
 unsigned HashBitmap(const SkBitmap& bitmap) {
-  return StringHasher::HashMemory(
+  return StringHasher::HashMemory32(
       UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
                                 bitmap.computeByteSize())));
 }

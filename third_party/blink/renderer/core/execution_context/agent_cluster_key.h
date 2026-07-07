@@ -194,8 +194,7 @@ struct HashTraits<AgentClusterKey> : GenericHashTraits<AgentClusterKey> {
             : 0,
         cross_origin_isolation_mode,
     };
-    return static_cast<unsigned>(
-        StringHasher::HashMemory(base::as_byte_span(hash_codes)));
+    return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
   }
 
   static AgentClusterKey& EmptyValue() {

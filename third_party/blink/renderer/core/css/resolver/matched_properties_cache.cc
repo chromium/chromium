@@ -57,8 +57,7 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result,
                                HashTraits<unsigned>::DeletedValue();
                       }))
       << "This should have been checked in AddMatchedProperties()";
-  unsigned hash = static_cast<unsigned>(
-      StringHasher::HashMemory(base::as_byte_span(hashes)));
+  unsigned hash = StringHasher::HashMemory32(base::as_byte_span(hashes));
   return EnsureValidHash(HashInts(hash, additional_hash));
 }
 

@@ -67,7 +67,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       "d875dfc2-4505-461b-98fe-0cf6cc5eaf44", "path", "text/plain"));
 
   // Used to control what kind of extra data is provided to the deserializer.
-  unsigned hash = StringHasher::HashMemory(data_span);
+  unsigned hash = StringHasher::HashMemory32(data_span);
 
   SerializedScriptValue::DeserializeOptions options;
   MessagePortArray message_ports;

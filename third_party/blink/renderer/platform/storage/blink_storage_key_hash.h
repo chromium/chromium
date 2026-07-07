@@ -29,8 +29,7 @@ struct BlinkStorageKeyHashTraits
 #error "Unknown bits"
 #endif
     };
-    return static_cast<unsigned>(
-        StringHasher::HashMemory(base::as_byte_span(hash_codes)));
+    return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
   }
 
   static unsigned GetHash(

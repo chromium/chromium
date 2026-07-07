@@ -106,19 +106,19 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
 
 TEST(StringHasherTest, StringHasher_HashMemory) {
   EXPECT_EQ(kEmptyStringHash,
-            StringHasher::HashMemory(base::span<const uint8_t>()));
+            StringHasher::HashMemory64(base::span<const uint8_t>()));
   EXPECT_EQ(kEmptyStringHash,
-            StringHasher::HashMemory(base::span<const uint8_t, 0>()));
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(
+            StringHasher::HashMemory64(base::span<const uint8_t, 0>()));
+  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory64(
                                   base::as_byte_span(kNullUChars).first(0u)));
 
   EXPECT_EQ(
       kSingleNullCharacterHash,
-      StringHasher::HashMemory(base::as_byte_span(kNullUChars).first(1u)));
+      StringHasher::HashMemory64(base::as_byte_span(kNullUChars).first(1u)));
 
-  EXPECT_EQ(kTestAHash, StringHasher::HashMemory(kTestALChars));
+  EXPECT_EQ(kTestAHash, StringHasher::HashMemory64(kTestALChars));
   EXPECT_EQ(kTestBHash,
-            StringHasher::HashMemory(base::as_byte_span(kTestBUChars)));
+            StringHasher::HashMemory64(base::as_byte_span(kTestBUChars)));
 }
 
 TEST(StringHasherTest, DeprecatedCaseFoldingHash) {

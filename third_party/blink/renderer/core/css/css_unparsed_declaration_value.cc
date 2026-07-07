@@ -19,8 +19,7 @@ String CSSUnparsedDeclarationValue::CustomCSSText() const {
 }
 
 unsigned CSSUnparsedDeclarationValue::CustomHash() const {
-  return static_cast<unsigned>(
-      StringHasher::HashMemory(data_->OriginalText().RawByteSpan()));
+  return StringHasher::HashMemory32(data_->OriginalText().RawByteSpan());
 }
 
 }  // namespace blink

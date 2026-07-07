@@ -107,11 +107,10 @@ class FontFaceCreationParams {
         int id;
         uint64_t filename_hash;
       } hash_data = {ttc_index_, fontconfig_interface_id_,
-                     HasFilename() ? StringHasher::HashMemory(
+                     HasFilename() ? StringHasher::HashMemory64(
                                          base::as_byte_span(Filename()))
                                    : 0};
-      return static_cast<unsigned>(
-          StringHasher::HashMemory(base::byte_span_from_ref(hash_data)));
+      return StringHasher::HashMemory32(base::byte_span_from_ref(hash_data));
     }
     return DeprecatedCaseFoldingHash::GetHash(family_.empty() ? g_empty_atom
                                                               : family_);

@@ -523,8 +523,7 @@ struct HashTraits<scoped_refptr<const SecurityOrigin>>
 #error "Unknown bits"
 #endif
     };
-    return static_cast<unsigned>(
-        StringHasher::HashMemory(base::as_byte_span(hash_codes)));
+    return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
   }
   static unsigned GetHash(const scoped_refptr<const SecurityOrigin>& origin) {
     return GetHash(origin.get());
