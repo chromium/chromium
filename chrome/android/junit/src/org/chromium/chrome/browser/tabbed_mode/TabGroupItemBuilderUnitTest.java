@@ -12,6 +12,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tabbed_mode.AppMenuUnitTestUtils.findItemById;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -133,15 +135,6 @@ public class TabGroupItemBuilderUnitTest {
         when(tabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab));
 
         return tab;
-    }
-
-    private ListItem findItemById(List<ListItem> items, int id) {
-        for (ListItem item : items) {
-            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == id) {
-                return item;
-            }
-        }
-        return null;
     }
 
     @Test
