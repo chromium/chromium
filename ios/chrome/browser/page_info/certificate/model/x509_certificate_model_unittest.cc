@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -104,6 +105,18 @@ TEST_F(X509CertificateModelTest, GetGoogleCertFields) {
   // Dec 18 23:59:59 2011 GMT
   const double kGoogleParseValidTo = 1324252799;
   EXPECT_EQ(kGoogleParseValidTo, not_after.InSecondsFSinceUnixEpoch());
+
+  // Signature information.
+  EXPECT_EQ("PKCS #1 SHA-1 With RSA Encryption", model.GetSignatureAlgorithm());
+  EXPECT_EQ("None", model.GetSignatureParameters());
+  EXPECT_EQ(
+      "9F 43 CF 5B C4 50 29 B1 BF E2 B0 9A FF 6A 21 1D 2D 12 C3 2C 4E 5A "
+      "F9 12 E2 CE B9 82 52 2D E7 1D 7E 1A 76 96 90 79 D1 24 52 38 79 BB "
+      "63 8D 80 97 7C 23 20 0F 91 4D 16 B9 EA EE F4 6D 89 CA C6 BD CC 24 "
+      "68 D6 43 5B CE 2A 58 BF 3C 18 E0 E0 3C 62 CF 96 02 2D 28 47 50 34 "
+      "E1 27 BA CF 99 D1 50 FF 29 25 C0 36 36 15 33 52 70 BE 31 8F 9F E8 "
+      "7F E7 11 0C 8D BF 84 A0 42 1A 80 89 B0 31 58 41 07 5F",
+      model.GetSignatureData());
 }
 
 TEST_F(X509CertificateModelTest, GetNDNCertFields) {
@@ -214,6 +227,27 @@ TEST_F(X509CertificateModelTest, SubjectEmptySequence) {
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
   EXPECT_TRUE(model.GetSubjectAttributesInOrder().empty());
+}
+
+TEST_F(X509CertificateModelTest, SignatureParametersRawBytes) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {
+  //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.11 }  # sha256WithRSAEncryption
+  //   OCTET_STRING { DE AD BE EF }                 # bogus, but non-NULL
+  // }
+  const uint8_t kAlg[] = {0x30, 0x11, 0x06, 0x09, 0x2A, 0x86, 0x48,
+                          0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0B, 0x04,
+                          0x04, 0xDE, 0xAD, 0xBE, 0xEF};
+  builder->SetSignatureAlgorithmTLV(base::as_string_view(kAlg));
+  builder->SetTBSSignatureAlgorithmTLV(base::as_string_view(kAlg));
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+  EXPECT_EQ("04 04 DE AD BE EF", model.GetSignatureParameters());
 }
 
 }  // namespace x509_certificate_model

@@ -61,6 +61,16 @@ class X509CertificateModel : public X509CertificateModelBase {
   // ordering used by Safari's certificate viewer.
   std::vector<RDNAttribute> GetSubjectAttributesInOrder() const;
   std::vector<RDNAttribute> GetIssuerAttributesInOrder() const;
+
+  // Returns the signature algorithm name (e.g. "PKCS #1 SHA-256 With RSA
+  // Encryption")
+  std::string GetSignatureAlgorithm() const;
+
+  // Returns the signature algorithm parameters if any.
+  std::string GetSignatureParameters() const;
+
+  // Returns the signature data as hex encoded string.
+  std::string GetSignatureData() const;
 };
 
 }  // namespace x509_certificate_model

@@ -11,6 +11,7 @@ source_set("model") {
     "//base",
     "//components/certificate_model",
     "//crypto",
+    "//ios/chrome/app/strings",
     "//net",
     "//third_party/boringssl",
     "//ui/base",
