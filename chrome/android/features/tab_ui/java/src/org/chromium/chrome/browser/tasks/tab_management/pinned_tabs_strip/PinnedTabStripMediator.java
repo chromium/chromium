@@ -479,6 +479,12 @@ public class PinnedTabStripMediator {
     void destroy() {
         mTabLisCoordinator.removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         mTabModelSupplier.removeObserver(mOnTabModelChanged);
+        // Remove the observer onTabModelChanged() added; removeObserver above won't. Mirrors
+        // TabSwitcherPaneCoordinator.destroy().
+        TabModel currentTabModel = mTabModelSupplier.get();
+        if (currentTabModel != null) {
+            currentTabModel.removeObserver(mTabModelObserver);
+        }
         if (mTabGroupListBottomSheetCoordinator != null) {
             mTabGroupListBottomSheetCoordinator.destroy();
             mTabGroupListBottomSheetCoordinator = null;

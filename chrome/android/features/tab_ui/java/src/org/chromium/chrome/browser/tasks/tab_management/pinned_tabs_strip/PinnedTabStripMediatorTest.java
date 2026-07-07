@@ -574,6 +574,9 @@ public class PinnedTabStripMediatorTest {
         mMediator.destroy();
         verify(mTabListCoordinator)
                 .removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
+        // Regression test: destroy() must remove the TabModel observer to avoid leaking the
+        // mediator.
+        verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
     }
 
     @Test
