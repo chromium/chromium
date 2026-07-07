@@ -13,6 +13,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -26,11 +27,25 @@ class GlicSelectionWidgetTest : public ChromeViewsTestBase {
   GlicSelectionWidgetTest() = default;
   ~GlicSelectionWidgetTest() override = default;
 
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    animation_resetter_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  }
+
+  void TearDown() override {
+    animation_resetter_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
  protected:
   void TriggerMenuCommand(GlicSelectionWidgetDelegate* delegate,
                           int command_id) {
     delegate->TriggerMenuCommandForTesting(command_id);
   }
+
+ private:
+  gfx::AnimationTestApi::RenderModeResetter animation_resetter_;
 };
 
 class TestWidgetObserver : public views::WidgetObserver {
@@ -206,6 +221,7 @@ TEST_F(GlicSelectionWidgetTest, ShowAndCloseWidget) {
   widget_delegate->ShowWidget();
   views::Widget* widget = widget_delegate->GetWidget();
   ASSERT_TRUE(widget);
+  widget->Show();
   EXPECT_TRUE(widget->IsVisible());
 
   TestWidgetObserver observer(widget);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -202,6 +203,17 @@ class GlicSelectionMenuModelAdapter : public views::MenuModelAdapter {
   base::WeakPtrFactory<GlicSelectionMenuModelAdapter> weak_ptr_factory_{this};
 };
 
+std::u16string GetCtaLabel() {
+  std::string cta = features::kGlicSelectionPromptCta.Get();
+  if (cta == features::kGlicSelectionPromptCtaTellMe) {
+    return l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_CTA_TELL_ME);
+  }
+  if (cta == features::kGlicSelectionPromptCtaExplain) {
+    return l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_CTA_EXPLAIN);
+  }
+  return l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
+}
+
 class GlicSelectionContentsView : public views::View,
                                   public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
@@ -262,8 +274,7 @@ class GlicSelectionContentsView : public views::View,
             base::BindRepeating(
                 &GlicSelectionWidgetDelegate::ActionDelegate::OnAskGemini,
                 base::Unretained(&widget_delegate_->action_delegate())),
-            l10n_util::GetStringUTF16(
-                IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL)));
+            GetCtaLabel()));
     ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
     ask_gemini_btn->SetImageLabelSpacing(4);

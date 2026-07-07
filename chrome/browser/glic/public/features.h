@@ -42,6 +42,9 @@ extern const base::FeatureParam<std::string> kGlicSelectionTopCueOnlyList;
 extern const base::FeatureParam<bool> kGlicSelectionEnableSiteSettings;
 extern const base::FeatureParam<bool> kGlicSelectionShowCopyButtons;
 extern const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt;
+extern const base::FeatureParam<std::string> kGlicSelectionPromptCta;
+inline constexpr char kGlicSelectionPromptCtaTellMe[] = "tell_me_about_this";
+inline constexpr char kGlicSelectionPromptCtaExplain[] = "explain";
 
 BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
 

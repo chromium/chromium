@@ -609,8 +609,14 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
               CreateAdditionalContext(web_contents.get(), selected_text),
               content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
           if (features::kGlicSelectionAutoSendPrompt.Get()) {
-            options.prompts.push_back(l10n_util::GetStringUTF8(
-                IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME));
+            std::string cta = features::kGlicSelectionPromptCta.Get();
+            std::string prompt = l10n_util::GetStringUTF8(
+                IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME);
+            if (cta == features::kGlicSelectionPromptCtaExplain) {
+              prompt = l10n_util::GetStringUTF8(
+                  IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_EXPLAIN);
+            }
+            options.prompts.push_back(prompt);
             glic_keyed_service->InvokeWithAutoSubmit(
                 InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
                 std::move(options));
