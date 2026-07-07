@@ -197,6 +197,7 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetJustifyItems(StyleRef().JustifyItems());
   child_style_builder.SetOverflowX(StyleRef().OverflowX());
   child_style_builder.SetOverflowY(StyleRef().OverflowY());
+  child_style_builder.SetScrollbarGutter(StyleRef().ScrollbarGutter());
   child_style_builder.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
 }
 

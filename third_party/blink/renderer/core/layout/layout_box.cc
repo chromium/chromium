@@ -1493,6 +1493,12 @@ bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
   if (StyleRef().IsScrollbarGutterAuto())
     return false;
 
+  // A box that doesn't respect CSS overflow can never show scrollbars itself,
+  // so it reserves no scrollbar gutter.
+  if (!RespectsCSSOverflow()) {
+    return false;
+  }
+
   DCHECK(StyleRef().IsScrollbarGutterStable());
 
   // Scrollbar-gutter propagates to the viewport

@@ -2132,7 +2132,8 @@ void GridLanesLayoutAlgorithm::RebuildSubgridLayoutDataForResolvedPlacement(
   const ConstraintSpace subgrid_space =
       CreateConstraintSpaceForLayout(subgridded_item_data);
   const FragmentGeometry subgrid_fragment_geometry =
-      CalculateInitialFragmentGeometryForSubgrid(subgrid_item, subgrid_space);
+      CalculateInitialFragmentGeometryForSubgrid(subgrid_item, subgrid_space,
+                                                 child_sizing_subtree);
 
   const GridLayoutAlgorithm subgrid_algorithm(
       {subgrid_item.node, subgrid_fragment_geometry, subgrid_space});
