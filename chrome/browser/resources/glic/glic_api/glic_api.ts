@@ -2814,6 +2814,8 @@ export enum SettingsPageField {
   OS_HOTKEY = 1,
   // The OS entrypoint enabling field.
   OS_ENTRYPOINT_TOGGLE = 2,
+  // The location permission field.
+  LOCATION_PERMISSION = 3,
 }
 
 ///////////////////////////////////////////////

@@ -717,23 +717,27 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OpenGlicSettingsPage(mojom::OpenSettingsOptionsPtr options) override {
+    std::string_view metric_suffix;
     switch (options->highlightField) {
       case mojom::SettingsPageField::kOsHotkey:
         ::glic::OpenGlicKeyboardShortcutSetting(profile_);
-        base::RecordAction(
-            base::UserMetricsAction("GlicSessionSettingsOpened.OsHotkey"));
+        metric_suffix = "OsHotkey";
         break;
       case mojom::SettingsPageField::kOsEntrypointToggle:
         ::glic::OpenGlicOsToggleSetting(profile_);
-        base::RecordAction(base::UserMetricsAction(
-            "GlicSessionSettingsOpened.OsEntrypointToggle"));
+        metric_suffix = "OsEntrypointToggle";
+        break;
+      case mojom::SettingsPageField::kLocationPermission:
+        ::glic::OpenGlicLocationSetting(profile_);
+        metric_suffix = "LocationPermission";
         break;
       case mojom::SettingsPageField::kNone:  // Default value.
         ::glic::OpenGlicSettingsPage(profile_);
-        base::RecordAction(
-            base::UserMetricsAction("GlicSessionSettingsOpened.Default"));
+        metric_suffix = "Default";
         break;
     }
+    base::RecordComputedAction(
+        base::StrCat({"GlicSessionSettingsOpened.", metric_suffix}));
   }
 
   void OpenPasswordManagerSettingsPage() override {

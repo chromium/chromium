@@ -25,6 +25,10 @@ void OpenGlicKeyboardShortcutSetting(Profile* profile) {
   ShowGlicSettings(GlicSettingsPage::kMain);
 }
 
+void OpenGlicLocationSetting(Profile* profile) {
+  ShowGlicSettings(GlicSettingsPage::kMain, "location_permission");
+}
+
 void OpenPasswordManagerSettingsPage(Profile* profile) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kActorLoginPermissionsUi)) {

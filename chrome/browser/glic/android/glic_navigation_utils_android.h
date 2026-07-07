@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_ANDROID_GLIC_NAVIGATION_UTILS_ANDROID_H_
 #define CHROME_BROWSER_GLIC_ANDROID_GLIC_NAVIGATION_UTILS_ANDROID_H_
 
+#include <string_view>
+
 class Profile;
 
 namespace content {
@@ -25,7 +27,8 @@ enum class GlicSettingsPage {
 };
 
 // Opens the GLIC `settings_page` on Android.
-void ShowGlicSettings(GlicSettingsPage settings_page);
+void ShowGlicSettings(GlicSettingsPage settings_page,
+                      std::string_view highlight_field = "");
 
 // Opens the GLIC signin activity on Android. `web_contents` is used to find the
 // activity to display the sign-in sheet.

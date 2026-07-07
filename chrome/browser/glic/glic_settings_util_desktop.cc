@@ -90,6 +90,11 @@ void OpenGlicKeyboardShortcutSetting(Profile* profile) {
       profile, features::kGlicKeyboardShortcutNewBadge, std::move(params));
 }
 
+void OpenGlicLocationSetting(Profile* profile) {
+  // TODO(b/530259491): Highlight the geolocation toggle on the settings page.
+  OpenGlicSettingsPage(profile);
+}
+
 void OpenPasswordManagerSettingsPage(Profile* profile) {
   const GURL settings_url =
       base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)

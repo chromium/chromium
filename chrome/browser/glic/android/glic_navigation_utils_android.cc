@@ -4,7 +4,10 @@
 
 #include "chrome/browser/glic/android/glic_navigation_utils_android.h"
 
+#include <string_view>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 
@@ -13,9 +16,12 @@
 
 namespace glic {
 
-void ShowGlicSettings(GlicSettingsPage settings_page) {
+void ShowGlicSettings(GlicSettingsPage settings_page,
+                      std::string_view highlight_field) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   Java_GlicNavigationUtils_showGlicSettings(
-      base::android::AttachCurrentThread(), static_cast<int>(settings_page));
+      env, static_cast<int>(settings_page),
+      base::android::ConvertUTF8ToJavaString(env, highlight_field));
 }
 
 void ShowSignIn(Profile* profile, content::WebContents* web_contents) {

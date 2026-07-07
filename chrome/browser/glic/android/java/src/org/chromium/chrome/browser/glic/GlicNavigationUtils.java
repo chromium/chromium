@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.glic;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
@@ -33,6 +34,8 @@ import java.util.function.Supplier;
 /** Bridge between Java and native GLIC code to launch GLIC settings. */
 @NullMarked
 public class GlicNavigationUtils {
+    public static final String EXTRA_HIGHLIGHT_FIELD =
+            "org.chromium.chrome.browser.glic.highlight_field";
     private static @Nullable Supplier<SigninAndHistorySyncActivityLauncher> sLauncherSupplier;
 
     /**
@@ -51,7 +54,7 @@ public class GlicNavigationUtils {
 
     /** Opens the GLIC settings page. */
     @CalledByNative
-    static void showGlicSettings(@GlicSettingsPage int settingsPage) {
+    static void showGlicSettings(@GlicSettingsPage int settingsPage, String highlightField) {
         Context context = ContextUtils.getApplicationContext();
 
         SettingsNavigation settingsNavigation =
@@ -66,7 +69,9 @@ public class GlicNavigationUtils {
                 fragmentClass = GlicSettings.class;
                 break;
         }
-        settingsNavigation.startSettings(context, fragmentClass);
+        Bundle args = new Bundle();
+        args.putString(EXTRA_HIGHLIGHT_FIELD, highlightField);
+        settingsNavigation.startSettings(context, fragmentClass, args);
     }
 
     /**

@@ -2498,6 +2498,7 @@ union GetImageBytesResult {
 
 // @generate glic_api
 // Fields of interest from the Glic settings page.
+// Next version: 2
 [Stable, Extensible]
 enum SettingsPageField {
   [Default] kNone = 0,
@@ -2505,6 +2506,8 @@ enum SettingsPageField {
   kOsHotkey,
   // The OS entrypoint enabling field.
   kOsEntrypointToggle,
+  // The location permission field.
+  [MinVersion=1] kLocationPermission,
 };
 
 // @generate glic_api
