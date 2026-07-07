@@ -42,9 +42,10 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
         }
 
         final BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
+        final Supplier<ShoppingService> shoppingServiceSupplier = mShoppingServiceSupplier;
         bookmarkModel.finishLoadingBookmarkModel(
                 () -> {
-                    ShoppingService shoppingService = mShoppingServiceSupplier.get();
+                    ShoppingService shoppingService = shoppingServiceSupplier.get();
 
                     // If the user isn't allowed to have the shopping list feature, don't do any
                     // more work.
