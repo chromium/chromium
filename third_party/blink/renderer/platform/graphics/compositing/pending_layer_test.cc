@@ -524,5 +524,52 @@ TEST_P(PendingLayerTextOpaquenessTest, UnitedClippedToOpaque) {
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
 
+TEST(PendingLayerTest, MergeCanvasSubtreeIncompatiblePropertyTreeState) {
+  EffectPaintPropertyNode::State canvas_effect_state;
+  canvas_effect_state.is_in_canvas_subtree = true;
+  auto* canvas_effect =
+      EffectPaintPropertyNode::Create(e0(), std::move(canvas_effect_state));
+
+  TransformPaintPropertyNode::State transform_state;
+  transform_state.backface_visibility =
+      TransformPaintPropertyNode::BackfaceVisibility::kHidden;
+  auto* backface_hidden_transform =
+      TransformPaintPropertyNode::Create(t0(), std::move(transform_state));
+
+  auto& artifact = TestPaintArtifact()
+                       .Chunk(t0(), c0(), *canvas_effect)
+                       .Bounds(gfx::Rect(0, 0, 30, 40))
+                       .Chunk(*backface_hidden_transform, c0(), *canvas_effect)
+                       .Bounds(gfx::Rect(10, 20, 30, 40))
+                       .Chunk(t0(), c0(), e0())
+                       .Bounds(gfx::Rect(0, 0, 30, 40))
+                       .Chunk(*backface_hidden_transform, c0(), e0())
+                       .Bounds(gfx::Rect(10, 20, 30, 40))
+                       .Build();
+
+  // Inside canvas subtree: force merge succeeds despite incompatible backface
+  // visibility.
+  PendingLayer canvas_layer_a(artifact, artifact.GetPaintChunks()[0]);
+  PendingLayer canvas_layer_b(artifact, artifact.GetPaintChunks()[1]);
+
+  EXPECT_FALSE(canvas_layer_a.GetPropertyTreeState()
+                   .CanUpcastWith(canvas_layer_b.GetPropertyTreeState(),
+                                  DefaultIsCompositedScroll)
+                   .has_value());
+
+  ASSERT_TRUE(Merge(canvas_layer_a, canvas_layer_b));
+  EXPECT_EQ(artifact.GetPaintChunks()[0].properties,
+            canvas_layer_a.GetPropertyTreeState());
+  EXPECT_THAT(ChunkIndices(canvas_layer_a), ElementsAre(0, 1));
+
+  // Outside canvas subtree: merge fails due to incompatible backface
+  // visibility.
+  PendingLayer non_canvas_layer_a(artifact, artifact.GetPaintChunks()[2]);
+  PendingLayer non_canvas_layer_b(artifact, artifact.GetPaintChunks()[3]);
+
+  EXPECT_FALSE(Merge(non_canvas_layer_a, non_canvas_layer_b));
+  EXPECT_THAT(ChunkIndices(non_canvas_layer_a), ElementsAre(2));
+}
+
 }  // namespace
 }  // namespace blink

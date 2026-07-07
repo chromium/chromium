@@ -214,10 +214,25 @@ bool PendingLayer::CanMerge(
     bool& merged_text_known_to_be_on_opaque_background,
     wtf_size_t& merged_solid_color_chunk_index,
     cc::HitTestOpaqueness& merged_hit_test_opaqueness) const {
+  // Force merge all content under canvas so that it can be drawn using
+  // html-in-canvas APIs, and so that it is not drawn as a regular
+  // cc::Layer.
+  bool force_merge = GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
+                     guest.GetPropertyTreeState().Effect().IsInCanvasSubtree();
+
   std::optional<PropertyTreeState> optional_merged_state =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
   if (!optional_merged_state) {
-    return false;
+    // TODO(paint-dev): what should we do when the property tree state of the
+    // descendant of a canvas child fails CanUpcastWith with the canvas child's
+    // property state? Our solution here is to force the descendant to paint
+    // into the property state of the canvas child, which will do *something*
+    // but not the right thing.
+    if (force_merge) {
+      optional_merged_state.emplace(GetPropertyTreeState());
+    } else {
+      return false;
+    }
   }
 
   merged_state = *optional_merged_state;
@@ -261,7 +276,6 @@ bool PendingLayer::CanMerge(
   merged_bounds =
       gfx::UnionRects(new_home_bounds.Rect(), new_guest_bounds.Rect());
 
-  bool force_merge = false;
   // If guest.has_decomposited_blend_mode_ is true, this function must merge
   // unconditionally and return because the decomposited blend mode requires
   // the merge. See PaintArtifactCompositor::DecompositeEffect().
@@ -272,14 +286,6 @@ bool PendingLayer::CanMerge(
   // - LCD text will be disabled with exotic blend mode.
   if (guest.has_decomposited_blend_mode_) {
     force_merge = true;
-  }
-
-  // Force merge all content under canvas so that it can be drawn using
-  // html-in-canvas APIs, and so that it is not drawn as a regular
-  // cc::Layer.
-  if (!force_merge) {
-    force_merge = GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
-                  guest.GetPropertyTreeState().Effect().IsInCanvasSubtree();
   }
 
   if (!force_merge) {
