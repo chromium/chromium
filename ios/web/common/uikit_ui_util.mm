@@ -24,5 +24,5 @@ UIWindow* GetAnyKeyWindow() {
 }
 
 UIInterfaceOrientation GetInterfaceOrientation() {
-  return GetAnyKeyWindow().windowScene.interfaceOrientation;
+  return GetAnyKeyWindow().windowScene.effectiveGeometry.interfaceOrientation;
 }
