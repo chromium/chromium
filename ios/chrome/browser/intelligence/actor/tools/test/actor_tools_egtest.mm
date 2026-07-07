@@ -12,17 +12,23 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/password_manager/core/browser/features/password_features.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -177,15 +183,27 @@ FindNodeResult FindNodeWithText(
                  @"Cross origin server failed to start.");
 }
 
+- (void)tearDownHelper {
+  [PasswordManagerAppInterface clearCredentials];
+  [super tearDownHelper];
+}
+
 #pragma mark - Helpers
+
+// Relaunches the app with the Actor Login feature enabled.
+- (void)launchAppWithActorLoginEnabled {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_enabled.push_back(password_manager::features::kActorLogin);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
 
 // Returns a URL for the given `html` content using the given `server`.
 - (GURL)URLForHTML:(const std::string&)html
             server:(net::test_server::EmbeddedTestServer*)server {
   GURL url = server->GetURL("/echo");
-  std::string escaped_content = base::EscapeQueryParamValue(html, true);
+  std::string escapedContent = base::EscapeQueryParamValue(html, true);
   GURL::Replacements replacements;
-  std::string query = "content=" + escaped_content;
+  std::string query = "content=" + escapedContent;
   replacements.SetQueryStr(query);
   return url.ReplaceComponents(replacements);
 }
@@ -232,6 +250,26 @@ FindNodeResult FindNodeWithText(
       })();
       )",
       selector.c_str()));
+}
+
+// Sets the coordinates on `target` using the center coordinates of the element
+// matching `selector`.
+- (void)setCoordinatesOnTarget:(optimization_guide::proto::ActionTarget*)target
+                  withSelector:(const std::string&)selector {
+  NSString* script = [self findCenterJsForElementWithSelector:selector];
+  base::Value result = [ChromeEarlGrey evaluateJavaScript:script];
+  GREYAssertTrue(result.is_dict(), @"Result is not a dict");
+
+  std::optional<double> optionalX = result.GetDict().FindDouble("x");
+  GREYAssertTrue(optionalX.has_value(), @"x coordinate not found");
+  int x = static_cast<int>(optionalX.value());
+
+  std::optional<double> optionalY = result.GetDict().FindDouble("y");
+  GREYAssertTrue(optionalY.has_value(), @"y coordinate not found");
+  int y = static_cast<int>(optionalY.value());
+
+  target->mutable_coordinate()->set_x(x);
+  target->mutable_coordinate()->set_y(y);
 }
 
 #pragma mark - Tests
@@ -292,28 +330,14 @@ FindNodeResult FindNodeWithText(
   [ChromeEarlGrey loadURL:[self URLForHTML:buttonHTML]];
   [ChromeEarlGrey waitForWebStateContainingText:"Click Me"];
 
-  NSString* script = [self findCenterJsForElementWithSelector:"button"];
-  base::Value result = [ChromeEarlGrey evaluateJavaScript:script];
-  GREYAssertTrue(result.is_dict(), @"Result is not a dict");
-
-  std::optional<double> x_opt = result.GetDict().FindDouble("x");
-  GREYAssertTrue(x_opt.has_value(), @"x coordinate not found");
-  int x = static_cast<int>(x_opt.value());
-
-  std::optional<double> y_opt = result.GetDict().FindDouble("y");
-  GREYAssertTrue(y_opt.has_value(), @"y coordinate not found");
-  int y = static_cast<int>(y_opt.value());
-
   optimization_guide::proto::Action action;
   optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
   clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
   clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
   clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
 
-  optimization_guide::proto::ActionTarget* target =
-      clickAction->mutable_target();
-  target->mutable_coordinate()->set_x(x);
-  target->mutable_coordinate()->set_y(y);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"button"];
 
   [self executeAction:action];
 
@@ -485,23 +509,14 @@ FindNodeResult FindNodeWithText(
       waitForWebStateContainingElement:[ElementSelector
                                            selectorWithCSSSelector:"input"]];
 
-  NSString* getCoordinates = [self findCenterJsForElementWithSelector:"input"];
-  base::Value coordinates = [ChromeEarlGrey evaluateJavaScript:getCoordinates];
-  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
-
-  int x = static_cast<int>(coordinates.GetDict().FindDouble("x").value());
-  int y = static_cast<int>(coordinates.GetDict().FindDouble("y").value());
-
   optimization_guide::proto::Action action;
   optimization_guide::proto::TypeAction* typeAction = action.mutable_type();
   typeAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
   typeAction->set_text("Hello World");
   typeAction->set_mode(optimization_guide::proto::TypeAction::APPEND);
 
-  optimization_guide::proto::ActionTarget* target =
-      typeAction->mutable_target();
-  target->mutable_coordinate()->set_x(x);
-  target->mutable_coordinate()->set_y(y);
+  [self setCoordinatesOnTarget:typeAction->mutable_target()
+                  withSelector:"input"];
 
   [self executeAction:action];
 
@@ -577,13 +592,6 @@ FindNodeResult FindNodeWithText(
       waitForWebStateContainingElement:[ElementSelector
                                            selectorWithCSSSelector:"div"]];
 
-  NSString* getCoordinates = [self findCenterJsForElementWithSelector:"#outer"];
-  base::Value coordinates = [ChromeEarlGrey evaluateJavaScript:getCoordinates];
-  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
-
-  int x = static_cast<int>(coordinates.GetDict().FindDouble("x").value());
-  int y = static_cast<int>(coordinates.GetDict().FindDouble("y").value());
-
   optimization_guide::proto::Action action;
   optimization_guide::proto::ScrollAction* scrollAction =
       action.mutable_scroll();
@@ -591,10 +599,8 @@ FindNodeResult FindNodeWithText(
   scrollAction->set_direction(optimization_guide::proto::ScrollAction::DOWN);
   scrollAction->set_distance(12.999);
 
-  optimization_guide::proto::ActionTarget* target =
-      scrollAction->mutable_target();
-  target->mutable_coordinate()->set_x(x);
-  target->mutable_coordinate()->set_y(y);
+  [self setCoordinatesOnTarget:scrollAction->mutable_target()
+                  withSelector:"#outer"];
 
   [self executeAction:action];
 
@@ -829,22 +835,14 @@ FindNodeResult FindNodeWithText(
       waitForWebStateContainingElement:[ElementSelector
                                            selectorWithCSSSelector:"select"]];
 
-  NSString* getCoordinates = [self findCenterJsForElementWithSelector:"select"];
-  base::Value coordinates = [ChromeEarlGrey evaluateJavaScript:getCoordinates];
-  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
-
   optimization_guide::proto::Action action;
   optimization_guide::proto::SelectAction* selectAction =
       action.mutable_select();
   selectAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
   selectAction->set_value("v2");
 
-  optimization_guide::proto::ActionTarget* target =
-      selectAction->mutable_target();
-  target->mutable_coordinate()->set_x(
-      static_cast<int>(coordinates.GetDict().FindDouble("x").value()));
-  target->mutable_coordinate()->set_y(
-      static_cast<int>(coordinates.GetDict().FindDouble("y").value()));
+  [self setCoordinatesOnTarget:selectAction->mutable_target()
+                  withSelector:"select"];
 
   [self executeAction:action];
 
@@ -999,20 +997,13 @@ FindNodeResult FindNodeWithText(
   (void)[ChromeEarlGrey evaluateJavaScript:configScript];
 
   // Set up a click action.
-  base::Value coordinates = [ChromeEarlGrey
-      evaluateJavaScript:[self findCenterJsForElementWithSelector:"#mutate"]];
-  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
-  int x = static_cast<int>(coordinates.GetDict().FindDouble("x").value());
-  int y = static_cast<int>(coordinates.GetDict().FindDouble("y").value());
   optimization_guide::proto::Action action;
   optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
   clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
   clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
   clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
-  optimization_guide::proto::ActionTarget* target =
-      clickAction->mutable_target();
-  target->mutable_coordinate()->set_x(x);
-  target->mutable_coordinate()->set_y(y);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"#mutate"];
 
   // Track the duration of the action execution.
   base::TimeTicks startTime = base::TimeTicks::Now();
@@ -1059,20 +1050,13 @@ FindNodeResult FindNodeWithText(
   (void)[ChromeEarlGrey evaluateJavaScript:configScript];
 
   // Set up a click action.
-  base::Value coordinates = [ChromeEarlGrey
-      evaluateJavaScript:[self findCenterJsForElementWithSelector:"#mutate"]];
-  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
-  int x = static_cast<int>(coordinates.GetDict().FindDouble("x").value());
-  int y = static_cast<int>(coordinates.GetDict().FindDouble("y").value());
   optimization_guide::proto::Action action;
   optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
   clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
   clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
   clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
-  optimization_guide::proto::ActionTarget* target =
-      clickAction->mutable_target();
-  target->mutable_coordinate()->set_x(x);
-  target->mutable_coordinate()->set_y(y);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"#mutate"];
   // Track the duration of the action execution.
   base::TimeTicks startTime = base::TimeTicks::Now();
   base::TimeDelta duration;
@@ -1106,6 +1090,365 @@ FindNodeResult FindNodeWithText(
   GREYAssertEqual(finalTabCount, initialTabCount - 1,
                   @"Expected tab count to decrease by 1, was %d -> %d",
                   initialTabCount, finalTabCount);
+}
+
+// Tests that the `AttemptLoginTool` fills the login form with existing
+// credentials from Password Manager, assuming that device authentication is
+// enabled.
+- (void)testAttemptLoginTool_fillsLoginForm_Reauth {
+  [self launchAppWithActorLoginEnabled];
+
+  // Establish reauth.
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+
+  // Establish login form HTML.
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  GURL url = self.testServer->GetURL("/simple_login_form_empty.html");
+
+  // Inject one credential for this page's URL in the password store.
+  NSString* username = @"test_user";
+  NSString* password = @"test_password";
+
+  // Clear any existing credentials before starting the test.
+  [PasswordManagerAppInterface clearCredentials];
+
+  NSError* storeError = [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(url)];
+  GREYAssertNil(storeError, @"Failed to store credential");
+
+  // Load the page and wait for the form to appear.
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+
+  // Construct AttemptLoginAction.
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::AttemptLoginAction* attemptLogin =
+      action.mutable_attempt_login();
+  attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
+      attemptLogin->add_login_targets();
+  loginTarget->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  [self setCoordinatesOnTarget:loginTarget->mutable_target()
+                  withSelector:"#submit_button"];
+
+  // Execute the action asynchronously (as it blocks waiting for reauth).
+  std::string serializedAction;
+  action.SerializeToString(&serializedAction);
+  NSData* actionData = [NSData dataWithBytes:serializedAction.data()
+                                      length:serializedAction.length()];
+
+  __block NSError* executionError = nil;
+  __block BOOL actionCompleted = NO;
+
+  [ActorAppInterface executeActionWithProto:actionData
+                                 completion:^(NSError* error) {
+                                   executionError = error;
+                                   actionCompleted = YES;
+                                 }];
+
+  // Verify that the login form was NOT filled before reauth is passed.
+  NSString* notFilledCondition =
+      @"document.getElementById('un')?.value === '' && "
+       "document.getElementById('pw')?.value === ''";
+  [ChromeEarlGrey waitForJavaScriptCondition:notFilledCondition];
+
+  // Manually trigger the successful re-authentication result.
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Wait for the action to complete.
+  BOOL success = [[GREYCondition conditionWithName:@"Wait for action completion"
+                                             block:^BOOL {
+                                               return actionCompleted;
+                                             }] waitWithTimeout:10.0];
+
+  GREYAssertTrue(success, @"Action timed out.");
+  GREYAssertNil(executionError, @"Action failed: %@", executionError);
+
+  // Verify that the login form was filled.
+  NSString* condition = [NSString
+      stringWithFormat:@"document.getElementById('%s')?.value === '%@' && "
+                       @"!!document.getElementById('%s')?.value",
+                       "un", username, "pw"];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Tests that the `AttemptLoginTool` fills the login form with existing
+// credentials from Password Manager, assuming that device authentication is
+// disabled.
+- (void)testAttemptLoginTool_fillsLoginForm_NoReauth {
+  [self launchAppWithActorLoginEnabled];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  // Establish login form HTML.
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  GURL url = self.testServer->GetURL("/simple_login_form_empty.html");
+
+  // Inject one credential for this page's URL in the password store.
+  NSString* username = @"test_user";
+  NSString* password = @"test_password";
+
+  // Clear any existing credentials before starting the test.
+  [PasswordManagerAppInterface clearCredentials];
+
+  NSError* storeError = [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(url)];
+  GREYAssertNil(storeError, @"Failed to store credential");
+
+  // Load the page and wait for the form to appear.
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+
+  // Construct AttemptLoginAction.
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::AttemptLoginAction* attemptLogin =
+      action.mutable_attempt_login();
+  attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
+      attemptLogin->add_login_targets();
+  loginTarget->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  [self setCoordinatesOnTarget:loginTarget->mutable_target()
+                  withSelector:"#submit_button"];
+
+  // Execute the action and wait for execution.
+  [self executeAction:action];
+
+  // Verify that the login form was filled.
+  NSString* condition = [NSString
+      stringWithFormat:@"document.getElementById('%s')?.value === '%@' && "
+                       @"!!document.getElementById('%s')?.value",
+                       "un", username, "pw"];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Tests that the `AttemptLoginTool` scrolls and fills the login form with
+// existing credentials from Password Manager when the form is located further
+// down the page.
+- (void)testAttemptLoginTool_scrollsAndFillsLoginForm {
+  [self launchAppWithActorLoginEnabled];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  // Establish login form HTML.
+  std::string html =
+      "<div style=\"width: 100px; height: 2000px; background-color: "
+      "gray;\">Long Advertisement</div>"
+      "Login form."
+      "<form name='login_form' id='login_form'>"
+      "  <input type='text' name='username' id='un'><br/>"
+      "  <input type='password' name='password' id='pw'><br/>"
+      "  <button id='submit_button' value='Submit'>SubForm</button>"
+      "</form>";
+  GURL url = [self URLForHTML:html];
+
+  // Inject one credential for this page's URL in the password store.
+  NSString* username = @"test_user";
+  NSString* password = @"test_password";
+
+  // Clear any existing credentials before starting the test.
+  [PasswordManagerAppInterface clearCredentials];
+
+  NSError* storeError = [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(url)];
+  GREYAssertNil(storeError, @"Failed to store credential");
+
+  // Load the page and wait for the form to appear.
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+
+  // Construct AttemptLoginAction.
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::AttemptLoginAction* attemptLogin =
+      action.mutable_attempt_login();
+  attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
+      attemptLogin->add_login_targets();
+  loginTarget->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  [self setCoordinatesOnTarget:loginTarget->mutable_target()
+                  withSelector:"#submit_button"];
+
+  // Execute the action and wait for execution.
+  [self executeAction:action];
+
+  // Verify that the login form was filled.
+  NSString* condition = [NSString
+      stringWithFormat:@"document.getElementById('%s')?.value === '%@' && "
+                       @"!!document.getElementById('%s')?.value",
+                       "un", username, "pw"];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Tests that when device reauthentication is disabled, triggering the
+// AttemptLogin action and immediately switching to a new tab does not block.
+// The form in the background tab is filled successfully, and is already filled
+// when the user switches back.
+- (void)testAttemptLoginTool_tabSwitch_NoReauth {
+  [self launchAppWithActorLoginEnabled];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  // Load page and inject credential.
+  GURL url = self.testServer->GetURL("/simple_login_form_empty.html");
+  NSString* username = @"test_user";
+  NSString* password = @"test_password";
+  [PasswordManagerAppInterface clearCredentials];
+  NSError* storeError = [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(url)];
+  GREYAssertNil(storeError, @"Failed to store credential");
+
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+
+  // Construct action.
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::AttemptLoginAction* attemptLogin =
+      action.mutable_attempt_login();
+  attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
+      attemptLogin->add_login_targets();
+  loginTarget->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  [self setCoordinatesOnTarget:loginTarget->mutable_target()
+                  withSelector:"#submit_button"];
+
+  // Start action asynchronously.
+  std::string serializedAction;
+  action.SerializeToString(&serializedAction);
+  NSData* actionData = [NSData dataWithBytes:serializedAction.data()
+                                      length:serializedAction.length()];
+
+  __block NSError* executionError = nil;
+  __block BOOL actionCompleted = NO;
+
+  [ActorAppInterface executeActionWithProto:actionData
+                                 completion:^(NSError* error) {
+                                   executionError = error;
+                                   actionCompleted = YES;
+                                 }];
+
+  // Immediately open a new tab and wait for a few seconds.
+  [ChromeEarlGrey openNewTab];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
+
+  // Verify the action has completed successfully.
+  GREYAssertTrue(actionCompleted,
+                 @"Action should have completed in background");
+  GREYAssertNil(executionError, @"Action failed in background: %@",
+                executionError);
+
+  // Go back to original tab.
+  [ChromeEarlGrey selectTabAtIndex:0];
+
+  // Verify the form is already filled.
+  NSString* condition = [NSString
+      stringWithFormat:@"document.getElementById('%s')?.value === '%@' && "
+                       @"!!document.getElementById('%s')?.value",
+                       "un", username, "pw"];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Tests that when device reauthentication is enabled, triggering the
+// AttemptLogin action and immediately switching to a new tab causes the
+// execution to remain pending (not filled) while in the background. Once the
+// user switches back to the original tab, device reauthentication is prompted
+// and the form is filled after reauth succeeds.
+- (void)testAttemptLoginTool_tabSwitch_Reauth {
+  [self launchAppWithActorLoginEnabled];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+
+  // Load page and inject credential.
+  GURL url = self.testServer->GetURL("/simple_login_form_empty.html");
+  NSString* username = @"test_user";
+  NSString* password = @"test_password";
+  [PasswordManagerAppInterface clearCredentials];
+  NSError* storeError = [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(url)];
+  GREYAssertNil(storeError, @"Failed to store credential");
+
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::AttemptLoginAction* attemptLogin =
+      action.mutable_attempt_login();
+  attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
+      attemptLogin->add_login_targets();
+  loginTarget->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  [self setCoordinatesOnTarget:loginTarget->mutable_target()
+                  withSelector:"#submit_button"];
+
+  // Start action asynchronously.
+  std::string serializedAction;
+  action.SerializeToString(&serializedAction);
+  NSData* actionData = [NSData dataWithBytes:serializedAction.data()
+                                      length:serializedAction.length()];
+
+  __block NSError* executionError = nil;
+  __block BOOL actionCompleted = NO;
+
+  [ActorAppInterface executeActionWithProto:actionData
+                                 completion:^(NSError* error) {
+                                   executionError = error;
+                                   actionCompleted = YES;
+                                 }];
+
+  // Immediately open a new tab and wait.
+  [ChromeEarlGrey openNewTab];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
+
+  // Verify the action has NOT completed yet because the tab is in the
+  // background and reauth is pending.
+  GREYAssertFalse(actionCompleted,
+                  @"Action should not have completed in background");
+
+  // Go back to original tab and verify that the login form is still NOT filled
+  // before reauth is passed.
+  [ChromeEarlGrey selectTabAtIndex:0];
+  NSString* notFilledCondition =
+      @"document.getElementById('un')?.value === '' && "
+       "document.getElementById('pw')?.value === ''";
+  [ChromeEarlGrey waitForJavaScriptCondition:notFilledCondition];
+
+  // Manually trigger the successful re-authentication result, and wait for the
+  // action to complete.
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
+  BOOL success = [[GREYCondition conditionWithName:@"Wait for action completion"
+                                             block:^BOOL {
+                                               return actionCompleted;
+                                             }] waitWithTimeout:10.0];
+
+  GREYAssertTrue(success, @"Action timed out after reauth");
+  GREYAssertNil(executionError, @"Action failed: %@", executionError);
+
+  // Verify that the form is filled.
+  NSString* condition = [NSString
+      stringWithFormat:@"document.getElementById('%s')?.value === '%@' && "
+                       @"!!document.getElementById('%s')?.value",
+                       "un", username, "pw"];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
 @end

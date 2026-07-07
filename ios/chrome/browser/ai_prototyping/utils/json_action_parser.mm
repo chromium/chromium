@@ -26,6 +26,7 @@ enum class ActionType {
   kScroll,
   kScrollTo,
   kSelect,
+  kAttemptLogin,
 };
 
 // Based on the field names in
@@ -57,6 +58,9 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "select") {
     return ActionType::kSelect;
+  }
+  if (key == "attempt_login") {
+    return ActionType::kAttemptLogin;
   }
   return ActionType::kUnknown;
 }
@@ -236,6 +240,38 @@ bool MapSelectAction(const base::DictValue& dict,
   return select->ByteSizeLong() > 0;
 }
 
+bool MapAttemptLoginAction(const base::DictValue& dict,
+                           optimization_guide::proto::Action* action) {
+  auto* attempt_login = action->mutable_attempt_login();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    attempt_login->set_tab_id(*tab_id);
+  }
+  if (const base::ListValue* login_targets = dict.FindList("login_targets")) {
+    for (const base::Value& login_target_val : *login_targets) {
+      if (!login_target_val.is_dict()) {
+        continue;
+      }
+      const base::DictValue& login_target_dict = login_target_val.GetDict();
+      auto* login_target = attempt_login->add_login_targets();
+      if (std::optional<int> login_type =
+              login_target_dict.FindInt("login_type")) {
+        if (optimization_guide::proto::
+                AttemptLoginAction_LoginTarget_LoginType_IsValid(*login_type)) {
+          login_target->set_login_type(
+              static_cast<optimization_guide::proto::
+                              AttemptLoginAction_LoginTarget_LoginType>(
+                  *login_type));
+        }
+      }
+      if (const base::DictValue* target =
+              login_target_dict.FindDict("target")) {
+        MapActionTarget(*target, login_target->mutable_target());
+      }
+    }
+  }
+  return attempt_login->ByteSizeLong() > 0;
+}
+
 }  // namespace
 
 bool ParseActionFromDict(const base::DictValue& dict,
@@ -272,6 +308,8 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapScrollToAction(value.GetDict(), action);
     case ActionType::kSelect:
       return MapSelectAction(value.GetDict(), action);
+    case ActionType::kAttemptLogin:
+      return MapAttemptLoginAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }
