@@ -11,6 +11,7 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -33,6 +34,7 @@ class SharedURLLoaderFactory;
 namespace policy {
 struct AccountStatus;
 class AccountStatusCheckFetcher;
+class DeviceManagementService;
 }  // namespace policy
 
 namespace ash {
@@ -64,9 +66,12 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   // `local_state` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
+  // `device_management_service` must be non-null and must outlive `this` in
+  // production, but it may be null in unit tests.
   GaiaScreen(
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::DeviceManagementService* device_management_service,
       base::WeakPtr<TView> view,
       const ScreenExitCallback& exit_callback);
 
@@ -124,6 +129,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   const raw_ref<PrefService> local_state_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;
+  const raw_ptr<policy::DeviceManagementService> device_management_service_;
 
   // Whether the QuickStart entry point visibility has already been determined.
   // This flag prevents duplicate histogram entries.

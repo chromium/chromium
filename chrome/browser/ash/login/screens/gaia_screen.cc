@@ -97,14 +97,20 @@ std::string GaiaScreen::GetResultString(Result result) {
 GaiaScreen::GaiaScreen(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::DeviceManagementService* device_management_service,
     base::WeakPtr<TView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(GaiaView::kScreenId, OobeScreenPriority::DEFAULT),
       local_state_(CHECK_DEREF(local_state)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      device_management_service_(device_management_service),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
-      exit_callback_(exit_callback) {}
+      exit_callback_(exit_callback) {
+  if (!device_management_service_) {
+    CHECK_IS_TEST();
+  }
+}
 
 GaiaScreen::~GaiaScreen() {
   backlights_forced_off_observation_.Reset();
@@ -307,11 +313,13 @@ void GaiaScreen::OnScreenBacklightStateChanged(
 
 void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
   if (ShouldFetchEnrollmentNudgePolicy(user_email)) {
+    CHECK(device_management_service_);
     view_->ToggleLoadingUI(true);
     account_status_fetcher_.reset();
     account_status_fetcher_ =
         std::make_unique<policy::AccountStatusCheckFetcher>(
-            shared_url_loader_factory_, user_email);
+            shared_url_loader_factory_, device_management_service_.get(),
+            user_email);
     account_status_fetcher_->Fetch(
         base::BindOnce(&GaiaScreen::OnAccountStatusFetched,
                        base::Unretained(this), user_email),
